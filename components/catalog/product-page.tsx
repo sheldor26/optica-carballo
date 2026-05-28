@@ -8,6 +8,7 @@ import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
+import { isCheckoutEnabled } from '@/lib/features';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { ProductDetailData } from '@/lib/catalog/queries';
 
@@ -130,6 +131,7 @@ export function ProductDetailPage({
 
           <VariantList
             showVariantCta={!isPlaceholder(product.name)}
+            checkoutEnabled={isCheckoutEnabled()}
             productName={product.name}
             brandName={product.brand.name}
             variants={activeVariants.map((v) => ({

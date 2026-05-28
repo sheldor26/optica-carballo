@@ -5,7 +5,13 @@ import { CartItemRow } from '@/components/cart/cart-item-row';
 import { formatPriceCents } from '@/lib/format/currency';
 import type { ResolvedCart } from '@/lib/cart/types';
 
-export function CartPage({ cart }: { cart: ResolvedCart }) {
+export function CartPage({
+  cart,
+  checkoutEnabled,
+}: {
+  cart: ResolvedCart;
+  checkoutEnabled: boolean;
+}) {
   if (cart.items.length === 0) {
     return (
       <main className="container py-12 md:py-16">
@@ -73,19 +79,27 @@ export function CartPage({ cart }: { cart: ResolvedCart }) {
               </p>
             )}
 
-            <Button
-              type="button"
-              className="mt-5 w-full"
-              size="lg"
-              disabled
-              title="Próximamente"
-            >
-              Iniciar compra
-            </Button>
-            <p className="text-muted-foreground mt-2 text-center text-xs">
-              Checkout próximamente. Mientras tanto, podés consultar por
-              WhatsApp.
-            </p>
+            {checkoutEnabled ? (
+              <Button asChild className="mt-5 w-full" size="lg">
+                <Link href="/checkout">Iniciar compra</Link>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  className="mt-5 w-full"
+                  size="lg"
+                  disabled
+                  title="Próximamente"
+                >
+                  Iniciar compra
+                </Button>
+                <p className="text-muted-foreground mt-2 text-center text-xs">
+                  Checkout próximamente. Mientras tanto, podés consultar por
+                  WhatsApp.
+                </p>
+              </>
+            )}
           </div>
 
           <p className="text-muted-foreground mt-4 text-xs">

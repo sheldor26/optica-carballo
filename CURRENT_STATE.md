@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED` instaurado — switch limpio entre WhatsApp y cart-online**
+
+Founder definió estrategia final: construir TODO el flow de venta (cart + checkout + MP + webhook) detrás de un feature flag, dejarlo oculto hasta tener "suficientes artículos para que valga la pena activarlo". Esta sesión: etapa 0 — el flag. Reactivar = setear `NEXT_PUBLIC_CHECKOUT_ENABLED=true` en Vercel + redeploy 1 min. Flag por default OFF: CartBadge oculto, VariantList con "Consultar WhatsApp", /carrito con "Próximamente". Flag ON: CartBadge visible, "Agregar al carrito" inline, /carrito linkea a /checkout. **Próxima etapa**: sub-feature 2b — `/checkout` + Mercado Pago Checkout Pro V1. Necesito credenciales MP sandbox del founder antes de instalar el SDK.
+
 🟢 **Migración 00005 (bucket products público) lista en local + helpers TS — pendiente aplicar a cloud**
 
 3 decisiones del founder cerradas: (1) carga de productos vía **seeds SQL asistidos** — founder me pasa data por chat, yo armo el SQL, founder corre en SQL Editor cloud; (2) imágenes en **bucket Supabase Storage `products` público** (CDN + next/image compatible); (3) empezamos por **Rusty reemplazando los 4 productos `[PH]` actuales**. Migration 00005 creada y testeada en local (bucket público 5MB, mime whitelist, 1 policy SELECT pública, escritura solo service_role). Helpers TS server-only en `lib/storage/products.ts`: upload + getPublicUrl + delete + suggestFilename. **Próximo paso del founder**: aplicar bootstrap al cloud + pasarme data del 1er producto Rusty real.
@@ -341,7 +345,26 @@ Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema valid
 
 ## Próximo paso EXACTO
 
-**Pre-decisión del founder** (no de código): cómo cargar los productos reales al cloud. 3 caminos:
+**Próxima sesión código**: **Sub-feature 2b** — `/checkout` completo con Mercado Pago Checkout Pro V1. Detrás del feature flag (default OFF, founder activa cuando quiera). Requiere:
+- Credenciales MP sandbox del founder (access token + public key).
+- Instalar `mercadopago` SDK v2 (decisión ya tomada).
+- Construir `lib/mp/*` (helpers de preferences).
+- Server action `createOrderFromCart` con stock atomic revalidation + snapshots ADR-007.
+- `/checkout/page.tsx` con address select + resumen + submit.
+- Páginas post-redirect: `/checkout/exito`, `/checkout/pendiente`, `/checkout/error`.
+
+**Pendientes del founder históricos** (no bloquean próxima sesión):
+- Aplicar bootstrap 00005 al cloud + verificar (1 bucket + 1 policy).
+- Pasarme data del 1er producto Rusty real para reemplazar `[PH]` (template en el cierre anterior).
+- Generar `CART_COOKIE_SECRET` para Vercel (diferente al de dev).
+- Redirect URLs en Supabase Auth Dashboard.
+- Credenciales MP sandbox (para sub-feature 2b).
+
+---
+
+## ⛔ Pendientes históricos (no bloqueantes)
+
+**Pre-decisión del founder** (resuelto): cómo cargar los productos reales al cloud. 3 caminos:
 - **A. Admin UI propio** en `/admin/productos/...` — más laburo (~600 líneas, 2-3 sesiones), pero le da herramienta autosuficiente al founder. Justifica si va a cargar 50+ productos o si quiere editar en el futuro.
 - **B. Supabase Studio** (table editor del Dashboard) — sin código nuevo, pero UX no ideal (especialmente para imágenes). Razonable para 10-30 productos iniciales.
 - **C. Seeds SQL asistidos por mí** — founder me pasa la data por chat / CSV, yo armo el archivo `supabase/seeds/02_{brand}_products.sql`, founder lo corre en SQL Editor cloud. Híbrido: rápido para arrancar, sin código nuevo.
@@ -394,6 +417,25 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Etapa 0 — Feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED` (✅ 2026-05-28)
+- **Decisión de producto**: founder redefinió estrategia — construir TODO el flow de venta detrás de un flag, dejarlo oculto hasta tener masa crítica de productos. Reactivar = flip 1 env var + redeploy. Implica: sub-features 2b + 3 SÍ se construyen, pero invisibles hasta que el flag se prenda.
+- **Helper nuevo** `lib/features.ts` con `isCheckoutEnabled()`. Convención del proyecto para feature flags: env vars `NEXT_PUBLIC_*_ENABLED` con valor `'true'`. Cualquier otro valor (incluyendo ausente) → deshabilitada.
+- **Aplicado en**:
+  - `SiteHeader`: `{checkoutEnabled && <CartBadge />}`. Import descomentado.
+  - `VariantList`: nueva prop `checkoutEnabled`. Si true → `AddToCartButton`. Si false → `VariantWhatsappCta`. Solo se muestra alguno si `showVariantCta` (false para `[PH]`).
+  - `product-page.tsx`: pasa `checkoutEnabled={isCheckoutEnabled()}`.
+  - `cart-page.tsx`: nueva prop `checkoutEnabled`. Si true → CTA "Iniciar compra" linkeable a `/checkout`. Si false → button disabled con texto "Checkout próximamente".
+  - `/carrito/page.tsx`: pasa el flag al componente.
+- **Decisiones técnicas clave**:
+  - **`NEXT_PUBLIC_*_ENABLED` por convención**: env público para que server components renderizen correctamente desde build/request. Si el día de mañana hay flags server-only, se usa otro patrón.
+  - **String `'true'` exacto** (no `'1'`, no truthy): explícito, sin ambigüedad. Falta de la env = no habilitada.
+  - **Flag por feature, no global**: ej `CHECKOUT_ENABLED` solo controla cart+checkout. Si después queremos un flag para "lector de receta IA", es `RX_AI_READER_ENABLED` separado.
+  - **Sin /checkout creado todavía**: cuando flag ON pero /checkout no existe (estado intermedio entre etapas), Next devuelve 404 natural. Acepta el costo de inconsistencia transitoria — la próxima sub-feature 2b crea /checkout.
+- **Smoke 4/4 verdes** (toggle entre OFF y ON):
+  - **OFF (default)**: home sin CartBadge (0 matches), producto `[PH]` sin "Agregar" (0 matches), sin "Consultar" inline (0 — porque `[PH]` no muestra ninguno).
+  - **ON**: home con CartBadge (1 match), /carrito vacío sin link a /checkout (0 — empty state no muestra sidebar), /carrito CON item (cookie sintética) muestra "Iniciar compra" + `href="/checkout"` (3 matches).
+- **Validación**: `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Build sin regresión.
 
 ### Migración 00005 — Bucket Storage `products` público + helpers (✅ 2026-05-28, local only)
 - **Bucket `products`** público: `public=true`, max 5 MB por imagen, mime whitelist (jpeg/png/webp/avif). Path pattern sugerido: `<brand_slug>/<product_slug>/<filename>`.

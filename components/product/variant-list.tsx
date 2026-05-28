@@ -1,3 +1,4 @@
+import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { VariantWhatsappCta } from '@/components/product/variant-whatsapp-cta';
 import { formatPriceCents } from '@/lib/format/currency';
 
@@ -51,16 +52,20 @@ export function VariantList({
   productName,
   brandName,
   showVariantCta,
+  checkoutEnabled,
 }: {
   variants: VariantListItem[];
   productName: string;
   brandName: string;
   /**
-   * Si es `false` (producto `[PH]` placeholder), no muestra CTA por variante.
-   * Hoy el CTA por variante es WhatsApp contextual; cuando se reactive el
-   * checkout online, este flag controla "Agregar al carrito" en su lugar.
+   * `false` para productos `[PH]` placeholder — sin CTA por variante.
    */
   showVariantCta: boolean;
+  /**
+   * `true` → muestra "Agregar al carrito". `false` → muestra "Consultar
+   * por WhatsApp". Controlado por `lib/features.isCheckoutEnabled()`.
+   */
+  checkoutEnabled: boolean;
 }) {
   if (variants.length === 0) {
     return (
@@ -103,16 +108,23 @@ export function VariantList({
                     {inStock ? `${v.stockQty} en stock` : 'Sin stock'}
                   </p>
                 </div>
-                {showVariantCta && (
-                  <VariantWhatsappCta
-                    productName={productName}
-                    brandName={brandName}
-                    sku={v.sku}
-                    variantLabel={label}
-                    priceCents={v.priceCents}
-                    inStock={inStock}
-                  />
-                )}
+                {showVariantCta &&
+                  (checkoutEnabled ? (
+                    <AddToCartButton
+                      variantId={v.id}
+                      variantLabel={label}
+                      disabled={!inStock}
+                    />
+                  ) : (
+                    <VariantWhatsappCta
+                      productName={productName}
+                      brandName={brandName}
+                      sku={v.sku}
+                      variantLabel={label}
+                      priceCents={v.priceCents}
+                      inStock={inStock}
+                    />
+                  ))}
               </div>
             </li>
           );
