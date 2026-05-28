@@ -285,6 +285,62 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Implementar recomendación del agente especialista sin pensar críticamente si tiene sentido en el contexto del sitio entero
+
+**Estado**: 🟡 Detectado y corregido en el mismo turno gracias al founder. Patrón identificado para no repetir.
+**Categoría**: Sistema de agentes / Calidad de decisión / Falta de pensamiento crítico
+
+### Qué pasó
+
+Al construir el recomendador de monturas, invoqué a `optical-expert` para obtener input regulatorio. El agente recomendó incluir matrícula de María Carlota Carballo en el disclaimer ("Óptica Carballo — Regente Téc. María Carlota Carballo, Mat. N°...") citando Ley 17.132 y protección legal.
+
+Implementé tal cual con `MATRICULA_PLACEHOLDER` esperando que el founder me pasara el número. Cerré el mensaje pidiéndole: **"Pasame la matrícula real de María Carlota Carballo. Cuando me la digas, cambio MATRICULA_PLACEHOLDER y pusheo."**
+
+Founder respondió: **"Para que necesitas saber la matricula? no tiene sentido"**.
+
+Pensándolo de nuevo, tenía razón:
+1. La matrícula no agrega protección legal real acá (la protección está en el lenguaje "orientativo").
+2. Ponerla al lado de un output de IA da impresión de aval profesional cuando NO hay aval.
+3. Es inconsistente con el resto del sitio (que no muestra matrícula en ninguna parte).
+
+### Causa raíz
+
+**Acepté la recomendación del agente sin filtro crítico**. El agente especialista tiene visión profunda de su dominio pero NO ve coherencia del sitio entero, modelo mental del usuario, ni tradeoffs cross-dominio. Yo SÍ tengo (o debería tener) esa visión, y mi rol incluye actuar como filtro entre los agentes y el founder.
+
+Patrón profundo: **trato a los agentes como autoridades en vez de consultores**. Cuando un agente dice "X es necesario por motivo regulatorio", asumo que SÍ y procedo a implementar + pedirle al founder los datos. Eso desactiva mi pensamiento crítico justo cuando más se necesita.
+
+Costo del mistake: poco (founder lo detectó en 1 turno, fix de 5 min, no llegó a producción). Pero el patrón es importante porque podría escalar — si en el futuro armo features grandes basados puramente en outputs de agentes sin filtrar, voy a meter complejidad innecesaria.
+
+### Regla preventiva
+
+Para CUALQUIER recomendación de un agente especialista que IMPLIQUE:
+- Agregar texto regulatorio/legal extenso
+- Pedirle al founder datos del negocio (matrícula, habilitaciones, números de registro)
+- Agregar checkboxes / micro-copy "por seguridad"
+- Implementar safeguards técnicos extra (rate limit, captcha, validaciones complejas)
+
+**Pasar por filtro antes de implementar/pedir al founder**:
+
+1. ¿Esta acción es coherente con el resto del sitio?
+2. ¿El costo (UX / coherencia / dato extra del founder) está justificado por el beneficio real?
+3. ¿El agente puede estar optimizando solo para SU dominio sin ver el cuadro completo?
+4. Si la respuesta a alguna es "no estoy seguro" → flagear al founder ANTES de implementar: "el agente recomienda X, mi lectura es que podría ser overkill por razón Y. ¿procedo o simplifico?"
+
+Especial cuidado con agentes que tienden al conservadurismo defensivo:
+- `optical-expert` (legal regulatorio óptico)
+- `argentine-ecom` (AFIP, defensa del consumidor)
+- `ai-features-engineer` (safety, rate limiting, prompt injection)
+
+Ellos NO se equivocan en su dominio. Pero su recomendación necesita filtrado por el costo UX/coherencia que solo se ve desde la perspectiva del producto entero.
+
+### Estado de mitigación
+
+- Implementada en este mismo turno: saqué matrícula del disclaimer, mantuve protección con lenguaje "orientativo".
+- Patrón documentado en LEARNINGS también ("los agentes pueden ser overly conservative; la decisión del founder pesa más").
+- Si en próximas sesiones repito el patrón (implementar sin filtrar + pedir data al founder), promover esta regla a CLAUDE.md.
+
+---
+
 ## 2026-05-28 — 5TA VEZ: la "mitigación de emergencia" del 4to mistake era incompleta (solo cubría CURRENT_STATE.md, omitía LEARNINGS + MISTAKES)
 
 **Estado**: 🔴 Abierto. La mitigación que escribí en la 4ta vez tenía bug de especificación. Corrijo la especificación acá.

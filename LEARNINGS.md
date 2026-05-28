@@ -22,6 +22,101 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Los agentes pueden ser overly conservative; la decisión del founder pesa más que la recomendación del agente cuando hay tradeoff de UX/coherencia
+
+**Categoría**: Sistema de agentes / Toma de decisión / Calibración
+**Confianza**: 🟢 Alta — caso concreto en el que el founder corrigió correctamente una recomendación del optical-expert.
+
+### Qué pasó
+
+`optical-expert` recomendó incluir matrícula de María Carlota Carballo en el disclaimer del recomendador de monturas, citando Ley 17.132 y "protección legal". Implementé tal cual con placeholder hasta que el founder me pasara el número. Founder cuestionó: "para qué necesitás saber la matrícula? no tiene sentido".
+
+Pensándolo de nuevo con el contexto del proyecto entero:
+- La matrícula NO agrega protección legal real en este contexto. La protección viene del lenguaje "orientativo / no reemplaza consulta profesional", no del número.
+- Mostrarla al lado del output de IA da impresión de que la matriculada AVALA esa recomendación específica — cuando NO la revisa en tiempo real.
+- En el resto del sitio no mostramos matrícula. Solo acá sería inconsistente.
+
+Decisión: sacarla. El disclaimer queda genérico, protege igual, no introduce contrasentido.
+
+### Por qué pasó
+
+El agente optical-expert tiene contexto técnico-óptico y legal pero NO tiene visibilidad de:
+- **Coherencia visual del sitio**: ¿esta protección extra rompe el tono del resto?
+- **UX completa**: ¿el usuario ve la matrícula como "garantía" o como "burocracia que da desconfianza"?
+- **Modelo mental del cliente**: ¿asocia la matrícula con esta herramienta específica de IA?
+
+El founder SÍ ve el sitio entero, el modelo mental, y la coherencia. Por eso su veto fue correcto.
+
+Adicionalmente: los agentes especialistas tienden a optimizar para SU dominio (legal-regulatorio, en este caso). En tradeoffs cross-dominio (UX vs legal, coherencia vs cobertura defensiva), el founder es el árbitro natural — yo no debería implementar la recomendación del agente sin pensar críticamente si tiene sentido en el sitio entero.
+
+### Cómo replicar
+
+- Cuando un agente recomienda algo que IMPLICA acción del founder (pedirle matrícula, pedirle datos extras, agregar texto que cambia el tono), **antes de implementar, preguntarme**: ¿esta acción tiene sentido en el contexto del sitio entero?
+- Si la respuesta no es obviamente sí, **flagear al founder antes de pedir/implementar**: "el agente recomienda X, mi lectura es que en el contexto del sitio Y podría ser overkill. ¿procedo o lo simplifico?"
+- Especialmente cuidadoso con agentes que tienden al conservadurismo defensivo (optical-expert para legal, ai-features-engineer para safety, argentine-ecom para AFIP).
+
+### Anti-patrón a evitar
+
+- Tratar la recomendación del agente como instrucción a ejecutar sin filtro. Los agentes son consultores, no commanders.
+- Pedirle al founder data extra (matrícula, número de habilitación, datos personales) sin haber validado que la necesidad es real en el contexto.
+- Optimizar protección legal "por si acaso" cuando el costo es UX o coherencia que sí impactan conversión.
+
+### Próxima vez aplicar a
+
+- Cualquier recomendación de `optical-expert` que implique agregar texto regulatorio extenso o pedir datos del negocio que el founder tendría que confirmar manualmente.
+- Cualquier recomendación de `argentine-ecom` que sugiera agregar checkboxes legales, micro-copy AFIP, etc. — validar primero si SÍ es obligatorio o si es defensivo over-the-top.
+- Cualquier recomendación de `ai-features-engineer` que sugiera rate limiting, auth, captchas como "mejor práctica" — validar contra el contexto real de uso esperado.
+
+---
+
+## 2026-05-28 — Patrón "2 agentes especialistas en paralelo" para feature compleja desbloqueó el approach en 1 sprint
+
+**Categoría**: Workflow / Sistema de agentes
+**Confianza**: 🟢 Alta (1 caso de éxito, pero el resultado fue notablemente mejor que arrancar yo solo)
+
+### Qué pasó
+
+Founder pidió construir "Recomendador de monturas por rostro" (IA Vision + lógica óptica + UX). Antes de codear, invoqué **2 agentes especialistas en paralelo en el mismo mensaje**:
+
+1. `optical-expert`: face shapes a reconocer (7 estándares argentinas), mapping óptico face shape → frame shape, slugs canónicos para `attributes.frame_shape`, disclaimer regulatorio obligatorio (Ley 17.132), qué NO hacer (género/edad, recomendar cristal), tono de los mensajes al cliente.
+2. `ai-features-engineer`: modelo a usar (claude-haiku-4-5 con justificación de costo y task fit), API Route vs Server Action, schema del response con confidence numérico vs string, safeguards anti prompt-injection en el system prompt, privacy en Vercel (no /tmp, no console.log del body), rate limiting (Upstash recomendado pero okay sin para iter 1), UX flow técnico.
+
+Ambos respondieron en ~40-60s. Sin sobrelap (cada uno aportó conocimiento de su dominio). El resultado fue que pude implementar el feature completo (lib helpers + API route + UI + sitemap) en 1 sprint sin re-trabajo por decisiones técnicas malas.
+
+### Por qué funcionó
+
+- **Decisiones óptico-regulatorias + decisiones técnicas son ortogonales**: el mapping face shape → frame shape NO depende de qué modelo usar. El disclaimer regulatorio NO depende de la arquitectura del endpoint. Por eso podían correr en paralelo sin coordinación.
+- **Cada agente tiene contexto del proyecto** (CLAUDE.md, BUSINESS_POLICIES.md, etc.) — no tuve que pasarle background, solo el delta del feature.
+- **Prompts a los agentes fueron muy específicos** sobre qué entregable necesito (no "escribí código", sino "decisiones técnicas/ópticas como bullet points"). Esto evitó que respondieran con código que después yo iba a tirar.
+- **Respeté la regla CLAUDE.md "no invocar 3+ agentes en un solo turno sin coordinación clara"**: 2 está bien, son ortogonales, sin coordinación entre ellos necesaria.
+
+### Cómo replicar
+
+Para CUALQUIER feature que toque 2+ dominios independientes, invocar 2 agentes en paralelo en el mismo mensaje con prompts específicos:
+
+**Buenos candidatos para este patrón**:
+- Feature de checkout: `argentine-ecom` (Mercado Pago, AFIP) + `optical-expert` (requisitos para vender lentes de contacto).
+- Feature de filtros de catálogo: `seo-strategist` (URLs + meta) + `optical-expert` (qué atributos son técnicamente relevantes).
+- Lector de receta IA: `optical-expert` (datos de receta argentinas, validaciones) + `ai-features-engineer` (Vision + structured output).
+- Asistente conversacional con RAG: `optical-expert` (qué SÍ/NO puede recomendar legalmente) + `ai-features-engineer` (RAG arquitectura).
+
+**Malos candidatos** (mejor secuencial o agente único):
+- Cuando el output del agente A condiciona el prompt del agente B. Si el optical-expert dice "no podemos usar Vision por X razón regulatoria", el prompt al ai-features-engineer cambia → mejor secuencial.
+
+### Anti-patrón a evitar
+
+- Invocar 3+ agentes en paralelo sin tener claro cómo se compone el resultado (mejor 2, y si hace falta un tercero, esperar al output de los primeros 2).
+- Pedirles que "diseñen el feature" → muy abstracto. Mejor: pedirles entregables específicos como inputs accionables para que YO construya.
+- Olvidar pasarles el contexto del proyecto en el prompt cuando es necesario (aunque los agentes tienen acceso al CLAUDE.md, a veces necesitan detalles del feature concreto que no están documentados).
+
+### Próxima vez aplicar a
+
+- Lector de receta IA (cuando el founder lo priorice): `optical-expert` (datos OD/OI/CIL/eje/DNP, formato receta argentina, regulación) + `ai-features-engineer` (Vision para PDF/foto, structured extraction, validaciones).
+- Checkout completo: `argentine-ecom` + `optical-expert`.
+- FAQs con FAQPage schema: `seo-strategist` (schema + rich snippets) + `content-writer-medical` (redacción + E-E-A-T).
+
+---
+
 ## 2026-05-28 — Letter-by-letter reveal: agrupar letras por palabra con `whitespace:nowrap` evita que el browser rompa palabras a mitad
 
 **Categoría**: framer-motion / animations / typography / CSS layout
