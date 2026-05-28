@@ -345,13 +345,33 @@ Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema valid
 
 ## Próximo paso EXACTO
 
-**Próxima sesión código**: **Sub-feature 2b** — `/checkout` completo con Mercado Pago Checkout Pro V1. Detrás del feature flag (default OFF, founder activa cuando quiera). Requiere:
-- Credenciales MP sandbox del founder (access token + public key).
-- Instalar `mercadopago` SDK v2 (decisión ya tomada).
-- Construir `lib/mp/*` (helpers de preferences).
-- Server action `createOrderFromCart` con stock atomic revalidation + snapshots ADR-007.
-- `/checkout/page.tsx` con address select + resumen + submit.
-- Páginas post-redirect: `/checkout/exito`, `/checkout/pendiente`, `/checkout/error`.
+**Próxima sesión código**: **Sub-feature 2b PARTE 1** — todo lo del checkout que NO depende de credenciales MP. Detrás del feature flag (default OFF).
+
+Decisiones cerradas en esta sesión para 2b:
+- **MP**: founder NO tiene cuenta MP todavía. La crea en paralelo. Yo arranco la parte 1 (sin MP), parte 2 (preference + redirect) viene cuando lleguen creds (`MP_ACCESS_TOKEN` test + `NEXT_PUBLIC_MP_PUBLIC_KEY` test).
+- **Resend**: founder lo instala más adelante para sub-feature 3 (webhook + emails). Pendiente: cuenta Resend (https://resend.com gratis 100/día) + `RESEND_API_KEY`.
+- **Shipping**: free desde **$80.000**, flat **$3.500** por encima. Constantes editables en `lib/shipping.ts`.
+- **Sin Tusfacturas en V1**: facturación manual al principio (founder confirmó).
+
+Scope sub-feature 2b parte 1 (todo SIN MP):
+- `lib/shipping.ts` con `FREE_SHIPPING_THRESHOLD_CENTS = 80000_00`, `FLAT_SHIPPING_CENTS = 3500_00`, `calculateShipping(subtotalCents)`.
+- Stock atomic revalidation (`UPDATE WHERE stock_qty >= ? RETURNING ...`) — defensa anti-overselling.
+- Server action `createOrderFromCart(addressId)` con snapshots inmutables (ADR-007), genera `order_number` automático (función migration 00003).
+- `/checkout/page.tsx` (auth required, redirect a /ingresar si no), con: resumen cart, address select (de las del user, link a crear si no tiene), envío calculado, total. Submit crea order y muestra "Esperando integración MP".
+
+Scope sub-feature 2b parte 2 (CUANDO lleguen creds MP):
+- Instalar `mercadopago` SDK v2.
+- `lib/mp/preferences.ts` con `createPreference(order)`.
+- Modificar `createOrderFromCart` para llamar `createPreference` y devolver `init_point`.
+- Redirect a init_point.
+- Pages post-redirect: `/checkout/exito`, `/checkout/pendiente`, `/checkout/error`.
+
+Scope sub-feature 3 (CUANDO lleguen creds MP + Resend):
+- Webhook MP en `app/api/mp/webhook/route.ts` con validación de signature + idempotencia.
+- Update `orders.status` (pending → paid / failed).
+- Email al cliente (Resend) confirmando pago.
+- Email al founder con datos para facturar manualmente.
+- Sin Tusfacturas — manual al principio.
 
 **Pendientes del founder históricos** (no bloquean próxima sesión):
 - Aplicar bootstrap 00005 al cloud + verificar (1 bucket + 1 policy).
