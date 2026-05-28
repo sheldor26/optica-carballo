@@ -22,6 +22,101 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Letter-by-letter reveal: agrupar letras por palabra con `whitespace:nowrap` evita que el browser rompa palabras a mitad
+
+**Categoría**: framer-motion / animations / typography / CSS layout
+**Confianza**: 🟢 Alta (bug detectado en producción por founder vía screenshot, fix verificado en build)
+
+### Qué pasó
+
+LetterReveal v1 (commit `9392c19`): cada letra del H1 era `motion.span style="display:inline-block; whiteSpace:pre"`. En desktop con ancho viewport ~1200px y text-balance, el browser rompía las palabras a mitad:
+
+> "Anteojos origina **|** les con asesoram **|** iento óptico real"
+
+Founder reportó "no me gusta como queda la J de anteojos" + screenshot. Ese "J" era realmente la J de "originaJes" cortada como "origina les".
+
+### Causa raíz
+
+**El browser puede hacer line break entre 2 inline-block consecutivos SIN necesidad de whitespace entre ellos**. Lógica del rendering: cada inline-block es un "atomic inline item" en el line flow. Cuando el ancho de línea se agota, el browser inserta el break en el último item que pudo, sin importar si hay un espacio o no.
+
+`whitespace:pre` mantiene el espacio renderizado pero NO previene el wrap entre los items inline-block. Resultado: las letras se rompen a mitad de palabra cuando el balance las distribuye.
+
+### Fix: agrupar letras por palabra en wrapper inline-block + nowrap
+
+```tsx
+const words = text.split(' ');
+let letterCounter = 0;
+return (
+  <Tag>
+    {words.map((word, wi) => (
+      <Fragment key={wi}>
+        {/* Wrapper de palabra: atomic, NO se rompe internamente */}
+        <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+          {Array.from(word).map((char) => {
+            const idx = letterCounter++;
+            return (
+              <motion.span
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: baseDelay + idx * 0.025, ... }}
+                style={{ display: 'inline-block' }}
+              >
+                {char}
+              </motion.span>
+            );
+          })}
+        </span>
+        {/* Espacio entre palabras: texto normal — SÍ permite wrap */}
+        {wi < words.length - 1 && ' '}
+      </Fragment>
+    ))}
+  </Tag>
+);
+```
+
+**Claves del fix**:
+1. **Palabra wrapper inline-block** + `whitespace:nowrap` → la palabra es un atomic item que el browser nunca rompe.
+2. **Espacios entre palabras como texto normal** (no inline-block) → permite que el browser wrap en estos puntos como en cualquier texto.
+3. **Delay individual por letra** (no `staggerChildren` del container) → cascada continúa atravesando palabras, no se resetea con cada wrapper.
+
+### Cómo replicar
+
+Cualquier vez que animes texto letra por letra (LetterReveal, scramble effect, char-by-char fade-in), agrupar las letras por palabra. Patrón:
+
+```
+container > word-wrapper(inline-block, nowrap) > letter(inline-block)
+                                              ↑
+                                  span entre word-wrappers como texto normal
+```
+
+### Anti-patrón a evitar
+
+```tsx
+// ❌ Mal — wrap a mitad de palabra
+{Array.from(text).map(char => (
+  <motion.span style={{ display: 'inline-block', whiteSpace: 'pre' }}>
+    {char}
+  </motion.span>
+))}
+
+// ✅ Bien — wrap solo entre palabras
+{words.map(word => (
+  <>
+    <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+      {[...word].map(char => <motion.span style={{ display: 'inline-block' }}>{char}</motion.span>)}
+    </span>
+    {' '}
+  </>
+))}
+```
+
+### Próxima vez aplicar a
+
+- Cualquier animación de texto que use `inline-block` por letra (scramble, fade-in cascade, jitter, hover-per-letter).
+- Si en algún futuro escribimos un `TextScramble` o `WordShuffle` component, NO repetir el bug.
+
+---
+
 ## 2026-05-28 — `useMotionTemplate` para que valores reactivos (gradient, color, transform string) actualicen en tiempo real
 
 **Categoría**: framer-motion / animations / React
@@ -172,7 +267,7 @@ Founder respondió eligiendo las 4 opciones + comentario: **"Hay muchas cosas qu
 ## 2026-05-28 — `Image fill` ignora `padding` del wrapper — usar double wrapper para que el padding absorba el zoom
 
 **Categoría**: Next.js / next/image / CSS positioning
-**Confianza**: 🟡 Media (el patrón del double wrapper es correcto, pero el padding requiere ser MUCHO más grande de lo intuitivo cuando las fotos source no tienen padding propio — ver "Notas").
+**Confianza**: 🟢 Alta — verificado en producción 2026-05-28. El fix iter 3 (`p-10 sm:p-14 md:p-20` + `scale-[1.03]` + double wrapper) resolvió definitivamente. Founder confirmó visualmente. El patrón es replicable mientras se calibre el padding contra fotos reales del fabricante.
 
 ### Qué pasó
 

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LetterReveal } from '@/components/ui/letter-reveal';
 import { MagneticButton } from '@/components/ui/magnetic-button';
@@ -46,13 +46,14 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
         <div className="bg-foreground/[0.04] animate-mesh-c absolute -bottom-32 left-1/2 size-[480px] -translate-x-1/2 rounded-full blur-3xl" />
       </div>
 
-      <div className="container relative grid grid-cols-1 items-center gap-10 py-16 md:grid-cols-[1.05fr_1fr] md:gap-12 md:py-28 lg:py-32">
-        <motion.div style={{ y: textY }} className="relative">
+      <div className="container relative grid grid-cols-1 items-center gap-8 py-12 md:grid-cols-[1.05fr_1fr] md:gap-12 md:py-28 lg:py-32">
+        <motion.div
+          style={{ y: textY }}
+          className="relative order-2 md:order-1"
+        >
           <p className="hero-reveal hero-reveal-1 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]">
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
             <span className="text-brand">{siteName}</span>
-            <span className="text-muted-foreground/70">·</span>
-            <span className="text-muted-foreground">óptica matriculada</span>
           </p>
           <h1 className="mt-5 text-balance font-serif text-5xl font-medium leading-[1.02] tracking-[-0.02em] md:text-6xl lg:text-7xl">
             <LetterReveal text="Anteojos originales con " delay={0.2} />
@@ -68,22 +69,22 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
             personalizada por técnico óptico matriculado, envíos a todo el
             país y cuotas sin interés.
           </p>
-          <div className="hero-reveal hero-reveal-4 mt-10 flex flex-wrap items-center gap-3">
-            <MagneticButton>
-              <Button asChild size="lg" className="shine-on-hover group">
+          <div className="hero-reveal hero-reveal-4 mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <MagneticButton className="w-full sm:w-auto">
+              <Button asChild size="lg" className="shine-on-hover group w-full sm:w-auto">
                 <Link href="/anteojos-de-sol">
                   Ver anteojos de sol
                   <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </Button>
             </MagneticButton>
-            <MagneticButton>
-              <Button asChild size="lg" variant="outline">
+            <MagneticButton className="w-full sm:w-auto">
+              <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
                 <Link href="/anteojos-de-receta">Ver anteojos de receta</Link>
               </Button>
             </MagneticButton>
             {whatsappLink && (
-              <Button asChild size="lg" variant="ghost">
+              <Button asChild size="lg" variant="ghost" className="w-full sm:w-auto">
                 <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="size-4" />
                   WhatsApp
@@ -96,29 +97,33 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
         {showcase && showcaseHref && showcaseImageUrl ? (
           <motion.div
             style={{ y: photoY }}
-            className="relative mx-auto flex w-full max-w-md items-center justify-center md:max-w-none"
+            className="relative order-1 mx-auto flex w-full max-w-md items-center justify-center md:order-2 md:max-w-none"
           >
-            {/* Chips flotantes — desktop only, posicionados sobre la foto */}
+            {/* Chip flotante "30+ años" — único chip, arriba-izquierda
+                para no chocar con la floating price card abajo-derecha. */}
             <div
               aria-hidden="true"
-              className="border-border/60 bg-background/80 absolute -left-2 top-6 z-20 hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur-sm md:inline-flex"
-              style={{ transform: 'rotate(-3deg)' }}
+              className="border-border/60 bg-background/80 absolute left-1 top-2 z-20 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm backdrop-blur-sm sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs md:-left-2 md:top-6"
+              style={{ transform: 'rotate(-2.5deg)' }}
             >
-              <ShieldCheck className="text-brand size-3.5" />
-              Óptica matriculada
-            </div>
-            <div
-              aria-hidden="true"
-              className="border-border/60 bg-background/80 absolute -right-2 bottom-10 z-20 hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur-sm md:inline-flex"
-              style={{ transform: 'rotate(2.5deg)' }}
-            >
-              <Sparkles className="text-brand size-3.5" />
+              <Sparkles className="text-brand size-3 sm:size-3.5" />
               30+ años en Argentina
             </div>
 
-            {/* Glow background detrás del producto */}
-            <div
+            {/* Glow background detrás del producto — pulsa lento para
+                acompañar el bob de la foto sin distraer. */}
+            <motion.div
               aria-hidden="true"
+              animate={
+                reduceMotion
+                  ? undefined
+                  : { opacity: [0.7, 1, 0.7], scale: [1, 1.05, 1] }
+              }
+              transition={
+                reduceMotion
+                  ? undefined
+                  : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
+              }
               className="bg-brand/15 absolute inset-x-8 top-1/2 -z-10 h-[70%] -translate-y-1/2 rounded-full blur-3xl"
             />
 
@@ -131,12 +136,12 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
                 animate={
                   reduceMotion
                     ? undefined
-                    : { y: [0, -8, 0] }
+                    : { y: [0, -14, 0], rotate: [0, 1.5, 0] }
                 }
                 transition={
                   reduceMotion
                     ? undefined
-                    : { duration: 5, repeat: Infinity, ease: 'easeInOut' }
+                    : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
                 }
                 className="relative aspect-square w-full"
               >

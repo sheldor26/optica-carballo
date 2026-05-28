@@ -1,7 +1,7 @@
 'use client';
 
+import { Fragment, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import type { ReactNode } from 'react';
 
 type Props = {
   /** Texto a animar letra por letra. */
@@ -39,39 +39,51 @@ export function LetterReveal({
     );
   }
 
-  const MotionTag = as === 'span' ? motion.span : as === 'h1' ? motion.h1 : motion.h2;
+  const Tag = as;
+  // Split por palabras: cada palabra es un wrapper inline-block
+  // whitespace-nowrap (evita que el browser rompa la palabra a mitad
+  // — bug detectado en producción 2026-05-28). Entre palabras dejamos
+  // un espacio de texto normal, que SÍ permite el wrap de línea.
+  // Cada letra dentro de la palabra usa delay individual (no `stagger`
+  // del container) para que el efecto cascada atraviese las palabras
+  // sin que el grouping las "resetee".
+  const words = text.split(' ');
+  let letterCounter = 0;
 
   return (
-    <MotionTag
+    <Tag
       className={className}
       style={italic ? { fontStyle: 'italic' } : undefined}
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: {},
-        visible: {
-          transition: { delayChildren: delay, staggerChildren: 0.025 },
-        },
-      }}
       aria-label={text}
     >
-      {Array.from(text).map((char, idx) => (
-        <motion.span
-          key={idx}
-          aria-hidden="true"
-          variants={{
-            hidden: { opacity: 0, y: 14 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.45, ease: [0.2, 0.6, 0.2, 1] },
-            },
-          }}
-          style={{ display: 'inline-block', whiteSpace: 'pre' }}
-        >
-          {char}
-        </motion.span>
+      {words.map((word, wi) => (
+        <Fragment key={`w-${wi}`}>
+          <span
+            style={{ display: 'inline-block', whiteSpace: 'nowrap' }}
+            aria-hidden="true"
+          >
+            {Array.from(word).map((char) => {
+              const idx = letterCounter++;
+              return (
+                <motion.span
+                  key={idx}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: delay + idx * 0.025,
+                    duration: 0.45,
+                    ease: [0.2, 0.6, 0.2, 1],
+                  }}
+                  style={{ display: 'inline-block' }}
+                >
+                  {char}
+                </motion.span>
+              );
+            })}
+          </span>
+          {wi < words.length - 1 && ' '}
+        </Fragment>
       ))}
-    </MotionTag>
+    </Tag>
   );
 }

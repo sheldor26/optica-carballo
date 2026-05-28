@@ -2,7 +2,104 @@
 
 ## Status
 
-🟡 **Round 4 modernización — Micro-interacciones (scroll progress + custom cursor + tilt-spotlight cards + letter reveal H1) implementadas, pendiente verificación visual**
+🟡 **Polish iter 2: 4 fixes al hero según feedback visual del founder — implementado, pendiente verificación**
+
+Founder mandó screenshot del hero desktop con 4 issues:
+1. **"lo de óptica matriculada no me va... ya se asume si sos óptica"** — quitar referencia a "óptica matriculada" del eyebrow (`ÓPTICA CARBALLO · ÓPTICA MATRICULADA`) y del chip flotante con ShieldCheck.
+2. **"no me gusta como queda la J de anteojos"** — el LetterReveal rompía palabras a mitad: "Anteojos origina | les con asesoram | iento óptico real". Bug del componente.
+3. **"hay varios carteles superpuestos"** — el chip "30+ años en Argentina" (abajo-derecha) tapaba la floating price card "Destacado · Vulk Day Light · desde $88.037".
+4. **"está muy estática, no hace la animación que espero"** — el idle bob actual (`y:[0,-8,0]` en 5s) era demasiado sutil. Foto se ve fija.
+
+**Fixes aplicados**:
+
+- **Quitado "óptica matriculada"**:
+  - Del eyebrow del hero: ahora solo "· ÓPTICA CARBALLO" (sin segundo segmento). NO inventé "desde 1992" tras pensarlo (LEARNINGS rule: no inventar datos verificables).
+  - Del chip flotante con ShieldCheck: eliminado por completo. Ahora solo 1 chip flotante en el hero.
+  - Removido import `ShieldCheck` (no se usa más).
+
+- **Bug del LetterReveal — fix por agrupación en palabras**:
+  - Causa: cada letra era `display:inline-block whiteSpace:pre`. El browser puede hacer wrap entre 2 inline-block consecutivos en cualquier punto, NO solo en espacios. Resultado: "originales" se rompía como "origina | les" si el ancho no daba.
+  - Fix: split por palabras. Cada palabra es un `<span style="display:inline-block; white-space:nowrap">` (la palabra no se rompe internamente). Entre palabras dejo `' '` texto normal (acá SÍ puede wrap el browser, como cualquier texto). Dentro de cada palabra, las letras son motion.span con delay individual (no `staggerChildren` de container) — así el efecto cascada atraviesa las palabras manteniendo el word boundary.
+  - Cambié de `useReducedMotion` + variants/stagger a delays calculados individualmente con counter global (`letterCounter`). Más simple y permite que el grouping no resetee el delay.
+
+- **Chips superpuestos resuelto**: como sacamos el de óptica matriculada (libera el slot top-left), reposicioné "30+ años en Argentina" arriba-izquierda donde estaba el ShieldCheck. La price card "Destacado" queda sola abajo-derecha, sin competir. Rotación del chip de "30+ años" cambió de `+2.5°` a `-2.5°` para coherencia visual con su nueva posición.
+
+- **Animación más viva**:
+  - Foto idle bob: `y:[0,-8,0]` 5s → `y:[0,-14,0]` + `rotate:[0,1.5°,0]` en 4s. El rotate suma sensación de "levitación natural" sin ser mareante.
+  - Glow ámbar de fondo ahora pulsa: `opacity:[0.7,1,0.7]` + `scale:[1,1.05,1]` en 4s syncado con el bob (mismo período, ambos easeInOut). El glow "respira" junto a la foto.
+  - Ambos animations respetan `prefers-reduced-motion`.
+
+**Build verde, typecheck verde**. Home ISR 5min, `5.05 kB / 169 kB First Load` (-0.17 kB porque sacamos 1 chip + 1 import ShieldCheck).
+
+**Próximo paso exacto**: founder verifica:
+- Desktop: el eyebrow ahora dice solo "· ÓPTICA CARBALLO" (sin "matriculada"). El H1 no rompe palabras a mitad ("originales" y "asesoramiento" enteras). Solo 1 chip "30+ años" arriba-izquierda. La foto se mueve más (sube/baja + leve rotación). El glow ámbar de fondo pulsa lento.
+- Mobile: stack vertical sigue con foto primero, chips visibles, CTAs full-width.
+
+Si OK → push. Si quiere ajustar (animación más/menos intensa, color/posición del chip, etc.) → tunear.
+
+---
+
+🟢 **Polish iter 1: Mobile hero alt + magnetic nav links — implementado y pendiente push**
+
+Tras los 4 Rounds + lightbox + seed 08 + crop fix verificados en producción, founder eligió "siguiente capa de polish visual". Propuse orden de 5 items priorizado por mobile-first + ROI; founder dio luz verde implícitamente al elegir la opción. Hice los 2 primeros:
+
+**Polish #1 — Mobile hero alt** (`components/home/home-hero.tsx`):
+- **Invertir orden en mobile**: foto del producto va PRIMERO arriba, texto debajo. Desktop sigue igual (texto izq, foto der) gracias a `order-1 md:order-2` / `order-2 md:order-1`.
+- **Chips visibles en mobile** (antes `hidden md:inline-flex`): tamaño responsive — `text-[10px] px-2.5 py-1 size-3` en mobile, `text-xs px-3 py-1.5 size-3.5` en sm+, posición ajustada (`left-1 top-2 right-1 bottom-16` en mobile, `-left-2 top-6 -right-2 bottom-10` en md+).
+- **CTAs full-width en mobile**: los 3 botones (sol/receta/WhatsApp) ahora son `w-full` en mobile stack vertical, `w-auto inline` en sm+. Pasé `className="w-full sm:w-auto"` al MagneticButton wrapper también (que ya aceptaba el prop).
+- **Padding reducido en mobile**: `py-16 → py-12` (más aire para que la foto sea protagonista).
+- **Gap reducido en mobile**: `gap-10 → gap-8` (menos separación entre foto y texto).
+
+**Polish #2 — Magnetic nav links** (`components/layout/desktop-nav.tsx`):
+- Cada nav link ahora envuelto en `<MagneticButton strength={0.18}>` (más sutil que botones del hero a 0.28).
+- **Underline animado ámbar** debajo del texto:
+  - Si link es active: underline siempre visible, `w-[calc(100%-1.5rem)]` (compensa el px-3 del padding).
+  - Si link NO active: `w-0` por default, anima a full width al hover desde el centro (`left-1/2 -translate-x-1/2`, transition 300ms ease-out).
+  - Color `bg-brand` ámbar para coherencia con accent del Round 2.
+
+**Decisiones técnicas**:
+- **No usar `useMediaQuery` para desactivar parallax mobile**: el parallax actual (60px en 500px de scroll) ya es sutil. Agregar query detection sumaba complejidad por delta marginal. Si en el test mobile resulta mareante, se reduce el valor a 30 o se mete media query.
+- **Mantener desktop split 60/40**: el founder ya verificó que funciona bien en desktop. Solo cambio mobile.
+- **Magnetic strength 0.18 para nav** vs 0.28 hero: en nav los links están más juntos, magnético muy fuerte hace que se "agarren" entre ellos al mover el mouse rápido.
+
+**Build verde, typecheck verde, home ISR 5min**. Home size: `5.22 kB / 169 kB First Load` (+1.5 kB por los reorderings + magnetic en nav, framer-motion ya en chunk).
+
+**Próximo paso exacto**: founder corre `pnpm dev` (o ve en producción si pusheo), verifica mobile (especialmente):
+1. La foto del producto aparece arriba antes del texto.
+2. Los 2 chips (shield + sparkles) son visibles sobre la foto.
+3. Los 3 CTAs son botones full-width verticales.
+4. Funciona el zoom de la foto al click (lightbox).
+5. Y desktop: hover sobre nav links — underline ámbar aparece animando desde el centro + leve atracción magnética.
+
+Si todo OK → push. Si querés más cambios mobile (reducir parallax, sacar foto idle bob en mobile, etc) → ajusto.
+
+---
+
+🟢 **Plan de modernización completo (Rounds 1-4) + lightbox modal + crop fix + seed 08 — TODO en producción, verificado por founder**
+
+Founder confirmó el 2026-05-28: "el seed 08 ya fue ejecutado en supabase, solucionado el crop visual". Cierra los 3 hilos pendientes que estaban en 🟡:
+
+1. **Crop visual de imágenes del producto** — el fix iter 3 (`p-10 sm:p-14 md:p-20` + `scale-[1.03]` + double wrapper) resolvió definitivamente. Causa raíz validada: las fotos del fabricante no tienen padding propio + scale + object-contain → padding generoso del wrapper compensa. Estado: 🟢 cerrado.
+2. **Seed 08 (`attributes.new_until = "2026-06-28"`)** — aplicado en Supabase cloud. Badge "Nuevo ingreso" verde debería estar visible en el Vulk Day Light hasta el 28 de junio. Estado: 🟢 cerrado.
+3. **Round 4 modernización** — micro-interacciones verificadas en producción. Estado: 🟢 cerrado.
+
+**Resumen del plan de modernización completado** (5 commits):
+- `196498d` Round 1: tipografía editorial Fraunces serif + Inter sans
+- `232a6c2` Round 2: accent ámbar + brands section dark + header glass on scroll
+- `088069a` Round 3 + lightbox modal: product showcase hero + zoom al click
+- `9392c19` Round 4: scroll progress + cursor follower + tilt-spotlight + letter reveal
+
+**Próximo paso**: el founder dijo "continuemos" sin especificar tema. El sitio está en estado "modernizado + 1 producto cargado + crop resuelto + new arrival badge live". Próximas direcciones posibles:
+1. Cargar más productos (Rusty, Reef, Mormaii, Paula Cahen D'Anvers) para tener catálogo real, no solo el Vulk.
+2. Implementar FAQ section + FAQPage schema en página de producto y home (el founder tiene que pasar las FAQs reales).
+3. Habilitar checkout end-to-end (env vars Mercado Pago + webhook + cambiar `NEXT_PUBLIC_CHECKOUT_ENABLED=true`).
+4. Próximo round de polish/UX (bento grid en home, magnetic links extra, hero alt para mobile, etc.).
+
+Vamos a preguntar al founder qué dirección priorizar.
+
+---
+
+🟢 **Round 4 modernización — Micro-interacciones implementadas, pusheado (commit `9392c19`), verificado en producción**
 
 Founder dio luz verde "sigamos" tras push de Round 3 + lightbox. Round 4 implementado en 1 turno (5 features juntas):
 

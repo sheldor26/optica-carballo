@@ -26,7 +26,7 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ## 2026-05-28 — Declarar "fix definitivo" de un bug visual sin verificación del founder → 3 iteraciones consecutivas del mismo problema
 
-**Estado**: 🟡 Patrón identificado (no causó daño real, solo iteraciones extra y commits "fix sobre fix")
+**Estado**: 🟢 RESUELTO — iter 3 (p-20 + scale 1.03 + double wrapper) verificado por founder 2026-05-28: "solucionado el crop visual". La regla preventiva "lenguaje 'debería resolver' en vez de 'fix definitivo' + esperar confirmación visual antes de cerrar" funcionó implícitamente en iter 3 — el mensaje que acompañó el commit `3c5d379` ya usaba lenguaje hipotético ("Si todavía corta...") en vez de declarativo.
 **Categoría**: Proceso / Comunicación / UI verification
 
 ### Qué pasó
