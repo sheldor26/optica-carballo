@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Cloud drift resuelto. Migraciones 00001 + 00002 + 00003 verificadas en cloud**
+🟢 **Bucket Storage `prescriptions` (local) + helpers — commit `17b612b`**
 
-Schema cloud al día con `supabase/migrations/`. 10 tablas + sequence + functions + triggers presentes. Auth flow listo (pendiente config Redirect URLs Auth Dashboard, no bloqueante para próxima feature). Próximos pasos código: bucket Storage privado para recetas, o server actions de checkout + integración Mercado Pago.
+Migración 00004 lista en local con 7 smoke tests verdes (bucket privado + 4 RLS policies + cross-user blocking + anon blocking + WITH CHECK). Helpers TS server-only para upload/signed URL/delete. **Pendiente aplicar al cloud** (founder pega bootstrap 80 líneas + verifica con SELECT). Próxima sesión código: server actions de checkout + Mercado Pago Checkout Pro V1.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Cloud drift resuelto. Founder ejecutó SELECT diagnóstico (5 tablas, solo catálogo de 00001) → confirmó hipótesis (00002 nunca aplicada en cloud, solo en tracker). Aplicó bootstrap 00002+00003 (390 líneas) en proyecto correcto `tuddpfspnbnmafsqdvat`. Re-verificó con 2 SELECTS post-aplicación: 10 tablas + 2 functions + 1 trigger + sequence. `CLOUD_APPLIED.md` actualizado con ✅ VERIFICADO (esta vez con evidencia, aplicando regla preventiva). `MISTAKES.md` cloud drift marcado como 🟢 Resuelto. `BACKLOG.md` con tres entries nuevas en "Hecho".
+**Por**: Skill `/migration` para 00004 prescriptions_storage. Bucket privado + 4 RLS policies + helpers TS server-only (constants + prescriptions.ts con upload/signedUrl/delete). 7 smoke tests verdes (cross-user blocking, WITH CHECK anti-spoofing, anon blocking, mime/size validation). Commit `17b612b`. CLOUD_APPLIED marcado ⏳ para 00004 (founder aplica + verifica).
 
 ## Qué se construyó hasta ahora
 
@@ -329,14 +329,19 @@ Schema cloud al día con `supabase/migrations/`. 10 tablas + sequence + function
 
 ## Próximo paso EXACTO
 
-**Pendiente ortogonal del founder** (no bloquea próxima sesión código):
-- Supabase Dashboard → Authentication → URL Configuration → Site URL + 4 Redirect URLs (BACKLOG.md 🔴). Necesario para que los emails de signup/reset traigan links válidos.
+**Pendientes del founder** (no bloquean próxima sesión código):
+1. Aplicar `supabase/cloud-bootstrap.sql` (80 líneas, migración 00004) en SQL Editor del proyecto `tuddpfspnbnmafsqdvat`. Verificar con SELECTs:
+   ```sql
+   SELECT id, public FROM storage.buckets WHERE id='prescriptions';
+   SELECT count(*) FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname LIKE 'prescriptions:%';
+   ```
+   Esperado: 1 bucket público=false + 4 policies.
+2. Supabase Auth Dashboard → URL Configuration → Site URL + 4 Redirect URLs (BACKLOG.md 🔴, pendiente desde sesiones anteriores).
 
-**Próxima sesión código** (decidís vos):
-- **Bucket Storage privado `prescriptions/`** + signed URLs + RLS policies de Storage. Paso previo al feature de upload de receta IA.
-- **Server actions de checkout** (`/carrito` → validar stock → crear order → preferencia MP → redirect). Requiere integración Mercado Pago Checkout Pro V1 (ADR-015) + Tusfacturas para facturación AFIP post-payment (ADR-016).
-
-Recomendación: **Bucket Storage primero** — más chico, sin dependencias externas (no necesita API keys de servicios). Después checkout (es feature grande, mejor con foco propio).
+**Próxima sesión código**: server actions de checkout + integración Mercado Pago Checkout Pro V1 (ADR-015) + Tusfacturas para facturación AFIP post-payment (ADR-016). Es feature grande, va con foco propio. Probable división en 2-3 sub-features:
+- 1) Cart minimalista (cookie/session, validación de stock).
+- 2) Crear order + redirect a MP preference.
+- 3) Webhook MP + actualización order.status + facturación Tusfacturas.
 
 **Próxima sesión** (decidís vos):
 
@@ -356,6 +361,21 @@ Recomendación: **Bucket Storage primero** — más chico, sin dependencias exte
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Migración 00004 prescriptions Storage bucket + RLS + helpers (✅ commit `17b612b` — 2026-05-28, local only)
+- **Bucket `prescriptions`** privado en Supabase Storage: `public=false`, max 10 MB por archivo, mime whitelist (jpeg/png/webp/pdf).
+- **4 RLS policies** en `storage.objects` filtrando por `bucket_id='prescriptions'` + `(storage.foldername(name))[1] = auth.uid()::text`. Path pattern: `<user_id>/<prescription_id>/original.<ext>`.
+- **Helpers server-only** (`lib/storage/`):
+  - `constants.ts` — source of truth de bucket name, mime types, size limit, TTL signed URL. Tiene que coincidir con la migración.
+  - `prescriptions.ts` — `uploadPrescriptionImage`, `getPrescriptionSignedUrl`, `deletePrescriptionImage`. Usan `createAdminClient` (service_role) para bypass de RLS desde server actions ya autenticadas.
+- **Decisiones técnicas clave**:
+  - Path con `user_id` como primer segmento → RLS de Storage valida ownership sin joins.
+  - Mime whitelist y size limit duplicados en migración Y en TS constants (single source of truth en constants, migración los referencia).
+  - Signed URL TTL 5 min default (suficiente para cargar img, no para compartir).
+  - `upsert: true` en upload — permite re-subir corregido sin DELETE explícito.
+  - Sin UI todavía (esperando feature de mi-cuenta/recetas o lector IA).
+- **7 smoke tests verdes**: bucket OK, 4 policies presentes, Alice ve su archivo, Bob no ve el de Alice, anon no ve nada, Bob no puede insertar bajo namespace de Alice (WITH CHECK).
+- **Pendiente cloud**: `supabase/cloud-bootstrap.sql` regenerado (80 líneas, solo 00004). Founder pega + verifica con SELECT (regla nueva post cloud drift).
 
 ### Migración 00003 order_number generator (✅ commit `4e4ffb2` — 2026-05-28, local only)
 - **Sequence + 2 functions + 1 trigger** que auto-genera `orders.order_number` con formato `OC-YYYY-NNNNN` cuando el insert no lo pasa.
