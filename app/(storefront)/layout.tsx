@@ -1,5 +1,7 @@
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { CursorFollower } from '@/components/ui/cursor-follower';
+import { ScrollProgress } from '@/components/ui/scroll-progress';
 
 export default function StorefrontLayout({
   children,
@@ -8,6 +10,8 @@ export default function StorefrontLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
+      <ScrollProgress />
+      <CursorFollower />
       <SiteHeader />
       <div className="flex-1">{children}</div>
       <SiteFooter />

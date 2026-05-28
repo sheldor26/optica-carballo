@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
+import { TiltSpotlightCard } from '@/components/ui/tilt-spotlight-card';
 
 type BrandSummary = {
   slug: string;
@@ -35,14 +36,16 @@ export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
         <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           {brands.map((b, idx) => (
             <RevealOnScroll as="li" key={b.slug} delay={60 * idx}>
-              <Link
-                href={`/anteojos-de-sol/${b.slug}`}
-                className="border-background/15 bg-background/5 hover:border-brand hover:bg-background/10 group flex flex-col items-center justify-center gap-1 rounded-md border p-4 text-center backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-0.5"
-              >
-                <span className="text-background font-medium transition-transform duration-300 group-hover:scale-[1.02]">
-                  {b.name}
-                </span>
-              </Link>
+              <TiltSpotlightCard tiltDeg={5}>
+                <Link
+                  href={`/anteojos-de-sol/${b.slug}`}
+                  className="border-background/15 bg-background/5 hover:border-brand hover:bg-background/10 group flex flex-col items-center justify-center gap-1 rounded-md border p-4 text-center backdrop-blur-sm transition-colors duration-300 ease-out"
+                >
+                  <span className="text-background font-medium transition-transform duration-300 group-hover:scale-[1.02]">
+                    {b.name}
+                  </span>
+                </Link>
+              </TiltSpotlightCard>
             </RevealOnScroll>
           ))}
         </ul>

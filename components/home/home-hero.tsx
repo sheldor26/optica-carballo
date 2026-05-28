@@ -6,6 +6,7 @@ import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LetterReveal } from '@/components/ui/letter-reveal';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
@@ -53,11 +54,14 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
             <span className="text-muted-foreground/70">·</span>
             <span className="text-muted-foreground">óptica matriculada</span>
           </p>
-          <h1 className="hero-reveal hero-reveal-2 mt-5 text-balance font-serif text-5xl font-medium leading-[1.02] tracking-[-0.02em] md:text-6xl lg:text-7xl">
-            Anteojos originales con{' '}
-            <span className="font-serif italic font-normal text-foreground/80">
-              asesoramiento óptico real
-            </span>
+          <h1 className="mt-5 text-balance font-serif text-5xl font-medium leading-[1.02] tracking-[-0.02em] md:text-6xl lg:text-7xl">
+            <LetterReveal text="Anteojos originales con " delay={0.2} />
+            <LetterReveal
+              text="asesoramiento óptico real"
+              italic
+              delay={1}
+              className="font-normal text-foreground/80"
+            />
           </h1>
           <p className="hero-reveal hero-reveal-3 text-muted-foreground mt-6 max-w-xl text-balance text-base md:text-lg">
             Anteojos de sol y receta de las marcas que trabajamos. Atención

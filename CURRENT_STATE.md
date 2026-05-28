@@ -2,7 +2,46 @@
 
 ## Status
 
-🟡 **Image lightbox modal en página de producto — implementado, pendiente verificación visual**
+🟡 **Round 4 modernización — Micro-interacciones (scroll progress + custom cursor + tilt-spotlight cards + letter reveal H1) implementadas, pendiente verificación visual**
+
+Founder dio luz verde "sigamos" tras push de Round 3 + lightbox. Round 4 implementado en 1 turno (5 features juntas):
+
+**Componentes nuevos creados** (`components/ui/`):
+1. `scroll-progress.tsx`: barra fija `h-[2px] bg-brand` arriba que crece de izquierda a derecha con `useScroll` + `useSpring` (stiffness 120, damping 25). Z-index 60 — por encima del header. Cero impacto en layout.
+2. `cursor-follower.tsx`: cursor custom que reemplaza al sistema. 2 capas: dot (8px sin spring) + ring (32px con spring 350/28). `mix-blend-difference` para invertirse sobre fondos oscuros sin perderse. Detecta target clickeable (`a, button, [role=button], input, ...`) → ring escala 1.5x. **Solo se monta si `(pointer: fine)` Y NO `prefers-reduced-motion`** — touch devices y users con motion off ven el cursor del sistema normal.
+3. `tilt-spotlight-card.tsx`: wrapper combinado tilt 3D (perspective 1000px + rotateX/Y proporcional a posición del mouse) + spotlight (`useMotionTemplate` con radial-gradient ámbar que sigue al cursor). `tiltDeg` prop configurable (default 6° sutil). Spring suaviza el tilt al alejar el mouse. **Bug detectado y arreglado en la misma sesión**: primera implementación usaba `.get()` sobre motionValues dentro del style inline → se evaluaba una sola vez. Fix: `useMotionTemplate` que construye string reactivo.
+4. `letter-reveal.tsx`: anima texto letra por letra con stagger 0.025s + leve subida `y: 14 → 0` y fade. Cada letra `display:inline-block whitespace:pre` para que espacios cuenten. Acepta `italic`, `delay`, `as: 'span'|'h1'|'h2'`. Respeta `prefers-reduced-motion` → renderiza estático. Tiene `aria-label={text}` para SR.
+
+**Aplicado en**:
+- `(storefront)/layout.tsx`: agregados `<ScrollProgress />` y `<CursorFollower />` como hijos del root div, antes del header.
+- `home-hero.tsx`: H1 ahora usa 2 `<LetterReveal>` — "Anteojos originales con " (delay 0.2s) + "asesoramiento óptico real" italic (delay 1s para que arranque cuando termine el primero). Las clases CSS `.hero-reveal` que ya tenía el H1 se mantienen para fade general.
+- `categories-section.tsx`: cada Card envuelta en `<TiltSpotlightCard tiltDeg={4}>` (sutil porque las cards son grandes). Cambié `<Link>` para tener `block h-full` y que el tilt herede la altura.
+- `brands-section.tsx`: cada brand chip envuelto en `<TiltSpotlightCard tiltDeg={5}>` (un poquito más por ser cards pequeñas).
+
+**Decisiones técnicas**:
+- **No usar `bg-accent` de shadcn** para el spotlight: el spotlight usa rgba inline (`rgba(200, 163, 90, 0.22)` = brand ámbar a 22% opacity) porque necesitábamos un color con alpha específico, no tailwind class.
+- **Custom cursor solo desktop fino**: la regla `(pointer: fine)` excluye trackpads de tablets híbridos donde el cursor follower podría ser molesto. Touch devices ven cursor del sistema (que en mobile no existe, no aplica).
+- **Letter reveal con stagger corto (0.025s)**: con stagger más largo, en frases de 30 caracteres el efecto duraría 0.75s — demasiado. Corto se siente fluido sin ralentizar.
+- **Z-index del scroll progress (60)**: por encima del header (z-40) y del lightbox modal (z-50) — siempre visible. NO encima del cursor follower (z-100).
+
+**Build verde, typecheck verde**. Home: `○ /` ISR 5min, `3.87 kB / 169 kB First Load` (sube apenas 2 kB porque framer-motion ya estaba en el bundle).
+
+**Próximo paso exacto**: founder corre `pnpm dev`, verifica:
+1. Hover el cursor desde el top de la página: ¿ves el dot + ring custom siguiéndolo? ¿el ring se agranda al pasar sobre botones/links?
+2. Cargá la home: ¿el H1 aparece letra por letra (escalonado)?
+3. Hover sobre las 2 cards de Categorías (sol / receta): ¿tilt + spotlight ámbar siguen al cursor?
+4. Scrolleá: ¿ves la barra ámbar fina avanzando arriba?
+5. Bajá a la sección "Marcas que trabajamos": ¿cada card también tilt + spotlight?
+
+Si todo OK → commit + push. Si algo molesta (cursor invasivo, tilt mareante, letter reveal lento, scroll bar muy gruesa) → ajustes finos:
+- Cursor: cambiar `mix-blend-difference` → solo dot sin ring (más sutil).
+- Tilt: bajar `tiltDeg` a 3.
+- Letter reveal: subir stagger a 0.04 si se siente apurado, o bajar a 0.015 si se siente lento.
+- Progress bar: cambiar grosor o color.
+
+---
+
+🟢 **Image lightbox modal en página de producto — implementado, pusheado (commit `088069a`), en producción**
 
 Founder pidió: "al hacer click en la imagen en la página del producto se haga un zoom, me explico? veo que muchas ópticas hacen eso".
 

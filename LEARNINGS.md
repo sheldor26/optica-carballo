@@ -22,6 +22,67 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — `useMotionTemplate` para que valores reactivos (gradient, color, transform string) actualicen en tiempo real
+
+**Categoría**: framer-motion / animations / React
+**Confianza**: 🟢 Alta (detectado como bug en sesión, fix aplicado, animación funciona)
+
+### Qué pasó
+
+Al construir el `TiltSpotlightCard` necesitaba que el background `radial-gradient(...)` siguiera al mouse en tiempo real. Primera implementación:
+
+```tsx
+const spotlightX = useTransform(mouseX, (v) => `${v * 100}%`);
+const spotlightY = useTransform(mouseY, (v) => `${v * 100}%`);
+
+<motion.div style={{
+  background: `radial-gradient(220px circle at ${spotlightX.get()} ${spotlightY.get()}, ...)`,
+}} />
+```
+
+**No funcionaba**: el gradient se quedaba fijo en el primer valor. Framer-motion no podía suscribirse a un string literal — `.get()` se evaluaba una vez en cada render, no en cada frame de animación.
+
+### Causa raíz
+
+`motionValue.get()` retorna el valor actual como **string normal**, perdiendo la reactividad. Style props con motion values funcionan **solo si pasás el motion value directamente** (`{ x: motionValueX }`) — no si construís un string con `.get()` adentro.
+
+Para CSS properties complejas que requieren string templating (gradient, transform combinado, filter), framer-motion provee `useMotionTemplate`:
+
+```tsx
+const spotlightBg = useMotionTemplate`radial-gradient(220px circle at ${spotlightX} ${spotlightY}, ...)`;
+
+<motion.div style={{ background: spotlightBg }} />
+```
+
+`useMotionTemplate` es un **tagged template literal** que retorna un motion value de string. Suscribe automáticamente a los motion values interpolados (`spotlightX`, `spotlightY`) y reemite el string completo cuando cambia cualquiera.
+
+### Cómo replicar
+
+- **Una sola propiedad CSS, valor numérico**: pasar motionValue directo. `style={{ x: motionX, opacity: motionOpacity }}`. Lo más común.
+- **Una propiedad CSS con string templating** (gradient, clip-path, filter, transform combinado): usar `useMotionTemplate`. Ejemplo:
+  ```tsx
+  const clip = useMotionTemplate`inset(${top}% ${right}% ${bottom}% ${left}%)`;
+  ```
+- **NUNCA usar `.get()` dentro de un template string en style** — eso pierde la suscripción.
+
+### Anti-patrón a evitar
+
+```tsx
+// ❌ Mal — string evaluado una sola vez
+style={{ background: `linear-gradient(${angle.get()}deg, red, blue)` }}
+
+// ✅ Bien — template reactivo
+const gradient = useMotionTemplate`linear-gradient(${angle}deg, red, blue)`;
+style={{ background: gradient }}
+```
+
+### Próxima vez aplicar a
+
+- Cualquier feature que necesite CSS dinámico complejo controlado por mouse/scroll (spotlight, mask reveal animado, clip-path responsive a cursor, color shift en hover con stops específicos).
+- Si en Round 4+ aparece bug similar "la animación se queda fija aunque el valor cambia", primer chequeo: ¿hay un `.get()` dentro del style?
+
+---
+
 ## 2026-05-28 — Usar `createStaticClient()` en lugar de `createClient()` para data pública en home mantiene ISR
 
 **Categoría**: Next.js / Supabase / SEO performance
