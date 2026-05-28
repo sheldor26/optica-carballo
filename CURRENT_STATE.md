@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Storefront V1 completo + páginas legales pre-checkout — commit `11835c9`**
+🟢 **Schema pre-checkout completo en local — commit `1cee084`**
 
-Home + 2 categorías + 5 marcas × 2 + productos + 4 páginas legales/info (sobre nosotros, política de devolución, botón de arrepentimiento, defensa del consumidor). Footer enriquecido con sección "Información". Falta para habilitar checkout: reemplazar `[PH]` de productos con data real, reemplazar `[PENDIENTE]` de plazos en política legal con valores confirmados por la regente, agregar matrícula real en env, y armar la migración 00002 + integración Mercado Pago.
+Migración 00002 (identity + orders) aplicada en local con todos los smoke tests RLS verdes. **Pendiente aplicar al cloud** (bootstrap regenerado con solo migración 00002). Próximos pasos código: auth UI (login/signup), bucket Storage para recetas, function `order_number` generator, server actions de checkout + integración Mercado Pago + Tusfacturas.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para páginas legales + sobre nosotros. 4 pages en `(storefront)/` (sobre-nosotros, politica-de-devolucion, boton-de-arrepentimiento, defensa-del-consumidor). Contenido legal genérico (art. 34 ley 24.240, links a argentina.gob.ar) va completo; lo específico del negocio (plazos, CUIT, política exacta) queda como `[PENDIENTE]` o `[PLACEHOLDER]` marcado visualmente con bloque amarillo. Footer extendido con sección "Información". Sitemap incluye las 4 URLs. Commit `11835c9`.
+**Por**: Skill `/migration` para migración 00002 identity_and_orders. 5 tablas (profiles, addresses, prescriptions, orders, order_items) con RLS estricta, trigger handle_new_user en auth.users, snapshots inmutables (ADR-007), 7 índices nuevos. 12 smoke tests RLS verdes: cross-user blocking, WITH CHECK anti-spoofing, UNIQUE partial de default address, CHECK ranges médicos, CHECK consistency de totales. Tipos TS regenerados, build clean. Commit `1cee084`. Bootstrap regenerado para que founder aplique al cloud.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,30 @@ Home + 2 categorías + 5 marcas × 2 + productos + 4 páginas legales/info (sobr
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Migración 00002 identity_and_orders (✅ commit `1cee084` — 2026-05-28, local only)
+- **5 tablas nuevas**:
+  - `profiles` (1:1 con `auth.users` vía PK, ON DELETE CASCADE). DNI/CUIT/phone/display_name. Trigger `handle_new_user` con `SECURITY DEFINER` crea row auto en signup.
+  - `addresses` (1:N user). UNIQUE partial `idx_addresses_one_default_per_user` garantiza solo 1 default per user.
+  - `prescriptions` (1:N user, datos de salud sensibles). Schema oftalmológico completo: OD/OI con esfera/cilindro/eje/adición, DP, doctor + matrícula, fechas, image_path para futura imagen, expires_at, is_archived.
+  - `orders` (snapshots inmutables ADR-007): cliente, dirección, totales centavos con CHECK ≥0, pago MP (mp_preference_id/mp_payment_id), facturación AFIP (invoice_id/invoice_cae), envío (tracking_number), prescription_id + snapshot JSONB. FKs no-blocking (SET NULL excepto user_id RESTRICT por auditoría). order_number text UNIQUE NOT NULL (function generator en feature de checkout).
+  - `order_items` (snapshots producto+variante ADR-007, lens_options JSONB). CHECK `line_total_cents = quantity * unit_price_cents`.
+- **RLS estricta en las 5**:
+  - profiles: 2 policies (SELECT + UPDATE propio). Sin INSERT/DELETE policy (trigger + cascade lo manejan).
+  - addresses: 4 policies (CRUD) con `auth.uid() = user_id` + WITH CHECK anti-spoofing.
+  - prescriptions: 4 policies idem addresses (datos de salud → más estricto aún).
+  - orders: 1 SELECT (writes vía service_role en server actions / webhooks).
+  - order_items: 1 SELECT con EXISTS sobre orders del user.
+- **7 índices nuevos**: `idx_addresses_user`, `idx_addresses_one_default_per_user` (UNIQUE partial), `idx_prescriptions_user (user_id, is_archived)`, `idx_orders_user (user_id, created_at DESC)`, `idx_orders_status`, `idx_orders_mp_payment` (partial WHERE NOT NULL para lookup en webhook), `idx_order_items_order`.
+- **12 smoke tests verdes**: trigger crea profile auto con fallback al email, anon ve 0, cross-user blocking, WITH CHECK bloquea spoofing user_id, UNIQUE partial de default, CHECK od_axis 0-180, CHECK ranges de totales, order + items con RLS por owner, CHECK line_total consistency.
+- **Tipos regenerados** (`pnpm db:types`): `types/supabase.ts` ahora con 10 tablas (5 nuevas + 5 catálogo).
+- **Decisiones técnicas clave**:
+  - `order.status` como CHECK text constraint (no enum) → agregar estado nuevo sin migración compleja.
+  - `prescription_snapshot jsonb` en orders además del FK → inmutabilidad legal si user edita la receta después.
+  - `order_number` text NOT NULL UNIQUE pero sin function default → la function generadora (formato `OC-YYYY-NNNNN`) viene con el feature de checkout (depende de sequence).
+  - DNI/CUIT en plain text por ahora; encriptación con pgcrypto si founder pide.
+  - Storage bucket privado para imágenes de receta NO en esta migración → viene con feature de upload (lector IA).
+- **Pendiente cloud**: `supabase/cloud-bootstrap.sql` regenerado (332 líneas, solo migración 00002). Founder pega en SQL Editor del Dashboard.
 
 ### Páginas legales + Sobre nosotros + footer enriquecido (✅ commit `11835c9` — 2026-05-28)
 - **4 páginas nuevas** en `(storefront)/`:
@@ -327,10 +351,14 @@ Home + 2 categorías + 5 marcas × 2 + productos + 4 páginas legales/info (sobr
 - Al final de la sesión, el founder pidió ejecutar un endpoint de la **Anthropic Admin API** (`GET /v1/organizations/api_keys/{api_key_id}`) — sin relación con Óptica Carballo. Paré porque faltaban dos inputs: el `api_key_id` específico y el `ANTHROPIC_ADMIN_API_KEY` (secret administrativo de la organización). Sugerí exportar el admin key como env var local en vez de pegarlo en el chat (queda en transcript). Si el founder vuelve con esos datos, se ejecuta como tarea aislada — no es del proyecto.
 
 ### 🟢 Próximas features de código (post-acciones del founder)
-9. **Migración 00002**: auth + profiles + addresses + orders + order_items + prescriptions. Habilita el flujo de checkout.
-10. **Integración Mercado Pago Checkout Pro** (ADR-015): webhook, redirección, confirmación, factura electrónica.
-11. **Tusfacturas integración** (ADR-016): facturación AFIP automática post-pago.
-12. **Logo SVG real + foto hero + fotos de productos en Storage**. Cuando tengas assets.
+9. ~~**Migración 00002**~~ ✅ Hecho en commit `1cee084`. Pendiente: founder aplica al cloud (`supabase/cloud-bootstrap.sql`).
+10. **Auth UI**: páginas de login, signup, forgot password. Server actions con `@supabase/ssr`. Validación con Zod. Email templates customizados en Supabase Auth dashboard.
+11. **Bucket Storage privado `prescriptions/`** + RLS policies de Storage + función helper para signed URLs (las imágenes de receta no se exponen públicamente).
+12. **Function generadora de `order_number`** (sequence + format `OC-YYYY-NNNNN`).
+13. **Server actions de checkout**: pasos del cart → validar stock → crear order + items → preferencia MP → redirect.
+14. **Integración Mercado Pago Checkout Pro** (ADR-015): webhook, redirección, confirmación de pago, actualizar `orders.status` → 'paid'.
+15. **Tusfacturas integración** (ADR-016): facturación AFIP automática post-payment confirmation. Guardar invoice_id + CAE en orders.
+16. **Logo SVG real + foto hero + fotos de productos en Storage**. Cuando tengas assets.
 
 ### 🟢 Pre-launch (más infra)
 5. **Migración 00002**: profiles + addresses + auth setup. Habilita login + flujo de checkout.
