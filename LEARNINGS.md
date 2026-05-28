@@ -22,6 +22,102 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — SVGs de logos tienen aspect ratios y composiciones internas muy heterogéneas — el render con altura fija necesita margen para el peor caso
+
+**Categoría**: Diseño / Rendering / Assets variables
+**Confianza**: 🟡 Media (1 caso, 5 logos, varios edge cases observados)
+
+### Qué pasó
+
+Al integrar logos de 5 marcas (Vulk, Rusty, Mormaii, Reef, Paula Cahen D'Anvers), elegí altura inicial `h-10` (40px) en el render como tamaño "razonable" para un logo de marca. En producción, las 5 marcas mostraron variabilidad enorme:
+
+- **Rusty**: wordmark horizontal compacto → ocupa toda la altura → se ve bien.
+- **Vulk**: wordmark horizontal con paths que llenan el viewBox → se ve bien.
+- **Mormaii**: wordmark con símbolo a la izquierda → ocupa altura completa → se ve bien (cuando carga).
+- **Paula Cahen D'Anvers**: SÍMBOLO PEQUEÑO ARRIBA + texto en mayúsculas DEBAJO. El símbolo + texto juntos suman altura pero el contenido visual relevante ocupa solo el ~30% del viewBox. Con `h-10` el contenido visible queda en ~12px, ilegible.
+- **Reef**: aparte de su problema de naming, su SVG es cuadrado, ocupa todo el viewBox.
+
+El "tamaño razonable" que elegí (`h-10`) funcionó para 4 de 5 logos pero falló para Paula porque ASUMÍ que todos los logos tienen composición horizontal balanceada (wordmark + opcional símbolo a la izquierda). No es así.
+
+### Por qué funciona el fix
+
+Cambié a `h-12 md:h-14` (48-56px) + `max-w-[140px]`. Esto:
+- Da espacio suficiente para que el contenido visual real de Paula sea legible.
+- No achata logos de wordmark horizontal (siguen quedando bien porque object-contain los ajusta proporcional).
+- Limita el ancho para que un logo muy panorámico no rompa el grid.
+
+### Cómo replicar
+
+Para CUALQUIER feature que renderice assets de tamaño/aspect ratio variable (logos, fotos de productos, banners de marca, íconos de pago):
+
+1. **Default a tamaños generosos** (más altura, más ancho-max). Es mejor desperdiciar ~10px de espacio cuando el asset es chico que truncar/achicar el contenido cuando es grande/centrado.
+2. **Usar `object-contain` + `max-w`** en lugar de altura fija sin max ancho. El navegador ajusta proporcional sin distorsionar.
+3. **Verificar con el peor caso** (símbolo centrado en viewBox grande, wordmark muy panorámico, texto vertical) antes de declarar el tamaño "OK".
+4. **Documentar la justificación del tamaño en el código** (por qué h-12 y no h-10) para que la próxima vez se entienda el razonamiento.
+
+### Anti-patrón a evitar
+
+- Elegir tamaño basado en "lo que se ve bien con el primer asset" sin probar con assets de diferentes proporciones.
+- Asumir que todos los SVGs de un dominio (logos de marca) van a tener composición similar — no es así.
+- Hardcodear tamaño solo en altura sin max-width — un asset panorámico puede romper el grid.
+
+### Próxima vez aplicar a
+
+- Cuando se agreguen banners de promo / hero rotators (variabilidad de aspect ratios alta).
+- Cuando se agreguen fotos de producto con diferentes orientaciones (algunos productos son cuadrados, otros panorámicos).
+- Cuando se agreguen íconos de medios de pago (algunos son lockups completos, otros solo símbolos).
+- Si en el futuro se agrega "galería de fotos del local" en `/sobre-nosotros` con fotos horizontales y verticales mezcladas.
+
+---
+
+## 2026-05-28 — Diagnóstico "doble paralelo" para problemas de carga de assets desde Supabase Storage: URL directa + SELECT del path
+
+**Categoría**: Debugging / Supabase Storage / Comunicación con founder no-técnico
+**Confianza**: 🟡 Media (1 caso, pendiente confirmar resolución)
+
+### Qué pasó
+
+Founder pusheó los UPDATEs SQL para activar los logos de Vulk y Rusty. En producción los logos aparecieron como **placeholders rotos con alt text visible al lado** (clásica señal de `<Image>` que falla al cargar la URL).
+
+En lugar de pedirle al founder múltiples idas y vueltas para diagnosticar ("revisá el bucket", "fijate el path", "abrime los logs", "verificá CORS"), le di **2 acciones paralelas que cubren ambas causas probables a la vez**:
+
+1. **URL directa en el navegador** (`https://[project].supabase.co/storage/v1/object/public/brand-assets/...`):
+   - Si ve la imagen → bucket OK, problema es el path en DB.
+   - Si ve 403/404 → bucket privado o path mal.
+
+2. **SELECT del path en DB** para confirmar que matchea exactamente con el archivo del bucket (case-sensitive).
+
+Cada acción discrimina entre 2 causas posibles. Las 2 juntas cubren las 4 combinaciones (bucket público + path OK, bucket público + path mal, bucket privado + path OK, bucket privado + path mal).
+
+### Por qué funciona
+
+- **Diagnóstico paralelo** vs **diagnóstico secuencial**: en secuencial el founder hace una acción, me reporta, yo pienso, le pido otra. En paralelo me ahorra 2-3 turnos de comunicación.
+- **Las 2 acciones son cheap para el founder no-técnico**: una URL para pegar en el browser + un SELECT para correr. No requiere navegación compleja en el Dashboard ni configuración previa.
+- **Cubre las dos dimensiones del problema**: infrastructure (bucket público / privado) Y data (path correcto en DB).
+- **El output de cada acción es discriminatorio**: ver/no ver imagen → respuesta binaria. Comparar paths visualmente → trivial.
+
+### Cómo replicar
+
+Para CUALQUIER problema de "asset no carga desde Storage" en producción:
+
+1. **Acción 1 — URL directa**: construir la URL pública completa y pedirle al founder que la pegue en el navegador. Discrimina entre "infrastructure issue" (bucket privado, CORS, dominio bloqueado) y "data issue" (path mal).
+2. **Acción 2 — SELECT del path**: query simple que muestra el path tal como está en DB. Discrimina entre "path correcto + setting mal" y "path mal + setting OK".
+3. **Si están claro 1 y 2 → diagnóstico inmediato sin más ida y vuelta**.
+
+### Anti-patrón a evitar
+
+- **Pedir un solo paso de diagnóstico cuando hay 2+ causas probables**: el founder hace lo que pediste, vuelve, yo proceso, pido otro. 4 turnos en lugar de 1.
+- **Pedir al founder que "revise los logs de Vercel"** o cosas internas técnicas: si hay forma de diagnosticar desde afuera (URL pública, SELECT), preferir eso.
+- **Asumir una sola causa "obvia"** sin cubrir las alternativas: si me equivoco, perdí 1 turno y la confianza del founder.
+
+### Próxima vez aplicar a
+
+- Cualquier feature de carga de assets/imágenes que pueda fallar en producción.
+- Cualquier feature que dependa de configuración manual del founder en un panel externo (Supabase, Vercel, MP, Tusfacturas) — anticipar las 2-3 causas posibles y dar 2 acciones de diagnóstico paralelas.
+- Verificación de env vars en Vercel (test endpoint que confirma que la var existe sin exponerla).
+
+---
+
 ## 2026-05-28 — Founder no-técnico prefiere separación visual de buckets en Dashboard sobre reuso técnico con prefijos
 
 **Categoría**: Supabase Storage / UX del founder / Arquitectura adaptada al usuario

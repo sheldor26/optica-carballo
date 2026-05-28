@@ -2,7 +2,80 @@
 
 ## Status
 
-🟡 **Logos de Vulk + Rusty: subidos a bucket nuevo `brand-assets`, código adaptado con invert smart por sufijo, esperando UPDATEs en DB**
+🔴 **Logos en producción: estado mixto tras subir 3 marcas más (Mormaii, Reef, Paula)**
+
+Founder subió las 3 marcas faltantes con sufijo `-dark.svg`. Resultado en producción:
+
+| Marca | Estado | Causa |
+|---|---|---|
+| Rusty | 🟢 OK | Archivo correctamente nombrado, renderiza bien |
+| Vulk | 🟡 visible pero se pierde en fondo dark | SVG con paths negros nombrado `-light` (founder interpretó "light" como "para fondo claro"). Pendiente rename + UPDATE. |
+| Mormaii | 🔴 roto (imagen no carga) | Probable: path en DB no matchea con bucket, o archivo no subido |
+| Reef | 🔴 bloque blanco | Probable: SVG con paths blancos nombrado `-dark`. Como código no invierte, ves el blanco directo |
+| Paula Cahen D'Anvers | 🟡 carga pero MUY chico | SVG con símbolo pequeño centrado en viewBox grande. Altura `h-10` (40px) achicaba el contenido visual real |
+
+**Fix de código aplicado** (`components/home/brands-section.tsx`, pendiente push):
+- Altura del logo: `h-8 md:h-10` → `h-12 md:h-14` (más generoso para SVGs con aire interno).
+- Altura del card: `h-20` → `h-24` (acompaña la nueva altura del logo).
+- `max-w-[140px]` para limitar ancho cuando el SVG es muy panorámico.
+- `width/height` props de `<Image>`: 120/48 → 160/64 (acompañar Tailwind).
+- Comentario explicativo en el código sobre por qué se eligieron esos tamaños.
+
+**Diagnóstico paralelo solicitado al founder** (aprovechando el patrón de LEARNINGS):
+1. URL directa de Reef SVG en navegador → confirma si es blanco o tiene fondo opaco.
+2. SELECT del path de Mormaii + URL directa → confirma si es path mal o archivo no subido.
+
+**Próximos pasos**:
+- Push del fix de tamaño + esperar resultados del diagnóstico.
+- Si Reef es blanco: rename a `reef-logo-light.svg` + UPDATE.
+- Si Mormaii es path issue: corregir UPDATE.
+- Si Vulk: rename + UPDATE como ya está documentado.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder activó "Public bucket" en `brand-assets` → ambos logos empezaron a cargar. Rusty 🟢 perfecto. Vulk 🟡 carga pero **el SVG tiene paths NEGROS aunque el archivo está nombrado `vulk-logo-light.svg`**. Mi código mira el sufijo del filename para decidir si invertir → ve `-light` → no invierte → logo negro sobre fondo negro = se pierde.
+
+**Convención mía** (no comunicada explícitamente al founder al diseñar el helper):
+- Sufijo del filename = COLOR del logo, NO fondo donde va.
+- `-dark.svg` → logo con paths oscuros/negros. Se ve directo en fondo claro, se invierte automáticamente en fondo oscuro.
+- `-light.svg` → logo con paths claros/blancos. Se ve directo en fondo oscuro, se invierte automáticamente en fondo claro.
+
+**Founder interpretó al revés**: "light" = "para fondo claro" → nombró el archivo de Vulk negro como `-light` (pensando que iría en fondo claro). Ambigüedad real del naming.
+
+**Fix propuesto al founder** (2 pasos):
+1. Rename en Supabase Storage: `vulk-logo-light.svg` → `vulk-logo-dark.svg`
+2. `UPDATE brands SET logo_url = 'brand-logos/vulk-logo-dark.svg' WHERE slug = 'vulk';`
+
+Tras eso: mi código detecta `-dark` en fondo dark → invierte → se vuelve blanco automáticamente → perfecto en home Y en brand pages (sin necesidad de subir versión separada).
+
+**Próximo paso founder**: hacer los 2 pasos arriba. Cuando se vea bien, status pasa a 🟢 y se aplica la convención para las próximas 3 marcas (Mormaii, Reef, Paula Cahen D'Anvers).
+
+**Posible refactor futuro** (NO necesario ahora): mover la convención de "color del logo" desde el sufijo del filename a un campo explícito en DB (ej `brands.logo_dominant_color: 'dark' | 'light'`). Más explícito pero más overhead. Ver si vale la pena cuando haya más marcas.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder corrió los UPDATEs SQL y pusheó el código (commit `5a02f98`). Pero el screenshot en producción muestra los logos como placeholders rotos con alt text "Rusty" y "Vulk" visible al lado — confirma que el `<Image>` falla al cargar la URL.
+
+**Diagnóstico**: 2 causas probables, en orden de likelihood:
+1. **Bucket `brand-assets` es PRIVADO**. Supabase crea buckets como privados por default. El bucket `products` (que sí carga) tiene "Public bucket: Yes" — el founder probablemente activó eso cuando lo creó hace meses. El nuevo bucket NO lo tiene activado.
+2. Path en DB no matchea con path real del bucket (case-sensitivity, typo).
+
+**Solución propuesta al founder**:
+- Diagnóstico 1-click: abrir URL pública directa del SVG en el navegador. Si 403/404 → bucket privado. Si carga → path mal en DB.
+- Cómo arreglar bucket: Dashboard → Storage → click `brand-assets` → "Edit bucket" → toggle "Public bucket" → Save.
+- Cómo verificar paths: `SELECT slug, name, logo_url FROM brands WHERE slug IN ('vulk', 'rusty');`
+
+**No es bloqueante para el resto del sitio** — fallback al texto del nombre funciona automáticamente cuando `<Image>` falla (aunque visualmente queda raro con el placeholder roto al lado).
+
+**Próximo paso exacto**: founder verifica el toggle "Public bucket" en `brand-assets` y arregla. Si después siguen rotos, mandar output del SELECT para verificar paths. Cuando los 2 logos carguen, este status pasa a 🟢.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
 
 Founder eligió camino DIFERENTE al que yo propuse: en vez de reusar `products` con prefijo `_brand-logos/`, **creó bucket separado `brand-assets`** con carpeta `brand-logos/` adentro. Subió 2 archivos:
 - `brand-logos/vulk-logo-light.svg` (light = pensado para fondos oscuros)

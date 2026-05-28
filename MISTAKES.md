@@ -285,6 +285,143 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Elegir tamaño de render `h-10` para logos sin validar contra assets de aspect ratios y composiciones internas heterogéneas
+
+**Estado**: 🟡 Detectado por feedback del founder ("Paula muy chico"). Fix aplicado en código (h-12/h-14 + max-w-140).
+**Categoría**: Diseño / Defaults / Validación con peor caso
+
+### Qué pasó
+
+Al implementar el render de logos de marca en `brands-section.tsx`, elegí altura `h-10` (40px) como tamaño "razonable" por intuición. Cuando vi Rusty cargar bien primero, asumí que el tamaño era correcto para todas las marcas.
+
+En producción, **Paula Cahen D'Anvers se mostró extremadamente pequeño** porque su SVG tiene composición vertical (símbolo arriba + texto debajo) en un viewBox grande con mucho aire. Con `h-10` el contenido visual real terminó en ~12px, ilegible.
+
+### Causa raíz
+
+**Asumí homogeneidad de assets que no es real**. "Logos de marca" no son un tipo homogéneo — algunos son wordmarks horizontales compactos, otros son lockups verticales con símbolo + texto, otros son símbolos cuadrados. Cada uno necesita tamaños diferentes para verse bien.
+
+Patrón meta: **eligo defaults basado en el primer caso que veo funcionar**, sin probar contra el peor caso de la distribución. Es el mismo patrón que el mistake del crop visual ("declarar fix definitivo sin verificar con founder") — declaro "OK" al ver 1 caso bien sin testear los demás.
+
+Adicionalmente: tenía la info necesaria para hacer mejor diseño desde el inicio. La spec de `optical-expert` decía: "wordmark horizontal" para todos. Pero PCD es lockup vertical → la spec inicial era incompleta. No la verifiqué cuando vi el SVG real de PCD.
+
+### Regla preventiva
+
+Para CUALQUIER feature que renderice una colección de assets heterogéneos (logos, fotos de producto, banners, íconos):
+
+1. **No elegir tamaño basado en el primer asset cargado**. Probar con assets de proporciones diferentes (más vertical, más horizontal, más cuadrado, más con aire interno).
+2. **Default a tamaños generosos + `object-contain` + `max-w`**: es mejor desperdiciar ~10px de espacio cuando el asset es chico que truncar contenido cuando es grande/centrado.
+3. **Si solo tengo 1 asset disponible**: pedir explícitamente al founder que mande variedad (1 wordmark, 1 lockup vertical, 1 símbolo cuadrado) antes de definir el tamaño.
+4. **Documentar JUSTIFICACIÓN del tamaño en el código** con un comentario explicando contra qué caso se calibró (peor caso identificado).
+
+### Estado de mitigación
+
+- Fix aplicado en código: h-12 md:h-14 + max-w-[140px] + width/height props alineados + comentario explicando por qué.
+- Documentado en LEARNINGS (entry positivo: cómo replicar el approach correcto).
+- Si en próximas implementaciones de assets heterogéneos cometo el mismo error (default basado en 1 caso), promover a regla operacional permanente.
+
+---
+
+## 2026-05-28 — Diseñar convención "smart" (sufijo del filename = color del logo) sin comunicarla explícitamente al founder no-técnico — naming ambiguo causó error
+
+**Estado**: 🟡 Detectado por feedback del founder ("logo de vulk se pierde en el fondo"). Causa real: convención de naming ambigua.
+**Categoría**: Arquitectura / Comunicación de convenciones / Sistemas "smart" frágiles
+
+### Qué pasó
+
+Diseñé un helper `shouldInvertLogo(path, context)` que mira el sufijo del filename (`-light` vs `-dark`) y decide si aplicar `filter: brightness-0 invert` según el contexto del fondo. La convención que YO usé:
+
+- **`-dark.svg`** = logo con paths OSCUROS/NEGROS (describe el COLOR del logo).
+- **`-light.svg`** = logo con paths CLAROS/BLANCOS (describe el COLOR del logo).
+
+Lo documenté solo en el comentario del helper. **NO se lo expliqué al founder cuando le pasé las specs de los logos** ("subilos a `brand-assets/{slug}-logo-dark.svg`"). Founder interpretó la convención de manera natural pero DIFERENTE:
+
+- Founder pensó: **`-light.svg`** = "para fondo claro", **`-dark.svg`** = "para fondo oscuro" (sufijo describe DESTINO, no contenido).
+- Subió el logo de Vulk (con paths NEGROS) como `vulk-logo-light.svg` → pensando que iría en fondo claro.
+
+Resultado: mi código vio `-light` → asumió logo blanco → no invertir en fondo dark → logo negro sobre fondo negro = invisible.
+
+### Causa raíz
+
+**El naming `-light/-dark` es genuinamente ambiguo**. Puede significar:
+- "Color del logo" (mi interpretación, basada en convenciones de design systems tipo Material Design).
+- "Contexto de uso" (interpretación natural del founder no-técnico — "para fondo light/dark").
+
+Ambas son razonables. La que YO elegí no era obvia sin documentación.
+
+Patrón meta: **diseñé un sistema "smart" cuyo correcto funcionamiento depende de una convención implícita del founder**. Cuando el founder interpreta la convención de otra forma (razonable), el sistema falla silenciosamente.
+
+Adicionalmente: la convención está en código (comentario del helper) pero NO en la conversación con el founder cuando le pedí los assets. El comentario es para mí, no para él.
+
+### Regla preventiva
+
+Para CUALQUIER sistema "smart" que dependa de una convención del founder (naming de archivos, formato de datos, slugs, etc.):
+
+1. **Default a sistema explícito** (campo en DB, flag explícito) en lugar de convención implícita en filename/path.
+2. **Si convención implícita es el único camino**: documentarla EXPLÍCITAMENTE en el mensaje al founder cuando le pido el asset. Ej:
+   > "Importante: el sufijo del filename indica el COLOR del logo (no el fondo donde va). `-dark.svg` = paths negros. `-light.svg` = paths blancos. El sistema decide automáticamente si invertir según el fondo."
+3. **Si la convención es ambigua entre 2+ interpretaciones razonables**: usar nombres MÁS específicos (ej `-black.svg` / `-white.svg` en vez de `-dark/-light`).
+4. **Validar visualmente con el founder en el primer caso**: si subió 1 archivo, ver cómo queda antes de aplicar la misma convención a 4 más.
+
+### Aplicaciones inmediatas
+
+- **Para los próximos 3 logos** (Mormaii, Reef, Paula Cahen D'Anvers): cuando founder me diga "voy a conseguir los logos", recordarle la convención EXPLÍCITA con ejemplo: "si el SVG tiene paths NEGROS, nombralo `marca-logo-dark.svg`. Si tiene paths BLANCOS, `marca-logo-light.svg`. El sistema invierte según contexto."
+- **Considerar refactor**: mover la convención a campo de DB (`brands.logo_dominant_color: 'dark' | 'light'`). Founder lo setea explícitamente al hacer el UPDATE, no por filename. Más overhead operacional pero cero ambigüedad. **Evaluar cuando haya 3+ marcas** (1 marca no justifica el refactor todavía).
+
+### Estado de mitigación
+
+- Documentado.
+- Aplicado YA en el mensaje al founder con la convención explícita ("Convención que estoy usando para futuras marcas").
+- Si en próximas marcas el founder vuelve a malinterpretar el sufijo, ejecutar el refactor a campo de DB.
+
+---
+
+## 2026-05-28 — No anticipar que un bucket NUEVO de Supabase Storage es PRIVADO por default — debería haber avisado al founder al validar su decisión
+
+**Estado**: 🟡 Detectado en producción cuando los logos no cargaron. Mitigación documentada.
+**Categoría**: Supabase / Anticipación / Comunicación al founder
+
+### Qué pasó
+
+Cuando founder me dijo "agregue el logo de vulk y rusty en el bucket de supabase" (creó bucket `brand-assets` separado, opuesto a mi propuesta), acepté la decisión y refactoricé el código. **No le advertí que un bucket nuevo es PRIVADO por default** y que mi helper `getBrandAssetUrl()` asumía bucket público en la URL (`/storage/v1/object/public/...`).
+
+Después del push y de los UPDATEs SQL, los logos aparecieron como placeholders rotos en producción. Founder reportó "logos rotos" y tuve que diagnosticar después del fact.
+
+### Causa raíz
+
+**Conocimiento implícito que no compartí**. Yo sabía/asumí:
+- El bucket `products` era público (porque el founder lo había configurado hace meses).
+- Por consistency, asumí que el nuevo bucket también sería público.
+- Mi helper construye URL pública (`/storage/v1/object/public/...`) asumiendo eso.
+
+Pero el founder no sabe esa convención de Supabase (privado por default). Para él, "subir archivos al bucket" = "están disponibles para el público". No es una asunción rara para un no-técnico.
+
+**Cuando él me dijo que había creado el bucket nuevo, tuve la oportunidad de advertirle**: "ojo que cuando crees un bucket nuevo es privado por default, asegurate de activar 'Public bucket' al crearlo o después en Settings". No lo hice. Aceptar su decisión ≠ ignorar consecuencias técnicas implícitas que él no conoce.
+
+### Regla preventiva
+
+Cuando el founder ejecuta alguna acción en panel externo (Supabase Dashboard, Vercel, MP, Tusfacturas, Resend) que YO sé tiene **defaults / settings invisibles que pueden romper algo**, advertir EN EL MOMENTO QUE LO COMUNICA, no después del problema.
+
+**Casos típicos donde aplica**:
+- **Bucket Supabase nuevo** → es privado por default. Necesita "Public bucket" para que assets carguen sin auth.
+- **Env var en Vercel** → afecta el siguiente deploy, NO el actual. Si la setea y no redeploya, sigue sin existir en producción.
+- **Webhook MP nuevo** → necesita secret + URL exacta + IP whitelist en MP panel.
+- **DNS en Resend / dominio nuevo** → propaga en minutos pero a veces hasta 48hs.
+- **Migración SQL en SQL Editor** → no es transaccional con seeds, si falla a la mitad deja DB inconsistente.
+
+**Formato de la advertencia**: 1 línea contextual cuando confirma la acción, NO antes (para no saturar) ni después (para no fallar).
+
+Ejemplo de cómo debería haber sido:
+
+> "Founder: agregue el logo de vulk y rusty en el bucket"
+> "Asistente: Buenísimo, acepto tu decisión de bucket separado y refactorizo el código. **Pequeño detalle: cuando creaste el bucket nuevo, asegurate que tenga el toggle 'Public bucket' activado en Settings (Supabase los crea privados por default)**. Cualquier duda me decís."
+
+### Estado de mitigación
+
+- Documentado en este turno + LEARNINGS con entry positivo sobre diagnóstico paralelo.
+- Si en próximas decisiones del founder no anticipo este tipo de "default invisible que rompe algo", agregar checklist explícito a CLAUDE.md de "settings invisibles a advertir según panel externo".
+
+---
+
 ## 2026-05-28 — Optimizar arquitectura por "overhead técnico mío" ignorando "overhead cognitivo del founder en UI externa" (Dashboard Supabase)
 
 **Estado**: 🟡 Detectado por la decisión opuesta del founder; mitigación documentada.
