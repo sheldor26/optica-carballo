@@ -1,0 +1,3 @@
+-- Seed data para desarrollo local.
+-- Se ejecuta automáticamente con `supabase db reset`.
+-- Las migraciones reales (tablas, RLS, policies) van en supabase/migrations/.

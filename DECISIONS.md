@@ -1,0 +1,581 @@
+# Óptica Carballo — Decisions Log (ADR)
+
+## Qué es este archivo
+
+Architecture Decision Records (ADRs) del proyecto. Toda decisión técnica o estratégica importante se registra acá.
+
+**Reglas**:
+- Una decisión registrada acá es **ley hasta que se actualice formalmente**.
+- Si una decisión se revierte, no se borra: se marca `Estado: Revertida` y se agrega una nueva entrada explicando por qué.
+- El `agent-manager` puede proponer revisar una decisión si nueva evidencia la contradice, pero la decisión se mantiene hasta que el founder apruebe el cambio.
+- Cada decisión tiene un ID secuencial (ADR-001, ADR-002, etc.) para referenciarla desde otros archivos.
+
+## Estados posibles
+
+- 🟢 **Vigente**: aplica actualmente.
+- 🟡 **En revisión**: bajo evaluación, todavía aplica pero puede cambiar.
+- 🔴 **Revertida**: ya no aplica, mantenida por historia.
+- ⚪ **Superseded**: reemplazada por una decisión posterior (referencia al ADR que la reemplaza).
+
+## Template para nuevas decisiones
+
+```markdown
+## ADR-XXX — [Título corto]
+
+**Fecha**: YYYY-MM-DD
+**Estado**: 🟢 Vigente
+**Categoría**: Arquitectura | SEO | Producto | Pagos | Logística | IA | Contenido | Operación
+
+### Contexto
+Qué situación llevó a esta decisión.
+
+### Decisión
+Qué se decidió.
+
+### Alternativas consideradas
+Qué otras opciones había y por qué no se eligieron.
+
+### Consecuencias
+- Positivas: qué se gana.
+- Negativas: qué se sacrifica.
+- Riesgos: qué puede salir mal.
+
+### Cómo se valida
+Métricas o checkpoints para confirmar que la decisión fue correcta.
+```
+
+---
+
+# Decisiones tomadas hasta ahora
+
+## ADR-001 — Stack tecnológico V1
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Arquitectura
+
+### Contexto
+Necesitamos decidir el stack para Óptica Carballo V1. El founder ya tiene experiencia con un stack específico en su otro proyecto (productosvirales.com.ar).
+
+### Decisión
+- **Framework**: Next.js 15 (App Router) + TypeScript
+- **DB / Auth / Storage**: Supabase
+- **Hosting**: Vercel
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Pagos**: Mercado Pago (Checkout Pro V1)
+- **Email**: Resend
+- **IA**: API LLM (Sonnet 4 default, Haiku para simple, Opus para complejo)
+- **Embeddings**: OpenAI text-embedding-3-small + pgvector
+
+### Alternativas consideradas
+- Astro / Remix → menos curva de aprendizaje pero menor capitalización del know-how existente.
+- Firebase → reemplazado por Supabase por consistencia con productosvirales.
+- Stripe → no opera bien en Argentina; MP es el estándar local.
+
+### Consecuencias
+- ✅ Reutilizamos curva de aprendizaje del founder.
+- ✅ Stack maduro, bien documentado, gran ecosistema.
+- ⚠️ Vendor lock-in moderado con Vercel/Supabase (aceptable en V1).
+
+### Cómo se valida
+- Velocidad de implementación de features.
+- Estabilidad en producción.
+- Costo operativo mensual <$100 en V1.
+
+---
+
+## ADR-002 — Web PWA en V1, no app nativa
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Arquitectura
+
+### Contexto
+Las opciones eran: web responsive (PWA) o app nativa (React Native/Expo) desde V1.
+
+### Decisión
+**Web responsive PWA**. App nativa queda para V3+ cuando haya tracción demostrada.
+
+### Alternativas consideradas
+- React Native desde día 1 → duplica trabajo sin justificación.
+- Web no-PWA → pierde feature de instalación en celular.
+
+### Consecuencias
+- ✅ Una sola base de código.
+- ✅ Instalable como app desde el celular.
+- ⚠️ Algunas features nativas (cámara permisiva, push notifications avanzadas) son más limitadas en PWA.
+
+### Cómo se valida
+- % de uso mobile vs desktop.
+- Si >70% mobile y usuarios piden app nativa → reevaluar.
+
+---
+
+## ADR-003 — Monorepo único
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Arquitectura
+
+### Contexto
+¿Separar admin y storefront en repos distintos o unificar?
+
+### Decisión
+**Monorepo único**. Admin como ruta protegida `/admin` dentro del mismo Next.js.
+
+### Consecuencias
+- ✅ Menos overhead de mantenimiento.
+- ✅ Compartir tipos, componentes, lógica.
+- ⚠️ Hay que asegurar separación clara de bundles (admin no debe entrar al bundle público).
+
+---
+
+## ADR-004 — Estructura de URLs SEO
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: SEO
+
+### Contexto
+La arquitectura de URLs determina el techo SEO del proyecto. Decisiones:
+- ¿`marcas/` como conector intermedio?
+- ¿Features bajo categoría o nivel raíz?
+- ¿`/guias/` o `/blog/`?
+- ¿URLs de artículos planas o jerárquicas?
+- ¿Páginas de "uso" (anteojos para computadora, etc.)?
+
+### Decisión
+- **Sin `marcas/` como conector**: `/anteojos-de-sol/rusty` (la marca es la keyword).
+- **Features bajo categoría**: `/anteojos-de-sol/polarizados`.
+- **`/guias/` (no `/blog/`)** — autoridad sobre entretenimiento.
+- **URLs de artículos planas**: `/guias/[slug]`.
+- **Sí páginas de uso**: `/anteojos-para-computadora`, `/anteojos-para-manejar`.
+- **Categorías como entidades de primera clase**, no filtros.
+- **Sin www, sin trailing slash, HTTPS obligatorio, hreflang es-AR**.
+
+### Consecuencias
+- ✅ URLs concentradas en keywords reales (validadas por keyword research).
+- ✅ Estructura clara para crawlers.
+- ✅ Páginas de marca pueden capturar volumen sustancial.
+
+### Cómo se valida
+- Crecimiento orgánico de páginas de marca en GSC.
+- CTR mejor que benchmark de e-commerce (>3% en posiciones 1-10).
+
+---
+
+## ADR-005 — Patrón de variantes de producto
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto
+
+### Contexto
+Un mismo modelo de anteojos tiene múltiples variantes (color, tamaño, color de lente). ¿Una publicación por variante o una publicación con variantes?
+
+### Decisión
+**Una publicación con variantes**. Modelo base + variants table con SKU vendible por combinación. URL canonical única, variantes via query param (no genera URLs nuevas indexables).
+
+### Alternativas consideradas
+- Publicación por variante (estilo ML/Amazon Seller) → canibalización SEO, reviews dispersas.
+
+### Consecuencias
+- ✅ Toda la autoridad SEO concentrada.
+- ✅ Reviews unificadas por modelo.
+- ✅ Menor mantenimiento.
+- ⚠️ UI más compleja: el selector de variantes debe ser claro.
+
+### Cómo se valida
+- Conversión de página de producto.
+- Ranking de keywords transaccionales del modelo.
+
+---
+
+## ADR-006 — Receta como entidad reusable
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto
+
+### Contexto
+La receta oftalmológica del usuario puede usarse para múltiples compras a lo largo del tiempo.
+
+### Decisión
+Receta es entidad separada en DB (tabla `prescriptions`), vinculada al usuario, reusable. Se puede asociar a una orden específica o quedar guardada en perfil.
+
+### Consecuencias
+- ✅ Habilita reorders rápidos de lentes de contacto.
+- ✅ Habilita "renová tu receta" cuando se acerca el vencimiento.
+- ⚠️ Manejo de privacidad: la receta tiene datos sensibles (salud).
+
+---
+
+## ADR-007 — Snapshots en órdenes
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto
+
+### Contexto
+Cuando se crea una orden, ¿guardamos sólo FKs a productos/direcciones o snapshot completo?
+
+### Decisión
+**Snapshot completo** de producto, precio, dirección al momento de la compra. FKs se mantienen para reportes pero los datos visibles vienen del snapshot.
+
+### Consecuencias
+- ✅ Las órdenes históricas son inmutables y precisas aunque el producto cambie de precio o nombre.
+- ✅ Cumple con buenas prácticas contables y de defensa del consumidor.
+- ⚠️ Más datos en DB pero el costo es marginal.
+
+---
+
+## ADR-008 — WhatsApp como canal complementario
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto
+
+### Contexto
+WhatsApp es canal natural en Argentina. Pero ¿lo mantenemos como canal principal (todo termina ahí) o lo subordinamos al checkout directo?
+
+### Decisión
+**Checkout directo es el primario; WhatsApp es complementario** para casos que requieren asesoramiento (recetas complejas, productos donde el usuario duda). Handoff siempre con contexto pre-cargado (producto, receta, datos del cliente).
+
+### Consecuencias
+- ✅ Escalabilidad: no dependemos de respuesta manual 1:1.
+- ✅ Métricas: trackeo claro de conversión.
+- ✅ WhatsApp absorbe casos donde la fricción humana suma valor.
+- ⚠️ Requiere disciplina para no convertir todo el flujo en handoff a WhatsApp.
+
+### Cómo se valida
+- Conversión por checkout directo > conversión por handoff a WhatsApp.
+- Tiempo de respuesta en WhatsApp <2hs en horario hábil.
+
+---
+
+## ADR-009 — No vender colecciones de famosos sin confirmación de stock
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto
+
+### Contexto
+Keyword research mostró volumen alto para colecciones de famosos (Las Oreiro 1.1k vol, Paula Cahen d'Anvers 1.1k, Valeria Mazza 1.1k, Teresa Calandra 1.1k, Pampita 500). Oportunidad SEO clara pero requiere stock real.
+
+### Decisión
+**No cargar colecciones de famosos hasta que el founder confirme qué stock real tiene**. Mejor cero que vender lo que no hay.
+
+### Consecuencias
+- ⚠️ Perdemos volumen SEO potencial inicialmente.
+- ✅ Mantenemos integridad de la promesa "stock real".
+
+### Pendiente
+Founder debe confirmar stock de colecciones para activar o descartar.
+
+---
+
+## ADR-010 — Sí modelar "anteojos de sol con aumento"
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto + SEO
+
+### Contexto
+Keyword research mostró 3.200 vol/mes para "anteojos de sol con aumento". Difficulty media. Categoría poco atacada por competencia argentina.
+
+### Decisión
+**Sí**, se modela como categoría específica: `/anteojos-de-sol/con-aumento`. Cruce de catálogo de sol + sistema de receta. Conecta con la feature del lector de receta IA.
+
+### Consecuencias
+- ✅ Atacamos cluster grande con baja competencia.
+- ⚠️ Requiere proceso definido para armado (sol + receta = más pasos).
+
+---
+
+## ADR-011 — B2B mayorista no en V1
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Producto
+
+### Contexto
+"Anteojos por mayor" 1.400 vol/mes. Oportunidad B2B real.
+
+### Decisión
+**Postergado a V2+**. La operación B2B requiere catálogo distinto, condiciones de pago distintas, mínimos, y flujo de cuenta corriente. Foco V1: B2C.
+
+### Consecuencias
+- ⚠️ Perdemos volumen B2B inicialmente.
+- ✅ Foco operativo en V1.
+
+---
+
+## ADR-012 — Repositorio: `optica-carballo`
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Operación
+
+### Decisión
+Nombre del repo y del proyecto en Vercel: `optica-carballo` (con guión).
+
+---
+
+## ADR-013 — Supabase Storage para imágenes de producto
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Arquitectura
+
+### Contexto
+Opciones: Supabase Storage vs Cloudinary vs S3.
+
+### Decisión
+**Supabase Storage**. Mismo servicio que la DB, menos overhead, suficiente performance para V1.
+
+### Consecuencias
+- ✅ Un solo servicio para gestionar.
+- ⚠️ Si volumen crece >50GB o necesitamos transformaciones avanzadas, reevaluar Cloudinary.
+
+### Cómo se valida
+- Si performance de imágenes (LCP) es buena en producción.
+- Si costo de Storage <$10/mes.
+
+---
+
+## ADR-014 — Agent Manager Versión A para empezar
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: IA / Operación
+
+### Contexto
+Opciones para el agent-manager: Versión A (auditor sistemático) vs Versión B (self-improving meta-agent).
+
+### Decisión
+**Versión A**. Versión B se evaluará a los 4 meses de operación estable (~septiembre 2026), cuando haya datos suficientes y el sistema esté maduro.
+
+### Consecuencias
+- ✅ Predecible, confiable.
+- ⚠️ Limita auto-mejora del propio meta-agente.
+
+### Pendiente
+- Reminder activado en memoria para revisar Versión B en septiembre 2026.
+
+---
+
+## ADR-015 — Mercado Pago Checkout Pro para V1
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Pagos
+
+### Contexto
+Opciones de MP: Checkout Pro (redirección) vs Bricks (embebido) vs API custom (PCI).
+
+### Decisión
+**Checkout Pro** en V1. MP aloja la página de pago, redirección, webhooks confirman. Bricks se evalúa en V2 cuando madure el flujo.
+
+### Consecuencias
+- ✅ Implementación rápida.
+- ✅ MP maneja PCI compliance.
+- ⚠️ Menos control de UX en el paso de pago.
+
+---
+
+## ADR-016 — Tusfacturas.app para facturación electrónica
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente — pendiente de implementación
+**Categoría**: Pagos / AFIP
+
+### Contexto
+Opciones para facturación electrónica AFIP: Tusfacturas, Afipsdk, Contabilium, MP Facturación.
+
+### Decisión
+**Tusfacturas.app** por simplicidad de integración y costo. Se valida en implementación.
+
+### Cómo se valida
+- Costo mensual razonable.
+- API funcional, sin errores frecuentes.
+- Si presenta problemas, evaluar migración a alternativa.
+
+---
+
+## ADR-017 — Andreani principal + Correo Argentino fallback
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: Logística
+
+### Decisión
+- **Andreani**: operador principal (sucursales y domicilio).
+- **Correo Argentino**: fallback para CPs donde Andreani no cubre.
+- **Retiro en local Virasoro**: tercer opción (gratis).
+
+### V1 simplificación
+Tabla fija de costos por zona, no cotización en tiempo real. Integrar API después.
+
+---
+
+## ADR-018 — Conexión futura con NeuralRouting
+
+**Fecha**: 2026-05-27
+**Estado**: 🟡 En revisión (depende de NeuralRouting llegar a prod estable)
+**Categoría**: IA
+
+### Contexto
+El founder desarrolla NeuralRouting.io (gateway de LLMs con cache, routing, PII filter, loop detection).
+
+### Decisión
+- **V1**: llamadas directas a la API del proveedor de IA.
+- **Futuro**: cuando NeuralRouting esté estable en producción, considerar migración a NeuralRouting como gateway para Óptica Carballo (ahorro por cache, routing automático Haiku/Sonnet/Opus).
+
+### Pendiente
+- Evaluación cuando NeuralRouting tenga SLA estable.
+- Comparar costo y latencia de ambas opciones.
+
+---
+
+# Decisiones SEO derivadas del keyword research
+
+## ADR-019 — Prioridad de carga de catálogo
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: SEO / Producto
+
+### Contexto
+Keyword research mostró que marcas argentinas tienen volumen alto y dificultad baja (Rusty 6k/diff 9, Reef 3.4k/diff 7, Vulk 2.5k/diff 8, Prune 2k/diff 6, etc.).
+
+### Decisión
+**Orden de prioridad de carga de catálogo**:
+1. Marcas argentinas top (Rusty, Reef, Vulk, Prune, Infinit, Union Pacific, Wanama, Orbital) — todas con páginas /hombre y /mujer.
+2. Marcas internacionales top (Ray-Ban, Oakley, Prada, Versace, Tiffany, Miu Miu).
+3. Colecciones de famosos (si stock confirmado — ver ADR-009).
+4. Categorías por forma (Redondos, Cuadrados, Aviador, Wayfarer, Rectangulares).
+5. Features (Polarizados, Deportivos, Con aumento, Ofertas).
+6. Categorías por forma de cara.
+
+### Consecuencias
+- ✅ Maximiza ROI SEO en las primeras semanas.
+- ⚠️ Requiere disciplina para no saltar al cluster que parece más interesante.
+
+---
+
+## ADR-020 — Pillar pages + topic clusters
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: SEO / Contenido
+
+### Decisión
+**Estrategia editorial**: pillar pages + clusters temáticos. Clusters principales:
+1. Astigmatismo
+2. Miopía
+3. Hipermetropía
+4. Presbicia
+5. Anteojos para computadora / fatiga visual digital
+6. Lentes de contacto
+7. Cómo elegir anteojos
+8. Cómo leer una receta
+9. Tendencias y moda
+
+Cada pillar 3000-5000 palabras, satélites 1200-2000 palabras, internal linking bidireccional.
+
+---
+
+# Decisiones de IA
+
+## ADR-021 — Stack de modelos IA
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: IA
+
+### Decisión
+- **Default**: Sonnet 4 (model id: `claude-sonnet-4-20250514`).
+- **Tareas simples / alto volumen**: Haiku 4.5.
+- **Tareas críticas / alta calidad**: Opus 4.7.
+- **Vision**: Sonnet con `image` content blocks.
+- **Embeddings**: OpenAI `text-embedding-3-small`.
+- **Vector store**: pgvector en Supabase.
+
+### Cómo se valida
+- Costo IA total <$100/mes en V1, <$300/mes con tracción.
+- Calidad de outputs evaluada manualmente en muestras.
+
+---
+
+## ADR-022 — Defensa contra prompt injection
+
+**Fecha**: 2026-05-27
+**Estado**: 🟢 Vigente
+**Categoría**: IA / Seguridad
+
+### Decisión
+Reglas duras aplicadas en todas las features de IA:
+- User content nunca como instrucción.
+- Separación XML clara en prompts.
+- Whitelist de tools.
+- System prompts no expuestos al usuario.
+- Validación post-output (schema).
+- Rate limiting por usuario/IP.
+- Texto en imágenes tratado como contenido, no como instrucciones (crítico en lector de receta).
+
+---
+
+# Pendiente de decisión (no resueltas todavía)
+
+## PEND-001 — Categoría fiscal del negocio
+
+**Estado**: Pendiente
+**Categoría**: Pagos / AFIP
+
+¿Óptica Carballo es Responsable Inscripto o Monotributo categoría alta? Necesario para configurar facturación electrónica correctamente.
+
+## PEND-002 — Stock de colecciones de famosos
+
+**Estado**: Pendiente
+**Categoría**: Producto
+
+Ver ADR-009. Founder debe inventariar y confirmar.
+
+## PEND-003 — Dominio: redirects de URLs viejas
+
+**Estado**: Pendiente
+**Categoría**: SEO
+
+El sitio viejo era Mercadoshops. ¿Hay URLs indexadas en Wayback Machine o GSC que valga redirectar para preservar autoridad? Investigar.
+
+## PEND-004 — Acceso a panel ML para exportar histórico
+
+**Estado**: Pendiente
+**Categoría**: Operación
+
+Aprovechar 2000+ ventas en ML para extraer: top productos, reviews, fotos, descripciones. Esquema del skill `/migration-from-ml` listo para esto.
+
+## PEND-005 — Cuentas creadas
+
+**Estado**: Pendiente
+**Categoría**: Operación
+
+Cuentas a confirmar/crear:
+- [ ] Vercel
+- [ ] Supabase
+- [ ] Resend
+- [ ] Mercado Pago (developer)
+- [ ] Tusfacturas
+- [ ] API IA (LLM provider)
+- [ ] OpenAI API (para embeddings)
+- [ ] Google Search Console (con dominio verificado)
+- [ ] Google Analytics 4
+
+---
+
+## Notas finales
+
+Este archivo NO se modifica casualmente. Cada cambio:
+1. Pasa por el agent-manager o por el founder explícitamente.
+2. Si una decisión cambia, NO se borra la entrada original — se marca el estado y se referencia el nuevo ADR.
+3. El número de ADR es secuencial y no se reutiliza.

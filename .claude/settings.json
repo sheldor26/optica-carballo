@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Antes de cerrar esta sesión, hacé tres cosas: (1) Actualizá CURRENT_STATE.md con qué se construyó o cambió, qué decisiones técnicas se tomaron y por qué, problemas encontrados, y el próximo paso exacto. (2) Si algo funcionó particularmente bien en esta sesión, agregalo a LEARNINGS.md usando el template. (3) Si se cometió un error nuevo o se descubrió un anti-pattern, agregalo a MISTAKES.md con causa raíz y regla preventiva. Sé específico y conciso. Confirmá qué archivos fueron actualizados."
+          }
+        ]
+      }
+    ]
+  }
+}
