@@ -2,6 +2,66 @@
 
 ## Status
 
+🟢 **Knowledge base SEO + políticas universales + UI con onda — sistema escalable para futuros productos**
+
+Founder pasó 2 inputs grandes: (a) CSVs de Ubersuggest con keywords reales para "anteojos de sol" (369 keywords) y "lentes de sol vulk" (82 keywords) + pedido explícito de que queden permanentes para que todos los agentes los lean; (b) política universal del negocio (estuche original + franela + garantía 1 año del fabricante en CADA compra salvo aviso); (c) feedback de que las descripciones se ven aburridas, sin onda, sin elementos visuales.
+
+**Sistema escalable creado**:
+
+1. **`SEO_STRATEGY.md` extendido** con sección **"Keywords por marca/producto cargados"** + sub-sección **"Cluster: VULK"** con keywords primarias/secundarias/long-tails de Ubersuggest. **Insight crítico documentado**: `lentes de sol vulk` (1.300/mes) vs `anteojos de sol hombre vulk` (210/mes) — en argentino se usan ambos términos pero NO son intercambiables para SEO. Plantilla incluida para que cualquier marca futura tenga su cluster con misma estructura.
+
+2. **`BUSINESS_POLICIES.md` nuevo** — política universal del negocio (incluye estuche+franela+garantía + envíos + devoluciones + receta + facturación). Es la fuente de verdad operativa.
+
+3. **Agentes actualizados** — `seo-strategist` y `content-writer-medical` ahora tienen sección **"Fuentes de verdad que tenés que leer ANTES"** con instrucciones de leer `SEO_STRATEGY.md` (cluster de marca) y `BUSINESS_POLICIES.md` antes de auditar o escribir. **Mecanismo**: si la marca no tiene cluster, deben pedir keyword research nuevo al founder en vez de inventar keywords.
+
+4. **`CLAUDE.md` referencia los 2 archivos** en la tabla de archivos importantes.
+
+**UI rediseño con más onda** (componentes nuevos):
+
+5. **`lib/business/product-includes.ts`** — constantes con la lista de inclusiones por defecto (case/cloth/warranty) + helper `resolveProductIncludes(attributes)` con mecanismo opcional de override.
+
+6. **`components/product/product-includes.tsx`** — bloque visual "Lo que incluye tu compra" con 3 ítems (estuche + franela + garantía), iconos lucide en círculos negros, layout sm:grid-cols-3, fondo `bg-muted/30` con borde rounded-xl. Se renderiza en CADA producto automáticamente.
+
+7. **`components/product/product-highlights.tsx`** — pills/badges flotantes con animación de entrada (`hero-reveal` 60ms stagger por badge) que muestran features clave del producto: lentes polarizadas, UV400, peso, unisex, garantía. Iconos lucide. Pill rounded-full con hover sutil.
+
+8. **`product-page.tsx` rediseñado** con más jerarquía visual:
+   - Hero del producto incluye `<ProductHighlights>` (pills animados) debajo del subtítulo
+   - **Bloque de precio destacado** con gradient bg + label "PRECIO" uppercase + dot verde "En stock · envío a todo el país"
+   - `<ProductIncludes>` agregado a la columna derecha
+   - Sección "Descripción" rediseñada con eyebrow "Sobre el producto" uppercase, H2 grande "Por qué elegir el {nombre}" en `text-3xl md:text-4xl`, párrafos split correctamente con `text-balance`
+
+**Copy del Vulk Day Light regenerado** por `content-writer-medical` con las keywords reales:
+- `short_description`: 158 chars, incluye "Anteojos de sol Vulk Day Light polarizados"
+- `description`: **1.087 chars** (+28% vs versión previa de 847), 4 párrafos estructurados, hook + G-Flex + polarizado con limitación honesta + variante + 1 línea sobre estuche original Vulk
+- `meta_title`: "Lentes de Sol Vulk Day Light Polarizados | Óptica Carballo" (60 chars exactos) — arranca con `lentes de sol vulk` (1.300/mes)
+- `meta_description`: "Anteojos de sol Vulk Day Light polarizados, armazón G-Flex carey brillo. Stock real, asesoramiento óptico matriculado y envíos a toda Argentina." (155 chars) — **detectado y corregido pre-cierre**: el agente había inventado "desde Córdoba" pero la óptica está en **Virasoro, Corrientes** (verificado por grep en SEO_STRATEGY.md). Removido.
+
+**Seeds nuevos**:
+- `supabase/seeds/03_vulk_day_light.sql` actualizado con el copy + meta v2 (para futuras aplicaciones limpias).
+- `supabase/seeds/05_vulk_day_light_seo_polish.sql` nuevo — UPDATE delta del copy/meta del producto Vulk ya cargado en cloud. Para el founder correr en SQL Editor.
+
+Typecheck verde. **PENDIENTE DEL FOUNDER**: aplicar **2 seeds en cloud** en orden: (1) `04_vulk_day_light_fixes.sql` (paths de imágenes + JSONB cleanup — del turno anterior, todavía no aplicado); (2) `05_vulk_day_light_seo_polish.sql` (copy + meta v2). Una vez aplicados + Vercel termine de hacer redeploy del código nuevo (~2 min), la página del producto va a tener: imágenes funcionando, cards clickeables en brand-page, descripción con más onda y SEO real, pills de features, bloque "Lo que incluye", precio destacado.
+
+🟡 **Vulk Day Light en prod con bugs reportados — fixes pusheados, pendiente correr SQL delta**
+
+Founder verificó visualmente Vulk Day Light en producción y reportó 3 bugs reales:
+
+1. **Cards en `/anteojos-de-sol/vulk` no eran clickeables ni mostraban imagen** — `ProductCard` era placeholder histórico sin Link wrapping ni Image render.
+2. **Imágenes rotas en página de detalle** — bucket tiene carpeta `vulk-day-light-sol/` (subió las imágenes al path viejo antes del cambio de slug recomendado por seo-strategist) pero SQL aplicado tenía paths `vulk-day-light/` (sin `-sol`). Mismatch → 404 en cada Image.
+3. **Copy adjustments** — sacar frase "Las lentes son intercambiables" (no era precisa); reformatear medidas como tabla con labels exactos del founder: Ancho total / Altura total / Puente / Calibre del aro / Largo de las patillas.
+
+**Fixes implementados y pusheados** (commit `482c304`):
+
+- **`ProductCard` reescrito**: envuelto en `<Link>` con href del producto, render de `primaryImagePath` via `next/image` si existe, hover lift + image zoom 1.04, flecha animada en footer. Type `ProductCardData` con `href` + `primaryImagePath` obligatorios.
+- **Query `fetchBrandPage` extendida** para incluir `product_images` con sort + primary, y `toCardData` en brand-page propaga el primary image path al ProductCard.
+- **Seed `03_vulk_day_light.sql`** actualizado: paths `vulk-day-light-sol/...` (matchear bucket real), descripción sin "intercambiables" ni medidas en párrafo, `attributes.frame_shape: rectangular` (sin sufijo `-small` que no matcheaba el FRAME_SHAPE_LABELS).
+- **Seed nuevo `04_vulk_day_light_fixes.sql`** con UPDATEs idempotentes para correr en cloud — alinea paths existentes y actualiza `description` y `attributes` del producto ya cargado.
+- **Componente nuevo `ProductMeasurements`** que renderiza tabla de medidas con los 5 labels exactos del founder. Inputs: `attributes.measurements` JSONB con keys `frame_width_mm / lens_height_mm / bridge_mm / lens_width_mm / temple_length_mm`.
+- **`ProductAttributes` extendido**: agregado `g-flex` y `tr-90` al `FRAME_MATERIAL_LABELS`, peso (`weight_grams`) ahora visible.
+- **`ProductDetailPage`** ahora muestra `ProductMeasurements` debajo de `ProductAttributes`.
+
+Typecheck verde. **PENDIENTE DEL FOUNDER**: aplicar `supabase/seeds/04_vulk_day_light_fixes.sql` en SQL Editor del Dashboard de Supabase para arreglar los datos ya cargados en cloud (sino los bugs persisten en prod). El push de código solo no arregla los paths del bucket — necesita el UPDATE SQL.
+
 🟢 **PRIMER PRODUCTO REAL LIVE — Vulk Day Light publicado en producción**
 
 Founder confirmó: "Las fotos ya estan en el bucket y aplicado el sql de daylight". Es el **primer producto REAL del catálogo cargado y publicado** — bisagra histórica del proyecto. Tras 2 días intensos: schema cloud completo, frontend con Capa 1+2 de modernización, deploy a `opticacarballo.com.ar`, infra Resend/MP configurada, ahora producto real con SEO end-to-end. Push del trabajo en commit `1720981` — Vercel rebuilding ahora. La URL pública del producto será `https://opticacarballo.com.ar/anteojos-de-sol/vulk/vulk-day-light` en ~2-3 minutos cuando termine el deploy. **Cloud aplicado**: `seeds/03_vulk_day_light.sql` registrado en `supabase/CLOUD_APPLIED.md` como ✅. Bucket `products` tiene los 3 archivos `vulk-day-light/{01-lateral,02-frontal,03-medidas}.jpg`. **Próximo paso founder**: verificar URL en producción cuando termine deploy + reportar cualquier issue visual. **Próxima sesión (cuando founder pase data)**: FAQs reales del negocio para implementar FAQ section + FAQPage schema (recomendación seo-strategist con highest impact pendiente), keyword research con Ubersuggest para refinar copy y meta de futuros productos.
@@ -95,6 +155,12 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: Knowledge base SEO permanente (SEO_STRATEGY.md sección Cluster Vulk + plantilla por marca) + BUSINESS_POLICIES.md nuevo con política universal de inclusiones (estuche+franela+garantía) + agentes seo-strategist y content-writer-medical actualizados con fuentes de verdad obligatorias + rediseño UI con onda (ProductHighlights pills + ProductIncludes bloque + precio destacado + descripción con jerarquía nueva). Copy Vulk regenerado por content-writer-medical con keywords reales del cluster, detectado y corregido invent "Córdoba" pre-cierre via grep (la óptica está en Virasoro Corrientes). 2 seeds pendientes del founder: 04 (fixes anteriores) + 05 (polish SEO copy).
+
+**Fecha**: 2026-05-28
+**Por**: 3 bugs fix tras feedback visual founder en producción. Commit `482c304` pusheado. ProductCard envuelto en Link + Image, query brand-page incluye product_images, ProductMeasurements component nuevo con labels exactos del founder, paths del seed alineados con bucket real (`vulk-day-light-sol/`). Seed delta `04_vulk_day_light_fixes.sql` creado para que founder corra UPDATE en cloud. Pendiente: aplicación del 04 en Dashboard.
 
 **Fecha**: 2026-05-28
 **Por**: PRIMER PRODUCTO REAL LIVE — Vulk Day Light. Founder confirmó imágenes subidas + SQL aplicado en cloud. Commit `1720981` pusheado, Vercel rebuilding. `supabase/CLOUD_APPLIED.md` actualizado con seed 03 marcado ✅. URL pública post-deploy: `https://opticacarballo.com.ar/anteojos-de-sol/vulk/vulk-day-light`. Próximo paso: founder verifica visualmente y reporta issues; próxima sesión podemos hacer FAQ + keywords Ubersuggest.

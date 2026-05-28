@@ -22,6 +22,61 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Knowledge base canónica para que agentes "sepan" sin inventar — patrón cluster por marca + políticas operativas
+
+**Categoría**: Sistema de agentes / Knowledge management
+**Confianza**: 🟢 Alta (implementado, agentes referencian archivos, próxima invocación los va a usar)
+
+### Qué funcionó
+
+Founder pasó keywords de Ubersuggest + política universal del negocio (estuche+franela+garantía) y pidió que "queden de forma permanente para que los agentes siempre sepan". El problema clásico de sistemas de agentes: cuando la data viene en un turno y se necesita en otro, se pierde o se inventa.
+
+**Solución implementada en 4 capas**:
+
+1. **Archivos canónicos en root**:
+   - `SEO_STRATEGY.md` (existente) extendido con sección "Keywords por marca/producto cargados" con sub-clusters por marca (ej "Cluster: VULK"). Cada cluster lista keywords primarias/secundarias/long-tails con vol/difficulty/intent.
+   - `BUSINESS_POLICIES.md` (nuevo) con políticas universales operativas (qué viene en cada compra, envíos, devoluciones, etc).
+2. **Plantilla en SEO_STRATEGY.md** para que la próxima marca cargada respete la misma estructura — autoreplicable.
+3. **Agentes con sección "Fuentes de verdad que tenés que leer ANTES"** — instrucción literal de leer los archivos canónicos antes de auditar/escribir. Si la marca no tiene cluster, el agente DEBE pedir keyword research al founder en vez de inventar.
+4. **CLAUDE.md tabla de archivos** referencia los 2 archivos.
+
+### Por qué funciona
+
+- **Source of truth única**: si un dato cambia (ej política de garantía), se cambia en 1 archivo y todos los agentes lo usan en su próxima invocación.
+- **Agentes no inventan** porque su prompt los obliga a leer el archivo. Si el dato no está, no asumen — preguntan.
+- **Escalable**: la plantilla de "Cluster: <MARCA>" permite agregar marcas nuevas sin tocar prompts ni código.
+- **Separation of concerns**: SEO_STRATEGY.md = qué posicionar; BUSINESS_POLICIES.md = qué cumple el negocio. Cada uno tiene su scope.
+
+### Cómo replicar
+
+Para cualquier proyecto con agentes que necesitan data específica del dominio:
+
+```
+1. Crear archivos canónicos en root con secciones bien delimitadas:
+   - <Domain>_STRATEGY.md (decisiones estratégicas)
+   - <Domain>_POLICIES.md (reglas operativas)
+2. Definir UNA plantilla replicable para data nueva (ej "Cluster: X").
+3. En los .md de cada agente, agregar sección "Fuentes de verdad que tenés que
+   leer ANTES de actuar" con paths exactos + qué buscar en cada uno.
+4. Cuando el agente no encuentre data → debe PEDIR al founder, no inventar.
+5. Referenciar los archivos en CLAUDE.md / system prompt principal para que
+   el orquestador también los conozca.
+```
+
+### Cuándo aplicarlo
+
+- Cualquier proyecto donde los agentes necesitan data específica (keywords, atributos, políticas, brand voice).
+- Especialmente cuando los datos vienen del founder en turnos sueltos y se reusarán en muchos turnos futuros.
+- Cuando hay riesgo de inventar (sectores YMYL, contenido legal, datos verificables).
+
+### Notas
+
+- En este turno se "promovió" la política universal de inclusiones (estuche/franela/garantía) que el founder había mencionado al pasar — sin esto, se perdía en próximas invocaciones.
+- El agente content-writer-medical en este mismo turno inventó "desde Córdoba" en una meta_description (la óptica está en Virasoro, Corrientes). Detectado por grep pre-cierre — el mismo patrón de defensa-en-profundidad que ya está documentado en LEARNINGS 2026-05-28 "Detección pre-cierre de fact inventado".
+- Combinado con la regla "grep pre-cierre", el sistema tiene 2 capas de defensa: (a) prevención (agente lee fuente de verdad) + (b) detección (grep antes de enviar).
+
+---
+
 ## 2026-05-28 — Productos relacionados con algoritmo cascada > query simple — robusto contra catálogo chico
 
 **Categoría**: SEO / UX / Catálogo

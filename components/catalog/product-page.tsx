@@ -5,6 +5,8 @@ import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { ProductAttributes } from '@/components/product/product-attributes';
 import { ProductGallery } from '@/components/product/product-gallery';
+import { ProductHighlights } from '@/components/product/product-highlights';
+import { ProductIncludes } from '@/components/product/product-includes';
 import { ProductMeasurements } from '@/components/product/product-measurements';
 import { RelatedProducts } from '@/components/product/related-products';
 import { VariantList } from '@/components/product/variant-list';
@@ -156,10 +158,24 @@ export async function ProductDetailPage({
                 {product.short_description}
               </p>
             )}
+            <ProductHighlights attributes={product.attributes} />
           </div>
 
           {priceLabel ? (
-            <p className="text-2xl font-semibold">{priceLabel}</p>
+            <div className="border-border/60 from-muted/30 to-background rounded-xl border bg-gradient-to-br p-5">
+              <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+                Precio
+              </p>
+              <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
+                {priceLabel}
+              </p>
+              {isInStock && (
+                <p className="text-muted-foreground mt-2 inline-flex items-center gap-1.5 text-xs">
+                  <span className="size-1.5 rounded-full bg-green-600" />
+                  En stock · envío a todo el país
+                </p>
+              )}
+            </div>
           ) : (
             <p className="text-muted-foreground text-base">Sin stock disponible</p>
           )}
@@ -167,6 +183,8 @@ export async function ProductDetailPage({
           <ProductAttributes attributes={product.attributes} />
 
           <ProductMeasurements attributes={product.attributes} />
+
+          <ProductIncludes attributes={product.attributes} />
 
           <VariantList
             showVariantCta={!isPlaceholder(product.name)}
@@ -187,13 +205,20 @@ export async function ProductDetailPage({
       </div>
 
       {product.description && (
-        <RevealOnScroll as="section" className="mt-16 max-w-3xl">
-          <h2 className="text-foreground text-xl font-semibold tracking-tight md:text-2xl">
-            Descripción
-          </h2>
-          <p className="text-muted-foreground mt-4 whitespace-pre-wrap text-base leading-relaxed">
-            {product.description}
+        <RevealOnScroll as="section" className="mt-20 max-w-3xl">
+          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
+            Sobre el producto
           </p>
+          <h2 className="text-foreground mt-2 text-balance text-3xl font-bold tracking-tight md:text-4xl">
+            Por qué elegir el {product.name}
+          </h2>
+          <div className="prose-base text-muted-foreground mt-6 space-y-4 text-base leading-relaxed [&_p]:text-balance">
+            {product.description.split('\n\n').map((para, i) => (
+              <p key={i} className="whitespace-pre-wrap">
+                {para}
+              </p>
+            ))}
+          </div>
         </RevealOnScroll>
       )}
 

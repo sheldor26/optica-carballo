@@ -109,7 +109,8 @@ Si tomaste una decisión importante: agregala a `DECISIONS.md` con formato ADR.
 | Archivo | Para qué |
 |---------|----------|
 | `ARCHITECTURE.md` | Stack y decisiones técnicas detalladas |
-| `SEO_STRATEGY.md` | Estructura completa de SEO del proyecto |
+| `SEO_STRATEGY.md` | Estructura SEO + **keywords primarias por marca/producto** (fuente de verdad para agentes) |
+| `BUSINESS_POLICIES.md` | Políticas universales del negocio (incluye estuche+franela+garantía, envíos, devoluciones, receta) |
 | `CONTENT_PLAN.md` | Plan editorial: qué artículos escribir y cuándo |
 | `BRANDS.md` | Marcas con stock real, líneas, segmento |
 | `AI_PROMPTS.md` | Biblioteca versionada de prompts de producción |

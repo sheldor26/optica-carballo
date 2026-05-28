@@ -144,6 +144,80 @@ Sitemap: https://opticacarballo.com.ar/sitemap.xml
 
 # Keyword Research
 
+## Keywords por marca/producto cargados
+
+> **Esta sección es la fuente de verdad** para que `content-writer-medical` y `seo-strategist` sepan qué keywords priorizar al escribir o auditar.
+> **Actualizar cada vez** que se cargue un producto nuevo o se haga keyword research nueva con Ubersuggest.
+
+### Cluster: VULK (mayo 2026 — Ubersuggest)
+
+**Keyword head crítica**: `lentes de sol vulk` — **1.300 vol/mes, difficulty 8** (TOP, atacar agresivamente).
+
+**Insight crítico**: en Argentina, `"lentes de sol"` y `"anteojos de sol"` se usan ambos pero NO son intercambiables para SEO. Para marca Vulk, `"lentes de sol vulk"` tiene **6× más volumen** que `"anteojos de sol hombre vulk"` (210). Sin embargo `"anteojos de sol"` (head sin marca) tiene 12.100 vs no aparece "lentes de sol" como head pura. **Conclusión**: en copy de productos Vulk usar AMBOS términos naturalmente; en meta_title arrancar con `Lentes de Sol Vulk` (captura el 1.300).
+
+**Keywords primarias (incluir en copy + meta)**:
+| Keyword | Vol/mes | Difficulty | Intent | Donde usar |
+|---|---|---|---|---|
+| lentes de sol vulk | 1.300 | 8 | transactional+commercial | meta_title, H1 secundario, copy primer párrafo |
+| anteojos de sol hombre vulk | 210 | 8 | transactional | copy + alt text |
+| anteojos de sol marca vulk | 40 | 36 | navigational | copy (long-tail branded) |
+| lentes de sol marca vulk | 20 | 34 | navigational | copy (long-tail branded) |
+
+**Keywords secundarias relevantes para Day Light** (rectangular pequeño polarizado carey verde):
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos de sol polarizados | 170 | 10 | Day Light ES polarizado |
+| anteojos de sol rectangulares | 140 | 12 | Es la forma del Day Light |
+| anteojos de sol cuadrados | 170 | 14 | Variante cercana a "rectangulares" |
+| anteojos de sol carey | 40 | 34 | Color de la variante única actual |
+| anteojos de sol unisex | (no medido) | - | El producto es unisex |
+| anteojos de sol uv400 | 30 | 35 | Day Light tiene UV400 |
+
+**Long-tails branded captured (low volume but high intent)**:
+- `lentes de sol vulk day light demi polarizado` — la búsqueda EXACTA del SKU (vol 0 medido pero alta conversión cuando aparece).
+- `lentes de sol vulk hombre polarizados`
+- `lentes de sol vulk carey`
+- `anteojos lentes de sol vulk day light`
+
+**No usar** (irrelevantes para este producto):
+- `lentes de sol vulk niños`, `lentes de sol vulk redondos`, `lentes de sol vulk aviador` (otras formas/segmentos).
+
+### Reglas para futuros productos
+
+Cuando se cargue un producto nuevo, ANTES de escribir copy:
+1. Pedir al founder keyword research de Ubersuggest para `<marca>` + `<modelo>` si aplica.
+2. Agregar sub-sección acá con el patrón "Cluster: MARCA" + tabla de keywords primarias/secundarias/long-tails.
+3. `content-writer-medical` debe leer la sección de la marca correspondiente antes de escribir.
+4. `seo-strategist` debe leer la sección antes de auditar slug/meta/internal linking.
+
+### Plantilla para nueva marca cargada
+
+```markdown
+### Cluster: <MARCA EN MAYÚSCULAS> (fecha Ubersuggest)
+
+**Keyword head crítica**: `<keyword>` — **<vol> vol/mes, difficulty <X>**.
+
+**Insight crítico**: <observación importante de los datos>.
+
+**Keywords primarias**:
+| Keyword | Vol/mes | Difficulty | Intent | Donde usar |
+|---|---|---|---|---|
+...
+
+**Keywords secundarias**:
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+...
+
+**Long-tails branded**:
+- ...
+
+**No usar**:
+- ...
+```
+
+---
+
 ## Datos cargados (Ubersuggest, mayo 2026)
 
 ### Volúmenes principales

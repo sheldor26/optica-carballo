@@ -31,8 +31,8 @@ VALUES (
   (SELECT id FROM sol),
   'vulk-day-light',
   'Vulk Day Light',
-  'Anteojos de sol unisex con armazón rectangular pequeño en G-Flex, lentes polarizadas verdes y bisagras reforzadas. Livianos: 26.1 gramos.',
-  E'Los Vulk Day Light son anteojos de sol unisex de estilo rectangular pequeño, pensados para uso diario en ciudad, manejo y exteriores. El armazón y las patillas están fabricados en G-Flex, un termoplástico flexible patentado por Vulk: liviano, resistente a torsiones y se adapta mejor al rostro sin perder forma. Pesan apenas 26.1 gramos.\n\nLas lentes son polarizadas, lo que reduce los reflejos molestos del agua, la ruta y superficies vidriadas, e implica protección UV total. Tener en cuenta: con lentes polarizadas algunas pantallas LCD (GPS, tableros de auto, cajeros) pueden verse oscurecidas o con patrones de colores según el ángulo.\n\nLas bisagras son de plástico reforzado. Variante disponible: armazón Carey Brillo con lentes verdes.',
+  'Anteojos de sol Vulk Day Light polarizados, armazón rectangular pequeño en G-Flex carey brillo con lentes verdes. Liviano, unisex, ideal para uso urbano.',
+  E'Los lentes de sol Vulk Day Light son un rectangular pequeño pensado para quien busca un anteojo discreto, prolijo y con buen agarre al rostro. Diseño unisex, líneas limpias y un peso de 26,1 gramos que casi no se siente durante el día.\n\nEl armazón está hecho en G-Flex, el termoplástico patentado por Vulk: flexible, resistente a torsiones y a los apretones del bolsillo. Las patillas acompañan el movimiento sin perder firmeza, y las bisagras reforzadas aguantan el uso diario. Funciona tanto para manejar como para caminar la ciudad o moverte al aire libre.\n\nLas lentes polarizadas verdes cortan los reflejos del asfalto, el agua y los vidrios, y suman protección UV total. Tené en cuenta una cosa: como toda lente polarizada, las pantallas LCD del tablero del auto, GPS o cajeros pueden verse oscurecidas o con efecto arcoíris según el ángulo. Es propio del polarizado, no un defecto.\n\nEsta versión viene en carey brillo, una variante clásica que combina con casi todo y suaviza los rasgos. Se entrega con su estuche original de Vulk. Stock real en Óptica Carballo, con asesoramiento técnico matriculado.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "rectangular",
@@ -50,8 +50,8 @@ VALUES (
   }'::jsonb,
   true,
   true,
-  'Anteojos de Sol Vulk Day Light Polarizados | Óptica Carballo',
-  'Anteojos de sol Vulk Day Light unisex con lentes polarizadas verdes. Stock real, asesoramiento de técnico óptico matriculado y envíos a toda Argentina.'
+  'Lentes de Sol Vulk Day Light Polarizados | Óptica Carballo',
+  'Anteojos de sol Vulk Day Light polarizados, armazón G-Flex carey brillo. Stock real, asesoramiento óptico matriculado y envíos a toda Argentina.'
 )
 ON CONFLICT (slug) DO UPDATE SET
   short_description = EXCLUDED.short_description,

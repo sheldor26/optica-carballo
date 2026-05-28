@@ -24,6 +24,45 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Mismatch entre storage_path en SQL y carpeta real en bucket Storage (cambio de slug post-upload)
+
+**Estado**: 🟡 Mitigado (fix delta SQL creado, founder corre UPDATE)
+**Categoría**: Coordinación / Cambios de slug
+
+### Qué pasó
+
+Secuencia de eventos:
+1. Pasé al founder la versión 1 del SQL del producto Vulk con slug `vulk-day-light-sol` y paths `vulk-day-light-sol/01-lateral.jpg`.
+2. Le di instrucciones de subir las imágenes al path `vulk-day-light-sol/`.
+3. Founder creó la carpeta en bucket y subió.
+4. **Después** invoqué a seo-strategist que recomendó cambiar el slug a `vulk-day-light` (sin sufijo redundante).
+5. Regeneré el SQL con slug `vulk-day-light` y paths `vulk-day-light/...`.
+6. Mencioné al pasar "los paths cambiaron de `vulk-day-light-sol/` a `vulk-day-light/`" en el mensaje.
+7. Founder aplicó el SQL nuevo PERO no movió las imágenes en el bucket (porque ya las había subido al path anterior). Resultado: las URLs en `product_images.storage_path` apuntan a un path que no existe → 404 en cada `<Image>`.
+
+### Causa raíz
+
+Cambié un dato crítico (path de storage) DESPUÉS de que el founder ya había ejecutado parte del workflow (upload de archivos). El cambio aplicaba a 2 sistemas separados (DB + Storage) y mi instrucción no fue lo suficientemente explícita ni bloqueante.
+
+El error real fue **subestimar el costo de coordinación cross-sistema**. Cambiar paths cuando el founder ya subió es high-friction: requiere mover archivos en bucket o cambiar paths en DB. Yo asumí que él vería "el path cambió" y movería los archivos — pero la lectura natural fue "ok hago lo que dice el SQL", aplicando el SQL sin tocar el bucket.
+
+### Regla preventiva
+
+**Cuando un cambio afecta a 2+ sistemas (DB + Storage, código + DB, etc) y uno de los sistemas ya tiene state aplicado por el founder, NO cambiar el camino — adaptar el camino al state existente.**
+
+Concretamente:
+1. Si el founder ya subió archivos a un path X, NO cambiar el path en SQL después. Adaptar el SQL a path X.
+2. Si querés cambiar paths (ej por consistencia con un nuevo slug), generar EXPLÍCITAMENTE un workflow de "mover archivos en bucket" como step adicional, no como nota al pasar.
+3. Cuando se recomienda algo (slug change) DESPUÉS de que el founder ya ejecutó workflow, evaluar el costo del cambio aplicado VS el beneficio. En este caso: ganamos 4 chars en URL SEO, perdimos 30 min de coordinación + 1 fix delta. Probablemente no valía la pena.
+
+### Lo que se hizo
+
+- Updated seed 03 paths a `vulk-day-light-sol/...` (matchear bucket).
+- Created seed 04 con UPDATEs delta para corregir DB en cloud.
+- Founder corre 04 → mismatch resuelto sin tocar bucket.
+
+---
+
 ## 2026-05-28 — 4TA VEZ: cerrar sin actualizar docs aunque la regla está EN CLAUDE.md (que leí al inicio de sesión)
 
 **Estado**: 🔴 Abierto — la regla en CLAUDE.md (promovida tras 3ra repetición) tampoco bastó. Necesita hook técnico.
