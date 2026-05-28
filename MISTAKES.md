@@ -105,6 +105,46 @@ Concretamente:
 
 ---
 
+## 2026-05-28 — `CLOUD_APPLIED.md` marcó migración 00002 como ✅ sin verificación real
+
+**Estado**: 🔴 Activo (en proceso de resolución)
+**Categoría**: Operación / Documentación
+
+### Qué pasó
+El founder dijo "cloud aplicado" después de pegar el bootstrap de migración 00002 en SQL Editor del Dashboard. El asistente marcó la fila correspondiente en `supabase/CLOUD_APPLIED.md` como ✅ 2026-05-28 sin verificar el estado real de las tablas en cloud.
+
+Al intentar aplicar la migración 00003 (que crea trigger sobre `orders`), el SQL falló con `ERROR: 42P01: relation "public.orders" does not exist`. Esto confirma que la 00002 NO está realmente aplicada, aunque el tracker la marcaba como aplicada.
+
+### Causa raíz
+- **Confianza ciega en el reporte verbal del founder** sin verificación independiente.
+- La transacción del bootstrap puede haber fallado silenciosamente (el founder vio "Success" parcial y asumió que estaba todo).
+- O el founder pegó solo parte del SQL.
+- O hubo otro mishap (aplicó en proyecto diferente, sesión perdida, etc).
+
+### Impacto
+- Trabajo desbloqueado en código asumiendo schema completo en cloud que no existe.
+- Migración 00003 no aplicable hasta arreglar la 00002.
+- Auth UI funciona en cloud (las queries `auth.users` y profiles vía trigger fallan silenciosas porque tabla no existe — pero como no se testeó signup real contra cloud, no se notó).
+
+### Cómo se detectó
+Founder intentó aplicar bootstrap de 00003 y reportó el error de FK.
+
+### Cómo se evita en el futuro
+**Regla preventiva**:
+
+Cuando el founder dice "cloud aplicado", el asistente debe:
+1. **Verificar inmediatamente con MCP** de Supabase si tiene acceso al proyecto (`list_tables` o `execute_sql` con SELECT a `pg_tables`).
+2. **Si NO tiene acceso MCP** (proyecto en org diferente), pedirle al founder que ejecute un SELECT diagnóstico y reporte el output ANTES de marcar como ✅.
+3. **NUNCA marcar ✅ en `CLOUD_APPLIED.md` solo por dicho** sin verificación de tablas/objetos creados.
+
+### Cambios derivados
+- [x] `CLOUD_APPLIED.md` revertido: 00002 vuelve a estado "⏳ Pendiente / a verificar".
+- [x] Registro en MISTAKES.md (este archivo).
+- [ ] Pendiente: founder ejecuta SELECT diagnóstico, identificamos qué hay realmente en cloud, aplicamos correcciones.
+- [ ] Considerar: agregar al CLAUDE.md una regla dura para verificación post-aplicación de migraciones.
+
+---
+
 ## 2026-05-28 — API key real pegada en el chat por el founder (riesgo de exposición)
 
 **Estado**: 🟡 Mitigado por aviso explícito (acción de rotación en manos del founder)

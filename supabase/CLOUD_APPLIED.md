@@ -14,8 +14,8 @@ re-aplicar o saltarse algo.
 | Archivo | Aplicada al cloud | Cómo | Notas |
 |---|---|---|---|
 | `20260528030711_catalog_foundation.sql` | ✅ 2026-05-28 | SQL Editor del Dashboard (founder pegó manualmente) | Schema base del catálogo + RLS lectura pública para activos. |
-| `20260528114114_identity_and_orders.sql` | ✅ 2026-05-28 | SQL Editor del Dashboard (founder pegó manualmente) | Identidad + transacciones + RLS estricta + trigger handle_new_user. |
-| `20260528122727_order_number_generator.sql` | ⏳ Pendiente | — | Sequence + function `generate_order_number()` + trigger `on_orders_set_number` que auto-genera `OC-YYYY-NNNNN`. Bootstrap derivado en `supabase/cloud-bootstrap.sql` (58 líneas). |
+| `20260528114114_identity_and_orders.sql` | ⚠️ **A verificar — marcada antes como aplicada pero error de 00003 sugiere que NO** | SQL Editor del Dashboard | El error `relation "public.orders" does not exist` al aplicar 00003 confirma que esta migración NO está realmente aplicada. Ver MISTAKES.md 2026-05-28. |
+| `20260528122727_order_number_generator.sql` | ⏳ Pendiente (bloqueada por 00002) | — | Sequence + function `generate_order_number()` + trigger. Bootstrap regenerado con 00002+00003 concatenadas (390 líneas) — pendiente verificación del estado real de cloud antes de aplicar. |
 
 ## Seeds aplicados a cloud
 
