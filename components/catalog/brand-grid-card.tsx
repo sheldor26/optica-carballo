@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { BrandWithProductCount } from '@/lib/catalog/queries';
 import type { CategoryConfig } from '@/lib/catalog/categories';
@@ -18,14 +17,7 @@ export function BrandGridCard({
     <Link href={href} className="group block">
       <Card className="flex h-full flex-col transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:border-foreground group-hover:shadow-xl">
         <CardHeader className="pb-3">
-          <div className="flex items-start justify-between gap-2">
-            <CardTitle className="text-lg">{brand.name}</CardTitle>
-            {brand.is_argentine && (
-              <Badge variant="secondary" className="shrink-0">
-                Marca local
-              </Badge>
-            )}
-          </div>
+          <CardTitle className="text-lg">{brand.name}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1">
           {brand.description && (

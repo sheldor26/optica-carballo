@@ -22,6 +22,72 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — `Image fill` ignora `padding` del wrapper — usar double wrapper para que el padding absorba el zoom
+
+**Categoría**: Next.js / next/image / CSS positioning
+**Confianza**: 🟢 Alta (bug reproducible, fix verificado, founder confirmó crop antes y ausencia después)
+
+### Qué pasó
+
+Tenía un `<Image fill>` con `object-contain` dentro de un wrapper con `aspect-square overflow-hidden p-8 md:p-12` y `className="group-hover:scale-[1.04]"`. **Esperaba** que el padding del wrapper diera "aire" para que el zoom hover no llegara a los bordes. **No funcionó** — la imagen se cortaba en el zoom.
+
+### Causa raíz
+
+`next/image` con `fill` aplica `position: absolute; inset: 0` al elemento img. Eso significa que el img ocupa **TODO el contenedor relative más cercano**, ignorando `padding` (porque `inset: 0` se calcula contra los bordes del contenedor, no contra el content box).
+
+Resultado: el padding del wrapper era irrelevante para el posicionamiento de la imagen. La imagen ocupaba el 100% del wrapper (incluido el área del padding) y al hacer `scale 1.04` se extendía 4% más allá del wrapper → cortada por `overflow-hidden`.
+
+### Fix: double wrapper
+
+```tsx
+{/* Outer: aspect-square + padding + overflow-hidden + el background visual */}
+<div className="relative aspect-square w-full overflow-hidden rounded-lg p-8 md:p-12">
+  {/* Inner: relative h-full w-full — es lo que `fill` respeta */}
+  <div className="relative h-full w-full">
+    <Image
+      src={...}
+      fill
+      className="object-contain group-hover:scale-[1.04]"
+    />
+  </div>
+</div>
+```
+
+Lo que cambia:
+- El outer define el **área visual** (con padding y bordes).
+- El inner es el **área de positioning** para `fill`. Su tamaño es `100% - padding del outer`.
+- Al hacer scale en la imagen, el zoom se expande dentro del inner. El padding del outer absorbe el overshoot — la imagen NO toca los bordes del outer, así que `overflow-hidden` no la corta.
+
+### Por qué funciona
+
+- `fill` busca el ancestor `position: relative` más cercano para hacer `inset: 0`. El inner es ese ancestor (no el outer).
+- El inner tiene `h-full w-full` que en CSS significa "100% del parent **content area**" — el parent es el outer, su content area excluye el padding.
+- El zoom 1.04 sobre la imagen dentro del inner queda dentro del área de padding del outer, no llega al borde exterior.
+
+### Cómo replicar
+
+Cuando combines `next/image fill` con cualquier transform (scale, rotate, translate) en hover Y querés que el efecto no toque los bordes:
+
+```tsx
+<div className="aspect-X overflow-hidden p-Y">    {/* visual area + padding */}
+  <div className="relative h-full w-full">         {/* positioning area for fill */}
+    <Image fill className="object-contain ..." />
+  </div>
+</div>
+```
+
+### Cuándo NO necesitás esto
+
+- Si no aplicás transform al image (sin scale/zoom hover): el padding del wrapper igual no funciona, pero no se nota porque no hay overshoot.
+- Si usás `Image` con `width/height` explícito en lugar de `fill`: el padding del wrapper se respeta naturalmente porque el img es `position: static`.
+
+### Notas
+
+- También aplica si tenés `Image fill` con `padding` directo en su className. El padding del propio img sí funciona (porque modifica el `inset: 0` efectivo), pero combina mal con `object-contain` porque object-contain no respeta el padding del img.
+- Mismo patrón aplica a `<video>` o cualquier elemento con `position: absolute; inset: 0`.
+
+---
+
 ## 2026-05-28 — Sort criterio "específico-antes-que-compartido" cuando filtrás N items + items globales en una vista por contexto
 
 **Categoría**: UI / sort algorithms / multi-variant rendering

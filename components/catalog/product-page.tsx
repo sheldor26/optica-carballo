@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
+import { NewArrivalBadge } from '@/components/product/new-arrival-badge';
 import { ProductAttributes } from '@/components/product/product-attributes';
 import { ProductCalloutAt } from '@/components/product/product-callouts';
 import { ProductGallery } from '@/components/product/product-gallery';
@@ -199,16 +200,14 @@ export async function ProductDetailPage({
 
         <div className="flex flex-col gap-6 md:col-start-2 md:row-span-2 md:row-start-1">
           <div>
-            <div className="mb-2 flex items-center gap-2">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
               <Link
                 href={`/${category.slug}/${product.brand.slug}`}
                 className="text-muted-foreground hover:text-foreground text-sm font-medium uppercase tracking-wide"
               >
                 {product.brand.name}
               </Link>
-              {product.brand.is_argentine && (
-                <Badge variant="secondary">Marca local</Badge>
-              )}
+              <NewArrivalBadge attributes={product.attributes} />
             </div>
             <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
               {product.name}

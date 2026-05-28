@@ -1,11 +1,9 @@
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 type BrandSummary = {
   slug: string;
   name: string;
-  is_argentine: boolean;
 };
 
 export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
@@ -33,11 +31,6 @@ export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
                 <span className="text-foreground font-medium transition-transform duration-300 group-hover:scale-[1.02]">
                   {b.name}
                 </span>
-                {b.is_argentine && (
-                  <Badge variant="secondary" className="text-[10px]">
-                    Marca local
-                  </Badge>
-                )}
               </Link>
             </RevealOnScroll>
           ))}

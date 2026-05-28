@@ -86,6 +86,18 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 
 ---
 
+## 8b. Badge "Nuevo ingreso" por fecha (`attributes.new_until`)
+
+Cada producto puede tener un campo `attributes.new_until` (string ISO 8601, ej `"2026-06-28"`). Si la fecha es **futura** al momento de renderizar la página, aparece un badge verde **"Nuevo ingreso"** con icono. Cuando la fecha pasa, el badge desaparece automáticamente (evaluación server-side).
+
+**Convención**: al cargar un producto nuevo, setear `new_until` a **1 mes** desde la fecha de carga. Founder puede extender editando el JSONB.
+
+**No usar para**: ofertas, promociones temporales o estados "destacado". Esos tienen otros mecanismos (`is_featured`, badge de oferta separado a futuro).
+
+**Decisión técnica**: badge eliminado "Marca local" (basado en `brand.is_argentine`) porque era poco accionable. La columna `is_argentine` se mantiene en DB por si se necesita en filtros SEO futuros, pero ya no se renderiza en UI.
+
+---
+
 ## 8. Descripción del producto: genérica del MODELO, no de variantes
 
 La descripción larga y la short_description deben describir el **modelo en general**, NO una variante específica.

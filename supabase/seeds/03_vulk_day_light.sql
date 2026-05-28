@@ -40,6 +40,7 @@ VALUES (
     "gender": "unisex",
     "weight_grams": 26.1,
     "hinge_material": "reinforced-plastic",
+    "new_until": "2026-06-28",
     "measurements": {
       "frame_width_mm": 140,
       "lens_width_mm": 51,

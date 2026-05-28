@@ -2,6 +2,35 @@
 
 ## Status
 
+🟢 **Badge "Nuevo ingreso" por fecha + fix definitivo del crop (double wrapper para Image fill)**
+
+Founder pidió:
+1. Reemplazar badge "Marca local" (poco accionable) por "Nuevo ingreso" verde que dure 1 mes y desaparezca solo.
+2. La imagen seguía cortándose al hacer hover, a pesar del padding.
+
+**Fix imagen crop (causa raíz)**: `Image fill` se posiciona `absolute inset-0` del contenedor relative más cercano. El padding del contenedor **NO afecta** dónde se renderiza un elemento absolute con `inset-0`. Por eso el scale 1.04 + padding p-8/p-12 no funcionaba: la imagen ocupaba inset-0 ignorando el padding. Solución: **double wrapper** — outer con padding + aspect-square + overflow-hidden, inner `relative h-full w-full` que es lo que `fill` respeta. Ahora el padding del outer SÍ absorbe el zoom del inner.
+
+**Badge "Nuevo ingreso"**:
+- Componente nuevo `components/product/new-arrival-badge.tsx` (verde con Sparkles icon, 2 sizes).
+- Schema: `attributes.new_until` string ISO. Si `Date(new_until) > Date.now()` → renderiza.
+- Server-side eval (la página es dinámica, badge desaparece naturalmente al pasar la fecha sin redeploy).
+- Convención: nuevos productos cargados con `new_until = +1 mes` desde la fecha de carga.
+
+**Removed** "Marca local" badge de:
+- `components/catalog/product-page.tsx` (header del producto)
+- `components/catalog/brand-page.tsx` (header de marca)
+- `components/catalog/brand-grid-card.tsx` (cards de marca en index)
+- `components/home/brands-section.tsx` (chips home)
+- Imports de `Badge` limpiados donde ya no se usa.
+- La columna `is_argentine` se mantiene en DB (puede servir para SEO/filtros futuros).
+
+**Schema + seeds**:
+- `seeds/08_vulk_day_light_new_arrival.sql` nuevo — UPDATE `attributes.new_until = "2026-06-28"` para Vulk Day Light.
+- `seeds/03_vulk_day_light.sql` sincronizado con `new_until` en attributes JSONB.
+- `BUSINESS_POLICIES.md` sección 8b nueva documentando la regla "1 mes desde carga".
+
+**Pendiente founder**: aplicar `seeds/08_vulk_day_light_new_arrival.sql` en SQL Editor. Hasta entonces, los productos en cloud no tienen el campo `new_until` y el badge no aparece.
+
 🟢 **UX polish iter 3: fondo de imágenes blanco (matchea foto) + image hover sin crop final**
 
 Founder reportó 2 cosas en el último review visual:
@@ -379,6 +408,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: Badge "Nuevo ingreso" por fecha (new_until JSONB) + fix DEFINITIVO del crop con double wrapper para Image fill. Founder pidió sacar "Marca local" → nuevo badge verde que dura 1 mes auto-evaluado server-side. La causa raíz del crop persistente: Image fill se posiciona absolute inset-0 ignorando padding del wrapper; fix con double wrapper (outer con padding + inner relative h-full w-full que es lo que fill respeta). Seed 08 + sync seed 03 + BUSINESS_POLICIES sección 8b.
 
 **Fecha**: 2026-05-28
 **Por**: 2 fixes UX iteración 3. (1) Fondo blanco coherente en TODOS los contenedores de imagen de producto (gallery main + thumbs gallery + VariantList thumb + ProductCard listado) — bg-muted/40 → bg-background + border-border/40 sutil. Matchea el fondo blanco original de las fotos. (2) Scale hover más sutil 1.04 + padding interior aumentado p-8 md:p-12 → no se corta el final de la patilla al hacer zoom.

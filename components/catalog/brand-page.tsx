@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
 import {
@@ -92,16 +91,9 @@ export function BrandCatalogPage({
       </nav>
 
       <RevealOnScroll as="article" className="mb-10 max-w-3xl">
-        <div className="mb-3 flex items-center gap-2">
-          <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            {category.name} {brand.name}
-          </h1>
-          {brand.is_argentine && (
-            <Badge variant="secondary" className="self-center">
-              Marca local
-            </Badge>
-          )}
-        </div>
+        <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+          {category.name} {brand.name}
+        </h1>
         {brand.description && (
           <p className="text-muted-foreground text-balance text-base md:text-lg">
             {brand.description}
