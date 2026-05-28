@@ -2,8 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { AuthMenu } from '@/components/auth/auth-menu';
-import { CartBadge } from '@/components/cart/cart-badge';
 import { Button } from '@/components/ui/button';
+// CartBadge importado cuando se reactive checkout online (sub-feature 2b MP).
+// import { CartBadge } from '@/components/cart/cart-badge';
 import { DesktopNav } from '@/components/layout/desktop-nav';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { PRIMARY_NAV } from '@/lib/site/nav';
@@ -40,7 +41,7 @@ export function SiteHeader() {
         </div>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <CartBadge />
+          {/* <CartBadge /> ocultado hasta que MP esté integrado (sub-feature 2b). */}
           <AuthMenu />
           {business.whatsappLink && (
             <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">

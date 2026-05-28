@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Modo "pre-venta" activado — cart UI oculto + CTA por variante = WhatsApp contextual**
+
+Founder pidió subir páginas de productos **sin habilitar compra** mientras MP no esté integrado y facturación se hace manual al principio. Cambios chicos: CartBadge del header comentado, `AddToCartButton` por variante reemplazado por `VariantWhatsappCta` con mensaje pre-llenado (marca + modelo + SKU + precio + variante). Cart code intacto (`lib/cart/*`, server actions, /carrito page, /api/cart/count) — listo para reactivar cuando llegue MP (descomentar 2 líneas + swap del prop en VariantList). `/carrito` sigue accesible vía URL directa pero noindex y nadie lo linkea. **Próxima decisión del founder**: cómo cargar productos reales (admin UI propio en /admin, vs Supabase Studio, vs seeds SQL asistidos por mí).
+
 🟢 **Sub-feature 2a (addresses CRUD en /mi-cuenta) completo — 5/5 smoke tests verdes**
 
 User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi-cuenta/direcciones`. Server actions con Zod validation (24 provincias AR enum, postal_code CPA o 4 dígitos, teléfono permisivo). Ownership via RLS + verificación de session en cada action. Delete promueve auto otra address a default. Próxima sub-feature: 2b /checkout completo con `mercadopago` SDK v2 (founder confirmó).
@@ -333,7 +337,14 @@ Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema valid
 
 ## Próximo paso EXACTO
 
-**Próxima sesión código**: **sub-feature 2 del checkout** — crear `orders` + `order_items` (con snapshots de variante/producto/precio según ADR-007) desde el cart, devolver `mp_preference_id` consumiendo la API V1 de Mercado Pago Checkout Pro (ADR-015), y redirigir al user a init_point. Tocaba: nuevo helper `lib/mp/preferences.ts`, server action `createOrderFromCart`, página `/checkout/pendiente` post-redirect, instalación de `mercadopago` SDK V2 (PREGUNTAR antes — regla 6).
+**Pre-decisión del founder** (no de código): cómo cargar los productos reales al cloud. 3 caminos:
+- **A. Admin UI propio** en `/admin/productos/...` — más laburo (~600 líneas, 2-3 sesiones), pero le da herramienta autosuficiente al founder. Justifica si va a cargar 50+ productos o si quiere editar en el futuro.
+- **B. Supabase Studio** (table editor del Dashboard) — sin código nuevo, pero UX no ideal (especialmente para imágenes). Razonable para 10-30 productos iniciales.
+- **C. Seeds SQL asistidos por mí** — founder me pasa la data por chat / CSV, yo armo el archivo `supabase/seeds/02_{brand}_products.sql`, founder lo corre en SQL Editor cloud. Híbrido: rápido para arrancar, sin código nuevo.
+
+Hasta que decida, **sub-feature 2 (Mercado Pago) queda en pausa**. El sub-feature 3 (Tusfacturas) también — porque founder hará facturación manual al principio.
+
+**Sub-feature 2b (Mercado Pago)** queda como _deferida indefinidamente_ hasta que se active el flow de ventas online real. Cuando llegue: instalar `mercadopago` SDK v2 (decisión ya tomada en esta sesión), crear `orders` + `order_items` (snapshots ADR-007) desde el cart, integrar API V1 Checkout Pro, redirigir a init_point.
 
 **Pendiente del founder** (ANTES del deploy de cart a producción):
 - Generar `CART_COOKIE_SECRET` de 32 bytes hex y agregar a Vercel (Production + Preview), DIFERENTE al de `.env.local` local. Sin esto, el cart tira error en runtime. Comando: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
@@ -379,6 +390,27 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Modo pre-venta — UI sin cart, CTA por variante = WhatsApp (✅ 2026-05-28)
+- **Decisión de producto**: founder pidió "subir páginas de productos sin que la gente pueda comprar aún" y mantener facturación manual al principio. Implica: NO Mercado Pago en V1, NO Tusfacturas automatizado, sub-features 2b/3 quedan para cuando empiece el flow de ventas online real.
+- **Cambios en UI**:
+  - **CartBadge oculto** en `SiteHeader` (línea comentada + import comentado, con nota). Reactivar = descomentar 2 líneas.
+  - **`AddToCartButton` reemplazado por `VariantWhatsappCta`** en `VariantList`. Cada variante con stock muestra un botón "Consultar" con mensaje pre-llenado: `"Hola! Quería consultar por el modelo {marca} {producto} ({variante}, SKU {sku}, {precio})"`.
+  - Prop renombrada `canAddToCart` → `showVariantCta` (más neutra; mismo flag bool — false para `[PH]` productos).
+  - Nuevos props requeridos en VariantList: `productName`, `brandName` (necesarios para componer el mensaje WhatsApp).
+- **Cart code intacto y sin uso público**:
+  - `lib/cart/{types,cookie,queries,actions}.ts` no se tocaron.
+  - `app/(storefront)/carrito/page.tsx` sigue accesible vía URL directa (HTTP 200 con cart vacío).
+  - `app/api/cart/count/route.ts` sigue respondiendo (devuelve 0).
+  - Server actions siguen funcionando — sin UI que las dispare hoy.
+- **Decisión técnica clave**: NO borrar cart code. Reactivar checkout = trivial cuando llegue MP (sub-feature 2b). Borrar y reescribir = trabajo perdido.
+- **Smoke 4/4 verdes** (con WhatsApp number seteado temporalmente para testing):
+  - Home no muestra CartBadge (0 matches `aria-label="Carrito`).
+  - Producto `[PH]` no muestra CTAs inline por variante (0 matches `Consultar por WhatsApp sobre`).
+  - WhatsappCta general (a nivel producto) sigue renderizando.
+  - `/carrito` sigue HTTP 200 vía URL directa.
+- **Comportamiento con env vacío**: si `NEXT_PUBLIC_WHATSAPP_NUMBER` está vacío (estado actual del founder), `VariantWhatsappCta` devuelve `null` (no renderiza) — regla 7: trust signals reales, no inventados. Cuando founder setee el número, los CTAs por variante aparecen automáticamente.
+- **Validación**: `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Build sin regresión.
 
 ### Sub-feature 2a — Addresses CRUD en /mi-cuenta/direcciones (✅ 2026-05-28)
 - **Páginas nuevas**:

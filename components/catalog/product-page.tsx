@@ -129,7 +129,9 @@ export function ProductDetailPage({
           <ProductAttributes attributes={product.attributes} />
 
           <VariantList
-            canAddToCart={!isPlaceholder(product.name)}
+            showVariantCta={!isPlaceholder(product.name)}
+            productName={product.name}
+            brandName={product.brand.name}
             variants={activeVariants.map((v) => ({
               id: v.id,
               sku: v.sku,

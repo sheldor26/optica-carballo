@@ -1,4 +1,4 @@
-import { AddToCartButton } from '@/components/cart/add-to-cart-button';
+import { VariantWhatsappCta } from '@/components/product/variant-whatsapp-cta';
 import { formatPriceCents } from '@/lib/format/currency';
 
 type AttributesJson = Record<string, unknown>;
@@ -48,14 +48,19 @@ function describeVariant(attrs: AttributesJson): string {
 
 export function VariantList({
   variants,
-  canAddToCart,
+  productName,
+  brandName,
+  showVariantCta,
 }: {
   variants: VariantListItem[];
+  productName: string;
+  brandName: string;
   /**
-   * `false` cuando el producto es placeholder (`[PH]`) — la página de producto
-   * no muestra el botón en ese caso porque el cart rechazaría el add igual.
+   * Si es `false` (producto `[PH]` placeholder), no muestra CTA por variante.
+   * Hoy el CTA por variante es WhatsApp contextual; cuando se reactive el
+   * checkout online, este flag controla "Agregar al carrito" en su lugar.
    */
-  canAddToCart: boolean;
+  showVariantCta: boolean;
 }) {
   if (variants.length === 0) {
     return (
@@ -98,11 +103,14 @@ export function VariantList({
                     {inStock ? `${v.stockQty} en stock` : 'Sin stock'}
                   </p>
                 </div>
-                {canAddToCart && (
-                  <AddToCartButton
-                    variantId={v.id}
+                {showVariantCta && (
+                  <VariantWhatsappCta
+                    productName={productName}
+                    brandName={brandName}
+                    sku={v.sku}
                     variantLabel={label}
-                    disabled={!inStock}
+                    priceCents={v.priceCents}
+                    inStock={inStock}
                   />
                 )}
               </div>
