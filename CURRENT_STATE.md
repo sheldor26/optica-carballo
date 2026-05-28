@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Bucket Storage `prescriptions` (local) + helpers — commit `17b612b`**
+🟢 **Migración 00004 aplicada a cloud + VERIFICADA con 2 SELECTs**
 
-Migración 00004 lista en local con 7 smoke tests verdes (bucket privado + 4 RLS policies + cross-user blocking + anon blocking + WITH CHECK). Helpers TS server-only para upload/signed URL/delete. **Pendiente aplicar al cloud** (founder pega bootstrap 80 líneas + verifica con SELECT). Próxima sesión código: server actions de checkout + Mercado Pago Checkout Pro V1.
+Bucket `prescriptions` privado (10 MB max) + 4 RLS policies confirmados en cloud. `CLOUD_APPLIED.md` marcado ✅ con evidencia. Bootstrap derivado borrado. Storefront pre-checkout completo: catálogo, marcas, productos, home, legales, auth UI, schema identity + orders + storage de recetas — todo en cloud. **Próxima sesión código**: server actions de checkout + Mercado Pago Checkout Pro V1 (ADR-015), probablemente dividido en 3 sub-features (cart → order+preference → webhook+facturación).
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/migration` para 00004 prescriptions_storage. Bucket privado + 4 RLS policies + helpers TS server-only (constants + prescriptions.ts con upload/signedUrl/delete). 7 smoke tests verdes (cross-user blocking, WITH CHECK anti-spoofing, anon blocking, mime/size validation). Commit `17b612b`. CLOUD_APPLIED marcado ⏳ para 00004 (founder aplica + verifica).
+**Por**: Cierre formal del deployment de migración 00004 al cloud. Founder pegó outputs de los 2 SELECTs: bucket OK (`prescriptions | prescriptions | false | 10485760`) + 4 policies OK (read/upload/update/delete con `cmd` correcto). Acciones: marcado ✅ VERIFICADO en `CLOUD_APPLIED.md` con evidencia detallada; borrado `supabase/cloud-bootstrap.sql` (derivado, regenerable); commit de cierre.
 
 ## Qué se construyó hasta ahora
 
@@ -329,14 +329,17 @@ Migración 00004 lista en local con 7 smoke tests verdes (bucket privado + 4 RLS
 
 ## Próximo paso EXACTO
 
-**Pendientes del founder** (no bloquean próxima sesión código):
-1. Aplicar `supabase/cloud-bootstrap.sql` (80 líneas, migración 00004) en SQL Editor del proyecto `tuddpfspnbnmafsqdvat`. Verificar con SELECTs:
-   ```sql
-   SELECT id, public FROM storage.buckets WHERE id='prescriptions';
-   SELECT count(*) FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname LIKE 'prescriptions:%';
-   ```
-   Esperado: 1 bucket público=false + 4 policies.
-2. Supabase Auth Dashboard → URL Configuration → Site URL + 4 Redirect URLs (BACKLOG.md 🔴, pendiente desde sesiones anteriores).
+**Inmediato (al reabrir sesión)**: founder pega los outputs de los 2 SELECTs de verificación del cloud:
+```sql
+SELECT id, name, public, file_size_limit FROM storage.buckets WHERE id = 'prescriptions';
+SELECT policyname, cmd FROM pg_policies
+WHERE schemaname='storage' AND tablename='objects' AND policyname LIKE 'prescriptions:%'
+ORDER BY policyname;
+```
+Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4 filas policies. Si coincide → marco ✅ VERIFICADO en `CLOUD_APPLIED.md`, borro `supabase/cloud-bootstrap.sql`, commit "docs: 00004 prescriptions Storage aplicado a cloud + verificado".
+
+**Otros pendientes del founder** (no bloquean próxima sesión código):
+- Supabase Auth Dashboard → URL Configuration → Site URL + 4 Redirect URLs (BACKLOG.md 🔴, pendiente desde sesiones anteriores).
 
 **Próxima sesión código**: server actions de checkout + integración Mercado Pago Checkout Pro V1 (ADR-015) + Tusfacturas para facturación AFIP post-payment (ADR-016). Es feature grande, va con foco propio. Probable división en 2-3 sub-features:
 - 1) Cart minimalista (cookie/session, validación de stock).
@@ -361,6 +364,14 @@ Migración 00004 lista en local con 7 smoke tests verdes (bucket privado + 4 RLS
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Deployment 00004 a cloud + verificación completa (✅ 2026-05-28)
+- **Founder pegó `supabase/cloud-bootstrap.sql` (80 líneas) en SQL Editor del Dashboard**. Output: `Success. No rows returned` (esperado para DDL).
+- **Verificación completa con 2 SELECTs** (regla post cloud-drift de 00002: nunca marcar ✅ sin SELECT):
+  - SELECT 1 (bucket): ✅ `prescriptions | prescriptions | false | 10485760` (1 fila, valores exactos esperados).
+  - SELECT 2 (policies): ✅ 4 filas con nombres `prescriptions: users {read,upload,update,delete} own files` y `cmd` correcto (SELECT/INSERT/UPDATE/DELETE).
+- **Decisión técnica reforzada**: aunque las policies existan, no asumir que el bucket existe. `bucket_id='prescriptions'` en las policies es un string literal sin FK → policies se crean aunque el INSERT del bucket falle. La verificación del bucket por SELECT separado es no-negociable. Aplicación exitosa de la regla documentada en LEARNINGS.md 2026-05-28.
+- **Cierre**: `CLOUD_APPLIED.md` marcado ✅ VERIFICADO con evidencia detallada; `supabase/cloud-bootstrap.sql` borrado (derivado, regenerable cuando haya nueva migración).
 
 ### Migración 00004 prescriptions Storage bucket + RLS + helpers (✅ commit `17b612b` — 2026-05-28, local only)
 - **Bucket `prescriptions`** privado en Supabase Storage: `public=false`, max 10 MB por archivo, mime whitelist (jpeg/png/webp/pdf).
@@ -516,6 +527,9 @@ Ver sección "Pendientes" en `DECISIONS.md`.
   1. **Bug encontrado y arreglado**: `generateStaticParams` corre en build time (fuera de request scope) y NO puede usar `cookies()`. Mi primer intento usaba `lib/supabase/server.ts` (que usa cookies async). Síntoma: HTTP 500 "cookies was called outside a request scope". Fix: creé `lib/supabase/static.ts` con cliente sin cookies para contextos sin request (generateStaticParams, sitemap, robots, scripts standalone). Registrado en LEARNINGS.
   2. **Asumí marcas del catálogo desde keyword research** (Rusty/Reef/Vulk/Prune/Infinit) en vez de preguntar stock real. Founder corrigió (Rusty/Vulk/Reef/**Mormaii**/**Paula Cahen**). Capturado antes de tocar código. Registrado en MISTAKES.md como caso adicional del mismo principio anti-alucinación.
   3. Sin otros problemas. Toda la validación local pasó (typecheck, lint, build, dev contra Supabase Docker). seo-strategist agregó 4 críticos + 5 importantes que se aplicaron en el mismo commit.
+- **2026-05-28 (micro-sesión deploy 00004 a cloud)**:
+  1. Ninguno conceptual. Founder aplicó bootstrap, SELECT de policies devolvió las 4 esperadas con nombres y `cmd` correctos. Falta SELECT del bucket para cierre formal.
+  2. Aplicación correcta de la regla nueva post cloud-drift de 00002: no se marcó ✅ VERIFICADO sin tener los 2 SELECTs en mano. Es exactamente el comportamiento que esa regla buscaba inducir.
 
 ## Métricas
 

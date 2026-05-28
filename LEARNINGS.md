@@ -22,6 +22,34 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — La regla "no marcar ✅ sin SELECT" salvó silent gap en 00004
+
+**Categoría**: Operación / Verificación cloud
+**Confianza**: 🟡 Media (1 aplicación exitosa de regla nueva — primera vez post-instauración)
+
+### Qué funcionó
+
+En el deploy de migración 00004 al cloud, el founder reportó "Success. No rows returned" y, en sesiones previas, ese reporte verbal hubiera sido suficiente para marcar la fila como ✅. Aplicando la regla nueva instaurada después del cloud-drift de 00002, pedí los 2 SELECTs de verificación antes de tocar `CLOUD_APPLIED.md`. El founder pegó el SELECT de policies (4 filas correctas) pero NO el SELECT del bucket. En vez de asumir "si las policies están, el bucket también", insistí en el bucket por separado.
+
+### Por qué funciona
+
+- **`bucket_id='prescriptions'` en las policies es un string literal, no una FK**. Las policies se crean aunque el bucket falle al insertar. Asumir correlación "si las policies existen, el bucket también" es un anti-patrón silencioso.
+- **El costo de pedir el SELECT extra es mínimo** (10 segundos del founder); el costo de un silent gap es perderlo semanas hasta que un upload falle con error críptico de Storage.
+- **La regla force-mismatch entre "lo que el founder cree" y "lo que la DB realmente tiene"**, que es justo el patrón que causó el cloud-drift de 00002.
+
+### Cómo aplicar
+
+- En cada deploy futuro de migración a cloud: NO marcar ✅ con menos de N SELECTs de verificación, donde N depende de las "moving parts" de la migración (tablas, funciones, triggers, policies, buckets, sequences). Para una migración pequeña, 2 SELECTs alcanza; para una grande, 4-5.
+- Si el founder pega solo PARTE de los SELECTs, pedir explícito los faltantes antes de cualquier acción de cierre. Nunca extrapolar de unos a otros.
+- Esta regla aplica también a seeds, no solo a schema.
+
+### Relacionado
+
+- MISTAKES.md 2026-05-28 "Cloud drift de migración 00002" (origen de la regla).
+- `supabase/CLOUD_APPLIED.md` (tabla viva que la regla protege).
+
+---
+
 ## 2026-05-28 — Extraer al SEGUNDO caso, no al tercero, cuando son archivos completos
 
 **Categoría**: Operación / Código
