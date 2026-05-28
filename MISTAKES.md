@@ -105,6 +105,38 @@ Concretamente:
 
 ---
 
+## 2026-05-28 — API key real pegada en el chat por el founder (riesgo de exposición)
+
+**Estado**: 🟡 Mitigado por aviso explícito (acción de rotación en manos del founder)
+**Categoría**: Seguridad / Operación
+
+### Qué pasó
+El founder pegó un API key real de Anthropic en el chat (prefijo `sk-ant-api03-...AK_QAA`) creyendo que era el admin key para un endpoint específico. Dos problemas en uno:
+1. **Exposición del secret**: el transcript queda guardado. Cualquier persona con acceso al historial puede usar la key.
+2. **Era el tipo incorrecto de key**: el endpoint pedido requería admin key (`sk-ant-admin-...`), no API key normal (`sk-ant-api03-...`). La key pegada tampoco servía para lo solicitado.
+
+### Causa raíz
+- Falta de claridad inicial sobre la diferencia entre API key y admin key.
+- Auto-mode de copy/paste sin reflexión sobre exposición de secrets.
+
+### Cómo se detectó
+Inmediato — vi el formato `sk-ant-api03-...` en el mensaje del founder. Respondí con alerta urgente: stop + instrucción de rotar la key + explicación del flujo correcto (export en shell local, no chat).
+
+### Cómo se evita en el futuro
+**Regla preventiva (asistente)**:
+- Cuando pido credencial al founder, **anticipar** confusión de tipos y dar instrucciones explícitas de export local PRIMERO.
+- Si veo formato de secret real en el chat (prefijos `sk-`, `eyJ`, `xoxb-`, etc.), alertar y NO usar el valor.
+
+**Regla preventiva (founder)**:
+- Secrets con privilegio NUNCA por chat. Patrón seguro: `export SECRET="..."` en terminal local, asistente referencia `$SECRET`.
+
+### Cambios derivados
+- [x] LEARNINGS.md tiene entrada explícita sobre patrón seguro (commit `dcc32d7`).
+- [x] Registro en MISTAKES.md.
+- [ ] Founder pendiente: confirmar rotación de la key comprometida.
+
+---
+
 ## 2026-05-27 — Borrado del binario `supabase-go` al limpiar el tarball del CLI
 
 **Estado**: 🟡 Mitigado

@@ -108,6 +108,41 @@ PostgREST puede devolver tanto array como objeto según la cardinalidad detectad
 
 ---
 
+## 2026-05-28 — Estructura `public/` con subdirectorios + README, no carpeta `assets/` en raíz
+
+**Categoría**: Convención del proyecto
+**Confianza**: 🟢 Alta (convención estándar de Next.js)
+
+### Qué funcionó
+Cuando el founder propuso "crear una carpeta en la raíz del proyecto" para assets (logos, favicon, fotos), redirigí a la convención de Next: **todo va en `public/`**. Cualquier otra carpeta (`assets/`, `static/`) NO es servida por Next sin webpack import.
+
+Estructura adoptada:
+- `public/brand/` — logos, isotipo, variantes.
+- `public/og/` — imágenes Open Graph 1200×630.
+- `public/products/<brand-slug>/<product-slug>/` — fotos de productos.
+- `public/favicon.ico` o `app/favicon.ico` — Next 15 soporta ambos, la segunda con auto-meta.
+- `public/README.md` — documenta la estructura + reglas de naming, formatos sugeridos, tamaños.
+
+### Por qué importa
+- **`public/foo.png` se sirve desde `/foo.png` sin import**. Performance directo (no pasa por webpack).
+- **Cualquier otra carpeta requiere `import logo from '@/assets/logo.png'`** — overhead innecesario para imágenes estáticas que solo se referencian por path.
+- **Naming organizado** evita el típico `public/logo.png`, `public/logo-old.png`, `public/logo2.png` después de 6 meses.
+
+### Cuándo aplicar
+- Cualquier asset estático (imagen, font, PDF, robots.txt, sitemap).
+- Cuando el founder o yo proponemos guardar archivos en raíz.
+
+### Cuándo NO aplica
+- Imágenes pesadas (>1 MB) o que crecen con el catálogo → Supabase Storage con CDN.
+- Assets que requieren transformación (resize, compresión adaptativa) → `next/image` con remote pattern + Storage.
+- Imágenes que el usuario sube → siempre Storage, NUNCA `public/`.
+
+### Acción derivada
+- [x] `public/README.md` documenta la convención y el uso de `next/image`.
+- [ ] Cuando catálogo crezca >50 productos, migrar `public/products/` a Supabase Storage.
+
+---
+
 ## 2026-05-28 — Para secrets sensibles (admin keys, service role keys), pedir env var local en vez de pegar en chat
 
 **Categoría**: Operación / Seguridad
