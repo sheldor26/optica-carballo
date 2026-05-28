@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Migración 00004 aplicada a cloud + VERIFICADA con 2 SELECTs**
+🟢 **Cart sub-feature 1 (cookie-based) completo — 7/7 smoke tests verdes**
 
-Bucket `prescriptions` privado (10 MB max) + 4 RLS policies confirmados en cloud. `CLOUD_APPLIED.md` marcado ✅ con evidencia. Bootstrap derivado borrado. Storefront pre-checkout completo: catálogo, marcas, productos, home, legales, auth UI, schema identity + orders + storage de recetas — todo en cloud. **Próxima sesión código**: server actions de checkout + Mercado Pago Checkout Pro V1 (ADR-015), probablemente dividido en 3 sub-features (cart → order+preference → webhook+facturación).
+Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Cierre formal del deployment de migración 00004 al cloud. Founder pegó outputs de los 2 SELECTs: bucket OK (`prescriptions | prescriptions | false | 10485760`) + 4 policies OK (read/upload/update/delete con `cmd` correcto). Acciones: marcado ✅ VERIFICADO en `CLOUD_APPLIED.md` con evidencia detallada; borrado `supabase/cloud-bootstrap.sql` (derivado, regenerable); commit de cierre.
+**Por**: Sub-feature 1 del checkout (cart cookie-based) construida end-to-end. Archivos nuevos: `lib/cart/{types,cookie,queries,actions}.ts`, `components/cart/{add-to-cart-button,cart-badge,cart-item-row,cart-page}.tsx`, `app/(storefront)/carrito/page.tsx`, `app/api/cart/count/route.ts`. Modificados: VariantList (inline button), SiteHeader (CartBadge), ProductDetailData type (id en variants), robots.ts (disallow /carrito). Smoke tests 7/7: empty cart, signed cookie con item inexistente → unavailable, tampered cookie → rejected, [PH] product → sin botón, home OK, robots meta noindex, robots.txt allow correcto. Build 26 páginas (sin regresión SSG/Static del storefront). Pendiente del founder: agregar `CART_COOKIE_SECRET` a Vercel para producción.
 
 ## Qué se construyó hasta ahora
 
@@ -329,7 +329,18 @@ Bucket `prescriptions` privado (10 MB max) + 4 RLS policies confirmados en cloud
 
 ## Próximo paso EXACTO
 
-**Inmediato (al reabrir sesión)**: founder pega los outputs de los 2 SELECTs de verificación del cloud:
+**Próxima sesión código**: **sub-feature 2 del checkout** — crear `orders` + `order_items` (con snapshots de variante/producto/precio según ADR-007) desde el cart, devolver `mp_preference_id` consumiendo la API V1 de Mercado Pago Checkout Pro (ADR-015), y redirigir al user a init_point. Tocaba: nuevo helper `lib/mp/preferences.ts`, server action `createOrderFromCart`, página `/checkout/pendiente` post-redirect, instalación de `mercadopago` SDK V2 (PREGUNTAR antes — regla 6).
+
+**Pendiente del founder** (ANTES del deploy de cart a producción):
+- Generar `CART_COOKIE_SECRET` de 32 bytes hex y agregar a Vercel (Production + Preview), DIFERENTE al de `.env.local` local. Sin esto, el cart tira error en runtime. Comando: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+
+**Otros pendientes del founder históricos** (no bloquean próxima sesión):
+
+---
+
+## ⛔ Pendientes históricos (no bloqueantes)
+
+**Inmediato cuando se acerque deploy auth a producción**: founder pega los outputs de los 2 SELECTs de verificación del cloud:
 ```sql
 SELECT id, name, public, file_size_limit FROM storage.buckets WHERE id = 'prescriptions';
 SELECT policyname, cmd FROM pg_policies
@@ -364,6 +375,44 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Cart sub-feature 1 — cookie-based con HMAC (✅ 2026-05-28, sin commit todavía)
+- **Stack**: cookie HttpOnly `oc_cart` firmada con HMAC-SHA256 (env `CART_COOKIE_SECRET`, 32 bytes hex). Payload base64url + Zod schema validation al leer. Tampered o invalid → cart vacío silencioso.
+- **Tipos** (`lib/cart/types.ts`): `CartItem` (variantId UUID + quantity 1-10), `Cart` (max 20 items distintos), `ResolvedCartItem` con flag `issue: 'unavailable' | 'out_of_stock' | 'over_stock' | null`.
+- **Cookie utilities** (`lib/cart/cookie.ts`): read/write/delete async (`cookies()` de Next 15), server-only, `getSecret()` exige >= 32 chars o tira error explícito con instrucciones.
+- **Resolver** (`lib/cart/queries.ts`): `resolveCart(cart)` hace 1 query con `in('id', variantIds)` + embed product→brand→category, marca items rotos sin quitarlos (UX: user decide quitar). Subtotal y count excluyen items con issue. `countCartItems()` helper para el badge.
+- **Server actions** (`lib/cart/actions.ts`): `addToCart`, `updateCartItem`, `removeFromCart`, `clearCart`. Cada una valida con Zod, consulta DB para verificar variant existe+activo+sin placeholder+stock, escribe cookie, llama `revalidatePath('/carrito')` + `('/','layout')`.
+- **Validaciones duras**:
+  - `MAX_QUANTITY_PER_ITEM = 10` (anti-bot/anti-abuso).
+  - `MAX_ITEMS_IN_CART = 20` (cordura + cookie size).
+  - Variant `is_active = true` + producto activo + brand activa + category activa.
+  - Producto NO `[PH]` (rechaza placeholders explícitamente).
+  - `quantity <= variant.stock_qty` en cada add/update.
+- **UI**:
+  - `AddToCartButton` (client, inline en VariantList) con `useTransition`, estados pending/added/error, dispara `oc:cart-changed` para refresh del badge.
+  - `CartBadge` (client, en SiteHeader) lee `/api/cart/count`, escucha `oc:cart-changed`. Preserva SSG del storefront (igual patrón que AuthMenu).
+  - `CartItemRow` (client, en /carrito): select de cantidad (max = min(stock, MAX_QTY)), botón quitar, render de `issue` con tono destructive.
+  - `CartPage` (server): empty state con CTAs a categorías, lista + sidebar resumen, CTA "Iniciar compra" disabled con tooltip "Próximamente".
+- **Route handler** `/api/cart/count` (force-dynamic, no-store) — único endpoint cliente-readable porque la cookie es HttpOnly.
+- **SEO**: `/carrito` con `robots: noindex, nofollow` + `robots.txt` con `Disallow: /carrito`.
+- **Decisiones técnicas clave**:
+  - **Cookie firmada** (no sólo Zod) → defensa-en-profundidad. Aunque DB es source of truth, evita ataques que dependan del payload (ej: futuras features que confíen en el cart sin re-resolución).
+  - **CartBadge cliente con fetch** en vez de cookie-en-cliente → cookie sigue HttpOnly (defensa XSS), y SSG del storefront preservado.
+  - **resolveCart no silencia broken items** → user ve qué pasa y decide. Evita "items que desaparecen misteriosamente".
+  - **Sin cart merge en login**: V1 anónimo. Si el founder pide después, se hace cuando flow de checkout esté integrado.
+  - **Sin cart drawer (Sheet)**: página dedicada alcanza, menos JS, mejor UX mobile.
+  - **`z.uuid()` de Zod 4.x** es estricto (RFC 4122 v1-8 + nil + max) — rechaza UUIDs malformados. Bonus de defensa.
+- **Smoke tests 7/7 verdes**:
+  1. Sin cookie → `/carrito` HTTP 200 empty state, count=0.
+  2. Cookie firmada con UUID inexistente → `/carrito` muestra "Producto no disponible" + "Ya no está disponible" + botón "Quitar"; count=0 (broken excluido).
+  3. Cookie tampered (payload modificado, sig vieja) → rechazada silenciosamente, count=0.
+  4. Producto `[PH]` (rusty-wayfarer-classic-sol) → NO renderiza botón Agregar.
+  5. Home `/` HTTP 200 con CartBadge en header.
+  6. `/carrito` tiene `<meta name="robots" content="noindex, nofollow">`.
+  7. `robots.txt` incluye `Disallow: /carrito`.
+- **Validación**: `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Build 26 páginas. Storefront sigue SSG/Static; `/carrito` y `/api/cart/count` son ƒ Dynamic (esperado).
+- **Pendiente del founder**: agregar `CART_COOKIE_SECRET` (32 bytes hex distinto al de dev) en Vercel Environment Variables Production + Preview ANTES del primer deploy. Sin esto el cart explota en runtime.
+- **Pendiente del founder testing local**: cuando reemplace algún producto `[PH]` por data real, validar add → ver en /carrito → cambiar cantidad → quitar → checkout disabled. Hasta entonces no se puede testear el happy path completo en cloud (todos los productos son [PH]).
 
 ### Deployment 00004 a cloud + verificación completa (✅ 2026-05-28)
 - **Founder pegó `supabase/cloud-bootstrap.sql` (80 líneas) en SQL Editor del Dashboard**. Output: `Success. No rows returned` (esperado para DDL).

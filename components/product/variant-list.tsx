@@ -1,8 +1,10 @@
+import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { formatPriceCents } from '@/lib/format/currency';
 
 type AttributesJson = Record<string, unknown>;
 
 export type VariantListItem = {
+  id: string;
   sku: string;
   priceCents: number;
   stockQty: number;
@@ -44,7 +46,17 @@ function describeVariant(attrs: AttributesJson): string {
   return parts.length > 0 ? parts.join(' / ') : 'Variante';
 }
 
-export function VariantList({ variants }: { variants: VariantListItem[] }) {
+export function VariantList({
+  variants,
+  canAddToCart,
+}: {
+  variants: VariantListItem[];
+  /**
+   * `false` cuando el producto es placeholder (`[PH]`) — la página de producto
+   * no muestra el botón en ese caso porque el cart rechazaría el add igual.
+   */
+  canAddToCart: boolean;
+}) {
   if (variants.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
@@ -61,28 +73,38 @@ export function VariantList({ variants }: { variants: VariantListItem[] }) {
       <ul className="mt-3 divide-y rounded-md border">
         {variants.map((v) => {
           const inStock = v.stockQty > 0;
+          const label = describeVariant(v.attributes);
           return (
             <li
               key={v.sku}
               className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
             >
               <div>
-                <p className="text-foreground font-medium">
-                  {describeVariant(v.attributes)}
-                </p>
+                <p className="text-foreground font-medium">{label}</p>
                 <p className="text-muted-foreground text-xs">SKU: {v.sku}</p>
               </div>
-              <div className="text-right">
-                <p className="text-foreground font-semibold">
-                  {formatPriceCents(v.priceCents)}
-                </p>
-                <p
-                  className={
-                    inStock ? 'text-muted-foreground text-xs' : 'text-destructive text-xs'
-                  }
-                >
-                  {inStock ? `${v.stockQty} en stock` : 'Sin stock'}
-                </p>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-foreground font-semibold">
+                    {formatPriceCents(v.priceCents)}
+                  </p>
+                  <p
+                    className={
+                      inStock
+                        ? 'text-muted-foreground text-xs'
+                        : 'text-destructive text-xs'
+                    }
+                  >
+                    {inStock ? `${v.stockQty} en stock` : 'Sin stock'}
+                  </p>
+                </div>
+                {canAddToCart && (
+                  <AddToCartButton
+                    variantId={v.id}
+                    variantLabel={label}
+                    disabled={!inStock}
+                  />
+                )}
               </div>
             </li>
           );

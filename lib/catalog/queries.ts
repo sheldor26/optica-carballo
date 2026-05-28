@@ -46,6 +46,7 @@ export type ProductDetailData = {
   };
   category: { slug: string; is_active: boolean };
   variants: Array<{
+    id: string;
     sku: string;
     price_cents: number;
     stock_qty: number;
@@ -152,7 +153,7 @@ export async function fetchProductPage(
         is_active,
         brand:brands!inner(slug, name, description, is_argentine, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(sku, price_cents, stock_qty, attributes, is_active, sort_order)
+        variants:product_variants(id, sku, price_cents, stock_qty, attributes, is_active, sort_order)
       `,
     )
     .eq('slug', productSlug)

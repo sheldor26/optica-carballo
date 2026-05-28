@@ -27,6 +27,14 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   fotos físicas de los productos + decidir bucket (Supabase Storage cuando
   haya más de 50 productos; `public/products/` mientras tanto).
 
+## 🔴 Pendiente bloqueante para cart en producción (acción del founder)
+
+- [ ] **Generar `CART_COOKIE_SECRET` para Vercel** (production env):
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+  Agregar en Vercel Environment Variables como `CART_COOKIE_SECRET` (Production + Preview). **Debe ser DIFERENTE al de `.env.local`** — buena práctica de aislamiento. Sin esto, el cart tira error en runtime en prod.
+
 ## 🔴 Pendiente bloqueante para Auth UI en producción (acción del founder)
 
 - [ ] **Configurar Redirect URLs en Supabase Auth** (Dashboard → Authentication → URL Configuration):

@@ -22,6 +22,39 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Zod 4 `z.uuid()` es estricto (RFC 4122 v1-8 + nil + max), no acepta cualquier 36 chars
+
+**Categoría**: Operación / Validación
+**Confianza**: 🟢 Alta (verificado contra el regex que Zod 4 imprime en error)
+
+### Qué funcionó
+
+El cart sub-feature 1 usa `z.uuid()` para validar `variantId`. Al smoke-testear con un UUID sintético `00000000-0000-0000-0000-000000000001`, el cart se rendereaba vacío silenciosamente. Debug: Zod rechazaba el UUID porque el regex es:
+```
+/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/
+```
+
+El tercer grupo exige `[1-8]` como primer char (versión RFC 4122), y el cuarto exige `[89abAB]` (variant bits). El UUID sintético tenía `0000` en ambos → rechazado. Las únicas excepciones son nil UUID (todo ceros) y max UUID (todo F).
+
+### Por qué es bueno
+
+- Esta estrictitud es una **defensa-en-profundidad gratis**: cualquier intento de inyectar un variant_id no-UUID en la cookie tampered hace fallar el schema y el cart vuelve vacío silenciosamente.
+- Supabase genera UUIDs v4 (cumplen el regex), entonces no hay falsos negativos en producción.
+- Antes de Zod 4, `z.string().uuid()` era más permisivo. La migración a `z.uuid()` ya está hecha en este proyecto desde el setup.
+
+### Cómo aplicar
+
+- Para smoke testing manual con UUID sintéticos: usar `00000000-0000-0000-0000-000000000000` (nil) o un UUID v4 generado con `crypto.randomUUID()`.
+- Para tests automatizados que necesiten UUIDs determinísticos: prefijar siempre con un version+variant válidos, ej: `00000000-0000-4000-8000-000000000001`.
+- Si en algún futuro `z.uuid()` rechaza UUIDs legítimos de algún sistema externo no-RFC-4122 (raro), usar `z.string().regex(/^[0-9a-f-]{36}$/i)` como fallback más permisivo.
+
+### Relacionado
+
+- Cart sub-feature 1 (esta sesión).
+- Anti-patrón histórico de "todo en la cookie es confiable" — la combinación HMAC + Zod estricto es la pinza correcta.
+
+---
+
 ## 2026-05-28 — La regla "no marcar ✅ sin SELECT" salvó silent gap en 00004
 
 **Categoría**: Operación / Verificación cloud
