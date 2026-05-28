@@ -139,6 +139,22 @@ export async function createOrderFromCart(args: {
 }
 
 /**
+ * Actualiza la order con el `mp_preference_id` post-creación de preference.
+ * Best-effort — si falla, la order sigue válida y el founder puede
+ * crear la preference manualmente desde el panel MP.
+ */
+export async function updateOrderMpPreference(args: {
+  orderId: string;
+  preferenceId: string;
+}): Promise<void> {
+  const supabase = createAdminClient();
+  await supabase
+    .from('orders')
+    .update({ mp_preference_id: args.preferenceId, payment_method: 'mercadopago' })
+    .eq('id', args.orderId);
+}
+
+/**
  * Compensación: re-incrementa stock cuando una operación posterior a
  * `reserve_stock` falla. Best-effort — si esta compensación también
  * falla, queda inconsistencia que requiere intervención manual.

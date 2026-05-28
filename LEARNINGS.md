@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — MP Checkout Pro V1 rechaza `auto_return: 'approved'` con back_urls localhost
+
+**Categoría**: Operación / Integración MP
+**Confianza**: 🟢 Alta (reproducido con error claro y workaround validado)
+
+### Qué funcionó
+
+Al hacer el primer E2E de creación de preference contra sandbox MP usando back_urls de `http://localhost:3000/checkout/...` con `auto_return: 'approved'`, MP devolvió error críptico: `auto_return invalid. back_url.success must be defined`. Las back_urls SÍ estaban definidas. Hipótesis: MP no acepta URLs `localhost` o `127.0.0.1` cuando `auto_return` está presente — requiere URLs públicas accesibles desde el browser del cliente.
+
+Workaround: en `lib/mp/preferences.ts` detectar si `SITE_URL` contiene "localhost" / "127.0.0.1" y omitir `auto_return` en ese caso. En dev → user clickea "Volver al sitio" manual en la UI de MP. En prod con dominio real (`https://opticacarballo.com.ar`) → `auto_return` funciona normal y MP redirige automático.
+
+Re-test con el workaround: preference creada exitosamente, `init_point` y `sandbox_init_point` válidos devueltos.
+
+### Por qué funciona
+
+- **`auto_return` requiere que MP pueda validar las back_urls** como URLs reachables. Localhost no es alcanzable desde el browser del cliente cuando MP redirige post-pago — el dominio no resuelve a la máquina del cliente.
+- Sin `auto_return`, MP igual respeta las back_urls (las muestra como botón "Volver al sitio") sin validarlas activamente. Por eso funciona en dev sin `auto_return`.
+- **El mensaje de error de MP es engañoso** ("back_url.success must be defined" cuando sí está). El campo que falla en realidad es `auto_return` por las URLs inválidas — pero MP lo reporta como problema con back_urls. Anti-pattern del API que conviene recordar.
+
+### Cómo aplicar
+
+- **Regla**: cuando integremos con servicios externos que requieren callbacks/webhooks/back_urls (MP, Stripe, OAuth providers), siempre testear E2E en dev ANTES de asumir que funciona. Las URLs públicas vs localhost son una clase de bug frecuente.
+- **Para MP específicamente**: usar el patrón `isLocalhost ? omit auto_return : include auto_return`. En testing real con webhooks, usar ngrok / tunnel.dev / Vercel preview deploys.
+- **Sub-feature 3 (webhook MP)**: el `notification_url` también va a fallar en localhost — MP no puede POSTear a `http://localhost:3000`. Vamos a necesitar ngrok o testear directo en Vercel preview cuando llegue ese momento.
+
+### Relacionado
+
+- [[supabase-js-rompe-inferencia]] — otro caso de error críptico de un SDK externo.
+- Sub-feature 3 (webhook MP) — futura, ya advierte sobre el problema.
+
+---
+
 ## 2026-05-28 — Pedir AMBOS PDFs al founder antes de decidir entre opciones del mismo proveedor
 
 **Categoría**: Estrategia / Decisión técnica

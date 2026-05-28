@@ -9,7 +9,9 @@ import { resolveCart } from '@/lib/cart/queries';
 import { fetchAddressById } from '@/lib/addresses/queries';
 import { calculateShipping } from '@/lib/shipping';
 import { isCheckoutEnabled } from '@/lib/features';
-import { createOrderFromCart } from './orders';
+import { createOrderFromCart, updateOrderMpPreference } from './orders';
+import { createCheckoutPreference } from '@/lib/mp/preferences';
+import { isMpTestMode } from '@/lib/mp/client';
 
 export type CheckoutFormState = {
   ok: boolean;
@@ -92,13 +94,38 @@ export async function submitCheckout(
     return { ok: false, error: result.error };
   }
 
-  // Limpiar carrito post-orden creada.
+  // Crear preferencia MP. Si falla, la order queda en DB con estado
+  // `pending` y el founder puede coordinarlo manual por WhatsApp.
+  const preferenceResult = await createCheckoutPreference({
+    orderNumber: result.orderNumber,
+    payerEmail: user.email,
+    cart: resolved,
+    shipping,
+  });
+
+  if (!preferenceResult.ok) {
+    // Limpiar cart (la order ya está creada) y avisar al user.
+    await deleteCartCookie();
+    revalidatePath('/carrito');
+    revalidatePath('/mi-cuenta', 'layout');
+    redirect(
+      `/checkout/pendiente?order=${encodeURIComponent(result.orderNumber)}&mp_error=1`,
+    );
+  }
+
+  // Guardar el preference_id en la order (best-effort; sin bloquear redirect).
+  await updateOrderMpPreference({
+    orderId: result.orderId,
+    preferenceId: preferenceResult.preferenceId,
+  });
+
   await deleteCartCookie();
   revalidatePath('/carrito');
   revalidatePath('/mi-cuenta', 'layout');
 
-  // V1 — sin MP todavía. Redirigimos a una página de "orden creada,
-  // pendiente de pago" que se reemplaza en sub-feature 2b parte 2
-  // por el redirect a MP init_point.
-  redirect(`/checkout/pendiente?order=${encodeURIComponent(result.orderNumber)}`);
+  // Redirect a MP. En modo test usamos sandbox_init_point; en prod, init_point.
+  const checkoutUrl = isMpTestMode()
+    ? preferenceResult.sandboxInitPoint
+    : preferenceResult.initPoint;
+  redirect(checkoutUrl);
 }

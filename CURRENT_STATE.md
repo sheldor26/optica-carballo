@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Sub-feature 2b PARTE 2 completa — integración Mercado Pago Checkout Pro V1 funcional E2E**
+
+Founder pasó credenciales TEST de MP. Instalé `mercadopago` v3.0.0 SDK + agregué `lib/mp/{client,preferences}.ts` + modifiqué `lib/checkout/actions.ts` para llamar `createCheckoutPreference` post-`createOrderFromCart`, redirigir al `init_point` (o `sandbox_init_point` en modo TEST). Guardo `mp_preference_id` + `payment_method='mercadopago'` en `orders`. Pages nuevas `/checkout/exito` y `/checkout/error` con info post-redirect (orden, payment_id, status). E2E validado: la creación de preference contra sandbox MP devuelve URLs reales (`https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id=...`). Detalle aprendido: MP rechaza `auto_return: 'approved'` con back_urls localhost — código condiciona auto_return solo si el SITE_URL NO es local. **Próxima sub-feature**: webhook MP (sub-feature 3) que actualiza `orders.status` cuando el pago se confirma, + emails con Resend (requiere `RESEND_API_KEY`).
+
 🟢 **Decisión logística cerrada: Mi Correo REST > PAQ.AR**
 
 Founder pasó AMBOS PDFs oficiales (PAQ.AR v2.0 + MiCorreo). Análisis comparativo: **Mi Correo gana** porque tiene endpoint `/rates` de cotización (PAQ.AR no), permite cuenta con DNI o CUIT sin agreement comercial corporativo (PAQ.AR requiere 3-6 semanas trámite), usa JWT moderno, y los endpoints faltantes (rótulo, tracking, cancelar) se gestionan desde el portal web `micorreo.correoargentino.com.ar` — aceptable para volumen 5-20/mes. Confirmado: cotización dinámica desde V1 (con fallback a tabla por zonas hardcoded actual) + ofrecer ambos delivery types (domicilio + retiro en sucursal). **Founder acción ahora**: solicitar credenciales API MiCorreo al área Comercial Correo Argentino. **Cuando lleguen**: sub-feature LOGISTICA con `lib/correo/*` (auth + quote + agencies + import) + migración 00007 (agregar shipping_delivery_type + agency_code + correo_ext_order_id a orders) + UI con delivery type toggle + selector sucursal + re-cotización.
@@ -447,7 +451,34 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Decisión: Mi Correo REST elegido como API logística (✅ 2026-05-28)
+### Sub-feature 2b PARTE 2 — Integración Mercado Pago Checkout Pro V1 (✅ 2026-05-28, sin commit todavía)
+- **Credenciales**: founder pasó TEST credentials de MP. Agregadas a `.env.local` como `MP_ACCESS_TOKEN` (server) + `NEXT_PUBLIC_MP_PUBLIC_KEY` (cliente, no usado V1 — sería para Bricks futuro).
+- **Dep instalada**: `mercadopago@3.0.0` (la "v2" del API moderno con `MercadoPagoConfig` + clases `Preference`). 2 packages totales, sin warnings críticos.
+- **`lib/mp/client.ts`**: singleton lazy `getMpClient()` que construye `MercadoPagoConfig` en el primer uso. Timeout 8s. Throw si falta env var. `isMpTestMode()` helper que detecta token TEST-... vs APP_USR-...
+- **`lib/mp/preferences.ts`**: `createCheckoutPreference({orderNumber, payerEmail, cart, shipping})`. Arma items del cart con `unit_price = price_cents / 100` (MP usa decimales, no centavos). Agrega item extra de "Envío — {zoneLabel}" si shipping no es free. `external_reference = orderNumber` (formato OC-YYYY-NNNNN único) para matchear webhook con DB. `back_urls` apuntan a `/checkout/{exito,pendiente,error}`. `notification_url` apunta a `/api/mp/webhook` (handler en sub-feature 3). `statement_descriptor: 'OPTICA CARBALLO'` (aparece en resumen tarjeta del cliente). Devuelve `{preferenceId, initPoint, sandboxInitPoint}`.
+- **Modificación `lib/checkout/orders.ts`**: nuevo `updateOrderMpPreference({orderId, preferenceId})` que UPDATE `orders.mp_preference_id + payment_method='mercadopago'` post-creación de preference. Best-effort (si falla, founder puede crear preference manual desde panel MP).
+- **Modificación `lib/checkout/actions.ts`**: tras `createOrderFromCart`, llama `createCheckoutPreference`. Si OK → `updateOrderMpPreference` + `redirect(checkoutUrl)` (sandbox o prod según modo). Si FAIL → redirect a `/checkout/pendiente?order=X&mp_error=1` (orden queda en DB, founder coordina por WhatsApp).
+- **Pages nuevas**:
+  - `/checkout/exito` — post-redirect APROBADO. Lee `external_reference`, `payment_id`, `status` de query. Muestra orden, payment_id, mensaje "Te vamos a enviar email". CTAs: "Ver mi cuenta" / "Seguir navegando". **Informativa solamente** — el cambio real de `orders.status='paid'` lo hace el webhook (sub-feature 3). Esta página puede ser vista por user con conexión flaky o que cerró ventana.
+  - `/checkout/error` — pago rechazado/cancelado. Lee `external_reference`, `status`. Muestra opciones (verificar datos, otro medio, contactar WhatsApp). CTA WhatsApp pre-llenado con número de orden.
+  - `/checkout/pendiente` ya existía (sub-feature 2b parte 1), funciona para casos de pago pendiente (transferencia, Rapipago).
+- **Decisiones técnicas clave**:
+  - **`auto_return: 'approved'` solo si NO localhost**: MP rechaza la preference con back_urls que apuntan a localhost cuando auto_return está presente ("back_url.success must be defined"). En dev local omitimos auto_return — el user clickea "Volver al sitio" manual. En prod con dominio real funciona normal. Registrado en LEARNINGS.
+  - **Items del cart + envío inline**: MP Checkout Pro V1 no tiene campo dedicado de shipping cost — va como item extra. Trick aceptado.
+  - **`unit_price` en decimales**: el SDK MP recibe `1500.00` no `150000`. Conversión `price_cents / 100` en el helper.
+  - **`external_reference = order_number`** (no UUID): legible en notificaciones MP + matchea con OC-YYYY-NNNNN del trigger 00003.
+  - **`mp_payment_id` NO se guarda acá**: ese viene del webhook (sub-feature 3) — la preference solo identifica una "intención de pago". El payment_id real existe recién cuando el cliente paga.
+  - **`isMpTestMode()`**: usa el `sandbox_init_point` automáticamente. Cuando founder pase a PROD, cambia `MP_ACCESS_TOKEN` por `APP_USR-...` y el helper devuelve `init_point` real sin tocar código.
+- **E2E validado contra sandbox MP real**:
+  - Test directo con node + creds reales del founder: preference creada OK, devolvió `preference_id` válido + `init_point` + `sandbox_init_point`. URLs reales `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=1975674-...`
+  - Smoke 4/4 sin sesión: `/checkout` HTTP 307 (auth), `/checkout/exito?params` HTTP 200 con info, `/checkout/error?params` HTTP 200 con info, `/checkout/pendiente?mp_error=1` HTTP 200.
+- **Validación**: `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Build incluye `/checkout/exito` y `/checkout/error` como Dynamic.
+- **Lo que queda para sub-feature 3 (cuando llegue Resend)**:
+  - `/api/mp/webhook` route handler que recibe notifications de MP, valida signature, lookup order por `external_reference`, UPDATE `orders.status='paid' | 'cancelled'` + `mp_payment_id + paid_at`, idempotencia por `mp_payment_id`.
+  - Email al cliente confirmando pago vía Resend.
+  - Email al founder con datos para facturar manual (regla de negocio actual: sin Tusfacturas).
+
+### Decisión: Mi Correo REST elegido como API logística (✅ 2026-05-28, commit `072cc81`)
 - **Contexto**: founder pasó AMBOS PDFs oficiales (PAQ.AR v2.0 + MiCorreo) en sesiones consecutivas. Análisis comparativo en el transcript.
 - **Decisión**: usar **Mi Correo REST** para sub-feature LOGISTICA (futura). NO usar PAQ.AR.
 - **Razones**:
