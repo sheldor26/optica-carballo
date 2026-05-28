@@ -9,7 +9,7 @@ Repo Next.js 15 funcionando + schema base del catálogo aplicado y testeado en S
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/migration` ejecutado de punta a punta (Steps 1-10). Background job de `supabase start` que quedó corriendo en el cierre anterior terminó OK, retomé al recibir la notificación, apliqué la migración y validé.
+**Por**: Sub-sesión de planning del skill `/feature` para "Cargar marcas reales + página `/anteojos-de-sol/[brand]`". Steps 1-2 completados, plan ajustado (V2) presentado y a la espera de aprobación final del founder. **NO se tocó código** en esta sub-sesión, pero se actualizaron docs (`BRANDS.md`, `DECISIONS.md` con ADR-023 nuevo y ADR-009 parcial).
 
 ## Qué se construyó hasta ahora
 
@@ -116,25 +116,44 @@ Repo Next.js 15 funcionando + schema base del catálogo aplicado y testeado en S
 - **PEND-005 parcialmente cerrado**: el `.env.local` ya tiene credenciales del proyecto Supabase cloud (`tuddpfspnbnmafsqdvat.supabase.co`). Faltan confirmar las cuentas restantes (Vercel, Resend, MP dev, Tusfacturas, API IA, OpenAI, GSC, GA4). Actualizar `DECISIONS.md` PEND-005.
 - Decidir si la próxima feature es schema inicial de DB (`/migration`) o página real (catálogo de marcas, home definitivo).
 
+## Decisiones técnicas tomadas en esta sub-sesión (planning)
+
+1. **Marcas reales del catálogo** (5, confirmadas por founder): Rusty, Vulk, Reef, Mormaii, Paula Cahen D'Anvers. Todas en sol Y receta. Reemplaza la lista anterior asumida (Rusty, Reef, Vulk, Prune, Infinit) que venía de keyword research, no de stock real.
+2. **`is_argentine = true` para las 5**, incluso Mormaii (brasilera). El flag pasa de "origen argentino estricto" a "marca pensada como local / con presencia argentina". Formalizado en **ADR-023 nuevo**.
+3. **Modelado sol vs receta = productos separados por uso**. Cada marco vendido como sol y como receta son rows distintas en `products`, slugs distintos (ej: `rusty-wayfarer-negro-sol` y `rusty-wayfarer-negro-rx`), category_id distinto. Razón: alinea con ADR-004 (URLs por categoría), SKUs típicamente distintos (sol tiene lente, receta no), trackeable independiente.
+4. **Implica 2 categorías top-level mínimas en seed**: `anteojos-de-sol`, `anteojos-de-receta`. Sin sub-categorías (polarizados, aviador, etc.) en este step.
+5. **ADR-009 (PEND-002)** pasa a 🟡 Parcial: Paula Cahen confirmada, las otras 4 colecciones (Las Oreiro, Valeria Mazza, Teresa Calandra, Pampita) siguen pendientes.
+6. **Seeds en SQL plano, no script TS** (decisión técnica del plan V1, sin cambios). Evita instalar `tsx` + `dotenv`.
+7. **Sin imágenes reales** en este step. Placeholder gris hasta que el founder pase fotos.
+
+## Archivos actualizados en esta sub-sesión (no commiteados todavía)
+
+- `BRANDS.md`: bloque nuevo arriba con las 5 marcas confirmadas; estado de Rusty, Reef, Vulk actualizado a 🟢 Activa; Mormaii agregada como entrada nueva; Paula Cahen D'Anvers agregada en su sección con estado 🟢.
+- `DECISIONS.md`: ADR-009 actualizado con sección 2026-05-28 (parcial); ADR-023 nuevo (semántica de `is_argentine`).
+- `CURRENT_STATE.md`: este archivo.
+
 ## Próximo paso EXACTO
 
-**Próxima sesión**: elegir entre seguir con schema (más migraciones) o usar lo que ya hay (cargar primeras marcas + primera página real). 
+**Esperando aprobación del founder** sobre el plan del skill `/feature` V2 (con marcas reales). Resumen del plan:
 
-Mi recomendación: **cargar primeras marcas argentinas** (Rusty, Reef, Vulk, Prune, Infinit — ADR-019 prioridad 1) **+ armar página `/anteojos-de-sol/rusty` como primer caso end-to-end**. Eso valida que el schema sirve para algo real antes de seguir agregando tablas. Si encontramos que falta una columna o un índice, lo descubrimos ahora con poco código existente, no con 6 tablas más arriba.
+- Feature: cargar las 5 marcas reales (Rusty, Vulk, Reef, Mormaii, Paula Cahen D'Anvers) + 2 categorías top-level (sol, receta) + 4 productos Rusty placeholder (2 sol + 2 rx) + armar página dinámica `/anteojos-de-sol/[brand]` con caso end-to-end Rusty.
+- Decisión bloqueante ya respondida por el founder: **aplicar migración 00001 a Supabase cloud** (vía `supabase link` + `supabase db push`) y trabajar contra cloud, no local.
+- Archivos a crear: 2 SQL seeds (`supabase/seeds/01_categories_brands.sql` con 2 categorías + 5 marcas, `02_rusty_products.sql` con 4 productos placeholder), Server Component `app/(storefront)/anteojos-de-sol/[brand]/page.tsx`, `not-found.tsx`, `components/product/product-card.tsx`, `components/seo/breadcrumb-jsonld.tsx`, `lib/format/currency.ts`. Shadcn components `card` y `badge` vía CLI.
+- NO se introducen libs nuevas (sigue regla 6 de CLAUDE.md).
+- NO se incluyen imágenes reales en este step (placeholder gris hasta que el founder pase fotos).
+- `seo-strategist` se invoca al final, antes del commit, para validar metadata + structured data.
 
-Tres caminos posibles:
-
-1. **Cargar marcas + primera página de marca** (`/feature` — Página marca Rusty). Requiere: imágenes en Storage bucket "products", server action de seed, primer Server Component leyendo de Supabase con tipos TS. Output: una URL real funcionando contra DB local.
-2. **Seguir con schema — migración 00002: profiles + addresses**. Auth flow. Necesario para checkout pero no inmediato.
-3. **Seguir con schema — migración 00002: orders + order_items + prescriptions**. Tampoco inmediato sin auth previo.
-
-Primera acción concreta de la próxima sesión, si elegís camino 1:
-- `supabase status` para confirmar stack corriendo. Si está detenido (`supabase stop` fue corrido entre sesiones), `supabase start`.
-- Crear el bucket "products" de Storage (vía SQL en una migración pequeña o vía Studio en `http://127.0.0.1:54323`).
-- Skill `/feature` para diseñar la página de marca y el flujo de seed.
+**Próxima sesión arranca aquí**:
+1. Founder confirma plan (o pide ajustes — precios placeholder, qué productos seedear, scope).
+2. Step 3 del `/feature`: `supabase link --project-ref tuddpfspnbnmafsqdvat` + `supabase db push`.
+3. Escribir SQL seeds.
+4. Aplicar seeds en local (`docker exec ... psql -f`) y en cloud (vía Dashboard SQL Editor).
+5. Agregar shadcn `card` + `badge`.
+6. Crear componentes + página dinámica.
+7. Invocar `seo-strategist` para validar SEO antes del commit.
+8. Commit `feat(catalog): primeras marcas + página /anteojos-de-sol/[brand]`.
 
 En paralelo (no bloqueante):
-- **Aplicar migración a Supabase cloud** cuando el founder lo decida: dos opciones — (a) `supabase link --project-ref tuddpfspnbnmafsqdvat && supabase db push`, o (b) pegar el SQL en el SQL Editor del Dashboard. Ambas idempotentes mientras la DB esté vacía.
 - Dominio `opticacarballo.com.ar` (pendiente).
 - PEND-001 a PEND-004 de `DECISIONS.md`.
 - PEND-005: cuentas restantes (Vercel, Resend, MP dev, etc.).

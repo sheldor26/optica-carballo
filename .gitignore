@@ -69,3 +69,6 @@ Desktop.ini
 
 # Claude harness internal state (locks de jobs, schedules, etc.)
 .claude/scheduled_tasks.lock
+
+# Archivos derivados (concatenación de migrations + seeds para aplicar manualmente)
+supabase/cloud-bootstrap.sql

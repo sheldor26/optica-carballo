@@ -25,6 +25,15 @@ Usado por:
 
 ---
 
+# Marcas con stock real confirmado (2026-05-28)
+
+Las 5 marcas que **Óptica Carballo trabaja efectivamente HOY**, confirmadas por el founder:
+**Rusty, Vulk, Reef, Mormaii, Paula Cahen D'Anvers** — todas en sol Y receta.
+
+> ⚠️ El flag `is_argentine` en DB se aplica a las 5 (incluso Mormaii que es brasilera de origen). Pasa a significar "marca con presencia argentina / pensada como local" más que "origen argentino estricto". Ver ADR-023.
+
+---
+
 # Marcas Argentinas (PRIORIDAD #1 según keyword research)
 
 ## Rusty
@@ -39,7 +48,7 @@ Usado por:
 - **Páginas hijas a tener**:
   - `/anteojos-de-sol/rusty/hombre` (3.200 vol)
   - `/anteojos-de-sol/rusty/mujer` (2.600 vol)
-- **Estado**: ⚪ Pendiente confirmar stock
+- **Estado**: 🟢 Activa — stock confirmado 2026-05-28. Sol Y receta.
 
 ## Reef
 
@@ -50,7 +59,7 @@ Usado por:
 - **Categorías**: Anteojos de sol
 - **Volumen SEO**: 3.400/mes (diff 7-9)
 - **Páginas hijas**: `/hombre`, `/mujer`
-- **Estado**: ⚪ Pendiente confirmar stock
+- **Estado**: 🟢 Activa — stock confirmado 2026-05-28. Sol Y receta.
 
 ## Vulk
 
@@ -61,7 +70,27 @@ Usado por:
 - **Categorías**: Anteojos de sol + receta
 - **Volumen SEO**: 2.500/mes (diff 8)
 - **Páginas hijas**: `/hombre`, `/mujer`
-- **Estado**: ⚪ Pendiente confirmar stock
+- **Estado**: 🟢 Activa — stock confirmado 2026-05-28. Sol Y receta.
+
+## Mormaii
+
+- **Slug**: `mormaii`
+- **URL**: `/anteojos-de-sol/mormaii` y `/anteojos-de-receta/mormaii`
+- **País**: Brasil (origen), tratada como local en este catálogo por presencia argentina (ver ADR-023).
+- **Segmento**: Medio. Surf / outdoor lifestyle.
+- **Categorías**: Sol + receta
+- **Estado**: 🟢 Activa — stock confirmado 2026-05-28. Sol Y receta.
+
+## Paula Cahen D'Anvers
+
+- **Slug**: `paula-cahen-danvers`
+- **URL**: `/anteojos-de-sol/paula-cahen-danvers` y `/anteojos-de-receta/paula-cahen-danvers`
+- **País**: Argentina. Colaboración / colección de Paula Cahen D'Anvers.
+- **Segmento**: Medio. Target principal: mujer.
+- **Categorías**: Sol + receta
+- **Volumen SEO**: 1.100/mes (diff 9, según keyword research previo).
+- **Estado**: 🟢 Activa — stock confirmado 2026-05-28. Cierra parcialmente ADR-009 (PEND-002) para esta colección.
+- **Nota**: en BRANDS.md original aparecía también en sección "Colaboraciones de celebridades" como pendiente. Mantenemos esa entrada por histórico, pero el estado real ahora es activa.
 
 ## Infinit
 

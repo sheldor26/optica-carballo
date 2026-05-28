@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — El Step 2 del `/feature` (presentar plan antes de codear) atrapó un mistake de catálogo
+
+**Categoría**: Operación
+**Confianza**: 🟢 Alta (validó el valor del workflow, segundo caso de "el plan atrapó algo")
+
+### Qué funcionó
+En el Step 2 del skill `/feature` para cargar marcas, presenté un plan basado en las marcas con mejor SEO score (Rusty, Reef, Vulk, Prune, Infinit). El founder leyó el plan y **corrigió antes de tocar código**: las marcas reales son Rusty, Vulk, Reef, Mormaii y Paula Cahen D'Anvers. Si hubiera saltado directo a código, habría escrito un seed con Prune e Infinit (no en stock) y omitido Mormaii (no estaba siquiera en BRANDS.md). Cero código fue desperdiciado porque el ciclo "presentar plan → recibir corrección → ajustar plan" capturó el error en segundos.
+
+### Por qué funcionó (causa real)
+El Step 2 del `/feature` obliga a hacer explícitos los **supuestos del implementador** (qué marcas, qué scope, qué decisiones). Cuando son explícitos, el founder puede aceptar o corregir. Cuando quedan implícitos (saltarse directo a código), las decisiones se imponen al founder vía commits que ya existen y hay que rollback.
+
+Es la misma lógica que el `[Lo que este step NO incluye]` registrado el 2026-05-27: **hacer explícitos los supuestos en planes escritos previene re-trabajo más caro después.**
+
+### Evidencia
+2 casos ahora:
+1. 2026-05-27 (setup Next.js): la lista explícita "NO incluye" mantuvo el scope.
+2. 2026-05-28 (catálogo marcas): el plan con marcas listadas dejó al founder corregir antes de codear.
+
+Ambos siguen el patrón: hacer explícito en el plan permite al founder dar feedback temprano y barato.
+
+### Cuándo aplicar esto de nuevo
+- **Cualquier feature que toque catálogo, precios, copy, contenido editorial o datos del negocio**: presentar la data candidata explícita en el plan (no solo decir "voy a cargar marcas argentinas top").
+- **Cualquier feature donde el asistente está infiriendo decisiones del negocio**: listar las inferencias para que el founder las vea.
+
+### Cuándo NO aplica
+- Features puramente técnicas (refactoring, fix de bug, ajuste de tsconfig) donde no hay decisiones de negocio.
+- Cuando el dato candidato es obvio o ya está documentado de manera autoritativa (no inferido).
+
+### Acción derivada
+- [x] Confirmar este learning con un 2do caso → ahora con 2 casos. Subido a 🟢 Alta confianza.
+- [ ] Promoverlo a regla explícita en el skill `/feature` Step 2: "Si la feature toca datos del negocio, listar los datos candidatos explícitamente en el plan, no solo describir 'voy a cargar X'."
+- [ ] Replicar en `/article` (datos candidatos: ¿qué artículo, qué keyword, qué hipótesis?), `/product` (productos exactos), `/migration` (tablas y columnas exactas).
+
+---
+
 ## 2026-05-28 — `docker exec` como fallback cuando `psql` no está instalado localmente
 
 **Categoría**: Operación

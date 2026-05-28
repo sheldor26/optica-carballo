@@ -256,7 +256,7 @@ WhatsApp es canal natural en Argentina. Pero ¿lo mantenemos como canal principa
 ## ADR-009 — No vender colecciones de famosos sin confirmación de stock
 
 **Fecha**: 2026-05-27
-**Estado**: 🟢 Vigente
+**Estado**: 🟡 Parcial — actualizado 2026-05-28
 **Categoría**: Producto
 
 ### Contexto
@@ -269,8 +269,10 @@ Keyword research mostró volumen alto para colecciones de famosos (Las Oreiro 1.
 - ⚠️ Perdemos volumen SEO potencial inicialmente.
 - ✅ Mantenemos integridad de la promesa "stock real".
 
-### Pendiente
-Founder debe confirmar stock de colecciones para activar o descartar.
+### Actualización 2026-05-28
+- ✅ **Paula Cahen D'Anvers**: stock confirmado por el founder. Se carga como marca activa (registrada en `BRANDS.md`).
+- ❌ **Las Oreiro, Valeria Mazza, Teresa Calandra, Pampita**: NO confirmadas. Siguen fuera del catálogo.
+- Estado neto: ADR-009 sigue vigente para las 4 colecciones no confirmadas. Para Paula Cahen, ya no aplica (resuelto).
 
 ---
 
@@ -504,6 +506,36 @@ Cada pillar 3000-5000 palabras, satélites 1200-2000 palabras, internal linking 
 ### Cómo se valida
 - Costo IA total <$100/mes en V1, <$300/mes con tracción.
 - Calidad de outputs evaluada manualmente en muestras.
+
+---
+
+## ADR-023 — Semántica del flag `is_argentine` en tabla `brands`
+
+**Fecha**: 2026-05-28
+**Estado**: 🟢 Vigente
+**Categoría**: Producto / Schema
+
+### Contexto
+El schema de `brands` tiene una columna `is_argentine boolean`. Inicialmente pensada como "marca de origen argentino estricto" (Rusty, Vulk, Prune, etc.). Cuando el founder confirmó las 5 marcas que efectivamente trabaja (Rusty, Vulk, Reef, Mormaii, Paula Cahen D'Anvers), decidió marcar **Mormaii como argentina** aunque sea de **origen brasilero**.
+
+### Decisión
+**El flag `is_argentine` significa: "marca que la óptica posiciona como local / pensada como marca argentina en el catálogo".**
+
+NO significa "marca con sede / fundación en Argentina estrictamente".
+
+### Alternativas consideradas
+- Mantener `is_argentine = false` para Mormaii (estricto origen) → rechazado por el founder.
+- Renombrar el campo a `is_local_presence` o `is_argentine_market` → descartado para evitar migración ahora; cambio cosmético se puede hacer después si crece la confusión.
+- Agregar un segundo campo `country_of_origin text` → posible feature futura para SEO/transparencia pero no en V1.
+
+### Consecuencias
+- ✅ El founder controla qué marcas aparecen en futuros filtros tipo "marcas argentinas" / "marcas locales".
+- ⚠️ Si más adelante hacemos contenido SEO sobre "marcas argentinas de anteojos" (artículo, página de categoría), tenemos que ser claros: el catálogo lista marcas "locales", no necesariamente "fundadas en AR". Para evitar engañar al usuario, en el copy podemos decir "marcas con presencia local fuerte" en vez de "marcas argentinas".
+- ⚠️ La data en `is_argentine` no sirve como fuente de verdad para schema.org `Brand.foundingLocation`. Para eso necesitaríamos un campo separado en el futuro.
+
+### Cómo se valida
+- Si un usuario se queja en feedback que Mormaii no es argentina → revisar el copy de las páginas que usen ese flag para que no afirme "marca argentina" sin matiz.
+- Si crece la fricción → agregar `country_of_origin` como columna nueva (`ALTER TABLE`) y refactor.
 
 ---
 

@@ -64,6 +64,47 @@ Esto vale especialmente para:
 
 ---
 
+## 2026-05-28 — Asumí las marcas del catálogo desde keyword research en vez de preguntar stock real
+
+**Estado**: 🟡 Mitigado
+**Categoría**: Operación / Producto
+
+### Qué pasó
+En el Step 2 del skill `/feature` para "cargar primeras marcas", presenté un plan basado en las marcas argentinas con mejor score SEO (Rusty, Reef, Vulk, Prune, Infinit) según el keyword research previo y la lista de "PRIORIDAD #1" en `BRANDS.md`. El founder corrigió: las marcas que **efectivamente trabajan** son Rusty, Vulk, Reef, **Mormaii** y **Paula Cahen D'Anvers**. Prune e Infinit nunca fueron stock real. Mormaii no estaba ni siquiera en `BRANDS.md`. Paula Cahen estaba listada como "colaboración pendiente de confirmar stock" (ADR-009), no como marca activa.
+
+### Causa raíz
+Confundí "marca con buen SEO score y comúnmente vendida en Argentina" con "marca que esta óptica específica tiene en stock". El keyword research dice qué quiere buscar la gente; el inventario dice qué tenemos. **Son cosas distintas.** Como `BRANDS.md` listaba 10+ marcas con estado ⚪ Pendiente (sin marcar cuáles eran reales), tomé las top 5 por SEO sin chequear cuáles tenían stock confirmado.
+
+Es la misma raíz que MISTAKE-2026-05-27 sobre el nombre de la regente: completar info que no tengo con plausibilidad en vez de preguntar.
+
+### Impacto
+- Bajo: detectado antes de tocar código. Ningún seed escrito, ninguna URL publicada con marcas incorrectas.
+- Si hubiera escrito el seed y aplicado al cloud antes de mostrar el plan: tendríamos data inventada que habría que limpiar manualmente.
+
+### Cómo se detectó
+El founder leyó el plan presentado en Step 2 y corrigió la lista de marcas explícitamente antes de aprobar.
+
+### Cómo se evita en el futuro
+**Regla preventiva**:
+
+Cuando una feature toque catálogo (marcas, productos, líneas de lentes de contacto, colaboraciones), **el Step 1 del skill `/feature` debe explícitamente preguntar al founder qué hay en stock real** antes de listar candidatos en el plan. NO usar `BRANDS.md` ni keyword research como fuente de verdad de stock — esos archivos son **planes y oportunidades**, no inventario.
+
+Concretamente:
+1. Si la feature menciona marcas/productos: la pregunta clarificadora del Step 1 incluye "¿Qué marcas/productos exactamente tenés en stock?" (con AskUserQuestion si hace falta).
+2. Si `BRANDS.md` dice ⚪ Pendiente para una marca, asumir que NO está disponible hasta que el founder lo confirme.
+3. Cuando el founder confirma stock, actualizar `BRANDS.md` a 🟢 Activa con fecha de confirmación en el mismo turno.
+
+### Cambios derivados
+- [x] Plan ajustado a V2 con las 5 marcas reales antes de tocar código.
+- [x] `BRANDS.md` actualizado con stock real confirmado (las 5 marcas como 🟢 Activa, Mormaii agregada, Paula Cahen movida a activa).
+- [x] `DECISIONS.md`: ADR-009 (PEND-002) actualizado a 🟡 Parcial para reflejar el cierre por Paula Cahen.
+- [x] `DECISIONS.md`: ADR-023 nuevo para formalizar la semántica del flag `is_argentine` que el founder cambió implícitamente al marcar Mormaii como AR.
+- [x] Registro en MISTAKES.md (este archivo).
+- [ ] Considerar agregar al skill `/feature` Step 1 una sub-tarea: "Si la feature toca catálogo, preguntar stock real antes de listar candidatos."
+- [ ] Considerar agregar al skill `/product` (cuando exista flujo de carga masiva): warning explícito sobre no usar BRANDS.md como fuente de verdad de stock.
+
+---
+
 ## 2026-05-27 — Borrado del binario `supabase-go` al limpiar el tarball del CLI
 
 **Estado**: 🟡 Mitigado
