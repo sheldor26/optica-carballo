@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — `supabase-js` rompe inferencia con `.select('*').maybeSingle().returns<T>()`, hay que enumerar columnas
+
+**Categoría**: Operación / Tipos
+**Confianza**: 🟢 Alta (verificado con error explícito de TS)
+
+### Qué funcionó
+
+En `lib/addresses/queries.ts` empecé con `supabase.from('addresses').select('*').maybeSingle().returns<Address>()`. TS marcó error:
+
+```
+Type mismatch: Cannot cast array result to a single object.
+Use .overrideTypes<Array<YourType>> or .returns<Array<YourType>> for array results
+or .single() to convert the result to a single object
+```
+
+La fix es **enumerar las columnas explícitamente**:
+```ts
+.select('id, user_id, label, recipient_name, street, number, apartment, city, province, postal_code, country, phone, is_default, created_at, updated_at')
+```
+
+### Por qué funciona
+
+- Con `select('*')`, supabase-js no sabe la cardinalidad inferida y por default tipa como array. `.returns<T>()` luego intenta cast a un singular y rompe.
+- Con select explícito + `.maybeSingle()`, supabase-js infiere correctamente que es 1 row o null, y `.returns<T>()` funciona.
+- Patrón ya usado en `lib/catalog/queries.ts` (todas las queries enumeran columnas) — esta sesión confirmó la regla.
+
+### Cómo aplicar
+
+- **Regla nueva**: para queries que terminan en `.single()` o `.maybeSingle()` + `.returns<T>()`, NUNCA usar `select('*')`. Enumerar columnas siempre.
+- Para queries que devuelven arrays, `select('*')` está OK (ej: `fetchUserAddresses()`).
+- Si la lista de columnas crece y enumerar es tedioso, considerar usar los Database types auto-generados (`pnpm db:types`) en vez de un tipo manual, y dejar que TS infiera todo.
+
+### Relacionado
+
+- [[supabase-fk-embeds-tipan-como-arrays]] (LEARNING anterior 2026-05-28).
+- Sub-feature 2a addresses (esta sesión).
+
+---
+
 ## 2026-05-28 — Zod 4 `z.uuid()` es estricto (RFC 4122 v1-8 + nil + max), no acepta cualquier 36 chars
 
 **Categoría**: Operación / Validación

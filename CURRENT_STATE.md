@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Sub-feature 2a (addresses CRUD en /mi-cuenta) completo — 5/5 smoke tests verdes**
+
+User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi-cuenta/direcciones`. Server actions con Zod validation (24 provincias AR enum, postal_code CPA o 4 dígitos, teléfono permisivo). Ownership via RLS + verificación de session en cada action. Delete promueve auto otra address a default. Próxima sub-feature: 2b /checkout completo con `mercadopago` SDK v2 (founder confirmó).
+
 🟢 **Cart sub-feature 1 (cookie-based) completo — 7/7 smoke tests verdes**
 
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
@@ -376,7 +380,40 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Cart sub-feature 1 — cookie-based con HMAC (✅ 2026-05-28, sin commit todavía)
+### Sub-feature 2a — Addresses CRUD en /mi-cuenta/direcciones (✅ 2026-05-28)
+- **Páginas nuevas**:
+  - `/mi-cuenta/direcciones` — lista, default primero ordenado por updated_at desc, empty state con CTA "Agregar mi primera dirección".
+  - `/mi-cuenta/direcciones/nueva` — form crear.
+  - `/mi-cuenta/direcciones/[id]/editar` — form editar con datos pre-cargados, `notFound()` si no es del user (RLS bloquea, queries devuelve null).
+  - Todas con `dynamic = 'force-dynamic'` + `requireAuth(currentPath)` que redirige a `/ingresar?next=<currentPath>` si no hay sesión. Metadata `noindex, nofollow`.
+- **Helpers nuevos `lib/addresses/`**:
+  - `constants.ts` — `AR_PROVINCES` const tuple (24: CABA + 23 provincias) como source of truth del select.
+  - `types.ts` — Zod schemas con validaciones específicas AR: postal_code regex `/^[A-Z]?\d{4}[A-Z]{0,3}$/i` (acepta CPA `B1900ABC` o 4 dígitos `1900`, normaliza a mayúsculas), teléfono regex permisivo `/^[\d+\-\s()]{6,30}$/` (acepta `+54 11 1234-5678`), province enum estricto. `AddressInput` / `Address` / `AddressFormState`.
+  - `queries.ts` — `fetchUserAddresses()` ordena default primero, `fetchAddressById(id)` con select explícito de columnas (no `*`) por LEARNING de supabase-js .returns<> con maybeSingle. RLS hace ownership check.
+  - `actions.ts` — 4 server actions: `createAddress`, `updateAddress` (bind con id), `deleteAddress`, `setDefaultAddress`. Cada una valida user con `auth.getUser()`. Insert auto-marca `is_default=true` si es la primera del user. Update/Insert con `is_default=true` primero desmarca el default anterior (evita violación de UNIQUE partial `idx_addresses_one_default_per_user`). Delete promueve auto la más reciente a default si la borrada era la default.
+- **UI nuevos `components/account/`**:
+  - `address-form.tsx` — client con `useActionState`, fields: label opcional, recipient_name, street + number (grid 1fr/140px), apartment opcional, city + postal_code (grid 1fr/140px), province `<select>`, phone opcional, checkbox is_default. Errores por field con `fieldErrors` map del Zod. Autocomplete attrs (`address-line1`, `postal-code`, `tel`).
+  - `address-card.tsx` — server, render una address con badge "Predeterminada" condicional, link a editar, botón "Marcar como predeterminada" si no lo es, "Eliminar".
+  - `delete-address-button.tsx` — client, confirm inline (2-step: click "Eliminar" → muestra "¿Eliminar? Sí/Cancelar") usando `useTransition`.
+  - `set-default-button.tsx` — client, `useTransition` simple.
+  - `form-submit-button.tsx` — variant de SubmitButton de auth, con label "Guardando..." en pending.
+- **`/mi-cuenta` page actualizada** — nueva sección "Tu actividad" con tile/Button outlined que linkea a `/mi-cuenta/direcciones`.
+- **Decisiones técnicas clave**:
+  - **Provincias en enum TS (Zod), NO en SQL CHECK**: agregar provincia nueva = sólo cambiar TS array, sin migración. Schema actual de `addresses.province` es `text` libre (ADR-005).
+  - **Default promotion automática en delete**: si la default se borra y hay otras, la más reciente toma su lugar. Si era la única, el user queda sin default (válido).
+  - **Sin transacción explícita para setDefault**: 2 queries (UPDATE off, UPDATE on) en secuencia. Race condition teórica entre clics rápidos del mismo user podría violar UNIQUE partial — extremadamente improbable (mismo user, mismo cliente). Si pasa, el INSERT falla con error que el user puede retry. Acepto V1 — la operación atómica vendría con una stored procedure.
+  - **Sin FK de orders.address_id**: al borrar una address, orders viejas NO se afectan (los datos están snapshotteados inline en orders por ADR-007).
+  - **Select explícito de columnas en queries.ts**: `select('*')` rompe la inferencia de tipos cuando usamos `.returns<Address>()` con `.maybeSingle()` — error "Cannot cast array result to a single object". Solución: enumerar columnas explícitamente.
+- **5/5 smoke tests verdes (sin sesión)**:
+  - `/mi-cuenta/direcciones` HTTP 307 → `/ingresar?next=%2Fmi-cuenta%2Fdirecciones`.
+  - `/mi-cuenta/direcciones/nueva` HTTP 307.
+  - `/mi-cuenta/direcciones/<uuid>/editar` HTTP 307.
+  - `/ingresar` post-redirect renderiza correctamente.
+  - `robots.txt` incluye `Disallow: /mi-cuenta` (cubre /direcciones por prefix).
+- **Validación**: `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Build 29 páginas (3 nuevas dynamic). First Load JS sin regresión.
+- **Pendiente del founder testing**: validar flow con login (crear address → ver en lista → editar → marcar default → eliminar). Hasta que el founder testee logueado en cloud, no se valida el happy path end-to-end.
+
+### Cart sub-feature 1 — cookie-based con HMAC (✅ 2026-05-28, commit `e7eba1f`)
 - **Stack**: cookie HttpOnly `oc_cart` firmada con HMAC-SHA256 (env `CART_COOKIE_SECRET`, 32 bytes hex). Payload base64url + Zod schema validation al leer. Tampered o invalid → cart vacío silencioso.
 - **Tipos** (`lib/cart/types.ts`): `CartItem` (variantId UUID + quantity 1-10), `Cart` (max 20 items distintos), `ResolvedCartItem` con flag `issue: 'unavailable' | 'out_of_stock' | 'over_stock' | null`.
 - **Cookie utilities** (`lib/cart/cookie.ts`): read/write/delete async (`cookies()` de Next 15), server-only, `getSecret()` exige >= 32 chars o tira error explícito con instrucciones.
