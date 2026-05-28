@@ -116,6 +116,8 @@ Si tomaste una decisión importante: agregala a `DECISIONS.md` con formato ADR.
 | `METRICS.md` | KPIs del negocio con targets |
 | `EXPERIMENTS.md` | Log de experimentos y A/B tests |
 | `AGENT_PERFORMANCE.md` | Tracker de performance de cada agente |
+| `BACKLOG.md` | Pendientes acumulados (assets, data real, mejoras técnicas, features menores) |
+| `supabase/CLOUD_APPLIED.md` | Registro de qué migraciones y seeds están aplicados al Supabase cloud |
 
 ## Regla de oro de este archivo
 
