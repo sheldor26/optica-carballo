@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Migración 00005 (bucket products público) lista en local + helpers TS — pendiente aplicar a cloud**
+
+3 decisiones del founder cerradas: (1) carga de productos vía **seeds SQL asistidos** — founder me pasa data por chat, yo armo el SQL, founder corre en SQL Editor cloud; (2) imágenes en **bucket Supabase Storage `products` público** (CDN + next/image compatible); (3) empezamos por **Rusty reemplazando los 4 productos `[PH]` actuales**. Migration 00005 creada y testeada en local (bucket público 5MB, mime whitelist, 1 policy SELECT pública, escritura solo service_role). Helpers TS server-only en `lib/storage/products.ts`: upload + getPublicUrl + delete + suggestFilename. **Próximo paso del founder**: aplicar bootstrap al cloud + pasarme data del 1er producto Rusty real.
+
 🟢 **Modo "pre-venta" activado — cart UI oculto + CTA por variante = WhatsApp contextual**
 
 Founder pidió subir páginas de productos **sin habilitar compra** mientras MP no esté integrado y facturación se hace manual al principio. Cambios chicos: CartBadge del header comentado, `AddToCartButton` por variante reemplazado por `VariantWhatsappCta` con mensaje pre-llenado (marca + modelo + SKU + precio + variante). Cart code intacto (`lib/cart/*`, server actions, /carrito page, /api/cart/count) — listo para reactivar cuando llegue MP (descomentar 2 líneas + swap del prop en VariantList). `/carrito` sigue accesible vía URL directa pero noindex y nadie lo linkea. **Próxima decisión del founder**: cómo cargar productos reales (admin UI propio en /admin, vs Supabase Studio, vs seeds SQL asistidos por mí).
@@ -391,7 +395,34 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Modo pre-venta — UI sin cart, CTA por variante = WhatsApp (✅ 2026-05-28)
+### Migración 00005 — Bucket Storage `products` público + helpers (✅ 2026-05-28, local only)
+- **Bucket `products`** público: `public=true`, max 5 MB por imagen, mime whitelist (jpeg/png/webp/avif). Path pattern sugerido: `<brand_slug>/<product_slug>/<filename>`.
+- **1 RLS policy** `products: anyone reads` (SELECT TO public) — pública lectura. NO policy de INSERT/UPDATE/DELETE — solo `service_role` (que bypassa RLS) puede modificar: server actions admin o Supabase Studio del founder.
+- **Smoke 3/3 verdes en local**:
+  - Anon INSERT → bloqueado (`new row violates row-level security policy`) ✓
+  - Authenticated INSERT → bloqueado (idem) ✓
+  - service_role INSERT → OK ✓
+- **Helpers server-only** (`lib/storage/`):
+  - `constants.ts` extendido con bloque `products`: `PRODUCTS_BUCKET`, `PRODUCTS_MAX_BYTES`, `PRODUCTS_ALLOWED_MIME`, `PRODUCTS_MIME_TO_EXT`.
+  - `products.ts` nuevo: `uploadProductImage` (valida mime + size, sube con `cacheControl: 31536000 immutable`), `getProductImagePublicUrl` (arma URL sin query a Storage), `deleteProductImage` (idempotente), `suggestFilename` (SKU → `rst-way-negro-001.webp`).
+- **Decisiones técnicas clave**:
+  - **Bucket público** (no privado como prescriptions): fotos de producto no son datos sensibles, queremos cache CDN y compatibilidad directa con `next/image`.
+  - **Sin policies de escritura**: defensa-en-profundidad. Browser jamás puede modificar el bucket. Toda escritura pasa por server actions/scripts con `createAdminClient`.
+  - **Mime whitelist incluye AVIF**: formato moderno con mejor compresión que WebP, compatible con next/image. Si el founder usa Canva/Photoshop, casi seguro exporta WebP/JPG.
+  - **Path sin user namespace**: a diferencia de prescriptions, no hay ownership por user — son assets globales del catálogo.
+  - **`next.config.mjs` ya soporta `*.supabase.co`**: no requiere ALTER.
+- **Bootstrap regenerado**: `supabase/cloud-bootstrap.sql` (58 líneas, solo 00005). CLOUD_APPLIED.md marcado ⏳ Pendiente.
+- **Pendiente del founder**:
+  - Aplicar bootstrap en SQL Editor cloud + verificar con:
+    ```sql
+    SELECT id, name, public, file_size_limit FROM storage.buckets WHERE id='products';
+    SELECT policyname, cmd, roles FROM pg_policies
+    WHERE schemaname='storage' AND tablename='objects' AND policyname LIKE 'products:%';
+    ```
+    Esperado: 1 fila bucket (`products | products | true | 5242880`) + 1 fila policy (`products: anyone reads | SELECT | {public}`).
+  - Pasarme data del 1er producto Rusty real para reemplazar `[PH]` (formato sugerido en docs).
+
+### Modo pre-venta — UI sin cart, CTA por variante = WhatsApp (✅ 2026-05-28, commit `2f9a75f`)
 - **Decisión de producto**: founder pidió "subir páginas de productos sin que la gente pueda comprar aún" y mantener facturación manual al principio. Implica: NO Mercado Pago en V1, NO Tusfacturas automatizado, sub-features 2b/3 quedan para cuando empiece el flow de ventas online real.
 - **Cambios en UI**:
   - **CartBadge oculto** en `SiteHeader` (línea comentada + import comentado, con nota). Reactivar = descomentar 2 líneas.
