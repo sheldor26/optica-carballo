@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Decisión logística cerrada: Mi Correo REST > PAQ.AR**
+
+Founder pasó AMBOS PDFs oficiales (PAQ.AR v2.0 + MiCorreo). Análisis comparativo: **Mi Correo gana** porque tiene endpoint `/rates` de cotización (PAQ.AR no), permite cuenta con DNI o CUIT sin agreement comercial corporativo (PAQ.AR requiere 3-6 semanas trámite), usa JWT moderno, y los endpoints faltantes (rótulo, tracking, cancelar) se gestionan desde el portal web `micorreo.correoargentino.com.ar` — aceptable para volumen 5-20/mes. Confirmado: cotización dinámica desde V1 (con fallback a tabla por zonas hardcoded actual) + ofrecer ambos delivery types (domicilio + retiro en sucursal). **Founder acción ahora**: solicitar credenciales API MiCorreo al área Comercial Correo Argentino. **Cuando lleguen**: sub-feature LOGISTICA con `lib/correo/*` (auth + quote + agencies + import) + migración 00007 (agregar shipping_delivery_type + agency_code + correo_ext_order_id a orders) + UI con delivery type toggle + selector sucursal + re-cotización.
+
 🟢 **Sub-feature 2b PARTE 1 completa — /checkout funcional (sin MP todavía) detrás del flag**
 
 Construido el flow completo de checkout SIN integración de pago: `/checkout` con auth + address selector + resumen + cálculo de envío por zonas (CABA/GBA, interior cercano/lejano, Patagonia) + free shipping desde $80k. Server action `submitCheckout` con reserve_stock atómico vía RPC + INSERT orders con snapshots ADR-007 + INSERT order_items + compensación de stock si falla. Página `/checkout/pendiente?order=X` post-confirmación con CTA WhatsApp temporal. Todo detrás del feature flag (default OFF → /checkout devuelve 404; flag ON → flow completo). Nueva migración 00006 con `reserve_stock` + `increment_variant_stock`. PAQ.AR v2.0 confirmado factible (manual oficial, founder evaluando vs Mi Correo REST) — pero NO tiene endpoint de cotización, por eso el cálculo de envío sigue siendo tabla por zonas hardcoded; cuando el founder elija API y tenga creds, integramos alta de orden + rótulo + tracking en nueva sub-feature LOGISTICA. **Próxima sesión**: sub-feature 2b PARTE 2 (MP preference + redirect + páginas post-redirect) cuando el founder tenga creds MP test.
@@ -443,7 +447,35 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Sub-feature 2b PARTE 1 — /checkout sin MP (✅ 2026-05-28, sin commit todavía)
+### Decisión: Mi Correo REST elegido como API logística (✅ 2026-05-28)
+- **Contexto**: founder pasó AMBOS PDFs oficiales (PAQ.AR v2.0 + MiCorreo) en sesiones consecutivas. Análisis comparativo en el transcript.
+- **Decisión**: usar **Mi Correo REST** para sub-feature LOGISTICA (futura). NO usar PAQ.AR.
+- **Razones**:
+  - **Mi Correo tiene `/rates`** (cotización dinámica) — PAQ.AR NO. Esto es crítico para mostrar precio exacto en checkout.
+  - **Mi Correo acepta DNI o CUIT** sin agreement comercial corporativo. PAQ.AR requiere cuenta corporativa con trámite de 3-6 semanas.
+  - **Mi Correo usa JWT moderno** (POST /token con basic auth → bearer). PAQ.AR usa Apikey + agreement headers estilo viejo.
+  - **Mi Correo tiene `/register`** vía API (autoservicio). PAQ.AR requiere gestión presencial con comercial.
+- **Trade-offs aceptados** (lo que PAQ.AR sí tiene y Mi Correo no):
+  - Rótulo PDF vía API → founder lo baja del portal web `micorreo.correoargentino.com.ar` post-import.
+  - Tracking vía API → cliente lo ve en portal web; futuramente podemos linkearlo desde nuestra UI.
+  - Cancelar vía API → manual desde portal. Para volumen 5-20/mes, OK.
+- **Decisiones de scope para sub-feature LOGISTICA** (no codeada todavía):
+  - Cotización dinámica desde V1 con fallback a tabla por zonas si la API falla (graceful degradation).
+  - Ofrecer ambos delivery types: `D` (domicilio) y `S` (sucursal).
+  - Mantener `lib/shipping.ts` como wrapper: detecta env vars MiCorreo configuradas → llama `lib/correo/quote.ts`; sino fallback a la tabla.
+- **Pendiente del founder ANTES de poder arrancar sub-feature LOGISTICA**:
+  - Solicitar credenciales API MiCorreo al área Comercial Correo Argentino (0800-777-0345 o portal). El PDF dice las credenciales se gestionan así.
+  - Confirmar `customerId` MiCorreo (formato `00xxxxxxxx`, lo ve en su perfil del portal).
+  - Confirmar CP de origen de envíos (Virasoro, Corrientes — probablemente 3342).
+- **Plan técnico cuando lleguen credenciales** (~600-800 líneas, 2 sesiones):
+  - **`lib/correo/`**: `auth.ts` (JWT con cache hasta expires), `quote.ts` (POST /rates), `agencies.ts` (GET /agencies por provincia, cache 1 día), `import-shipping.ts` (POST /shipping/import post-pago), `provinces.ts` (mapping nombre → código 1-letter), `constants.ts` (BUSINESS_POSTAL_CODE, dimensiones default, productType "CP").
+  - **Migración 00007**: agregar a `orders` las columnas `shipping_delivery_type` text CHECK IN ('D','S'), `shipping_agency_code` text, `correo_ext_order_id` text.
+  - **Refactor `lib/shipping.ts`**: wrapper con fallback a tabla.
+  - **`components/checkout/checkout-page.tsx`**: toggle delivery type + selector sucursal condicional + re-cotización al cambiar address/type con loading.
+  - **`lib/checkout/actions.ts`**: post-createOrder llamar `importShipping` (best-effort; si falla, log + alertar, order válida igual).
+  - **Env vars nuevas**: `MICORREO_API_BASE_URL`, `MICORREO_API_USER`, `MICORREO_API_PASSWORD`, `MICORREO_CUSTOMER_ID`, `BUSINESS_POSTAL_CODE`.
+
+### Sub-feature 2b PARTE 1 — /checkout sin MP (✅ 2026-05-28, commit `b32cbf2`)
 - **Decisión de scope clave**: founder pidió "construir todo el flow de venta detrás de flag, oculto hasta tener masa crítica de productos". Parte 1 = todo lo del checkout que NO depende de credenciales MP. Parte 2 = preference + redirect (cuando lleguen creds MP). Esto desbloqueó arrancar inmediato.
 - **`lib/shipping.ts`** — tabla por zonas hardcoded:
   - CABA/GBA $2.500, Interior cercano $4.500, Interior lejano $6.500, Patagonia $9.500. Free shipping desde $80.000.

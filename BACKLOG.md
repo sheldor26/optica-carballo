@@ -27,6 +27,16 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   fotos físicas de los productos + decidir bucket (Supabase Storage cuando
   haya más de 50 productos; `public/products/` mientras tanto).
 
+## 🔴 Pendiente bloqueante para sub-feature LOGISTICA (acción del founder)
+
+- [ ] **Solicitar credenciales API MiCorreo** al área Comercial de Correo Argentino:
+  - Llamar al **0800-777-0345** (línea PyMEs) o ir a sucursal Virasoro.
+  - Decir: "Soy cliente MiCorreo (DNI/CUIT XXX) y quiero las credenciales API para integrar mi e-commerce. Necesito ambiente test y producción."
+  - Te van a pedir: tu `customerId` MiCorreo (formato `00xxxxxxxx`, lo ves en perfil del portal `micorreo.correoargentino.com.ar`) + finalidad ("integración tienda online").
+  - Te van a dar: `user` + `password` para Basic Auth en `/token`. Probablemente distintos para test y prod.
+- [ ] **Confirmar `customerId` MiCorreo** en tu perfil del portal.
+- [ ] **Confirmar CP de origen** de los envíos (Virasoro, Corrientes — probablemente 3342, verificar).
+
 ## 🔴 Pendiente bloqueante para cart en producción (acción del founder)
 
 - [ ] **Generar `CART_COOKIE_SECRET` para Vercel** (production env):

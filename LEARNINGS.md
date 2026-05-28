@@ -22,6 +22,36 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Pedir AMBOS PDFs al founder antes de decidir entre opciones del mismo proveedor
+
+**Categoría**: Estrategia / Decisión técnica
+**Confianza**: 🟢 Alta (caso clarísimo donde la decisión correcta cambió al ver ambos PDFs)
+
+### Qué funcionó
+
+Founder pasó primero el PDF de PAQ.AR v2.0 y preguntó "¿sirve?". Yo arranqué a planear sub-feature LOGISTICA asumiendo PAQ.AR. Después mencionó "API MiCorreo REST.... quizás esta me sirva mejor en mi caso". Le pedí explícitamente el PDF de Mi Correo. Cuando lo pasó, el análisis comparativo reveló que **Mi Correo es estrictamente superior para nuestro caso**: tiene `/rates` (cotización), acepta DNI (sin trámite corporativo), JWT moderno, autoservicio. Los endpoints que PAQ.AR tiene de más (rótulo, tracking, cancelar) son tareas operativas que vienen igual con el portal web — no aportan valor extra para volumen bajo.
+
+**Si hubiera aceptado el primer PDF (PAQ.AR) y arrancado a codear**, hubiera invertido tiempo en una integración inferior + el founder hubiera iniciado un trámite corporativo de 3-6 semanas que no necesitaba.
+
+### Por qué funciona
+
+- **Proveedores grandes ofrecen MÚLTIPLES productos** con APIs distintas (PAQ.AR = corporativo, Mi Correo = PyME / self-service). El founder a veces conoce los nombres pero no qué API encaja con su caso.
+- **Comparar features explícitamente** revela trade-offs que no son obvios desde un solo PDF (ej: la falta de `/rates` en PAQ.AR es invisible hasta que ves que Mi Correo lo tiene).
+- **Costo de pedir 2do PDF = 30 segundos del founder**; costo de codear la integración equivocada = sesiones perdidas.
+
+### Cómo aplicar
+
+- **Regla**: cuando el founder mencione "tengo el PDF de la API X" para un proveedor que ofrece múltiples productos, preguntar explícitamente: "¿hay otros productos del mismo proveedor que estés evaluando? Pasá los PDFs también, comparo antes de planear código."
+- Aplica especialmente a: Correo Argentino (PAQ.AR vs Mi Correo vs eCommerceCorreo), Andreani (B2B Web Services vs PyME), Mercado Pago (Checkout Pro vs Bricks vs Payment Brick).
+- **Output del análisis**: tabla comparativa con criterios que importan para nuestro caso (no genéricos). Recomendación clara con justificación.
+
+### Relacionado
+
+- [[la-info-del-agente-no-es-ground-truth]] — el LEARNING anterior sobre validar info de agentes.
+- [[acepta-literal-pivot-tecnico-founder-sin-verificar]] (MISTAKES) — el caso PAQ.AR original donde estuve a 1 turno de pedir trámite corporativo innecesario.
+
+---
+
 ## 2026-05-28 — La info del agente NO es ground truth; el manual oficial del proveedor sí
 
 **Categoría**: Operación / Verificación de agentes
