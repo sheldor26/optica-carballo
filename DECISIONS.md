@@ -606,7 +606,8 @@ Cuentas a confirmar/crear:
 ### Notas sobre Supabase (cerrado 2026-05-27)
 - Proyecto cloud creado por el founder antes/durante la sesión de setup técnico inicial.
 - Anon key y service_role key configuradas en `.env.local` local del founder.
-- Acción próxima: cuando se diseñe el primer schema (skill `/migration`), decidir si usar `supabase db push` contra cloud directamente o si trabajar primero local (`supabase start` + Docker) y después promover a cloud.
+- ✅ **2026-05-28**: migración 00001 (`catalog_foundation`) + seeds (marcas + categorías + productos Rusty placeholder) aplicados al cloud vía Dashboard SQL Editor (founder pegó manualmente el archivo combinado `supabase/cloud-bootstrap.sql`). Validado end-to-end con `pnpm dev` contra cloud.
+- Para futuras migraciones: o bien pasar el SQL al founder para Dashboard, o linkear con `supabase link --project-ref tuddpfspnbnmafsqdvat` + `supabase db push` (requiere DB password).
 
 ---
 

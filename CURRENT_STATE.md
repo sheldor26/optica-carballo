@@ -2,9 +2,9 @@
 
 ## Status
 
-🟢 **Primera página de marca funcionando en local con SEO completo — commit `ca0c2c9`**
+🟢 **Primera página de marca funcionando contra LOCAL y CLOUD — commit `ca0c2c9` + cloud aplicado 2026-05-28**
 
-Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas + 4 productos Rusty placeholder + página dinámica `/anteojos-de-sol/[brand]` con SSG+ISR, structured data (5 schemas), sitemap.xml, robots.txt. Validado punta a punta contra Supabase local. **Schema y data en cloud TODAVÍA no aplicados** — pendiente que el founder pegue `supabase/cloud-bootstrap.sql` en el SQL Editor del Dashboard.
+Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas + 4 productos Rusty placeholder + página dinámica `/anteojos-de-sol/[brand]` con SSG+ISR, structured data (5 schemas), sitemap.xml, robots.txt. **Validado end-to-end contra los dos ambientes**: Supabase local (Docker) y Supabase cloud (`tuddpfspnbnmafsqdvat.supabase.co`). Próximo paso: decidir qué feature sigue (Header/Footer recomendado).
 
 ## Última actualización
 
@@ -167,8 +167,7 @@ Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas
 
 ## Próximo paso EXACTO
 
-**Pendiente para el founder** (no bloquea desarrollo):
-1. Aplicar `supabase/cloud-bootstrap.sql` (460 líneas) al Supabase cloud vía Dashboard SQL Editor. Cuando esté, decir "cloud aplicado" para validar `pnpm dev` contra cloud.
+**Cloud aplicado y validado** ✅ — schema 00001 + seeds están en `tuddpfspnbnmafsqdvat.supabase.co`. `pnpm dev` apuntando a cloud (vía `.env.local`) responde `/anteojos-de-sol/rusty` con HTTP 200 y 2 productos rendereados.
 
 **Próxima sesión** (decidís vos): tres caminos posibles ordenados por impacto:
 
