@@ -27,6 +27,23 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   fotos físicas de los productos + decidir bucket (Supabase Storage cuando
   haya más de 50 productos; `public/products/` mientras tanto).
 
+## 🔴 Pendiente bloqueante para Auth UI en producción (acción del founder)
+
+- [ ] **Configurar Redirect URLs en Supabase Auth** (Dashboard → Authentication → URL Configuration):
+  - **Site URL**: `https://opticacarballo.com.ar`
+  - **Redirect URLs** (Additional Redirect URLs):
+    - `https://opticacarballo.com.ar/auth/callback`
+    - `https://opticacarballo.com.ar/recuperar-clave/restablecer`
+    - `http://localhost:3000/auth/callback`
+    - `http://localhost:3000/recuperar-clave/restablecer`
+  - Sin esto, los emails de confirmación de signup y de reset de contraseña tendrán links que no funcionan (Supabase los bloquea por seguridad).
+- [ ] **Customizar templates de email** en Supabase Dashboard → Authentication → Email Templates:
+  - Confirmar email (signup) → asunto + body en español, mencionar "Óptica Carballo".
+  - Magic link → no usar (no implementado).
+  - Reset password → asunto + body en español.
+  - Change email → asunto + body en español.
+  - Por default vienen en inglés y genéricos — se ven poco profesionales.
+
 ## 🟡 Pendiente — data real (acción del founder)
 
 - [ ] **Reemplazar productos `[PH]`** en `supabase/seeds/02_rusty_products.sql`

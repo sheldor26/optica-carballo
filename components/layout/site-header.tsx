@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
+import { AuthMenu } from '@/components/auth/auth-menu';
 import { Button } from '@/components/ui/button';
 import { DesktopNav } from '@/components/layout/desktop-nav';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -37,7 +38,8 @@ export function SiteHeader() {
           <DesktopNav links={PRIMARY_NAV} />
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <AuthMenu />
           {business.whatsappLink && (
             <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
               <a
