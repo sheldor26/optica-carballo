@@ -34,6 +34,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          apartment: string | null
+          city: string
+          country: string
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string | null
+          number: string
+          phone: string | null
+          postal_code: string
+          province: string
+          recipient_name: string
+          street: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apartment?: string | null
+          city: string
+          country?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          number: string
+          phone?: string | null
+          postal_code: string
+          province: string
+          recipient_name: string
+          street: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apartment?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string | null
+          number?: string
+          phone?: string | null
+          postal_code?: string
+          province?: string
+          recipient_name?: string
+          street?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       brands: {
         Row: {
           created_at: string
@@ -131,6 +185,292 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          lens_options: Json | null
+          line_total_cents: number
+          order_id: string
+          product_id: string | null
+          product_name: string
+          product_slug: string
+          quantity: number
+          unit_price_cents: number
+          variant_attributes: Json
+          variant_id: string | null
+          variant_sku: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lens_options?: Json | null
+          line_total_cents: number
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          product_slug: string
+          quantity: number
+          unit_price_cents: number
+          variant_attributes?: Json
+          variant_id?: string | null
+          variant_sku: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lens_options?: Json | null
+          line_total_cents?: number
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          product_slug?: string
+          quantity?: number
+          unit_price_cents?: number
+          variant_attributes?: Json
+          variant_id?: string | null
+          variant_sku?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_dni: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          delivered_at: string | null
+          discount_cents: number
+          id: string
+          invoice_cae: string | null
+          invoice_id: string | null
+          invoice_url: string | null
+          mp_payment_id: string | null
+          mp_preference_id: string | null
+          notes: string | null
+          order_number: string
+          paid_at: string | null
+          payment_method: string | null
+          payment_status: string | null
+          prescription_id: string | null
+          prescription_snapshot: Json | null
+          shipped_at: string | null
+          shipping_address_id: string | null
+          shipping_apartment: string | null
+          shipping_cents: number
+          shipping_city: string | null
+          shipping_cost_cents: number | null
+          shipping_country: string | null
+          shipping_method: string | null
+          shipping_number: string | null
+          shipping_phone: string | null
+          shipping_postal_code: string | null
+          shipping_province: string | null
+          shipping_recipient_name: string | null
+          shipping_street: string | null
+          status: string
+          subtotal_cents: number
+          total_cents: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_dni?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          delivered_at?: string | null
+          discount_cents?: number
+          id?: string
+          invoice_cae?: string | null
+          invoice_id?: string | null
+          invoice_url?: string | null
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          notes?: string | null
+          order_number: string
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          prescription_id?: string | null
+          prescription_snapshot?: Json | null
+          shipped_at?: string | null
+          shipping_address_id?: string | null
+          shipping_apartment?: string | null
+          shipping_cents?: number
+          shipping_city?: string | null
+          shipping_cost_cents?: number | null
+          shipping_country?: string | null
+          shipping_method?: string | null
+          shipping_number?: string | null
+          shipping_phone?: string | null
+          shipping_postal_code?: string | null
+          shipping_province?: string | null
+          shipping_recipient_name?: string | null
+          shipping_street?: string | null
+          status?: string
+          subtotal_cents: number
+          total_cents: number
+          tracking_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_dni?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          delivered_at?: string | null
+          discount_cents?: number
+          id?: string
+          invoice_cae?: string | null
+          invoice_id?: string | null
+          invoice_url?: string | null
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
+          notes?: string | null
+          order_number?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          prescription_id?: string | null
+          prescription_snapshot?: Json | null
+          shipped_at?: string | null
+          shipping_address_id?: string | null
+          shipping_apartment?: string | null
+          shipping_cents?: number
+          shipping_city?: string | null
+          shipping_cost_cents?: number | null
+          shipping_country?: string | null
+          shipping_method?: string | null
+          shipping_number?: string | null
+          shipping_phone?: string | null
+          shipping_postal_code?: string | null
+          shipping_province?: string | null
+          shipping_recipient_name?: string | null
+          shipping_street?: string | null
+          status?: string
+          subtotal_cents?: number
+          total_cents?: number
+          tracking_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_shipping_address_id_fkey"
+            columns: ["shipping_address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          created_at: string
+          doctor_matricula: string | null
+          doctor_name: string | null
+          expires_at: string | null
+          id: string
+          image_path: string | null
+          is_archived: boolean
+          notes: string | null
+          od_addition: number | null
+          od_axis: number | null
+          od_cylinder: number | null
+          od_sphere: number | null
+          oi_addition: number | null
+          oi_axis: number | null
+          oi_cylinder: number | null
+          oi_sphere: number | null
+          patient_name: string | null
+          prescribed_at: string | null
+          pupillary_distance: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_matricula?: string | null
+          doctor_name?: string | null
+          expires_at?: string | null
+          id?: string
+          image_path?: string | null
+          is_archived?: boolean
+          notes?: string | null
+          od_addition?: number | null
+          od_axis?: number | null
+          od_cylinder?: number | null
+          od_sphere?: number | null
+          oi_addition?: number | null
+          oi_axis?: number | null
+          oi_cylinder?: number | null
+          oi_sphere?: number | null
+          patient_name?: string | null
+          prescribed_at?: string | null
+          pupillary_distance?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doctor_matricula?: string | null
+          doctor_name?: string | null
+          expires_at?: string | null
+          id?: string
+          image_path?: string | null
+          is_archived?: boolean
+          notes?: string | null
+          od_addition?: number | null
+          od_axis?: number | null
+          od_cylinder?: number | null
+          od_sphere?: number | null
+          oi_addition?: number | null
+          oi_axis?: number | null
+          oi_cylinder?: number | null
+          oi_sphere?: number | null
+          patient_name?: string | null
+          prescribed_at?: string | null
+          pupillary_distance?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       product_images: {
         Row: {
@@ -304,6 +644,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          cuit_cuil: string | null
+          display_name: string | null
+          dni: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cuit_cuil?: string | null
+          display_name?: string | null
+          dni?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cuit_cuil?: string | null
+          display_name?: string | null
+          dni?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
