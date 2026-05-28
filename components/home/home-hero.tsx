@@ -26,9 +26,9 @@ export function HomeHero() {
           <p className="hero-reveal hero-reveal-1 text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
             {siteName} · óptica matriculada · 30+ años
           </p>
-          <h1 className="hero-reveal hero-reveal-2 mt-5 text-balance text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl lg:text-[5.5rem]">
+          <h1 className="hero-reveal hero-reveal-2 mt-5 text-balance font-serif text-5xl font-medium leading-[1.02] tracking-[-0.02em] md:text-7xl lg:text-[5.5rem]">
             Anteojos originales con{' '}
-            <span className="bg-foreground/90 from-foreground to-foreground/60 bg-gradient-to-br bg-clip-text text-transparent">
+            <span className="font-serif italic font-normal text-foreground/80">
               asesoramiento óptico real
             </span>
           </h1>

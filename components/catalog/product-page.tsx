@@ -209,7 +209,7 @@ export async function ProductDetailPage({
               </Link>
               <NewArrivalBadge attributes={product.attributes} />
             </div>
-            <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
+            <h1 className="text-balance font-serif text-4xl font-medium leading-[1.05] tracking-[-0.02em] md:text-5xl">
               {product.name}
             </h1>
             <p className="text-muted-foreground mt-2 text-base font-medium md:text-lg">
@@ -277,8 +277,8 @@ export async function ProductDetailPage({
           <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
             Sobre el producto
           </p>
-          <h2 className="text-foreground mt-2 text-balance text-3xl font-bold tracking-tight md:text-4xl">
-            Por qué elegir el {product.name}
+          <h2 className="text-foreground mt-2 text-balance font-serif text-3xl font-medium tracking-[-0.015em] md:text-4xl">
+            Por qué elegir el <span className="italic font-normal">{product.name}</span>
           </h2>
           <DescriptionWithCallouts
             description={product.description}

@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Glosario de efectos modernos + plan por "rounds verificables" desbloqueó dirección de modernización
+
+**Categoría**: Comunicación founder ↔ asistente / dirección de producto
+**Confianza**: 🟢 Alta (founder eligió las 4 opciones propuestas + agradeció el vocabulario explícitamente)
+
+### Qué pasó
+
+Founder pidió "hacerlo más moderno" — pregunta abierta que históricamente generaba propuestas vagas. En vez de tirar una lista de 10 ideas o arrancar a programar a ciegas, hice 2 cosas:
+
+1. **Glosario rápido de efectos modernos por categoría** (cursor follower, parallax, sticky scroll, tilt 3D, spotlight, bento grid, glass morphism, marquee, view transitions, shimmer, etc.) con nombre técnico + descripción corta + ejemplo de dónde se usa.
+2. **AskUserQuestion con 4 ejes concretos** (tipografía editorial / showcase hero / accent + dark / micro-interacciones) cada uno con preview ASCII mostrando ACTUAL vs PROPUESTO + costo + impacto.
+
+Founder respondió eligiendo las 4 opciones + comentario: **"Hay muchas cosas que veo en paginas modernas, el tema es que no se como ponerles nombres a ese tipo de interacciones/ efectos..."**.
+
+### Por qué funcionó
+
+- **El glosario destrabó comunicación futura**: ahora el founder puede pedir "agregá un spotlight a los cards" o "quiero parallax en el hero" sin tener que describir el efecto cada vez. Es vocabulary tooling, no docs decorativos.
+- **AskUserQuestion con previews ASCII** convirtió un brief abstracto en 4 opciones concretas y comparables. El founder no técnico evaluó las 4 mirando previews, no leyendo párrafos.
+- **Plan por rounds verificables** (4 etapas, cada una autocontenida, build/typecheck verde antes de pushear) le da control granular al founder: puede aprobar/rechazar/iterar cada round sin comprometerse a las siguientes.
+
+### Cómo replicar
+
+- **Cuando founder pide algo abstracto** ("más moderno", "que se vea premium", "ponele onda"), antes de proponer features: confirmar si tiene vocabulario. Si no, preguntar con previews ASCII de opciones concretas en vez de descripciones textuales.
+- **Crear glosario one-shot** cuando hay un dominio nuevo (efectos web, marketing, óptica). El glosario es overhead de 1 mensaje que paga dividendos en todas las conversaciones siguientes.
+- **Romper trabajo grande en rounds verificables** cuando hay alta incertidumbre estética. Cada round = 1 commit, 1 verificación visual, build/typecheck verde. Si el round 1 falla, no se contamina el round 2.
+
+### Anti-patrón a evitar
+
+- Tirar 10 ideas en una lista sin priorizar — el founder no puede elegir, queda paralizado.
+- Empezar a codear "lo más moderno" sin checkpoint de dirección — terminás con 4 cambios paralelos y el founder no sabe cuál le gustó.
+- Asumir que founder sabe el vocabulario técnico — el comentario "no sé cómo llamarlos" lo confirmó.
+
+### Próxima vez aplicar a
+
+- Cuando founder pida ideas para landing pages de marcas nuevas (Vulk, Rusty, etc.) — usar mismo patrón: glosario de "layouts editoriales" + opciones con preview.
+- Cuando se discutan promociones / banners / hero rotators — glosario de "patterns de promo" + opciones.
+
+---
+
 ## 2026-05-28 — `Image fill` ignora `padding` del wrapper — usar double wrapper para que el padding absorba el zoom
 
 **Categoría**: Next.js / next/image / CSS positioning

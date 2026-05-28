@@ -2,6 +2,33 @@
 
 ## Status
 
+🟡 **Round 1 modernización — Tipografía editorial (Fraunces serif + Inter sans) aplicada, pendiente verificación visual del founder**
+
+Founder pidió "hacerlo más moderno". Propuse plan de 4 rounds verificables:
+1. Tipografía editorial (Fraunces serif para H1/H2 + Inter sans body) ← **EN VERIFICACIÓN**
+2. Accent color + sección dark (trust marquee invertido)
+3. Product showcase hero con foto Vulk + parallax
+4. Micro-interacciones (tilt 3D + custom cursor + spotlight)
+
+Antes del plan, le pasé un **glosario rápido de efectos modernos** (cursor follower, parallax, sticky scroll, tilt 3D, spotlight, bento grid, glass morphism, marquee, view transitions, etc.) para que pueda pedir efectos por nombre en futuras conversaciones — founder dijo que ve cosas modernas pero no sabe cómo nombrarlas.
+
+**Round 1 — Cambios aplicados**:
+- `app/layout.tsx`: cargado Fraunces (variable font con axis `opsz` para optical sizing automático) como `--font-serif` + Inter como `--font-sans`. Reemplazado `inter.className` por clase `font-sans` que toma la variable.
+- `tailwind.config.ts`: `font-sans` y `font-serif` apuntan a las variables CSS.
+- H1 hero: `font-serif text-5xl/7xl font-medium tracking-[-0.02em]` + "asesoramiento óptico real" en **italic** font-normal (gancho editorial, estilo Cartier).
+- H2 home (Categorías, Marcas): `font-serif text-3xl/4xl font-medium tracking-[-0.015em]`.
+- H1 category-index + brand-page: `font-serif text-5xl/7xl font-medium` + nombre de marca en italic.
+- H1 product + H2 "Por qué elegir…": serif + nombre producto en italic.
+- H2 productos similares: serif.
+
+**Lo que NO cambió a propósito**: body, párrafos, badges, breadcrumbs, prices, checkout success/error/pendiente, botones, micro-copy uppercase tracking — siguen Inter sans porque la legibilidad transaccional + tabular gana sobre el look editorial en esos contextos.
+
+**Build verde, typecheck verde**. Commit pendiente hasta verificación visual.
+
+**Próximo paso exacto**: founder corre `pnpm dev` y revisa home + página de producto. Si la onda editorial cierra → commit + push + arrancar Round 2 (accent color + 1 sección dark, probablemente trust marquee invertido). Si NO cierra → revertir o ajustar pesos/sizes/italic distribution.
+
+---
+
 🟡 **Fix iterativo del crop — double wrapper NO fue suficiente, padding generoso + scale 1.03 puede o no resolver según las fotos del fabricante**
 
 Después de declarar "fix definitivo" del crop con double wrapper, founder reportó **"sigue cortando, a lo ancho"** con screenshots comparando: Imagen 1 (sitio nuestro, anteojo cortado a los costados) vs Imagen 2 (foto Vulk oficial, anteojo con aire alrededor).

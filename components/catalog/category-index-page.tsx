@@ -77,7 +77,7 @@ export function CategoryIndexPage({
       </nav>
 
       <RevealOnScroll as="article" className="mb-10 max-w-3xl">
-        <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+        <h1 className="text-balance font-serif text-5xl font-medium leading-[1.05] tracking-[-0.02em] md:text-6xl lg:text-7xl">
           {category.name}
         </h1>
         <p className="text-muted-foreground mt-4 text-balance text-base md:text-lg">

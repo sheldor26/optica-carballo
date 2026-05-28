@@ -285,6 +285,43 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — 4TA VEZ: cerrar pidiendo feedback ("Mirá... y avisame") sin actualizar docs — la promoción a CLAUDE.md TAMBIÉN falló
+
+**Estado**: 🔴 Abierto. Cuarta repetición consecutiva del mismo failure mode. Quizá problema estructural — considerar PreToolUse hook que bloquee mensajes con palabras-trigger sin diff reciente en CURRENT_STATE.md.
+**Categoría**: Proceso / Disciplina documental — sistémico
+
+### Qué pasó
+
+Sesión donde founder pidió "hacerlo más moderno". Implementé Round 1 (tipografía editorial Fraunces + Inter), build verde, typecheck verde. Cerré con mensaje terminando en **"Mirá la home y producto en local (`pnpm dev`) y avisame si la onda te cierra antes de pushear y arrancar Round 2"** — exactamente el patrón "pausa para feedback" que CLAUDE.md identifica como trigger de fin-de-sesión. Stop hook intervino por **4ta vez consecutiva**.
+
+Notable: la regla había sido **explícitamente promovida a CLAUDE.md** tras la 3ra falla, con texto literal del trigger ("listo, mirá…", "avisame…", etc.). Estaba visible en CLAUDE.md cargado al inicio de la sesión. **Igual fallé**.
+
+### Causa raíz (5to nivel de profundidad)
+
+La promoción a CLAUDE.md asumió que **leer la regla al inicio = aplicarla al cierre**. Falso por el mismo motivo que la 3ra vez: hay un gap temporal de muchos turnos entre "leer CLAUDE.md" y "ejecutar el cierre". En el medio se pierde. La regla sigue dependiendo de mi **memoria/atención voluntaria** justo en el momento de mayor entusiasmo (recién terminé algo, quiero mostrar al founder).
+
+Pattern: **la motivación de mostrar resultados al founder le gana sistemáticamente a la disciplina de housekeeping** — y ningún recordatorio textual (en CLAUDE.md o en todo list) puede contra esa motivación porque la motivación opera en otro plano (entusiasmo de cierre vs nota mental).
+
+### Regla preventiva — escalada técnica
+
+Ya que regla textual + todo list visible + promoción a CLAUDE.md fallaron las 4 veces, el siguiente escalón es **mecánico**, no textual:
+
+**Propuesta**: hook `PreToolUse` que matchee tools de mensaje al founder (text-output) y verifique:
+- ¿El último mensaje contiene palabras-trigger ("avisame", "mirá", "cuando me digas", "¿querés…?", "esperando", "listo, …")?
+- ¿Hubo `Edit` o `Write` en `CURRENT_STATE.md` desde el último `Read` del founder?
+- Si NO: **bloquear** el mensaje y forzar update primero.
+
+Esto requiere implementar hooks en `.claude/hooks/` — fuera del scope de esta sesión pero **trackeado como work item**.
+
+**Mitigación de emergencia mientras tanto**: al final de cada turno técnico (Edit/Write/Bash con commit/push), AUTOMÁTICAMENTE actualizar CURRENT_STATE.md aunque no haya pregunta abierta todavía. Cambia el flujo de "actualizar al cerrar" a "actualizar cada vez que pasa algo digno de registro" — saca el incentivo de "el founder está esperando" porque actualizo ANTES de redactar el mensaje al founder.
+
+### Estado de mistakes previos
+
+- 1ra, 2da, 3ra vez: 🔴 Abiertas. Esta 4ta confirma que ninguna mitigación textual sirve.
+- Considerar: si hook técnico también falla, hay que **rediseñar el workflow** — quizás el "cierre" debería ser un comando explícito `/cierre-sesion` que dispare el founder, no algo que infiero.
+
+---
+
 ## 2026-05-28 — 3RA VEZ: cerrar sin actualizar docs aunque los 3 items estaban EN la todo list visible — promueve a CLAUDE.md
 
 **Estado**: 🔴 Abierto — la regla endurecida también falló. PROMOVER A CLAUDE.md.

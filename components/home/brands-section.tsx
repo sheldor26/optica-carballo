@@ -13,7 +13,7 @@ export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
     <section className="bg-muted/40 border-y">
       <div className="container py-12 md:py-16">
         <RevealOnScroll>
-          <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
+          <h2 className="text-foreground font-serif text-3xl font-medium tracking-[-0.015em] md:text-4xl">
             Marcas que trabajamos
           </h2>
           <p className="text-muted-foreground mt-2 text-base">

@@ -25,7 +25,7 @@ export function RelatedProducts({
       <RevealOnScroll>
         <h2
           id="related-products-heading"
-          className="text-foreground text-2xl font-semibold tracking-tight md:text-3xl"
+          className="text-foreground font-serif text-3xl font-medium tracking-[-0.015em] md:text-4xl"
         >
           {heading}
         </h2>
