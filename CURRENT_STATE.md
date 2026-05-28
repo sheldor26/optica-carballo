@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Home definitiva + storefront completo — commit `a2f968d`**
+🟢 **Storefront V1 completo + páginas legales pre-checkout — commit `11835c9`**
 
-La home `/` ya no es placeholder: hero + categorías + marcas + value props + Organization/WebSite JSON-LD. Las 4 capas del storefront cubiertas (home, índice categoría, marca, producto). Falta: reemplazar `[PH]` con data real, páginas legales antes del checkout, fotos.
+Home + 2 categorías + 5 marcas × 2 + productos + 4 páginas legales/info (sobre nosotros, política de devolución, botón de arrepentimiento, defensa del consumidor). Footer enriquecido con sección "Información". Falta para habilitar checkout: reemplazar `[PH]` de productos con data real, reemplazar `[PENDIENTE]` de plazos en política legal con valores confirmados por la regente, agregar matrícula real en env, y armar la migración 00002 + integración Mercado Pago.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para home definitivo. 4 componentes nuevos en `components/home/` (hero, categories, brands, value-props). 2 schemas nuevos (Organization+Optician, WebSite). Helpers `fetchAllActiveBrands` + `buildHomeMetadata`. Sin imágenes hero (placeholder, regla 7), sin reviews falsas, value props condicionales según env vars (matrícula visible solo si configurada). Validado contra cloud. Commit `a2f968d`.
+**Por**: Skill `/feature` para páginas legales + sobre nosotros. 4 pages en `(storefront)/` (sobre-nosotros, politica-de-devolucion, boton-de-arrepentimiento, defensa-del-consumidor). Contenido legal genérico (art. 34 ley 24.240, links a argentina.gob.ar) va completo; lo específico del negocio (plazos, CUIT, política exacta) queda como `[PENDIENTE]` o `[PLACEHOLDER]` marcado visualmente con bloque amarillo. Footer extendido con sección "Información". Sitemap incluye las 4 URLs. Commit `11835c9`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,24 @@ La home `/` ya no es placeholder: hero + categorías + marcas + value props + Or
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Páginas legales + Sobre nosotros + footer enriquecido (✅ commit `11835c9` — 2026-05-28)
+- **4 páginas nuevas** en `(storefront)/`:
+  - `sobre-nosotros`: historia, regente matriculada (condicional según env), técnico, "cómo trabajamos", marcas, atención.
+  - `politica-de-devolucion`: arrepentimiento + cambios + productos exceptuados (cristales graduados, lentes de contacto abiertos) + garantía + cómo iniciar trámite. Plazos como `[PENDIENTE]`.
+  - `boton-de-arrepentimiento`: art. 34 ley 24.240 textual + cómo ejercer + canales + excepciones.
+  - `defensa-del-consumidor`: derechos del consumidor + canales OFICIALES reales (link a argentina.gob.ar) + marco legal.
+- **Componentes nuevos `components/legal/`**:
+  - `info-page-shell.tsx`: wrapper con breadcrumb + container + h1 + prose styling vía Tailwind arbitrary selectors (`[&_h2]:...`, `[&_p]:...`).
+  - `placeholder-note.tsx`: bloque amarillo con icono `AlertTriangle`. Visible en producción para que el founder vea qué falta.
+- **Footer extendido** (`components/layout/site-footer.tsx`): grid pasa de 3 a 4 columnas (md+) con nueva columna "Información" linkeando a las 4 páginas.
+- **Helpers**:
+  - `lib/site/nav.ts` agregado `FOOTER_INFO_LINKS` (separado de `PRIMARY_NAV` para no contaminar header).
+  - `lib/catalog/metadata.ts` agregado `buildInfoPageMetadata({title, description, slug})` genérico.
+- **Sitemap actualizado**: 4 URLs nuevas con `changeFrequency: monthly`, priority 0.5-0.6.
+- **Anti-alucinación aplicada**: NO se inventa CUIT, dirección exacta, plazos, ni email oficial. Los marco como `[PENDIENTE]` en el texto, con `PlaceholderNote` arriba que dice exactamente qué falta y qué archivo editar. Los datos que sí están en env (regente name, locality, region, WhatsApp) se renderizan automáticamente.
+- **Contenido legal genuino donde aplica**: artículo 34 ley 24.240 (texto del Estado, no inventado), links oficiales reales a argentina.gob.ar/produccion/defensadelconsumidor. Marco legal: leyes referenciadas con número.
+- **Build**: las 4 páginas como `○ Static` con revalidate 86400 (1 día). First Load JS 105 kB. Total páginas pre-rendereadas en build: 24.
 
 ### Home definitiva (✅ commit `a2f968d` — 2026-05-28)
 - **`app/(storefront)/page.tsx`**: Server Component que fetcha 3 queries en paralelo (`Promise.all`) — categorías sol, rx, y todas las marcas activas. Compone hero + categorías + marcas + value props. `revalidate = 300` → SSG con ISR.
@@ -298,8 +316,18 @@ La home `/` ya no es placeholder: hero + categorías + marcas + value props + Or
 2. ~~**Página de marca en categoría receta**~~ ✅ Hecho en commit `91b1d90`.
 3. ~~**Página índice de categoría**~~ ✅ Hecho en commit `538f7c3`.
 4. ~~**Home definitivo**~~ ✅ Hecho en commit `a2f968d`.
-5. **Links legales** (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`, `/sobre-nosotros`) — **obligatorios antes de habilitar checkout**. Páginas estáticas, contenido legal. Coordinar con `content-writer-medical` para copy de "Sobre nosotros" con E-E-A-T.
-6. **Cargar logo SVG real + foto hero**. Cuando founder pase assets.
+5. ~~**Páginas legales obligatorias + sobre nosotros**~~ ✅ Hecho en commit `11835c9`.
+
+### 🔴 Acciones del founder (no de código) antes del checkout
+6. **Reemplazar productos `[PH]`** con nombres, descripciones, precios reales (editar `supabase/seeds/02_rusty_products.sql` + reaplicar al cloud).
+7. **Reemplazar `[PENDIENTE]` de las páginas legales** con plazos y políticas confirmadas por la regente (editar los 3 archivos en `app/(storefront)/{politica-de-devolucion,boton-de-arrepentimiento,sobre-nosotros}/page.tsx`).
+8. **Completar env vars del negocio**: matrícula de regente (`NEXT_PUBLIC_REGENTE_MATRICULA`), del técnico (`NEXT_PUBLIC_TECNICO_MATRICULA`), CUIT, teléfono, email oficial, dirección exacta, WhatsApp.
+
+### 🟢 Próximas features de código (post-acciones del founder)
+9. **Migración 00002**: auth + profiles + addresses + orders + order_items + prescriptions. Habilita el flujo de checkout.
+10. **Integración Mercado Pago Checkout Pro** (ADR-015): webhook, redirección, confirmación, factura electrónica.
+11. **Tusfacturas integración** (ADR-016): facturación AFIP automática post-pago.
+12. **Logo SVG real + foto hero + fotos de productos en Storage**. Cuando tengas assets.
 
 ### 🟢 Pre-launch (más infra)
 5. **Migración 00002**: profiles + addresses + auth setup. Habilita login + flujo de checkout.
