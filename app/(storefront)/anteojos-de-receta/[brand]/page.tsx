@@ -8,7 +8,7 @@ import {
   getStaticBrandParams,
 } from '@/lib/catalog/queries';
 
-const CATEGORY = CATEGORIES.sol;
+const CATEGORY = CATEGORIES.rx;
 
 export const revalidate = 300;
 
