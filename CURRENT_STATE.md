@@ -2,6 +2,40 @@
 
 ## Status
 
+🟢 **UX polish variantes: swatch thumb al lado del radio + sort fix (específicas antes que compartidas)**
+
+Founder reportó 2 cosas tras ver la página live con las 2 variantes:
+
+1. **Orden incorrecto de thumbs en variante Rosa**: el esquema de medidas aparecía en posición 2 cuando debería ser 3. En Carey aparecía bien.
+2. **Sugerencia UX**: agregar la imagen lateral pequeña al lado del cuadrito (radio button) de cada variante para que el usuario vea visualmente el color/look sin tener que hacer click.
+
+**Causa del bug #1**: el sorter previo solo consideraba `(is_primary DESC, sort_order ASC)`. Las imágenes compartidas (`variant_id=NULL`) tenían `sort_order=2` y las específicas de Rosa tenían `sort_order=3` y `4`. Cuando se filtraban juntas, la compartida quedaba en el medio. En Carey funcionaba por casualidad: sus específicas tenían `sort_order=0,1` y la compartida `sort_order=2` → orden natural.
+
+**Fix #1 — sort logic en `ProductGallery.sortImages`**:
+```ts
+sort((a, b) => {
+  // 1. Primary primero
+  if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+  // 2. Específicas de la variante seleccionada antes que compartidas
+  if (selectedVariantId) {
+    const aSpecific = a.variant_id === selectedVariantId;
+    const bSpecific = b.variant_id === selectedVariantId;
+    if (aSpecific !== bSpecific) return aSpecific ? -1 : 1;
+  }
+  // 3. Sort_order como tiebreaker
+  return a.sort_order - b.sort_order;
+});
+```
+
+Ahora ambas variantes muestran orden lógico: foto principal (primary) → foto secundaria → esquema técnico (compartida) al final.
+
+**Fix #2 — thumb al lado del radio**:
+- `VariantListItem` type extendido con `primaryImagePath: string | null`.
+- `product-page.tsx` calcula la imagen primary de cada variante con `findPrimaryImagePathForVariant(images, variantId)` — busca `is_primary=true` y `variant_id=variantId`, fallback al sort_order más bajo de las de esa variante.
+- `VariantList` renderiza un thumb cuadrado de `size-11` (44px) al lado del radio button con `object-contain p-1` para que la imagen no llegue a los bordes. Si la variante no tiene foto, no se renderiza nada (no rompe).
+
+Typecheck verde. Commit pendiente.
+
 🔴 **Bug detectado: `product_images` con duplicados en cloud — migration de dedupe + UNIQUE constraint pendiente del founder**
 
 Founder reportó: "Cada vez que elijo una variante se me van sumando fotos debajo de la imagen" + screenshot con ~18 thumbnails. Diagnóstico inmediato: `INSERT ... ON CONFLICT DO NOTHING` **sin target** no detecta conflict si no hay UNIQUE constraint que matchee. La tabla `product_images` no tenía UNIQUE en `storage_path`, así que cada re-ejecución de los seeds 03/07 insertó filas duplicadas con UUIDs nuevos.
@@ -324,6 +358,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: 2 fixes UX tras feedback founder en la página de producto con 2 variantes activas. (1) Sort logic en ProductGallery: imágenes específicas de la variante seleccionada antes que las compartidas (variant_id NULL) — antes el esquema de medidas se colaba al medio en Rosa. (2) Thumb visual al lado del radio en VariantList: VariantListItem con `primaryImagePath`, helper `findPrimaryImagePathForVariant` en product-page calcula la primary por variant_id, render con next/image size-11 + object-contain. Typecheck verde, commit pendiente.
 
 **Fecha**: 2026-05-28
 **Por**: Bug fix product_images duplicados. Founder reportó "se me suman fotos al elegir variante" + screenshot con 18+ thumbnails. Diagnóstico: ON CONFLICT DO NOTHING sin target en seeds 03/07 no detectaba conflict por falta de UNIQUE en storage_path → cada re-ejecución duplicaba. Fix: migration `20260528170000_product_images_unique_path.sql` (DELETE duplicados + ADD UNIQUE (product_id, storage_path)) + seeds 03/07 actualizados con ON CONFLICT explícito + MISTAKES.md entry documentando causa raíz y regla preventiva.

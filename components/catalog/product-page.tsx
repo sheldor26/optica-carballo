@@ -28,6 +28,18 @@ function extractFrameShape(attrs: Record<string, unknown>): string | null {
   return typeof v === 'string' ? v : null;
 }
 
+function findPrimaryImagePathForVariant(
+  images: ProductDetailData['images'],
+  variantId: string,
+): string | null {
+  const variantImages = images.filter((img) => img.variant_id === variantId);
+  if (variantImages.length === 0) return null;
+  const primary = variantImages.find((img) => img.is_primary);
+  if (primary) return primary.storage_path;
+  const sorted = [...variantImages].sort((a, b) => a.sort_order - b.sort_order);
+  return sorted[0]?.storage_path ?? null;
+}
+
 function categorySubtitle(category: CategoryConfig, attrs: Record<string, unknown>): string {
   const gender = typeof attrs.gender === 'string' ? attrs.gender : null;
   const treatments = Array.isArray(attrs.lens_treatment)
@@ -242,6 +254,10 @@ export async function ProductDetailPage({
               priceCents: v.price_cents,
               stockQty: v.stock_qty,
               attributes: v.attributes,
+              primaryImagePath: findPrimaryImagePathForVariant(
+                product.images ?? [],
+                v.id,
+              ),
             }))}
           />
 

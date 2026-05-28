@@ -12,9 +12,23 @@ type Props = {
   images: ProductImage[];
 };
 
-function sortImages(images: ProductImage[]): ProductImage[] {
+function sortImages(
+  images: ProductImage[],
+  selectedVariantId: string | null,
+): ProductImage[] {
   return [...images].sort((a, b) => {
+    // 1. Primary primero.
     if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+    // 2. Imágenes específicas de la variante seleccionada antes que las
+    //    compartidas (variant_id null). Sin esto, una imagen compartida
+    //    con sort_order bajo se cuela entre las específicas y queda
+    //    visualmente fuera de orden.
+    if (selectedVariantId) {
+      const aSpecific = a.variant_id === selectedVariantId;
+      const bSpecific = b.variant_id === selectedVariantId;
+      if (aSpecific !== bSpecific) return aSpecific ? -1 : 1;
+    }
+    // 3. Sort_order como tiebreaker final.
     return a.sort_order - b.sort_order;
   });
 }
@@ -23,15 +37,15 @@ export function ProductGallery({ productName, images }: Props) {
   const { selectedVariantId } = useVariantSelection();
 
   const sorted = useMemo(() => {
-    if (!selectedVariantId) return sortImages(images);
+    if (!selectedVariantId) return sortImages(images, null);
     // Filtrar imágenes de la variante seleccionada + las que aplican a
     // todo el modelo (variant_id null).
     const filtered = images.filter(
       (img) => img.variant_id === selectedVariantId || img.variant_id === null,
     );
     // Si la variante no tiene fotos propias, mostrar todas (fallback).
-    if (filtered.length === 0) return sortImages(images);
-    return sortImages(filtered);
+    if (filtered.length === 0) return sortImages(images, null);
+    return sortImages(filtered, selectedVariantId);
   }, [images, selectedVariantId]);
 
   const [activeIdx, setActiveIdx] = useState(0);

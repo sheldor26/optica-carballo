@@ -1,9 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { VariantWhatsappCta } from '@/components/product/variant-whatsapp-cta';
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { formatPriceCents } from '@/lib/format/currency';
+import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { cn } from '@/lib/utils';
 
 type AttributesJson = Record<string, unknown>;
@@ -14,6 +16,7 @@ export type VariantListItem = {
   priceCents: number;
   stockQty: number;
   attributes: AttributesJson;
+  primaryImagePath: string | null;
 };
 
 const FRAME_COLOR_LABELS: Record<string, string> = {
@@ -132,8 +135,22 @@ export function VariantList({
                     <span className="bg-foreground size-2 rounded-full" />
                   )}
                 </span>
-                <div>
-                  <p className="text-foreground font-medium">{label}</p>
+                {v.primaryImagePath && (
+                  <div
+                    aria-hidden="true"
+                    className="bg-muted/40 relative size-11 shrink-0 overflow-hidden rounded-md"
+                  >
+                    <Image
+                      src={getProductImageUrl(v.primaryImagePath)}
+                      alt=""
+                      fill
+                      sizes="44px"
+                      className="object-contain p-1"
+                    />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-foreground truncate font-medium">{label}</p>
                   <p className="text-muted-foreground text-xs">SKU: {v.sku}</p>
                 </div>
               </div>
