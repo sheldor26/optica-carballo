@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Sub-feature 3 completa — webhook MP + emails transaccionales (Resend) funcional**
+
+Flow completo de venta cerrado end-to-end (en dev, falta deploy + DNS + creds prod). Webhook `/api/mp/webhook` recibe notifications de MP, valida signature con `MP_WEBHOOK_SECRET` (opcional en dev, obligatorio en prod), fetcha el payment completo vía SDK MP, mapea status MP → status orders, hace UPDATE con idempotencia (no procesa 2x el mismo payment_id), y dispara 2 emails vía Resend cuando una order pasa a `paid`: (1) al cliente confirmando pago + detalles + dirección + total, (2) al founder con datos para facturar manual y despachar. Templates HTML inline-friendly (Gmail/Outlook/Apple Mail compatibles). Smoke 5/5: GET health, POST con type≠payment skipped, POST con JSON inválido 400, POST con payment_id falso fetcha MP y devuelve "not found" graceful, POST sin signature secret procesa sin verificar (correcto en dev). **Próximas acciones críticas del founder antes de prod**: (1) confirmar SELECTs cloud para regenerar bootstrap solo con 00006, (2) configurar webhook URL en panel MP + `MP_WEBHOOK_SECRET` para signature validation real, (3) verificar dominio Resend para enviar desde `hola@opticacarballo.com.ar`, (4) setear `BUSINESS_ADMIN_EMAIL` para recibir notifications admin.
+
 🟢 **Sub-feature 2b PARTE 2 completa — integración Mercado Pago Checkout Pro V1 funcional E2E**
 
 Founder pasó credenciales TEST de MP. Instalé `mercadopago` v3.0.0 SDK + agregué `lib/mp/{client,preferences}.ts` + modifiqué `lib/checkout/actions.ts` para llamar `createCheckoutPreference` post-`createOrderFromCart`, redirigir al `init_point` (o `sandbox_init_point` en modo TEST). Guardo `mp_preference_id` + `payment_method='mercadopago'` en `orders`. Pages nuevas `/checkout/exito` y `/checkout/error` con info post-redirect (orden, payment_id, status). E2E validado: la creación de preference contra sandbox MP devuelve URLs reales (`https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id=...`). Detalle aprendido: MP rechaza `auto_return: 'approved'` con back_urls localhost — código condiciona auto_return solo si el SITE_URL NO es local. **Próxima sub-feature**: webhook MP (sub-feature 3) que actualiza `orders.status` cuando el pago se confirma, + emails con Resend (requiere `RESEND_API_KEY`).
@@ -451,7 +455,45 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Sub-feature 2b PARTE 2 — Integración Mercado Pago Checkout Pro V1 (✅ 2026-05-28, sin commit todavía)
+### Sub-feature 3 — Webhook MP + emails transaccionales Resend (✅ 2026-05-28, sin commit todavía)
+- **Trigger**: founder confirmó que `RESEND_API_KEY` ya está en `.env.local` (también `RESEND_FROM_EMAIL=Óptica Carballo <hola@opticacarballo.com.ar>`).
+- **Dep instalada**: `resend@6.12.4`.
+- **`lib/emails/client.ts`**: singleton lazy del SDK Resend. `getFromAddress()` lee `RESEND_FROM_EMAIL` con fallback a `onboarding@resend.dev` (Resend default verificado, útil mientras founder verifica DNS de `opticacarballo.com.ar`). `getAdminEmail()` lee `BUSINESS_ADMIN_EMAIL` (opcional — si no está, no manda emails admin).
+- **`lib/emails/templates/`**:
+  - `shared.ts`: `escapeHtml`, `fmtPrice`, `emailLayout` con HTML5 + inline styles compatibles Gmail/Outlook/Apple Mail. Sin React Email (evita dep grande para 2 templates).
+  - `order-confirmation-customer.ts`: subject "Confirmamos tu pedido OC-YYYY-NNNNN", body con bienvenida, número orden, payment_id MP, tabla de productos (qty + importe), totales, dirección de envío, "¿qué sigue?".
+  - `order-notification-admin.ts`: subject "💰 Nuevo pago — OC-YYYY-NNNNN ($ X)", body con alerta + checklist de acciones manuales (facturar AFIP, imprimir rótulo, despachar, mandar tracking), datos cliente + email + tel, dirección envío + tel, productos con SKUs, totales, footer técnico con MP payment_id + order_id.
+- **`lib/emails/send-order-emails.ts`**: 2 funciones `sendOrderConfirmationToCustomer` + `sendOrderNotificationToAdmin`. **Best-effort**: si Resend falla, log y retorna error sin tirar excepción (el webhook MP no debe responder 500 por email — MP reintentaría indefinidamente).
+- **`lib/mp/webhook.ts`**:
+  - `validateMpSignature({xSignature, xRequestId, dataId})`: HMAC-SHA256 del template `id:<X>;request-id:<Y>;ts:<Z>;` usando `MP_WEBHOOK_SECRET`. Si secret no está en env → `{ok:true, verified:false}` (aceptable dev/pre-launch). Si headers faltan o firma no matchea → `{ok:false}`. Usa `timingSafeEqual` contra timing attacks.
+  - `fetchPaymentById(paymentId)`: fetcha el payment completo vía SDK `Payment(client).get({id})`. Devuelve `{id, status, status_detail, external_reference, transaction_amount, payment_method_id, payer_email}` o null.
+  - `mpStatusToOrderStatus(mpStatus)`: mapea MP statuses (approved/in_process/rejected/cancelled/refunded/etc) → nuestros orders.status (paid/pending/cancelled/refunded). `in_mediation` devuelve null (mantener status actual).
+- **`app/api/mp/webhook/route.ts`** (POST + GET):
+  - **POST**: parse JSON, filtra `type==='payment'`, valida signature, fetcha payment, lookup order por `external_reference=order_number`, idempotencia (skip si `mp_payment_id` y `status` ya matchean), UPDATE `orders.status + mp_payment_id + payment_status + paid_at`, dispara emails SI transicionó a `paid`, responde 200 siempre (sino MP reintenta indefinidamente — excepción: 401 si signature inválida).
+  - **GET**: health check (`{ok:true, endpoint:'mp-webhook'}`). Útil para que el founder confirme la URL desde el panel MP antes de configurar.
+- **Decisiones técnicas clave**:
+  - **Validación signature opcional en V1**: si `MP_WEBHOOK_SECRET` no está, procesa sin validar. Permite arrancar sin configurar el secret. Founder lo configura en panel MP cuando esté listo para prod.
+  - **Status 200 a MP siempre** (excepto signature inválida): si devolvemos 500 por errores nuestros, MP reintenta exponencialmente. Mejor log + 200 + alertar internamente.
+  - **Idempotencia por `mp_payment_id + status`**: doble check evita re-procesar pero permite legitimas actualizaciones (ej: approved → refunded).
+  - **Emails solo en transición `wasUnpaid → isNowPaid`**: evita mandar email dos veces si MP reenvía el mismo evento.
+  - **Templates HTML inline-friendly**: sin `<style>` blocks, todo `style="..."` en cada tag. Gmail clip parses así sin problemas.
+  - **Fallback `RESEND_FROM_EMAIL` a `onboarding@resend.dev`**: founder puede testear sin verificar dominio DNS. Cuando verifique, usa el real automáticamente.
+  - **`BUSINESS_ADMIN_EMAIL` opcional**: si no está, skip silencioso (no error). Útil si founder quiere arrancar sin recibir emails todavía.
+  - **TODO conocido**: `brand_name` en email cliente está vacío. El schema `order_items` no guarda brand snapshot. Si importa para UX del email, hacer migración 00007 con `brand_name_snapshot` o joinear contra `products → brands` al render. Aceptable para V1.
+- **Smoke 5/5 verdes**:
+  - GET `/api/mp/webhook` → `{ok:true, endpoint:'mp-webhook'}`
+  - POST `type='merchant_order'` → `{ok:true, skipped:'not a payment event'}`
+  - POST con JSON inválido → 400 `{ok:false, error:'invalid json'}`
+  - POST con secret configurado + sin headers → 401 (correcto — validación activa)
+  - POST sin secret + `type='payment'` + payment_id falso → 200 `{ok:true, error:'payment not found in MP api'}` (graceful)
+- **Validación**: typecheck + lint + build clean.
+- **🔴 Acciones del founder antes de funcionar end-to-end en cloud**:
+  1. **Configurar webhook en panel MP**: Dashboard → Tus integraciones → Notificaciones → Configurar webhook → URL `https://opticacarballo.com.ar/api/mp/webhook` → eventos: solo `payment` → MP genera signing key → agregar a Vercel como `MP_WEBHOOK_SECRET`.
+  2. **Verificar dominio `opticacarballo.com.ar` en Resend**: Dashboard Resend → Domains → Add Domain → seguir instrucciones DNS (SPF/DKIM/MX records). Sin esto, Resend rebota envíos desde `hola@opticacarballo.com.ar`.
+  3. **Setear `BUSINESS_ADMIN_EMAIL`** en `.env.local` y Vercel para recibir notifications administrativas.
+  4. **Testing en dev local**: webhook MP no puede POSTear a `localhost`. Para E2E local: usar ngrok / tunnel.dev. Alternativa: testing directo en Vercel preview cuando se acerque deploy.
+
+### Sub-feature 2b PARTE 2 — Integración Mercado Pago Checkout Pro V1 (✅ 2026-05-28, commit `b4a890f`)
 - **Credenciales**: founder pasó TEST credentials de MP. Agregadas a `.env.local` como `MP_ACCESS_TOKEN` (server) + `NEXT_PUBLIC_MP_PUBLIC_KEY` (cliente, no usado V1 — sería para Bricks futuro).
 - **Dep instalada**: `mercadopago@3.0.0` (la "v2" del API moderno con `MercadoPagoConfig` + clases `Preference`). 2 packages totales, sin warnings críticos.
 - **`lib/mp/client.ts`**: singleton lazy `getMpClient()` que construye `MercadoPagoConfig` en el primer uso. Timeout 8s. Throw si falta env var. `isMpTestMode()` helper que detecta token TEST-... vs APP_USR-...

@@ -27,6 +27,19 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   fotos físicas de los productos + decidir bucket (Supabase Storage cuando
   haya más de 50 productos; `public/products/` mientras tanto).
 
+## 🔴 Pendiente bloqueante para emails en producción (acción del founder)
+
+- [ ] **Verificar dominio `opticacarballo.com.ar` en Resend**:
+  - Resend Dashboard → Domains → Add Domain → `opticacarballo.com.ar`
+  - Resend te da SPF, DKIM, MX records → agregar en el DNS del dominio (donde sea que lo tengas registrado).
+  - Sin verificar: Resend rebota envíos desde `hola@opticacarballo.com.ar` y el fallback usa `onboarding@resend.dev` (funciona pero menos profesional).
+- [ ] **Configurar webhook MP**:
+  - Dashboard MP → Tus integraciones → Notificaciones → Configurar webhook.
+  - URL: `https://opticacarballo.com.ar/api/mp/webhook` (cuando esté deployed).
+  - Eventos: solo `Pagos` (`payment`).
+  - MP genera signing key → agregar a Vercel como `MP_WEBHOOK_SECRET`.
+- [ ] **Setear `BUSINESS_ADMIN_EMAIL`** en `.env.local` y Vercel para recibir notifications administrativas (alta de pagos). Sin esto los emails admin se silencian.
+
 ## 🔴 Pendiente bloqueante para sub-feature LOGISTICA (acción del founder)
 
 - [ ] **Solicitar credenciales API MiCorreo** al área Comercial de Correo Argentino:
