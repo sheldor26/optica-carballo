@@ -2,14 +2,14 @@
 
 ## Status
 
-🔴 **BLOQUEADO por cloud drift de migración 00002 — commit `f5a0ecf`**
+🟢 **Cloud drift resuelto. Migraciones 00001 + 00002 + 00003 verificadas en cloud**
 
-Al intentar aplicar migración 00003 al cloud, error `42P01: relation "public.orders" does not exist`. Eso confirma que la migración 00002 NO está realmente aplicada al cloud, aunque `CLOUD_APPLIED.md` la marcaba como ✅ por confianza ciega en el reporte verbal del founder. El MCP de Supabase no puede verificar directamente porque el proyecto `tuddpfspnbnmafsqdvat` está en una cuenta distinta del founder a la que la integración MCP tiene asociada. Necesito output de SELECT diagnóstico del founder antes de aplicar correcciones.
+Schema cloud al día con `supabase/migrations/`. 10 tablas + sequence + functions + triggers presentes. Auth flow listo (pendiente config Redirect URLs Auth Dashboard, no bloqueante para próxima feature). Próximos pasos código: bucket Storage privado para recetas, o server actions de checkout + integración Mercado Pago.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Sesión bloqueada por cloud drift. Al intentar aplicar bootstrap de 00003, error 42P01 confirma que 00002 no está aplicada al cloud. Investigación: MCP no puede verificar cloud directamente (proyecto en cuenta distinta). Bootstrap regenerado con 00002+00003 concatenadas (390 líneas) por si la 00002 nunca se aplicó realmente. Founder reportó que usa cuentas distintas de Supabase — el aplicar SQL en proyecto incorrecto es una hipótesis. Esperando del founder: (a) project ID en la URL del Dashboard donde aplica, (b) output de SELECT diagnóstico. Docs actualizadas: CLOUD_APPLIED 00002 a ⚠️, MISTAKES nueva entrada 🔴 activa.
+**Por**: Cloud drift resuelto. Founder ejecutó SELECT diagnóstico (5 tablas, solo catálogo de 00001) → confirmó hipótesis (00002 nunca aplicada en cloud, solo en tracker). Aplicó bootstrap 00002+00003 (390 líneas) en proyecto correcto `tuddpfspnbnmafsqdvat`. Re-verificó con 2 SELECTS post-aplicación: 10 tablas + 2 functions + 1 trigger + sequence. `CLOUD_APPLIED.md` actualizado con ✅ VERIFICADO (esta vez con evidencia, aplicando regla preventiva). `MISTAKES.md` cloud drift marcado como 🟢 Resuelto. `BACKLOG.md` con tres entries nuevas en "Hecho".
 
 ## Qué se construyó hasta ahora
 
@@ -329,24 +329,14 @@ Al intentar aplicar migración 00003 al cloud, error `42P01: relation "public.or
 
 ## Próximo paso EXACTO
 
-**🔴 BLOQUEANTE — resolver cloud drift antes de cualquier código**:
+**Pendiente ortogonal del founder** (no bloquea próxima sesión código):
+- Supabase Dashboard → Authentication → URL Configuration → Site URL + 4 Redirect URLs (BACKLOG.md 🔴). Necesario para que los emails de signup/reset traigan links válidos.
 
-1. Founder verifica que el SQL Editor que está usando apunta al proyecto correcto: URL debe contener `project/tuddpfspnbnmafsqdvat`.
-2. Founder ejecuta SELECT diagnóstico (en CURRENT_STATE.md sección "Status" hay link al snippet o ver último turno conversacional). Reporta:
-   - `db` + `cluster` (confirma proyecto correcto).
-   - Lista de tablas en `public`.
-3. Según el output, próxima acción concreta:
-   - Si 5 tablas (solo catálogo) → pegar `supabase/cloud-bootstrap.sql` completo (390 líneas, 00002+00003).
-   - Si 10 tablas (todo aplicado) → solo aplicar 00003 (regenerar bootstrap con solo esa migración) — probable que el error vino de pegar en proyecto incorrecto.
-   - Si 6-9 tablas (parcial) → armar SQL targeted que cree solo lo faltante. CASE específico, definir según output.
-4. Actualizar `CLOUD_APPLIED.md` con estado real validado (no por dicho).
+**Próxima sesión código** (decidís vos):
+- **Bucket Storage privado `prescriptions/`** + signed URLs + RLS policies de Storage. Paso previo al feature de upload de receta IA.
+- **Server actions de checkout** (`/carrito` → validar stock → crear order → preferencia MP → redirect). Requiere integración Mercado Pago Checkout Pro V1 (ADR-015) + Tusfacturas para facturación AFIP post-payment (ADR-016).
 
-**Pendientes ortogonales del founder** (no bloquean cuando se resuelva el cloud drift):
-- Supabase Dashboard → Authentication → URL Configuration → Site URL + 4 Redirect URLs (BACKLOG.md 🔴).
-
-**Próxima sesión código** (cuando cloud drift resuelto):
-- **Bucket Storage privado `prescriptions/`** + signed URLs + RLS policies de Storage.
-- **Server actions de checkout** + integración Mercado Pago (ADR-015 Checkout Pro V1).
+Recomendación: **Bucket Storage primero** — más chico, sin dependencias externas (no necesita API keys de servicios). Después checkout (es feature grande, mejor con foco propio).
 
 **Próxima sesión** (decidís vos):
 

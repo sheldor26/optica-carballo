@@ -107,7 +107,7 @@ Concretamente:
 
 ## 2026-05-28 — `CLOUD_APPLIED.md` marcó migración 00002 como ✅ sin verificación real
 
-**Estado**: 🔴 Activo (en proceso de resolución)
+**Estado**: 🟢 Resuelto (cloud drift corregido + regla preventiva activa)
 **Categoría**: Operación / Documentación
 
 ### Qué pasó
@@ -138,10 +138,12 @@ Cuando el founder dice "cloud aplicado", el asistente debe:
 3. **NUNCA marcar ✅ en `CLOUD_APPLIED.md` solo por dicho** sin verificación de tablas/objetos creados.
 
 ### Cambios derivados
-- [x] `CLOUD_APPLIED.md` revertido: 00002 vuelve a estado "⏳ Pendiente / a verificar".
-- [x] Registro en MISTAKES.md (este archivo).
-- [ ] Pendiente: founder ejecuta SELECT diagnóstico, identificamos qué hay realmente en cloud, aplicamos correcciones.
+- [x] `CLOUD_APPLIED.md` revertido: 00002 a "⚠️ A verificar".
+- [x] Registro en MISTAKES.md.
+- [x] **Resuelto 2026-05-28**: founder ejecutó SELECT diagnóstico → confirmó 5 tablas (solo catálogo) → re-aplicó bootstrap 00002+00003 → re-verificó con 2 SELECTS post-aplicación → 10 tablas + 2 functions + 1 trigger + sequence presentes. `CLOUD_APPLIED.md` actualizado con ✅ VERIFICADO.
+- [x] LEARNINGS tiene la regla preventiva: nunca marcar ✅ sin SELECT diagnóstico post-aplicación.
 - [ ] Considerar: agregar al CLAUDE.md una regla dura para verificación post-aplicación de migraciones.
+- [ ] Considerar: agregar Step 10 obligatorio al skill `/migration` con verificación SELECT post-aplicación.
 
 ---
 

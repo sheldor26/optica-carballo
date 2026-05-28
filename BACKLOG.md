@@ -103,8 +103,12 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 - 2026-05-28: API key comprometida rotada por el founder. Nueva key en
   `.env.local`.
-- 2026-05-28: `supabase/cloud-bootstrap.sql` con migraciones 00001 + 00002
-  aplicado al cloud. Trackeado en `supabase/CLOUD_APPLIED.md`.
+- 2026-05-28: Migración 00001 (catálogo) aplicada al cloud (verificada).
+- 2026-05-28: Migración 00002 (identity + orders) aplicada al cloud
+  (post cloud drift detectado y resuelto — ver MISTAKES.md 2026-05-28
+  "CLOUD_APPLIED marcó ✅ sin verificación real"). Verificada con SELECT.
+- 2026-05-28: Migración 00003 (order_number generator) aplicada al cloud
+  junto con 00002. Verificada con SELECT.
 
 ## ❌ Descartado
 
