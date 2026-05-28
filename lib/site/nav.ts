@@ -14,3 +14,15 @@ export const PRIMARY_NAV: NavLink[] = [
   { href: '/anteojos-de-sol', label: 'Anteojos de sol' },
   { href: '/anteojos-de-receta', label: 'Anteojos de receta' },
 ];
+
+/**
+ * Links de información/legales para el footer. NO van en el header
+ * para no contaminar la navegación principal. Estas páginas son
+ * obligatorias antes de habilitar el checkout.
+ */
+export const FOOTER_INFO_LINKS: NavLink[] = [
+  { href: '/sobre-nosotros', label: 'Sobre nosotros' },
+  { href: '/politica-de-devolucion', label: 'Política de cambios y devoluciones' },
+  { href: '/boton-de-arrepentimiento', label: 'Botón de arrepentimiento' },
+  { href: '/defensa-del-consumidor', label: 'Defensa del consumidor' },
+];

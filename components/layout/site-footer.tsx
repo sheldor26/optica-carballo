@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
-import { PRIMARY_NAV } from '@/lib/site/nav';
+import { FOOTER_INFO_LINKS, PRIMARY_NAV } from '@/lib/site/nav';
 import { getBusinessInfo } from '@/lib/site/business';
 
 export function SiteFooter() {
@@ -19,7 +19,7 @@ export function SiteFooter() {
   return (
     <footer className="border-border bg-muted/40 mt-16 border-t">
       <div className="container py-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <p className="text-foreground text-base font-semibold">
               {business.siteName}
@@ -48,6 +48,22 @@ export function SiteFooter() {
             <p className="text-foreground text-sm font-semibold">Catálogo</p>
             <ul className="mt-3 space-y-2">
               {PRIMARY_NAV.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-muted-foreground hover:text-foreground text-sm"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-foreground text-sm font-semibold">Información</p>
+            <ul className="mt-3 space-y-2">
+              {FOOTER_INFO_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

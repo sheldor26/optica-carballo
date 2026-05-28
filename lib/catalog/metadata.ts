@@ -139,6 +139,28 @@ export function buildCategoryIndexMetadata(
   };
 }
 
+/**
+ * Metadata para páginas estáticas de información/legales (sobre nosotros,
+ * política de devolución, etc.). Title + description + canonical + hreflang.
+ */
+export function buildInfoPageMetadata(args: {
+  title: string;
+  description: string;
+  slug: string;
+}): Metadata {
+  const fullTitle = `${args.title} | Óptica Carballo`;
+  const url = `${SITE_URL}/${args.slug}`;
+  return {
+    title: { absolute: fullTitle },
+    description: args.description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title: fullTitle, description: args.description, url, type: 'article' },
+  };
+}
+
 function formatBrandList(names: string[]): string {
   if (names.length === 0) return '';
   if (names.length === 1) return names[0]!;
