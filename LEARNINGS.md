@@ -22,6 +22,34 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Invocar `argentine-ecom` ANTES de planificar integración logística salvó iniciar trámite innecesario
+
+**Categoría**: Estrategia / Uso de agentes
+**Confianza**: 🟢 Alta (validado con info concreta del agente que cambió decisión)
+
+### Qué funcionó
+
+Founder decidió "shipping con PAQ.AR de Correo Argentino" sin que yo cuestionara la viabilidad técnica. En vez de empezar a codear (o peor, pedirle que inicie trámite corporativo), invoqué al agente `argentine-ecom` para investigar el estado real de la API. El agente reveló: (1) PAQ.AR no tiene API pública — requiere cuenta corporativa + NDA (3-6 semanas); (2) DX de la API es débil incluso cuando la tenés; (3) Andreani sigue siendo mejor opción técnica (ADR-017 vigente); (4) Para volumen inicial (5-20/mes), NO se justifica integrar API — tabla fija + despacho manual es más eficiente. Resultado: founder NO inicia trámite Correo corporativo (ahorro 3-6 semanas + DX hostil), plan pivota a tabla por zonas con migración a Andreani PyME cuando crezca volumen.
+
+### Por qué funciona
+
+- **El founder pide cosas con vocabulario técnico** ("PAQ.AR API") sin necesariamente conocer la realidad operativa actual. Aceptar literal lleva a iniciar trámites largos por nada.
+- **Los agentes especialistas tienen conocimiento de dominio** que yo no tengo (logística AR es nicho). Invocarlos como segundo cerebro antes de codear o pedir acciones al founder evita rabbit holes.
+- **El costo de invocar un agente es bajo** (~40 segundos en background) vs el costo de iniciar trámites/escribir código en base a supuestos.
+
+### Cómo aplicar
+
+- **Regla**: cuando founder mencione integración técnica con un proveedor argentino (AFIP, MP, Andreani, Correo, banco, etc.) y yo NO tenga conocimiento directo y reciente del estado de su API, invocar `argentine-ecom` ANTES de planear código o pedir credenciales/trámites.
+- Aplica también a pivots de scope que dependen de una pieza externa cuya viabilidad no conozco.
+- No aplica a decisiones puras de producto/UX (esas las decide el founder, no requieren verificación técnica externa).
+
+### Relacionado
+
+- ADR-017 (Andreani principal + Correo Argentino fallback) — confirmado vigente por el agente.
+- Decisión de shipping V1 ajustada en CURRENT_STATE.md ("Próximo paso EXACTO").
+
+---
+
 ## 2026-05-28 — `supabase-js` rompe inferencia con `.select('*').maybeSingle().returns<T>()`, hay que enumerar columnas
 
 **Categoría**: Operación / Tipos

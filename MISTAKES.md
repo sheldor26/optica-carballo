@@ -24,6 +24,58 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Iba a aceptar literal "integrá PAQ.AR" del founder sin verificar viabilidad técnica
+
+**Estado**: 🟡 Mitigado
+**Categoría**: Sistema / IA / Validación de pivots
+
+### Qué pasó
+
+Founder pidió "para los envíos trataría de hacerlo integrando correo argentino (PAQ.AR)" como cambio de plan sobre el flat rate previamente decidido. Mi primera respuesta aceptó el pivot literal: actualicé TodoWrite con "Migración a PAQ.AR API cuando founder tenga cuenta corporativa", agregué "iniciar trámite corporativa" a pendientes del founder, y propuse plan operativo asumiendo que la integración API era viable. Recién ahí pregunté si tenía cuenta corporativa (founder respondió "personal"), y SOLO entonces decidí invocar al agente `argentine-ecom` para verificar el estado real.
+
+El agente reveló que **PAQ.AR no tiene API pública**, requiere cuenta corporativa con NDA + trámite de 3-6 semanas, DX hostil aún con la cuenta, y que **para volumen inicial (5-20 envíos/mes) integrar API no se justifica**. Si hubiera arrancado a codear o si el founder hubiera iniciado el trámite corporativo en base a mi primera respuesta, hubieran sido semanas perdidas + frustración garantizada.
+
+### Causa raíz
+
+Acepté un pivot técnico del founder sin verificar viabilidad **porque sonaba específico y plausible** ("PAQ.AR de Correo Argentino" tiene nombre concreto, parece producto real). Pero el founder es **no-técnico explícito** (declarado en CLAUDE.md) — sus pedidos vienen del marketing del proveedor o de aspiración, no de haber leído la documentación técnica. La aspiración "quiero usar Correo Argentino para envíos" es legítima y atendible, pero **la implementación "integrar API PAQ.AR" puede ser ingenua o imposible** — y esa diferencia solo se detecta verificando.
+
+### Impacto
+
+- Bajo en este caso (detectado en el siguiente turno antes de codear).
+- Si hubiera llegado a un commit con `lib/correo-argentino/*.ts` + actualización de ADR + pedidos al founder de iniciar trámite: 3-6 semanas perdidas del founder + código muerto + revertir decisiones formales.
+
+### Cómo se detectó
+
+Pregunté al founder si tenía cuenta corporativa antes de codear, y su respuesta ("personal pero no corporativa") activó el reflejo de invocar al agente `argentine-ecom` para investigar viabilidad. Mejor que nada, pero **demasiado tarde** — el agente tendría que haberse invocado en el MISMO turno que recibí el pivot "integrá PAQ.AR".
+
+### Cómo se evita en el futuro
+
+**Regla nueva aplicable al sistema principal**:
+
+> Cuando el founder pivote scope técnico mencionando integración con un proveedor argentino (AFIP, Mercado Pago, Andreani, Correo Argentino, banco, AFIP, Tusfacturas, etc.) y yo NO tenga conocimiento directo y reciente y verificable del estado actual de su API/integración, **invocar `argentine-ecom` en el MISMO turno** que recibí el pivot, antes de actualizar plan / TodoWrite / pedir trámites al founder.
+
+Aplica también a:
+- Pivots de scope que dependen de una pieza externa cuya viabilidad no conozco (logística, pagos, banca, fiscal, mensajería corporativa).
+- Sugerencias del founder con jerga de marketing del proveedor ("integrá X", "usemos Y").
+- Cambios de stack ad-hoc — antes de actualizar ADRs o repositorios, verificar viabilidad técnica con agente del dominio.
+
+NO aplica a:
+- Decisiones puras de producto/UX (esas son del founder).
+- Cambios cosméticos o de copy.
+- Pivots dentro de stack ya elegido (ej "usemos Server Actions en vez de route handlers" — eso es interno).
+
+### Patrón sistémico relacionado
+
+- [[regente-name-inventada]] 2026-05-27 — aceptar dato sin verificar (allá inventaba; acá aceptaba el pivot del founder como técnicamente sano).
+- **Patrón común**: tomar lo que el founder dice/no-dice como verdad técnica cuando el founder no es técnico. La regla preventiva es la misma: verificar antes de actuar.
+
+### Cambios derivados
+
+- LEARNING gemelo `learnings/2026-05-28 — Invocar argentine-ecom ANTES de planificar integración logística` documenta el caso positivo (la invocación tardía sí evitó el daño).
+- Considerar agregar a CLAUDE.md una regla 11 explícita sobre verificar pivots técnicos del founder antes de comprometer plan.
+
+---
+
 ## 2026-05-27 — Nombre inventado de la regente
 
 **Estado**: 🟡 Mitigado

@@ -350,8 +350,9 @@ Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema valid
 Decisiones cerradas en esta sesión para 2b:
 - **MP**: founder NO tiene cuenta MP todavía. La crea en paralelo. Yo arranco la parte 1 (sin MP), parte 2 (preference + redirect) viene cuando lleguen creds (`MP_ACCESS_TOKEN` test + `NEXT_PUBLIC_MP_PUBLIC_KEY` test).
 - **Resend**: founder lo instala más adelante para sub-feature 3 (webhook + emails). Pendiente: cuenta Resend (https://resend.com gratis 100/día) + `RESEND_API_KEY`.
-- **Shipping**: free desde **$80.000**, flat **$3.500** por encima. Constantes editables en `lib/shipping.ts`.
+- **Shipping V1** (REVISADO post-investigación PAQ.AR): **tabla por zonas** hardcoded en `lib/shipping.ts`. Defaults conservadores propuestos: CABA/GBA $2.500, Interior cercano $4.500, Interior lejano $6.500, Patagonia $9.500, free shipping desde $80.000. Founder traerá 5 cotizaciones reales (CABA, Rosario, Mendoza, Bariloche, Ushuaia) para ajustar la tabla. **NO se inicia trámite cuenta corporativa Correo Argentino** (3-6 semanas + DX débil de API). Plan: Andreani principal con tabla fija → migrar a Andreani PyME API cuando llegue 50+ envíos/mes (ADR-017 sigue vigente). PAQ.AR queda como **fallback manual** (despacho en sucursal con cuenta personal) para CPs que Andreani no cubre.
 - **Sin Tusfacturas en V1**: facturación manual al principio (founder confirmó).
+- **Investigación argentine-ecom completada**: confirmó que PAQ.AR no tiene API pública (NDA + corporativo), Andreani sigue siendo mejor DX, y para volumen inicial (5-20 envíos/mes) integrar API no se justifica. Ver respuesta del agente en el transcript de esta sesión.
 
 Scope sub-feature 2b parte 1 (todo SIN MP):
 - `lib/shipping.ts` con `FREE_SHIPPING_THRESHOLD_CENTS = 80000_00`, `FLAT_SHIPPING_CENTS = 3500_00`, `calculateShipping(subtotalCents)`.
