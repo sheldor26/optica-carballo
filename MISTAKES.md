@@ -64,6 +64,42 @@ Esto vale especialmente para:
 
 ---
 
+## 2026-05-27 — Borrado del binario `supabase-go` al limpiar el tarball del CLI
+
+**Estado**: 🟡 Mitigado
+**Categoría**: Operación / Sistema
+
+### Qué pasó
+Al instalar Supabase CLI por método "binario directo" (sin Homebrew), descargué el tarball, lo extraje en `/tmp`, moví el binario `supabase` a `~/.local/bin/`, y limpié con `rm -f supabase.tar.gz README.md LICENSE completions`. **No me di cuenta de que el tarball incluía DOS binarios** (`supabase` + `supabase-go`) y el primero es un shim que delega en el segundo. Cuando intenté `supabase init`, falló con el error explícito de no encontrar `supabase-go`. Resuelto re-extrayendo el tarball completo a `~/.local/share/supabase/` y haciendo un symlink desde `~/.local/bin/supabase`.
+
+### Causa raíz
+Asumí que un CLI moderno es un solo binario autocontenido. No leí el contenido del tarball antes de borrar. El nombre `supabase-go` parecía un artefacto de build, no parte del distributable. Lección: **antes de borrar archivos junto a un binario recién instalado, listar contenidos del tarball/dir y entender qué hace cada uno.**
+
+### Impacto
+- Bajo: 5 minutos de re-instalación. El error del shim fue auto-explicativo y dio el comando exacto para arreglar.
+- Si hubiera sido un CLI menos amigable: pérdida de tiempo significativa.
+
+### Cómo se detectó
+`supabase init` falló inmediatamente con un mensaje claro: "Could not find the `supabase-go` binary."
+
+### Cómo se evita en el futuro
+**Regla preventiva**:
+
+Cuando instalo un binario CLI desde un tarball / zip:
+1. **Primero**: `tar -tzf archive.tar.gz` (o equivalente) para ver TODOS los archivos del paquete.
+2. **Después**: mover/copiar TODOS los archivos a un directorio dedicado (`~/.local/share/<tool>/`), no extraer en `/tmp` y mover archivos sueltos.
+3. **Symlink** el ejecutable principal desde un directorio del PATH (`~/.local/bin/<tool>` → `~/.local/share/<tool>/<tool>`).
+4. **No borrar nada del directorio del binario** salvo el tarball original.
+
+Aplica a: CLIs distribuidos como tarball (supabase, gh, mc, k9s, etc.).
+
+### Cambios derivados
+- [x] Supabase CLI re-instalada correctamente en `~/.local/share/supabase/` con symlink en `~/.local/bin/supabase`.
+- [x] Registro en MISTAKES.md (este archivo).
+- [x] Learning en LEARNINGS.md sobre el patrón correcto de instalación de CLIs.
+
+---
+
 ## 2026-05-27 — Pre-requisitos del entorno verificados después de aprobar el plan, no antes
 
 **Estado**: 🟡 Mitigado

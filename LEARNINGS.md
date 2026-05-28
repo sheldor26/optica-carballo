@@ -22,6 +22,149 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — `docker exec` como fallback cuando `psql` no está instalado localmente
+
+**Categoría**: Operación
+**Confianza**: 🟢 Alta (patrón estándar, funciona out-of-the-box)
+
+### Qué funcionó
+Cuando había que ejecutar SQL ad-hoc para verificar el schema aplicado (consultas a `pg_tables`, `pg_policies`, `pg_indexes`, smoke tests con `SET ROLE anon`), descubrí que `psql` no estaba instalado en el sistema del founder. En vez de pedirle que lo instale, usé `docker exec supabase_db_optica-carballo psql -U postgres -d postgres -c "..."` — el contenedor de Supabase ya trae psql incluido, y el founder solo necesitaba Docker corriendo (que ya tenía).
+
+### Por qué funcionó (causa real)
+El contenedor Postgres oficial trae el cliente `psql` además del server. Cuando Supabase local está corriendo, ya tenés psql disponible vía `docker exec` sin instalar nada adicional. Esto es **invisible para muchos workflows** porque la gente asume que necesita instalar psql en el host, pero la mayoría de los casos pueden resolverse usando el cliente del contenedor.
+
+### Evidencia
+1 caso resuelto en esta sesión. 7 consultas SQL ejecutadas sin haber instalado psql.
+
+### Cuándo aplicar esto de nuevo
+- Smoke tests post-migración, queries de inspección de schema, role tests.
+- Cualquier momento que necesite SQL ad-hoc y haya un contenedor Postgres corriendo.
+- Reemplaza a instalar `postgresql-client` con brew/apt solo para esto.
+
+### Cuándo NO aplica
+- Si necesitás psql sin que haya un contenedor corriendo (ej: conectarte a una DB remota desde scripts de CI).
+- Si necesitás features de psql que requieren archivos locales (`\i archivo.sql` desde el host) — `docker cp` ayuda pero suma fricción.
+
+### Acción derivada
+- [ ] En el skill `/migration` Step 9 (Verificar post-deploy), mencionar `docker exec <container> psql` como alternativa cuando psql no está instalado.
+
+---
+
+## 2026-05-28 — Trabajo largo en background + presentación de decisiones al founder en paralelo
+
+**Categoría**: Operación
+**Confianza**: 🔵 Hipótesis (1 caso, validar más)
+
+### Qué funcionó
+Cuando había que arrancar `supabase start` (que la primera vez descarga ~1 GB de imágenes Docker y tarda 5-10 minutos), en vez de bloquear esperando, lancé el comando con `run_in_background` y en el **mismo turno** seguí trabajando: generé el archivo de migración con `supabase migration new`, escribí el SQL completo (250 líneas), y presenté al founder un resumen estructurado de las decisiones del schema en formato tabla (qué decisión + por qué). Cuando Docker terminó (vía notificación), el plan ya estaba 80% adelantado.
+
+### Por qué funcionó (causa real)
+Las operaciones lentas no son CPU-bound del asistente — son network/IO externos. Bloquear el turno esperando es desperdicio. El patrón es **mover trabajo del founder al espacio mientras espera la máquina**: en lugar de "Docker está descargando, esperá", al founder le llega "Docker descargando + acá las 12 decisiones del schema para que revises mientras tanto". Productividad paralela.
+
+### Evidencia
+1 caso confirmado (esta sesión). Founder no quedó esperando — pudo revisar el SQL mientras la infraestructura se preparaba.
+
+### Cuándo aplicar esto de nuevo
+- **Cualquier comando que tome >30 segundos**: `supabase start`, `pnpm install` grande, builds largos, `gh repo create` con remote setup, descarga de modelos, etc.
+- **Cuando el output del comando no se necesita para el siguiente paso inmediato**: lanzar en background y avanzar.
+
+### Cuándo NO aplica
+- Cuando el siguiente paso depende del resultado (no se puede paralelizar).
+- Cuando el comando puede fallar de forma silenciosa: ahí conviene esperar y validar el exit code.
+- Cuando un fallo en el background invalida el trabajo paralelo (ej: si Docker no arranca, escribir el SQL no fue inútil pero no se puede aplicar).
+
+### Acción derivada
+- [ ] Confirmar con 2+ casos más antes de promover a 🟢 Alta confianza.
+- [ ] Si se confirma: documentar como patrón explícito en el skill `/feature` (Step 3) y `/migration` (Step 7).
+
+---
+
+## 2026-05-27 — `setAll` callbacks de @supabase/ssr necesitan tipado explícito con TS strict
+
+**Categoría**: Código
+**Confianza**: 🟢 Alta (afecta cualquier proyecto Next + Supabase + TS strict)
+
+### Qué funcionó
+Cuando el typecheck falló con 10 errores `implicitly has an 'any' type` en los callbacks `setAll` de `lib/supabase/server.ts` y `lib/supabase/middleware.ts`, la fix fue: importar `CookieOptions` de `@supabase/ssr`, definir un type alias local `type CookieToSet = { name: string; value: string; options: CookieOptions }` y tipar el parámetro del callback explícitamente.
+
+### Por qué funcionó (causa real)
+Las firmas de tipo en `@supabase/ssr` para las opciones de cookies usan generics flexibles que TypeScript no puede inferir desde el contexto del object literal en `cookies: { setAll(...) }`. En modo `strict: true` con `noImplicitAny`, el callback queda con parámetro `any` y el compiler lo flaggea. Es expected behavior, no un bug — `strict` es más estricto que la inferencia default.
+
+### Evidencia
+1 caso resuelto en esta sesión. Patrón repetido en server.ts y middleware.ts, idéntica solución.
+
+### Cuándo aplicar esto de nuevo
+- **Siempre que se cree un cliente Supabase server/middleware en Next.js con TS strict** (que es nuestro default).
+- **Cualquier callback de librería externa** que TS no infiere con strict: usar import de tipos públicos + type alias local antes que `as any` o `// @ts-ignore`.
+
+### Cuándo NO aplica
+- Si se baja la estrictez del tsconfig (NO recomendado en este proyecto — ya fijado en ADR-001 + setup).
+- Si la librería actualiza sus tipos en el futuro para mejor inferencia (`@supabase/ssr` 0.5.x todavía requiere esto).
+
+### Acción derivada
+- [x] Aplicado en `lib/supabase/server.ts` y `lib/supabase/middleware.ts`.
+- [ ] Cuando se agreguen más helpers Supabase, usar el mismo patrón.
+
+---
+
+## 2026-05-27 — Tarball CLI = directorio dedicado + symlink, no archivos sueltos en PATH
+
+**Categoría**: Operación
+**Confianza**: 🟢 Alta (validado por el propio mensaje de error del CLI)
+
+### Qué funcionó (después del mistake)
+Cuando un CLI se distribuye como tarball con múltiples archivos (shim + binario real, o ejecutable + archivos de soporte), el patrón correcto es:
+1. Extraer el tarball en `~/.local/share/<tool>/` (un dir dedicado).
+2. Symlink el ejecutable principal: `ln -sf ~/.local/share/<tool>/<tool> ~/.local/bin/<tool>`.
+3. NUNCA extraer en `/tmp` y mover archivos sueltos a `~/.local/bin/`.
+
+### Por qué funcionó (causa real)
+Muchos CLIs modernos (Supabase, gh CLI multi-binario, herramientas con assets, etc.) **necesitan que sus archivos cohabiten en el mismo directorio** para funcionar. Si los separás, el ejecutable pierde sus dependencias laterales.
+
+### Evidencia
+- Supabase CLI: el shim `supabase` busca `supabase-go` en el mismo directorio. Sin el segundo, falla con mensaje explícito.
+- gh CLI: usa `bin/gh` + `share/gh/extensions/` — separarlos rompe extensions.
+- k9s, mc, otras herramientas con configs/templates: idem.
+
+### Cuándo aplicar esto de nuevo
+- Cada vez que instalo un CLI desde tarball/zip en `~/.local/`.
+- En scripts de bootstrap de máquinas nuevas.
+
+### Cuándo NO aplica
+- Binarios verdaderamente autocontenidos (Go binaries con `go install`, Rust binaries con `cargo install`).
+- Cuando hay un instalador oficial (brew, apt, etc.).
+
+### Acción derivada
+- [x] Supabase CLI instalada con este patrón.
+- [ ] Si vienen más CLIs (deno, gh, sb, etc.): aplicar el mismo patrón.
+
+---
+
+## 2026-05-27 — Founder ejecuta cosas en paralelo durante sesiones largas (segundo caso)
+
+**Categoría**: Operación
+**Confianza**: 🟡 Media (2 confirmaciones — patrón emergente)
+
+### Qué funcionó (observación)
+Mientras yo instalaba Supabase CLI y creaba el scaffold, el founder en paralelo creó `.env.local` con las credenciales reales del proyecto Supabase cloud (mtime 23:48, post-inicio de sesión). Lo detecté en el `ls` después de `pnpm build` cuando Next mencionó "Environments: .env.local".
+
+### Por qué importa
+Ya pasó dos veces:
+1. Sesión 1 (validación inicial): los 15 skills ya estaban en disco aunque CURRENT_STATE.md decía que no.
+2. Sesión actual: `.env.local` apareció a mitad del setup con credenciales reales.
+
+El founder trabaja en paralelo a las acciones del asistente. **No es un problema en sí**, pero significa que el estado del disco puede cambiar entre comandos del asistente. Lección: **chequear timestamps y re-listar directorios clave cuando el resultado de un comando no coincide con la suposición previa.**
+
+### Cuándo aplicar esto
+- Antes de generar archivos importantes (ej: `.env.local`), `ls -la` primero para ver si ya existe.
+- Antes de validar criterios de éxito, re-listar el dir.
+- Cuando un comando da output inesperado ("Environments: .env.local" cuando no creé `.env.local`), investigar antes de seguir.
+
+### Acción derivada
+- [ ] Si se confirma 1 vez más (3 casos): incorporar al skill `/feature` como sub-tarea de Step 3: "Antes de generar archivos nuevos, re-listar el dir target para detectar cambios paralelos del founder."
+
+---
+
 ## 2026-05-27 — Verificar pre-requisitos del entorno ANTES de aprobar el plan, no después
 
 **Categoría**: Operación

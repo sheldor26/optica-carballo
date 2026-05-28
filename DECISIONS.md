@@ -557,12 +557,12 @@ Aprovechar 2000+ ventas en ML para extraer: top productos, reviews, fotos, descr
 
 ## PEND-005 — Cuentas creadas
 
-**Estado**: Pendiente
+**Estado**: 🟡 Parcial (actualizado 2026-05-27 en sesión de setup)
 **Categoría**: Operación
 
 Cuentas a confirmar/crear:
 - [ ] Vercel
-- [ ] Supabase
+- [x] **Supabase** — proyecto cloud `tuddpfspnbnmafsqdvat` operativo, credenciales en `.env.local` (no commiteadas).
 - [ ] Resend
 - [ ] Mercado Pago (developer)
 - [ ] Tusfacturas
@@ -570,6 +570,11 @@ Cuentas a confirmar/crear:
 - [ ] OpenAI API (para embeddings)
 - [ ] Google Search Console (con dominio verificado)
 - [ ] Google Analytics 4
+
+### Notas sobre Supabase (cerrado 2026-05-27)
+- Proyecto cloud creado por el founder antes/durante la sesión de setup técnico inicial.
+- Anon key y service_role key configuradas en `.env.local` local del founder.
+- Acción próxima: cuando se diseñe el primer schema (skill `/migration`), decidir si usar `supabase db push` contra cloud directamente o si trabajar primero local (`supabase start` + Docker) y después promover a cloud.
 
 ---
 

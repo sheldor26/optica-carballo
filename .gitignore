@@ -66,3 +66,6 @@ Desktop.ini
 # Project specific
 /uploads-tmp
 /scripts/local-data
+
+# Claude harness internal state (locks de jobs, schedules, etc.)
+.claude/scheduled_tasks.lock
