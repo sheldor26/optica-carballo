@@ -2,6 +2,29 @@
 
 ## Status
 
+🟢 **UI polish iteración 2 — ficha técnica + medidas con onda visual, image hover sin crop, variante capitalizada**
+
+Founder pasó 3 feedbacks de UX/UI tras ver Vulk Day Light en prod:
+1. **Ficha técnica y Medidas se veían planas** (solo texto) — pidió color que resalte + cuadritos.
+2. **Image hover se cortaba** al hacer scale.
+3. **Variante**: moverla debajo del precio + sacar "(termoplástico Vulk)" del material + capitalizar "carey-brillo / Verde" → "Carey Brillo / Verde".
+
+**Implementación**:
+
+1. **`ProductAttributes` rediseñado** — antes era `<dl>` plano. Ahora cada par label/value en mini-card propio: `border-l-[3px]` accent, `bg-muted/30` con hover `bg-muted/50`, `rounded-lg`, grid 2-cols. Label en uppercase `text-[10px]` con tracking ancho, value en `text-sm font-semibold`. Hover transition 200ms.
+
+2. **`ProductMeasurements` rediseñado** — cada medida en stat-card: `bg-gradient-to-br from-muted/40 to-background`, border completo, hover `-translate-y-0.5`, grid 2-cols mobile / 3-cols desktop. Label uppercase chico arriba, valor grande `text-lg font-bold` con "mm" en chip al lado. Más visual que tabla.
+
+3. **`ProductGallery` fix crop** — wrapper con `p-6 md:p-10` (antes sin padding interno), Image con `p-2` extra para "aire" + scale subido a `1.06` (más perceptible) pero con suficiente espacio para no cortarse. La imagen ya no toca los bordes del aspect-square en estado base, así que el zoom hover no se corta.
+
+4. **`VariantList` capitaliza correctamente** — agregado `toTitleCase(s)` helper que parte por `-`/`_`/space y capitaliza cada palabra. Ahora `"carey-brillo"` JSONB → `"Carey Brillo"` en UI. Funciona como fallback genérico (no necesito mantener cada color/material en el map manualmente).
+
+5. **`ProductAttributes` material limpio** — `g-flex` ahora muestra `"G-Flex"` pelado (sin "(termoplástico Vulk)" que founder consideró innecesario, ya está en el copy de la descripción larga).
+
+6. **Reordenamiento product-page** — orden nuevo de columna derecha: H1+subtitle → `ProductHighlights` (pills) → bloque precio → **`VariantList` (movido arriba)** → `ProductAttributes` → `ProductMeasurements` → `ProductIncludes` → `WhatsappCta`. La variante ahora aparece inmediatamente debajo del precio (mejor UX de compra — ves precio, después qué color tiene).
+
+Typecheck verde. **Commit `4ae0b45` ya pusheado anteriormente con el knowledge base**. Este turno: commit pendiente.
+
 🟢 **Knowledge base SEO + políticas universales + UI con onda — sistema escalable para futuros productos**
 
 Founder pasó 2 inputs grandes: (a) CSVs de Ubersuggest con keywords reales para "anteojos de sol" (369 keywords) y "lentes de sol vulk" (82 keywords) + pedido explícito de que queden permanentes para que todos los agentes los lean; (b) política universal del negocio (estuche original + franela + garantía 1 año del fabricante en CADA compra salvo aviso); (c) feedback de que las descripciones se ven aburridas, sin onda, sin elementos visuales.

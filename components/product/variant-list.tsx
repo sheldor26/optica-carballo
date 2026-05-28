@@ -34,9 +34,18 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   espejado: 'Espejado',
 };
 
+function toTitleCase(s: string): string {
+  return s
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+    .join(' ');
+}
+
 function lookup(map: Record<string, string>, key: unknown): string | null {
   if (typeof key !== 'string') return null;
-  return map[key] ?? key;
+  if (map[key]) return map[key];
+  return toTitleCase(key);
 }
 
 function describeVariant(attrs: AttributesJson): string {

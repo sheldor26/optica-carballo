@@ -180,12 +180,6 @@ export async function ProductDetailPage({
             <p className="text-muted-foreground text-base">Sin stock disponible</p>
           )}
 
-          <ProductAttributes attributes={product.attributes} />
-
-          <ProductMeasurements attributes={product.attributes} />
-
-          <ProductIncludes attributes={product.attributes} />
-
           <VariantList
             showVariantCta={!isPlaceholder(product.name)}
             checkoutEnabled={isCheckoutEnabled()}
@@ -199,6 +193,12 @@ export async function ProductDetailPage({
               attributes: v.attributes,
             }))}
           />
+
+          <ProductAttributes attributes={product.attributes} />
+
+          <ProductMeasurements attributes={product.attributes} />
+
+          <ProductIncludes attributes={product.attributes} />
 
           <WhatsappCta productName={product.name} inStock={isInStock} />
         </div>

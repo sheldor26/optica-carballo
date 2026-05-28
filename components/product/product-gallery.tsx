@@ -48,13 +48,13 @@ export function ProductGallery({ productName, images }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-muted/40 group relative aspect-square w-full overflow-hidden rounded-lg">
+      <div className="bg-muted/40 group relative aspect-square w-full overflow-hidden rounded-lg p-6 md:p-10">
         <Image
           src={activeUrl}
           alt={active.alt_text}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
           priority={activeIdx === 0}
         />
       </div>

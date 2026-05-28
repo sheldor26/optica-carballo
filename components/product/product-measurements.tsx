@@ -36,14 +36,24 @@ export function ProductMeasurements({
 
   return (
     <div>
-      <h2 className="text-foreground text-sm font-semibold tracking-tight">
+      <h2 className="text-muted-foreground text-xs font-semibold uppercase tracking-[0.15em]">
         Medidas
       </h2>
-      <dl className="text-muted-foreground mt-3 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
+      <dl className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
         {rows.map((row) => (
-          <div key={row.label} className="contents">
-            <dt className="font-medium">{row.label}</dt>
-            <dd className="text-foreground">{row.valueMm} mm</dd>
+          <div
+            key={row.label}
+            className="border-border/60 from-muted/40 to-background hover:border-foreground/40 group relative overflow-hidden rounded-lg border bg-gradient-to-br px-3 py-2.5 transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <dt className="text-muted-foreground text-[10px] font-medium uppercase tracking-wider leading-tight">
+              {row.label}
+            </dt>
+            <dd className="text-foreground mt-1 flex items-baseline gap-1 text-lg font-bold leading-none tracking-tight">
+              {row.valueMm}
+              <span className="text-muted-foreground text-[10px] font-medium">
+                mm
+              </span>
+            </dd>
           </div>
         ))}
       </dl>

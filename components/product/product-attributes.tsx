@@ -5,7 +5,7 @@ const FRAME_MATERIAL_LABELS: Record<string, string> = {
   metal: 'Metal',
   injected: 'Inyectado',
   titanium: 'Titanio',
-  'g-flex': 'G-Flex (termoplástico Vulk)',
+  'g-flex': 'G-Flex',
   'tr-90': 'TR-90',
 };
 
@@ -74,14 +74,21 @@ export function ProductAttributes({ attributes }: { attributes: AttributesJson }
 
   return (
     <div>
-      <h2 className="text-foreground text-sm font-semibold tracking-tight">
+      <h2 className="text-muted-foreground text-xs font-semibold uppercase tracking-[0.15em]">
         Ficha técnica
       </h2>
-      <dl className="text-muted-foreground mt-3 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
+      <dl className="mt-3 grid grid-cols-2 gap-2.5">
         {rows.map((row) => (
-          <div key={row.label} className="contents">
-            <dt className="font-medium">{row.label}</dt>
-            <dd className="text-foreground">{row.value}</dd>
+          <div
+            key={row.label}
+            className="border-foreground/15 bg-muted/30 hover:border-foreground/30 hover:bg-muted/50 group relative overflow-hidden rounded-lg border-l-[3px] border-y border-r px-3 py-2.5 transition-all duration-200"
+          >
+            <dt className="text-muted-foreground text-[10px] font-medium uppercase tracking-wider">
+              {row.label}
+            </dt>
+            <dd className="text-foreground mt-0.5 text-sm font-semibold leading-tight">
+              {row.value}
+            </dd>
           </div>
         ))}
       </dl>
