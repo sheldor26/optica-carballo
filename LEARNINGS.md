@@ -25,7 +25,7 @@ Sirve para:
 ## 2026-05-28 — `Image fill` ignora `padding` del wrapper — usar double wrapper para que el padding absorba el zoom
 
 **Categoría**: Next.js / next/image / CSS positioning
-**Confianza**: 🟢 Alta (bug reproducible, fix verificado, founder confirmó crop antes y ausencia después)
+**Confianza**: 🟡 Media (el patrón del double wrapper es correcto, pero el padding requiere ser MUCHO más grande de lo intuitivo cuando las fotos source no tienen padding propio — ver "Notas").
 
 ### Qué pasó
 
@@ -85,6 +85,8 @@ Cuando combines `next/image fill` con cualquier transform (scale, rotate, transl
 
 - También aplica si tenés `Image fill` con `padding` directo en su className. El padding del propio img sí funciona (porque modifica el `inset: 0` efectivo), pero combina mal con `object-contain` porque object-contain no respeta el padding del img.
 - Mismo patrón aplica a `<video>` o cualquier elemento con `position: absolute; inset: 0`.
+- **Calibrar padding contra las fotos reales, no contra el cálculo teórico**: en e-commerce las fotos del fabricante con frecuencia NO tienen padding propio en el JPG — el objeto toca los bordes del cuadrado. Aunque el double wrapper aísle el área de positioning, si la imagen llena el inner hasta el borde, cualquier scale crece "afuera" del inner. Calibración inicial p-12 (48px) parecía generosa pero no compensaba el cero-padding intrínseco de las fotos. Real-world: empezar con padding generoso (p-16/p-20 = 64-80px en desktop) Y scale chico (1.02-1.03), después afinar bajando si se ve excesivo.
+- **Verificar visualmente con el founder antes de declarar "fix definitivo"**. El cálculo teórico ("8px overshoot, 48px padding → no se corta") asumía que la imagen NO tocaba los bordes del inner. Cuando la imagen sí los toca (por la naturaleza de los JPGs source), el cálculo falla. La verificación con screenshots reales del founder es el feedback loop crítico.
 
 ---
 

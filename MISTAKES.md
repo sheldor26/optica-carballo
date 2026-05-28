@@ -24,6 +24,58 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Declarar "fix definitivo" de un bug visual sin verificación del founder → 3 iteraciones consecutivas del mismo problema
+
+**Estado**: 🟡 Patrón identificado (no causó daño real, solo iteraciones extra y commits "fix sobre fix")
+**Categoría**: Proceso / Comunicación / UI verification
+
+### Qué pasó
+
+Bug original: imagen del producto se cortaba al hacer hover. Iteré 3 veces:
+
+1. **Iter 1**: cambié `scale 1.04 → 1.06` (?) + `p-6 md:p-10` (commit anterior). Founder reportó "sigue cortando".
+2. **Iter 2**: refactor con **double wrapper** + scale 1.04. Documenté en CURRENT_STATE como "fix definitivo del crop" y en LEARNINGS como solución completa. Founder reportó "sigue cortando, a lo ancho".
+3. **Iter 3** (commit `3c5d379`): subí padding a `p-10 sm:p-14 md:p-20` + bajé scale a `1.03`. Pendiente verificación.
+
+Cada vez que cerré una iteración con "fix listo, recargá", el founder reportó que seguía mal. Tres rondas de feedback que se podrían haber evitado.
+
+### Causa raíz
+
+**Validé mi fix con cálculo teórico, no con verificación visual real**. Mi razonamiento iter 2:
+
+> "Con padding 48px y scale 1.04, el overshoot teórico es ~8px que es mucho menos que 48px → no se corta."
+
+El cálculo asumía que la imagen renderizada NO tocaba los bordes del inner. Pero las fotos del fabricante de óptica con frecuencia tienen el anteojo PEGADO a los bordes del JPG (sin padding intrínseco). object-contain renderiza la imagen llenando el inner hasta los bordes → el anteojo está visualmente en el borde → cualquier scale crece "para afuera".
+
+El cálculo era correcto sobre el RECTÁNGULO de la imagen renderizada (cuadrado dentro del inner cuadrado). Pero el bug visual es sobre el CONTENIDO de la imagen (el anteojo) que ocupa todo ese rectángulo. La diferencia entre "imagen renderizada" y "contenido visible de la imagen" no la consideré.
+
+### Regla preventiva
+
+**Para bugs visuales (layout, hover, animaciones, responsive), NO declarar "fix definitivo" sin verificación visual del founder o del navegador real**.
+
+Reglas operacionales:
+
+1. **Empezar conservador**: cuando hay incertidumbre sobre cuánto espacio/padding/margin se necesita, errar al lado de "más" y bajar si se ve excesivo. Costo de "demasiado padding" = la imagen se ve un poco más chica (estético). Costo de "muy poco padding" = la imagen se corta (bug funcional).
+
+2. **No usar cálculo teórico para validar bugs de overflow visual** — el cálculo asume condiciones que pueden no cumplirse (en este caso, que la imagen tenga padding intrínseco). Verificar SIEMPRE con la data real (los JPGs reales del fabricante).
+
+3. **En el lenguaje al founder**: usar "esto debería resolver el crop, decime cómo se ve" en vez de "fix definitivo del crop". El primer lenguaje invita a feedback; el segundo cierra prematuramente.
+
+4. **Antes de documentar un fix en LEARNINGS o cerrar un mistake en MISTAKES**, esperar confirmación visual del founder o probar localmente con dev server (cuando aplique). Mover el "✅ fix verificado" del CURRENT_STATE al final del ciclo de verificación, no antes.
+
+### Cómo se detectó
+
+Founder reportó "sigue cortando" con screenshots comparativos. Sin el feedback explícito, podría haber declarado el bug resuelto y pasado a otra cosa, dejando el sitio con un crop sutil en producción.
+
+### Acción tomada
+
+- Padding p-10 sm:p-14 md:p-20 + scale 1.03 (commit 3c5d379).
+- LEARNINGS actualizado: confianza bajada a 🟡, agregadas notas sobre calibrar contra fotos reales + verificación con founder.
+- Este MISTAKES entry para el patrón meta de "declarar fix sin verificar".
+- Pendiente: la verificación del founder del iter 3 — si todavía corta, escalar a "pedir fotos con padding" o "transformación en upload".
+
+---
+
 ## 2026-05-28 — `ON CONFLICT DO NOTHING` sin target en seeds → duplicados silenciosos en cada re-ejecución
 
 **Estado**: 🟡 Mitigado (migration de dedupe + UNIQUE constraint creada, founder aplica)

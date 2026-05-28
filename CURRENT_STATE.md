@@ -2,6 +2,18 @@
 
 ## Status
 
+🟡 **Fix iterativo del crop — double wrapper NO fue suficiente, padding generoso + scale 1.03 puede o no resolver según las fotos del fabricante**
+
+Después de declarar "fix definitivo" del crop con double wrapper, founder reportó **"sigue cortando, a lo ancho"** con screenshots comparando: Imagen 1 (sitio nuestro, anteojo cortado a los costados) vs Imagen 2 (foto Vulk oficial, anteojo con aire alrededor).
+
+**Diagnóstico**: el double wrapper en sí funciona correctamente (separa el área de positioning de fill del padding visual), pero **el padding p-8 md:p-12 no era suficiente** porque las fotos del fabricante NO tienen padding propio en el JPG — el anteojo toca los bordes del cuadrado. Cuando object-contain renderiza, llena el inner (=outer menos padding) hasta los bordes. El scale 1.04 multiplica eso → overshoot.
+
+**Fix correctivo** (commit `3c5d379`):
+- Padding outer: `p-8 md:p-12` → `p-10 sm:p-14 md:p-20` (40/56/80px) — mucho más aire para compensar imágenes sin padding propio.
+- Scale hover: `1.04` → `1.03` (apenas perceptible, evita overshoot extremo).
+
+**Pendiente verificación visual del founder**. Si todavía corta con p-20, las fotos del fabricante son tan pegadas al borde que ningún padding razonable las salva — habría que pedir versiones con más aire al fabricante o paddear las imágenes vía Storage transformations / re-upload manual.
+
 🟢 **Badge "Nuevo ingreso" por fecha + fix definitivo del crop (double wrapper para Image fill)**
 
 Founder pidió:
@@ -408,6 +420,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: Fix correctivo del crop tras double wrapper insuficiente. Founder reportó "sigue cortando" con screenshots. Causa real: fotos del fabricante sin padding propio + padding outer p-12 insuficiente. Fix: padding subido a p-10 sm:p-14 md:p-20 + scale bajado a 1.03. Commit 3c5d379. Pendiente verificación visual.
 
 **Fecha**: 2026-05-28
 **Por**: Badge "Nuevo ingreso" por fecha (new_until JSONB) + fix DEFINITIVO del crop con double wrapper para Image fill. Founder pidió sacar "Marca local" → nuevo badge verde que dura 1 mes auto-evaluado server-side. La causa raíz del crop persistente: Image fill se posiciona absolute inset-0 ignorando padding del wrapper; fix con double wrapper (outer con padding + inner relative h-full w-full que es lo que fill respeta). Seed 08 + sync seed 03 + BUSINESS_POLICIES sección 8b.
