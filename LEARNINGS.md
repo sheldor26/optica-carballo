@@ -108,6 +108,49 @@ PostgREST puede devolver tanto array como objeto según la cardinalidad detectad
 
 ---
 
+## 2026-05-28 — Verificar estado real del cloud post-aplicación, nunca confiar solo en el reporte verbal
+
+**Categoría**: Operación / Seguridad
+**Confianza**: 🟢 Alta (validado por el incidente del cloud drift de la misma sesión)
+
+### Qué funcionó (después del incidente)
+Cuando aparece un error como `relation "X" does not exist` al aplicar una migración que depende de otra previa, hay que asumir que la "otra previa" no se aplicó realmente, aunque el tracker la marque como ✅. La verificación correcta es **observar el estado real**, no fiarse del reporte.
+
+Mecanismos de verificación, en orden de preferencia:
+
+1. **MCP de Supabase** (`list_tables`, `execute_sql`) — si el proyecto está bajo la cuenta que tiene la integración MCP activa. Permite SELECT directo sin involucrar al founder.
+2. **Pedir al founder un SELECT diagnóstico** y reportar el output literal. SQL sugerido:
+   ```sql
+   SELECT current_database() AS db,
+          count(*) FILTER (WHERE schemaname='public') AS public_tables,
+          array_agg(tablename ORDER BY tablename) FILTER (WHERE schemaname='public') AS tables
+   FROM pg_tables;
+   ```
+3. **Verificar la URL del Dashboard** donde se aplicó el SQL (`/project/<id>/sql/...`) coincide con el `id` esperado del proyecto target.
+
+### Por qué importa (causa real)
+- El founder puede tener múltiples cuentas de Supabase y aplicar SQL en proyecto incorrecto sin notarlo.
+- Una transacción SQL del SQL Editor puede fallar silenciosamente en algunos casos (errores parciales reportados pero asumidos como warnings).
+- Marcar ✅ "cloud aplicado" en el tracker por dicho del founder **es una mentira documentada**: hace que el sistema asuma estado que no existe, y todo el trabajo subsecuente se construye sobre arena.
+- El blast radius es alto: features futuras que asumen schema, migraciones encadenadas, código de producción que falla en runtime.
+
+### Cuándo aplicar
+- **SIEMPRE** después de cada aplicación de migración o seed al cloud, antes de marcar ✅.
+- Cada vez que el founder reporta "ya está hecho" sobre algo que afecta cloud.
+- Antes de aplicar migración N que depende de la N-1, asumir nada sobre el estado de la N-1.
+
+### Cuándo NO aplica
+- Cambios puramente locales (que no afectan cloud).
+- Cambios de configuración del Dashboard que no se reflejan en `pg_tables` (ej: customización de email templates) — esos requieren otra forma de verificación.
+
+### Acción derivada
+- [x] `CLOUD_APPLIED.md` ahora tiene estado `⚠️ A verificar` para entries no confirmadas (no solo ✅/⏳).
+- [x] MISTAKES.md registra el incidente con regla preventiva.
+- [ ] Considerar agregar a CLAUDE.md una regla dura: "Toda fila ✅ en CLOUD_APPLIED.md requiere evidencia verificable (output de SELECT, tabla creada, etc.) — no solo dicho."
+- [ ] Considerar agregar al skill `/migration` un paso Step 10 obligatorio: "Verificar post-aplicación con SELECT y solo entonces marcar ✅."
+
+---
+
 ## 2026-05-28 — `BACKLOG.md` + `CLOUD_APPLIED.md` evitan que pendientes triviales se pierdan en CURRENT_STATE
 
 **Categoría**: Operación / Documentación
