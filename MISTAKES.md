@@ -24,6 +24,72 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — `ON CONFLICT DO NOTHING` sin target en seeds → duplicados silenciosos en cada re-ejecución
+
+**Estado**: 🟡 Mitigado (migration de dedupe + UNIQUE constraint creada, founder aplica)
+**Categoría**: SQL / Idempotencia / Schema design
+
+### Qué pasó
+
+Founder cargó la 2da variante del Vulk Day Light (rosa) y, al ver la página, reportó: **"Cada vez que elijo una variante se me van sumando fotos debajo de la imagen"**. El screenshot mostró 18+ thumbnails (cuando deberían ser ~3 por variante).
+
+Diagnóstico: la tabla `product_images` tenía filas duplicadas en cloud. Cada vez que el founder corría un seed (sea el 03 original, o el 07), el `INSERT ... ON CONFLICT DO NOTHING` insertaba nuevamente las mismas filas con UUIDs nuevos.
+
+### Causa raíz
+
+`ON CONFLICT DO NOTHING` en PostgreSQL **solo detecta conflicto contra constraints existentes** (PRIMARY KEY, UNIQUE). El `id` de la tabla es `gen_random_uuid()` que NUNCA conflicta (cada INSERT genera UUID nuevo). Y `storage_path` NO tenía UNIQUE constraint.
+
+Resultado: `ON CONFLICT DO NOTHING` actúa como `INSERT` plano → cada re-ejecución duplica filas silenciosamente.
+
+Schema actual de `product_images` (catalog_foundation migration):
+```sql
+CREATE TABLE public.product_images (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id uuid NOT NULL REFERENCES ...,
+  variant_id uuid REFERENCES ...,
+  storage_path text NOT NULL,
+  ...
+);
+
+-- Solo había un UNIQUE INDEX condicional sobre primary, NO sobre storage_path
+CREATE UNIQUE INDEX idx_product_images_primary_per_product
+  ON public.product_images(product_id)
+  WHERE is_primary = true AND variant_id IS NULL;
+```
+
+### Cómo se detectó
+
+Founder reportó visualmente. Si hubiera ejecutado `SELECT COUNT(*) FROM product_images WHERE product_id = X` post-seed, lo habría detectado yo mismo. **No lo verifiqué** porque asumí que `ON CONFLICT DO NOTHING` era idempotente sin pensar en el target.
+
+### Regla preventiva
+
+**SIEMPRE que un seed contenga `INSERT ... ON CONFLICT`, verificar que el target del ON CONFLICT existe como constraint en el schema**:
+- Si querés `ON CONFLICT (col1, col2) DO NOTHING/UPDATE`, debe existir `UNIQUE (col1, col2)` en la tabla.
+- Si solo escribís `ON CONFLICT DO NOTHING` sin paréntesis, el target implícito es CUALQUIER constraint existente — **y si ninguna constraint matchea**, NO falla pero **tampoco evita el duplicado** (porque no detecta nada como conflict).
+
+**Workflow nuevo al diseñar seeds**:
+1. Identificar la "identidad natural" del registro (qué combinación de columnas debería ser única).
+2. Verificar que existe `UNIQUE` o `PRIMARY KEY` para esa identidad. Si no existe, crear migration que la agregue.
+3. ON CONFLICT explícito con el target: `ON CONFLICT (product_id, storage_path) DO UPDATE SET ...` o `DO NOTHING`.
+
+**Workflow nuevo al revisar seeds existentes**:
+- Para cada `ON CONFLICT DO NOTHING` sin paréntesis: validar que hay alguna UNIQUE constraint que detecte el duplicado deseado. Si no, agregar target explícito + crear constraint correspondiente.
+
+### Acción tomada
+
+1. Migration `20260528170000_product_images_unique_path.sql`:
+   - DELETE duplicados (conservar la fila más antigua por `(product_id, storage_path)`).
+   - ADD `UNIQUE (product_id, storage_path)`.
+2. Seeds 03 y 07 actualizados con `ON CONFLICT (product_id, storage_path) DO UPDATE SET ...` — idempotentes a futuro.
+3. `CLOUD_APPLIED.md` registra migration como pendiente.
+
+### Notas
+
+- `product_variants` no tiene este problema porque ya tiene `UNIQUE (sku)` y los seeds usan `ON CONFLICT (sku) DO UPDATE`. Correctamente idempotente.
+- Si esto se repite con otra tabla (cualquier `ON CONFLICT DO NOTHING` sin target en seed nuevo), promover la regla a CLAUDE.md.
+
+---
+
 ## 2026-05-28 — Mismatch entre storage_path en SQL y carpeta real en bucket Storage (cambio de slug post-upload)
 
 **Estado**: 🟡 Mitigado (fix delta SQL creado, founder corre UPDATE)

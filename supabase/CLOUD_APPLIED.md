@@ -20,6 +20,7 @@ re-aplicar o saltarse algo.
 | `20260528142242_products_storage.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (bootstrap combinado idempotente) | Verificación post-aplicación: `products | products | true | 5242880`. Policy `products: anyone reads | SELECT`. |
 | `20260528151158_reserve_stock_function.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (bootstrap combinado idempotente) | Verificación post-aplicación: 2 funciones presentes (`reserve_stock`, `increment_variant_stock`). SECURITY INVOKER + REVOKE anon/authenticated/PUBLIC + GRANT service_role. |
 | `20260528160715_add_brand_name_to_order_items.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (bootstrap combinado idempotente) | Verificación post-aplicación: columna `brand_name` (type text) presente en `public.order_items`. Backfill desde products→brands sin filas afectadas (no hay data legacy). |
+| `20260528170000_product_images_unique_path.sql` | ⏳ pendiente | Bug fix: dedupe de `product_images` (conservar la más antigua por product_id + storage_path) + ADD UNIQUE constraint (product_id, storage_path) para que ON CONFLICT funcione. Detectado tras feedback founder "cada vez que elijo una variante se me van sumando fotos". Causa raíz: seeds 03/07 usaban ON CONFLICT DO NOTHING sin target → cada re-ejecución insertaba duplicados. |
 
 ## Seeds aplicados a cloud
 
@@ -28,10 +29,10 @@ re-aplicar o saltarse algo.
 | `seeds/01_categories_brands.sql` | ✅ 2026-05-28 | 2 categorías top-level + 5 marcas reales. |
 | `seeds/02_rusty_products.sql` | ✅ 2026-05-28 | 4 productos Rusty placeholder + 6 variantes. **Marcados `[PH]`** — reemplazar con data real. |
 | `seeds/03_vulk_day_light.sql` | ✅ 2026-05-28 | **PRIMER PRODUCTO REAL**: Vulk Day Light (sol), slug `vulk-day-light`, variante única SKU 194185 (Carey Brillo / Verde), precio $88.037, stock 3. + 3 imágenes en bucket `products` con path `vulk-day-light/{01-lateral,02-frontal,03-medidas}.jpg`. Confirmado por founder: "Las fotos ya estan en el bucket y aplicado el sql de daylight". El archivo en disco fue actualizado después con copy V2 + callouts V2 + 2da variante para mantener consistencia futura. |
-| `seeds/04_vulk_day_light_fixes.sql` | ⏳ pendiente | UPDATE paths imágenes (`vulk-day-light/` → `vulk-day-light-sol/`) + cleanup JSONB attributes (sacar `interchangeable_lenses`, fix `frame_shape: rectangular`). Founder aplica en SQL Editor. |
-| `seeds/05_vulk_day_light_seo_polish.sql` | ⏳ pendiente | UPDATE copy + meta v2 con keywords de Ubersuggest (cluster Vulk en SEO_STRATEGY.md). meta_title arranca con "Lentes de Sol Vulk" (1.300 vol/mes). |
-| `seeds/06_vulk_day_light_callouts.sql` | ⏳ pendiente | UPDATE attributes.callouts con 3 callouts validados por optical-expert (info / recommendation / tip), cada uno con `position` y ~250 chars (tweet length). |
-| `seeds/07_vulk_day_light_variant_rosa.sql` | ⏳ pendiente | UPDATE description del modelo a genérica (sin colores) + UPDATE variant_id de fotos viejas a la variante Carey + INSERT 2da variante Rosa Pálido (SKU 194180, $88.037, stock 3 placeholder) + INSERT 2 imágenes nuevas. Founder debe subir `04-lateral-rosa.jpg` y `05-frontal-rosa.jpg` al bucket ANTES de aplicar. |
+| `seeds/04_vulk_day_light_fixes.sql` | ✅ 2026-05-28 | UPDATE paths imágenes (`vulk-day-light/` → `vulk-day-light-sol/`) + cleanup JSONB attributes (sacar `interchangeable_lenses`, fix `frame_shape: rectangular`). Aplicado por founder. |
+| `seeds/05_vulk_day_light_seo_polish.sql` | ✅ 2026-05-28 | UPDATE copy + meta v2 con keywords de Ubersuggest (cluster Vulk en SEO_STRATEGY.md). meta_title arranca con "Lentes de Sol Vulk" (1.300 vol/mes). Aplicado por founder. |
+| `seeds/06_vulk_day_light_callouts.sql` | ✅ 2026-05-28 | UPDATE attributes.callouts con 3 callouts validados por optical-expert (info / recommendation / tip), cada uno con `position` y ~250 chars (tweet length). Aplicado por founder. |
+| `seeds/07_vulk_day_light_variant_rosa.sql` | ✅ 2026-05-28 | UPDATE description del modelo a genérica (sin colores) + UPDATE variant_id de fotos viejas a la variante Carey + INSERT 2da variante Rosa Pálido (SKU 194180, $88.037, stock 3 confirmado por founder) + INSERT 2 imágenes nuevas. Aplicado por founder. ⚠️ **Verificar que founder subió `04-lateral-rosa.jpg` y `05-frontal-rosa.jpg` al bucket Storage** — sin esos archivos las imágenes de la variante rosa devuelven 404. |
 
 ---
 

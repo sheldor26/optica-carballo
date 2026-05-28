@@ -173,6 +173,11 @@ VALUES
     'Vulk Day Light vista frontal, armazón rosa pálido transparente con lentes gris oscuro degradé',
     1500, 1500, 4, false
   )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (product_id, storage_path) DO UPDATE SET
+  variant_id = EXCLUDED.variant_id,
+  alt_text   = EXCLUDED.alt_text,
+  sort_order = EXCLUDED.sort_order,
+  is_primary = EXCLUDED.is_primary,
+  updated_at = now();
 
 COMMIT;

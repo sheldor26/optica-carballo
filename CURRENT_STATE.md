@@ -2,6 +2,44 @@
 
 ## Status
 
+🔴 **Bug detectado: `product_images` con duplicados en cloud — migration de dedupe + UNIQUE constraint pendiente del founder**
+
+Founder reportó: "Cada vez que elijo una variante se me van sumando fotos debajo de la imagen" + screenshot con ~18 thumbnails. Diagnóstico inmediato: `INSERT ... ON CONFLICT DO NOTHING` **sin target** no detecta conflict si no hay UNIQUE constraint que matchee. La tabla `product_images` no tenía UNIQUE en `storage_path`, así que cada re-ejecución de los seeds 03/07 insertó filas duplicadas con UUIDs nuevos.
+
+**Fix implementado**:
+
+1. **Migration nueva** `supabase/migrations/20260528170000_product_images_unique_path.sql`:
+   - DELETE duplicados (conserva la fila más antigua por `(product_id, storage_path)` via `ROW_NUMBER() OVER (PARTITION BY ... ORDER BY created_at ASC)`).
+   - ADD `UNIQUE (product_id, storage_path)` constraint.
+2. **Seeds 03 y 07 actualizados** con `ON CONFLICT (product_id, storage_path) DO UPDATE SET variant_id = EXCLUDED..., alt_text = EXCLUDED..., sort_order = EXCLUDED..., is_primary = EXCLUDED..., updated_at = now()` — idempotentes a futuro. Si los aplicás de nuevo después, NO duplican y ADEMÁS actualizan campos como variant_id, alt_text, etc, si cambian.
+3. **`MISTAKES.md` nuevo entry** documentando causa raíz (ON CONFLICT DO NOTHING sin target = no-op silencioso si no hay constraint) + regla preventiva ("siempre verificar que existe la constraint target en el schema antes de escribir ON CONFLICT en seed").
+4. **`CLOUD_APPLIED.md` actualizado** con la migration como ⏳ pendiente.
+
+**Pendiente founder**: aplicar el SQL del migration en SQL Editor del Dashboard de Supabase. Cuando termine, recargar la página → ver 3 thumbnails por variante (no 18).
+
+🟢 **TODOS LOS SEEDS VULK APLICADOS — 04 + 05 + 06 + 07 LIVE en cloud + stock variante rosa confirmado**
+
+Founder aplicó los 4 seeds pendientes (`04_vulk_day_light_fixes.sql`, `05_vulk_day_light_seo_polish.sql`, `06_vulk_day_light_callouts.sql`, `07_vulk_day_light_variant_rosa.sql`) en SQL Editor del Dashboard de Supabase y confirmó stock de la 2da variante Rosa Pálido (SKU 194180) en **3 unidades** (igual al placeholder del seed, no requiere UPDATE adicional).
+
+**Estado final del Vulk Day Light en producción**:
+- Slug: `vulk-day-light`
+- Descripción genérica del modelo (sin mencionar colores de variantes)
+- Meta title/description optimizados con keyword head "lentes de sol vulk" (1.300 vol/mes)
+- 3 callouts validados por optical-expert con `position` (top/middle/bottom) y tweet length
+- 2 variantes activas:
+  - **Carey Brillo / Verde** (SKU 194185) — $88.037, stock 3
+  - **Rosa Pálido + Caramelo / Gris Oscuro Degradé** (SKU 194180) — $88.037, stock 3
+- 5 imágenes registradas en `product_images`:
+  - `01-lateral.jpg` + `02-frontal.jpg` (variant_id = Carey)
+  - `03-medidas.jpg` (variant_id = NULL, compartida — esquema técnico)
+  - `04-lateral-rosa.jpg` + `05-frontal-rosa.jpg` (variant_id = Rosa)
+
+`CLOUD_APPLIED.md` actualizado con los 4 seeds marcados ✅ aplicados.
+
+**⚠️ Pregunta crítica al founder**: el seed 07 inserta filas en `product_images` con paths `vulk-day-light-sol/04-lateral-rosa.jpg` y `05-frontal-rosa.jpg`. Si esos archivos **NO están en el bucket Storage**, los componentes `<Image>` para la variante rosa van a devolver 404 cuando el usuario la seleccione. Pregunta abierta: ¿el founder subió esas 2 fotos al bucket antes/durante de aplicar los seeds? Si no, hay que hacerlo ahora.
+
+**Si fotos OK** → la página tiene comportamiento completo: cargar = variante Carey con 3 imágenes visibles (2 carey + esquema medidas); click en variante Rosa → gallery cambia automáticamente a 3 imágenes (2 rosa + esquema medidas).
+
 🟢 **2da variante Vulk Day Light + descripción genérica del modelo + Gallery filter por variante seleccionada**
 
 Founder cargó la 2da variante del Vulk Day Light (Rosa Pálido + Caramelo / Gris Oscuro Degradé, SKU 194180, $88.037). En el mismo turno detectó un problema sistémico que aplica a TODOS los productos: **la descripción NO puede mencionar colores específicos de una variante** porque ahora hay >1 variante y queda mal cuando el usuario está mirando la otra. Esto desbloqueó 3 implementaciones grandes:
@@ -286,6 +324,12 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: Bug fix product_images duplicados. Founder reportó "se me suman fotos al elegir variante" + screenshot con 18+ thumbnails. Diagnóstico: ON CONFLICT DO NOTHING sin target en seeds 03/07 no detectaba conflict por falta de UNIQUE en storage_path → cada re-ejecución duplicaba. Fix: migration `20260528170000_product_images_unique_path.sql` (DELETE duplicados + ADD UNIQUE (product_id, storage_path)) + seeds 03/07 actualizados con ON CONFLICT explícito + MISTAKES.md entry documentando causa raíz y regla preventiva.
+
+**Fecha**: 2026-05-28
+**Por**: Founder confirmó aplicación de los 4 seeds pendientes (04 + 05 + 06 + 07) en cloud + stock variante rosa confirmado en 3 unidades. `CLOUD_APPLIED.md` actualizado: 7 seeds tracked, los 4 pendientes pasaron a ✅. Estado completo del Vulk Day Light en prod: 2 variantes con fotos propias, descripción genérica del modelo, 3 callouts validados, meta optimizado. Pregunta abierta al founder: confirmar que las 2 fotos rosa están en el bucket Storage (sino las imágenes de esa variante devuelven 404).
 
 **Fecha**: 2026-05-28
 **Por**: 2da variante Vulk + sistema de selección de variante con Gallery filtering + regla "descripción genérica del modelo". Founder cargó variante Rosa Pálido del Vulk Day Light. Detectó que la descripción no puede mencionar colores específicos. Implementé: Context de selección de variante (provider en product-page + hook usado por gallery y variant-list), gallery filtra imágenes por variante seleccionada, variant-list ahora es client + radio-button visual + click handler en fila, schema product_images extendido con variant_id + UPDATE de fotos viejas para apuntar a variante carey. Seed 07 nuevo + seed 03 sincronizado. CLOUD_APPLIED.md actualizado con 5 seeds tracked.
