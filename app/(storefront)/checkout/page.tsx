@@ -7,6 +7,7 @@ import { resolveCart } from '@/lib/cart/queries';
 import { fetchUserAddresses } from '@/lib/addresses/queries';
 import { calculateShipping } from '@/lib/shipping';
 import { isCheckoutEnabled } from '@/lib/features';
+import { getBusinessInfo } from '@/lib/site/business';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +42,23 @@ export default async function Page() {
     provinceName: defaultAddress?.province ?? 'Buenos Aires',
   });
 
+  // Armar dirección legible del local para mostrar como destino de retiro.
+  // Si business info no está completa, devolvemos null y el componente
+  // muestra "coordinamos por WhatsApp" como fallback honesto.
+  const business = getBusinessInfo();
+  const pickupAddress =
+    business.street && business.locality
+      ? [business.street, business.locality, business.region]
+          .filter((v): v is string => Boolean(v))
+          .join(', ')
+      : null;
+
   return (
-    <CheckoutPage cart={resolved} addresses={addresses} shipping={shipping} />
+    <CheckoutPage
+      cart={resolved}
+      addresses={addresses}
+      shipping={shipping}
+      pickupAddress={pickupAddress}
+    />
   );
 }

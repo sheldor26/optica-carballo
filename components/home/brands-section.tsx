@@ -1,10 +1,17 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { TiltSpotlightCard } from '@/components/ui/tilt-spotlight-card';
+import { cn } from '@/lib/utils';
+import {
+  getBrandAssetUrl,
+  shouldInvertLogo,
+} from '@/lib/storage/brand-asset-url';
 
 type BrandSummary = {
   slug: string;
   name: string;
+  logo_url?: string | null;
 };
 
 export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
@@ -39,11 +46,29 @@ export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
               <TiltSpotlightCard tiltDeg={5}>
                 <Link
                   href={`/anteojos-de-sol/${b.slug}`}
-                  className="border-background/15 bg-background/5 hover:border-brand hover:bg-background/10 group flex flex-col items-center justify-center gap-1 rounded-md border p-4 text-center backdrop-blur-sm transition-colors duration-300 ease-out"
+                  className="border-background/15 bg-background/5 hover:border-brand hover:bg-background/10 group flex h-20 items-center justify-center rounded-md border p-4 text-center backdrop-blur-sm transition-colors duration-300 ease-out"
+                  aria-label={`Ver anteojos ${b.name}`}
                 >
-                  <span className="text-background font-medium transition-transform duration-300 group-hover:scale-[1.02]">
-                    {b.name}
-                  </span>
+                  {b.logo_url ? (
+                    // Sección con fondo dark. shouldInvertLogo() detecta el
+                    // sufijo del filename: si es `-dark.*`, invertimos para
+                    // que se vea claro acá; si es `-light.*`, lo dejamos.
+                    <Image
+                      src={getBrandAssetUrl(b.logo_url)}
+                      alt={b.name}
+                      width={120}
+                      height={48}
+                      className={cn(
+                        'h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.04] md:h-10',
+                        shouldInvertLogo(b.logo_url, 'dark-bg') &&
+                          'brightness-0 invert',
+                      )}
+                    />
+                  ) : (
+                    <span className="text-background font-medium transition-transform duration-300 group-hover:scale-[1.02]">
+                      {b.name}
+                    </span>
+                  )}
                 </Link>
               </TiltSpotlightCard>
             </RevealOnScroll>

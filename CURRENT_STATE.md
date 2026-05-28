@@ -2,7 +2,121 @@
 
 ## Status
 
-🟡 **Feature IA: Recomendador de monturas por rostro — implementado iter 1, pendiente env var + test con foto real**
+🟡 **Logos de Vulk + Rusty: subidos a bucket nuevo `brand-assets`, código adaptado con invert smart por sufijo, esperando UPDATEs en DB**
+
+Founder eligió camino DIFERENTE al que yo propuse: en vez de reusar `products` con prefijo `_brand-logos/`, **creó bucket separado `brand-assets`** con carpeta `brand-logos/` adentro. Subió 2 archivos:
+- `brand-logos/vulk-logo-light.svg` (light = pensado para fondos oscuros)
+- `brand-logos/rusty-logo-dark.svg` (dark = pensado para fondos claros)
+
+**Acepté su decisión** y refactoricé el código (su decisión es mejor para gestión visual del Dashboard — ver LEARNINGS update).
+
+**Cambios técnicos**:
+- `lib/storage/brand-asset-url.ts` NUEVO: helper `getBrandAssetUrl(path)` que apunta al bucket `brand-assets` + helper `shouldInvertLogo(path, context)` que detecta el sufijo del filename (`-light.*` vs `-dark.*`) y devuelve si hay que aplicar `filter: brightness-0 [invert]` según el fondo (`dark-bg` vs `light-bg`).
+- **Convención de invert smart**: light logo + light bg = invertir. Dark logo + dark bg = invertir. Logo y contexto matchean = no invertir. Funciona solo para logos monocromáticos (paths con un solo color). Si en el futuro una marca tiene logo con color (ej rojo de Coca-Cola), invert lo rompe — toca actualizar lógica.
+- `components/home/brands-section.tsx`: usa `getBrandAssetUrl` + `shouldInvertLogo(b.logo_url, 'dark-bg')`. Vulk light se ve directo (fondo dark), Rusty dark se invertirá automáticamente.
+- `components/catalog/brand-grid-card.tsx`: usa `shouldInvertLogo(b.logo_url, 'light-bg')`. Rusty dark se ve directo (fondo claro), Vulk light se invertirá automáticamente.
+- `components/catalog/brand-page.tsx`: idem brand-grid-card (fondo claro).
+- `next.config.mjs`: NO requiere cambio — el remotePattern `*.supabase.co` ya cubre cualquier bucket.
+
+**Build verde, typecheck verde**.
+
+**Pasos del founder para activar Vulk y Rusty** (cuando pueda):
+```sql
+UPDATE brands SET logo_url = 'brand-logos/vulk-logo-light.svg' WHERE slug = 'vulk';
+UPDATE brands SET logo_url = 'brand-logos/rusty-logo-dark.svg' WHERE slug = 'rusty';
+```
+
+Después del UPDATE, los logos aparecen automáticamente. El sistema invert smart maneja la coherencia visual por sí solo en cualquier contexto (fondo claro u oscuro).
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder consiguió el SVG de Vulk (4522×2094, paths fill `#010101`, fondo transparente, texto convertido a paths). Spec verificada ✅. Único detalle menor: falta `viewBox` — lo agrego yo cuando subo al bucket si hace falta, por ahora next/image lo maneja con width/height.
+
+**Decisión técnica de bucket**: usar `products` bucket existente con prefijo `_brand-logos/` (en vez de crear bucket `brand-assets` separado). Razones:
+- Bucket existente, configurado, con RLS público.
+- Helper `getProductImageUrl()` ya construye URL pública.
+- Prefijo `_` distingue assets internos de productos reales.
+- Migración a bucket dedicado en el futuro es trivial.
+
+**Código ya integrado** (pendiente push):
+- `lib/catalog/queries.ts`: agregué `logo_url` al select de `fetchAllActiveBrands`, `fetchBrandPage`, `fetchCategoryIndex`. Extendí types `BrandPageData` y `BrandWithProductCount` con `logo_url: string | null`.
+- `components/home/brands-section.tsx`: cada brand chip renderiza `<Image>` del logo si `logo_url` existe, fallback al texto del nombre. Aplicado `brightness-0 invert` por CSS para fondo dark de la sección.
+- `components/catalog/brand-grid-card.tsx`: render del logo en el header de la card en lugar del título (fondo claro, sin invert). `aria-label="Ver {brand.name}"` mantiene accesibilidad.
+- `components/catalog/brand-page.tsx`: logo en grande arriba del H1 del breadcrumb header (fondo claro). `priority` para LCP.
+
+**Build verde, typecheck verde**.
+
+**Pasos del founder para activar el logo de Vulk** (cuando pueda):
+1. Subir `vulk logo blanco y negro vulk transparente.svg` al bucket `products` en Supabase Storage, path: `_brand-logos/vulk-dark.svg` (renombré el archivo a algo más corto y consistente).
+2. Correr en SQL Editor: `UPDATE brands SET logo_url = '_brand-logos/vulk-dark.svg' WHERE slug = 'vulk';`
+
+Cuando ambos se hagan, el logo aparece automáticamente en: home brands section (con invert blanco), `/anteojos-de-sol` card de Vulk, y `/anteojos-de-sol/vulk` header. Sin redeploy.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder está pidiendo los logos a las marcas. Le pasé spec concreta como respuesta:
+- **Formato**: SVG ideal (vectorial, ~5KB), PNG transparente aceptable. NUNCA JPG.
+- **Fondo**: transparente obligatorio.
+- **Versiones por marca**: 2 ideal (dark para fondos claros, light para fondos oscuros). 1 sola dark + filter CSS invert como fallback.
+- **Tamaño PNG**: 400px altura mínima (Retina-safe).
+- **Tipo**: wordmark horizontal (con texto del nombre), no solo símbolo.
+- **SVG**: convertir texto a paths para no depender de fuente.
+- **Padding**: cero interno, controlo spacing por CSS.
+- **Paths Supabase Storage**: `brand-assets/{slug}-logo-dark.svg` y `-light.svg`.
+
+Dónde se van a usar: brand section home (dark), brand pages (claro), trust marquee (dark), eventualmente product cards mini.
+
+**Próximo paso del founder**: arrancar por Vulk (única marca con producto cargado) → subir al bucket → avisarme → yo conecto a `brands.logo_path` en DB + actualizo `brands-section.tsx` para renderizar logo en lugar del texto del nombre + ajusto `brand-grid-card.tsx`. Cuando el founder vea cómo queda Vulk, puede juntar el resto del set sin sorpresas.
+
+**Tareas técnicas mías cuando lleguen los assets**:
+1. Verificar que existe columna `logo_path` en tabla `brands` (si no, migración).
+2. Update `fetchAllActiveBrands()` y `fetchCategoryIndex()` para incluir logo_path.
+3. Reemplazar `<span>{b.name}</span>` por `<Image src={logoUrl} alt={b.name}>` en brands-section + brand cards.
+4. Trust marquee opcional: reemplazar íconos lucide por logos de marca rotando.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder eligió "avanzar checkout (lo que NO requiere creds MP)". Hice 3 cosas en este sprint sin tocar la lógica de pagos/AFIP (eso queda para iter futura con `argentine-ecom`):
+
+**1. Modernización visual del carrito + checkout** (matchea Round 1-4):
+- `cart-page.tsx` rewrite: H1 serif "Tu *carrito*" (italic), summary card con shadow + bg-background + serif "Resumen", progress bar ámbar hacia free shipping cuando no llegó al threshold (`bg-brand/10 border-brand/30` block con barra visual), trust signals (shield/truck/credit-card con ícono ámbar), empty state con gradient + glow ámbar + serif "Tu carrito está *vacío*" + foto pendiente shoppingbag con CTA dual.
+- `checkout-page.tsx`: H1 serif "Finalizar *compra*", form layout mantenido pero ahora con secciones (radio method + dirección condicional), trust signal con shield ámbar.
+- `checkout-summary.tsx`: card con rounded-xl + shadow + serif "Tu pedido" + total en font-serif text-2xl.
+
+**2. Retiro en local como método de envío** (`components/checkout/shipping-method-selector.tsx` NUEVO):
+- `lib/shipping.ts` extendido: `ShippingMethod = 'delivery' | 'pickup'`, agregado zone `pickup` con label "Retiro en local" + tarifa 0, función `pickupQuote()` returns ShippingQuote con method=pickup cents=0 isFree=true. Backward compat: `calculateShipping()` ahora retorna `method: 'delivery'` siempre.
+- UI: `ShippingMethodSelector` con 2 radio cards estilo Stripe (icon + título + subtítulo + precio + dot indicator). Click cambia el método, summary recalcula. Si pickup → muestra dirección del local desde `getBusinessInfo()` (fallback "coordinamos por WhatsApp" si no está completa). Dirección armada con `street + locality + region`.
+- `CheckoutPage` ahora client component con state `method`, calcula `activeQuote` dinámicamente (`method === 'pickup' ? pickupQuote() : shipping`). El submit envía `shipping_method` hidden input.
+- Hidden input listo para que el backend reciba el método. **TODO marcado en `lib/checkout/actions.ts`**: cuando se active el checkout, extender el schema para validar `shipping_method` y si method=pickup, no requerir `address_id` ni leer dirección. Hoy la action retorna early con "checkout no habilitado", no llega a la validación, así que no rompe.
+- Address selector solo se muestra si `method === 'delivery'`. Si pickup, esa sección se oculta.
+
+**3. Shipping calculator inline en carrito** (`components/cart/shipping-calculator.tsx` NUEVO):
+- Mini-widget en sidebar del carrito (debajo del summary, encima de trust signals).
+- Selector de provincia (las 24 de Argentina desde `AR_PROVINCES` constant).
+- Al elegir provincia → llama `calculateShipping()` (pura, sin DB ni APIs) → muestra zona + costo + tachado-original si free + "sumá X para envío gratis" si no llegó al threshold.
+- Microcopy "Estimación orientativa. El costo final se confirma con la dirección exacta en el checkout."
+
+**Build verde, typecheck verde**. Tamaños:
+- `/carrito`: `2.56 kB / 134 kB` (era `~1.5 kB / 105 kB`, +30 kB porque framer-motion y client interactividad del calculator).
+- `/checkout`: `4.22 kB / 119 kB` (subió un poco por el state del method selector).
+- `/checkout/error|exito|pendiente`: sin cambios.
+
+**Pendiente cuando se active checkout** (no bloqueante hoy):
+- Extender `submitCheckout` action para soportar `shipping_method='pickup'` (TODO documentado en el archivo).
+- Hacer `address` opcional en `createOrderFromCart` + ajustar columns shipping_* a nullable.
+- Agregar columna `shipping_method` en tabla `orders` para que el founder pueda filtrar pedidos a entregar vs retirar.
+
+**Próximo paso exacto del founder**: ver el cart + checkout en producción tras push. Si la onda visual cierra → seguir con guest checkout + AFIP via `argentine-ecom` agent invocation. Si quiere ajustar algo (intensidad del trust, microcopy, etc.) → tunear.
+
+---
+
+🟢 **Feature IA: Recomendador de monturas por rostro — implementado iter 1, pusheado (commit `9425a57`), en producción**
 
 **Update**: founder cuestionó la decisión de incluir matrícula de María Carlota en el disclaimer. Razonamiento del founder: (a) la matrícula no agrega protección legal real (la protección viene del lenguaje "orientativo / no reemplaza consulta profesional", no del número), (b) mostrarla al lado del output de IA da impresión de que la matriculada AVALA esa recomendación específica cuando NO la revisa, (c) inconsistente con el resto del sitio que no muestra matrícula. **Decisión**: sacar matrícula del disclaimer. Lo que queda es texto genérico de protección sin número.
 

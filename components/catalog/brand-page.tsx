@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
@@ -6,6 +7,11 @@ import {
   type ProductCardData,
 } from '@/components/product/product-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
+import { cn } from '@/lib/utils';
+import {
+  getBrandAssetUrl,
+  shouldInvertLogo,
+} from '@/lib/storage/brand-asset-url';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type {
   BrandPageData,
@@ -91,6 +97,21 @@ export function BrandCatalogPage({
       </nav>
 
       <RevealOnScroll as="article" className="mb-10 max-w-3xl">
+        {brand.logo_url && (
+          <div className="mb-6 flex h-14 items-center md:h-16">
+            <Image
+              src={getBrandAssetUrl(brand.logo_url)}
+              alt={brand.name}
+              width={240}
+              height={80}
+              className={cn(
+                'h-12 w-auto object-contain md:h-14',
+                shouldInvertLogo(brand.logo_url, 'light-bg') && 'brightness-0',
+              )}
+              priority
+            />
+          </div>
+        )}
         <h1 className="text-balance font-serif text-5xl font-medium leading-[1.05] tracking-[-0.02em] md:text-6xl lg:text-7xl">
           {category.name} <span className="italic font-normal">{brand.name}</span>
         </h1>

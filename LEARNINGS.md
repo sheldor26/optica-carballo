@@ -22,6 +22,169 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Founder no-técnico prefiere separación visual de buckets en Dashboard sobre reuso técnico con prefijos
+
+**Categoría**: Supabase Storage / UX del founder / Arquitectura adaptada al usuario
+**Confianza**: 🟢 Alta (decisión explícita del founder + lógica clara que aplica a Dashboard UI)
+
+### Qué pasó
+
+Propuse reusar bucket `products` con prefijo `_brand-logos/` para los logos de marca (ver entry refutado arriba). Founder eligió OPUESTO: creó bucket nuevo `brand-assets` con carpeta `brand-logos/` adentro. Subió `vulk-logo-light.svg` y `rusty-logo-dark.svg` ahí.
+
+Mi lógica: "menos overhead operacional, helper existente funciona". Pero founder priorizó otra dimensión que yo NO consideré:
+
+**Cuando el founder no-técnico gestiona el bucket por el Dashboard UI de Supabase, ver buckets separados por TIPO de asset es más entendible que ver un solo bucket con subcarpetas mezcladas.**
+
+En el Dashboard:
+- Mi propuesta: `products/` ← acá conviven fotos de productos reales (vulk-day-light/...) Y assets internos (_brand-logos/...). El founder tiene que navegar y entender el prefijo `_`.
+- Decisión founder: `products/` para fotos reales + `brand-assets/` para logos. Cada bucket tiene un único propósito claro.
+
+### Por qué la decisión del founder es mejor que la mía
+
+- **Cognitive overhead bajo**: el founder ve "products" y sabe "fotos de productos". Ve "brand-assets" y sabe "logos y assets de marca". No tiene que recordar convención de prefijo.
+- **Permite políticas RLS distintas a futuro**: brand-assets podría tener policies diferentes (ej caching más agresivo, retention diferente) sin afectar productos.
+- **Búsqueda más fácil**: search in bucket queda scoped al tipo de asset.
+- **Setup operacional bajo**: crear bucket en Dashboard es 30 segundos UI clicks. El "overhead" que yo prioricé era marginal.
+- **Mi helper paralelo no es problema**: `getBrandAssetUrl()` es 5 líneas, copy-paste de `getProductImageUrl()`. Cero burden.
+
+### Causa raíz de mi error
+
+Optimicé por dimensión equivocada: **"overhead técnico" (creación de bucket + helper)** en vez de **"overhead cognitivo del founder en Dashboard UI"**. El primero lo pago una sola vez yo (30 minutos). El segundo lo paga el founder CADA VEZ que abre el Dashboard a gestionar assets.
+
+Patrón meta: **cuando hay 2 dimensiones de costo (técnica vs UX/cognitiva), priorizar la UX/cognitiva del founder no-técnico si:**
+- La operación es recurrente para él (gestión de assets, productos, órdenes).
+- El costo técnico que se ahorra es chico (helper extra, bucket setup, etc.).
+- No hay constraints de performance reales (compute, latencia).
+
+### Cómo replicar
+
+Para CUALQUIER decisión de arquitectura que afecte cómo el founder interactúa con sistemas externos (Supabase Dashboard, panel Mercado Pago, panel Tusfacturas, Resend, Vercel):
+
+1. **Pensar primero**: ¿esto va a aparecer en una UI que el founder use recurrente?
+2. **Si sí**: ¿la decisión técnica le agrega overhead cognitivo? (convenciones para recordar, navegación extra, búsqueda compleja).
+3. **Si sí + el costo técnico es marginal**: priorizar la opción que sea más obvia visualmente en la UI externa.
+4. **Documentar la convención** en este archivo para que la próxima decisión similar sea correcta sin re-derivarla.
+
+### Aplicaciones concretas
+
+- **Buckets Supabase Storage**: 1 bucket por tipo semántico de asset (`products`, `brand-assets`, `prescriptions`, `banners-promo`). NO mezclar con prefijos.
+- **Tablas Supabase**: ya está bien separado por entidad (products, brands, orders, etc.) — mantener.
+- **Env vars Vercel**: agrupar por servicio con prefijo claro (`MP_*`, `RESEND_*`, `TUSFACTURAS_*`).
+- **Folders dentro de cada bucket**: usar slugs claros (`vulk-day-light/`, `brand-logos/`). NO prefijos cripticos como `_internal/`.
+
+### Anti-patrón a evitar
+
+- Optimizar por "menos overhead técnico de mi parte" cuando ese overhead lo pago yo una sola vez y el founder paga overhead cognitivo recurrente.
+- Inventar convenciones (prefijo `_`) que requieren documentación adicional para el founder.
+- Asumir que "limpieza arquitectural teórica" pesa más que "cómo se ve en la UI externa".
+
+### Próxima vez aplicar a
+
+- Cuando se agreguen banners de promo / hero rotators: bucket `banners-promo/` separado en vez de mezclar en `products`.
+- Cuando se agreguen fotos del local físico para `/sobre-nosotros`: bucket `store-photos/` separado.
+- Cuando se agreguen íconos custom de medios de pago: bucket `payment-icons/` separado.
+- Si en el futuro hay videos de productos: bucket `product-videos/` separado por billing diferente.
+
+---
+
+## 2026-05-28 — Reusar bucket Supabase existente con prefijo `_` para assets internos reduce overhead operacional vs crear bucket dedicado
+
+**Categoría**: Supabase Storage / Arquitectura / Operacional
+**Confianza**: 🔴 **REFUTADO en 2026-05-28** — founder eligió bucket separado `brand-assets` por simpleza visual del Dashboard de Supabase Storage. Ver entry siguiente "Founder no-técnico prefiere separación visual de buckets" para la versión corregida del learning.
+
+### Qué pasó
+
+Al integrar logos de marcas (Vulk + 4 más a futuro), tenía 2 opciones:
+
+**Opción A**: crear bucket nuevo `brand-assets` dedicado. Pros: semánticamente limpio (assets no son productos). Contras: founder no-técnico tiene que crear bucket en Dashboard, configurar RLS pública, y yo tengo que crear helper `getBrandAssetUrl()` paralelo a `getProductImageUrl()`.
+
+**Opción B**: reusar bucket `products` existente con prefijo `_brand-logos/`. Pros: cero setup operacional para el founder, helper existente funciona, RLS ya configurado. Contras: semánticamente mezclamos assets con productos.
+
+Elegí **opción B** con criterio: el costo semántico es bajo (prefijo `_` distingue), y el ahorro operacional es alto (founder no tiene que aprender otro bucket). Si en el futuro hay overhead real (ej: tamaño del bucket products crece y queremos separar billing), migrar es trivial: copiar archivos + UPDATE de paths en DB.
+
+### Por qué funcionó
+
+- **Prioricé el costo cognitivo del founder no-técnico** sobre la "limpieza arquitectural" teórica. Founder sabe usar el bucket `products`, ya subió las fotos de Vulk Day Light ahí.
+- **Prefijo `_` como convención visual**: distingue assets internos (logos, banners genéricos) de assets de producto. Convención simple y obvia.
+- **Migración futura es trivial**: copiar archivos + UPDATE de paths. No hay coupling con DB schema (`logo_url` guarda path relativo, no URL completa).
+- **Helper único `getProductImageUrl()`** sirve para todos los assets del bucket. Menos código, menos lugares de mantener.
+
+### Cómo replicar
+
+Cuando se necesite agregar un nuevo tipo de asset (banners, ícones de pago, badges de envío, fotos del local, etc.) y haya bucket Supabase ya configurado:
+
+1. **Default**: reusar bucket existente con prefijo de carpeta (`_banners/`, `_payment-icons/`, `_store-photos/`).
+2. **Excepción**: crear bucket dedicado solo si:
+   - El asset tiene **RLS diferente** (público vs autenticado, ej: prescripciones de clientes).
+   - El asset tiene **billing crítico separado** (ej: video assets pesados que justifican lifecycle policy distinto).
+   - El asset requiere **CDN/cache diferente** (raro en Supabase Storage default).
+3. **Convención de prefijo**: usar `_` al inicio para distinguir de carpetas de productos reales (que típicamente usan slug, ej `vulk-day-light/`).
+
+### Anti-patrón a evitar
+
+- Crear un bucket nuevo por cada tipo de asset por "limpieza" arquitectural. El founder paga el costo operacional cada vez sin beneficio real.
+- Mezclar assets sin prefijo (ej: subir logos a la raíz del bucket `products`). Se vuelve imposible distinguir productos de assets internos al hacer listing.
+- Inventar helper paralelo cuando el existente funciona (`getBrandAssetUrl()` vs `getProductImageUrl()` para el mismo bucket).
+
+### Próxima vez aplicar a
+
+- Banners para hero rotators o promos.
+- Íconos de medios de pago (Visa, Master, MP, etc.) si decidimos custom en vez de lucide.
+- Badges de envío / certificaciones para mostrar en footer.
+- Fotos del local físico para `/sobre-nosotros`.
+
+---
+
+## 2026-05-28 — Cuando el founder pregunta "cómo necesitás que sea X?" — responder con spec en tabla + alternativas + dónde se usa + plan de "arrancá por 1"
+
+**Categoría**: Comunicación / Onboarding de assets / Specs de input
+**Confianza**: 🟡 Media (1 caso, pendiente confirmar resultado cuando suba logos de Vulk)
+
+### Qué pasó
+
+Founder estaba consiguiendo logos de las 5 marcas con las que trabaja la óptica (Vulk, Rusty, Mormaii, Reef, Paula Cahen D'Anvers). Preguntó: "Como necesitas que sean los logos? Tamanos, Con fondo? Sin?".
+
+Respondí con una estructura que cubrió:
+1. **Tabla concreta** de specs por atributo (formato, fondo, versiones, tamaño, tipo de logo, padding, SVG texto): cada fila con **"Lo ideal" + "Alternativa aceptable"** para que el founder no quede bloqueado si no consigue el ideal.
+2. **Dónde se usa cada versión** (brand section home dark, brand pages claras, trust marquee dark, product cards mini): justifica por qué pido 2 versiones.
+3. **"Si solo conseguís 1 versión"**: fallback honesto (dark + filter CSS invert) con tradeoff explícito.
+4. **Convención de naming + paths Supabase Storage**: `brand-assets/{slug}-logo-dark.svg`. Founder sabe dónde subirlo sin tener que preguntarme después.
+5. **"Arrancá por 1 caso"** (Vulk primero — el único con producto cargado): permite ver el resultado antes de invertir tiempo en los otros 4.
+
+### Por qué funcionó
+
+- **Tabla > texto narrativo** cuando son specs técnicos: el founder no-técnico puede scanear y decidir rápido. Texto narrativo requiere leer todo para encontrar el atributo que importa.
+- **"Lo ideal + alternativa aceptable" por fila**: evita que el founder se bloquee buscando el formato perfecto. Le da margen de maniobra y conoce el costo de cada alternativa.
+- **"Arrancá por 1"** reduce riesgo de inversión sin feedback. Es el equivalente al "plan por rounds verificables" pero para inputs del founder en lugar de mi código.
+- **Paths exactos de storage** anticipan la próxima pregunta ("¿dónde lo subo?"). Reducen idas y vueltas.
+
+### Cómo replicar
+
+Para CUALQUIER pregunta del founder del tipo "cómo necesitás que sea X?" / "qué formato te paso?" / "cuántos / cuánto / dónde?":
+
+1. **Tabla de specs por atributo** con "Lo ideal" + "Alternativa aceptable" en cada fila.
+2. **Sección "Dónde se va a usar"**: justifica las decisiones técnicas con el caso de uso real.
+3. **Fallback honesto** si solo consigue uno de los ideales — con tradeoff explícito.
+4. **Convención de naming + paths exactos** si va a subir a Supabase Storage o algún bucket.
+5. **"Arrancá por 1 caso"** para validar antes de invertir tiempo en el resto.
+
+### Anti-patrón a evitar
+
+- Responder solo "subilos en SVG con fondo transparente" → demasiado breve, el founder vuelve con más preguntas (tamaño, padding, naming).
+- Sobre-explicar: 6 párrafos sobre por qué SVG es mejor que PNG. Founder no-técnico le importa el outcome, no la teoría.
+- Pedir todos los assets juntos sin verificación intermedia. Si me equivoco con la spec, el founder pierde tiempo en 5 marcas en lugar de 1.
+- Inventar paths/convenciones que no son las usadas en el resto del proyecto (chequear cómo se usa el bucket `products` y mantener consistencia).
+
+### Próxima vez aplicar a
+
+- Fotos de productos nuevos (cómo recortar, qué tamaño, qué padding, dónde subir).
+- Recetas para validar el lector de receta IA (formato JPG/PDF, fotos vs scans, anonimización).
+- Selfies de prueba para el recomendador de monturas (qué condiciones, qué casos edge).
+- CSVs / bulk uploads (template prearmado, encoding, separador, columnas requeridas).
+- Datos de contacto para WhatsApp / email (formato, validaciones, ejemplos).
+
+---
+
 ## 2026-05-28 — Los agentes pueden ser overly conservative; la decisión del founder pesa más que la recomendación del agente cuando hay tradeoff de UX/coherencia
 
 **Categoría**: Sistema de agentes / Toma de decisión / Calibración

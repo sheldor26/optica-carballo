@@ -16,8 +16,10 @@ export function CheckoutSummary({
   const totalCents = cart.subtotalCents + shipping.cents;
 
   return (
-    <div className="border-border rounded-lg border p-5">
-      <h2 className="text-foreground text-base font-semibold">Tu pedido</h2>
+    <div className="border-border/60 bg-background rounded-xl border p-5 shadow-sm">
+      <h2 className="text-foreground font-serif text-xl font-medium tracking-tight">
+        Tu pedido
+      </h2>
 
       <ul className="mt-4 space-y-3">
         {cart.items.map((item) => (
@@ -79,7 +81,7 @@ export function CheckoutSummary({
 
       <div className="border-border mt-4 flex items-baseline justify-between border-t pt-4">
         <span className="text-foreground text-base font-semibold">Total</span>
-        <span className="text-foreground text-xl font-bold tabular-nums">
+        <span className="text-foreground font-serif text-2xl font-medium tabular-nums">
           {formatPriceCents(totalCents)}
         </span>
       </div>

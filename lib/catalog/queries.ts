@@ -13,6 +13,7 @@ export type BrandPageData = {
   name: string;
   description: string | null;
   is_argentine: boolean;
+  logo_url: string | null;
 };
 
 export type ProductCardSource = {
@@ -85,6 +86,7 @@ export type BrandWithProductCount = {
   name: string;
   description: string | null;
   is_argentine: boolean;
+  logo_url: string | null;
   productCount: number;
 };
 
@@ -110,7 +112,7 @@ export async function fetchBrandPage(
 
   const { data: brand } = await supabase
     .from('brands')
-    .select('id, slug, name, description, is_argentine')
+    .select('id, slug, name, description, is_argentine, logo_url')
     .eq('slug', brandSlug)
     .eq('is_active', true)
     .maybeSingle()
@@ -349,12 +351,13 @@ export async function fetchAllActiveBrands(): Promise<
     name: string;
     description: string | null;
     is_argentine: boolean;
+    logo_url: string | null;
   }>
 > {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from('brands')
-    .select('id, slug, name, description, is_argentine')
+    .select('id, slug, name, description, is_argentine, logo_url')
     .eq('is_active', true)
     .order('sort_order', { ascending: true });
   return data ?? [];
@@ -403,7 +406,7 @@ export async function fetchCategoryIndex(
 
   const { data: brands } = await supabase
     .from('brands')
-    .select('id, slug, name, description, is_argentine')
+    .select('id, slug, name, description, is_argentine, logo_url')
     .in('id', brandIds)
     .eq('is_active', true)
     .order('sort_order', { ascending: true })

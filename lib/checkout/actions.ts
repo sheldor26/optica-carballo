@@ -18,6 +18,20 @@ export type CheckoutFormState = {
   error?: string;
 };
 
+// TODO (cuando se active el checkout): extender este schema para soportar
+// shipping_method = 'pickup' (el form en checkout-page.tsx ya envía un
+// hidden input con `shipping_method`). Cuando method=pickup, address_id no
+// es necesario y hay que adaptar el flujo:
+//  1. NO validar address_id si method=pickup.
+//  2. Usar pickupQuote() en lugar de calculateShipping().
+//  3. Pasar address=null a createOrderFromCart y hacer ese parámetro opcional.
+//  4. En orders.ts, dejar las columnas shipping_* como null cuando es pickup,
+//     y agregar una columna `shipping_method` para que el founder pueda
+//     filtrar pedidos a entregar vs retirar.
+//
+// Hoy esta action retorna early con "checkout no habilitado" porque el
+// feature flag está OFF — no llega a validar el schema. Cuando se active,
+// recordar este TODO.
 const inputSchema = z.object({
   address_id: z.uuid({ error: 'Elegí una dirección de envío.' }),
 });

@@ -285,6 +285,136 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Optimizar arquitectura por "overhead técnico mío" ignorando "overhead cognitivo del founder en UI externa" (Dashboard Supabase)
+
+**Estado**: 🟡 Detectado por la decisión opuesta del founder; mitigación documentada.
+**Categoría**: Arquitectura / UX del founder / Filtro crítico
+
+### Qué pasó
+
+Cuando founder preguntó dónde subir los logos, recomendé reusar bucket `products` con prefijo `_brand-logos/`. Mi razonamiento: "menos buckets que gestionar, helper existente funciona, prefijo `_` distingue assets de productos reales". Lo registré como LEARNING 🟡 confidence Media.
+
+Founder hizo lo opuesto: creó bucket separado `brand-assets` con carpeta `brand-logos/` adentro. Subió logos ahí.
+
+**Su decisión es mejor que la mía** porque optimicé por la dimensión equivocada: "overhead técnico de creación de bucket + helper" (que se paga una vez) en vez de "overhead cognitivo del founder cada vez que abre el Dashboard de Supabase a gestionar assets" (que se paga recurrente).
+
+### Causa raíz
+
+El "overhead técnico" es lo que YO experimentaba al implementar: tener que crear bucket, copiar helper, decidir prefijos. Eso lo veo y lo cuantifico. **El "overhead cognitivo del founder en UI externa" es invisible para mí** porque no abro el Supabase Dashboard a gestionar assets — el founder sí.
+
+Patrón meta del error: **cuando hay 2 dimensiones de costo (técnica vs UX externa), tiendo a optimizar por la que YO experimento (técnica), no por la que el founder experimenta (UX externa)**. Es una versión específica del sesgo "the developer is the user" — pero el developer (yo) NO es el usuario operativo del Dashboard Supabase, el founder lo es.
+
+### Regla preventiva
+
+Para CUALQUIER decisión de arquitectura que afecte cómo el founder interactúa con sistemas externos (Supabase Dashboard, Vercel, MP, Tusfacturas, Resend, etc.):
+
+1. **Pregunta filtro**: ¿esta decisión va a aparecer en una UI que el founder use recurrente para operar el negocio?
+2. **Si sí**: ¿la opción "técnicamente más simple" le agrega overhead cognitivo en esa UI?
+3. **Si sí**: el founder prefiere la opción "técnicamente más laboriosa" pero "operacionalmente más clara". Default a esa.
+4. **Documentar la convención** (en LEARNINGS) para que la próxima decisión similar sea correcta sin re-derivarla.
+
+Casos típicos donde aplica:
+- Buckets de Storage (separar por tipo de asset, NO mezclar con prefijos).
+- Tablas (1 entidad = 1 tabla, NO meter múltiples entidades en jsonb por "menos tablas").
+- Env vars (agrupar por servicio con prefijos claros).
+- Estructura de folders dentro de cada bucket (slugs claros, NO prefijos crípticos).
+- Naming de productos / órdenes / clientes (humanos, NO IDs UUID expuestos).
+
+### Estado de mitigación
+
+- Documentado en este turno + LEARNINGS con entry positivo "founder no-técnico prefiere separación visual".
+- Si en próximas decisiones de arquitectura ignoro de nuevo la dimensión "UX del founder en UI externa", elevar a CLAUDE.md como regla operacional.
+
+---
+
+## 2026-05-28 — 6TA VEZ: cerrar mensaje de "consulta / spec / respuesta sin código" pidiendo feedback sin actualizar docs — la mitigación cubría "bloques técnicos" pero no "mensajes de respuesta a consultas"
+
+**Estado**: 🔴 Abierto. Bug de especificación en la mitigación del 5to mistake.
+**Categoría**: Proceso / Especificación incompleta de mitigaciones — recurrente
+
+### Qué pasó
+
+Founder preguntó "cómo necesitás que sean los logos? tamaños, con fondo, sin?". Respondí con spec detallada (tabla de atributos + dónde se usa + fallback + paths Supabase + "arrancá por Vulk"). Cerré el mensaje con: **"Mi consejo: arrancá por Vulk... si me lo pasás, lo conecto y ves cómo queda antes de juntar el resto."** — claramente un patrón de pausa para acción del founder.
+
+Stop hook intervino por **6ta vez consecutiva** señalando que no actualicé docs antes de cerrar.
+
+### Causa raíz (refinamiento del 5to mistake)
+
+La mitigación corregida del 5to mistake decía: *"Al final de cada **bloque técnico** (Edit/Write/Bash con commit/push o cambios significativos), AUTOMÁTICAMENTE evaluar los 3 archivos..."*.
+
+Esa definición cubre cuando hago código. **NO cubre cuando respondo una consulta del founder sin código** (preguntas sobre specs, formatos, decisiones, ideas, etc.). Esos mensajes:
+- No tienen `Edit`/`Write`/`Bash` previo.
+- Sin embargo SÍ pueden terminar con pausa para acción del founder ("avisame cuando…", "arrancá por…", "decime y…").
+- Y sin embargo SÍ representan cierre de sesión que requiere update de docs (al menos CURRENT_STATE para registrar la decisión / spec acordada).
+
+### Regla preventiva — corregir DE NUEVO la especificación
+
+**Mitigación corregida v2** (reemplaza la del 5to mistake):
+
+> Al final de cualquier mensaje al founder que termine con pausa para su acción (trigger phrases: "avisame", "mirá", "cuando me digas", "esperando", "¿querés que…?", "arrancá por…", "decime…", "listo, mirá…"), AUTOMÁTICAMENTE evaluar los 3 archivos en orden ANTES de enviar el mensaje:
+>
+> 1. **CURRENT_STATE.md** — SIEMPRE actualizar. Aún si la sesión fue una consulta sin código: registrar la decisión, spec acordada, o info que el founder dejó (ej: "founder está consiguiendo logos, spec acordada: SVG con fondo transparente...").
+> 2. **LEARNINGS.md** — actualizar SI hubo un patrón nuevo que funcionó (incluyendo patterns de comunicación, no solo técnicos).
+> 3. **MISTAKES.md** — actualizar SI hubo un error nuevo, anti-pattern detectado, o el stop hook intervino.
+>
+> **Trigger no es "hubo bloque técnico"**, es **"el mensaje termina con pausa para acción del founder"** — incluye respuestas a consultas, decisiones de dirección, specs solicitadas, planes propuestos, etc.
+
+### Por qué este nivel de detalle importa
+
+Las 6 repeticiones del patrón confirman que necesito un trigger CON MAYOR PRECISIÓN, no más fuerte. Cada vez que la mitigación falla, el patrón se refina pero queda un edge case nuevo no cubierto:
+- 1ra-3ra vez: trigger era textual ("acordate de"). Falló por falta de visibilidad sistemática.
+- 4ta vez: trigger se elevó a CLAUDE.md. Falló porque CLAUDE.md cargado al inicio no = aplicado al cierre.
+- 5ta vez: mitigación de emergencia "actualizar después de bloque técnico". Falló porque solo cubría CURRENT_STATE.
+- 5ta vez corregida: "evaluar los 3 archivos después de bloque técnico". Falló porque **"bloque técnico" no cubre respuestas a consultas sin código**.
+- 6ta vez (este): la regla nueva debe ser "fin del mensaje al founder con pausa para acción", no "fin de bloque técnico".
+
+### Estado de mitigación
+
+- Aplicado en este mismo turno: actualizando 3 archivos antes de cerrar respuesta a consulta de logos.
+- Si en próximas 3 sesiones repito el patrón (cerrar consulta sin código pidiendo acción sin update de docs), considerar:
+  - Eliminar la distinción "bloque técnico vs consulta" y usar el trigger único "pausa para acción del founder".
+  - Promover a CLAUDE.md con texto explícito del trigger.
+  - O escalada técnica: hook PreToolUse que matchee trigger phrases en mensajes pendientes.
+
+---
+
+## 2026-05-28 — Repetir pedidos de data al founder en cada mensaje de cierre — saturación de comunicación
+
+**Estado**: 🔴 Abierto — patrón a corregir.
+**Categoría**: Comunicación / UX del founder
+
+### Qué pasó
+
+Tras sacar la matrícula del disclaimer del recomendador (porque founder objetó "para qué necesitás saberla?"), en mi siguiente mensaje de cierre incluí en la sección "Pendientes tuyos":
+> "1. Setear ANTHROPIC_API_KEY en Vercel..."
+> "2. Testear con foto real..."
+
+Founder respondió: "Push... no es necesario que en cada paso de código ya me la estés pidiendo y pidiendo... ya está seteada la key de anthropic en vercel".
+
+Dos cosas pasaron:
+1. **Repetí pedido de env var** que ya estaba seteada — info que tenía si hubiera preguntado o asumido por defecto que un push del SDK ya implicaba env var configurada.
+2. **Patrón de "pendientes founder" en cada cierre** está saturando — el founder los entrega cuando puede, no necesita ser recordado en cada turno.
+
+### Causa raíz
+
+**Trato cada mensaje de cierre como si fuera el primero** — incluyo todos los pendientes acumulados como si el founder no los conociera. Pero el founder los conoce; ya están en su mente. Repetirlos no agrega info, agrega ruido.
+
+Patrón profundo: confundo "completitud" con "valor". Un mensaje con 5 pendientes listados se siente "completo" para mí, pero para el founder es 5 cosas para tachar mentalmente sin acción inmediata.
+
+### Regla preventiva
+
+1. **Pendientes del founder se piden UNA vez**, cuando son críticos para desbloquear lo siguiente. No se repiten en cierres subsiguientes salvo que cambie el contexto (ej: ahora SÍ es bloqueante).
+2. **Distinguir "pendiente bloqueante" (mencionar)** vs "pendiente nice-to-have" (no mencionar). El env var de Anthropic ANTES del push era nice-to-have (no bloqueante para mergear código). Después de mi mensaje informando que está pendiente, founder ya sabe — no repetir.
+3. **Asumir buena fe del founder**: si dice "lo voy a hacer", confío. Si lo necesito YA porque es bloqueante, lo digo explícito una vez con "esto bloquea X".
+4. **En mensajes de cierre, default a NO incluir sección "Pendientes founder"**. Solo agregar si hay algo nuevo o cambió la criticidad.
+
+### Estado de mitigación
+
+- Registrado en este turno. Aplicar desde el próximo cierre.
+- Si en próximos 3 cierres repito el patrón (pendientes ya conocidos), elevar la regla a CLAUDE.md.
+
+---
+
 ## 2026-05-28 — Implementar recomendación del agente especialista sin pensar críticamente si tiene sentido en el contexto del sitio entero
 
 **Estado**: 🟡 Detectado y corregido en el mismo turno gracias al founder. Patrón identificado para no repetir.

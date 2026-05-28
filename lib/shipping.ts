@@ -27,18 +27,22 @@ import { AR_PROVINCES, type ArProvince } from '@/lib/addresses/constants';
 /** Subtotal del cart (en centavos) a partir del cual el envío es gratis. */
 export const FREE_SHIPPING_THRESHOLD_CENTS = 80_000_00; // $80.000
 
+export type ShippingMethod = 'delivery' | 'pickup';
+
 export type ShippingZone =
   | 'caba_gba'
   | 'interior_cercano'
   | 'interior_lejano'
-  | 'patagonia';
+  | 'patagonia'
+  | 'pickup';
 
-/** Tarifa flat por zona (en centavos). */
+/** Tarifa flat por zona (en centavos). `pickup` siempre = 0 (gratis). */
 export const SHIPPING_RATES_BY_ZONE: Record<ShippingZone, number> = {
   caba_gba: 2_500_00, // $2.500 — CABA + GBA
   interior_cercano: 4_500_00, // $4.500 — Litoral + Córdoba + Mendoza + Entre Ríos + La Pampa
   interior_lejano: 6_500_00, // $6.500 — NEA + NOA + Cuyo
   patagonia: 9_500_00, // $9.500 — Patagonia (incluye Tierra del Fuego)
+  pickup: 0,
 };
 
 // ============================================================================
@@ -77,6 +81,7 @@ const ZONE_LABELS: Record<ShippingZone, string> = {
   interior_cercano: 'Centro / Litoral',
   interior_lejano: 'NEA / NOA / Cuyo',
   patagonia: 'Patagonia',
+  pickup: 'Retiro en local',
 };
 
 // ============================================================================
@@ -84,15 +89,16 @@ const ZONE_LABELS: Record<ShippingZone, string> = {
 // ============================================================================
 
 export type ShippingQuote = {
+  method: ShippingMethod;
   zone: ShippingZone;
   zoneLabel: string;
-  /** Costo en centavos. 0 si el subtotal supera el threshold de free shipping. */
+  /** Costo en centavos. 0 si el subtotal supera el threshold de free shipping, o si method=pickup. */
   cents: number;
-  /** true cuando el subtotal disparó el envío gratis. */
+  /** true cuando el subtotal disparó el envío gratis, o cuando es pickup. */
   isFree: boolean;
   /** Costo "tachado" cuando isFree=true (para mostrar el ahorro). null si no aplica. */
   originalCents: number | null;
-  /** Cuánto le falta al user para llegar al free shipping. 0 si ya llegó. */
+  /** Cuánto le falta al user para llegar al free shipping. 0 si ya llegó o es pickup. */
   centsToFreeShipping: number;
 };
 
@@ -126,11 +132,28 @@ export function calculateShipping(args: {
     : FREE_SHIPPING_THRESHOLD_CENTS - args.subtotalCents;
 
   return {
+    method: 'delivery',
     zone,
     zoneLabel: ZONE_LABELS[zone],
     cents: isFree ? 0 : baseRate,
     isFree,
     originalCents: isFree ? baseRate : null,
     centsToFreeShipping,
+  };
+}
+
+/**
+ * Quote para retiro en local. Siempre gratis. No depende de provincia ni
+ * subtotal. El caller maneja la UI para mostrar la dirección del local.
+ */
+export function pickupQuote(): ShippingQuote {
+  return {
+    method: 'pickup',
+    zone: 'pickup',
+    zoneLabel: ZONE_LABELS.pickup,
+    cents: 0,
+    isFree: true,
+    originalCents: null,
+    centsToFreeShipping: 0,
   };
 }

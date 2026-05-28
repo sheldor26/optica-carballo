@@ -1,6 +1,12 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import {
+  getBrandAssetUrl,
+  shouldInvertLogo,
+} from '@/lib/storage/brand-asset-url';
 import type { BrandWithProductCount } from '@/lib/catalog/queries';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 
@@ -14,10 +20,26 @@ export function BrandGridCard({
   const href = `/${category.slug}/${brand.slug}`;
 
   return (
-    <Link href={href} className="group block">
+    <Link href={href} className="group block" aria-label={`Ver ${brand.name}`}>
       <Card className="flex h-full flex-col transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:border-foreground group-hover:shadow-xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">{brand.name}</CardTitle>
+          {brand.logo_url ? (
+            <div className="flex h-12 items-center">
+              <Image
+                src={getBrandAssetUrl(brand.logo_url)}
+                alt={brand.name}
+                width={140}
+                height={48}
+                className={cn(
+                  'h-10 w-auto object-contain',
+                  shouldInvertLogo(brand.logo_url, 'light-bg') &&
+                    'brightness-0',
+                )}
+              />
+            </div>
+          ) : (
+            <CardTitle className="text-lg">{brand.name}</CardTitle>
+          )}
         </CardHeader>
         <CardContent className="flex-1">
           {brand.description && (
