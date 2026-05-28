@@ -2,6 +2,38 @@
 
 ## Status
 
+🟢 **2da variante Vulk Day Light + descripción genérica del modelo + Gallery filter por variante seleccionada**
+
+Founder cargó la 2da variante del Vulk Day Light (Rosa Pálido + Caramelo / Gris Oscuro Degradé, SKU 194180, $88.037). En el mismo turno detectó un problema sistémico que aplica a TODOS los productos: **la descripción NO puede mencionar colores específicos de una variante** porque ahora hay >1 variante y queda mal cuando el usuario está mirando la otra. Esto desbloqueó 3 implementaciones grandes:
+
+### 1. Descripción genérica del modelo (regla #8 en BUSINESS_POLICIES.md)
+Reescritura del Vulk: sacado "Esta versión viene en carey brillo, una variante clásica…" y "Las lentes polarizadas **verdes**…" → ahora "Las lentes polarizadas cortan los reflejos…". La descripción describe el MODELO, no la variante seleccionada. Los colores específicos viven en `product_variants.attributes` y se renderizan en el bloque "Variantes disponibles". Regla documentada como política #8 + `content-writer-medical` agent actualizado para respetarla en futuros productos.
+
+### 2. Sistema de selección de variante con Gallery filtering
+**Problema**: con 2 variantes con fotos propias (2 fotos Carey + 2 fotos Rosa + 1 esquema técnico = 5 imágenes), si la gallery muestra todas mezcladas el usuario se confunde. Implementé:
+- **`lib/product/variant-selection.tsx`** — client component con Context + Provider + hook `useVariantSelection()`. Mantiene estado `selectedVariantId` + función `selectVariant(id)`.
+- **`ProductGallery`** ahora usa `useVariantSelection()` para filtrar: muestra solo imágenes de la variante seleccionada + las que tienen `variant_id = NULL` (compartidas, ej esquema de medidas). Reset de `activeIdx` a 0 cuando cambia variante.
+- **`VariantList`** convertido a client component. Cada fila ahora es clickeable (radio-button visual + highlight `bg-muted/50`). Click selecciona la variante → gallery cambia automáticamente. Aria-pressed + keyboard handler (Enter/Space).
+- **`ProductDetailPage`** envuelve `<main>` con `VariantSelectionProvider defaultVariantId={primera variante en stock}`. Default está pre-seleccionada al cargar.
+- **Query extendida**: `product_images` ahora incluye `variant_id` + `ProductImage` type extendido.
+
+### 3. Schema DB y data del producto
+- Las fotos existentes (`01-lateral.jpg`, `02-frontal.jpg`) ahora tienen `variant_id` apuntando a la variante Carey (SKU 194185). El esquema técnico (`03-medidas.jpg`) sigue con `variant_id: NULL` (compartida).
+- 2da variante INSERT: SKU 194180, attributes `{frame_color: "rosa-palido-caramelo", lens_color: "gris-oscuro-degrade", reference_code: "L.PINK/DRT-25 POL."}`, precio $88.037, stock 3 (placeholder — pendiente confirmación founder).
+- 2 imágenes nuevas con `variant_id` apuntando a la variante Rosa: `04-lateral-rosa.jpg` (primary de la variante) y `05-frontal-rosa.jpg`.
+
+### Seeds
+- **`seeds/07_vulk_day_light_variant_rosa.sql`** nuevo: UPDATE description + UPDATE variant_id fotos viejas + INSERT variante rosa + INSERT 2 imágenes.
+- **`seeds/03_vulk_day_light.sql`** sincronizado con la 2da variante + descripción genérica + imágenes con variant_id correcto. Para futuras aplicaciones limpias.
+- **`supabase/CLOUD_APPLIED.md`** actualizado: registra seed 03 ✅ y seeds 04, 05, 06, 07 con estado ⏳ pendiente.
+
+Typecheck verde. **Commit pendiente**.
+
+### Pendiente founder para activar la 2da variante
+1. **Subir 2 fotos rosa al bucket** Storage en `vulk-day-light-sol/04-lateral-rosa.jpg` y `vulk-day-light-sol/05-frontal-rosa.jpg`.
+2. **Confirmar stock** de la variante rosa (SKU 194180). Por ahora seed pone 3, ajusto si me decís otro.
+3. **Aplicar seeds en orden**: 04 → 05 → 06 → 07.
+
 🟢 **Callouts iteración 2 — distribuidos por posición + tweet-length + layout sin espacio blanco**
 
 Founder reportó 2 issues + 1 ajuste de callouts:
@@ -254,6 +286,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: 2da variante Vulk + sistema de selección de variante con Gallery filtering + regla "descripción genérica del modelo". Founder cargó variante Rosa Pálido del Vulk Day Light. Detectó que la descripción no puede mencionar colores específicos. Implementé: Context de selección de variante (provider en product-page + hook usado por gallery y variant-list), gallery filtra imágenes por variante seleccionada, variant-list ahora es client + radio-button visual + click handler en fila, schema product_images extendido con variant_id + UPDATE de fotos viejas para apuntar a variante carey. Seed 07 nuevo + seed 03 sincronizado. CLOUD_APPLIED.md actualizado con 5 seeds tracked.
 
 **Fecha**: 2026-05-28
 **Por**: Callouts iteración 2 tras feedback founder. Position field (top/middle/bottom), helper distributor que intercala en la descripción, callouts acortados a ~250 chars (tweet length). Layout product-page con grid-rows que mueve ProductIncludes a columna izquierda debajo del gallery — llena el espacio blanco en desktop sin romper mobile (sigue al final). Documentación actualizada en BUSINESS_POLICIES.md + content-writer-medical agent. Seed 06 V2 con callouts cortos + position.

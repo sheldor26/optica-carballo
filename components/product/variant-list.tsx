@@ -1,6 +1,10 @@
+'use client';
+
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { VariantWhatsappCta } from '@/components/product/variant-whatsapp-cta';
+import { useVariantSelection } from '@/lib/product/variant-selection';
 import { formatPriceCents } from '@/lib/format/currency';
+import { cn } from '@/lib/utils';
 
 type AttributesJson = Record<string, unknown>;
 
@@ -76,6 +80,8 @@ export function VariantList({
    */
   checkoutEnabled: boolean;
 }) {
+  const { selectedVariantId, selectVariant } = useVariantSelection();
+
   if (variants.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
@@ -93,16 +99,48 @@ export function VariantList({
         {variants.map((v) => {
           const inStock = v.stockQty > 0;
           const label = describeVariant(v.attributes);
+          const isSelected = v.id === selectedVariantId;
           return (
             <li
               key={v.sku}
-              className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
+              className={cn(
+                'flex cursor-pointer items-center justify-between gap-4 px-4 py-3 text-sm transition-colors duration-150',
+                isSelected ? 'bg-muted/50' : 'hover:bg-muted/30',
+              )}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
+              onClick={() => selectVariant(v.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  selectVariant(v.id);
+                }
+              }}
             >
-              <div>
-                <p className="text-foreground font-medium">{label}</p>
-                <p className="text-muted-foreground text-xs">SKU: {v.sku}</p>
+              <div className="flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'flex size-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
+                    isSelected
+                      ? 'border-foreground'
+                      : 'border-muted-foreground/40',
+                  )}
+                >
+                  {isSelected && (
+                    <span className="bg-foreground size-2 rounded-full" />
+                  )}
+                </span>
+                <div>
+                  <p className="text-foreground font-medium">{label}</p>
+                  <p className="text-muted-foreground text-xs">SKU: {v.sku}</p>
+                </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div
+                className="flex items-center gap-4"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="text-right">
                   <p className="text-foreground font-semibold">
                     {formatPriceCents(v.priceCents)}

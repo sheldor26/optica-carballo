@@ -17,6 +17,7 @@ import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { isCheckoutEnabled } from '@/lib/features';
 import { fetchRelatedProducts } from '@/lib/catalog/queries';
+import { VariantSelectionProvider } from '@/lib/product/variant-selection';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { ProductDetailData } from '@/lib/catalog/queries';
 
@@ -119,7 +120,13 @@ export async function ProductDetailPage({
     frameShape: extractFrameShape(product.attributes),
   });
 
+  // Default seleccionado: primera variante en stock activa, sino la
+  // primera activa, sino null.
+  const defaultVariantId =
+    inStockVariants[0]?.id ?? activeVariants[0]?.id ?? null;
+
   return (
+    <VariantSelectionProvider defaultVariantId={defaultVariantId}>
     <main className="container py-8 md:py-12">
       <BreadcrumbJsonLd
         items={[
@@ -267,5 +274,6 @@ export async function ProductDetailPage({
 
       <RelatedProducts products={relatedProducts} />
     </main>
+    </VariantSelectionProvider>
   );
 }

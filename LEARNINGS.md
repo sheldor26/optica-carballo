@@ -22,6 +22,101 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Variant selection con Context: gallery filtering + click-to-select sin perder server components
+
+**Categoría**: React patterns / Client+Server hybrid / E-commerce UX
+**Confianza**: 🟢 Alta (implementado, typecheck verde, comportamiento natural en variants con stock)
+
+### Qué funcionó
+
+Problema: cuando un producto tiene múltiples variantes con fotos propias (ej Vulk Day Light: variante carey con 2 fotos + variante rosa con 2 fotos + 1 esquema técnico compartido), la gallery default mostraba **TODAS las imágenes mezcladas** → 5 thumbs confusas. Y la VariantList tenía variantes sin mecanismo de "selección" más allá del CTA de compra.
+
+**Solución idiomática React 19**:
+
+1. **Context Provider client-side** en `lib/product/variant-selection.tsx`:
+```tsx
+'use client';
+const VariantSelectionContext = createContext<Ctx>({...});
+export function VariantSelectionProvider({ children, defaultVariantId }) {
+  const [selectedVariantId, setSelectedVariantId] = useState(defaultVariantId);
+  // useMemo + useCallback para stable references
+  return <VariantSelectionContext.Provider value={...}>{children}</...>;
+}
+export function useVariantSelection() {
+  return useContext(VariantSelectionContext);
+}
+```
+
+2. **Server component wraps con Provider** en `ProductDetailPage`:
+```tsx
+const defaultVariantId = inStockVariants[0]?.id ?? activeVariants[0]?.id ?? null;
+return (
+  <VariantSelectionProvider defaultVariantId={defaultVariantId}>
+    <main>...</main>
+  </VariantSelectionProvider>
+);
+```
+
+3. **Client consumers** (`ProductGallery`, `VariantList`) usan el hook:
+```tsx
+const { selectedVariantId, selectVariant } = useVariantSelection();
+const visibleImages = useMemo(() =>
+  images.filter(img => img.variant_id === selectedVariantId || img.variant_id === null),
+[images, selectedVariantId]);
+```
+
+4. **VariantList: row clickeable + radio visual**:
+- Cada `<li>` con `role="button" tabIndex={0}` + `onClick={() => selectVariant(v.id)}`.
+- Radio circle visual a la izquierda (border + dot interno cuando seleccionada).
+- El botón CTA interno usa `onClick={(e) => e.stopPropagation()}` para que clickear el botón NO seleccione la variante.
+- Keyboard accessibility: Enter/Space trigger select.
+
+### Por qué funciona
+
+- **Server component genera defaults** desde DB (primera variante en stock) sin necesidad de fetch client-side. SSR-friendly, sin flash.
+- **Provider boundary chico** envuelve solo `<main>` del product-page, no toda la app. Performance OK.
+- **Filter en `useMemo`** con dependency `[images, selectedVariantId]` — solo recompute cuando cambia la selección.
+- **Reset de `activeIdx` cuando cambia variante** evita apuntar a una imagen del set anterior:
+```tsx
+useEffect(() => { setActiveIdx(0); }, [selectedVariantId]);
+```
+
+### Schema design choice: imágenes compartidas vs por variante
+
+El schema `product_images` permite `variant_id: NULL` = imagen "del modelo" (compartida entre variantes). Útil para:
+- Esquemas técnicos de medidas
+- Comparación lado a lado
+- Hero images neutrales
+
+Reglas que aplicamos en data:
+- Foto de **una variante específica** (ej "Carey Brillo de frente") → `variant_id = variant.id`.
+- Foto **compartida del modelo** (ej "esquema técnico de medidas") → `variant_id = NULL`.
+
+Filter logic en gallery: muestra `variant_id === selectedVariantId OR variant_id === null`. Ambas categorías son visibles cuando la variante está seleccionada.
+
+### Cómo replicar
+
+Para cualquier producto con variantes que tengan datos visuales propios (imágenes, swatches, descripciones):
+
+1. Crear Context client-side con state + setter.
+2. Provider wraps el área del producto en server component, default desde server data.
+3. Componentes que necesitan reaccionar consumen via hook.
+4. Filtros en consumers via `useMemo`.
+5. Reset state local cuando cambia la selección.
+
+Aplica a:
+- Variantes de color con fotos propias (este caso).
+- Talles con tabla de medidas distinta.
+- "Modos" del producto (ej receta vs sol del mismo armazón).
+
+### Notas
+
+- React 19 Context Provider sigue siendo el patrón estándar; no usamos `use()` para esto porque el state es mutable client-side.
+- Si en el futuro queremos sincronizar la variante con la URL (deep linking ej `?variant=rosa`), agregar `useSearchParams` + `router.replace` cuando cambia la selección. Trivial extensión del Provider.
+- Considerar `useTransition` si el cambio de variante dispara fetches (no es el caso ahora, todo client-side).
+
+---
+
 ## 2026-05-28 — CSS Grid con row-span + col-start asimétrico = stack vertical en mobile + layout balanceado en desktop sin duplicar markup
 
 **Categoría**: CSS / Layout responsivo

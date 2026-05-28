@@ -86,7 +86,36 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 
 ---
 
-## 8. Callouts en página de producto (bloques visuales destacados)
+## 8. Descripción del producto: genérica del MODELO, no de variantes
+
+La descripción larga y la short_description deben describir el **modelo en general**, NO una variante específica.
+
+**❌ Mal** (mezcla modelo + variante):
+> "Esta versión viene en carey brillo, una variante clásica que combina con casi todo."
+> "Las lentes polarizadas verdes cortan los reflejos…"
+
+**✅ Bien** (describe el modelo):
+> "Las lentes polarizadas cortan los reflejos…"
+
+### Por qué importa
+
+- Un modelo puede tener N variantes (colores, tamaños). Si la descripción menciona la variante específica X, queda incorrecta cuando se carga la variante Y.
+- Cambiar la descripción "dinámicamente" según variante seleccionada requiere data por variante + lógica client-side. **No vale la pena para SEO** (Google indexa una sola descripción) ni para UX (el usuario lee la descripción una vez).
+
+### Cómo nombrar las variantes en lugar
+
+- Los colores y referencias específicas viven en `product_variants.attributes` (frame_color, lens_color, reference_code).
+- La página de producto **muestra automáticamente** estos atributos en el bloque "Variantes disponibles".
+- Las imágenes específicas de la variante (lateral, frontal del color real) se renderizan en la gallery cuando el usuario selecciona esa variante.
+
+### Excepciones
+
+- **Modelo con UNA SOLA variante posible** (extremadamente raro en óptica): se puede mencionar el color sin riesgo. Si se piensa agregar variantes después, mejor genérico desde el inicio.
+- **Material o feature único de una variante** (ej "esta variante incluye lentes fotocromáticas y las demás no"): NO debería estar en la descripción larga del modelo. Si es relevante, separar como **callout** con `position: middle` y reference a la variante. O agregar como `product` separado si el feature cambia mucho.
+
+---
+
+## 9. Callouts en página de producto (bloques visuales destacados)
 
 Cada producto puede tener bloques destacados llamados **callouts**: cuadros con border-left de color, fondo sutil, icono, y texto corto (4-6 líneas). Aparecen debajo de la descripción larga.
 
@@ -164,4 +193,5 @@ Si el founder no quiere callouts para un producto puntual, los omite del JSONB y
 | Fecha | Cambio | Por |
 |---|---|---|
 | 2026-05-28 | Versión inicial. Política universal de inclusión (estuche + franela + garantía 1 año), confirmada por founder al cargar 1er producto Vulk Day Light. | founder |
-| 2026-05-28 | Agregada política #8: callouts en página de producto (4 tipos: info/tip/recommendation/warning). Patrón propuesto por founder con ejemplos visuales de otros proyectos. Validación técnica obligatoria via `optical-expert` para callouts sobre óptica/materiales. | founder |
+| 2026-05-28 | Agregada política #9: callouts en página de producto (4 tipos: info/tip/recommendation/warning). Patrón propuesto por founder con ejemplos visuales de otros proyectos. Validación técnica obligatoria via `optical-expert` para callouts sobre óptica/materiales. | founder |
+| 2026-05-28 | Agregada política #8: descripción genérica del MODELO, no de variantes. Detectado al cargar 2da variante (Rosa Pálido) del Vulk Day Light — la descripción original mencionaba "carey brillo con lentes verdes" lo cual queda mal cuando hay otras variantes. Solución sistemática: descripción nunca menciona colores específicos de variantes. | founder |

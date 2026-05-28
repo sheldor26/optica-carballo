@@ -1,9 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { useVariantSelection } from '@/lib/product/variant-selection';
 import type { ProductImage } from '@/lib/catalog/queries';
 
 type Props = {
@@ -11,16 +12,36 @@ type Props = {
   images: ProductImage[];
 };
 
+function sortImages(images: ProductImage[]): ProductImage[] {
+  return [...images].sort((a, b) => {
+    if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+    return a.sort_order - b.sort_order;
+  });
+}
+
 export function ProductGallery({ productName, images }: Props) {
+  const { selectedVariantId } = useVariantSelection();
+
   const sorted = useMemo(() => {
-    const list = [...images].sort((a, b) => {
-      if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
-      return a.sort_order - b.sort_order;
-    });
-    return list;
-  }, [images]);
+    if (!selectedVariantId) return sortImages(images);
+    // Filtrar imágenes de la variante seleccionada + las que aplican a
+    // todo el modelo (variant_id null).
+    const filtered = images.filter(
+      (img) => img.variant_id === selectedVariantId || img.variant_id === null,
+    );
+    // Si la variante no tiene fotos propias, mostrar todas (fallback).
+    if (filtered.length === 0) return sortImages(images);
+    return sortImages(filtered);
+  }, [images, selectedVariantId]);
 
   const [activeIdx, setActiveIdx] = useState(0);
+
+  // Cuando cambia la variante (y por lo tanto el set de imágenes), reset
+  // al index 0 — sino podríamos quedar apuntando a una imagen que ya no
+  // está en el subset filtrado.
+  useEffect(() => {
+    setActiveIdx(0);
+  }, [selectedVariantId]);
 
   if (sorted.length === 0) {
     return (

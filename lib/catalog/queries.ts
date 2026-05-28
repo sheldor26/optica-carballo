@@ -41,6 +41,7 @@ export type ProductImage = {
   height: number | null;
   sort_order: number;
   is_primary: boolean;
+  variant_id: string | null;
 };
 
 export type ProductDetailData = {
@@ -169,7 +170,7 @@ export async function fetchProductPage(
         brand:brands!inner(slug, name, description, is_argentine, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, attributes, is_active, sort_order),
-        images:product_images(storage_path, alt_text, width, height, sort_order, is_primary)
+        images:product_images(storage_path, alt_text, width, height, sort_order, is_primary, variant_id)
       `,
     )
     .eq('slug', productSlug)

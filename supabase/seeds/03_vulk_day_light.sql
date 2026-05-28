@@ -31,8 +31,8 @@ VALUES (
   (SELECT id FROM sol),
   'vulk-day-light',
   'Vulk Day Light',
-  'Anteojos de sol Vulk Day Light polarizados, armazón rectangular pequeño en G-Flex carey brillo con lentes verdes. Liviano, unisex, ideal para uso urbano.',
-  E'Los lentes de sol Vulk Day Light son un rectangular pequeño pensado para quien busca un anteojo discreto, prolijo y con buen agarre al rostro. Diseño unisex, líneas limpias y un peso de 26,1 gramos que casi no se siente durante el día.\n\nEl armazón está hecho en G-Flex, el termoplástico patentado por Vulk: flexible, resistente a torsiones y a los apretones del bolsillo. Las patillas acompañan el movimiento sin perder firmeza, y las bisagras reforzadas aguantan el uso diario. Funciona tanto para manejar como para caminar la ciudad o moverte al aire libre.\n\nLas lentes polarizadas verdes cortan los reflejos del asfalto, el agua y los vidrios, y suman protección UV total. Tené en cuenta una cosa: como toda lente polarizada, las pantallas LCD del tablero del auto, GPS o cajeros pueden verse oscurecidas o con efecto arcoíris según el ángulo. Es propio del polarizado, no un defecto.\n\nEsta versión viene en carey brillo, una variante clásica que combina con casi todo y suaviza los rasgos. Se entrega con su estuche original de Vulk. Stock real en Óptica Carballo, con asesoramiento técnico matriculado.',
+  'Anteojos de sol Vulk Day Light polarizados, armazón rectangular pequeño en G-Flex. Liviano, unisex, ideal para uso urbano.',
+  E'Los lentes de sol Vulk Day Light son un rectangular pequeño pensado para quien busca un anteojo discreto, prolijo y con buen agarre al rostro. Diseño unisex, líneas limpias y un peso de 26,1 gramos que casi no se siente durante el día.\n\nEl armazón está hecho en G-Flex, el termoplástico patentado por Vulk: flexible, resistente a torsiones y a los apretones del bolsillo. Las patillas acompañan el movimiento sin perder firmeza, y las bisagras reforzadas aguantan el uso diario. Funciona tanto para manejar como para caminar la ciudad o moverte al aire libre.\n\nLas lentes polarizadas cortan los reflejos del asfalto, el agua y los vidrios, y suman protección UV total. Tené en cuenta una cosa: como toda lente polarizada, las pantallas LCD del tablero del auto, GPS o cajeros pueden verse oscurecidas o con efecto arcoíris según el ángulo. Es propio del polarizado, no un defecto.\n\nSe entrega con su estuche original de Vulk. Stock real en Óptica Carballo, con asesoramiento técnico matriculado.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "rectangular",
@@ -91,19 +91,33 @@ INSERT INTO public.product_variants (
   product_id, sku, attributes,
   price_cents, stock_qty, is_active, sort_order
 )
-VALUES (
-  (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
-  '194185',
-  '{
-    "frame_color": "carey-brillo",
-    "lens_color": "verde",
-    "reference_code": "SDEMI-DRWG 15C3 POL."
-  }'::jsonb,
-  8803700,
-  3,
-  true,
-  1
-)
+VALUES
+  (
+    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
+    '194185',
+    '{
+      "frame_color": "carey-brillo",
+      "lens_color": "verde",
+      "reference_code": "SDEMI-DRWG 15C3 POL."
+    }'::jsonb,
+    8803700,
+    3,
+    true,
+    1
+  ),
+  (
+    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
+    '194180',
+    '{
+      "frame_color": "rosa-palido-caramelo",
+      "lens_color": "gris-oscuro-degrade",
+      "reference_code": "L.PINK/DRT-25 POL."
+    }'::jsonb,
+    8803700,
+    3,
+    true,
+    2
+  )
 ON CONFLICT (sku) DO UPDATE SET
   attributes  = EXCLUDED.attributes,
   price_cents = EXCLUDED.price_cents,
@@ -121,26 +135,43 @@ INSERT INTO public.product_images (
   width, height, sort_order, is_primary
 )
 VALUES
+  -- Variante Carey (SKU 194185)
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
-    NULL,
+    (SELECT id FROM public.product_variants WHERE sku = '194185'),
     'vulk-day-light-sol/01-lateral.jpg',
     'Vulk Day Light anteojos de sol vista lateral 3/4, armazón carey brillo con patilla negra',
     1500, 1500, 0, true
   ),
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
-    NULL,
+    (SELECT id FROM public.product_variants WHERE sku = '194185'),
     'vulk-day-light-sol/02-frontal.jpg',
     'Vulk Day Light anteojos de sol vista frontal, armazón rectangular pequeño carey brillo',
     1500, 1500, 1, false
   ),
+  -- Esquema de medidas (aplica a todas las variantes del modelo)
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
     NULL,
     'vulk-day-light-sol/03-medidas.jpg',
     'Esquema técnico de medidas Vulk Day Light: frente 140mm, lente 51x31mm, puente 20mm, varilla 140mm',
     1500, 1500, 2, false
+  ),
+  -- Variante Rosa Pálido (SKU 194180)
+  (
+    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
+    (SELECT id FROM public.product_variants WHERE sku = '194180'),
+    'vulk-day-light-sol/04-lateral-rosa.jpg',
+    'Vulk Day Light vista lateral 3/4, armazón rosa pálido y caramelo con lentes gris oscuro degradé',
+    1500, 1500, 3, true
+  ),
+  (
+    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
+    (SELECT id FROM public.product_variants WHERE sku = '194180'),
+    'vulk-day-light-sol/05-frontal-rosa.jpg',
+    'Vulk Day Light vista frontal, armazón rosa pálido transparente con lentes gris oscuro degradé',
+    1500, 1500, 4, false
   )
 ON CONFLICT DO NOTHING;
 
