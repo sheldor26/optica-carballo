@@ -25,6 +25,16 @@ export type BusinessInfo = {
   tecnicoMatricula: string | null;
 };
 
+/**
+ * Construye una URL `wa.me/` con mensaje pre-llenado.
+ * Devuelve null si no hay número de WhatsApp configurado.
+ */
+export function getWhatsappLinkWithContext(message: string): string | null {
+  const whatsappNumber = nonEmpty(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER);
+  if (!whatsappNumber) return null;
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
+
 export function getBusinessInfo(): BusinessInfo {
   const whatsappNumber = nonEmpty(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER);
   const whatsappLink = whatsappNumber
