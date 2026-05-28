@@ -17,7 +17,8 @@ re-aplicar o saltarse algo.
 | `20260528114114_identity_and_orders.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (re-aplicada con bootstrap 00002+00003) | Verificación post-aplicación: `public_tables=10`, lista incluye profiles, addresses, prescriptions, orders, order_items. |
 | `20260528122727_order_number_generator.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (mismo bootstrap que 00002) | Verificación post-aplicación: 2 functions (`generate_order_number`, `set_order_number`), 1 trigger (`on_orders_set_number`), sequence en 1. |
 | `20260528125415_prescriptions_storage.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (bootstrap 80 líneas) | Verificación post-aplicación: bucket `prescriptions` con `public=false`, `file_size_limit=10485760` (10 MB). 4 policies en `storage.objects` filtradas por `policyname LIKE 'prescriptions:%'`: read (SELECT), upload (INSERT), update (UPDATE), delete (DELETE). |
-| `20260528142242_products_storage.sql` | ⏳ Pendiente | — | Bucket público `products` (5 MB max, mime jpeg/png/webp/avif) + 1 RLS policy `products: anyone reads` (SELECT para `public`). Escritura solo service_role (sin policy de INSERT/UPDATE/DELETE). Bootstrap en `supabase/cloud-bootstrap.sql` (58 líneas). |
+| `20260528142242_products_storage.sql` | ⏳ Pendiente | — | Bucket público `products` (5 MB max, mime jpeg/png/webp/avif) + 1 RLS policy `products: anyone reads` (SELECT para `public`). Escritura solo service_role. |
+| `20260528151158_reserve_stock_function.sql` | ⏳ Pendiente | — | 2 funciones SQL: `reserve_stock(p_items jsonb)` atómica (defensa anti-overselling) + `increment_variant_stock(p_variant_id, p_amount)` compensatoria. SECURITY INVOKER, EXECUTE solo a service_role (REVOKE explícito de anon + authenticated + PUBLIC). Bootstrap combinado 00005+00006 en `supabase/cloud-bootstrap.sql` (195 líneas). |
 
 ## Seeds aplicados a cloud
 

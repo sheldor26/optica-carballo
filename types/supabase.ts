@@ -681,6 +681,11 @@ export type Database = {
     }
     Functions: {
       generate_order_number: { Args: never; Returns: string }
+      increment_variant_stock: {
+        Args: { p_amount: number; p_variant_id: string }
+        Returns: undefined
+      }
+      reserve_stock: { Args: { p_items: Json }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

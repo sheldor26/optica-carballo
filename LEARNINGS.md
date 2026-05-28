@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — La info del agente NO es ground truth; el manual oficial del proveedor sí
+
+**Categoría**: Operación / Verificación de agentes
+**Confianza**: 🟡 Media (1 caso confirmado, pero principio general bien establecido)
+
+### Qué funcionó
+
+El agente `argentine-ecom` afirmó que la documentación de PAQ.AR estaba "bajo NDA" y que la API era "notoriamente débil con sandbox poco confiable". Founder me pasó el manual oficial PDF v2.0 (abril 2023) que CONTRADICE parcialmente esto: la documentación SÍ es accesible (founder la consiguió), URLs reales son `apitest.correoargentino.com.ar/paqar/v1` y `api.correoargentino.com.ar/paqar/v1`, endpoints REST estándar con auth por `Apikey` + `agreement` header, y soporta lo básico (alta orden, cancelar, rótulo PDF, tracking, sucursales). Lo del NDA y DX débil quedó relativizado.
+
+Lo que SÍ confirmó el manual del agente: requiere acuerdo comercial con Correo Argentino para obtener `agreement` (id numérico) + `API-Key`. No es API pública abierta para cualquiera.
+
+### Por qué funciona
+
+- **Los agentes especialistas trabajan con conocimiento general, no con la doc específica del proveedor**. Si el founder tiene acceso al material oficial (PDF, login portal, etc.), siempre vale más que la opinión del agente.
+- **La info del agente sirve para `desconocidos conocidos`** (qué preguntar, qué proveedores existen, qué patrones típicos). NO para reemplazar la consulta de fuentes primarias cuando están disponibles.
+- **Patrón inverso al MISTAKE de PAQ.AR** (aceptar pivot técnico del founder sin verificar): acá el founder verificó el conocimiento del agente con doc oficial. Esto es lo correcto: triangular agentes + docs + experiencia.
+
+### Cómo aplicar
+
+- **Regla**: cuando el agente argentine-ecom (o cualquier agente de dominio) afirma algo sobre un proveedor específico ("la API no es pública", "el DX es malo", "el trámite tarda X"), **tratarlo como hipótesis a validar**, no como hecho.
+- Cuando el founder tiene material oficial del proveedor (PDF, portal, contacto comercial), priorizar SIEMPRE eso sobre lo que dijo el agente.
+- Si hay contradicción entre agente y material oficial: actualizar el plan según el material oficial, registrar el hallazgo en LEARNINGS (no en MISTAKES — no es error, es info actualizada).
+- Para feedback al agente: el [[agent-manager]] puede registrar esto en su próximo review para ajustar la confiabilidad del `argentine-ecom` en temas específicos.
+
+### Relacionado
+
+- [[invocar-argentine-ecom-antes-de-planificar-integracion-logistica]] — el LEARNING original sobre invocar al agente.
+- [[acepta-literal-pivot-tecnico-founder-sin-verificar]] (MISTAKES) — el caso anterior donde la verificación llegó tarde.
+
+---
+
 ## 2026-05-28 — Invocar `argentine-ecom` ANTES de planificar integración logística salvó iniciar trámite innecesario
 
 **Categoría**: Estrategia / Uso de agentes

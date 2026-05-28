@@ -16,6 +16,7 @@ type VariantRow = {
   attributes: Record<string, unknown>;
   is_active: boolean;
   product: {
+    id: string;
     slug: string;
     name: string;
     is_active: boolean;
@@ -44,7 +45,7 @@ export async function resolveCart(cart: Cart): Promise<ResolvedCart> {
       `
         id, sku, price_cents, stock_qty, attributes, is_active,
         product:products!inner(
-          slug, name, is_active,
+          id, slug, name, is_active,
           brand:brands!inner(slug, name, is_active),
           category:categories!inner(slug, is_active)
         )
@@ -85,6 +86,7 @@ export async function resolveCart(cart: Cart): Promise<ResolvedCart> {
           attributes: row?.attributes ?? {},
         },
         product: {
+          id: row?.product.id ?? '',
           slug: row?.product.slug ?? '',
           name: row?.product.name ?? 'Producto no disponible',
         },
@@ -117,7 +119,11 @@ export async function resolveCart(cart: Cart): Promise<ResolvedCart> {
         stockQty: row.stock_qty,
         attributes: row.attributes,
       },
-      product: { slug: row.product.slug, name: row.product.name },
+      product: {
+        id: row.product.id,
+        slug: row.product.slug,
+        name: row.product.name,
+      },
       brand: { slug: row.product.brand.slug, name: row.product.brand.name },
       categorySlug: row.product.category.slug,
       issue,

@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Sub-feature 2b PARTE 1 completa — /checkout funcional (sin MP todavía) detrás del flag**
+
+Construido el flow completo de checkout SIN integración de pago: `/checkout` con auth + address selector + resumen + cálculo de envío por zonas (CABA/GBA, interior cercano/lejano, Patagonia) + free shipping desde $80k. Server action `submitCheckout` con reserve_stock atómico vía RPC + INSERT orders con snapshots ADR-007 + INSERT order_items + compensación de stock si falla. Página `/checkout/pendiente?order=X` post-confirmación con CTA WhatsApp temporal. Todo detrás del feature flag (default OFF → /checkout devuelve 404; flag ON → flow completo). Nueva migración 00006 con `reserve_stock` + `increment_variant_stock`. PAQ.AR v2.0 confirmado factible (manual oficial, founder evaluando vs Mi Correo REST) — pero NO tiene endpoint de cotización, por eso el cálculo de envío sigue siendo tabla por zonas hardcoded; cuando el founder elija API y tenga creds, integramos alta de orden + rótulo + tracking en nueva sub-feature LOGISTICA. **Próxima sesión**: sub-feature 2b PARTE 2 (MP preference + redirect + páginas post-redirect) cuando el founder tenga creds MP test.
+
 🟢 **Feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED` instaurado — switch limpio entre WhatsApp y cart-online**
 
 Founder definió estrategia final: construir TODO el flow de venta (cart + checkout + MP + webhook) detrás de un feature flag, dejarlo oculto hasta tener "suficientes artículos para que valga la pena activarlo". Esta sesión: etapa 0 — el flag. Reactivar = setear `NEXT_PUBLIC_CHECKOUT_ENABLED=true` en Vercel + redeploy 1 min. Flag por default OFF: CartBadge oculto, VariantList con "Consultar WhatsApp", /carrito con "Próximamente". Flag ON: CartBadge visible, "Agregar al carrito" inline, /carrito linkea a /checkout. **Próxima etapa**: sub-feature 2b — `/checkout` + Mercado Pago Checkout Pro V1. Necesito credenciales MP sandbox del founder antes de instalar el SDK.
@@ -439,7 +443,55 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Etapa 0 — Feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED` (✅ 2026-05-28)
+### Sub-feature 2b PARTE 1 — /checkout sin MP (✅ 2026-05-28, sin commit todavía)
+- **Decisión de scope clave**: founder pidió "construir todo el flow de venta detrás de flag, oculto hasta tener masa crítica de productos". Parte 1 = todo lo del checkout que NO depende de credenciales MP. Parte 2 = preference + redirect (cuando lleguen creds MP). Esto desbloqueó arrancar inmediato.
+- **`lib/shipping.ts`** — tabla por zonas hardcoded:
+  - CABA/GBA $2.500, Interior cercano $4.500, Interior lejano $6.500, Patagonia $9.500. Free shipping desde $80.000.
+  - Mapeo de las 24 provincias AR a 4 zonas en `PROVINCE_TO_ZONE`.
+  - `calculateShipping({subtotalCents, provinceName}) → ShippingQuote` pura, sin DB/fetch.
+  - Cuando founder elija API Correo + tenga creds, este helper se reemplaza por `lib/correo/quote.ts` con misma firma de retorno (`ShippingQuote`) — el resto del flow no cambia.
+- **Migración 00006 `reserve_stock_function.sql`** — 2 funciones SQL:
+  - `reserve_stock(p_items jsonb)`: decrementa stock_qty de N variants en una transacción. Aprovecha el CHECK `stock_qty >= 0` del schema (migración 00001) — si cualquier decremento dejaría negativo, falla TODO con SQLSTATE `23514` y rollback automático. Mensaje de error útil con SKU + disponible + pedido.
+  - `increment_variant_stock(p_variant_id, p_amount)`: compensatoria. Se llama desde `createOrderFromCart` si un INSERT posterior a reserve falla.
+  - Ambas `SECURITY INVOKER` + `REVOKE ALL FROM PUBLIC/anon/authenticated` + `GRANT EXECUTE TO service_role`. Solo invocables desde server actions con `createAdminClient`.
+- **`lib/checkout/orders.ts`** — `createOrderFromCart(args)`:
+  - Llama RPC `reserve_stock` (atómico).
+  - INSERT `orders` con snapshots inmutables (ADR-007): `customer_name`, `customer_email`, `customer_phone`, `shipping_*` (12 columnas separadas para dirección snapshotteada — schema 00002), totales en centavos, `shipping_method` = zone, `notes` con zona y "Envío gratis" si aplica. `order_number` se autogenera por trigger 00003.
+  - INSERT `order_items` con snapshots (`product_name`, `product_slug`, `variant_sku`, `variant_attributes`, `quantity`, `unit_price_cents`, `line_total_cents` validado por CHECK).
+  - Compensación de stock si INSERT falla (best-effort, no transaccional — V1 acepta este riesgo para volumen 5-20/mes).
+- **`lib/checkout/actions.ts`** — server action `submitCheckout(prev, formData)`:
+  - Verifica flag, auth (`getCurrentProfile`), valida `address_id` (Zod uuid), fetcha address (RLS), lee cart cookie + resuelve, calcula shipping, llama `createOrderFromCart`.
+  - Customer name: `profile.display_name || address.recipient_name || email-username || 'Cliente'`.
+  - Post-éxito: borra cookie cart, `revalidatePath`, redirect a `/checkout/pendiente?order=<orderNumber>`.
+- **UI nueva en `components/checkout/`**:
+  - `address-selector.tsx` (client) — radios visuales en vez de `<select>` (mejor UX para 1-5 addresses); preselecciona default.
+  - `checkout-summary.tsx` (server) — items con quantity + brand + SKU, subtotal/envío/total tabulares, banner "te faltan $X para envío gratis" cuando aplica.
+  - `checkout-page.tsx` (client) — form con `useActionState`, layout grid 1fr+360px, empty state si user no tiene addresses con CTA a `/mi-cuenta/direcciones/nueva?next=/checkout`, link "agregar otra dirección", trust signal "pago seguro vía MP".
+- **Pages**:
+  - `app/(storefront)/checkout/page.tsx` (server, dynamic) — `notFound()` si flag OFF, `requireAuth('/checkout')`, redirect a `/carrito` si cart vacío o con issues, render `<CheckoutPage>` con addresses + shipping inicial (zona = provincia del default address o "Buenos Aires" fallback).
+  - `app/(storefront)/checkout/pendiente/page.tsx` (server, dynamic) — "Recibimos tu pedido" + número de orden + mensaje "estamos integrando MP, mientras coordinamos por WhatsApp" + CTA WhatsApp con mensaje pre-llenado incluyendo el número de orden.
+- **Decisiones técnicas clave**:
+  - **Atomicidad vía función SQL**: en vez de hacer N UPDATEs en JS (no transaccional vía PostgREST), la función `reserve_stock` corre todo en una transacción de Postgres. CHECK constraint del schema es el último guardián, la función expone el error.
+  - **Compensación de stock NO transaccional**: si el INSERT order falla post-reserve, llamamos `increment_variant_stock` para revertir. Best-effort — si esa compensación también falla, queda inconsistencia que requiere intervención manual. Aceptable para 5-20 envíos/mes; con volumen mayor se mueve TODO (reserve + insert) a una sola función SQL.
+  - **Snapshots inmutables en order_items** (ADR-007): `product_name`, `variant_sku`, `unit_price_cents` se copian del cart resuelto. Si el founder cambia el precio o renombra el producto después, las orders viejas mantienen los datos del momento de compra.
+  - **`product_id` y `variant_id` con `ON DELETE SET NULL`** (schema 00002): si se borra un producto, las orders quedan con los snapshots pero pierden el FK — válido para historial legal.
+  - **Envío inicial en página**: se cotiza con la provincia del default address. Cuando el user cambia la selección, la cotización NO se re-calcula client-side todavía (mantenemos UI simple V1). La cotización final se valida en el server action al submit. Si en V2 el founder quiere preview dinámico, agrego una API route + fetch onChange.
+  - **`shipping_address_id` FK opcional** + 12 columnas snapshot: si el user borra la address después, el snapshot sobrevive (ADR-007).
+- **Smoke 4/4 verdes**:
+  - Flag OFF (default): `/checkout` HTTP 404; `/checkout/pendiente` HTTP 404.
+  - Flag ON sin sesión: `/checkout` HTTP 307 → `/ingresar?next=%2Fcheckout`.
+  - Flag ON con order param: `/checkout/pendiente?order=OC-2026-00001` HTTP 200, renderiza "Recibimos tu pedido" + número + mención MP.
+- **Smoke `reserve_stock` 3/4 verdes en local**:
+  - Test 1 ✓ service_role decrementa OK (stock 5 → 3 con qty=2).
+  - Test 2 ✓ stock insuficiente con mensaje claro (`disponible: 3, pedido: 99`).
+  - Test 3 ❌ anon/authenticated llamando la función con permiso revocado crashea PG 17 local (bug raro de runtime). En producción cloud (PG 15/16) no debería pasar, y de cualquier modo en producción solo se llama vía `createAdminClient` (service_role). Registrado en MISTAKES.
+  - Test 4 (sub-test rollback multi-item) ✓ stock correcto post-rollback.
+- **Validación**: `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Sin regresión.
+- **Pendiente del founder**:
+  - Aplicar bootstrap 00005+00006 al cloud (195 líneas) + verificar con SELECTs.
+  - Las 5 cotizaciones reales de envío para ajustar la tabla en `lib/shipping.ts`.
+
+### Etapa 0 — Feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED` (✅ 2026-05-28, commit `ee4a1ed`)
 - **Decisión de producto**: founder redefinió estrategia — construir TODO el flow de venta detrás de un flag, dejarlo oculto hasta tener masa crítica de productos. Reactivar = flip 1 env var + redeploy. Implica: sub-features 2b + 3 SÍ se construyen, pero invisibles hasta que el flag se prenda.
 - **Helper nuevo** `lib/features.ts` con `isCheckoutEnabled()`. Convención del proyecto para feature flags: env vars `NEXT_PUBLIC_*_ENABLED` con valor `'true'`. Cualquier otro valor (incluyendo ausente) → deshabilitada.
 - **Aplicado en**:

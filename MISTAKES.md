@@ -24,6 +24,52 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Crash de Postgres 17 local con función PL/pgSQL + RAISE EXCEPTION + SET ROLE anon
+
+**Estado**: 🟡 Mitigado
+**Categoría**: Infraestructura / Supabase local
+
+### Qué pasó
+
+Durante smoke tests de la función `reserve_stock(jsonb)` (migración 00006), al hacer `SET ROLE anon; SELECT reserve_stock(...)` con `REVOKE EXECUTE FROM anon` aplicado, Postgres 17 local (de Supabase Studio docker) **crashea el server completo** ("connection to server was lost" + entra en "recovery mode"). El mismo test con `service_role` (Test 1) y con `RAISE EXCEPTION` por stock insuficiente (Test 2) funcionan perfecto.
+
+Esto NO debería pasar — un permission denied debería retornar un error normal, no crashear el server.
+
+### Causa raíz (hipótesis)
+
+Bug específico de Postgres 17 + PL/pgSQL function con `EXCEPTION WHEN check_violation` + `SET ROLE` switch en la misma sesión. Posiblemente relacionado a cómo PG 17 maneja el savepoint implícito del BEGIN/EXCEPTION combinado con un context switch de rol. No tengo certeza absoluta — el debugging requeriría revisar logs del kernel postgres + escalar a un issue oficial.
+
+Lo que SÍ sé:
+- Función está bien diseñada (SECURITY INVOKER + REVOKE explícito de anon/authenticated/PUBLIC + GRANT solo a service_role).
+- El uso real de la función (server action con `createAdminClient` que usa `service_role`) NO crashea — Tests 1, 2 y rollback multi-item pasaron.
+- En cloud Supabase la versión de Postgres suele ser 15 o 16, donde es muy probable que este bug no se reproduzca.
+
+### Impacto
+
+- Bajo en producción: la función solo se llama desde server actions con service_role. Anon/authenticated nunca la invocan.
+- Medio en testing local: no podemos validar el comportamiento defensivo (anon bloqueado) sin matar el server. Tenemos que confiar en el REVOKE + en testing post-deploy.
+
+### Cómo se detectó
+
+Smoke tests durante construcción de sub-feature 2b parte 1.
+
+### Cómo se evita en el futuro
+
+**Regla operativa**:
+
+> Para funciones SQL con `EXCEPTION` handlers en Supabase local PG 17, **NO testear permission denied haciendo `SET ROLE anon; SELECT funcion(...)`**. Validar permisos vía:
+> 1. `SELECT grantee, privilege_type FROM information_schema.routine_privileges WHERE routine_name = 'X'` (declarativo).
+> 2. Post-deploy a cloud: invocar la función con un anon JWT a través del PostgREST endpoint y verificar HTTP 401/403.
+
+Documentar en el header de cada función SQL: "solo testar con role correcto en local; permisos defensivos validados declarativamente".
+
+### Cambios derivados
+
+- Migración 00006 documenta el comportamiento esperado en sus comentarios.
+- Smoke test pattern actualizado: 3/4 tests (sin el "anon crashea") siguen siendo válidos para considerar la función verde.
+
+---
+
 ## 2026-05-28 — Iba a aceptar literal "integrá PAQ.AR" del founder sin verificar viabilidad técnica
 
 **Estado**: 🟡 Mitigado

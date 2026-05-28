@@ -37,6 +37,7 @@ export type ResolvedCartItem = {
     attributes: Record<string, unknown>;
   };
   product: {
+    id: string;
     slug: string;
     name: string;
   };
