@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,10 +17,20 @@ export function SiteHeader() {
 
         <Link
           href="/"
-          className="font-semibold tracking-tight text-foreground"
+          className="flex items-center gap-2.5"
           aria-label={`${business.siteName} — Inicio`}
         >
-          {business.siteName}
+          <Image
+            src="/brand/logo-square.png"
+            alt=""
+            width={100}
+            height={100}
+            priority
+            className="size-9 rounded-md md:size-10"
+          />
+          <span className="text-foreground hidden font-semibold tracking-tight sm:inline">
+            {business.siteName}
+          </span>
         </Link>
 
         <div className="hidden md:ml-6 md:block">
