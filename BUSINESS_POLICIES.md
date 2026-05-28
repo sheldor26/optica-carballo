@@ -86,8 +86,56 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 
 ---
 
+## 8. Callouts en página de producto (bloques visuales destacados)
+
+Cada producto puede tener bloques destacados llamados **callouts**: cuadros con border-left de color, fondo sutil, icono, y texto corto (4-6 líneas). Aparecen debajo de la descripción larga.
+
+**Objetivo**: agregar profundidad técnica, opinión honesta, y atención visual sin alargar la descripción narrativa.
+
+### Tipos disponibles
+
+| Tipo | Color | Cuándo usarlo | Ejemplos de titles |
+|---|---|---|---|
+| `info` | Azul | Curiosidad técnica, dato físico verificable, explicación de un atributo | "Sabías que…", "Cómo funciona…" |
+| `tip` | Ámbar | Consejo de cuidado, mantenimiento, mejor uso | "Para que duren", "Tip de la óptica" |
+| `recommendation` | Verde | Opinión honesta sobre uso ideal / cuándo NO es la mejor opción | "Recomendación", "Para qué sirve mejor" |
+| `warning` | Rojo | Limitación conocida del producto, contraindicación | "Importante", "Antes de comprar" |
+
+### Schema (JSONB en attributes)
+
+```json
+{
+  "callouts": [
+    {
+      "type": "info",
+      "title": "Sabías que…",
+      "body": "Texto corto, sin saltos de línea. 4-6 líneas máximo."
+    },
+    { "type": "recommendation", "title": "Recomendación", "body": "..." }
+  ]
+}
+```
+
+### Reglas de redacción
+
+- **NUNCA inventar**: cada callout debe ser técnicamente correcto y verificable. Si no se puede verificar, no se escribe.
+- **Validar con `optical-expert`** cualquier callout que toque óptica/física/materiales. El agente sabe distinguir lo verificable de lo marketinero.
+- **Máximo 3 callouts por producto** (mobile-friendly + no satura).
+- **Sin emojis ni markdown bold inline** (el componente maneja la jerarquía visual).
+- **Tono coloquial argentino** ("tenés", "fijate") sin perder rigor.
+- **NO repetir lo que ya está en la descripción larga** — el callout agrega valor, no resume.
+
+### Cuándo proponer callouts en productos nuevos
+
+`content-writer-medical` debe sugerir 2-3 callouts cuando escriba la descripción de un producto. Para productos con features ópticas/técnicas (polarizado, fotocromático, materiales especiales, formas específicas), los callouts son ESPECIALMENTE valiosos para E-E-A-T.
+
+Si el founder no quiere callouts para un producto puntual, los omite del JSONB y la sección no se renderiza.
+
+---
+
 ## Historial de cambios
 
 | Fecha | Cambio | Por |
 |---|---|---|
 | 2026-05-28 | Versión inicial. Política universal de inclusión (estuche + franela + garantía 1 año), confirmada por founder al cargar 1er producto Vulk Day Light. | founder |
+| 2026-05-28 | Agregada política #8: callouts en página de producto (4 tipos: info/tip/recommendation/warning). Patrón propuesto por founder con ejemplos visuales de otros proyectos. Validación técnica obligatoria via `optical-expert` para callouts sobre óptica/materiales. | founder |

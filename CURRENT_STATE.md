@@ -2,6 +2,43 @@
 
 ## Status
 
+🟢 **Sistema de Callouts validados — bloques visuales "Sabías que / Recomendación / Tip / Importante" en página de producto**
+
+Founder pasó referencias visuales (screenshots de callouts dorados + verdes de otros proyectos suyos) y pidió: que las descripciones tengan más profundidad/atención visual con "Sabías que…", "Recomendación", "Si pensás usar para X no es ideal…", "Cuidados…". Patrón **alta valor** porque (a) diferenciador real en óptica AR donde casi nadie hace esto, (b) E-E-A-T directo (opinión experta, advertencias honestas), (c) SEO con contenido extra, (d) UX scaneable.
+
+**Implementación end-to-end**:
+
+1. **`ProductCallouts` component nuevo** con 4 variantes visuales sutiles (no rompen la estética minimalista del sitio):
+   - `info` → border-left azul + bg `blue-50/60` + icono `Info`
+   - `tip` → border-left amber + bg `amber-50/60` + icono `Lightbulb` (matchea el screen "dorado" del founder)
+   - `recommendation` → border-left emerald + bg `emerald-50/60` + icono `Sparkles` (matchea el screen "verde" del founder)
+   - `warning` → border-left red + bg `red-50/60` + icono `TriangleAlert`
+   - **Dark mode soportado** con `dark:bg-X-950/30`
+   - Cada callout en RevealOnScroll con stagger 80ms
+   - Iconos lucide en círculos con bg tintado del color del tipo
+   - Hover: shadow-sm sutil
+
+2. **Schema sin migración**: callouts viven en `attributes.callouts` JSONB como array `[{type, title?, body}, ...]`. Parser defensivo con type narrowing (`isValidType`, validación de body string no vacío). Si attributes no tiene callouts o están malformados → no renderiza nada.
+
+3. **Integración en product-page**: ProductCallouts se renderiza dentro de la sección "Sobre el producto", después de la descripción larga, antes de productos relacionados.
+
+4. **3 callouts validados por `optical-expert`** para Vulk Day Light:
+   - **"Sabías que…" (info)**: cómo funcionan físicamente las lentes polarizadas (filtro de rejilla vertical, bloquea luz horizontal de reflejos en agua/asfalto/vidrio). Técnicamente verificable.
+   - **"Recomendación" (recommendation)**: cuándo SÍ y cuándo NO usar (sí: día/playa/montaña/pesca/nieve; no: noche/poca luz). Honestidad sobre limitación.
+   - **"Para que duren" (tip)**: cuidado del G-Flex + limpieza correcta (agua tibia + jabón neutro + microfibra) + warning sobre guantera del auto.
+
+5. **Documentación del patrón** en `BUSINESS_POLICIES.md` sección nueva #8 — tabla de los 4 tipos, schema JSONB, reglas de redacción (no inventar, validación con optical-expert, máx 3 por producto, no duplicar descripción).
+
+6. **`content-writer-medical` agent actualizado** — ahora en sus "Fuentes de verdad" tiene instrucción de PROPONER 2-3 callouts JSONB cuando escriba descripción de producto + validar con `optical-expert`.
+
+7. **Seeds**:
+   - `seeds/03_vulk_day_light.sql` sincronizado con callouts en attributes.callouts (para futuras aplicaciones limpias).
+   - `seeds/06_vulk_day_light_callouts.sql` nuevo — UPDATE delta para que founder corra en cloud y se aplique al producto actual.
+
+Typecheck verde. **Commit pendiente**.
+
+**Sistema escalable**: cualquier producto futuro que cargue el founder va a poder tener callouts en su JSONB. content-writer-medical va a proponerlos automáticamente cuando escriba copy. optical-expert va a validarlos técnicamente.
+
 🟢 **UI polish iteración 2 — ficha técnica + medidas con onda visual, image hover sin crop, variante capitalizada**
 
 Founder pasó 3 feedbacks de UX/UI tras ver Vulk Day Light en prod:
@@ -178,6 +215,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: Sistema de Callouts en página de producto (4 tipos: info/tip/recommendation/warning) con colores sutiles + dark mode + RevealOnScroll stagger. Schema en `attributes.callouts` JSONB sin migración. 3 callouts iniciales del Vulk Day Light validados por optical-expert. Patrón documentado en BUSINESS_POLICIES.md #8 + content-writer-medical actualizado para proponerlos automáticamente. Seed 06 nuevo con UPDATE delta para cloud.
 
 **Fecha**: 2026-05-28
 **Por**: Knowledge base SEO permanente (SEO_STRATEGY.md sección Cluster Vulk + plantilla por marca) + BUSINESS_POLICIES.md nuevo con política universal de inclusiones (estuche+franela+garantía) + agentes seo-strategist y content-writer-medical actualizados con fuentes de verdad obligatorias + rediseño UI con onda (ProductHighlights pills + ProductIncludes bloque + precio destacado + descripción con jerarquía nueva). Copy Vulk regenerado por content-writer-medical con keywords reales del cluster, detectado y corregido invent "Córdoba" pre-cierre via grep (la óptica está en Virasoro Corrientes). 2 seeds pendientes del founder: 04 (fixes anteriores) + 05 (polish SEO copy).

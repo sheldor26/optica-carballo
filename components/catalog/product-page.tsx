@@ -4,6 +4,7 @@ import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { ProductAttributes } from '@/components/product/product-attributes';
+import { ProductCallouts } from '@/components/product/product-callouts';
 import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductHighlights } from '@/components/product/product-highlights';
 import { ProductIncludes } from '@/components/product/product-includes';
@@ -219,6 +220,7 @@ export async function ProductDetailPage({
               </p>
             ))}
           </div>
+          <ProductCallouts attributes={product.attributes} />
         </RevealOnScroll>
       )}
 
