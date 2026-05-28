@@ -46,23 +46,24 @@ export function BrandsSection({ brands }: { brands: BrandSummary[] }) {
               <TiltSpotlightCard tiltDeg={5}>
                 <Link
                   href={`/anteojos-de-sol/${b.slug}`}
-                  className="border-background/15 bg-background/5 hover:border-brand hover:bg-background/10 group flex h-24 items-center justify-center rounded-md border p-4 text-center backdrop-blur-sm transition-colors duration-300 ease-out"
+                  className="border-background/15 bg-background/5 hover:border-brand hover:bg-background/10 group flex h-28 items-center justify-center rounded-md border p-3 text-center backdrop-blur-sm transition-colors duration-300 ease-out md:h-32"
                   aria-label={`Ver anteojos ${b.name}`}
                 >
                   {b.logo_url ? (
                     // Sección con fondo dark. shouldInvertLogo() detecta el
                     // sufijo del filename: si es `-dark.*`, invertimos para
                     // que se vea claro acá; si es `-light.*`, lo dejamos.
-                    // Tamaños más generosos (h-12 md:h-14) porque algunos
-                    // SVGs tienen aire interno (símbolo + texto debajo) y
-                    // h-10 los achicaba demasiado.
+                    // Tamaños generosos (h-16 md:h-20) porque algunos SVGs
+                    // tienen aire interno (símbolo + texto debajo, ej
+                    // Paula Cahen D'Anvers). object-contain mantiene la
+                    // proporción sin distorsionar wordmarks horizontales.
                     <Image
                       src={getBrandAssetUrl(b.logo_url)}
                       alt={b.name}
-                      width={160}
-                      height={64}
+                      width={200}
+                      height={96}
                       className={cn(
-                        'h-12 w-auto max-w-[140px] object-contain transition-transform duration-300 group-hover:scale-[1.04] md:h-14',
+                        'h-16 w-auto max-w-[170px] object-contain transition-transform duration-300 group-hover:scale-[1.04] md:h-20 md:max-w-[200px]',
                         shouldInvertLogo(b.logo_url, 'dark-bg') &&
                           'brightness-0 invert',
                       )}
