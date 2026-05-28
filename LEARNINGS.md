@@ -22,6 +22,78 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Sort criterio "específico-antes-que-compartido" cuando filtrás N items + items globales en una vista por contexto
+
+**Categoría**: UI / sort algorithms / multi-variant rendering
+**Confianza**: 🟢 Alta (implementado, founder confirmó bug visual reproducible, fix verificado)
+
+### Qué funcionó
+
+Patrón general: cuando en una UI mostrás items **filtrados por un contexto** (variante, talle, idioma, lo que sea) MEZCLADOS con items que son **compartidos a todos los contextos**, el sort default `(prioridad ASC, sort_order ASC)` puede intercalar los compartidos en el medio de los específicos si los `sort_order` no fueron pensados con esto en mente.
+
+**Caso real**: producto con 2 variantes (Carey, Rosa) y 1 esquema técnico de medidas compartido (variant_id=NULL). Los `sort_order` originales:
+- Carey: 0 (lateral), 1 (frontal)
+- Medidas compartida: 2
+- Rosa: 3 (lateral), 4 (frontal)
+
+Sort `(is_primary, sort_order)` cuando seleccionás Rosa:
+- 04 lateral rosa (primary=true, sort=3) → pos 1
+- **03 medidas compartida (primary=false, sort=2) → pos 2** ← BUG: se cuela
+- 05 frontal rosa (primary=false, sort=4) → pos 3
+
+El usuario espera: lateral rosa → frontal rosa → medidas técnicas. Pero ve: lateral rosa → medidas → frontal rosa.
+
+### Solución: agregar criterio "es específico del contexto seleccionado" antes del sort_order
+
+```ts
+sort((a, b) => {
+  // 1. Primary primero (si aplica)
+  if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+
+  // 2. Específicos del contexto seleccionado antes que compartidos
+  if (selectedContextId) {
+    const aSpecific = a.context_id === selectedContextId;
+    const bSpecific = b.context_id === selectedContextId;
+    if (aSpecific !== bSpecific) return aSpecific ? -1 : 1;
+  }
+
+  // 3. Sort_order como tiebreaker
+  return a.sort_order - b.sort_order;
+});
+```
+
+Con esto, no importa qué `sort_order` tengan las compartidas: siempre van DESPUÉS de las específicas del contexto seleccionado.
+
+### Por qué funciona
+
+- **Independiente del sort_order**: no requiere reorganizar la data ni renumerar. Funciona aunque los `sort_order` se hayan asignado sin pensar en este caso.
+- **Generalizable**: el criterio "específico-antes-que-compartido" es válido en cualquier UI multi-contexto. Aplica a:
+  - Galerías de producto con imágenes por variante + imágenes del modelo.
+  - Tabs de "para este país" + "global" en docs i18n.
+  - Atributos por talle vs atributos del producto.
+- **Defensive default**: si `selectedContextId` es `null`, el criterio se salta y se mantiene el sort básico — no rompe vistas que no tienen contexto seleccionado.
+
+### Alternativa peor (no usar)
+
+"Resolver" reasignando sort_order altos a las compartidas (ej 99). Funciona pero:
+- Requiere mantener convención manual al cargar data nueva ("recordá poner 99 a las compartidas").
+- Rompe si alguna variante futura tiene >99 imágenes (impróbable pero teórico).
+- No escala a múltiples niveles (qué pasa si querés "específicos del contexto > shared a la categoría > shared al producto > shared global").
+
+Mejor el criterio en el sort: la convención vive en código, no en data.
+
+### Cuándo aplicarlo
+
+- Cualquier filter+sort UI donde hay items con un FK opcional al "contexto" y los items con FK NULL son globales/compartidos.
+- Schemas tipo: `attribute_id NULL = aplica a todo el padre` (common pattern en e-commerce).
+
+### Notas
+
+- Si el contexto puede tener jerarquía multinivel (variant_id NULL puede ser "compartida a esta talla" pero NO "compartida globalmente"), agregar más criterios al sort por nivel de specificity.
+- Si la lista es muy grande (>1000 items), considerar precomputar la specificity como una columna virtual en la query (SQL `CASE WHEN ...`).
+
+---
+
 ## 2026-05-28 — Variant selection con Context: gallery filtering + click-to-select sin perder server components
 
 **Categoría**: React patterns / Client+Server hybrid / E-commerce UX
