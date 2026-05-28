@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Schema pre-checkout completo en local — commit `1cee084`**
+🟢 **Auth UI completo — commit `12ca894`. Bloqueado por config de Supabase Auth Dashboard**
 
-Migración 00002 (identity + orders) aplicada en local con todos los smoke tests RLS verdes. **Pendiente aplicar al cloud** (bootstrap regenerado con solo migración 00002). Próximos pasos código: auth UI (login/signup), bucket Storage para recetas, function `order_number` generator, server actions de checkout + integración Mercado Pago + Tusfacturas.
+Flow de login/signup/reset/mi-cuenta funcional contra cloud. Para testear end-to-end falta que el founder configure Redirect URLs en Supabase Auth Dashboard (sin esto, los emails de signup/reset llegan con links inválidos). Próximos pasos código: bucket Storage privado para recetas, function `order_number`, server actions checkout + integración Mercado Pago.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Housekeeping post-aplicación de assets y migración cloud. Founder rotó API key + aplicó migración 00002 al cloud. Creados `BACKLOG.md` (raíz, lista centralizada de pendientes) y `supabase/CLOUD_APPLIED.md` (registro vivo del estado de cloud). `cloud-bootstrap.sql` eliminado (derivado). `CLAUDE.md` actualizado. Plan Step 1+2 del skill `/feature` para Auth UI presentado, esperando aprobación del founder para introducir `zod` como dependencia (regla 6).
+**Por**: Skill `/feature` para Auth UI ejecutado punta a punta. `zod` 4.4.3 instalado, shadcn input/label/alert. 4 pages auth + callback route + /mi-cuenta. Server actions con Zod validation, AuthMenu client en SiteHeader (mantiene SSG del storefront). Validado contra cloud: typecheck/lint/build clean, pages responden HTTP 200, redirección protegida funciona. Commit `12ca894`. Pendiente del founder: configurar Redirect URLs en Supabase Auth Dashboard (BACKLOG 🔴 bloqueante).
 
 ## Qué se construyó hasta ahora
 
@@ -329,7 +329,13 @@ Migración 00002 (identity + orders) aplicada en local con todos los smoke tests
 
 ## Próximo paso EXACTO
 
-**Esperando aprobación del founder** para introducir `zod` (~14 KB gzipped) como dependencia de validación de forms. Es necesario para arrancar el Step 3 del skill `/feature` para **Auth UI** (login, signup, recuperar clave, callback de email, página `/mi-cuenta`). Plan completo presentado en último turno conversacional. Si founder aprueba, ejecución estimada 1-2 sesiones.
+**Pendiente acción founder** (bloquea testeo end-to-end del Auth UI):
+1. Supabase Dashboard → Authentication → URL Configuration → Site URL = `https://opticacarballo.com.ar`, Redirect URLs = los 4 listados en BACKLOG.md sección 🔴.
+
+**Próxima sesión código** (decidís vos):
+- **Bucket Storage privado `prescriptions/`** + signed URLs. Paso previo al feature de upload de receta IA.
+- **Function generadora de `order_number`** (sequence + format `OC-YYYY-NNNNN`). Necesario para el checkout.
+- **Server actions de checkout** (`/carrito` → crear order → preferencia MP → redirect). Requiere lo anterior + integración MP.
 
 **Próxima sesión** (decidís vos):
 
@@ -349,6 +355,26 @@ Migración 00002 (identity + orders) aplicada en local con todos los smoke tests
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Auth UI completo (✅ commit `12ca894` — 2026-05-28)
+- **Pages nuevas** en `(auth)` layout group: `/ingresar`, `/registro`, `/recuperar-clave`, `/recuperar-clave/restablecer`. Todas con metadata `noindex, follow`. AuthFormShell wrapper compartido.
+- **Route handler** `/auth/callback` — intercambia code de confirmación email / magic link por sesión. `safeNextPath` whitelist anti open-redirect.
+- **Page `/mi-cuenta`** en `(account)` layout group — dashboard simple con datos del profile + logout. `getCurrentProfile()` redirige a `/ingresar?next=/mi-cuenta` si no hay sesión.
+- **Server actions** (`app/(auth)/actions.ts`): `signIn`, `signUp`, `signOut`, `requestPasswordReset`, `resetPassword`. Validación Zod, errores en español argentino, `emailRedirectTo` apunta a `SITE_URL + /auth/callback`.
+- **Helpers** (`lib/auth/server.ts`): `getCurrentUser()` (non-redirecting), `requireAuth(currentPath)`, `getCurrentProfile()`.
+- **Componentes** (`components/auth/`): AuthFormShell, LoginForm, SignupForm, PasswordResetRequestForm, PasswordResetForm, LogoutButton, FormStatus (SubmitButton + FormFeedback). Todos con `useActionState` (React 19).
+- **`AuthMenu`** client component en SiteHeader — hace `getUser()` en cliente para mantener SSG de las páginas del storefront. Skeleton de ~36×36 mientras hidrata (sin layout shift). Muestra "Ingresar" o "Mi cuenta" según session.
+- **Dependencias nuevas**: `zod 4.4.3` (~14 KB) + shadcn `input`/`label`/`alert`.
+- **Decisiones técnicas clave**:
+  - Email + password único método V1 (OAuth en V2).
+  - Confirmación de email obligatoria (default Supabase).
+  - Mensaje neutro en password reset anti-enumeration ("si existe una cuenta…").
+  - `safeNextPath()` whitelist (sólo paths que empiezan con `/` y no `//`).
+  - AuthMenu client en vez de server para no romper SSG.
+- **Validación contra cloud**: las 4 pages auth HTTP 200, `/mi-cuenta` sin sesión → 307 a `/ingresar?next=/mi-cuenta`, meta `noindex` presente. Build: storefront sigue SSG/Static, solo auth pages son Dynamic (esperado).
+- **Pendiente del founder ANTES de testear flow end-to-end** (en BACKLOG.md sección 🔴 bloqueante):
+  - Configurar Redirect URLs en Supabase Auth Dashboard.
+  - (Opcional) Customizar templates de email en español.
 
 ### Housekeeping: BACKLOG centralizado + CLOUD_APPLIED tracker (✅ commit `b202d34` — 2026-05-28)
 - **API key comprometida rotada** por el founder + `.env.local` actualizado con la nueva. Resuelve MISTAKE 2026-05-28 "API key real pegada en el chat".
