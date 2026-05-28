@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { isCheckoutEnabled } from '@/lib/features';
 import { DesktopNav } from '@/components/layout/desktop-nav';
 import { MobileNav } from '@/components/layout/mobile-nav';
+import { ScrollAwareHeader } from '@/components/layout/scroll-aware-header';
 import { PRIMARY_NAV } from '@/lib/site/nav';
 import { getBusinessInfo } from '@/lib/site/business';
 
@@ -15,7 +16,7 @@ export function SiteHeader() {
   const checkoutEnabled = isCheckoutEnabled();
 
   return (
-    <header className="border-border/60 bg-background/75 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 border-b backdrop-blur-md">
+    <ScrollAwareHeader>
       <div className="container flex h-14 items-center gap-3 md:h-16">
         <MobileNav links={PRIMARY_NAV} />
 
@@ -76,6 +77,6 @@ export function SiteHeader() {
           )}
         </div>
       </div>
-    </header>
+    </ScrollAwareHeader>
   );
 }

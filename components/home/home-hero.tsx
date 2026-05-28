@@ -23,8 +23,11 @@ export function HomeHero() {
 
       <div className="container py-20 md:py-32">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="hero-reveal hero-reveal-1 text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
-            {siteName} · óptica matriculada · 30+ años
+          <p className="hero-reveal hero-reveal-1 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]">
+            <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
+            <span className="text-brand">{siteName}</span>
+            <span className="text-muted-foreground/70">·</span>
+            <span className="text-muted-foreground">óptica matriculada · 30+ años</span>
           </p>
           <h1 className="hero-reveal hero-reveal-2 mt-5 text-balance font-serif text-5xl font-medium leading-[1.02] tracking-[-0.02em] md:text-7xl lg:text-[5.5rem]">
             Anteojos originales con{' '}

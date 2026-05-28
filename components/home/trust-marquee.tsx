@@ -23,7 +23,7 @@ export function TrustMarquee() {
                 key={idx}
                 className="flex shrink-0 items-center gap-2 text-sm font-medium tracking-wide"
               >
-                <Icon className="size-4 opacity-80" aria-hidden="true" />
+                <Icon className="text-brand size-4" aria-hidden="true" />
                 <span>{item.label}</span>
               </div>
             );

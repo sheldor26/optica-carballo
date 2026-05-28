@@ -2,7 +2,30 @@
 
 ## Status
 
-🟡 **Round 1 modernización — Tipografía editorial (Fraunces serif + Inter sans) aplicada, pendiente verificación visual del founder**
+🟡 **Round 2 modernización — Accent ámbar + brands section dark + header glass on scroll aplicado, pendiente verificación visual**
+
+Founder dio luz verde al plan ajustado tras compartir 2 tendencias adicionales:
+1. Micro-animaciones + 3D en browser → traducido a "pseudo-3D barato" (CSS transforms) + foto producto flotante (no modelo 3D real — overkill para óptica de barrio).
+2. Minimalismo flotante + tipografías expresivas + depth → traducido a chips flotantes + glass morphism header + dark sections con contraste.
+
+**Round 2 — Cambios aplicados**:
+- `app/globals.css`: nuevas variables CSS `--brand: 36 45% 52%` (ámbar warm tipo Cartier) + `--brand-foreground`. Convivencia con `--accent` shadcn (gris hover) sin conflicto.
+- `tailwind.config.ts`: color `brand` registrado, disponible como `text-brand`, `bg-brand`, `border-brand`.
+- `home-hero.tsx`: chip uppercase del hero ahora con dot ámbar + nombre marca en `text-brand` (gancho visual sutil arriba del H1).
+- `brands-section.tsx`: cambió de `bg-muted/40` (gris claro) a `bg-foreground text-background` (full dark editorial) con 2 mesh gradients ámbar + blanco a baja opacidad de fondo, padding más generoso (py-16/24), eyebrow ámbar "Marcas oficiales", H2 con "trabajamos" en italic ámbar, cards con glass morphism leve (`bg-background/5 backdrop-blur-sm hover:border-brand`).
+- `trust-marquee.tsx`: íconos de los items pasaron a `text-brand` (ámbar warm) — sutil pero da vida al marquee dark.
+- `scroll-aware-header.tsx` NUEVO: client component wrapper que detecta `scrollY > 8` y aplica clase con bg + blur + shadow. Cuando estás en top, el header es transparente; cuando scrolleas, "flota" con glass morphism.
+- `site-header.tsx`: wrapped contenido en `<ScrollAwareHeader>` reemplazando el `<header>` estático.
+
+**Decisión técnica sobre el accent**: variable separada `--brand` en vez de pisar `--accent` de shadcn. Razón: shadcn usa `bg-accent` en hovers de menús, dropdowns, etc. Cambiar eso a ámbar rompía hovers de UI primitives. Solución limpia: nueva variable, no toca lo existente, accesible como `text-brand`.
+
+**Build verde, typecheck verde**. Pendiente commit + verificación visual del founder.
+
+**Próximo paso exacto**: founder corre `pnpm dev`, verifica home (chip ámbar arriba del H1, trust marquee con íconos ámbar, brands section dark editorial, header que se "despega" al scrollear). Si la onda cierra → commit + push + arrancar Round 3 (product showcase hero con foto Vulk flotante + parallax). Si no cierra → tunear color, contraste, o revertir secciones puntuales.
+
+---
+
+🟡 **Round 1 modernización — Tipografía editorial (Fraunces serif + Inter sans) aplicada, pushed, en producción**
 
 Founder pidió "hacerlo más moderno". Propuse plan de 4 rounds verificables:
 1. Tipografía editorial (Fraunces serif para H1/H2 + Inter sans body) ← **EN VERIFICACIÓN**
