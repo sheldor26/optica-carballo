@@ -108,6 +108,37 @@ PostgREST puede devolver tanto array como objeto según la cardinalidad detectad
 
 ---
 
+## 2026-05-28 — Para secrets sensibles (admin keys, service role keys), pedir env var local en vez de pegar en chat
+
+**Categoría**: Operación / Seguridad
+**Confianza**: 🟢 Alta (mejor práctica universal de seguridad)
+
+### Qué funcionó
+Cuando el founder pidió ejecutar un endpoint que requería `ANTHROPIC_ADMIN_API_KEY` (key administrativo de la organización Anthropic — distinto del key normal de Claude, da control sobre workspaces/miembros/costos), en lugar de pedirle que pegue el valor en el chat, sugerí que lo exporte como env var en su terminal antes de que yo corra el comando: `export ANTHROPIC_ADMIN_API_KEY="..."`. Yo después uso `$ANTHROPIC_ADMIN_API_KEY` en el curl sin que el valor pase por el transcript.
+
+### Por qué importa
+El transcript de la conversación se guarda. Cualquier secret pegado ahí queda persistido:
+- Visible en historial local de Claude.
+- Potencialmente sincronizado si hay backups del transcript.
+- Recuperable por terceros que accedan al equipo.
+
+Para keys con blast radius alto (admin, service_role, deploy tokens), la regla es: **el secret nunca pasa por el chat, vive solo en el shell/env local**.
+
+### Cuándo aplicar
+- Cualquier admin API key (Anthropic, OpenAI org admin, GitHub PAT, Vercel API).
+- Service role keys de Supabase (NUNCA pegar en chat — `.env.local` está gitignored, y para uso ad-hoc, env var del shell).
+- DB passwords directas (Supabase cloud, Postgres remotas).
+- Deploy tokens / CI secrets.
+
+### Cuándo NO aplica (puede ir en chat)
+- Anon keys públicas (las que ya están en `.env.local` y se exponen al cliente browser — `NEXT_PUBLIC_*`).
+- IDs (no secrets — el `api_key_id` es solo un identificador, no autoriza nada por sí solo).
+
+### Acción derivada
+- [ ] Considerar agregar a CLAUDE.md una regla explícita: "Para secrets con privilegio administrativo, pedir env var local antes que pegar en chat".
+
+---
+
 ## 2026-05-28 — Limpiar `.next/` después de mover archivos en `app/`
 
 **Categoría**: Operación

@@ -323,6 +323,9 @@ Home + 2 categorías + 5 marcas × 2 + productos + 4 páginas legales/info (sobr
 7. **Reemplazar `[PENDIENTE]` de las páginas legales** con plazos y políticas confirmadas por la regente (editar los 3 archivos en `app/(storefront)/{politica-de-devolucion,boton-de-arrepentimiento,sobre-nosotros}/page.tsx`).
 8. **Completar env vars del negocio**: matrícula de regente (`NEXT_PUBLIC_REGENTE_MATRICULA`), del técnico (`NEXT_PUBLIC_TECNICO_MATRICULA`), CUIT, teléfono, email oficial, dirección exacta, WhatsApp.
 
+### ⏸️ Pedido fuera-de-scope al cierre (pendiente decisión del founder)
+- Al final de la sesión, el founder pidió ejecutar un endpoint de la **Anthropic Admin API** (`GET /v1/organizations/api_keys/{api_key_id}`) — sin relación con Óptica Carballo. Paré porque faltaban dos inputs: el `api_key_id` específico y el `ANTHROPIC_ADMIN_API_KEY` (secret administrativo de la organización). Sugerí exportar el admin key como env var local en vez de pegarlo en el chat (queda en transcript). Si el founder vuelve con esos datos, se ejecuta como tarea aislada — no es del proyecto.
+
 ### 🟢 Próximas features de código (post-acciones del founder)
 9. **Migración 00002**: auth + profiles + addresses + orders + order_items + prescriptions. Habilita el flujo de checkout.
 10. **Integración Mercado Pago Checkout Pro** (ADR-015): webhook, redirección, confirmación, factura electrónica.
