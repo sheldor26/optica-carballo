@@ -62,6 +62,19 @@ type StaticProductRow = {
   category: { slug: string };
 };
 
+export type BrandWithProductCount = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  is_argentine: boolean;
+  productCount: number;
+};
+
+type CategoryIndexProductRow = {
+  brand_id: string;
+};
+
 // ============================================================================
 // Helpers para páginas
 // ============================================================================
@@ -154,6 +167,61 @@ export async function fetchProductPage(
   if (!data.category.is_active) return null;
 
   return data;
+}
+
+/**
+ * Página índice de categoría (`/anteojos-de-sol`, `/anteojos-de-receta`):
+ * devuelve las marcas que tienen al menos 1 producto activo en la
+ * categoría, con count por marca. Marcas sin productos no aparecen.
+ */
+export async function fetchCategoryIndex(
+  category: CategoryConfig,
+): Promise<BrandWithProductCount[]> {
+  // Usa el cliente estático (sin cookies) para que la página pueda ser SSG.
+  // La query lee data pública; no requiere session de usuario.
+  const supabase = createStaticClient();
+
+  const { data: cat } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', category.slug)
+    .is('parent_id', null)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<CategoryRow>();
+
+  if (!cat) return [];
+
+  // Traemos brand_id de cada producto activo en la categoría y agregamos
+  // count por brand en TS (más simple que GROUP BY via PostgREST).
+  const { data: productRows } = await supabase
+    .from('products')
+    .select('brand_id')
+    .eq('category_id', cat.id)
+    .eq('is_active', true)
+    .returns<CategoryIndexProductRow[]>();
+
+  const countByBrand = new Map<string, number>();
+  for (const row of productRows ?? []) {
+    countByBrand.set(row.brand_id, (countByBrand.get(row.brand_id) ?? 0) + 1);
+  }
+
+  if (countByBrand.size === 0) return [];
+
+  const brandIds = Array.from(countByBrand.keys());
+
+  const { data: brands } = await supabase
+    .from('brands')
+    .select('id, slug, name, description, is_argentine')
+    .in('id', brandIds)
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+    .returns<Omit<BrandWithProductCount, 'productCount'>[]>();
+
+  return (brands ?? []).map((b) => ({
+    ...b,
+    productCount: countByBrand.get(b.id) ?? 0,
+  }));
 }
 
 /**

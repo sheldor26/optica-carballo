@@ -91,6 +91,42 @@ export async function buildProductMetadata(
   };
 }
 
+/**
+ * Metadata para páginas índice de categoría (`/anteojos-de-sol`,
+ * `/anteojos-de-receta`). Title con keyword genérica + descripción que
+ * lista las marcas con productos en esa categoría.
+ */
+export function buildCategoryIndexMetadata(
+  category: CategoryConfig,
+  brandNames: string[],
+): Metadata {
+  const title = `${category.name} — Marcas Originales con Envío | Óptica Carballo`;
+  const brandList = formatBrandList(brandNames);
+  const description = brandList
+    ? `${capitalize(category.metaPhrase)} ${brandList}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`
+    : `${capitalize(category.metaPhrase)} en Óptica Carballo. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`;
+  const url = `${SITE_URL}/${category.slug}`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'website' },
+  };
+}
+
+function formatBrandList(names: string[]): string {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0]!;
+  if (names.length === 2) return `${names[0]} y ${names[1]}`;
+  const head = names.slice(0, -1).join(', ');
+  const tail = names[names.length - 1];
+  return `${head} y ${tail}`;
+}
+
 function capitalize(s: string): string {
   return s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 }
