@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { CATEGORIES } from '@/lib/catalog/categories';
 import type { BrandWithProductCount } from '@/lib/catalog/queries';
 
@@ -69,25 +70,31 @@ export function CategoriesSection({
 }) {
   return (
     <section className="container py-12 md:py-16">
-      <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
-        Categorías
-      </h2>
-      <p className="text-muted-foreground mt-2 text-base">
-        Elegí qué estás buscando.
-      </p>
+      <RevealOnScroll>
+        <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
+          Categorías
+        </h2>
+        <p className="text-muted-foreground mt-2 text-base">
+          Elegí qué estás buscando.
+        </p>
+      </RevealOnScroll>
       <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <CategoryCard
-          slug={CATEGORIES.sol.slug}
-          name={CATEGORIES.sol.name}
-          description="Anteojos de sol originales con protección UV. Marcas argentinas e internacionales."
-          stats={summarize(solBrands)}
-        />
-        <CategoryCard
-          slug={CATEGORIES.rx.slug}
-          name={CATEGORIES.rx.name}
-          description="Armazones para anteojos con cristales graduados según tu receta oftalmológica."
-          stats={summarize(rxBrands)}
-        />
+        <RevealOnScroll delay={120}>
+          <CategoryCard
+            slug={CATEGORIES.sol.slug}
+            name={CATEGORIES.sol.name}
+            description="Anteojos de sol originales con protección UV. Marcas argentinas e internacionales."
+            stats={summarize(solBrands)}
+          />
+        </RevealOnScroll>
+        <RevealOnScroll delay={220}>
+          <CategoryCard
+            slug={CATEGORIES.rx.slug}
+            name={CATEGORIES.rx.name}
+            description="Armazones para anteojos con cristales graduados según tu receta oftalmológica."
+            stats={summarize(rxBrands)}
+          />
+        </RevealOnScroll>
       </div>
     </section>
   );

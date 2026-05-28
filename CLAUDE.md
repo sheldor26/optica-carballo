@@ -100,6 +100,8 @@ Actualizá automáticamente:
 - **`LEARNINGS.md`**: si algo funcionó particularmente bien, agregalo con el template.
 - **`MISTAKES.md`**: si algo falló, registralo con causa raíz para no repetirlo.
 
+**Definición operacional de "fin de sesión"**: NO es "el último mensaje". Es "antes del mensaje que devuelve control al founder con pregunta, decisión pendiente o pausa para feedback". Si estás por escribir un mensaje que termina con `"¿querés que…?"`, `"cuando me digas…"`, `"esperando tu…"`, `"listo, mirá…"` o similar — ese mensaje NO sale hasta que los 3 docs estén actualizados (o justifiques explícitamente por qué no hay nada nuevo). El mensaje al founder debe incluir la sección `"✅ Archivos actualizados"`. Promovida tras fallar 3 veces — ver MISTAKES.md 2026-05-28 "3RA VEZ".
+
 Si tomaste una decisión importante: agregala a `DECISIONS.md` con formato ADR.
 
 ## Otros archivos importantes

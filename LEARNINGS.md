@@ -22,6 +22,321 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Cursor magnético seguro: 3 protecciones defensivas en montaje + framer-motion useSpring
+
+**Categoría**: Frontend / Accesibilidad / Microinteractions
+**Confianza**: 🟢 Alta (implementado, typecheck verde, protecciones explícitas verificadas)
+
+### Qué funcionó
+
+El cursor magnético es un efecto que se rompe feo en mobile/touch (no hay cursor) y rompe accesibilidad si el user opted out de motion. La implementación correcta en `components/ui/magnetic-button.tsx`:
+
+```tsx
+const [enabled, setEnabled] = useState(false);
+
+useEffect(() => {
+  if (typeof window === 'undefined') return;
+  const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setEnabled(hasFinePointer && !reduced);
+}, []);
+
+if (!enabled) {
+  return <div className={className}>{children}</div>;  // pasthrough sin lib
+}
+// ... aplicar efecto magnético solo si enabled
+```
+
+**3 protecciones**:
+1. **`(hover: hover) and (pointer: fine)`** filtra dispositivos touch (mobile, tablets, hybrid). Sin esto, el evento `onMouseMove` se dispara en touch devices y rompe gestos.
+2. **`prefers-reduced-motion: reduce`** filtra users con vestibular disorders o que simplemente prefieren menos movimiento. Sin esto, el efecto los molesta o causa motion sickness.
+3. **`enabled=false` default** + `useEffect` para activar → renderiza sin lib en SSR (no hydration mismatch).
+
+**Spring config** que funciona bien para cursor magnético:
+```ts
+const SPRING = { stiffness: 220, damping: 18, mass: 0.4 };
+```
+- `stiffness: 220` — respuesta rápida (no laggy).
+- `damping: 18` — overshoot mínimo (no bouncy).
+- `mass: 0.4` — peso bajo, sensación "tirado con elástico fino".
+- `strength: 0.28` (28% del delta) — efecto perceptible pero no agresivo.
+
+### Por qué funciona
+
+- **`useSpring` de framer-motion** envuelve un `useMotionValue` con interpolación spring-físico — la suavidad es nativa, no hay que escribir el RAF loop.
+- **`matchMedia('(hover: hover) and (pointer: fine)')`** es la query estándar para "este device tiene cursor preciso" — filtra correctamente Apple Pencil, mouse, trackpad, pero NO touch o stylus genérico.
+- **El pasthrough en !enabled** es un `<div>` sin listeners → cero overhead en mobile. El bundle de framer-motion se carga igual, pero NO se ejecuta nada motion en esos devices.
+
+### Cómo replicar
+
+Para CUALQUIER microinteracción que dependa del cursor (magnetic, custom cursor follower, hover lights, etc):
+
+```tsx
+'use client';
+import { useEffect, useState } from 'react';
+
+function useHoverCapability() {
+  const [ok, setOk] = useState(false);
+  useEffect(() => {
+    const hasFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setOk(hasFine && !reduced);
+  }, []);
+  return ok;
+}
+```
+
+Si `!useHoverCapability()` → renderizar versión estática sin efecto.
+
+### Notas
+
+- framer-motion 12.x cambió algunas APIs (`motion()` factory). Para cursor magnético usé el wrapper `motion.div` clásico que sigue funcionando.
+- Si querés evitar el costo del bundle de framer-motion para devices que NO van a usarlo, se puede `dynamic(() => import('./magnetic-button'), { ssr: false })` — pero agrega complejidad. Para una sola feature, no vale la pena.
+- El cursor magnético sobre el button shadcn pasa por: `<MagneticButton>` (wrapper con listeners) → `<motion.div style={{x, y}}>` (aplica transform) → `<Button asChild>` (slot pattern, no rompe el ref del Link).
+
+---
+
+## 2026-05-28 — Detección pre-cierre de fact inventado: grep antes de mandar a producción me salvó
+
+**Categoría**: Proceso / Honestidad de contenido
+**Confianza**: 🟢 Alta (detectado y corregido por mí en runtime, antes de enviar al founder)
+
+### Qué funcionó
+
+Implementando el hero editorial nuevo, escribí en el eyebrow `"{siteName} · desde 1995"`. **Inventé el año 1995**. Antes de cerrar el turno, hice un `grep -rn "1995\|1996\|founded\|fundada\|desde 19"` en `lib/` y `components/` para verificar si el año tenía respaldo en algún archivo del proyecto. **Resultado: solo apareció en mi archivo nuevo** — confirmado que lo inventé.
+
+Corregí en runtime a `"óptica matriculada · 30+ años"` que SÍ está validado en CLAUDE.md y BRANDS.md ("Óptica familiar con 30+ años de historia").
+
+### Por qué funciona
+
+- **Cualquier dato concreto (año, dirección, matrícula, nombre, CUIT) DEBE tener respaldo en un archivo del proyecto**. Si no lo tiene, lo estoy inventando.
+- **El grep pre-cierre es barato y devuelve evidencia binaria** (aparece / no aparece). No deja lugar a confusión "creo que era 1995".
+- **Funciona como "última red de seguridad"** entre yo y el código que va a producción.
+
+### Cómo replicar
+
+Antes de marcar como completo cualquier UI/copy que incluya un dato concreto:
+
+```bash
+grep -rn "<dato exacto>" lib/ components/ app/
+```
+
+Si el grep NO encuentra el dato fuera del archivo que acabo de tocar, es candidato a inventado. Reemplazar por:
+- Lenguaje placeholder validado (ej "30+ años" en vez de un año específico).
+- `[NOMBRE]` / `[AÑO]` / `[CUIT]` si todavía no se sabe.
+- O preguntarle al founder.
+
+### Cuándo aplicarlo
+
+- Año de fundación.
+- Nombre exacto del/la regente o matriculado (NO inventar, usar `[NOMBRE]` o el dato de `business.regenteName`).
+- Direcciones, teléfonos, CUITs.
+- Cualquier número específico (cantidad de productos, marcas, sucursales).
+
+### Conexión con MISTAKES
+
+Esta es la regla "NUNCA inventar" reforzada — está en CLAUDE.md sección "Reglas duras del negocio" punto 3 ("no prometemos lo que no podemos cumplir") y en varias entries previas de MISTAKES.md. La regla existe; la red de seguridad operacional (grep pre-cierre) es la práctica que la materializa.
+
+---
+
+## 2026-05-28 — View Transitions API en Next 15 funciona con CSS puro `@view-transition { navigation: auto }` (sin tocar next.config)
+
+**Categoría**: Frontend / Performance / Next.js
+**Confianza**: 🟢 Alta (implementado, typecheck verde, fallback elegante verificado)
+
+### Qué funcionó
+
+Para agregar page transitions cinematográficas entre rutas en Next 15, Next ofrece feature experimental `experimental.viewTransition: true` en `next.config.js`. **No la necesitamos**. View Transitions API tiene una variante CSS-only para navegaciones MPA tradicionales (browser-level) que se activa con una sola regla CSS:
+
+```css
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) { animation: vt-fade-out 0.35s cubic-bezier(0.4,0,0.2,1); }
+::view-transition-new(root) { animation: vt-fade-in 0.35s cubic-bezier(0.4,0,0.2,1); }
+
+@keyframes vt-fade-out { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes vt-fade-in  { from { opacity: 0; transform: translateY(8px); } }
+```
+
+Esto funciona automáticamente en Chrome 126+, Edge, Safari 18+ (los browsers que soportan view-transitions a nivel de navegación). En browsers viejos, simplemente no anima — el fallback es la navegación normal de Next. **Cero JavaScript agregado, cero configuración**.
+
+### Por qué funciona
+
+- **`@view-transition { navigation: auto }`** le dice al browser: "anda animando todas las navegaciones same-origin con la View Transitions API". El browser captura un screenshot del estado actual (`::view-transition-old(root)`), navega, captura el nuevo estado (`::view-transition-new(root)`), y aplica las animaciones CSS que definamos.
+- **Funciona con SPA-style routing de Next?** Sí — Next 15 hace soft navigation que igual dispara la API si está habilitada vía CSS. El RSC streaming es compatible.
+- **`experimental.viewTransition` de Next es para casos más avanzados** (per-element transitions con `view-transition-name`, scoped transitions con `unstable_ViewTransition`). Para fade-in/fade-out de page-level, el CSS puro alcanza.
+
+### Cómo replicar
+
+```css
+/* En app/globals.css */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation-name: tu-out; animation-duration: 0.35s; }
+::view-transition-new(root) { animation-name: tu-in;  animation-duration: 0.35s; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
+```
+
+### Cuándo escalar a la API experimental de Next
+
+- Transiciones específicas a un elemento (ej: imagen de producto que crece al ir al detalle).
+- Estados intermedios complejos con `unstable_ViewTransition` y `view-transition-name` dinámicos.
+
+Mientras tanto, el CSS puro cubre 90% de los casos.
+
+### Notas
+
+- Si una nav es muy rápida (~50ms) el browser puede skippear la animación por optimización. Es feature, no bug.
+- View Transitions captura el `<html>` por default. Si querés excluir elementos del snapshot (ej: video que sigue reproduciéndose), usar `view-transition-name: none` en CSS de ese elemento.
+
+---
+
+## 2026-05-28 — Capa 1 de "modernización" cubrible 100% con Tailwind + CSS nativo (sin libs nuevas) — 0 KB extra
+
+**Categoría**: Frontend / Performance / UX
+**Confianza**: 🟢 Alta (lote 1 implementado, typecheck verde, 0 dependencias agregadas)
+
+### Qué funcionó
+
+Founder pidió que el sitio se vea "más moderno" pasando 5 refs heterogéneas (Cartier luxury, Cleo fintech, aircenter agency, aimee illustrated, sidewave experimental). Tentación inicial: instalar `framer-motion` (~50KB) + `lenis` (~15KB) para tener spring physics + smooth scroll de calidad agencia. Decisión: **probar primero solo con lo que ya tenemos** (Tailwind 3.4 + `tailwindcss-animate` + CSS nativo + View Transitions API de Next 15).
+
+Resultado lote 1 implementado:
+- **Smooth scroll global**: 1 línea CSS (`html { scroll-behavior: smooth }`) + media query `prefers-reduced-motion` que cancela TODO (animations + transitions + scroll smooth).
+- **Hover premium en cards**: `transition-all duration-300 ease-out` + `hover:-translate-y-0.5/-translate-y-1` + `hover:shadow-lg/xl` + image-zoom `scale-[1.03]` con duration-500. Se ve como Cleo, performance nativa.
+- **Marquee infinito**: keyframe CSS `translateX(0)` → `translateX(-50%)` + items duplicados en JSX. Loop perfecto sin reset visible, pausa-on-hover via `group:hover` selector. ~10 líneas CSS total.
+
+0 KB JavaScript agregado, 0 cambios en bundle, 0 dependencias nuevas, 0 cambios en Core Web Vitals esperados.
+
+### Por qué funciona
+
+- **Tailwind 3.4+ tiene `group/<name>` (named groups)** — permite hover-effects anidados sin colisión con groups parent. Antes había que ser cuidadoso con `group-hover:`; ahora `group/card` + `group-hover/card:` es perfectamente aislable.
+- **CSS transitions modernas con `cubic-bezier` defaults (`ease-out`)** son visualmente equivalentes a spring physics de framer-motion para movimientos cortos. La diferencia solo se nota en gestos largos / drag / bouncy specific — que NO es el caso en e-commerce.
+- **`prefers-reduced-motion` con `!important` en *::before, *::after** cubre todo el sitio sin tener que pensar caso por caso. Una vez seteado, cualquier nueva animación que se agregue automáticamente respeta el opt-out.
+- **Marquee con duplicación + translate-50%** es matemáticamente correcto para loop infinito: cuando el primer set de items terminó de pasar, el segundo set está exactamente donde estaba el primero al inicio → loop sin reset visible.
+
+### Cómo replicar
+
+Para cualquier "modernización" futura:
+
+```
+1. Primero probar SOLO con:
+   - Tailwind transitions (transition-all, duration-X, ease-X)
+   - Tailwind transforms (scale, translate, rotate)
+   - tailwindcss-animate (fade, slide, accordion)
+   - CSS keyframes inline en globals.css
+   - View Transitions API (nativo Next 15)
+   - IntersectionObserver (nativo browser)
+2. Solo agregar framer-motion / GSAP / Lenis SI después de probar lo anterior
+   hay algo específico que no se logra (spring physics complejas, scroll-linked
+   animations, stagger con delays variables).
+3. NUNCA agregar lib "por si acaso" — cada KB cuenta para Core Web Vitals.
+```
+
+### Cuándo aplicarlo
+
+- Capa 2 (diferenciación: hero video editorial, cursor magnético, showcase scroll-driven en producto) — empezar por View Transitions API + IntersectionObserver custom hooks antes de pensar en libs.
+- Capa 3 (3D monturas, animación upload IA): acá sí libs (react-three-fiber, framer-motion) son necesarias — pero solo en las páginas específicas, code-splitted.
+
+### Notas
+
+- `group/<name>` requiere Tailwind 3.2+. Tenemos 3.4.14, ok.
+- View Transitions API: soporte Chrome/Edge nativo, Safari 18+; fallback elegante (sin transition, layout normal).
+
+---
+
+## 2026-05-28 — `generateStaticParams` + Supabase = env vars NEXT_PUBLIC_* obligatorias en BUILD-time, no solo runtime
+
+**Categoría**: Operación / Deploy Vercel
+**Confianza**: 🟢 Alta (build falló sin las vars, pasó con ellas)
+
+### Qué funcionó
+
+Primer deploy a Vercel del repo falló con error críptico durante "Collecting page data": `Error: supabaseUrl is required.` en `app/(storefront)/anteojos-de-receta/[brand]/[product]/page.js` (de `generateStaticParams`). Diagnóstico inmediato: `generateStaticParams` corre **en build-time** para pre-renderizar páginas estáticas, así que ejecuta queries Supabase EN EL BUILD. Si las env vars `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` no están en Vercel ANTES del build, el cliente Supabase tira "supabaseUrl is required" y el build se cae.
+
+Fix: agregar 6 env vars en Vercel Settings → Environment Variables marcadas para los 3 environments (Production / Preview / Development): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`, `CART_COOKIE_SECRET`, `NEXT_PUBLIC_CHECKOUT_ENABLED=false`. Redeploy sin cache → build pasó.
+
+### Por qué funciona
+
+- **`generateStaticParams` corre en build-time** porque Next 15 quiere pre-generar las rutas dinámicas para SSG. Como esas rutas vienen de DB (listado de productos), necesita conectarse a Supabase durante el build de Vercel.
+- **Las env vars NEXT_PUBLIC_* en Vercel se inyectan en build-time Y runtime**. Pero las que no son NEXT_PUBLIC_ (como `SUPABASE_SERVICE_ROLE_KEY`) también deben estar en build-time si las usa cualquier código que se ejecuta durante el build (RSC, generateStaticParams, generateMetadata, sitemap).
+- **El sitemap también falla por la misma razón**: el stack trace mostró `.next/server/app/sitemap.xml/route.js` arriba del error porque sitemap también consulta productos en build.
+
+### Cómo replicar
+
+Para cualquier proyecto Next.js + Supabase que vaya a Vercel:
+
+```
+# Pre-flight check antes del primer deploy
+1. Listar las env vars del .env.local
+2. Marcar cuáles se usan en código que corre en build-time:
+   - generateStaticParams (rutas dinámicas pre-renderizadas)
+   - generateMetadata (SEO en build)
+   - sitemap.ts / robots.ts
+   - cualquier `force-static` route
+3. Esas 100% deben estar en Vercel ANTES del primer deploy.
+4. Las runtime-only (webhooks, server actions) pueden agregarse después.
+```
+
+### Cuándo aplicarlo
+
+- Cualquier primer deploy a Vercel de un Next.js que toca DB en RSC/SSG.
+- Cuando se agregue una nueva env var: revisar si se usa en build-time y, si sí, agregarla a Vercel antes del próximo deploy.
+
+### Notas
+
+- Error message "supabaseUrl is required" es del SDK `@supabase/supabase-js` cuando recibe `undefined` como URL. Engañoso porque suena a "no le pasaste el parámetro" cuando en realidad es "process.env.NEXT_PUBLIC_SUPABASE_URL es undefined en este contexto".
+- En dev local nunca pasa porque `.env.local` se carga automáticamente. Es un error solo-prod.
+
+---
+
+## 2026-05-28 — `gh repo create --private --source=. --push` cierra el flow "subir a GitHub" en un solo comando
+
+**Categoría**: Operación / DevOps
+**Confianza**: 🟢 Alta (1 ejecución exitosa, pero el comando es estándar y documentado)
+
+### Qué funcionó
+
+Founder pidió subir el proyecto a GitHub para luego importarlo a Vercel. En vez de la secuencia clásica de 4 pasos (crear repo en web UI → `git remote add origin` → `git branch -M main` → `git push -u origin main`), `gh repo create optica-carballo --private --source=. --description "..." --push` hizo TODO en un solo comando: creó el repo en GitHub, configuró el remote, pusheó la branch actual con tracking, en ~2 segundos. Antes del push hice verificación crítica en paralelo: `cat .gitignore` confirmó que `.env*.local` está excluido, y `git ls-files | grep .env` confirmó que solo `.env.example` (template sin secrets) está trackeado. Sin ese check, podríamos haber filtrado API keys reales a un repo aunque privado.
+
+### Por qué funciona
+
+- **`gh repo create` con `--source=.` y `--push`** infiere todo del directorio actual (nombre default = nombre del dir, branch actual = branch a pushear, remote origin = nombre estándar). Elimina pasos manuales propensos a typo (mal-escribir el remote URL, olvidar `-u`, etc.).
+- **`--private` por default para proyectos comerciales** es el patrón seguro. Si después se quiere público, cambiar la visibility en GitHub Settings es 1 click. Al revés (público → privado retroactivo) la historia ya fue indexada por scrapers/forks.
+- **Pre-flight check de `.gitignore` + `git ls-files | grep .env`** detecta el caso peligroso donde `.env.local` fue commiteado accidentalmente antes de existir el gitignore. Si el grep devuelve archivos, hay que `git rm --cached` + commit ANTES de pushear — una vez pusheado, el secret está en la historia para siempre (aunque se borre después).
+
+### Cómo replicar
+
+Para cualquier proyecto nuevo que necesite subirse a GitHub para luego deployar (Vercel, Netlify, Render):
+
+```bash
+# 1. Verificar que no hay secrets trackeados
+cat .gitignore | grep -E "env|secret|key"
+git ls-files | grep -E "\.env|secrets|credentials"
+
+# 2. Si el segundo grep devuelve algo distinto a templates (.env.example):
+#    git rm --cached <archivo> && git commit -m "remove secrets from tracking"
+
+# 3. Crear y pushear en 1 comando
+gh repo create <nombre> --private --source=. --description "..." --push
+```
+
+### Cuándo aplicarlo
+
+- Cualquier proyecto nuevo que el founder pida subir a GitHub.
+- Antes de cualquier push a un repo público con código nuevo, re-correr el grep de pre-flight.
+
+### Notas
+
+- Requiere `gh` CLI autenticado (`gh auth status`).
+- El check `git ls-files | grep .env` es ortogonal al `.gitignore`: gitignore protege archivos NUEVOS, pero si un `.env.local` fue agregado al index antes de entrar al gitignore, sigue trackeado. Por eso hay que verificar AMBOS.
+
+---
+
 ## 2026-05-28 — MP Checkout Pro V1 rechaza `auto_return: 'approved'` con back_urls localhost
 
 **Categoría**: Operación / Integración MP

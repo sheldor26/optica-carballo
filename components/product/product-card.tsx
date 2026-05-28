@@ -13,10 +13,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const outOfStock = product.inStockCount === 0;
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="group/card hover:border-foreground/30 flex h-full flex-col transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg">
       <CardHeader className="pb-3">
         <div
-          className="bg-muted text-muted-foreground flex aspect-[4/3] w-full items-center justify-center rounded-md text-xs"
+          className="bg-muted text-muted-foreground flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-md text-xs transition-transform duration-500 ease-out group-hover/card:scale-[1.03]"
           aria-hidden="true"
         >
           Foto pendiente

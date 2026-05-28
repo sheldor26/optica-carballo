@@ -1,4 +1,5 @@
 import { GraduationCap, MessageCircle, Truck, Award } from 'lucide-react';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { getBusinessInfo } from '@/lib/site/business';
 
 type Prop = {
@@ -42,14 +43,19 @@ export function ValueProps() {
   return (
     <section className="container py-12 md:py-16">
       <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {props.map((p) => {
+        {props.map((p, idx) => {
           const Icon = p.icon;
           return (
-            <li key={p.title} className="flex flex-col gap-2">
+            <RevealOnScroll
+              as="li"
+              key={p.title}
+              delay={100 * idx}
+              className="flex flex-col gap-2"
+            >
               <Icon className="text-foreground size-6" aria-hidden="true" />
               <p className="text-foreground text-base font-semibold">{p.title}</p>
               <p className="text-muted-foreground text-sm">{p.body}</p>
-            </li>
+            </RevealOnScroll>
           );
         })}
       </ul>

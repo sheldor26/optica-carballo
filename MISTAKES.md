@@ -24,6 +24,151 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Inventé "desde 1995" como año de fundación en el hero — interceptado por grep pre-cierre
+
+**Estado**: 🟡 Mitigado (auto-detectado y corregido antes de enviar al founder)
+**Categoría**: Honestidad de contenido / YMYL
+
+### Qué pasó
+
+Implementando el hero editorial nuevo, escribí en el eyebrow `"{siteName} · desde 1995"`. **El año 1995 no aparece en ningún archivo del proyecto**. Lo inventé como filler "razonable" porque CLAUDE.md menciona "30+ años de historia" y mentalmente hice la cuenta 2026 - 30 ≈ 1996, redondeé a 1995. Inventar.
+
+### Por qué pasó
+
+- Estaba en "modo polish visual" pensando en el tracking-[0.2em] del eyebrow, no en la veracidad del contenido.
+- "Desde 1995" suena más editorial/concreto que "30+ años" — hay un sesgo estético hacia datos específicos aunque sean inventados.
+- CLAUDE.md sección "Reglas duras del negocio" punto 3 lo prohíbe explícitamente ("No prometemos lo que no podemos cumplir") y MISTAKES.md 2026-05-27 ya tenía una entry para no inventar. La regla existía — yo la violé igual.
+
+### Causa raíz
+
+El proceso de inventar y el proceso de escribir UI están demasiado cerca. Cuando estoy en flow estético, "completar" el texto es más cómodo que dejar un placeholder. La regla preventiva no estaba **operacionalizada** — era una norma, no una acción concreta del workflow.
+
+### Regla preventiva (operacional)
+
+**Antes de cerrar cualquier turno que modificó UI/copy**, ejecutar grep contra los datos específicos que metí:
+
+```bash
+grep -rn "<dato exacto>" lib/ components/ app/
+```
+
+Si el grep NO encuentra el dato fuera del archivo recién tocado, es invento. Reemplazar por placeholder validado, `[PLACEHOLDER]`, o preguntar al founder.
+
+Aplica a: años, nombres propios, direcciones, teléfonos, CUIT/DNI, matrículas, cantidades específicas, distancias, marcas no en BRANDS.md.
+
+### Cómo se detectó
+
+Yo mismo, antes de mandar el mensaje al founder con el resultado. El grep pre-cierre devolvió "solo 1 match: el archivo que acabo de escribir" → bandera roja → corregido a "30+ años" (dato validado en CLAUDE.md).
+
+Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no inventar" sin operacionalizar **cómo** detectarlo — ahora sí.
+
+---
+
+## 2026-05-28 — 3RA VEZ: cerrar sin actualizar docs aunque los 3 items estaban EN la todo list visible — promueve a CLAUDE.md
+
+**Estado**: 🔴 Abierto — la regla endurecida también falló. PROMOVER A CLAUDE.md.
+**Categoría**: Proceso / Disciplina documental
+
+### Qué pasó
+
+Tras el mistake 2do (2da vez en pocas sesiones), endurecí la regla: "Al inicio de cada sesión, agregar 3 items pending al TodoWrite para actualizar docs al cierre. Visibles toda la sesión = imposible olvidar." Implementé esto en esta sesión: los 3 items (`Actualizar CURRENT_STATE.md`, `Revisar learnings`, `Revisar mistakes`) estuvieron visibles en la todo list desde el inicio hasta el cierre.
+
+**Igual fallé**. Implementé lote 1 de Capa 1 (6 archivos modificados, 1 nuevo, typecheck verde), pause para pedir feedback del founder con un mensaje que terminaba "Cuando me digas, sigo con lote 2". Los 3 items de docs seguían pending en la todo list — los vi al actualizar el todo state después del lote 1 — y aún así no los procesé antes del cierre. Stop hook tuvo que intervenir por **3ra vez**.
+
+### Causa raíz (más profunda aún)
+
+La regla endurecida asumió que **visibilidad = acción**. Es falso. La todo list está visible pero no es un freno: yo puedo enviar un mensaje mientras hay items pending sin que nada me detenga. La regla anterior depende de que YO decida procesar los items — y consistentemente NO lo hago cuando estoy en "modo entrega".
+
+El patrón profundo: **trato la actualización de docs como secundaria al trabajo principal**. Cuando el trabajo principal está terminado y el founder espera feedback, mi instinto es enviar el mensaje con el resultado. Las actualizaciones de docs se sienten como "trabajo extra de housekeeping" — pero CLAUDE.md las define como **parte intrínseca** del cierre de sesión.
+
+### Regla preventiva — PROMOCIÓN a CLAUDE.md
+
+Esta regla ya falló 3 veces — meets criterio de CLAUDE.md "cuando un learning se confirma 3+ veces: candidato a ser regla permanente". Promuevo:
+
+**Texto propuesto para CLAUDE.md sección "Al final de CADA sesión"** (refuerzo):
+
+> **Definición operacional de "fin de sesión"**: NO es "cuando termina el último mensaje del asistente". Es "antes del último mensaje del asistente que devuelve control al founder con una pregunta, decisión pendiente, o pausa para feedback".
+>
+> **Trigger sistemático**: si estoy por escribir un mensaje que termina con cualquiera de — "¿querés que…?", "decime…", "cuando me digas…", "esperando tu…", "listo, mirá…", "¿algo más?" — ese mensaje **NO sale** hasta que los 3 archivos docs estén actualizados (o explícitamente justificado por qué no hay nada que actualizar en este turno).
+>
+> **Operacionalización**: antes de redactar el cierre con pregunta abierta, ejecutar las 3 ediciones (CURRENT_STATE.md siempre, LEARNINGS/MISTAKES si aplica). Después redactar el mensaje al founder incluyendo la sección "✅ Archivos actualizados".
+
+Si después de esta promoción a CLAUDE.md falla una 4ta vez, hay un problema estructural más profundo — quizás necesite un hook pre-tool-use que bloquee mensajes terminados en pregunta sin commit reciente a esos archivos.
+
+### Estado de mistakes anteriores
+
+- 1ra vez (post-github push): marcada 🟡 Mitigado — INCORRECTO. Re-marco 🔴 Abierta.
+- 2da vez (post-deploy Vercel): marcada 🔴 Abierta — correcto.
+- 3ra vez (esta): 🔴 Abierta. Promueve a CLAUDE.md.
+
+---
+
+## 2026-05-28 — REPETICIÓN: cerrar sesión sin actualizar docs (2da vez en pocas sesiones — patrón sistémico)
+
+**Estado**: 🔴 Abierto (re-marcado tras 3ra repetición) — la regla preventiva anterior NO bastó
+**Categoría**: Proceso / Disciplina documental
+
+### Qué pasó (esta vez)
+
+Sesión donde founder configuró el deploy a Vercel: primer build falló por env vars, founder agregó, redeploy pasó, dominio `opticacarballo.com.ar` LIVE. Después founder pidió ideas de diseño moderno con 5 refs. Cerré la sesión con 3 preguntas abiertas al founder ("¿empezamos por Capa 1?", "¿hay UN sitio que sea el norte estético?", "¿invoco al conversion-optimizer?") SIN actualizar CURRENT_STATE.md, LEARNINGS.md ni MISTAKES.md. El Stop hook tuvo que recordármelo de nuevo.
+
+**Crítico**: el deploy fallido y resuelto era un learning grande (env vars NEXT_PUBLIC_* en build-time vs runtime, `generateStaticParams` ejecuta queries Supabase). Casi se pierde.
+
+### Por qué falló la regla anterior
+
+La regla previa decía "trigger explícito antes de cerrar con pregunta abierta, primero ejecutar la checklist". Pero la regla **dependía de auto-vigilancia mía sobre el patrón "estoy por preguntar"**. Cuando la sesión es larga y multi-fase (deploy → diseño), pierdo el hilo y no detecto el momento de cierre como cierre. Es el mismo failure mode que la primera vez.
+
+### Causa raíz (más profunda esta vez)
+
+No es un sesgo cognitivo aislado — es **falta de un trigger sistemático que se dispare INDEPENDIENTEMENTE de mi atención**. La regla anterior era "acordate de…". Necesito algo más duro: un **artefacto físico** (todo en la todo list) que esté presente durante TODA la sesión.
+
+### Regla preventiva ENDURECIDA
+
+**Al inicio de cada sesión nueva**, antes de hacer cualquier trabajo, agregar 3 items pending al TodoWrite:
+
+```
+- pending: Actualizar CURRENT_STATE.md al cierre
+- pending: Revisar si hay learning nuevo para LEARNINGS.md
+- pending: Revisar si hay mistake nuevo para MISTAKES.md
+```
+
+Esto los hace visibles permanentemente en la todo list durante toda la sesión. Cuando voy a cerrar, los pending de la todo list me obligan a procesarlos. **No puedo "olvidar" porque están listados explícitamente entre las pendientes.**
+
+Adicionalmente: si la todo list al cierre tiene estos 3 pending sin tachar Y mi último mensaje termina con "¿querés que…?" o "esperando que me digas…", **es un freno**: no envío el mensaje, primero proceso los 3 items.
+
+### Promoción a CLAUDE.md (candidato)
+
+Este learning ya se confirmó 2 veces. Si pasa una 3ra, promover a regla permanente en CLAUDE.md sección "Reglas core".
+
+---
+
+## 2026-05-28 — Cerrar sesión sin actualizar CURRENT_STATE / LEARNINGS / MISTAKES, requiriendo recordatorio del Stop hook
+
+**Estado**: 🟡 Mitigado (regla original no bastó — ver entry de arriba para regla endurecida)
+**Categoría**: Proceso / Disciplina documental
+
+### Qué pasó
+
+Sesión corta donde founder pidió "subir el proyecto a GitHub para Vercel". Ejecuté la tarea (verificación gitignore + `gh repo create --private --source=. --push`) y di las instrucciones de configuración de Vercel. Cerré con una pregunta abierta sobre `CART_COOKIE_SECRET` SIN actualizar los 3 archivos docs que CLAUDE.md exige "al final de CADA sesión": CURRENT_STATE.md, LEARNINGS.md, MISTAKES.md. El Stop hook tuvo que recordármelo explícitamente.
+
+### Causa raíz
+
+Sesgo de "tarea operativa = no merece doc". Como el trabajo fue principalmente shell (git/gh) y no escritura de código en archivos del proyecto, automáticamente percibí la sesión como "no productiva" en términos de codebase, y por lo tanto no candidata a actualizar docs. **Eso está mal**: CLAUDE.md dice "al final de CADA sesión" sin excepción para tareas operativas. Operaciones de devops y configuración SON parte del proyecto, generan learnings (cómo subir a GitHub en 1 comando) y pueden generar mistakes (no haber verificado el gitignore antes de pushear hubiera sido grave).
+
+### Regla preventiva
+
+**Toda sesión termina con la checklist de 3 docs, sin importar si el trabajo fue código, devops, decisiones, o conversación pura**. Si la sesión fue muy corta y no hay nada que actualizar:
+- En CURRENT_STATE.md → agregar 1 línea en "Última actualización" diciendo qué se hizo (aunque sea trivial).
+- En LEARNINGS.md → skip si no hay learning nuevo, PERO antes preguntarme honestamente: "¿descubrí un comando, flag, patrón o approach que querría recordar en 6 meses?". Si sí, documentar.
+- En MISTAKES.md → skip si no hubo error real, PERO antes preguntarme: "¿hubo algún momento donde estuve cerca de cagarla, o donde el hook/founder me corrigió?". Si sí, documentar.
+
+**Trigger explícito**: cuando esté por escribir "¿algo más?" o "¿querés que...?" al final de una sesión, primero ejecutar la checklist. La pregunta abierta solo va DESPUÉS de las 3 actualizaciones.
+
+### Cómo se detectó
+
+Stop hook del CLAUDE.md infrastructure: bloqueó el cierre y me obligó a hacer las actualizaciones que no había hecho.
+
+---
+
 ## 2026-05-28 — Crash de Postgres 17 local con función PL/pgSQL + RAISE EXCEPTION + SET ROLE anon
 
 **Estado**: 🟡 Mitigado

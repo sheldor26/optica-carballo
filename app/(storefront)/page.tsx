@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { BrandsSection } from '@/components/home/brands-section';
 import { CategoriesSection } from '@/components/home/categories-section';
 import { HomeHero } from '@/components/home/home-hero';
+import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
 import { OrganizationJsonLd } from '@/components/seo/organization-jsonld';
 import { WebsiteJsonLd } from '@/components/seo/website-jsonld';
@@ -30,6 +31,7 @@ export default async function HomePage() {
       <OrganizationJsonLd />
       <WebsiteJsonLd />
       <HomeHero />
+      <TrustMarquee />
       <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
       <BrandsSection brands={allBrands} />
       <ValueProps />

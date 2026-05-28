@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MagneticButton } from '@/components/ui/magnetic-button';
 import { getBusinessInfo, getWhatsappLinkWithContext } from '@/lib/site/business';
 
 export function HomeHero() {
@@ -10,30 +11,46 @@ export function HomeHero() {
   );
 
   return (
-    <section className="from-muted/40 to-background bg-gradient-to-b">
-      <div className="container py-16 md:py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-muted-foreground text-sm font-medium uppercase tracking-wide">
-            {siteName}
+    <section className="from-muted/30 to-background relative isolate overflow-hidden bg-gradient-to-b">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+      >
+        <div className="bg-foreground/[0.06] animate-mesh-a absolute -top-24 left-[18%] size-[520px] rounded-full blur-3xl" />
+        <div className="bg-foreground/[0.05] animate-mesh-b absolute top-1/2 right-[12%] size-[620px] rounded-full blur-3xl" />
+        <div className="bg-foreground/[0.04] animate-mesh-c absolute -bottom-32 left-1/2 size-[480px] -translate-x-1/2 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container py-20 md:py-32">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="hero-reveal hero-reveal-1 text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
+            {siteName} · óptica matriculada · 30+ años
           </p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight md:text-6xl">
-            Anteojos originales con asesoramiento óptico real
+          <h1 className="hero-reveal hero-reveal-2 mt-5 text-balance text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl lg:text-[5.5rem]">
+            Anteojos originales con{' '}
+            <span className="bg-foreground/90 from-foreground to-foreground/60 bg-gradient-to-br bg-clip-text text-transparent">
+              asesoramiento óptico real
+            </span>
           </h1>
-          <p className="text-muted-foreground mt-5 text-base md:text-lg">
+          <p className="hero-reveal hero-reveal-3 text-muted-foreground mx-auto mt-6 max-w-2xl text-balance text-base md:text-lg">
             Anteojos de sol y receta de las marcas que trabajamos. Atención
             personalizada por técnico óptico matriculado, envíos a todo el
             país y cuotas sin interés.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg">
-              <Link href="/anteojos-de-sol">
-                Ver anteojos de sol
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/anteojos-de-receta">Ver anteojos de receta</Link>
-            </Button>
+          <div className="hero-reveal hero-reveal-4 mt-10 flex flex-wrap items-center justify-center gap-3">
+            <MagneticButton>
+              <Button asChild size="lg" className="shine-on-hover group">
+                <Link href="/anteojos-de-sol">
+                  Ver anteojos de sol
+                  <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </MagneticButton>
+            <MagneticButton>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/anteojos-de-receta">Ver anteojos de receta</Link>
+              </Button>
+            </MagneticButton>
             {whatsappLink && (
               <Button asChild size="lg" variant="ghost">
                 <a href={whatsappLink} target="_blank" rel="noopener noreferrer">

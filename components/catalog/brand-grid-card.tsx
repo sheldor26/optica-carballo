@@ -15,8 +15,8 @@ export function BrandGridCard({
   const href = `/${category.slug}/${brand.slug}`;
 
   return (
-    <Link href={href} className="group">
-      <Card className="flex h-full flex-col transition-colors group-hover:border-foreground">
+    <Link href={href} className="group block">
+      <Card className="flex h-full flex-col transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:border-foreground group-hover:shadow-xl">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-lg">{brand.name}</CardTitle>
@@ -45,7 +45,7 @@ export function BrandGridCard({
             aria-hidden="true"
           >
             Ver catálogo
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
           </span>
         </CardFooter>
       </Card>
