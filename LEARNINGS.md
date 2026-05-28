@@ -22,6 +22,52 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Supabase JS tipa embeds FK 1:1 como arrays — usar `.returns<>()` con tipos manuales
+
+**Categoría**: Código
+**Confianza**: 🟢 Alta (problema explícito, fix verificado, patrón replicable)
+
+### Qué funcionó
+Cuando se hace una query con embeds tipo `select('..., brand:brands!inner(...), category:categories!inner(...)')`, supabase-js tipa los embeds como **arrays** aunque la FK sea 1:1 (un producto tiene una marca, no muchas). En runtime, PostgREST devuelve objetos, pero TS strict no lo sabe. Síntoma: 10+ errores tipo `Property 'slug' does not exist on type '{ slug: any; }[]'`.
+
+Solución: definir un tipo manual del shape esperado y pasarlo a `.returns<MyType>()`:
+
+```ts
+type ProductRow = {
+  brand: { slug: string; name: string; ... };
+  category: { slug: string; is_active: boolean };
+  // ...
+};
+
+const { data } = await supabase
+  .from('products')
+  .select('...')
+  .maybeSingle()
+  .returns<ProductRow>();
+```
+
+### Por qué funcionó (causa real)
+PostgREST puede devolver tanto array como objeto según la cardinalidad detectada, y supabase-js no infiere correctamente desde el SQL string del select. El generador `supabase gen types` produce tipos correctos para tablas (`Tables<'products'>['Row']`) pero la inferencia para queries con embeds custom es imperfecta. `.returns<>()` es el escape hatch oficial — no es un hack, es la API documentada.
+
+### Evidencia
+1 caso resuelto en esta sesión. Aplicado en 3 lugares: `fetchProduct()`, `generateStaticParams()` (`StaticParamRow`), `sitemap.ts` (`ProductSitemapRow`). Cada uno con su tipo específico, validado por typecheck clean.
+
+### Cuándo aplicar esto de nuevo
+- **Siempre que hagas `.select()` con embeds y joins en supabase-js**.
+- **Siempre que pretendas usar TS strict (que es el default del proyecto)**.
+- Si la query es trivial sin embeds (`select('*')` de una sola tabla), los tipos generados bastan, no hace falta `.returns<>()`.
+
+### Cuándo NO aplica
+- Queries sin embeds (`select('id, name').from('brands')`).
+- Cuando no necesitás type safety estricta (RSC con `unknown` cast inline — pero eso es peor patrón).
+
+### Acción derivada
+- [x] Aplicado en `page.tsx` y `sitemap.ts` de la feature de producto.
+- [ ] Replicar en futuras queries con embeds: receta, carrito, órdenes, etc.
+- [ ] Considerar crear un helper `lib/supabase/queries/` con queries reusables tipadas — cuando se repita el mismo embed shape 3+ veces.
+
+---
+
 ## 2026-05-28 — Limpiar `.next/` después de mover archivos en `app/`
 
 **Categoría**: Operación

@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Header + Footer del storefront funcionando — commit `825a2e2`**
+🟢 **End-to-end de catálogo de display completo — commit `c817f28`**
 
-Stack completo del storefront V1: home + página dinámica de marca + header con nav mobile/desktop + footer con info del negocio. Todo validado contra LOCAL y CLOUD. Próximo paso: decidir feature siguiente (página de producto individual o migración 00002 para auth).
+Catálogo navegable de punta a punta: home → página de marca → página de producto individual. Header + Footer en todas. SEO completo (BreadcrumbList, CollectionPage, ItemList, Brand, AggregateOffer/Offer, Product schemas; sitemap dinámico; robots.txt; hreflang). **Productos placeholder `[PH]` con `noindex` para evitar contaminar Google** hasta que founder confirme nombres y precios reales. Próximo: o reemplazar `[PH]` con data real, o seguir con auth/checkout, o producto en categoría receta.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para Header + Footer del storefront. Plan minimalista (logo texto, nav, WhatsApp condicional). shadcn `sheet` + `button` agregados. 4 componentes layout + 2 helpers (`nav.ts`, `business.ts`). Layout group `(storefront)` envuelve home + página de marca. Mobile-first con hamburger menu (Sheet). Validado typecheck/lint/build/dev. Commit `825a2e2`.
+**Por**: Skill `/feature` para página de producto individual `/anteojos-de-sol/[brand]/[product]`. 5 componentes nuevos (gallery placeholder, attributes, variants, whatsapp-cta, product-jsonld). Helper `lib/catalog/placeholder.ts`. Página dynamic con 3 validaciones de seguridad (cross-brand/category/404). seo-strategist review aplicado: noindex para [PH], Offer vs AggregateOffer, itemCondition, title más corto, sitemap excluye placeholders, changefreq uniforme weekly. Validado contra cloud. Commit `c817f28`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,39 @@ Stack completo del storefront V1: home + página dinámica de marca + header con
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Página de producto individual /[brand]/[product] (✅ commit `c817f28` — 2026-05-28)
+- **URL**: `app/(storefront)/anteojos-de-sol/[brand]/[product]/page.tsx` + `not-found.tsx`.
+- **3 validaciones de seguridad** en `fetchProduct`: producto activo + brand matchea params + category matchea `anteojos-de-sol`. Cualquier mismatch → `notFound()`. Previene cross-brand (`/reef/rusty-x`) y cross-category (`/sol/producto-rx`) URLs sintéticas.
+- **Componentes nuevos** (5):
+  - `components/product/product-gallery.tsx` — placeholder "Foto pendiente" + thumbnails muteadas. Cuando founder pase fotos, swap a `next/image`.
+  - `components/product/product-attributes.tsx` — ficha técnica (`dl/dt/dd`) con mapeo controlado de JSONB keys: `frame_material`, `frame_shape`, `lens_treatment`, `gender`. Keys desconocidas se ignoran.
+  - `components/product/variant-list.tsx` — lista de variantes con etiquetas españolizadas (negro, carey, dorado, marrón degradé, etc.). Stock por variante.
+  - `components/product/whatsapp-cta.tsx` — Botón con mensaje pre-llenado contextual ("Hola, me interesa el [producto]..."). Oculto si no hay número.
+  - `components/seo/product-jsonld.tsx` — Product schema con `Offer` vs `AggregateOffer` según si low===high, `itemCondition: NewCondition`, `sku`, `brand`, `image` opcional.
+- **Helpers nuevos**:
+  - `lib/catalog/placeholder.ts` con `isPlaceholder(name)` — detecta `[PH]` en el nombre. Usado para `noindex` + exclusión de sitemap + supresión de Product JSON-LD.
+  - `lib/site/business.ts` extendido con `getWhatsappLinkWithContext(message)` para CTAs contextuales.
+- **SEO** (todos los findings críticos + importantes del seo-strategist aplicados):
+  - Title `~60 chars`: "{name} | Anteojos de Sol - Óptica Carballo" (sin repetir marca — ya está en breadcrumb + Brand schema).
+  - **Productos [PH] con `robots: { index: false, follow: true }`** + sin Product JSON-LD + excluidos del sitemap. Previene contaminación de Google con nombres placeholder.
+  - `Offer` cuando un solo precio, `AggregateOffer` cuando hay rango.
+  - `itemCondition: NewCondition` siempre.
+  - `image: null` por ahora (placeholder); cuando haya fotos, se pasa URL absoluta.
+  - Breadcrumb 4-level (Inicio → Sol → Brand → Product) tanto en HTML semántico como en BreadcrumbList JSON-LD.
+- **Sitemap** actualizado (`app/sitemap.ts`):
+  - Incluye URLs de producto con `priority: 0.7`.
+  - **Filtra productos `[PH]`** (`!isPlaceholder(p.name)`).
+  - `changeFrequency: weekly` consistente en todas las URLs (era `daily` exagerado — Google penaliza la mentira en crawl budget).
+- **Tipos**:
+  - `.returns<>()` de supabase-js para forzar tipos correctos en embeds. Problema: la inferencia automática tipa `brand`/`category` (FK 1:1) como arrays cuando en runtime son objetos. Resolver con type assertions explícitas (`ProductRow`, `StaticParamRow`, `ProductSitemapRow`).
+- **Validación contra cloud**:
+  - `/anteojos-de-sol/rusty/rusty-wayfarer-classic-sol` HTTP 200 con info completa + meta noindex (porque tiene [PH]).
+  - `/anteojos-de-sol/reef/rusty-wayfarer-classic-sol` HTTP 404 (cross-brand).
+  - `/anteojos-de-sol/rusty/rusty-redondo-vintage-rx` HTTP 404 (cross-category, producto está en rx).
+  - `/anteojos-de-sol/rusty/no-existe` HTTP 404.
+  - Sitemap: 13 URLs, 0 productos placeholder.
+  - `pnpm typecheck` + `pnpm lint` + `pnpm build` clean. Build pre-genera 2 URLs de producto (a pesar de noindex la página existe, solo le decimos a Google que no la indexe).
 
 ### Header + Footer del storefront (✅ commit `825a2e2` — 2026-05-28)
 - **Layout group `(storefront)`** ahora envuelve home + páginas de marca con SiteHeader + SiteFooter.
@@ -198,18 +231,22 @@ Stack completo del storefront V1: home + página dinámica de marca + header con
 
 **Cloud aplicado y validado** ✅ — schema 00001 + seeds están en `tuddpfspnbnmafsqdvat.supabase.co`. `pnpm dev` apuntando a cloud (vía `.env.local`) responde `/anteojos-de-sol/rusty` con HTTP 200 y 2 productos rendereados.
 
-**Próxima sesión** (decidís vos): dos caminos principales ordenados por impacto inmediato:
+**Próxima sesión** (decidís vos):
 
-1. **Página de producto individual `/anteojos-de-sol/[brand]/[product]`** (skill `/feature`) — completa el end-to-end del catálogo. URL profunda con structured data Product completo, galería de variantes, selector de color/material, botón "consultar / agregar al carrito" (sin carrito funcional todavía). Habilita CTR desde Google a páginas de modelos específicos. Aprovecha al máximo el schema actual.
-2. **Migración 00002: profiles + addresses + auth setup** (skill `/migration` + `/feature` después) — habilita login, checkout futuro. Más infraestructura, menos impacto SEO inmediato. **Solo aplicar cuando estemos cerca del checkout**.
+### 🔴 Crítico para que el sitio sea publicable
+1. **Reemplazar productos `[PH]` por datos reales** del founder: confirmar 4 modelos (2 sol + 2 rx) con nombre, descripción, atributos y precio real. Cuando el seed se actualice, los productos automáticamente dejan de tener `noindex` y entran al sitemap. Requiere input del founder, no de código.
 
-Mi recomendación: **camino 1** (página de producto) — completa el catálogo de display y le saca jugo a lo que ya tenemos antes de seguir agregando schema.
+### 🟡 Features importantes para storefront completo
+2. **Página de marca en categoría receta** `/anteojos-de-receta/[brand]` + página de producto rx (copy-paste del patrón sol con cambio de `CATEGORY_SLUG`). Cubre el lado rx que actualmente da 404.
+3. **Página índice de categoría** `/anteojos-de-sol` (sin marca) listando todas las marcas con productos. Cierra el 404 que actualmente apunta el nav.
+4. **Links legales** (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`) — **obligatorios antes de habilitar checkout**. Páginas estáticas, contenido legal.
 
-**Otras opciones menores** que valen sesión propia:
-- Página índice de categoría `/anteojos-de-sol` (sin marca) — lista todas las marcas con productos. Bajo esfuerzo.
-- Logo SVG real (cuando founder pase asset). Trivial.
-- Links legales (devolución, arrepentimiento) — se necesitan ANTES de habilitar checkout, no después.
-- Texto SEO 150-300 palabras por marca — requiere ALTER TABLE brands (campos `seo_intro`, `seo_outro`).
+### 🟢 Pre-launch (más infra)
+5. **Migración 00002**: profiles + addresses + auth setup. Habilita login + flujo de checkout.
+6. **Fotos reales de productos** + Storage bucket + ALTER products para `images`.
+7. **Logo SVG** real cuando founder pase asset.
+
+Mi recomendación: **camino 1** primero (reemplazar [PH]) o **camino 2** (cubrir lado rx) en paralelo. Camino 4 hay que tenerlo listo cuando se acerque el launch.
 
 **Cosas pendientes ortogonales**:
 
@@ -268,6 +305,10 @@ Ver sección "Pendientes" en `DECISIONS.md`.
   1. La herramienta `Write` rechazó sobreescribir el archivo de migración recién creado por `supabase migration new` porque "no fue leído primero". Resuelto con un Read trivial. No es bug — es safeguard. No merece MISTAKES.
   2. `psql` no está instalado localmente en el sistema (no era pre-requisito explícito). Resuelto usando `docker exec supabase_db_optica-carballo psql ...` que sí tiene psql incluido. Patrón útil registrado en LEARNINGS.
   3. La migración aplicó sin errores en `supabase db reset`. Todos los smoke tests verdes. No hubo problemas conceptuales.
+- **2026-05-28 (sesión página de producto)**:
+  1. **Tipos de Supabase JS para embeds tipan FK 1:1 como arrays**, no como objetos. En runtime devuelve objeto, pero TS strict se queja. Fix: usar `.returns<ProductRow>()` con tipos explícitos manuales por consulta. Aprendí: para queries con embeds, siempre definir tipo manual y pasarlo a `.returns<>()`. Registrado en LEARNINGS.
+  2. **seo-strategist detectó 3 críticos**: `[PH]` en producción contaminaría Google con nombres placeholder; `AggregateOffer` con low===high es semánticamente incorrecto; falta `image` + `itemCondition` en Product schema. Aplicado todos: helper `isPlaceholder()` + `robots: noindex` + filtro sitemap + lógica Offer vs AggregateOffer + campos al schema.
+  3. Sin problemas conceptuales. La página renderiza correctamente, las 3 validaciones de seguridad (cross-brand, cross-category, inexistente) responden 404.
 - **2026-05-28 (sesión Header/Footer)**:
   1. **`pnpm typecheck` falló inicialmente** después de mover `app/page.tsx` a `app/(storefront)/page.tsx`. Causa: `.next/types/validator.ts` referenciaba la ruta vieja (cache stale). Fix: `rm -rf .next` y re-correr. Aprendí: cuando muevo rutas o cambio el tree de `app/`, conviene limpiar `.next/` antes de validar tipos.
   2. Greps fallaron con "Regente: " y "© 2026" — falsos negativos por React `<!-- -->` separadores. Mismo patrón que ya vi en sesiones anteriores (H1 del rusty). No es bug.
