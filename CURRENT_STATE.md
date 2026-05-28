@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Catálogo de display 100% navegable — commit `538f7c3`**
+🟢 **Home definitiva + storefront completo — commit `a2f968d`**
 
-Las 3 capas del catálogo cubiertas: índice de categoría (sol/rx) → página de marca → producto individual. Cero 404 en el nav. SEO completo en cada nivel (CollectionPage, ItemList, Brand, AggregateOffer/Offer, Product, BreadcrumbList). Próximos pasos: reemplazar productos `[PH]` con data real, o páginas legales antes del checkout.
+La home `/` ya no es placeholder: hero + categorías + marcas + value props + Organization/WebSite JSON-LD. Las 4 capas del storefront cubiertas (home, índice categoría, marca, producto). Falta: reemplazar `[PH]` con data real, páginas legales antes del checkout, fotos.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para páginas índice de categoría. `fetchCategoryIndex()` agregado a `lib/catalog/queries.ts` (usa `createStaticClient` para que la página sea SSG). `buildCategoryIndexMetadata` agregado a `lib/catalog/metadata.ts` (description dinámica con lista de marcas). 2 componentes UI nuevos (BrandGridCard + CategoryIndexPage). 2 thin wrappers de routing. Validado contra cloud. Commit `538f7c3`.
+**Por**: Skill `/feature` para home definitivo. 4 componentes nuevos en `components/home/` (hero, categories, brands, value-props). 2 schemas nuevos (Organization+Optician, WebSite). Helpers `fetchAllActiveBrands` + `buildHomeMetadata`. Sin imágenes hero (placeholder, regla 7), sin reviews falsas, value props condicionales según env vars (matrícula visible solo si configurada). Validado contra cloud. Commit `a2f968d`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,26 @@ Las 3 capas del catálogo cubiertas: índice de categoría (sol/rx) → página 
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Home definitiva (✅ commit `a2f968d` — 2026-05-28)
+- **`app/(storefront)/page.tsx`**: Server Component que fetcha 3 queries en paralelo (`Promise.all`) — categorías sol, rx, y todas las marcas activas. Compone hero + categorías + marcas + value props. `revalidate = 300` → SSG con ISR.
+- **Componentes en `components/home/`**:
+  - `home-hero.tsx`: text-only con gradient sutil, 3 CTAs (sol, receta, WhatsApp condicional). Headline "Anteojos originales con asesoramiento óptico real" + sub con value prop.
+  - `categories-section.tsx`: 2 cards (sol/receta) con stats reales (`"1 marca · 2 modelos"` actualmente porque solo Rusty tiene productos). Linkean a páginas índice.
+  - `brands-section.tsx`: grid de las 5 marcas activas (incluso las sin productos), cards minimales con badge "Marca local". Apóstrofe de Paula Cahen renderea como `&#x27;`.
+  - `value-props.tsx`: 4 items con `lucide-react` icons. **Trust signals reales según env**: regente matriculada (visible: hay name pero falta matrícula); 30+ años; envíos Andreani; WhatsApp condicional.
+- **Schemas nuevos**:
+  - `components/seo/organization-jsonld.tsx`: `@type: ["Organization", "Optician"]` con `address`, `telephone`, `sameAs` (wa.me). Solo emite campos del negocio configurados — no inventa data faltante.
+  - `components/seo/website-jsonld.tsx`: WebSite con `inLanguage: 'es-AR'`. Sin SearchAction (no hay search global).
+- **Helpers**:
+  - `fetchAllActiveBrands()` agregado a `lib/catalog/queries.ts` — usa `createStaticClient`, devuelve marcas ordenadas por sort_order.
+  - `buildHomeMetadata()` en `lib/catalog/metadata.ts` — title ~70 chars con marca + categorías + diferenciador, description con E-E-A-T.
+- **Decisiones técnicas clave**:
+  - **Sin imágenes hero / banners**. Hero text-only sostenido por gradient + tipografía + spacing. Cuando founder pase asset, swap a `next/image`.
+  - **Sin productos destacados** (los `[PH]` no califican; total 4 productos hoy). Cuando founder reemplace `[PH]` y haya `is_featured = true`, agregar sección.
+  - **Sin reviews / testimonios** (regla 7 — no inventar).
+  - **Value prop de matrícula condicional**: si hay `NEXT_PUBLIC_REGENTE_MATRICULA`, muestra "Regente óptica matriculada"; sino fallback "Atención profesional". Si hay `NEXT_PUBLIC_REGENTE_NAME`, muestra "Asesoramiento personal de [nombre]". Hoy renderiza "Asesoramiento personal de María Carlota Carballo".
+- **Validación contra cloud**: HTTP 200 (95 KB HTML), title + meta + schemas presentes, header/footer del `(storefront)` layout aplican. Build: home como `○ Static` revalidate 5m, 105 kB First Load JS sin cambio. `pnpm typecheck` + `lint` clean.
 
 ### Páginas índice de categoría /anteojos-de-sol y /anteojos-de-receta (✅ commit `538f7c3` — 2026-05-28)
 - **URL**: `/anteojos-de-sol` y `/anteojos-de-receta` (sin marca). Antes daban 404 → ahora muestran grid de marcas con productos en esa categoría + count por marca.
@@ -277,8 +297,9 @@ Las 3 capas del catálogo cubiertas: índice de categoría (sol/rx) → página 
 ### 🟡 Features importantes para storefront completo
 2. ~~**Página de marca en categoría receta**~~ ✅ Hecho en commit `91b1d90`.
 3. ~~**Página índice de categoría**~~ ✅ Hecho en commit `538f7c3`.
-4. **Links legales** (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`) — **obligatorios antes de habilitar checkout**. Páginas estáticas, contenido legal.
-5. **Home definitivo** — actualmente `/` muestra placeholder "En construcción". Diseñar home real con hero, marcas destacadas, productos destacados, value props.
+4. ~~**Home definitivo**~~ ✅ Hecho en commit `a2f968d`.
+5. **Links legales** (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`, `/sobre-nosotros`) — **obligatorios antes de habilitar checkout**. Páginas estáticas, contenido legal. Coordinar con `content-writer-medical` para copy de "Sobre nosotros" con E-E-A-T.
+6. **Cargar logo SVG real + foto hero**. Cuando founder pase assets.
 
 ### 🟢 Pre-launch (más infra)
 5. **Migración 00002**: profiles + addresses + auth setup. Habilita login + flujo de checkout.
