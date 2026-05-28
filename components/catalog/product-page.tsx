@@ -2,20 +2,41 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
+import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { ProductAttributes } from '@/components/product/product-attributes';
 import { ProductGallery } from '@/components/product/product-gallery';
+import { RelatedProducts } from '@/components/product/related-products';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { isCheckoutEnabled } from '@/lib/features';
+import { fetchRelatedProducts } from '@/lib/catalog/queries';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { ProductDetailData } from '@/lib/catalog/queries';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
-export function ProductDetailPage({
+function extractFrameShape(attrs: Record<string, unknown>): string | null {
+  const v = attrs.frame_shape;
+  return typeof v === 'string' ? v : null;
+}
+
+function categorySubtitle(category: CategoryConfig, attrs: Record<string, unknown>): string {
+  const gender = typeof attrs.gender === 'string' ? attrs.gender : null;
+  const treatments = Array.isArray(attrs.lens_treatment)
+    ? attrs.lens_treatment.filter((t): t is string => typeof t === 'string')
+    : [];
+  const isPolarized = treatments.includes('polarized');
+  const prefix = category.slug === 'anteojos-de-sol' ? 'Anteojos de sol' : 'Anteojos de receta';
+  const parts = [prefix];
+  if (gender) parts.push(gender);
+  if (category.slug === 'anteojos-de-sol' && isPolarized) parts.push('polarizados');
+  return parts.join(' ');
+}
+
+export async function ProductDetailPage({
   category,
   product,
 }: {
@@ -41,6 +62,15 @@ export function ProductDetailPage({
   const pageUrl = `${SITE_URL}/${category.slug}/${product.brand.slug}/${product.slug}`;
   const brandUrl = `${SITE_URL}/${category.slug}/${product.brand.slug}`;
   const categoryUrl = `${SITE_URL}/${category.slug}`;
+  const subtitle = categorySubtitle(category, product.attributes);
+
+  const relatedProducts = await fetchRelatedProducts({
+    excludeSlug: product.slug,
+    categorySlug: category.slug,
+    brandSlug: product.brand.slug,
+    priceCents: minPrice !== null ? minPrice : null,
+    frameShape: extractFrameShape(product.attributes),
+  });
 
   return (
     <main className="container py-8 md:py-12">
@@ -57,6 +87,7 @@ export function ProductDetailPage({
           name={product.name}
           description={product.description ?? product.short_description}
           brandName={product.brand.name}
+          brandUrl={brandUrl}
           pageUrl={pageUrl}
           imageUrl={null}
           offers={activeVariants.map((v) => ({
@@ -66,6 +97,7 @@ export function ProductDetailPage({
           }))}
         />
       )}
+      <RelatedItemListJsonLd products={relatedProducts} />
 
       <nav aria-label="Breadcrumb" className="text-muted-foreground mb-6 text-sm">
         <ol className="flex flex-wrap items-center gap-1">
@@ -97,7 +129,7 @@ export function ProductDetailPage({
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2 md:gap-12">
-        <ProductGallery productName={product.name} />
+        <ProductGallery productName={product.name} images={product.images ?? []} />
 
         <div className="flex flex-col gap-6">
           <div>
@@ -115,8 +147,11 @@ export function ProductDetailPage({
             <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
               {product.name}
             </h1>
+            <p className="text-muted-foreground mt-2 text-base font-medium md:text-lg">
+              {subtitle}
+            </p>
             {product.short_description && (
-              <p className="text-muted-foreground mt-2 text-base">
+              <p className="text-muted-foreground mt-2 text-sm md:text-base">
                 {product.short_description}
               </p>
             )}
@@ -158,6 +193,8 @@ export function ProductDetailPage({
           </p>
         </RevealOnScroll>
       )}
+
+      <RelatedProducts products={relatedProducts} />
     </main>
   );
 }

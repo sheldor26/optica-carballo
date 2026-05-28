@@ -22,6 +22,230 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Productos relacionados con algoritmo cascada > query simple — robusto contra catálogo chico
+
+**Categoría**: SEO / UX / Catálogo
+**Confianza**: 🟢 Alta (validado por seo-strategist + implementado en `lib/catalog/queries.ts:fetchRelatedProducts`)
+
+### Qué funcionó
+
+Cuando hay que mostrar "productos similares" en página de producto, la opción naive es `SELECT * FROM products WHERE brand = current_brand AND category = current_category LIMIT 6`. Problema: cuando una marca tiene 1 solo producto (caso real del proyecto: Vulk con sólo Vulk Day Light cargado), esa query devuelve 0 → la sección queda vacía → rompe confianza ("¿este sitio tiene un solo producto?").
+
+Solución: **algoritmo cascada con fallbacks priorizados**. 4 pasos secuenciales que rellenan el bucket de 6 productos:
+
+1. **Misma categoría + misma marca** (excluyendo el actual) → si encuentra ≥6, stop.
+2. **Si faltan: misma categoría + similar precio (±30%)** — cualquier marca.
+3. **Si faltan: misma categoría + misma forma de armazón** (rectangular, wayfarer, aviator, etc).
+4. **Si faltan: cualquier producto de la misma categoría** — fallback final.
+
+Cada paso agrega solo lo que falta para llegar a 6. Productos sin stock se filtran. El producto actual se excluye.
+
+### Por qué funciona
+
+- **NUNCA muestra 0 productos** — siempre hay fallback. La página nunca queda vacía visualmente.
+- **Prioridad declarativa**: el orden de los pasos refleja qué define "similar" desde más fuerte (mismo SKU mental) a más débil (cualquiera de la misma cat).
+- **Mantiene UX coherente**: cuando la marca tiene 6+ productos, todos son de la misma marca → el usuario ve un "más Vulk". Cuando solo hay 1, mezcla marcas pero mantiene la categoría (sigue siendo sol, no le aparece receta).
+- **SEO bonus**: el anchor de cada card es el nombre del producto (no "Ver producto" genérico) → Google ve internal links con anchors descriptivos naturalmente.
+
+### Cómo replicar
+
+```ts
+async function fetchRelatedProducts({
+  excludeSlug, categorySlug, brandSlug, priceCents, frameShape,
+}): Promise<RelatedProductCard[]> {
+  const collected = new Map<string, RelatedProductCard>();
+  const LIMIT = 6;
+
+  const addRows = (rows) => {
+    for (const row of rows ?? []) {
+      if (collected.size >= LIMIT) return;
+      if (row.slug === excludeSlug) continue;
+      const card = toCard(row);
+      if (card.inStockCount === 0) continue;
+      if (collected.has(card.slug)) continue;
+      collected.set(card.slug, card);
+    }
+  };
+
+  // Paso 1: misma cat + misma marca
+  addRows((await query.eq('category.slug', categorySlug).eq('brand.slug', brandSlug)).data);
+  if (collected.size >= LIMIT) return Array.from(collected.values());
+
+  // Paso 2: similar precio
+  if (priceCents !== null) {
+    addRows((await query.gte('price', priceCents * 0.7).lte('price', priceCents * 1.3)).data);
+    if (collected.size >= LIMIT) return Array.from(collected.values());
+  }
+
+  // Paso 3: misma forma de armazón
+  if (frameShape) {
+    addRows((await query.eq('attributes->>frame_shape', frameShape)).data);
+    if (collected.size >= LIMIT) return Array.from(collected.values());
+  }
+
+  // Paso 4: fallback total
+  addRows((await query).data);
+  return Array.from(collected.values());
+}
+```
+
+### Cuándo aplicarlo
+
+- E-commerce con catálogo chico-medio (<200 productos) donde cada categoría puede tener solo 1-2 productos por marca.
+- Sitios donde la marca propia importa (óptica, moda, vino) — paso 1 prioriza marca.
+- Cualquier "related items" donde haya múltiples atributos de similitud y no quieras hardcodear uno solo.
+
+### Cuándo NO aplicarlo
+
+- Catálogos muy grandes (10k+ productos): mejor un servicio de recomendaciones real (Algolia Recommend, Vespa) que devuelve cosas más relevantes por behavior + content.
+- Cuando "similar" tiene una definición rígida (ej: "el mismo modelo en otra talla") — usar query directa.
+
+### Notas
+
+- Cada query es independiente — son 4 round-trips a Supabase en el peor caso. Aceptable para volumen actual; cachear con `revalidate: 3600` si crece.
+- El `attributes->>frame_shape` usa el operador JSONB de PostgreSQL — funciona porque ya tenemos índice GIN en `attributes`.
+- El anchor SEO está en el `<Link>` que envuelve el card → el nombre del producto como child es el anchor text natural.
+
+---
+
+## 2026-05-28 — Supabase Storage público: URL construible deterministically sin SDK + sin server-only
+
+**Categoría**: Frontend / Performance / Supabase
+**Confianza**: 🟢 Alta (implementado en `lib/storage/product-image-url.ts`, typecheck verde, listo para client components)
+
+### Qué funcionó
+
+Para mostrar imágenes de un bucket público de Supabase Storage en client components / nuestros `<Image>` de Next, había 3 caminos:
+
+1. **Llamar al SDK** `supabase.storage.from(bucket).getPublicUrl(path)` — funciona pero requiere instanciar el client y la respuesta queda en `data.publicUrl`. El existente `lib/storage/products.ts` lo hace pero está marcado `'server-only'` porque usa `createAdminClient` (service_role).
+2. **Pre-calcular las URLs en el server y pasarlas al client** — funciona pero acopla server↔client innecesariamente y duplica datos en props.
+3. **Construir la URL directamente** desde `NEXT_PUBLIC_SUPABASE_URL` + path canónico del bucket público — pure JS, sin SDK, funciona en cualquier context.
+
+Elegí opción 3. La URL pública de un bucket público de Supabase Storage tiene formato 100% determinístico:
+
+```ts
+`${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`
+```
+
+Helper `lib/storage/product-image-url.ts` (sin `'server-only'`):
+
+```ts
+export function getProductImageUrl(storagePath: string): string {
+  return `${SUPABASE_URL}/storage/v1/object/public/${PRODUCTS_BUCKET}/${storagePath}`;
+}
+```
+
+### Por qué funciona
+
+- **Bucket público = no hace falta firmar URLs**. Las firmadas son para buckets privados. Si el bucket es público, cualquiera con la URL puede leer — y la URL es construible sin secretos.
+- **`NEXT_PUBLIC_SUPABASE_URL` está disponible en client** (es `NEXT_PUBLIC_*`). No hay leak de secrets.
+- **Pure JS function** → puede usarse en RSC, client component, edge runtime, scripts. Sin restricciones.
+- **Cero overhead**: no necesita instanciar SDK, no hace network call, no async.
+
+### Cuándo NO usar este patrón
+
+- **Bucket privado**: para esos hay que generar signed URLs vía SDK (server-side) con expiración. Construir manual NO va a funcionar.
+- **Necesitás transformaciones** (resize, format conversion via Supabase Image Transformation): la URL tiene parámetros adicionales — mejor usar SDK.
+- **El path no es controlado por vos** (ej user-uploaded sin sanitización): primero validá el path.
+
+### Cómo replicar
+
+Para cualquier bucket público de Supabase:
+
+```ts
+// lib/storage/<resource>-url.ts (sin 'server-only')
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
+
+export function get<Resource>Url(path: string): string {
+  return `${SUPABASE_URL}/storage/v1/object/public/<bucket>/${path}`;
+}
+```
+
+Y configurar en `next.config.mjs`:
+```js
+images: {
+  remotePatterns: [
+    { protocol: 'https', hostname: '*.supabase.co' },
+  ],
+}
+```
+
+(Esto ya estaba configurado en nuestro proyecto.)
+
+### Notas
+
+- En dev local Supabase corre en `http://localhost:54321`. El fallback `?? 'http://localhost:54321'` cubre eso. En prod, `NEXT_PUBLIC_SUPABASE_URL` está seteado en Vercel.
+- El bucket `products` está marcado `public=true` en `storage.buckets` + tiene policy `anyone reads`. Si después se hace privado, este helper deja de funcionar y hay que migrar a signed URLs.
+
+---
+
+## 2026-05-28 — Plantilla estructurada de inputs > pingpong de preguntas, especialmente con founders no-técnicos
+
+**Categoría**: Comunicación / Workflow con founder
+**Confianza**: 🟢 Alta (usada al pedir data del 1er producto Rusty real — patrón claro y replicable)
+
+### Qué funcionó
+
+Cuando founder pidió "cargar 1 producto para ver cómo se ve la página de producto", la opción obvia era arrancar con AskUserQuestion("¿qué marca?") → respuesta → AskUserQuestion("¿qué categoría?") → respuesta → AskUserQuestion("¿qué nombre exacto?") → etc. Hubiera tomado 8-12 turnos para juntar la data completa de 1 producto.
+
+En lugar de eso, le pasé una **plantilla markdown estructurada** que él puede rellenar en su tiempo y devolverme en 1 sola respuesta:
+
+```
+MARCA: ...
+CATEGORÍA: sol / receta
+MODELO EXACTO: ...
+NOMBRE COMPLETO: ...
+DESCRIPCIÓN CORTA: ...
+DESCRIPCIÓN LARGA: ...
+ATRIBUTOS:
+  - Material del marco: ...
+  - Forma del marco: ...
+  - ...
+VARIANTE 1:
+  - Color del armazón: ...
+  - Precio: ...
+  - Stock: ...
+VARIANTE 2: ...
+```
+
+Esto convierte un proceso de 8-12 turnos (yo pregunto → él responde → yo pregunto → él responde) en **1 turno asíncrono** (yo paso plantilla → él la llena cuando puede → yo proceso todo).
+
+### Por qué funciona
+
+- **Founder no-técnico ve TODA la data requerida al mismo tiempo** → entiende el alcance, no se sorprende por preguntas inesperadas a mitad de carga.
+- **Puede llenar la plantilla offline / en su tiempo** (consultar facturas, fotos, stock real) sin presión de turnos.
+- **Yo proceso TODA la data junta** → menos contexto perdido entre turnos, menos riesgo de olvidar atributos.
+- **La plantilla actúa como spec implícita** del data model — founder ve "ah, necesitás esto, esto y esto" y aprende qué datos vamos a estructurar.
+
+### Cuándo aplicarlo
+
+- Carga de productos / data de catálogo.
+- Onboarding de marca nueva (slug, descripción, líneas, segmento).
+- Configuración inicial (env vars, contactos, datos legales).
+- Cualquier proceso que requiera >3 datos discretos del founder.
+
+### Cuándo NO aplicarlo
+
+- Decisiones binarias o de 2-3 opciones → AskUserQuestion es mejor (más fast).
+- Cuando la siguiente pregunta depende de la respuesta a la anterior (ej "¿elegís A o B?" → si A pregunto X, si B pregunto Y) → plantilla no sirve porque no se puede pre-escribir.
+- Cuando el founder ya está activo y en flow (ej "dale", "continuá") — plantilla sería burocrática.
+
+### Cómo replicar
+
+Template structure:
+
+1. **Encabezado**: estado actual del sistema relevante a la pregunta (qué hay cargado, qué falta).
+2. **Estrategia recomendada**: qué voy a hacer con los datos que pida (transparencia → builds trust).
+3. **La plantilla**: agrupada por secciones, con ejemplos entre paréntesis donde sea ambiguo.
+4. **Notas auxiliares**: cualquier pendiente paralelo que el founder pueda adelantar mientras consigue la data.
+
+### Notas
+
+- Si la plantilla queda larga (>30 líneas), considerar partirla en fases (ej "fase 1: producto base; fase 2: variantes; fase 3: imágenes") y procesarlas secuencialmente, no en paralelo.
+- Esta es la inversa del "leak by 1000 cuts": en vez de descubrir requirements de a poco, los ponemos arriba de la mesa de entrada.
+
+---
+
 ## 2026-05-28 — Cursor magnético seguro: 3 protecciones defensivas en montaje + framer-motion useSpring
 
 **Categoría**: Frontend / Accesibilidad / Microinteractions

@@ -8,6 +8,7 @@ type Args = {
   name: string;
   description: string | null;
   brandName: string;
+  brandUrl?: string;
   pageUrl: string;
   imageUrl: string | null;
   offers: Offer[];
@@ -17,6 +18,7 @@ export function ProductJsonLd({
   name,
   description,
   brandName,
+  brandUrl,
   pageUrl,
   imageUrl,
   offers,
@@ -68,7 +70,11 @@ export function ProductJsonLd({
     '@type': 'Product',
     name,
     ...(description ? { description } : {}),
-    brand: { '@type': 'Brand', name: brandName },
+    brand: {
+      '@type': 'Brand',
+      name: brandName,
+      ...(brandUrl ? { url: brandUrl } : {}),
+    },
     url: pageUrl,
     ...(imageUrl ? { image: imageUrl } : {}),
     ...(offers[0]?.sku ? { sku: offers[0].sku } : {}),
