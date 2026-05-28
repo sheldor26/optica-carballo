@@ -83,19 +83,24 @@ export function ProductGallery({ productName, images }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-background border-border/40 group relative aspect-square w-full overflow-hidden rounded-lg border p-8 md:p-12">
+      <div className="bg-background border-border/40 group relative aspect-square w-full overflow-hidden rounded-lg border p-10 sm:p-14 md:p-20">
         {/* Inner wrapper para que `fill` respete el padding del outer.
             `Image fill` se posiciona absolute inset-0 del contenedor
             relative más cercano — el outer tiene padding pero fill lo
             ignora. Este inner wrapper define el área "post-padding"
-            donde la imagen y su zoom hover deben caber. */}
+            donde la imagen y su zoom hover deben caber.
+
+            Padding generoso (p-20 = 80px en desktop) porque las fotos
+            originales del fabricante vienen muchas veces sin aire
+            propio — el anteojo toca los bordes del JPG. El padding
+            del wrapper compensa eso. */}
         <div className="relative h-full w-full">
           <Image
             src={activeUrl}
             alt={active.alt_text}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             priority={activeIdx === 0}
           />
         </div>
