@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Limpiar `.next/` después de mover archivos en `app/`
+
+**Categoría**: Operación
+**Confianza**: 🟢 Alta (problema explícito + fix verificado)
+
+### Qué funcionó
+Después de mover `app/page.tsx` → `app/(storefront)/page.tsx` para que la home herede el layout del storefront, `pnpm typecheck` falló con `Cannot find module '../../app/page.js'` en `.next/types/validator.ts`. Causa: Next.js genera `.next/types/` con referencias TS al árbol de rutas anterior, y como el archivo cambió de path, las referencias quedaron stale.
+
+Fix de 1 línea: `rm -rf .next && pnpm typecheck`.
+
+### Por qué funcionó (causa real)
+Next 15 mantiene un cache de tipos generados (`.next/types/`) que valida rutas estáticamente. Cuando se mueve un archivo de página (especialmente entre layout groups), el path del módulo cambia, pero el cache referencia el path viejo. El typechecker se queja porque el módulo no existe ahí. Limpiar `.next/` fuerza la regeneración con el árbol actual.
+
+### Cuándo aplicar esto de nuevo
+- **Después de mover archivos `page.tsx`, `layout.tsx`, `not-found.tsx`, etc.** entre carpetas en `app/`.
+- **Después de cambios estructurales en route groups `(name)`** (mover páginas dentro/fuera de un group).
+- **Después de renombrar route segments** dinámicos (`[id]` → `[slug]`).
+- **Después de borrar páginas**: el cache puede mantener referencias a la ruta vieja.
+
+Si `pnpm typecheck` falla con errores raros de "Cannot find module" después de tocar `app/`, probar primero limpiar `.next/`.
+
+### Cuándo NO aplica
+- Cambios solo dentro del contenido de un archivo (no se mueve, no se renombra). Cache se invalida correctamente.
+- Cambios en `components/`, `lib/`, `public/`, configs. No afectan el árbol de rutas.
+
+### Acción derivada
+- [ ] Considerar agregar a `package.json` un script `clean` (`rm -rf .next`) para que sea más fácil de invocar.
+- [ ] Documentar en el skill `/feature` (Step 7 — Testing manual): "Si moviste páginas o cambiaste rutas, `rm -rf .next` antes de validar tipos."
+
+---
+
 ## 2026-05-28 — `generateStaticParams` (build time) NO puede usar el cliente Supabase cookie-aware
 
 **Categoría**: Código

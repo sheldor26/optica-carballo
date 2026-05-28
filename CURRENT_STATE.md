@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Primera página de marca funcionando contra LOCAL y CLOUD — commit `ca0c2c9` + cloud aplicado 2026-05-28**
+🟢 **Header + Footer del storefront funcionando — commit `825a2e2`**
 
-Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas + 4 productos Rusty placeholder + página dinámica `/anteojos-de-sol/[brand]` con SSG+ISR, structured data (5 schemas), sitemap.xml, robots.txt. **Validado end-to-end contra los dos ambientes**: Supabase local (Docker) y Supabase cloud (`tuddpfspnbnmafsqdvat.supabase.co`). Próximo paso: decidir qué feature sigue (Header/Footer recomendado).
+Stack completo del storefront V1: home + página dinámica de marca + header con nav mobile/desktop + footer con info del negocio. Todo validado contra LOCAL y CLOUD. Próximo paso: decidir feature siguiente (página de producto individual o migración 00002 para auth).
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` ejecutado punta a punta: cargar marcas reales + página `/anteojos-de-sol/[brand]`. Plan V2 aprobado. Seeds escritos y aplicados a local. shadcn `card` + `badge` instalados. 6 componentes nuevos + sitemap + robots. seo-strategist invocado y findings críticos + importantes aplicados (title, meta, hreflang, ISR, 5 schemas JSON-LD). Validado contra local (typecheck, lint, build, dev). Commit `ca0c2c9`.
+**Por**: Skill `/feature` para Header + Footer del storefront. Plan minimalista (logo texto, nav, WhatsApp condicional). shadcn `sheet` + `button` agregados. 4 componentes layout + 2 helpers (`nav.ts`, `business.ts`). Layout group `(storefront)` envuelve home + página de marca. Mobile-first con hamburger menu (Sheet). Validado typecheck/lint/build/dev. Commit `825a2e2`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,35 @@ Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Header + Footer del storefront (✅ commit `825a2e2` — 2026-05-28)
+- **Layout group `(storefront)`** ahora envuelve home + páginas de marca con SiteHeader + SiteFooter.
+- **Home movida** de `app/page.tsx` → `app/(storefront)/page.tsx` para heredar el layout.
+- **Componentes**:
+  - `components/layout/site-header.tsx` (Server) — logo texto, nav, WhatsApp button condicional. Sticky top con border-b.
+  - `components/layout/site-footer.tsx` (Server) — razón social, ubicación (Virasoro, Corrientes), regente matriculada, nav, WhatsApp, copyright.
+  - `components/layout/desktop-nav.tsx` (Client, usa `usePathname`) — links inline ≥md con active state vía `aria-current="page"`.
+  - `components/layout/mobile-nav.tsx` (Client, Sheet de shadcn) — hamburger trigger en <md, drawer desde la izquierda.
+- **Helpers**:
+  - `lib/site/nav.ts` — `PRIMARY_NAV` con los 2 links activos (sol, receta). Source of truth reusable header + footer + futuro sitemap.
+  - `lib/site/business.ts` — `getBusinessInfo()` lee env vars `NEXT_PUBLIC_BUSINESS_*` con función `nonEmpty()` helper. **Campos vacíos NO se renderizan** (regla 7: trust signals reales, no inventados). WhatsApp link se construye solo si hay número.
+- **shadcn agregados**: `sheet`, `button` (peer dep `@radix-ui/react-dialog`).
+- **Decisiones de UX**:
+  - Logo texto hasta que founder pase SVG real.
+  - WhatsApp visible en sm: con label + ícono; en mobile compact solo ícono.
+  - Active state distintivo (color foreground vs muted-foreground) en desktop nav.
+  - Mobile nav cierra al hacer click en un link (UX expected).
+- **Lo que NO incluye intencionalmente** (próximo cuando aplique):
+  - Links legales (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`) — se agregan cuando esté el checkout (legalmente obligatorios entonces).
+  - Carrito, login, search bar — features futuras.
+  - Logo SVG, redes sociales, newsletter, mega-menu.
+- **Validación**:
+  - `pnpm typecheck` clean (después de limpiar `.next` stale por mover home).
+  - `pnpm lint` clean.
+  - `pnpm build`: 11 páginas, 105 kB First Load JS (sin cambio significativo — Sheet de shadcn queda en chunk de página, no shared).
+  - `pnpm dev` contra cloud: home (`/`) y `/anteojos-de-sol/rusty` renderean con header + footer.
+  - Active state visible en `/anteojos-de-sol/rusty` (link "Anteojos de sol" highlighted).
+  - Footer muestra "Regente: María Carlota Carballo" (matrícula oculta por env vacía).
 
 ### Página de marca /anteojos-de-sol/[brand] (✅ commit `ca0c2c9` — 2026-05-28)
 - **Seeds aplicados a local** (no a cloud todavía):
@@ -169,13 +198,18 @@ Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas
 
 **Cloud aplicado y validado** ✅ — schema 00001 + seeds están en `tuddpfspnbnmafsqdvat.supabase.co`. `pnpm dev` apuntando a cloud (vía `.env.local`) responde `/anteojos-de-sol/rusty` con HTTP 200 y 2 productos rendereados.
 
-**Próxima sesión** (decidís vos): tres caminos posibles ordenados por impacto:
+**Próxima sesión** (decidís vos): dos caminos principales ordenados por impacto inmediato:
 
-1. **Página de producto individual `/anteojos-de-sol/[brand]/[product]`** (skill `/feature`) — completa el end-to-end del catálogo. URL profunda con structured data Product completo, galería de variantes, selector de color, botón "consultar / agregar al carrito" (sin carrito funcional todavía). Habilita CTR desde Google a páginas de modelos específicos.
-2. **Header + Footer del sitio** (skill `/feature`) — el sitio actualmente no tiene navegación. Hace falta para que el visitante pueda ir de `/anteojos-de-sol/rusty` a otras marcas o secciones. Logo + menú + WhatsApp button + footer con info del negocio (matrícula, política de devolución, contacto).
-3. **Migración 00002: profiles + addresses + auth setup** (skill `/migration` + `/feature`) — habilita login, checkout futuro. Más infraestructura, menos impacto SEO inmediato.
+1. **Página de producto individual `/anteojos-de-sol/[brand]/[product]`** (skill `/feature`) — completa el end-to-end del catálogo. URL profunda con structured data Product completo, galería de variantes, selector de color/material, botón "consultar / agregar al carrito" (sin carrito funcional todavía). Habilita CTR desde Google a páginas de modelos específicos. Aprovecha al máximo el schema actual.
+2. **Migración 00002: profiles + addresses + auth setup** (skill `/migration` + `/feature` después) — habilita login, checkout futuro. Más infraestructura, menos impacto SEO inmediato. **Solo aplicar cuando estemos cerca del checkout**.
 
-Mi recomendación: **camino 2 primero** (Header/Footer) porque mejora UX inmediato sin requerir nuevo schema. Después camino 1 (página de producto) que sí lo aprovecha. Camino 3 puede esperar.
+Mi recomendación: **camino 1** (página de producto) — completa el catálogo de display y le saca jugo a lo que ya tenemos antes de seguir agregando schema.
+
+**Otras opciones menores** que valen sesión propia:
+- Página índice de categoría `/anteojos-de-sol` (sin marca) — lista todas las marcas con productos. Bajo esfuerzo.
+- Logo SVG real (cuando founder pase asset). Trivial.
+- Links legales (devolución, arrepentimiento) — se necesitan ANTES de habilitar checkout, no después.
+- Texto SEO 150-300 palabras por marca — requiere ALTER TABLE brands (campos `seo_intro`, `seo_outro`).
 
 **Cosas pendientes ortogonales**:
 
@@ -234,6 +268,10 @@ Ver sección "Pendientes" en `DECISIONS.md`.
   1. La herramienta `Write` rechazó sobreescribir el archivo de migración recién creado por `supabase migration new` porque "no fue leído primero". Resuelto con un Read trivial. No es bug — es safeguard. No merece MISTAKES.
   2. `psql` no está instalado localmente en el sistema (no era pre-requisito explícito). Resuelto usando `docker exec supabase_db_optica-carballo psql ...` que sí tiene psql incluido. Patrón útil registrado en LEARNINGS.
   3. La migración aplicó sin errores en `supabase db reset`. Todos los smoke tests verdes. No hubo problemas conceptuales.
+- **2026-05-28 (sesión Header/Footer)**:
+  1. **`pnpm typecheck` falló inicialmente** después de mover `app/page.tsx` a `app/(storefront)/page.tsx`. Causa: `.next/types/validator.ts` referenciaba la ruta vieja (cache stale). Fix: `rm -rf .next` y re-correr. Aprendí: cuando muevo rutas o cambio el tree de `app/`, conviene limpiar `.next/` antes de validar tipos.
+  2. Greps fallaron con "Regente: " y "© 2026" — falsos negativos por React `<!-- -->` separadores. Mismo patrón que ya vi en sesiones anteriores (H1 del rusty). No es bug.
+  3. Ninguno conceptual. Header/footer renderizó correctamente en home + brand page, mobile + desktop, contra cloud.
 - **2026-05-28 (sesión página de marca)**:
   1. **Bug encontrado y arreglado**: `generateStaticParams` corre en build time (fuera de request scope) y NO puede usar `cookies()`. Mi primer intento usaba `lib/supabase/server.ts` (que usa cookies async). Síntoma: HTTP 500 "cookies was called outside a request scope". Fix: creé `lib/supabase/static.ts` con cliente sin cookies para contextos sin request (generateStaticParams, sitemap, robots, scripts standalone). Registrado en LEARNINGS.
   2. **Asumí marcas del catálogo desde keyword research** (Rusty/Reef/Vulk/Prune/Infinit) en vez de preguntar stock real. Founder corrigió (Rusty/Vulk/Reef/**Mormaii**/**Paula Cahen**). Capturado antes de tocar código. Registrado en MISTAKES.md como caso adicional del mismo principio anti-alucinación.
