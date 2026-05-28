@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Catálogo de display completo — SOL y RECETA simétricos — commit `91b1d90`**
+🟢 **Catálogo de display 100% navegable — commit `538f7c3`**
 
-Catálogo navegable en **dos categorías**: anteojos de sol Y anteojos de receta. Cada una con marca + producto. Lógica compartida extraída a `lib/catalog/` y `components/catalog/` (segundo caso de patrón = momento correcto para extraer). Las page.tsx ahora son thin wrappers de ~30 líneas que solo pasan la categoría. Próximo paso clave: reemplazar productos `[PH]` con datos reales o agregar páginas legales antes del checkout.
+Las 3 capas del catálogo cubiertas: índice de categoría (sol/rx) → página de marca → producto individual. Cero 404 en el nav. SEO completo en cada nivel (CollectionPage, ItemList, Brand, AggregateOffer/Offer, Product, BreadcrumbList). Próximos pasos: reemplazar productos `[PH]` con data real, o páginas legales antes del checkout.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para cubrir lado RX + refactor a helpers compartidos. Antes de duplicar ~500 líneas, extraje a `lib/catalog/{categories,queries,metadata}.ts` y `components/catalog/{brand-page,product-page}.tsx`. Las page.tsx de sol pasaron a thin wrappers, las de receta son thin wrappers nuevos. 4 archivos nuevos de routing (sol/rx × marca/producto). Validado: sol intacto, rx funciona, cross-category 404 OK. Build pre-genera 14 SSG pages. Commit `91b1d90`.
+**Por**: Skill `/feature` para páginas índice de categoría. `fetchCategoryIndex()` agregado a `lib/catalog/queries.ts` (usa `createStaticClient` para que la página sea SSG). `buildCategoryIndexMetadata` agregado a `lib/catalog/metadata.ts` (description dinámica con lista de marcas). 2 componentes UI nuevos (BrandGridCard + CategoryIndexPage). 2 thin wrappers de routing. Validado contra cloud. Commit `538f7c3`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,22 @@ Catálogo navegable en **dos categorías**: anteojos de sol Y anteojos de receta
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Páginas índice de categoría /anteojos-de-sol y /anteojos-de-receta (✅ commit `538f7c3` — 2026-05-28)
+- **URL**: `/anteojos-de-sol` y `/anteojos-de-receta` (sin marca). Antes daban 404 → ahora muestran grid de marcas con productos en esa categoría + count por marca.
+- **Filtro**: solo aparecen marcas con `productCount > 0`. Vulk/Reef/Mormaii/Paula Cahen no aparecen hoy porque ningún seed les agregó productos. Cuando el founder cargue productos, aparecen automáticamente.
+- **Helpers nuevos**:
+  - `fetchCategoryIndex(category)` en `lib/catalog/queries.ts`: agrega count por brand en TS (más simple que GROUP BY de PostgREST). **Usa `createStaticClient` (sin cookies)** para que la página sea SSG, no Dynamic.
+  - `buildCategoryIndexMetadata(category, brandNames)` en `lib/catalog/metadata.ts`: title con keyword genérica, description dinámica con `formatBrandList()` ("Rusty, Vulk y Reef" estilo es-AR).
+- **Componentes nuevos**:
+  - `components/catalog/brand-grid-card.tsx`: card de marca con badge "Marca local", descripción truncada (3 líneas), count + ArrowRight.
+  - `components/catalog/category-index-page.tsx`: UI compartida. Breadcrumb 2-level, H1, copy intro por categoría (hardcoded en el componente, no en DB), grid responsive, JSON-LD CollectionPage + ItemList.
+- **Pages**: `app/(storefront)/anteojos-de-sol/page.tsx` y `anteojos-de-receta/page.tsx` — thin wrappers de ~20 líneas.
+- **Validación contra cloud**:
+  - `/anteojos-de-sol` HTTP 200, Rusty (2 modelos) único visible. Title + meta description dinámica + 2 schemas.
+  - `/anteojos-de-receta` idem.
+  - Build: ambas como `○ Static` (revalidate 5m, expire 1y). Total 20 páginas en build (14 SSG + 2 Static + home + sitemap + robots + 404).
+- **Decisión técnica**: `fetchCategoryIndex` usa cliente estático en vez de cookie-aware. Razón: query lee data pública (brands + product counts), no necesita session de usuario, y permite que la página sea SSG no Dynamic. Si en el futuro necesita filtrar por preferencias del usuario, se cambia.
 
 ### Páginas de receta + refactor a helpers compartidos (✅ commit `91b1d90` — 2026-05-28)
 - **Decisión de arquitectura**: antes de duplicar ~500 líneas (sol vs rx, marca vs producto = 4 combinaciones casi idénticas), extraer la lógica común. Esto NO es "tres líneas similares OK" — son 4 archivos completos con divergencia esperada. El **segundo caso de un patrón es el momento de extraer**, no después.
@@ -260,8 +276,9 @@ Catálogo navegable en **dos categorías**: anteojos de sol Y anteojos de receta
 
 ### 🟡 Features importantes para storefront completo
 2. ~~**Página de marca en categoría receta**~~ ✅ Hecho en commit `91b1d90`.
-3. **Página índice de categoría** `/anteojos-de-sol` y `/anteojos-de-receta` (sin marca) listando todas las marcas con productos. Cierra los 404 que actualmente apuntan en el nav.
+3. ~~**Página índice de categoría**~~ ✅ Hecho en commit `538f7c3`.
 4. **Links legales** (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`) — **obligatorios antes de habilitar checkout**. Páginas estáticas, contenido legal.
+5. **Home definitivo** — actualmente `/` muestra placeholder "En construcción". Diseñar home real con hero, marcas destacadas, productos destacados, value props.
 
 ### 🟢 Pre-launch (más infra)
 5. **Migración 00002**: profiles + addresses + auth setup. Habilita login + flujo de checkout.
