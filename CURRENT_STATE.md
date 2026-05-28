@@ -9,7 +9,7 @@ Migración 00002 (identity + orders) aplicada en local con todos los smoke tests
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/migration` para migración 00002 identity_and_orders. 5 tablas (profiles, addresses, prescriptions, orders, order_items) con RLS estricta, trigger handle_new_user en auth.users, snapshots inmutables (ADR-007), 7 índices nuevos. 12 smoke tests RLS verdes: cross-user blocking, WITH CHECK anti-spoofing, UNIQUE partial de default address, CHECK ranges médicos, CHECK consistency de totales. Tipos TS regenerados, build clean. Commit `1cee084`. Bootstrap regenerado para que founder aplique al cloud.
+**Por**: Housekeeping post-aplicación de assets y migración cloud. Founder rotó API key + aplicó migración 00002 al cloud. Creados `BACKLOG.md` (raíz, lista centralizada de pendientes) y `supabase/CLOUD_APPLIED.md` (registro vivo del estado de cloud). `cloud-bootstrap.sql` eliminado (derivado). `CLAUDE.md` actualizado. Plan Step 1+2 del skill `/feature` para Auth UI presentado, esperando aprobación del founder para introducir `zod` como dependencia (regla 6).
 
 ## Qué se construyó hasta ahora
 
@@ -329,7 +329,7 @@ Migración 00002 (identity + orders) aplicada en local con todos los smoke tests
 
 ## Próximo paso EXACTO
 
-**Cloud aplicado y validado** ✅ — schema 00001 + seeds están en `tuddpfspnbnmafsqdvat.supabase.co`. `pnpm dev` apuntando a cloud (vía `.env.local`) responde `/anteojos-de-sol/rusty` con HTTP 200 y 2 productos rendereados.
+**Esperando aprobación del founder** para introducir `zod` (~14 KB gzipped) como dependencia de validación de forms. Es necesario para arrancar el Step 3 del skill `/feature` para **Auth UI** (login, signup, recuperar clave, callback de email, página `/mi-cuenta`). Plan completo presentado en último turno conversacional. Si founder aprueba, ejecución estimada 1-2 sesiones.
 
 **Próxima sesión** (decidís vos):
 
@@ -350,7 +350,15 @@ Migración 00002 (identity + orders) aplicada en local con todos los smoke tests
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Logo + favicon + iconos PWA en el storefront (✅ commit `102b501` + rename — 2026-05-28)
+### Housekeeping: BACKLOG centralizado + CLOUD_APPLIED tracker (✅ commit `b202d34` — 2026-05-28)
+- **API key comprometida rotada** por el founder + `.env.local` actualizado con la nueva. Resuelve MISTAKE 2026-05-28 "API key real pegada en el chat".
+- **Migraciones 00001 + 00002 aplicadas al cloud** por el founder vía SQL Editor del Dashboard. Resuelve los dos pendientes de "cloud sin migración".
+- **`supabase/cloud-bootstrap.sql` ELIMINADO**: era derivado/transitorio (estaba en `.gitignore`). Cuando haga falta para una migración nueva, se regenera.
+- **`supabase/CLOUD_APPLIED.md` NUEVO**: tabla viva de qué migraciones y seeds están en cloud (`tuddpfspnbnmafsqdvat`) vs lo que está en `supabase/migrations/`. Documenta el flujo para próximas migraciones (regenerar bootstrap → founder pega en Dashboard → confirmar → actualizar tracker → borrar bootstrap).
+- **`BACKLOG.md` NUEVO** en raíz: lista centralizada de pendientes que NO son features con planning propio (assets visuales, data real, mejoras técnicas, features menores). Sección "Hecho" con commit hash/fecha + "Descartado" para histórico. Sustituye los listados ad-hoc dispersos.
+- **`CLAUDE.md` actualizado**: tabla "Otros archivos importantes" incluye `BACKLOG.md` y `supabase/CLOUD_APPLIED.md`.
+
+### Logo + favicon + iconos PWA en el storefront (✅ commit `102b501` + rename `d3da669` — 2026-05-28)
 - **Assets cargados por el founder** a disco:
   - `public/brand/logo-square.png` (100×100 RGBA, 6.2 KB) — isotipo cuadrado azul oscuro.
   - `app/favicon.ico` (41 KB) — auto-detectado por Next 15.

@@ -108,6 +108,50 @@ PostgREST puede devolver tanto array como objeto según la cardinalidad detectad
 
 ---
 
+## 2026-05-28 — `BACKLOG.md` + `CLOUD_APPLIED.md` evitan que pendientes triviales se pierdan en CURRENT_STATE
+
+**Categoría**: Operación / Documentación
+**Confianza**: 🟡 Media (1 caso de adopción, validar con uso real en próximas sesiones)
+
+### Qué funcionó
+Cuando se acumularon múltiples pendientes chicos (OG image, isotipo transparente, env vars vacías, productos `[PH]`, plazos `[PENDIENTE]` en legales, mejoras de SEO menores), separé en dos archivos dedicados en vez de seguir extendiendo CURRENT_STATE:
+
+- **`BACKLOG.md`** (raíz): pendientes acumulados por categoría (assets, data real, mejoras técnicas, features menores). Cada item tiene contexto + cuándo se agregó. Sección "Hecho" con commit hash/fecha + "Descartado" para histórico.
+- **`supabase/CLOUD_APPLIED.md`**: tabla viva de migraciones/seeds aplicados al cloud vs lo que está en `supabase/migrations/`. Resuelve la confusión recurrente de "¿esto ya está en cloud o no?".
+
+### Por qué funcionó (causa real)
+CURRENT_STATE creció a >300 líneas porque mezclaba 3 cosas:
+1. Estado actual del proyecto (lo que es).
+2. Logros recientes (lo que se hizo).
+3. Pendientes acumulados (lo que falta).
+
+Las primeras 2 son históricas y específicas de cada sesión. La 3ra es transversal y persistente. Mezclarlas convertía CURRENT_STATE en un dump difícil de escanear.
+
+Separar pendientes a `BACKLOG.md`:
+- CURRENT_STATE se mantiene legible (~estado + logros + próximo paso).
+- BACKLOG es escaneable por categoría/prioridad y tiene historial de "hecho/descartado".
+- Items chicos no se pierden entre features grandes.
+
+`CLOUD_APPLIED.md` resuelve un problema específico (cloud drift) con un tracker mínimo. Más simple que migración tooling (no necesitamos `supabase link` + `db diff` para 2 migraciones).
+
+### Cuándo aplicar
+- Cuando aparezca un pendiente "para hacer después" que no es feature completa → `BACKLOG.md`.
+- Cuando se aplique cualquier cambio a cloud (migración o seed) → fila nueva en `CLOUD_APPLIED.md`.
+- Cuando un item de BACKLOG se haga → mover a "Hecho" con commit hash + fecha.
+
+### Cuándo NO aplica
+- Features con planificación propia (skill `/feature` o `/migration`) → siguen en su flujo normal.
+- Decisiones de arquitectura → siguen en `DECISIONS.md` con ADRs.
+- Bugs activos → siguen en `MISTAKES.md` con causa raíz.
+
+### Acción derivada
+- [x] `BACKLOG.md` con secciones por categoría (assets, data real, mejoras técnicas, features menores).
+- [x] `supabase/CLOUD_APPLIED.md` con tabla + flujo documentado para próximas migraciones.
+- [x] `CLAUDE.md` referencia los dos archivos en "Otros archivos importantes".
+- [ ] Validar en 2-3 sesiones más que BACKLOG se mantiene útil y no se vuelve cementerio de items olvidados.
+
+---
+
 ## 2026-05-28 — Next 15 usa `apple-icon.png` (no `apple-touch-icon.png`) en `app/`
 
 **Categoría**: Convención del framework
