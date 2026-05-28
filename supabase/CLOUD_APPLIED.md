@@ -18,7 +18,10 @@ re-aplicar o saltarse algo.
 | `20260528122727_order_number_generator.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (mismo bootstrap que 00002) | Verificación post-aplicación: 2 functions (`generate_order_number`, `set_order_number`), 1 trigger (`on_orders_set_number`), sequence en 1. |
 | `20260528125415_prescriptions_storage.sql` | ✅ 2026-05-28 (VERIFICADO con SELECT) | SQL Editor del Dashboard (bootstrap 80 líneas) | Verificación post-aplicación: bucket `prescriptions` con `public=false`, `file_size_limit=10485760` (10 MB). 4 policies en `storage.objects` filtradas por `policyname LIKE 'prescriptions:%'`: read (SELECT), upload (INSERT), update (UPDATE), delete (DELETE). |
 | `20260528142242_products_storage.sql` | ⏳ Pendiente | — | Bucket público `products` (5 MB max, mime jpeg/png/webp/avif) + 1 RLS policy `products: anyone reads` (SELECT para `public`). Escritura solo service_role. |
-| `20260528151158_reserve_stock_function.sql` | ⏳ Pendiente | — | 2 funciones SQL: `reserve_stock(p_items jsonb)` atómica (defensa anti-overselling) + `increment_variant_stock(p_variant_id, p_amount)` compensatoria. SECURITY INVOKER, EXECUTE solo a service_role (REVOKE explícito de anon + authenticated + PUBLIC). Bootstrap combinado 00005+00006 en `supabase/cloud-bootstrap.sql` (195 líneas). |
+| `20260528151158_reserve_stock_function.sql` | ⏳ Pendiente | — | 2 funciones SQL: `reserve_stock(p_items jsonb)` atómica (defensa anti-overselling) + `increment_variant_stock(p_variant_id, p_amount)` compensatoria. SECURITY INVOKER, EXECUTE solo a service_role (REVOKE explícito de anon + authenticated + PUBLIC). |
+| `20260528160715_add_brand_name_to_order_items.sql` | ⏳ Pendiente | — | ALTER TABLE order_items ADD COLUMN brand_name text (nullable, snapshot ADR-007). Backfill desde products→brands para data legacy (si la hubiera). Resuelve TODO de emails que mostraban brand vacío. |
+
+**Bootstrap actual** `supabase/cloud-bootstrap.sql` (~232 líneas): combina **00005 + 00006 + 00007** con guards idempotentes (`DROP POLICY IF EXISTS`, `ADD COLUMN IF NOT EXISTS`, `CREATE OR REPLACE FUNCTION`) — seguro re-aplicar aunque 00005 ya esté parcial en cloud.
 
 ## Seeds aplicados a cloud
 

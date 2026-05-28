@@ -150,13 +150,13 @@ export async function POST(request: NextRequest) {
     const { data: items } = await supabase
       .from('order_items')
       .select(
-        'product_name, variant_sku, quantity, unit_price_cents, variant_attributes',
+        'product_name, brand_name, variant_sku, quantity, unit_price_cents, variant_attributes',
       )
       .eq('order_id', orderRow.id);
 
     const itemsForEmail = (items ?? []).map((it) => ({
       productName: it.product_name,
-      brandName: '', // TODO: schema no guarda brand snapshot — usar attributes o expandir migración futura
+      brandName: it.brand_name ?? '',
       sku: it.variant_sku,
       quantity: it.quantity,
       unitPriceCents: it.unit_price_cents,

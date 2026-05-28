@@ -188,6 +188,7 @@ export type Database = {
       }
       order_items: {
         Row: {
+          brand_name: string | null
           created_at: string
           id: string
           lens_options: Json | null
@@ -203,6 +204,7 @@ export type Database = {
           variant_sku: string
         }
         Insert: {
+          brand_name?: string | null
           created_at?: string
           id?: string
           lens_options?: Json | null
@@ -218,6 +220,7 @@ export type Database = {
           variant_sku: string
         }
         Update: {
+          brand_name?: string | null
           created_at?: string
           id?: string
           lens_options?: Json | null

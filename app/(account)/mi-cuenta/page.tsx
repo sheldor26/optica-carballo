@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { MapPin, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { getCurrentProfile } from '@/lib/auth/server';
@@ -54,6 +54,17 @@ export default async function Page() {
       <section className="mt-8">
         <h2 className="text-foreground text-lg font-semibold">Tu actividad</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Button asChild variant="outline" className="h-auto justify-start py-4">
+            <Link href="/mi-cuenta/pedidos">
+              <Package className="size-5" />
+              <span className="flex flex-col items-start">
+                <span className="font-medium">Mis pedidos</span>
+                <span className="text-muted-foreground text-xs">
+                  Historial de tus compras
+                </span>
+              </span>
+            </Link>
+          </Button>
           <Button asChild variant="outline" className="h-auto justify-start py-4">
             <Link href="/mi-cuenta/direcciones">
               <MapPin className="size-5" />

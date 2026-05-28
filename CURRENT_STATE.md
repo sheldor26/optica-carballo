@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **`/mi-cuenta/pedidos` listo + Migración 00007 (brand_name) + bootstrap idempotente**
+
+Sesión enfocada en lo que NO depende de inputs externos pendientes (creds MiCorreo, data productos, configuración Resend/MP en prod). Construido: (1) Migración 00007 que agrega `order_items.brand_name` (resuelve TODO conocido de emails con brand vacío) + backfill desde catálogo; (2) `/mi-cuenta/pedidos` lista con badges de status (Pago pendiente / Pagado / En camino / etc), formato fecha es-AR, link a detalle; (3) `/mi-cuenta/pedidos/[id]` detalle completo con items, totales, dirección, tracking, mp_payment_id, link de factura, CTA WhatsApp; (4) Update dashboard `/mi-cuenta` con tile "Mis pedidos" prominente; (5) Bootstrap cloud regenerado con guards idempotentes (`DROP POLICY IF EXISTS`, `ADD COLUMN IF NOT EXISTS`) — seguro re-aplicar aunque 00005 esté parcialmente en cloud. **Founder ahora puede aplicar el bootstrap entero (~232 líneas) sin que falle el error 42710 previo**. RLS de orders ya filtra por user — un user nunca ve pedidos de otro.
+
 🟢 **Sub-feature 3 completa — webhook MP + emails transaccionales (Resend) funcional**
 
 Flow completo de venta cerrado end-to-end (en dev, falta deploy + DNS + creds prod). Webhook `/api/mp/webhook` recibe notifications de MP, valida signature con `MP_WEBHOOK_SECRET` (opcional en dev, obligatorio en prod), fetcha el payment completo vía SDK MP, mapea status MP → status orders, hace UPDATE con idempotencia (no procesa 2x el mismo payment_id), y dispara 2 emails vía Resend cuando una order pasa a `paid`: (1) al cliente confirmando pago + detalles + dirección + total, (2) al founder con datos para facturar manual y despachar. Templates HTML inline-friendly (Gmail/Outlook/Apple Mail compatibles). Smoke 5/5: GET health, POST con type≠payment skipped, POST con JSON inválido 400, POST con payment_id falso fetcha MP y devuelve "not found" graceful, POST sin signature secret procesa sin verificar (correcto en dev). **Próximas acciones críticas del founder antes de prod**: (1) confirmar SELECTs cloud para regenerar bootstrap solo con 00006, (2) configurar webhook URL en panel MP + `MP_WEBHOOK_SECRET` para signature validation real, (3) verificar dominio Resend para enviar desde `hola@opticacarballo.com.ar`, (4) setear `BUSINESS_ADMIN_EMAIL` para recibir notifications admin.
@@ -455,7 +459,46 @@ Esperado: 1 fila bucket (`prescriptions | prescriptions | false | 10485760`) + 4
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### Sub-feature 3 — Webhook MP + emails transaccionales Resend (✅ 2026-05-28, sin commit todavía)
+### /mi-cuenta/pedidos + Migración 00007 (✅ 2026-05-28, sin commit todavía)
+- **Contexto**: founder dijo "continuar" sin nuevos inputs externos. Avancé con lo bloqueante interno (TODO de brand en emails) + features útiles autocontenidas (lista + detalle de pedidos en cuenta del user).
+- **Migración 00007 `add_brand_name_to_order_items.sql`**:
+  - `ALTER TABLE order_items ADD COLUMN brand_name text` (nullable — no hay data legacy en cloud todavía pero aceptamos null por seguridad operativa).
+  - Backfill UPDATE desde `products → brands` para data legacy (best-effort, si producto borrado queda null).
+  - Smoke local: `\d order_items` confirma columna agregada.
+- **Update `createOrderFromCart`**: agrega `brand_name: it.brand.name` al INSERT order_items. Las orders nuevas tienen brand snapshot completo.
+- **Update webhook `/api/mp/webhook`**: SELECT incluye `brand_name`, lo pasa a `itemsForEmail.brandName`. **TODO conocido resuelto**.
+- **`lib/orders/types.ts`**: `OrderStatus`, `OrderListItem`, `OrderDetail`, `OrderItem`. Tipos manuales (no derivados de Database) para estabilidad si el schema cambia.
+- **`lib/orders/labels.ts`**: `ORDER_STATUS_LABELS` (Pago pendiente / Pagado / En preparación / En camino / Entregado / Cancelado / Reembolsado) + `ORDER_STATUS_TONE` (neutral/success/info/warning/destructive) + `formatOrderDate` y `formatOrderDateShort` con `Intl.DateTimeFormat es-AR` + `America/Argentina/Buenos_Aires`.
+- **`lib/orders/queries.ts`**:
+  - `fetchUserOrders()`: lista resumida con count de items agregado en JS (evita N+1 sin GROUP BY de PostgREST). RLS auto-filtra `user_id = auth.uid()`.
+  - `fetchOrderById(id)`: detalle completo + items con `brand_name`. Devuelve null si RLS bloquea o no existe (la page hace `notFound()`).
+- **UI nuevos `components/account/`**:
+  - `order-status-badge.tsx`: pill con tonos por status (emerald/sky/amber/destructive/muted) compatible dark mode.
+  - `order-list.tsx`: lista en card con divisores, fecha + count + total + ChevronRight. Empty state con CTA a categorías.
+  - `order-detail.tsx`: header con order_number mono + badge status, tracking destacado si shipped, items con qty bubble + brand + SKU + lineTotal, grid 2-col totales + dirección, link factura si existe, CTA WhatsApp pre-llenado con número de orden.
+- **Pages nuevas**:
+  - `app/(account)/mi-cuenta/pedidos/page.tsx` — lista (force-dynamic, requireAuth, noindex).
+  - `app/(account)/mi-cuenta/pedidos/[id]/page.tsx` — detalle (force-dynamic, requireAuth, notFound si no es del user, noindex).
+- **Update `app/(account)/mi-cuenta/page.tsx`**: nuevo tile "Mis pedidos" (Package icon) a la izquierda de "Mis direcciones". Grid sm:grid-cols-2.
+- **Bootstrap idempotente** `supabase/cloud-bootstrap.sql` (~232 líneas combina 00005+00006+00007):
+  - `DROP POLICY IF EXISTS "products: anyone reads" ON storage.objects` antes del CREATE → resuelve el error `42710 already exists` reportado por founder al re-aplicar 00005.
+  - `ALTER TABLE ... ADD COLUMN IF NOT EXISTS brand_name text` → seguro re-aplicar.
+  - `CREATE OR REPLACE FUNCTION` (ya idempotente) para reserve_stock + increment_variant_stock.
+  - **Founder puede aplicar entero sin temor a "already exists"** — solo lo que falte se aplica.
+- **Decisiones técnicas clave**:
+  - **Status labels en español argentino**: "Pago pendiente" (no "pending"), "En camino" (no "shipped"), etc. El cliente NO ve los enums internos.
+  - **Tabular nums en precios y fechas**: alineación vertical clean en listas (Tailwind `tabular-nums`).
+  - **`tracking_number` destacado** si existe: card al inicio del detail con icono Truck — UX clave cuando llega "ya despachamos tu pedido".
+  - **WhatsApp CTA en cada detail** con mensaje pre-llenado `"Hola! Te consulto por mi pedido OC-2026-NNNNN."` — facilita soporte humano para casos no automáticos.
+  - **RLS hace el security en queries**, no validación adicional en TS: si el order_id en URL pertenece a otro user, `fetchOrderById` devuelve null → `notFound()`. Sin necesidad de chequeos manuales.
+- **Smoke 4/4 verdes** (sin sesión):
+  - `/mi-cuenta/pedidos` HTTP 307 → `/ingresar?next=...`
+  - `/mi-cuenta/pedidos/<uuid>` HTTP 307
+  - `/mi-cuenta` HTTP 307
+  - Follow redirect a `/ingresar` renderiza form de login OK.
+- **Validación**: typecheck + lint + build clean. Build muestra `/mi-cuenta/pedidos` y `/mi-cuenta/pedidos/[id]` como ƒ Dynamic.
+
+### Sub-feature 3 — Webhook MP + emails transaccionales Resend (✅ 2026-05-28, commit `49a0309`)
 - **Trigger**: founder confirmó que `RESEND_API_KEY` ya está en `.env.local` (también `RESEND_FROM_EMAIL=Óptica Carballo <hola@opticacarballo.com.ar>`).
 - **Dep instalada**: `resend@6.12.4`.
 - **`lib/emails/client.ts`**: singleton lazy del SDK Resend. `getFromAddress()` lee `RESEND_FROM_EMAIL` con fallback a `onboarding@resend.dev` (Resend default verificado, útil mientras founder verifica DNS de `opticacarballo.com.ar`). `getAdminEmail()` lee `BUSINESS_ADMIN_EMAIL` (opcional — si no está, no manda emails admin).
