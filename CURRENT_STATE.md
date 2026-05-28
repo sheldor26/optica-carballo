@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Auth UI completo — commit `12ca894`. Bloqueado por config de Supabase Auth Dashboard**
+🟢 **Auth UI completo + order_number generator (local) — commits `12ca894` + `4e4ffb2`**
 
-Flow de login/signup/reset/mi-cuenta funcional contra cloud. Para testear end-to-end falta que el founder configure Redirect URLs en Supabase Auth Dashboard (sin esto, los emails de signup/reset llegan con links inválidos). Próximos pasos código: bucket Storage privado para recetas, function `order_number`, server actions checkout + integración Mercado Pago.
+Auth flow end-to-end (bloqueado por config de Redirect URLs en Supabase Auth Dashboard). Migración 00003 (order_number `OC-YYYY-NNNNN` auto-gen) lista en local, pendiente aplicar al cloud. Próximos pasos código: bucket Storage privado para recetas, o server actions de checkout + integración Mercado Pago.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para Auth UI ejecutado punta a punta. `zod` 4.4.3 instalado, shadcn input/label/alert. 4 pages auth + callback route + /mi-cuenta. Server actions con Zod validation, AuthMenu client en SiteHeader (mantiene SSG del storefront). Validado contra cloud: typecheck/lint/build clean, pages responden HTTP 200, redirección protegida funciona. Commit `12ca894`. Pendiente del founder: configurar Redirect URLs en Supabase Auth Dashboard (BACKLOG 🔴 bloqueante).
+**Por**: Skill `/migration` para 00003 order_number_generator. Sequence + 2 functions + 1 trigger. 12 smoke tests verdes (auto-gen, override manual para imports, string vacío, preview directo, sequence avanza). Commit `4e4ffb2`. Pendiente: founder aplica `supabase/cloud-bootstrap.sql` (58 líneas) al cloud.
 
 ## Qué se construyó hasta ahora
 
@@ -329,13 +329,13 @@ Flow de login/signup/reset/mi-cuenta funcional contra cloud. Para testear end-to
 
 ## Próximo paso EXACTO
 
-**Pendiente acción founder** (bloquea testeo end-to-end del Auth UI):
-1. Supabase Dashboard → Authentication → URL Configuration → Site URL = `https://opticacarballo.com.ar`, Redirect URLs = los 4 listados en BACKLOG.md sección 🔴.
+**Pendientes acción founder** (no bloquean próxima sesión de código):
+1. Supabase Dashboard → Authentication → URL Configuration → Site URL + 4 Redirect URLs (detalle en BACKLOG.md 🔴).
+2. Aplicar `supabase/cloud-bootstrap.sql` (migración 00003) en SQL Editor del Dashboard. Tracker en `supabase/CLOUD_APPLIED.md` ⏳.
 
 **Próxima sesión código** (decidís vos):
-- **Bucket Storage privado `prescriptions/`** + signed URLs. Paso previo al feature de upload de receta IA.
-- **Function generadora de `order_number`** (sequence + format `OC-YYYY-NNNNN`). Necesario para el checkout.
-- **Server actions de checkout** (`/carrito` → crear order → preferencia MP → redirect). Requiere lo anterior + integración MP.
+- **Bucket Storage privado `prescriptions/`** + signed URLs + RLS policies de Storage. Paso previo al feature de upload de receta IA.
+- **Server actions de checkout** (`/carrito` → validar stock → crear order → preferencia MP → redirect). Requiere integración Mercado Pago (ADR-015 Checkout Pro V1).
 
 **Próxima sesión** (decidís vos):
 
@@ -355,6 +355,16 @@ Flow de login/signup/reset/mi-cuenta funcional contra cloud. Para testear end-to
 
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
+
+### Migración 00003 order_number generator (✅ commit `4e4ffb2` — 2026-05-28, local only)
+- **Sequence + 2 functions + 1 trigger** que auto-genera `orders.order_number` con formato `OC-YYYY-NNNNN` cuando el insert no lo pasa.
+- **Counter global** (no reinicia anual). Año desde `now() AT TIME ZONE 'America/Argentina/Buenos_Aires'` (no UTC) — el "año" de la order es el de Argentina.
+- **Override manual permitido**: el trigger solo dispara si `order_number IS NULL OR = ''`. Habilita importar histórico de Mercado Libre con sus números originales.
+- **`generate_order_number()` función pública** invocable directo (preview de número en UI antes del insert, con cuidado del side-effect de `nextval`).
+- **Gaps aceptables**: `nextval` no es rollback-safe — si una transacción falla, el número queda quemado. Comportamiento estándar y aceptable (la numeración legalmente importante la maneja Tusfacturas con su propio numerador AFIP).
+- **Smoke tests verdes**: auto-gen (`OC-2026-00001`, `OC-2026-00002`), override (`ML-IMPORT-001`), string vacío auto-gen, preview directo, sequence avanza correcto.
+- **Tipos regenerados**, typecheck + lint + build clean.
+- **Pendiente cloud**: `supabase/cloud-bootstrap.sql` (58 líneas, solo migración 00003) → founder pega en Dashboard. `CLOUD_APPLIED.md` la marca como ⏳ Pendiente.
 
 ### Auth UI completo (✅ commit `12ca894` — 2026-05-28)
 - **Pages nuevas** en `(auth)` layout group: `/ingresar`, `/registro`, `/recuperar-clave`, `/recuperar-clave/restablecer`. Todas con metadata `noindex, follow`. AuthFormShell wrapper compartido.
