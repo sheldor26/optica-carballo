@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — `generateStaticParams` (build time) NO puede usar el cliente Supabase cookie-aware
+
+**Categoría**: Código
+**Confianza**: 🟢 Alta (validado con error explícito + fix verificado)
+
+### Qué funcionó (después del bug)
+Separar el cliente Supabase en dos: `lib/supabase/server.ts` (cookie-aware, para Server Components que SÍ tienen request scope: Page, generateMetadata, server actions) y `lib/supabase/static.ts` (sin cookies, para contextos sin request: `generateStaticParams`, `sitemap.ts`, `robots.ts`, scripts standalone).
+
+### Por qué funcionó (causa real)
+En Next.js 15 App Router:
+- **Page Component** y **`generateMetadata`** corren dentro de un request scope cuando se invocan en runtime → tienen acceso a `cookies()`.
+- **`generateStaticParams`**, `sitemap.ts`, `robots.ts` corren en **build time o cuando ISR revalida**, no hay request scope → llamar a `cookies()` lanza `Error: cookies was called outside a request scope`.
+
+`@supabase/ssr` `createServerClient` requiere callbacks de cookies. Si el contexto no tiene cookies disponibles, no puede instanciarse. Solución: usar `@supabase/supabase-js` `createClient` directo (sin SSR helpers) en contextos sin request scope. Solo lee con el rol `anon` desde env vars públicas.
+
+### Evidencia
+1 caso resuelto en esta sesión. Síntoma: HTTP 500 en `/anteojos-de-sol/rusty`. Stack trace apuntaba a `generateStaticParams` → `createClient` → `cookies()`. Fix immediato y página empieza a responder HTTP 200.
+
+### Cuándo aplicar esto de nuevo
+- **Toda función que genere data estática en build**: `generateStaticParams`, `app/sitemap.ts`, `app/robots.ts`, `opengraph-image.tsx`, `icon.tsx` dinámica.
+- **Scripts standalone** (seed via TS, migrations programáticas, jobs cron en Edge Functions externos).
+- **Cualquier código que corra fuera del servidor Next durante un request HTTP**.
+
+### Cuándo NO aplica
+- Page Components, layouts, loading/error/not-found, route handlers (api/) — esos corren en request scope, usar el cliente cookie-aware.
+- `generateMetadata` cuando se invoca por una request real (Next docs lo permiten — pero conviene usar el static client si solo se accede a data pública, para evitar overhead innecesario de cookies).
+
+### Acción derivada
+- [x] `lib/supabase/static.ts` creado y documentado con JSDoc.
+- [x] Usado en `app/(storefront)/anteojos-de-sol/[brand]/page.tsx` (generateStaticParams), `app/sitemap.ts`.
+- [ ] Cuando se agregue otra página con generateStaticParams, usar el mismo patrón.
+- [ ] Agregar nota en `ARCHITECTURE.md` (sección Supabase) cuando se documente el data layer.
+
+---
+
 ## 2026-05-28 — El Step 2 del `/feature` (presentar plan antes de codear) atrapó un mistake de catálogo
 
 **Categoría**: Operación

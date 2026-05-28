@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **Migración 00001 aplicada y validada en local — commit `62d2e85`**
+🟢 **Primera página de marca funcionando en local con SEO completo — commit `ca0c2c9`**
 
-Repo Next.js 15 funcionando + schema base del catálogo aplicado y testeado en Supabase local (Docker). 5 tablas (`brands`, `categories`, `products`, `product_variants`, `product_images`) con RLS, índices, triggers, FKs CASCADE/RESTRICT. Tipos TS regenerados y typecheck limpio. **Schema cloud todavía vacío** — `supabase db push` queda para cuando el founder decida.
+Repo Next.js 15 + schema aplicado (5 tablas con RLS) + 5 marcas reales seedeadas + 4 productos Rusty placeholder + página dinámica `/anteojos-de-sol/[brand]` con SSG+ISR, structured data (5 schemas), sitemap.xml, robots.txt. Validado punta a punta contra Supabase local. **Schema y data en cloud TODAVÍA no aplicados** — pendiente que el founder pegue `supabase/cloud-bootstrap.sql` en el SQL Editor del Dashboard.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Sub-sesión de planning del skill `/feature` para "Cargar marcas reales + página `/anteojos-de-sol/[brand]`". Steps 1-2 completados, plan ajustado (V2) presentado y a la espera de aprobación final del founder. **NO se tocó código** en esta sub-sesión, pero se actualizaron docs (`BRANDS.md`, `DECISIONS.md` con ADR-023 nuevo y ADR-009 parcial).
+**Por**: Skill `/feature` ejecutado punta a punta: cargar marcas reales + página `/anteojos-de-sol/[brand]`. Plan V2 aprobado. Seeds escritos y aplicados a local. shadcn `card` + `badge` instalados. 6 componentes nuevos + sitemap + robots. seo-strategist invocado y findings críticos + importantes aplicados (title, meta, hreflang, ISR, 5 schemas JSON-LD). Validado contra local (typecheck, lint, build, dev). Commit `ca0c2c9`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,39 @@ Repo Next.js 15 funcionando + schema base del catálogo aplicado y testeado en S
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Página de marca /anteojos-de-sol/[brand] (✅ commit `ca0c2c9` — 2026-05-28)
+- **Seeds aplicados a local** (no a cloud todavía):
+  - 5 brands (Rusty, Vulk, Reef, Mormaii, Paula Cahen D'Anvers) — todas `is_argentine = true` (semántica ADR-023).
+  - 2 categories top-level (anteojos-de-sol, anteojos-de-receta).
+  - 4 products Rusty con `[PH]` (placeholder) en nombre — 2 en sol, 2 en receta.
+  - 6 product_variants con SKUs, precios placeholder (centavos ARS), stock > 0.
+- **Componentes nuevos**:
+  - `components/ui/{card,badge}.tsx` (shadcn).
+  - `components/product/product-card.tsx` con placeholder "Foto pendiente".
+  - `components/seo/breadcrumb-jsonld.tsx`, `catalog-jsonld.tsx`.
+  - `lib/format/currency.ts` (Intl.NumberFormat es-AR ARS sin decimales).
+  - `lib/supabase/static.ts` (cliente sin cookies para `generateStaticParams` / scripts).
+- **Página dinámica**:
+  - `app/(storefront)/anteojos-de-sol/[brand]/page.tsx` con `revalidate = 300` (ISR).
+  - `generateStaticParams` pre-genera las 5 marcas en build.
+  - `generateMetadata` dinámica con title específico de sol ("Anteojos de sol X Originales | Envío a Todo el País - Óptica Carballo") y meta description con E-E-A-T (técnico matriculado, 30+ años, cuotas).
+  - hreflang `es-AR` + `x-default` absolutos.
+  - 5 schemas JSON-LD: BreadcrumbList, CollectionPage, ItemList, Brand, AggregateOffer.
+  - `not-found.tsx` específico ("Esa marca todavía no está").
+- **SEO infrastructure**:
+  - `app/sitemap.ts` dinámico (lee brands activos, devuelve 13 URLs: 3 estáticas + 5 marcas × 2 categorías).
+  - `app/robots.ts` (allow / + disallow /admin, /api, /mi-cuenta).
+- **Validación local**:
+  - `pnpm typecheck` clean, `pnpm lint` clean.
+  - `pnpm build`: 11 páginas (5 SSG-ISR + 6 static), First Load JS 105 kB per brand (< 200 kB target).
+  - `pnpm dev`: `/anteojos-de-sol/rusty` HTTP 200 con 2 productos rendereados; `/reef` empty state; `/marca-inexistente` HTTP 404.
+- **NO incluido (scope cerrado)**:
+  - Imágenes reales (placeholder gris hasta que founder pase fotos).
+  - Páginas de producto individual.
+  - Header/Footer/Nav.
+  - Texto SEO 150-300 palabras por marca (requiere campo nuevo en DB).
+  - FAQ schema, OG image dinámica (próximas mejoras según seo-strategist).
 
 ### Migración 00001 — catalog_foundation (✅ aplicada en local — 2026-05-28, commit `62d2e85`)
 - **Archivo creado**: `supabase/migrations/20260528030711_catalog_foundation.sql` (~250 líneas).
@@ -134,27 +167,22 @@ Repo Next.js 15 funcionando + schema base del catálogo aplicado y testeado en S
 
 ## Próximo paso EXACTO
 
-**Esperando aprobación del founder** sobre el plan del skill `/feature` V2 (con marcas reales). Resumen del plan:
+**Pendiente para el founder** (no bloquea desarrollo):
+1. Aplicar `supabase/cloud-bootstrap.sql` (460 líneas) al Supabase cloud vía Dashboard SQL Editor. Cuando esté, decir "cloud aplicado" para validar `pnpm dev` contra cloud.
 
-- Feature: cargar las 5 marcas reales (Rusty, Vulk, Reef, Mormaii, Paula Cahen D'Anvers) + 2 categorías top-level (sol, receta) + 4 productos Rusty placeholder (2 sol + 2 rx) + armar página dinámica `/anteojos-de-sol/[brand]` con caso end-to-end Rusty.
-- Decisión bloqueante ya respondida por el founder: **aplicar migración 00001 a Supabase cloud** (vía `supabase link` + `supabase db push`) y trabajar contra cloud, no local.
-- Archivos a crear: 2 SQL seeds (`supabase/seeds/01_categories_brands.sql` con 2 categorías + 5 marcas, `02_rusty_products.sql` con 4 productos placeholder), Server Component `app/(storefront)/anteojos-de-sol/[brand]/page.tsx`, `not-found.tsx`, `components/product/product-card.tsx`, `components/seo/breadcrumb-jsonld.tsx`, `lib/format/currency.ts`. Shadcn components `card` y `badge` vía CLI.
-- NO se introducen libs nuevas (sigue regla 6 de CLAUDE.md).
-- NO se incluyen imágenes reales en este step (placeholder gris hasta que el founder pase fotos).
-- `seo-strategist` se invoca al final, antes del commit, para validar metadata + structured data.
+**Próxima sesión** (decidís vos): tres caminos posibles ordenados por impacto:
 
-**Próxima sesión arranca aquí**:
-1. Founder confirma plan (o pide ajustes — precios placeholder, qué productos seedear, scope).
-2. Step 3 del `/feature`: `supabase link --project-ref tuddpfspnbnmafsqdvat` + `supabase db push`.
-3. Escribir SQL seeds.
-4. Aplicar seeds en local (`docker exec ... psql -f`) y en cloud (vía Dashboard SQL Editor).
-5. Agregar shadcn `card` + `badge`.
-6. Crear componentes + página dinámica.
-7. Invocar `seo-strategist` para validar SEO antes del commit.
-8. Commit `feat(catalog): primeras marcas + página /anteojos-de-sol/[brand]`.
+1. **Página de producto individual `/anteojos-de-sol/[brand]/[product]`** (skill `/feature`) — completa el end-to-end del catálogo. URL profunda con structured data Product completo, galería de variantes, selector de color, botón "consultar / agregar al carrito" (sin carrito funcional todavía). Habilita CTR desde Google a páginas de modelos específicos.
+2. **Header + Footer del sitio** (skill `/feature`) — el sitio actualmente no tiene navegación. Hace falta para que el visitante pueda ir de `/anteojos-de-sol/rusty` a otras marcas o secciones. Logo + menú + WhatsApp button + footer con info del negocio (matrícula, política de devolución, contacto).
+3. **Migración 00002: profiles + addresses + auth setup** (skill `/migration` + `/feature`) — habilita login, checkout futuro. Más infraestructura, menos impacto SEO inmediato.
 
-En paralelo (no bloqueante):
-- Dominio `opticacarballo.com.ar` (pendiente).
+Mi recomendación: **camino 2 primero** (Header/Footer) porque mejora UX inmediato sin requerir nuevo schema. Después camino 1 (página de producto) que sí lo aprovecha. Camino 3 puede esperar.
+
+**Cosas pendientes ortogonales**:
+
+- Imágenes reales de productos (Storage bucket "products" + upload).
+- Nombres y precios reales de productos Rusty (los actuales son `[PH]` placeholder).
+- Dominio `opticacarballo.com.ar` (pendiente desde sesiones anteriores).
 - PEND-001 a PEND-004 de `DECISIONS.md`.
 - PEND-005: cuentas restantes (Vercel, Resend, MP dev, etc.).
 
@@ -207,6 +235,10 @@ Ver sección "Pendientes" en `DECISIONS.md`.
   1. La herramienta `Write` rechazó sobreescribir el archivo de migración recién creado por `supabase migration new` porque "no fue leído primero". Resuelto con un Read trivial. No es bug — es safeguard. No merece MISTAKES.
   2. `psql` no está instalado localmente en el sistema (no era pre-requisito explícito). Resuelto usando `docker exec supabase_db_optica-carballo psql ...` que sí tiene psql incluido. Patrón útil registrado en LEARNINGS.
   3. La migración aplicó sin errores en `supabase db reset`. Todos los smoke tests verdes. No hubo problemas conceptuales.
+- **2026-05-28 (sesión página de marca)**:
+  1. **Bug encontrado y arreglado**: `generateStaticParams` corre en build time (fuera de request scope) y NO puede usar `cookies()`. Mi primer intento usaba `lib/supabase/server.ts` (que usa cookies async). Síntoma: HTTP 500 "cookies was called outside a request scope". Fix: creé `lib/supabase/static.ts` con cliente sin cookies para contextos sin request (generateStaticParams, sitemap, robots, scripts standalone). Registrado en LEARNINGS.
+  2. **Asumí marcas del catálogo desde keyword research** (Rusty/Reef/Vulk/Prune/Infinit) en vez de preguntar stock real. Founder corrigió (Rusty/Vulk/Reef/**Mormaii**/**Paula Cahen**). Capturado antes de tocar código. Registrado en MISTAKES.md como caso adicional del mismo principio anti-alucinación.
+  3. Sin otros problemas. Toda la validación local pasó (typecheck, lint, build, dev contra Supabase Docker). seo-strategist agregó 4 críticos + 5 importantes que se aplicaron en el mismo commit.
 
 ## Métricas
 
