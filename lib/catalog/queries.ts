@@ -430,6 +430,80 @@ export async function getStaticBrandParams(): Promise<{ brand: string }[]> {
   return (data ?? []).map((b) => ({ brand: b.slug }));
 }
 
+export type HomeShowcaseProduct = {
+  slug: string;
+  name: string;
+  brandSlug: string;
+  brandName: string;
+  categorySlug: string;
+  minPriceCents: number;
+  primaryImagePath: string;
+};
+
+type HomeShowcaseRow = {
+  slug: string;
+  name: string;
+  is_featured: boolean;
+  brand: { slug: string; name: string; is_active: boolean };
+  category: { slug: string };
+  variants: Array<{ price_cents: number; stock_qty: number; is_active: boolean }>;
+  images: Array<{ storage_path: string; is_primary: boolean; sort_order: number; variant_id: string | null }>;
+};
+
+/**
+ * Trae 1 producto para destacar en el hero de home. Prioriza
+ * `is_featured = true`; si no hay, cae al producto más recientemente
+ * actualizado con stock. Devuelve null si no hay productos con stock.
+ */
+export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | null> {
+  // createStaticClient para que la home siga siendo ISR (revalidate 300).
+  // Info pública: productos activos con stock, no requiere auth.
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        is_featured,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
+      `,
+    )
+    .eq('is_active', true)
+    .order('is_featured', { ascending: false })
+    .order('updated_at', { ascending: false })
+    .limit(8)
+    .returns<HomeShowcaseRow[]>();
+
+  if (!data || data.length === 0) return null;
+
+  for (const row of data) {
+    if (!row.brand.is_active) continue;
+    const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
+    if (inStock.length === 0) continue;
+    const minPriceCents = Math.min(...inStock.map((v) => v.price_cents));
+    const sortedImages = [...row.images].sort((a, b) => {
+      if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+      return a.sort_order - b.sort_order;
+    });
+    const primary = sortedImages[0];
+    if (!primary) continue;
+    return {
+      slug: row.slug,
+      name: row.name,
+      brandSlug: row.brand.slug,
+      brandName: row.brand.name,
+      categorySlug: row.category.slug,
+      minPriceCents,
+      primaryImagePath: primary.storage_path,
+    };
+  }
+  return null;
+}
+
 /**
  * Para `generateStaticParams` de páginas de producto: devuelve las
  * combinaciones {brand, product} para una categoría específica.

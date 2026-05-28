@@ -22,6 +22,53 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Usar `createStaticClient()` en lugar de `createClient()` para data pública en home mantiene ISR
+
+**Categoría**: Next.js / Supabase / SEO performance
+**Confianza**: 🟢 Alta (verificado en build output: home pasa de `ƒ /` dynamic a `○ /` static + ISR 5min)
+
+### Qué pasó
+
+Al implementar `fetchHomeShowcaseProduct()` para mostrar el producto destacado en el hero, usé `createClient()` (server client con auth cookies) por inercia — es el patrón default en `lib/catalog/queries.ts` para queries en páginas dinámicas. **Resultado**: la home pasó de `○ /` (static + ISR 5min) a `ƒ /` (dynamic SSR en cada request).
+
+### Causa raíz
+
+`createClient()` lee `cookies()` en `lib/supabase/server.ts` para resolver auth del usuario. Next.js detecta el acceso a cookies durante el render del Server Component → marca la página como `dynamic`, deshabilita ISR. Pérdida en performance (cada request hace SSR + 4 queries Supabase) y SEO (CDN no puede cachear el HTML).
+
+### Fix
+
+Usar `createStaticClient()` cuando la query es de **info pública** que no depende del usuario logueado:
+- `fetchAllActiveBrands` — ya lo usaba (público)
+- `fetchHomeShowcaseProduct` — cambiado a este patrón
+
+```ts
+// ❌ Mal — rompe ISR
+const supabase = await createClient();
+
+// ✅ Bien — mantiene ISR
+const supabase = createStaticClient();
+```
+
+Resultado: home volvió a `○ /` static + ISR 5min en el build, sin cambios funcionales.
+
+### Cómo replicar
+
+- **Default**: si la query es info pública (catálogo, marcas, productos activos), `createStaticClient()`.
+- **Excepción**: si la query depende del usuario (su carrito, sus pedidos, su address), `createClient()` con cookies — y aceptar que la página será dynamic.
+- **Verificar en build output**: si una página debería ser ISR pero aparece como `ƒ` (dynamic), buscar `createClient()` en sus queries y reemplazar por `createStaticClient()` donde sea seguro.
+
+### Anti-patrón a evitar
+
+- Copiar el patrón `await createClient()` de otra query sin pensar si la nueva query necesita auth.
+- Mover queries de público a auth-aware sin validar el impacto en ISR — el costo SEO de perder static rendering es invisible pero real.
+
+### Próxima vez aplicar a
+
+- Cualquier nueva función en `lib/catalog/queries.ts` que se llame desde Server Components de páginas públicas (home, category index, brand page, product page).
+- Antes de pushear, mirar el build output y confirmar que las páginas que deberían ser ISR siguen apareciendo como `○`.
+
+---
+
 ## 2026-05-28 — Glosario de efectos modernos + plan por "rounds verificables" desbloqueó dirección de modernización
 
 **Categoría**: Comunicación founder ↔ asistente / dirección de producto

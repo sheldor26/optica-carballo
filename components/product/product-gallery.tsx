@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { useVariantSelection } from '@/lib/product/variant-selection';
+import { ImageLightbox } from '@/components/product/image-lightbox';
 import type { ProductImage } from '@/lib/catalog/queries';
 
 type Props = {
@@ -49,6 +50,7 @@ export function ProductGallery({ productName, images }: Props) {
   }, [images, selectedVariantId]);
 
   const [activeIdx, setActiveIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Cuando cambia la variante (y por lo tanto el set de imágenes), reset
   // al index 0 — sino podríamos quedar apuntando a una imagen que ya no
@@ -83,7 +85,12 @@ export function ProductGallery({ productName, images }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-background border-border/40 group relative aspect-square w-full overflow-hidden rounded-lg border p-10 sm:p-14 md:p-20">
+      <button
+        type="button"
+        onClick={() => setLightboxOpen(true)}
+        aria-label={`Ampliar imagen: ${active.alt_text}`}
+        className="bg-background border-border/40 group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border p-10 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-14 md:p-20"
+      >
         {/* Inner wrapper para que `fill` respete el padding del outer.
             `Image fill` se posiciona absolute inset-0 del contenedor
             relative más cercano — el outer tiene padding pero fill lo
@@ -104,7 +111,7 @@ export function ProductGallery({ productName, images }: Props) {
             priority={activeIdx === 0}
           />
         </div>
-      </div>
+      </button>
       {sorted.length > 1 && (
         <div
           className="grid gap-2"
@@ -142,6 +149,13 @@ export function ProductGallery({ productName, images }: Props) {
           })}
         </div>
       )}
+      <ImageLightbox
+        open={lightboxOpen}
+        images={sorted}
+        activeIdx={activeIdx}
+        onClose={() => setLightboxOpen(false)}
+        onChangeIdx={setActiveIdx}
+      />
     </div>
   );
 }

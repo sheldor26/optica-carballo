@@ -2,7 +2,56 @@
 
 ## Status
 
-🟡 **Round 2 modernización — Accent ámbar + brands section dark + header glass on scroll aplicado, pendiente verificación visual**
+🟡 **Image lightbox modal en página de producto — implementado, pendiente verificación visual**
+
+Founder pidió: "al hacer click en la imagen en la página del producto se haga un zoom, me explico? veo que muchas ópticas hacen eso".
+
+**Implementado**: lightbox modal al click sobre la imagen principal del `ProductGallery`. Patrón clásico de e-commerce.
+
+- `components/product/image-lightbox.tsx` NUEVO: componente client modal con backdrop `bg-foreground/95 + backdrop-blur-md`, animación fade-in, ESC para cerrar, click-outside para cerrar, body scroll lock mientras está abierto. Botón X arriba-derecha. Si hay >1 imagen: contador "X / Y" arriba-centro, botones Prev/Next a los costados desktop (ChevronLeft/Right en círculos glass), navegación con flechas del teclado (←/→). Mobile: dots indicators abajo en vez de prev/next buttons.
+- `components/product/product-gallery.tsx`: la imagen principal pasó de `<div>` a `<button>` con `cursor-zoom-in`, `focus-visible` ring, `aria-label="Ampliar imagen: ..."`, onClick = abre lightbox. Agregado state `lightboxOpen`. Render del `<ImageLightbox>` al final del componente pasando `sorted`, `activeIdx`, callbacks. Cuando el usuario navega con prev/next en el lightbox, también actualiza el `activeIdx` del gallery (sincronizado).
+
+**Diseño**:
+- Modal NO tiene zoom-on-zoom (panning + pinch). Simple: foto a tamaño grande (max-h-[85vh] max-w-5xl, object-contain), centrada. Pinch-to-zoom nativo del navegador en mobile funciona porque no bloqueamos touch-action.
+- Backdrop con blur fuerte (no solo overlay) → sensación premium tipo "Apple gallery".
+- Glass morphism en todos los buttons del modal (`bg-background/10 backdrop-blur-md`) → coherente con accent del Round 2.
+- Counter "X / Y" se oculta si hay solo 1 imagen (Vulk Day Light tiene 5 en Carey o 3 en Rosa).
+- Si necesitamos zoom-en-zoom (click-to-magnify, pan-and-drag) en el futuro, se agrega como state adicional sin romper la API.
+
+**Trade-offs**:
+- No usa `<dialog>` HTML nativo porque tiene quirks de styling y accesibilidad en navegadores móviles antiguos — uso un div con `role="dialog" aria-modal="true"` que es estándar pre-dialog.
+- Sin librerías nuevas (cumple regla CLAUDE.md "no introducir librerías sin preguntar"). Considerar `react-image-lightbox`/`yet-another-react-lightbox` solo si pedimos features avanzadas (zoom panning, transitions cross-fade, thumbnails strip).
+
+**Build verde, typecheck verde**. Pendiente commit + verificación visual.
+
+**Próximo paso exacto**: founder corre `pnpm dev`, va a página de producto Vulk Day Light, hace click en la imagen principal — debería abrirse el lightbox. Probar ESC, click afuera, flechas, mobile dots. Si la onda cierra → commit + push. Si quiere zoom más rico (panning, click-to-magnify a 2x), me dice y agrego. Después continuamos con Round 3 verificación + Round 4.
+
+---
+
+🟡 **Round 3 modernización — Product showcase hero con foto Vulk flotante + chips + parallax + price card aplicado, pendiente verificación visual**
+
+Founder dio luz verde tras Round 2. Round 3 implementado:
+
+- `lib/catalog/queries.ts`: nueva función `fetchHomeShowcaseProduct()` que trae 1 producto destacado para el hero. Prioriza `is_featured DESC` luego `updated_at DESC`. Filtra solo productos con stock activo. Usa `createStaticClient()` (no `createClient()` con cookies) para mantener la home como ISR (5min) y no romper SEO/performance.
+- `app/(storefront)/page.tsx`: agregado `fetchHomeShowcaseProduct()` al `Promise.all`, pasa `showcase`, `siteName`, `whatsappLink` al `<HomeHero>`.
+- `components/home/home-hero.tsx`: **rewrite completo a client component** con framer-motion para parallax + animación idle de la foto. Layout:
+  - Grid 1 col mobile / `1.05fr_1fr` desktop (texto izq, foto der, leve dominancia del texto).
+  - **Texto izquierda**: chip eyebrow (dot ámbar + brand text-brand), H1 serif, párrafo, CTAs (Ver sol / Ver receta / WhatsApp).
+  - **Foto derecha**: Image fill con `drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]` + `animate={{y:[0,-8,0]}}` loop 5s easeInOut (idle bob). Glow ámbar/15 difuso detrás del producto. Hover scale 1.03.
+  - **Chips flotantes desktop only** (`hidden md:inline-flex`): "Óptica matriculada" (top-left, rotate -3°) y "30+ años en Argentina" (bottom-right, rotate 2.5°). Glass morphism con `backdrop-blur-sm`.
+  - **Floating price card** sobre la esquina inferior derecha de la foto: eyebrow "Destacado" + brand+modelo (modelo italic serif) + "desde $XXX" en text-brand con arrow → animation. Linkea al producto.
+  - **Parallax sutil**: `useScroll` + `useTransform`. Texto sube `-20px` al scrollear 500px, foto sube `60px`. Respeta `prefers-reduced-motion` (si está activo, parallax = 0 y idle bob = off).
+  - Mesh gradient `bg-brand/[0.08]` reemplazó uno de los 3 gradients del fondo (toque ámbar sutil en el ambient).
+
+**Build verde**, home sigue siendo `○ /` static + ISR (5min) — no se rompió SEO. Size: `50.5 kB / 167 kB First Load` (más alto que antes por framer-motion runtime, aceptable para hero rico).
+
+**Trade-off conocido**: el hero ahora es `'use client'`. Antes era server component. Razón: framer-motion `useScroll`/`useTransform` son hooks que requieren client. Los `RevealOnScroll` y `hero-reveal` CSS ya eran client-side igualmente, así que el impacto es mínimo.
+
+**Próximo paso exacto**: founder corre `pnpm dev`, mira home (split hero con Vulk flotante + chips + price card + parallax al scroll). Si la onda cierra → commit + push + arrancar Round 4 (tilt 3D cards + custom cursor + spotlight + letter-by-letter reveal H1 + scroll progress bar). Si requiere ajuste (posición de chips, intensidad del shadow, velocidad del bob, contraste del price card) → tunear.
+
+---
+
+🟢 **Round 2 modernización — Accent ámbar + brands section dark + header glass on scroll, pusheado (commit `232a6c2`), en producción**
 
 Founder dio luz verde al plan ajustado tras compartir 2 tendencias adicionales:
 1. Micro-animaciones + 3D en browser → traducido a "pseudo-3D barato" (CSS transforms) + foto producto flotante (no modelo 3D real — overkill para óptica de barrio).
