@@ -170,6 +170,29 @@ export async function fetchProductPage(
 }
 
 /**
+ * Devuelve todas las marcas activas ordenadas por sort_order. Reusada
+ * por la home (sección "marcas que trabajamos") y otras vistas que listan
+ * marcas independientemente de si tienen productos cargados.
+ */
+export async function fetchAllActiveBrands(): Promise<
+  Array<{
+    id: string;
+    slug: string;
+    name: string;
+    description: string | null;
+    is_argentine: boolean;
+  }>
+> {
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from('brands')
+    .select('id, slug, name, description, is_argentine')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+  return data ?? [];
+}
+
+/**
  * Página índice de categoría (`/anteojos-de-sol`, `/anteojos-de-receta`):
  * devuelve las marcas que tienen al menos 1 producto activo en la
  * categoría, con count por marca. Marcas sin productos no aparecen.

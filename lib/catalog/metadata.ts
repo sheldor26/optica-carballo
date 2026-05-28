@@ -92,6 +92,27 @@ export async function buildProductMetadata(
 }
 
 /**
+ * Metadata para la home (`/`). Title con marca + categorías principales +
+ * diferenciador. Description con E-E-A-T (matriculados, años, envíos).
+ */
+export function buildHomeMetadata(): Metadata {
+  const title =
+    'Óptica Carballo — Anteojos de Sol y Receta | Envíos a Todo el País';
+  const description =
+    'Óptica Carballo: anteojos de sol y receta originales. 30+ años de experiencia, regente óptica matriculada, envíos a todo Argentina y cuotas sin interés.';
+  const url = SITE_URL;
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'website' },
+  };
+}
+
+/**
  * Metadata para páginas índice de categoría (`/anteojos-de-sol`,
  * `/anteojos-de-receta`). Title con keyword genérica + descripción que
  * lista las marcas con productos en esa categoría.
