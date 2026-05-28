@@ -26,7 +26,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       <Card className="hover:border-foreground/30 flex h-full flex-col transition-all duration-300 ease-out group-hover/card:-translate-y-0.5 group-hover/card:shadow-lg">
         <CardHeader className="pb-3">
           <div
-            className="bg-muted relative aspect-[4/3] w-full overflow-hidden rounded-md"
+            className="bg-background border-border/40 relative aspect-[4/3] w-full overflow-hidden rounded-md border p-2"
             aria-hidden="true"
           >
             {imageUrl ? (

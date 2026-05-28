@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **UX polish iter 3: fondo de imágenes blanco (matchea foto) + image hover sin crop final**
+
+Founder reportó 2 cosas en el último review visual:
+
+1. **Reborde gris** alrededor de las imágenes del producto — el `bg-muted/40` (gris claro) no matcheaba con el fondo blanco de las fotos originales, generando un "marco" gris no intencional.
+2. **Crop al hover** — el `scale 1.06` con padding `p-6 md:p-10` todavía cortaba el final de la patilla.
+
+**Fixes**:
+
+- **Fondo blanco coherente** en TODOS los contenedores de imagen de producto:
+  - `ProductGallery` (imagen principal + thumbs): `bg-muted/40` → `bg-background` + `border-border/40` sutil para mantener delimitación.
+  - `VariantList` thumbs (al lado del radio): idem.
+  - `ProductCard` (listado en brand-page): `bg-muted` → `bg-background` + border + `p-2`.
+
+- **Scale más sutil + más padding interior** en ProductGallery:
+  - `scale-[1.06]` → `scale-[1.04]` (zoom hover más discreto).
+  - `p-6 md:p-10` → `p-8 md:p-12` (más aire para que el zoom no llegue a los bordes).
+  - Quitado `p-2` adicional en el Image (redundante con el padding del wrapper).
+
+Typecheck verde. Commit pendiente.
+
 🟢 **UX polish variantes: swatch thumb al lado del radio + sort fix (específicas antes que compartidas)**
 
 Founder reportó 2 cosas tras ver la página live con las 2 variantes:
@@ -358,6 +379,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: 2 fixes UX iteración 3. (1) Fondo blanco coherente en TODOS los contenedores de imagen de producto (gallery main + thumbs gallery + VariantList thumb + ProductCard listado) — bg-muted/40 → bg-background + border-border/40 sutil. Matchea el fondo blanco original de las fotos. (2) Scale hover más sutil 1.04 + padding interior aumentado p-8 md:p-12 → no se corta el final de la patilla al hacer zoom.
 
 **Fecha**: 2026-05-28
 **Por**: 2 fixes UX tras feedback founder en la página de producto con 2 variantes activas. (1) Sort logic en ProductGallery: imágenes específicas de la variante seleccionada antes que las compartidas (variant_id NULL) — antes el esquema de medidas se colaba al medio en Rosa. (2) Thumb visual al lado del radio en VariantList: VariantListItem con `primaryImagePath`, helper `findPrimaryImagePathForVariant` en product-page calcula la primary por variant_id, render con next/image size-11 + object-contain. Typecheck verde, commit pendiente.

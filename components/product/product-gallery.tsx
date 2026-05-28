@@ -83,13 +83,13 @@ export function ProductGallery({ productName, images }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-muted/40 group relative aspect-square w-full overflow-hidden rounded-lg p-6 md:p-10">
+      <div className="bg-background border-border/40 group relative aspect-square w-full overflow-hidden rounded-lg border p-8 md:p-12">
         <Image
           src={activeUrl}
           alt={active.alt_text}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+          className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           priority={activeIdx === 0}
         />
       </div>
@@ -111,11 +111,11 @@ export function ProductGallery({ productName, images }: Props) {
                 aria-label={`Ver imagen ${idx + 1} de ${sorted.length}: ${img.alt_text}`}
                 aria-current={isActive}
                 className={cn(
-                  'bg-muted/40 relative aspect-square overflow-hidden rounded-md transition-all duration-200',
+                  'bg-background relative aspect-square overflow-hidden rounded-md p-1 transition-all duration-200',
                   'ring-offset-background focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                   isActive
                     ? 'ring-foreground ring-2'
-                    : 'ring-border/0 hover:ring-foreground/40 ring-1',
+                    : 'ring-border/40 hover:ring-foreground/40 ring-1',
                 )}
               >
                 <Image

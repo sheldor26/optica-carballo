@@ -138,7 +138,7 @@ export function VariantList({
                 {v.primaryImagePath && (
                   <div
                     aria-hidden="true"
-                    className="bg-muted/40 relative size-11 shrink-0 overflow-hidden rounded-md"
+                    className="bg-background border-border/40 relative size-11 shrink-0 overflow-hidden rounded-md border"
                   >
                     <Image
                       src={getProductImageUrl(v.primaryImagePath)}
