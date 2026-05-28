@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { BrandGridCard } from '@/components/catalog/brand-grid-card';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { BrandWithProductCount } from '@/lib/catalog/queries';
 
@@ -75,14 +76,14 @@ export function CategoryIndexPage({
         </ol>
       </nav>
 
-      <header className="mb-10 max-w-3xl">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+      <RevealOnScroll as="article" className="mb-10 max-w-3xl">
+        <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
           {category.name}
         </h1>
-        <p className="text-muted-foreground mt-3 text-base md:text-lg">
+        <p className="text-muted-foreground mt-4 text-balance text-base md:text-lg">
           {INTRO_COPY[category.slug]}
         </p>
-      </header>
+      </RevealOnScroll>
 
       {brands.length === 0 ? (
         <p className="text-muted-foreground">
@@ -93,8 +94,10 @@ export function CategoryIndexPage({
           aria-label={`Marcas en ${category.name.toLowerCase()}`}
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {brands.map((brand) => (
-            <BrandGridCard key={brand.id} brand={brand} category={category} />
+          {brands.map((brand, idx) => (
+            <RevealOnScroll key={brand.id} delay={80 * idx}>
+              <BrandGridCard brand={brand} category={category} />
+            </RevealOnScroll>
           ))}
         </section>
       )}

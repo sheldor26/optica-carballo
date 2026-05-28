@@ -6,6 +6,7 @@ import { ProductAttributes } from '@/components/product/product-attributes';
 import { ProductGallery } from '@/components/product/product-gallery';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { isCheckoutEnabled } from '@/lib/features';
@@ -111,7 +112,7 @@ export function ProductDetailPage({
                 <Badge variant="secondary">Marca local</Badge>
               )}
             </div>
-            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+            <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
               {product.name}
             </h1>
             {product.short_description && (
@@ -148,14 +149,14 @@ export function ProductDetailPage({
       </div>
 
       {product.description && (
-        <section className="mt-12 max-w-3xl">
-          <h2 className="text-foreground text-lg font-semibold tracking-tight">
+        <RevealOnScroll as="section" className="mt-16 max-w-3xl">
+          <h2 className="text-foreground text-xl font-semibold tracking-tight md:text-2xl">
             Descripción
           </h2>
-          <p className="text-muted-foreground mt-3 whitespace-pre-wrap text-sm leading-relaxed md:text-base">
+          <p className="text-muted-foreground mt-4 whitespace-pre-wrap text-base leading-relaxed">
             {product.description}
           </p>
-        </section>
+        </RevealOnScroll>
       )}
     </main>
   );

@@ -6,6 +6,7 @@ import {
   ProductCard,
   type ProductCardData,
 } from '@/components/product/product-card';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type {
   BrandPageData,
@@ -80,9 +81,9 @@ export function BrandCatalogPage({
         </ol>
       </nav>
 
-      <header className="mb-8 max-w-3xl">
+      <RevealOnScroll as="article" className="mb-10 max-w-3xl">
         <div className="mb-3 flex items-center gap-2">
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+          <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
             {category.name} {brand.name}
           </h1>
           {brand.is_argentine && (
@@ -92,11 +93,11 @@ export function BrandCatalogPage({
           )}
         </div>
         {brand.description && (
-          <p className="text-muted-foreground text-base md:text-lg">
+          <p className="text-muted-foreground text-balance text-base md:text-lg">
             {brand.description}
           </p>
         )}
-      </header>
+      </RevealOnScroll>
 
       {items.length === 0 ? (
         <p className="text-muted-foreground">
@@ -107,8 +108,10 @@ export function BrandCatalogPage({
           aria-label={`Productos de ${brand.name} en ${category.name.toLowerCase()}`}
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          {items.map((item) => (
-            <ProductCard key={item.slug} product={item} />
+          {items.map((item, idx) => (
+            <RevealOnScroll key={item.slug} delay={60 * idx}>
+              <ProductCard product={item} />
+            </RevealOnScroll>
           ))}
         </section>
       )}

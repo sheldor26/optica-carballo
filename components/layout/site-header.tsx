@@ -15,7 +15,7 @@ export function SiteHeader() {
   const checkoutEnabled = isCheckoutEnabled();
 
   return (
-    <header className="border-border bg-background sticky top-0 z-40 border-b">
+    <header className="border-border/60 bg-background/75 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 border-b backdrop-blur-md">
       <div className="container flex h-14 items-center gap-3 md:h-16">
         <MobileNav links={PRIMARY_NAV} />
 
