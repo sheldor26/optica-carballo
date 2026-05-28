@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { ProductAttributes } from '@/components/product/product-attributes';
-import { ProductCallouts } from '@/components/product/product-callouts';
+import { ProductCalloutAt } from '@/components/product/product-callouts';
 import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductHighlights } from '@/components/product/product-highlights';
 import { ProductIncludes } from '@/components/product/product-includes';
@@ -38,6 +38,49 @@ function categorySubtitle(category: CategoryConfig, attrs: Record<string, unknow
   if (gender) parts.push(gender);
   if (category.slug === 'anteojos-de-sol' && isPolarized) parts.push('polarizados');
   return parts.join(' ');
+}
+
+function DescriptionWithCallouts({
+  description,
+  attributes,
+}: {
+  description: string;
+  attributes: Record<string, unknown>;
+}) {
+  const paragraphs = description.split('\n\n').filter((p) => p.trim().length > 0);
+  const total = paragraphs.length;
+  // Insertar middle callout aproximadamente a la mitad de los párrafos.
+  const midIdx = total >= 4 ? Math.ceil(total / 2) : Math.max(1, Math.floor(total / 2));
+
+  return (
+    <div className="text-muted-foreground mt-6 text-base leading-relaxed">
+      <div className="mb-5">
+        <ProductCalloutAt attributes={attributes} position="top" />
+      </div>
+      <div className="space-y-4 [&_p]:text-balance">
+        {paragraphs.slice(0, midIdx).map((para, i) => (
+          <p key={`pre-${i}`} className="whitespace-pre-wrap">
+            {para}
+          </p>
+        ))}
+      </div>
+      {midIdx < total && (
+        <div className="my-5">
+          <ProductCalloutAt attributes={attributes} position="middle" />
+        </div>
+      )}
+      <div className="space-y-4 [&_p]:text-balance">
+        {paragraphs.slice(midIdx).map((para, i) => (
+          <p key={`post-${i}`} className="whitespace-pre-wrap">
+            {para}
+          </p>
+        ))}
+      </div>
+      <div className="mt-5">
+        <ProductCalloutAt attributes={attributes} position="bottom" />
+      </div>
+    </div>
+  );
 }
 
 export async function ProductDetailPage({
@@ -132,10 +175,10 @@ export async function ProductDetailPage({
         </ol>
       </nav>
 
-      <div className="grid gap-8 md:grid-cols-2 md:gap-12">
+      <div className="grid gap-8 md:grid-cols-2 md:grid-rows-[auto_1fr] md:gap-x-12 md:gap-y-6">
         <ProductGallery productName={product.name} images={product.images ?? []} />
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 md:col-start-2 md:row-span-2 md:row-start-1">
           <div>
             <div className="mb-2 flex items-center gap-2">
               <Link
@@ -199,9 +242,11 @@ export async function ProductDetailPage({
 
           <ProductMeasurements attributes={product.attributes} />
 
-          <ProductIncludes attributes={product.attributes} />
-
           <WhatsappCta productName={product.name} inStock={isInStock} />
+        </div>
+
+        <div className="md:col-start-1 md:row-start-2">
+          <ProductIncludes attributes={product.attributes} />
         </div>
       </div>
 
@@ -213,14 +258,10 @@ export async function ProductDetailPage({
           <h2 className="text-foreground mt-2 text-balance text-3xl font-bold tracking-tight md:text-4xl">
             Por qué elegir el {product.name}
           </h2>
-          <div className="prose-base text-muted-foreground mt-6 space-y-4 text-base leading-relaxed [&_p]:text-balance">
-            {product.description.split('\n\n').map((para, i) => (
-              <p key={i} className="whitespace-pre-wrap">
-                {para}
-              </p>
-            ))}
-          </div>
-          <ProductCallouts attributes={product.attributes} />
+          <DescriptionWithCallouts
+            description={product.description}
+            attributes={product.attributes}
+          />
         </RevealOnScroll>
       )}
 

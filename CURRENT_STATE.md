@@ -2,6 +2,45 @@
 
 ## Status
 
+🟢 **Callouts iteración 2 — distribuidos por posición + tweet-length + layout sin espacio blanco**
+
+Founder reportó 2 issues + 1 ajuste de callouts:
+
+1. **Espacio blanco grande** debajo de las imágenes en desktop (columna izquierda más corta que derecha).
+2. **Callouts demasiado largos** (eran 450-550 chars cada uno) e **invasivos** todos juntos al final.
+3. Founder sugirió ejemplos tipo "para que no se te rayen las lentes te recomendamos…" — más concretos y prácticos que el cuidado genérico.
+
+**Implementación**:
+
+1. **Schema callouts extendido con `position`**: `'top' | 'middle' | 'bottom'`. Parser defensivo agrega default `'bottom'` si falta. Validación de tipo en runtime.
+
+2. **Componente refactorizado** — antes era `ProductCallouts` que renderizaba todos al final. Ahora exports:
+   - `getCalloutByPosition(attributes, position)` — helper puro.
+   - `ProductCallout` — render de un callout solo.
+   - `ProductCalloutAt({attributes, position})` — wrapper con RevealOnScroll que busca el callout de esa posición.
+
+3. **Helper `DescriptionWithCallouts` en product-page** — recibe `description` (string) y `attributes`, parte la descripción en párrafos, calcula midpoint (`Math.ceil(total / 2)` si hay ≥4 párrafos), y renderiza: `[top callout]` → `[primera mitad de párrafos]` → `[middle callout]` → `[segunda mitad de párrafos]` → `[bottom callout]`. Si una position no tiene callout, no aparece y se compacta naturalmente.
+
+4. **Callouts Vulk acortados a tweet length** (~250 chars cada uno):
+   - **Top "Sabías que…"**: explicación del filtro polarizador en 4 líneas concretas.
+   - **Middle "Recomendación"**: ideales para X / no usar para manejar de noche, 3 líneas.
+   - **Bottom "Para que no se rayen las lentes"** (rephrased como propuso founder): franela de microfibra + agua tibia + jabón neutro + no guantera al sol. 3 líneas prácticas.
+
+5. **Layout grid refactor** — el grid del product-page pasa de `grid-cols-2` simple a `grid-cols-2 grid-rows-[auto_1fr]` con asignación explícita:
+   - **Gallery**: row-start-1, col-start-1.
+   - **Right column** (H1 → highlights → precio → variants → attributes → measurements → whatsapp): `col-start-2 row-span-2 row-start-1` — ocupa las 2 filas en col 2.
+   - **ProductIncludes**: `col-start-1 row-start-2` — debajo del gallery en desktop.
+   - En mobile (1 col), el orden natural es Gallery → Right column entera → Includes (al final, antes de la descripción).
+   - Esto llena el espacio blanco que aparecía debajo de las imágenes en desktop.
+
+6. **Documentación actualizada**:
+   - `BUSINESS_POLICIES.md` #8: tabla de positions, ejemplos, regla "~250 chars máximo (tweet length)", título concreto.
+   - `content-writer-medical` agent: ahora debe asignar `position` + respetar tweet length cuando proponga callouts en futuros productos.
+
+7. **Seeds**: `seeds/03_vulk_day_light.sql` sincronizado y `seeds/06_vulk_day_light_callouts.sql` actualizado (V2 con callouts cortos + position). Cuando founder corra el 06 en cloud, los callouts viejos quedan reemplazados.
+
+Typecheck verde. Commit pendiente.
+
 🟢 **Sistema de Callouts validados — bloques visuales "Sabías que / Recomendación / Tip / Importante" en página de producto**
 
 Founder pasó referencias visuales (screenshots de callouts dorados + verdes de otros proyectos suyos) y pidió: que las descripciones tengan más profundidad/atención visual con "Sabías que…", "Recomendación", "Si pensás usar para X no es ideal…", "Cuidados…". Patrón **alta valor** porque (a) diferenciador real en óptica AR donde casi nadie hace esto, (b) E-E-A-T directo (opinión experta, advertencias honestas), (c) SEO con contenido extra, (d) UX scaneable.
@@ -215,6 +254,9 @@ User puede crear/editar/eliminar/marcar-default direcciones de envío desde `/mi
 Carrito anónimo persistido en cookie firmada (HMAC-SHA256) con Zod schema validation. 4 server actions (add/update/remove/clear) con validaciones duras (stock, max-qty, max-items, placeholder rejection). Página `/carrito` con resolución viva contra DB e issues flag (`unavailable`/`out_of_stock`/`over_stock`). CartBadge cliente en header lee count vía `/api/cart/count` (HttpOnly cookie, requiere route handler) — preserva SSG del storefront. AddToCartButton inline por variante en página de producto. CTA "Iniciar compra" disabled con tooltip hasta que sub-feature 2 (MP) esté lista. **Próxima sub-feature**: 2 = crear order + Mercado Pago preference; 3 = webhook MP + Tusfacturas AFIP.
 
 ## Última actualización
+
+**Fecha**: 2026-05-28
+**Por**: Callouts iteración 2 tras feedback founder. Position field (top/middle/bottom), helper distributor que intercala en la descripción, callouts acortados a ~250 chars (tweet length). Layout product-page con grid-rows que mueve ProductIncludes a columna izquierda debajo del gallery — llena el espacio blanco en desktop sin romper mobile (sigue al final). Documentación actualizada en BUSINESS_POLICIES.md + content-writer-medical agent. Seed 06 V2 con callouts cortos + position.
 
 **Fecha**: 2026-05-28
 **Por**: Sistema de Callouts en página de producto (4 tipos: info/tip/recommendation/warning) con colores sutiles + dark mode + RevealOnScroll stagger. Schema en `attributes.callouts` JSONB sin migración. 3 callouts iniciales del Vulk Day Light validados por optical-expert. Patrón documentado en BUSINESS_POLICIES.md #8 + content-writer-medical actualizado para proponerlos automáticamente. Seed 06 nuevo con UPDATE delta para cloud.

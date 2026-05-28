@@ -22,6 +22,168 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — CSS Grid con row-span + col-start asimétrico = stack vertical en mobile + layout balanceado en desktop sin duplicar markup
+
+**Categoría**: CSS / Layout responsivo
+**Confianza**: 🟢 Alta (implementado, typecheck verde, comportamiento verificado en código)
+
+### Qué funcionó
+
+Problema clásico de e-commerce: en la página de detalle de producto, la columna izquierda (galería de imágenes) es más corta que la columna derecha (que tiene H1, atributos, medidas, variantes, etc) → en desktop queda un **espacio blanco grande** debajo de las imágenes.
+
+Soluciones típicas:
+1. Mover algo de la columna derecha a la izquierda → en mobile (1 col) ese elemento queda en el medio del flow, donde no debería estar.
+2. Duplicar el componente con `hidden md:block` + `md:hidden` → markup duplicado, riesgo de drift.
+3. Conformarse con el espacio blanco.
+
+**Solución CSS Grid pura, sin duplicar markup**:
+
+```tsx
+<div className="grid gap-8 md:grid-cols-2 md:grid-rows-[auto_1fr] md:gap-y-6">
+  {/* Row 1 Col 1: Gallery (default position) */}
+  <ProductGallery />
+
+  {/* Right column ocupa ambas rows en col 2 */}
+  <div className="md:col-start-2 md:row-span-2 md:row-start-1">
+    {/* H1, atributos, medidas, etc */}
+  </div>
+
+  {/* ProductIncludes en col 1 row 2 (debajo del gallery en desktop) */}
+  <div className="md:col-start-1 md:row-start-2">
+    <ProductIncludes />
+  </div>
+</div>
+```
+
+**Comportamiento**:
+- **Desktop** (md+): Gallery arriba-izq, Right column ocupa toda la columna derecha (row-span 2), ProductIncludes abajo-izq llenando el espacio.
+- **Mobile** (default, sin md): no aplica grid-cols-2, los items se apilan en orden natural de DOM: Gallery → Right column → ProductIncludes.
+
+### Por qué funciona
+
+- **CSS Grid es 2D**: a diferencia de flexbox, podés controlar tanto rows como cols explícitamente.
+- **`md:row-span-2`** dice "este elemento ocupa 2 rows" → cuando hay un elemento en `md:row-start-2` en la otra columna, no chocan, porque cada uno está en su columna.
+- **El orden del DOM determina el orden mobile**: el ProductIncludes está físicamente después del right column en el JSX → en mobile va al final naturalmente.
+- **`grid-rows-[auto_1fr]`** asegura que la primera row se ajusta al contenido (gallery) y la segunda toma el espacio restante (where it makes sense).
+
+### Cómo replicar
+
+Patrón general "columna corta + columna larga + elemento que llena el espacio":
+
+```
+grid-cols-2 grid-rows-[auto_1fr] (md+)
+
+[col 1 row 1]  [col 2 row 1]
+[col 1 row 2]  [col 2 row 2]
+                              ← lo que está en col-start-2 + row-span-2
+                                ocupa ambas rows
+```
+
+Aplicable a:
+- Página de producto (gallery + sidebar + extras debajo del gallery).
+- Páginas de blog (sidebar + content + bloque "newsletter" debajo del sidebar).
+- Dashboards (chart + KPIs + descripción debajo del chart).
+
+### Cuándo NO usar este patrón
+
+- Si la columna corta es MÁS larga que la columna larga: rompe el balance, mejor flex.
+- Si necesitás cambiar el orden visual entre mobile y desktop drásticamente: combinar con `order-` utility.
+- En IE11 (irrelevante hoy, pero por si acaso): grid-template-rows con `1fr` tiene gotchas.
+
+### Notas
+
+- Tailwind 3.4 soporta `grid-rows-[auto_1fr]` con sintaxis arbitraria.
+- Si el contenido del row-spanned column es muy largo, puede empujar la altura total — el espacio blanco no desaparece 100%, solo se compacta. Para el caso típico (gallery + 5-7 secciones a la derecha + 1 sección extra a la izquierda), funciona bien.
+- En mobile, si querés controlar el orden distinto al DOM, usar `order-` en cada item.
+
+---
+
+## 2026-05-28 — Schema extensible via JSONB attributes + validación cross-agent: callouts sin migración + sin invenciones
+
+**Categoría**: Schema design / Workflow agentes / UX
+**Confianza**: 🟢 Alta (implementado end-to-end, typecheck verde, 3 callouts Vulk validados por optical-expert ya en código)
+
+### Qué funcionó
+
+Founder pidió "bloques visuales tipo Sabías que / Recomendación" en página de producto (para profundidad + diferenciación + E-E-A-T). 3 sub-problemas convergentes que resolvimos con un mismo patrón:
+
+1. **Cómo agregar contenido estructurado nuevo SIN migrar DB cada vez**.
+2. **Cómo evitar que el copywriter (content-writer-medical) invente data técnica** (ej: "las lentes polarizadas funcionan así…").
+3. **Cómo dar UI consistente para algo que va a crecer** (4 tipos de callout hoy, mañana quizás más).
+
+**Solución triple-capa**:
+
+### Capa 1 — Schema JSONB en `attributes`, sin migración
+
+En vez de agregar columna `callouts` a la tabla `products` (migración + sincronización local↔cloud), uso `products.attributes` JSONB existente con sub-key `callouts`:
+
+```json
+{
+  "frame_material": "g-flex",
+  "callouts": [
+    { "type": "info", "title": "Sabías que…", "body": "..." },
+    { "type": "recommendation", "title": "Recomendación", "body": "..." }
+  ]
+}
+```
+
+**Pros**:
+- Cero migración. Funciona en cloud sin tocar schema.
+- Productos sin callouts simplemente no tienen la key — el parser devuelve `[]` y el componente no renderiza.
+- Si mañana querés agregar otra dimensión (ej "faq", "testimonials") es la misma técnica: nueva key dentro de `attributes`.
+
+**Contras** (aceptados):
+- No hay constraint a nivel DB del shape del JSONB. El **parser defensivo** en TS valida en runtime (type narrowing por field, filtra items malformados).
+- Querying por "productos con callouts del tipo X" requiere `attributes->'callouts' @> '[{"type":"X"}]'` JSONB ops — no hay index automático. Para volumen actual (decenas de productos), aceptable.
+
+### Capa 2 — Validación cross-agent: content-writer propone, optical-expert valida
+
+Cualquier callout sobre óptica/física/materiales DEBE ser técnicamente correcto (la regla "no inventar" de CLAUDE.md aplica fuerte acá: si decimos "las lentes polarizadas funcionan X" y X está mal, perdemos autoridad YMYL).
+
+Flujo nuevo:
+1. **`content-writer-medical`** (cuando escribe descripción de producto) propone 2-3 callouts JSONB candidatos.
+2. **`optical-expert`** valida técnicamente cada callout (o lo reescribe si tiene errores).
+3. Lo validado va al seed.
+
+Operacionalizado en `.claude/agents/content-writer-medical.md` — instrucción literal de validar con optical-expert para callouts técnicos. **Sin esto, el agente inventa con confianza ("rejilla magnética", "filtro biofotónico", etc).**
+
+### Capa 3 — UI pattern parametrizable con 4 variantes
+
+`ProductCallouts` component con `CALLOUT_STYLE` map por tipo. Cada tipo tiene `{container, icon, iconWrap, title}` con clases Tailwind. Para agregar un 5to tipo (ej "story", "testimonial"), basta agregarlo al map + a la unión de types — sin tocar render logic.
+
+Cada variante usa colores Tailwind directos (`blue-500`, `amber-500`, `emerald-500`, `red-500`) con saturación baja (`bg-X-50/60`) y dark mode (`dark:bg-X-950/30`) para no romper la estética minimalista del sitio.
+
+### Por qué la combinación funciona
+
+- **Schema flexible + parser defensivo** = puedo extender el modelo de contenido sin tocar DB. Productos viejos no se rompen, productos nuevos opt-in.
+- **Validación cross-agent** = cada agente respeta su scope (writer escribe con tono, expert valida con rigor). Resultado: copy bueno + correcto.
+- **UI parametrizable** = agregar tipos es trivial. UI cambia en 1 archivo.
+- **Documentado en BUSINESS_POLICIES.md** = la próxima vez que alguien (yo en otra sesión, otro agente, el founder revisando) pregunte "¿cómo agregar callouts?", la respuesta está ahí.
+
+### Cómo replicar este patrón para contenido futuro
+
+Si mañana queremos agregar otra dimensión de contenido a productos (FAQ, testimonials de cliente, "compará con otro producto", "guía de talles"):
+
+```
+1. Definir sub-key en attributes.<nombre> con shape JSONB simple.
+2. Crear parser defensivo TS con type narrowing por field.
+3. Componente React que recibe attributes y renderiza si hay data,
+   no-op si falta.
+4. Documentar en BUSINESS_POLICIES.md (cuándo usar, schema, reglas).
+5. Update agente que escribe ese contenido para que sepa el patrón
+   y proponga automáticamente.
+6. Si toca dominio técnico (óptica), workflow de validación con
+   optical-expert antes de seedear.
+```
+
+### Notas
+
+- Si en el futuro un campo del JSONB se vuelve "first-class" (querying frecuente, índices, constraints), promover a columna real con migración. Por ahora `attributes.callouts` es perfectly fine.
+- El componente actual respeta `prefers-reduced-motion` via `RevealOnScroll` (que ya tiene esa lógica).
+- Los 3 callouts Vulk Day Light que escribió optical-expert son verificables: la explicación del filtro polarizador es física básica (rejilla orientada en un eje bloquea ondas en el eje perpendicular).
+
+---
+
 ## 2026-05-28 — Knowledge base canónica para que agentes "sepan" sin inventar — patrón cluster por marca + políticas operativas
 
 **Categoría**: Sistema de agentes / Knowledge management

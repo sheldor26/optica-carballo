@@ -108,22 +108,48 @@ Cada producto puede tener bloques destacados llamados **callouts**: cuadros con 
   "callouts": [
     {
       "type": "info",
+      "position": "top",
       "title": "Sabías que…",
-      "body": "Texto corto, sin saltos de línea. 4-6 líneas máximo."
+      "body": "Texto corto, máximo ~250 caracteres (tweet length)."
     },
-    { "type": "recommendation", "title": "Recomendación", "body": "..." }
+    {
+      "type": "recommendation",
+      "position": "middle",
+      "title": "Recomendación",
+      "body": "..."
+    },
+    {
+      "type": "tip",
+      "position": "bottom",
+      "title": "Para que duren",
+      "body": "..."
+    }
   ]
 }
 ```
+
+### Posiciones (position)
+
+Los callouts se intercalan con los párrafos de la descripción según su posición:
+
+| Position | Dónde aparece | Cuándo usar |
+|---|---|---|
+| `top` | Al principio de la sección descripción, antes del primer párrafo | Curiosidad técnica que engancha (típico "Sabías que…") |
+| `middle` | En el medio de los párrafos | Opinión / recomendación de uso |
+| `bottom` | Al final, después del último párrafo | Tip de cuidado / mantenimiento |
+
+Si una position no tiene callout, simplemente no aparece. Si hay 2 callouts con la misma position, se toma el primero (las posiciones son únicas).
 
 ### Reglas de redacción
 
 - **NUNCA inventar**: cada callout debe ser técnicamente correcto y verificable. Si no se puede verificar, no se escribe.
 - **Validar con `optical-expert`** cualquier callout que toque óptica/física/materiales. El agente sabe distinguir lo verificable de lo marketinero.
-- **Máximo 3 callouts por producto** (mobile-friendly + no satura).
+- **Máximo 3 callouts por producto** (uno por posición). Más satura.
+- **~250 chars máximo por callout** (tweet length). Si necesita más espacio, va en la descripción larga, no en callout.
 - **Sin emojis ni markdown bold inline** (el componente maneja la jerarquía visual).
 - **Tono coloquial argentino** ("tenés", "fijate") sin perder rigor.
 - **NO repetir lo que ya está en la descripción larga** — el callout agrega valor, no resume.
+- **Title concreto y útil**: "Para que no se rayen las lentes" > "Cuidados generales". El title es el gancho.
 
 ### Cuándo proponer callouts en productos nuevos
 

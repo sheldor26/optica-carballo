@@ -18,7 +18,7 @@ export function ProductIncludes({
   if (items.length === 0) return null;
 
   return (
-    <div className="border-border/60 bg-muted/30 mt-6 rounded-xl border p-5">
+    <div className="border-border/60 bg-muted/30 rounded-xl border p-5">
       <h2 className="text-foreground text-sm font-semibold uppercase tracking-wider">
         Lo que incluye tu compra
       </h2>
