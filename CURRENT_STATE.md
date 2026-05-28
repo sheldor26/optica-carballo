@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Migraciones 00005 + 00006 + 00007 aplicadas y VERIFICADAS en cloud (4/4 SELECTs)**
+
+Founder aplicó el bootstrap idempotente (~232 líneas) sin errores. Los 4 SELECTs de verificación devolvieron exactamente lo esperado: bucket `products` público 5MB, policy `products: anyone reads SELECT`, funciones `reserve_stock` + `increment_variant_stock`, columna `order_items.brand_name text`. Bootstrap derivado borrado (cumplió su rol). CLOUD_APPLIED.md marcado ✅ VERIFICADO para las 3 migraciones. **Schema cloud está en paridad total con local** — listo para testing E2E real cuando configuremos webhook MP + dominio Resend en cloud. **Próximo paso real depende del founder**: (1) verificar dominio Resend, (2) configurar webhook MP en panel, (3) creds MiCorreo cuando respondan, (4) data primer producto Rusty real para reemplazar `[PH]`.
+
 🟢 **`/mi-cuenta/pedidos` listo + Migración 00007 (brand_name) + bootstrap idempotente**
 
 Sesión enfocada en lo que NO depende de inputs externos pendientes (creds MiCorreo, data productos, configuración Resend/MP en prod). Construido: (1) Migración 00007 que agrega `order_items.brand_name` (resuelve TODO conocido de emails con brand vacío) + backfill desde catálogo; (2) `/mi-cuenta/pedidos` lista con badges de status (Pago pendiente / Pagado / En camino / etc), formato fecha es-AR, link a detalle; (3) `/mi-cuenta/pedidos/[id]` detalle completo con items, totales, dirección, tracking, mp_payment_id, link de factura, CTA WhatsApp; (4) Update dashboard `/mi-cuenta` con tile "Mis pedidos" prominente; (5) Bootstrap cloud regenerado con guards idempotentes (`DROP POLICY IF EXISTS`, `ADD COLUMN IF NOT EXISTS`) — seguro re-aplicar aunque 00005 esté parcialmente en cloud. **Founder ahora puede aplicar el bootstrap entero (~232 líneas) sin que falle el error 42710 previo**. RLS de orders ya filtra por user — un user nunca ve pedidos de otro.
