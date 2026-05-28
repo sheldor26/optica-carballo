@@ -2,14 +2,14 @@
 
 ## Status
 
-🟢 **End-to-end de catálogo de display completo — commit `c817f28`**
+🟢 **Catálogo de display completo — SOL y RECETA simétricos — commit `91b1d90`**
 
-Catálogo navegable de punta a punta: home → página de marca → página de producto individual. Header + Footer en todas. SEO completo (BreadcrumbList, CollectionPage, ItemList, Brand, AggregateOffer/Offer, Product schemas; sitemap dinámico; robots.txt; hreflang). **Productos placeholder `[PH]` con `noindex` para evitar contaminar Google** hasta que founder confirme nombres y precios reales. Próximo: o reemplazar `[PH]` con data real, o seguir con auth/checkout, o producto en categoría receta.
+Catálogo navegable en **dos categorías**: anteojos de sol Y anteojos de receta. Cada una con marca + producto. Lógica compartida extraída a `lib/catalog/` y `components/catalog/` (segundo caso de patrón = momento correcto para extraer). Las page.tsx ahora son thin wrappers de ~30 líneas que solo pasan la categoría. Próximo paso clave: reemplazar productos `[PH]` con datos reales o agregar páginas legales antes del checkout.
 
 ## Última actualización
 
 **Fecha**: 2026-05-28
-**Por**: Skill `/feature` para página de producto individual `/anteojos-de-sol/[brand]/[product]`. 5 componentes nuevos (gallery placeholder, attributes, variants, whatsapp-cta, product-jsonld). Helper `lib/catalog/placeholder.ts`. Página dynamic con 3 validaciones de seguridad (cross-brand/category/404). seo-strategist review aplicado: noindex para [PH], Offer vs AggregateOffer, itemCondition, title más corto, sitemap excluye placeholders, changefreq uniforme weekly. Validado contra cloud. Commit `c817f28`.
+**Por**: Skill `/feature` para cubrir lado RX + refactor a helpers compartidos. Antes de duplicar ~500 líneas, extraje a `lib/catalog/{categories,queries,metadata}.ts` y `components/catalog/{brand-page,product-page}.tsx`. Las page.tsx de sol pasaron a thin wrappers, las de receta son thin wrappers nuevos. 4 archivos nuevos de routing (sol/rx × marca/producto). Validado: sol intacto, rx funciona, cross-category 404 OK. Build pre-genera 14 SSG pages. Commit `91b1d90`.
 
 ## Qué se construyó hasta ahora
 
@@ -41,6 +41,28 @@ Catálogo navegable de punta a punta: home → página de marca → página de p
   - `migration-from-ml.md`, `whatsapp-handoff.md`
   - `image-optimization.md`
 - ⚠️ Pendiente confirmar: `settings.json` con hook de auto-actualización al cerrar sesión (verificar si existe en `.claude/`).
+
+### Páginas de receta + refactor a helpers compartidos (✅ commit `91b1d90` — 2026-05-28)
+- **Decisión de arquitectura**: antes de duplicar ~500 líneas (sol vs rx, marca vs producto = 4 combinaciones casi idénticas), extraer la lógica común. Esto NO es "tres líneas similares OK" — son 4 archivos completos con divergencia esperada. El **segundo caso de un patrón es el momento de extraer**, no después.
+- **Nuevos helpers `lib/catalog/`**:
+  - `categories.ts`: `CATEGORIES.sol` y `CATEGORIES.rx` como source of truth (slug, name, shortLabel, metaPhrase).
+  - `queries.ts`: `fetchBrandPage`, `fetchProductPage`, `getStaticBrandParams`, `getStaticProductParamsForCategory`. Tipos manuales (`BrandPageData`, `ProductDetailData`, etc.) centralizados — resuelve el problema conocido de embeds FK 1:1 que supabase-js tipa como arrays.
+  - `metadata.ts`: `buildBrandMetadata` + `buildProductMetadata`. Title específico por categoría usando `category.metaPhrase`. `robots: noindex` para productos `[PH]`.
+- **Componentes UI compartidos `components/catalog/`**:
+  - `brand-page.tsx`: `BrandCatalogPage` recibe `category` + `brand` + `products`.
+  - `product-page.tsx`: `ProductDetailPage` recibe `category` + `product`.
+- **Page.tsx ahora thin wrappers** (~30 líneas cada una):
+  - Sol: las 2 existentes refactorizadas (sin cambio funcional).
+  - Receta: 2 nuevas + 2 not-found.tsx propias.
+- **Validación**:
+  - SOL intacto post-refactor: `/anteojos-de-sol/rusty` y `/anteojos-de-sol/rusty/rusty-wayfarer-classic-sol` HTTP 200.
+  - RX funciona: `/anteojos-de-receta/rusty` HTTP 200 con 2 productos rx; `/anteojos-de-receta/rusty/rusty-redondo-vintage-rx` HTTP 200 con title específico de receta.
+  - Empty state rx: `/anteojos-de-receta/mormaii` HTTP 200 ("Todavía no hay productos…").
+  - Cross-category 404: `/anteojos-de-receta/rusty/rusty-wayfarer-classic-sol` (producto sol vía URL rx) → 404. La validación funciona en ambas direcciones.
+  - Build: 14 SSG pages (5 sol marca + 5 rx marca + 2 sol producto + 2 rx producto).
+  - First Load JS 105 kB (sin cambio — extracción no agregó shared chunks).
+  - `pnpm typecheck` + `lint` clean.
+- **Nota**: el sitemap.ts ya generaba URLs de receta (lo había agregado preventivamente). No requirió cambio en este commit.
 
 ### Página de producto individual /[brand]/[product] (✅ commit `c817f28` — 2026-05-28)
 - **URL**: `app/(storefront)/anteojos-de-sol/[brand]/[product]/page.tsx` + `not-found.tsx`.
@@ -237,8 +259,8 @@ Catálogo navegable de punta a punta: home → página de marca → página de p
 1. **Reemplazar productos `[PH]` por datos reales** del founder: confirmar 4 modelos (2 sol + 2 rx) con nombre, descripción, atributos y precio real. Cuando el seed se actualice, los productos automáticamente dejan de tener `noindex` y entran al sitemap. Requiere input del founder, no de código.
 
 ### 🟡 Features importantes para storefront completo
-2. **Página de marca en categoría receta** `/anteojos-de-receta/[brand]` + página de producto rx (copy-paste del patrón sol con cambio de `CATEGORY_SLUG`). Cubre el lado rx que actualmente da 404.
-3. **Página índice de categoría** `/anteojos-de-sol` (sin marca) listando todas las marcas con productos. Cierra el 404 que actualmente apunta el nav.
+2. ~~**Página de marca en categoría receta**~~ ✅ Hecho en commit `91b1d90`.
+3. **Página índice de categoría** `/anteojos-de-sol` y `/anteojos-de-receta` (sin marca) listando todas las marcas con productos. Cierra los 404 que actualmente apuntan en el nav.
 4. **Links legales** (`/politica-de-devolucion`, `/boton-de-arrepentimiento`, `/defensa-del-consumidor`) — **obligatorios antes de habilitar checkout**. Páginas estáticas, contenido legal.
 
 ### 🟢 Pre-launch (más infra)
@@ -305,6 +327,9 @@ Ver sección "Pendientes" en `DECISIONS.md`.
   1. La herramienta `Write` rechazó sobreescribir el archivo de migración recién creado por `supabase migration new` porque "no fue leído primero". Resuelto con un Read trivial. No es bug — es safeguard. No merece MISTAKES.
   2. `psql` no está instalado localmente en el sistema (no era pre-requisito explícito). Resuelto usando `docker exec supabase_db_optica-carballo psql ...` que sí tiene psql incluido. Patrón útil registrado en LEARNINGS.
   3. La migración aplicó sin errores en `supabase db reset`. Todos los smoke tests verdes. No hubo problemas conceptuales.
+- **2026-05-28 (sesión extracción + rx)**:
+  1. Falso positivo en grep: "Producto no encontrado" apareció en el HTML de una página con HTTP 200 y title correcto. Causa: Next 15 serializa el contenido de `not-found.tsx` dentro del RSC payload aunque la página principal renderice OK. No es bug. Aprendí: los greps sobre HTML de Next 15 pueden tener match en payload RSC, no solo en DOM visible. Para chequear contenido visible, mejor usar HTTP status code + title + el primer match único de algo del componente principal.
+  2. Sin otros problemas. El refactor a helpers compartidos pasó sin issues — typecheck verde de una vez, sol sigue intacto post-refactor, rx funciona desde la primera curl.
 - **2026-05-28 (sesión página de producto)**:
   1. **Tipos de Supabase JS para embeds tipan FK 1:1 como arrays**, no como objetos. En runtime devuelve objeto, pero TS strict se queja. Fix: usar `.returns<ProductRow>()` con tipos explícitos manuales por consulta. Aprendí: para queries con embeds, siempre definir tipo manual y pasarlo a `.returns<>()`. Registrado en LEARNINGS.
   2. **seo-strategist detectó 3 críticos**: `[PH]` en producción contaminaría Google con nombres placeholder; `AggregateOffer` con low===high es semánticamente incorrecto; falta `image` + `itemCondition` en Product schema. Aplicado todos: helper `isPlaceholder()` + `robots: noindex` + filtro sitemap + lógica Offer vs AggregateOffer + campos al schema.

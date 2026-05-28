@@ -22,6 +22,46 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Extraer al SEGUNDO caso, no al tercero, cuando son archivos completos
+
+**Categoría**: Operación / Código
+**Confianza**: 🟢 Alta (validado contra el principio general "tres similares OK")
+
+### Qué funcionó
+Cuando iba a duplicar la página de marca y la página de producto para cubrir el lado rx (después de tenerlas funcionando en sol), evalué dos approaches: (a) copy-paste literal, (b) extraer helpers compartidos. Elegí extraer ANTES de duplicar.
+
+Resultado: 4 archivos thin (~30 líneas cada uno) reusando `lib/catalog/{categories,queries,metadata}.ts` y `components/catalog/{brand-page,product-page}.tsx`. La duplicación que evité era ~500 líneas de código casi idéntico. La inversión fue ~300 líneas en helpers + componentes, neto a favor.
+
+### Por qué funcionó (causa real)
+El principio universal **"no abstraer prematuramente — tres líneas similares está bien"** asume **líneas**, no archivos completos. Cuando el patrón es de archivos enteros (cada uno con su propia lógica de routing, fetch, render, metadata), aplicar "tres similares OK" significa esperar al tercer archivo = ~1500 líneas duplicadas. Eso es scope creep en vez de simplicidad.
+
+La heurística refinada que aplico: **abstraer al primer "obviamente repetible" si el unit es archivo, función completa o componente. Mantener tres-líneas-OK solo para snippets dentro de un archivo.**
+
+Otra señal de "extraer ahora": cuando el segundo caso va a tener divergencia eventual (sol y rx tendrán copy distinto, schemas distintos, etc.) pero la estructura es estable, encapsular la estructura permite que la divergencia se exprese como datos (config), no como código.
+
+### Evidencia
+1 caso esta sesión:
+- Si hubiera copy-paste: 500 líneas duplicadas en sol/rx. Cada bug-fix futuro requiere actualizar ambos.
+- Con helpers: 30 líneas por archivo, la lógica está en un único lugar.
+
+Y un sub-resultado: el typecheck pasó verde de una vez post-refactor; sol intacto sin tocar el dev manualmente, rx funcionó desde la primera curl. La cohesión del refactor se validó automáticamente.
+
+### Cuándo aplicar esto de nuevo
+- **Cuando el unit de duplicación es archivo completo o función larga** (no snippets).
+- **Cuando hay configuración que naturalmente describe los casos** (acá: `CATEGORIES.sol` y `CATEGORIES.rx`).
+- **Cuando esperás que el patrón se replique más de 2 veces** (en este proyecto: lentes de contacto vendría como tercer categoría con misma estructura).
+
+### Cuándo NO aplica
+- Cuando el "segundo caso" parece similar pero tiene fundamentos distintos (es una coincidencia, no un patrón). Forzar abstracción ahí crea acoplamiento falso.
+- Cuando todavía no entendés bien la forma del patrón (preferir copy-paste y refactorizar al tercer caso).
+
+### Acción derivada
+- [x] Aplicado en `lib/catalog/` con helpers + componentes compartidos.
+- [ ] Si llega un tercer caso (ej: `/lentes-de-contacto/[brand]/[product]`), validar que los helpers escalan o si necesitan generalizarse más.
+- [ ] Si el patrón se replica 4+ veces sin problemas, considerar agregar a CLAUDE.md como regla: "extraer al segundo caso cuando el unit es archivo/función".
+
+---
+
 ## 2026-05-28 — Supabase JS tipa embeds FK 1:1 como arrays — usar `.returns<>()` con tipos manuales
 
 **Categoría**: Código
