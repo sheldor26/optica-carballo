@@ -32,14 +32,13 @@ VALUES (
   'vulk-day-light',
   'Vulk Day Light',
   'Anteojos de sol unisex con armazón rectangular pequeño en G-Flex, lentes polarizadas verdes y bisagras reforzadas. Livianos: 26.1 gramos.',
-  E'Los Vulk Day Light son anteojos de sol unisex de estilo rectangular pequeño, pensados para uso diario en ciudad, manejo y exteriores. El armazón y las patillas están fabricados en G-Flex, un termoplástico flexible patentado por Vulk: liviano, resistente a torsiones y se adapta mejor al rostro sin perder forma. Pesan apenas 26.1 gramos.\n\nLas lentes son polarizadas, lo que reduce los reflejos molestos del agua, la ruta y superficies vidriadas, e implica protección UV total. Tener en cuenta: con lentes polarizadas algunas pantallas LCD (GPS, tableros de auto, cajeros) pueden verse oscurecidas o con patrones de colores según el ángulo.\n\nLas lentes son intercambiables y las bisagras son de plástico reforzado. Medidas: frente 140mm, lente 51x31mm, puente 20mm, varilla 140mm. Variante disponible: armazón Carey Brillo con lentes verdes.',
+  E'Los Vulk Day Light son anteojos de sol unisex de estilo rectangular pequeño, pensados para uso diario en ciudad, manejo y exteriores. El armazón y las patillas están fabricados en G-Flex, un termoplástico flexible patentado por Vulk: liviano, resistente a torsiones y se adapta mejor al rostro sin perder forma. Pesan apenas 26.1 gramos.\n\nLas lentes son polarizadas, lo que reduce los reflejos molestos del agua, la ruta y superficies vidriadas, e implica protección UV total. Tener en cuenta: con lentes polarizadas algunas pantallas LCD (GPS, tableros de auto, cajeros) pueden verse oscurecidas o con patrones de colores según el ángulo.\n\nLas bisagras son de plástico reforzado. Variante disponible: armazón Carey Brillo con lentes verdes.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "rectangular-small",
+    "frame_shape": "rectangular",
     "lens_treatment": ["polarized", "uv400"],
     "gender": "unisex",
     "weight_grams": 26.1,
-    "interchangeable_lenses": true,
     "hinge_material": "reinforced-plastic",
     "measurements": {
       "frame_width_mm": 140,
@@ -105,21 +104,21 @@ VALUES
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
     NULL,
-    'vulk-day-light/01-lateral.jpg',
+    'vulk-day-light-sol/01-lateral.jpg',
     'Vulk Day Light anteojos de sol vista lateral 3/4, armazón carey brillo con patilla negra',
     1500, 1500, 0, true
   ),
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
     NULL,
-    'vulk-day-light/02-frontal.jpg',
+    'vulk-day-light-sol/02-frontal.jpg',
     'Vulk Day Light anteojos de sol vista frontal, armazón rectangular pequeño carey brillo',
     1500, 1500, 1, false
   ),
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
     NULL,
-    'vulk-day-light/03-medidas.jpg',
+    'vulk-day-light-sol/03-medidas.jpg',
     'Esquema técnico de medidas Vulk Day Light: frente 140mm, lente 51x31mm, puente 20mm, varilla 140mm',
     1500, 1500, 2, false
   )

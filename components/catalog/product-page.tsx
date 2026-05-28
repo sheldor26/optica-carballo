@@ -5,6 +5,7 @@ import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { ProductAttributes } from '@/components/product/product-attributes';
 import { ProductGallery } from '@/components/product/product-gallery';
+import { ProductMeasurements } from '@/components/product/product-measurements';
 import { RelatedProducts } from '@/components/product/related-products';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
@@ -164,6 +165,8 @@ export async function ProductDetailPage({
           )}
 
           <ProductAttributes attributes={product.attributes} />
+
+          <ProductMeasurements attributes={product.attributes} />
 
           <VariantList
             showVariantCta={!isPlaceholder(product.name)}

@@ -5,6 +5,8 @@ const FRAME_MATERIAL_LABELS: Record<string, string> = {
   metal: 'Metal',
   injected: 'Inyectado',
   titanium: 'Titanio',
+  'g-flex': 'G-Flex (termoplástico Vulk)',
+  'tr-90': 'TR-90',
 };
 
 const FRAME_SHAPE_LABELS: Record<string, string> = {
@@ -56,6 +58,9 @@ export function ProductAttributes({ attributes }: { attributes: AttributesJson }
     .filter((v): v is string => Boolean(v));
   const gender = lookup(GENDER_LABELS, asString(attributes.gender));
 
+  const weightGrams =
+    typeof attributes.weight_grams === 'number' ? attributes.weight_grams : null;
+
   const rows: { label: string; value: string }[] = [];
   if (frameMaterial) rows.push({ label: 'Material', value: frameMaterial });
   if (frameShape) rows.push({ label: 'Forma', value: frameShape });
@@ -63,6 +68,7 @@ export function ProductAttributes({ attributes }: { attributes: AttributesJson }
     rows.push({ label: 'Lente', value: lensTreatments.join(', ') });
   }
   if (gender) rows.push({ label: 'Género', value: gender });
+  if (weightGrams !== null) rows.push({ label: 'Peso', value: `${weightGrams} g` });
 
   if (rows.length === 0) return null;
 

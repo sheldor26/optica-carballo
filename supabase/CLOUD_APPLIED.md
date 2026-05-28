@@ -27,6 +27,7 @@ re-aplicar o saltarse algo.
 |---|---|---|
 | `seeds/01_categories_brands.sql` | ✅ 2026-05-28 | 2 categorías top-level + 5 marcas reales. |
 | `seeds/02_rusty_products.sql` | ✅ 2026-05-28 | 4 productos Rusty placeholder + 6 variantes. **Marcados `[PH]`** — reemplazar con data real. |
+| `seeds/03_vulk_day_light.sql` | ✅ 2026-05-28 | **PRIMER PRODUCTO REAL**: Vulk Day Light (sol), slug `vulk-day-light`, variante única SKU 194185 (Carey Brillo / Verde), precio $88.037, stock 3. + 3 imágenes en bucket `products` con path `vulk-day-light/{01-lateral,02-frontal,03-medidas}.jpg`. Confirmado por founder: "Las fotos ya estan en el bucket y aplicado el sql de daylight". |
 
 ---
 

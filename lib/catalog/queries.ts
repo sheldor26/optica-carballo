@@ -25,6 +25,11 @@ export type ProductCardSource = {
     stock_qty: number;
     is_active: boolean;
   }>;
+  images?: Array<{
+    storage_path: string;
+    is_primary: boolean;
+    sort_order: number;
+  }>;
 };
 
 type CategoryRow = { id: string };
@@ -126,7 +131,7 @@ export async function fetchBrandPage(
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(price_cents, stock_qty, is_active)',
+      'slug, name, short_description, is_featured, variants:product_variants(price_cents, stock_qty, is_active), images:product_images(storage_path, is_primary, sort_order)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)

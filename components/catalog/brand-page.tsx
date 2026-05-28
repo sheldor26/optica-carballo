@@ -15,8 +15,15 @@ import type {
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
-function toCardData(p: ProductCardSource): ProductCardData {
+function toCardData(
+  p: ProductCardSource,
+  hrefPrefix: string,
+): ProductCardData {
   const inStock = p.variants.filter((v) => v.is_active && v.stock_qty > 0);
+  const sortedImages = [...(p.images ?? [])].sort((a, b) => {
+    if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+    return a.sort_order - b.sort_order;
+  });
   return {
     slug: p.slug,
     name: p.name,
@@ -24,6 +31,8 @@ function toCardData(p: ProductCardSource): ProductCardData {
     minPriceCents:
       inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
     inStockCount: inStock.length,
+    primaryImagePath: sortedImages[0]?.storage_path ?? null,
+    href: `${hrefPrefix}/${p.slug}`,
   };
 }
 
@@ -37,7 +46,8 @@ export function BrandCatalogPage({
   products: ProductCardSource[];
 }) {
   const pageUrl = `${SITE_URL}/${category.slug}/${brand.slug}`;
-  const items = products.map(toCardData);
+  const hrefPrefix = `/${category.slug}/${brand.slug}`;
+  const items = products.map((p) => toCardData(p, hrefPrefix));
 
   return (
     <main className="container py-8 md:py-12">
