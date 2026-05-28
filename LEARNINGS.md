@@ -108,6 +108,40 @@ PostgREST puede devolver tanto array como objeto según la cardinalidad detectad
 
 ---
 
+## 2026-05-28 — Next 15 usa `apple-icon.png` (no `apple-touch-icon.png`) en `app/`
+
+**Categoría**: Convención del framework
+**Confianza**: 🟢 Alta (validado con HTTP 200 vs 404)
+
+### Qué funcionó
+La convención de archivos de iconos en Next 15 App Router para `app/` es:
+- `app/favicon.ico` → `<link rel="icon">` para favicon clásico.
+- `app/icon.{ico,jpg,jpeg,png,svg}` → `<link rel="icon">` general (típicamente 512×512 PWA).
+- `app/apple-icon.{jpg,jpeg,png}` → `<link rel="apple-touch-icon">` (típicamente 180×180 iOS).
+
+Lo que NO funciona: `app/apple-touch-icon.png` (nombre histórico HTML, pero no es el reconocido por Next). Sirve HTTP 404.
+
+### Por qué importa
+- Tradicionalmente en HTML el meta tag es `<link rel="apple-touch-icon">` y muchos generadores de assets (RealFaviconGenerator, etc.) producen archivos con ese nombre exacto.
+- Next 15 abstrae: vos pones el archivo como `apple-icon.png`, y Next genera el meta tag `rel="apple-touch-icon"` automáticamente con `sizes="180x180"` (detectado del archivo) + URL con hash para cache busting.
+- Si nombrás el archivo como `apple-touch-icon.png`, Next no lo reconoce y va al 404 handler.
+
+### Evidencia
+1 caso resuelto en esta sesión. Síntoma: `/apple-touch-icon.png` → HTTP 404 con 17 KB (página 404 default). Fix: `git mv app/apple-touch-icon.png app/apple-icon.png` + `rm -rf .next` + verificación: HTTP 200 con meta tag `<link rel="apple-touch-icon" href="/apple-icon.png?<hash>" type="image/png" sizes="180x180">`.
+
+### Cuándo aplicar
+- Cualquier vez que el founder o un generador externo pase archivos de icon con nombres clásicos HTML.
+- Cuando aparezcan 404 al testear `/apple-touch-icon.png` u otras variantes.
+
+### Cuándo NO aplica
+- Si los archivos están en `public/` (convención clásica) en vez de `app/`, los nombres originales sí funcionan (Next no los procesa, solo los sirve). Pero perdés la auto-generación de meta tags + cache busting.
+
+### Acción derivada
+- [x] Rename aplicado.
+- [ ] Cuando founder pase próximos assets, validar nombres contra convención Next.
+
+---
+
 ## 2026-05-28 — Estructura `public/` con subdirectorios + README, no carpeta `assets/` en raíz
 
 **Categoría**: Convención del proyecto

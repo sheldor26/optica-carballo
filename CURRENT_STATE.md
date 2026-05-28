@@ -350,14 +350,17 @@ Migración 00002 (identity + orders) aplicada en local con todos los smoke tests
 ### ⏸️ Episodio fuera-de-scope al cierre (descartado por el founder)
 - Founder pidió ejecutar endpoint Anthropic Admin API. Pidió credenciales, pegó por error una API key normal (`sk-ant-api03-...`) en el chat → alerta urgente + instrucción de rotar (registrado en MISTAKES.md 2026-05-28). Founder descartó el pedido. **Acción pendiente del founder: confirmar rotación de la key comprometida.**
 
-### 📁 Estructura `public/` para assets del proyecto (en disco, NO commiteada en commit principal)
-- Creada `public/{brand,og,products}/` con `.gitkeep` y `public/README.md` documentando convención + naming + tamaños sugeridos.
-- Founder tiene logo PNG (símbolo cuadrado azul oscuro) + favicon `.ico` para cargar. Le pasé instrucciones exactas de paths para `mv` desde Downloads.
-- **Pendiente**: el founder copia los archivos manualmente (no puedo escribir binarios desde chat — limitación de la herramienta Write). Cuando estén:
-  - Reemplazar texto "Óptica Carballo" en `SiteHeader` por `next/image` con `priority`.
-  - Decidir si el logo cuadrado queda como badge o si founder pasa versión transparente del isotipo.
-  - Favicon: convención `app/favicon.ico` (Next 15 lo auto-detecta y genera meta tags).
-  - Considerar OG image dinámica 1200×630 con `opengraph-image.tsx` cuando haya asset.
+### Logo + favicon + iconos PWA en el storefront (✅ commit `102b501` + rename — 2026-05-28)
+- **Assets cargados por el founder** a disco:
+  - `public/brand/logo-square.png` (100×100 RGBA, 6.2 KB) — isotipo cuadrado azul oscuro.
+  - `app/favicon.ico` (41 KB) — auto-detectado por Next 15.
+  - `app/icon.png` (79 KB) — PWA / Android.
+  - `app/apple-icon.png` (15 KB) — iOS home screen (renombrado de `apple-touch-icon.png` por convención Next 15).
+- **`SiteHeader` actualizado**: reemplaza el span "Óptica Carballo" por `<Image priority src="/brand/logo-square.png" />` (100×100) + span con nombre. Mobile (<sm): solo logo. Desde sm+: logo + nombre. `rounded-md` suaviza el cuadrado azul contra el fondo blanco.
+- **Auto-generación de meta tags por Next 15**: `<link rel="icon">` para favicon e icon, `<link rel="apple-touch-icon">` para apple-icon, con `sizes` detectado del archivo y URL con hash para cache busting. Sin tocar `layout.tsx`.
+- **Pendiente del founder** (mencionado, no bloqueante):
+  - Versión transparente del isotipo (PNG con alpha o SVG) para usar sobre fondo claro sin el cuadrado azul como marco. La actual funciona como badge pero no es ideal.
+  - OG image 1200×630 para `opengraph-image.tsx` (lo hace "luego").
 
 ### 🟢 Próximas features de código (post-acciones del founder)
 9. ~~**Migración 00002**~~ ✅ Hecho en commit `1cee084`. Pendiente: founder aplica al cloud (`supabase/cloud-bootstrap.sql`).
