@@ -2,6 +2,11 @@
 
 ## Status
 
+✅ **Sprint SEO+ CERRADO** (2026-05-29). 3 quick wins del backlog para mejorar rich results en Google:
+- **FAQPage JSON-LD** en `/anteojos-de-sol/[brand]` y `/anteojos-de-receta/[brand]` (5 FAQs específicas por marca en `lib/content/brand-faqs.ts` + sección visible con `FaqAccordion`).
+- **AggregateOffer JSON-LD** en `/anteojos-de-sol` y `/anteojos-de-receta` con `priceRange` (min/max basado en variantes activas con stock real).
+- **`pnpm clean`** script — limpia `.next` cuando cache stale rompe typecheck.
+
 ✅ **Sprint Performance Audit CERRADO** (2026-05-29). Audit técnico completo del sitio — no se encontraron bugs de performance. Base técnica sólida (Next/Image bien usado, fonts con `display:swap`, GA4 con `afterInteractive`, bundle 101 kB shared). Doc `PERFORMANCE_AUDIT.md` creado con plan de acción para el founder (activar Vercel Analytics + correr PageSpeed Insights).
 
 ✅ **Sprint 2a ML OAuth + Sprint Analytics (GA4 + GSC) CERRADOS** (2026-05-29). OAuth ML funcionando end-to-end (seller `1975674`), GA4 capturando data, GSC verificada + sitemap aprobado. Google va a indexar las 100+ URLs SEO en 1-7 días.

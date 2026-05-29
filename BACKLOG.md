@@ -98,19 +98,12 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## 🟢 Mejoras técnicas (sin urgencia)
 
-- [ ] **Crear `clean` script** en `package.json` (`rm -rf .next`). Cuando
-  movemos rutas, el cache stale rompe el typecheck (LEARNING ya registrado
-  2026-05-28). Un script lo hace más visible.
 - [ ] **Migrar `pnpm lint`** a la CLI nueva de ESLint (Next 15 deprecó
   `next lint`, en Next 16 se elimina). Comando: `npx @next/codemod@canary
   next-lint-to-eslint-cli .`. No urgente — sigue funcionando bien.
 - [ ] **Texto SEO 150-300 palabras por marca** en `/anteojos-de-sol/[brand]`.
   Requiere ALTER TABLE para agregar `brands.seo_intro` y `brands.seo_outro`.
   Sub-feature de mejora de SEO (seo-strategist lo sugirió en ese momento).
-- [ ] **FAQ schema** en páginas de marca (3-5 preguntas frecuentes con
-  `FAQPage` JSON-LD). Bajo esfuerzo, alto CTR potencial.
-- [ ] **AggregateOffer a nivel categoría** (`/anteojos-de-sol`) con
-  `priceRange` min/max. Rich result.
 - [ ] **`engines.npm` en package.json** para que falle si alguien usa
   npm en vez de pnpm. Ya hay `packageManager` field, pero engines.npm con
   versión inexistente sería más explícito.
@@ -132,6 +125,9 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## ✅ Hecho
 
+- 2026-05-29 (commit pendiente sprint SEO+): `clean` script en package.json (`pnpm clean` = `rm -rf .next`).
+- 2026-05-29 (commit pendiente sprint SEO+): FAQ schema en páginas de marca (5 FAQs específicas por marca en `lib/content/brand-faqs.ts`, renderizadas con `FaqAccordion` + `FaqJsonLd`).
+- 2026-05-29 (commit pendiente sprint SEO+): AggregateOffer a nivel categoría en `/anteojos-de-sol` y `/anteojos-de-receta` (priceRange basado en variantes con stock real).
 - 2026-05-28: API key comprometida rotada por el founder. Nueva key en
   `.env.local`.
 - 2026-05-28: Migración 00001 (catálogo) aplicada al cloud (verificada).

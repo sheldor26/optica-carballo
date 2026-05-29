@@ -22,6 +22,34 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — FAQ schema por marca: específico, no genérico (regla Google)
+
+**Categoría**: SEO / Structured data
+**Confianza**: 🟢 Alta (Google guidelines explícitas)
+
+### Qué funcionó
+
+Al agregar `FAQPage` JSON-LD a las páginas `/anteojos-de-sol/[brand]`, NO reutilicé las FAQs genéricas de `lib/content/faqs.ts` (envíos, pagos, garantía general). Creé `lib/content/brand-faqs.ts` con 4-5 preguntas ESPECÍFICAS de cada marca (origen, público, polarizados, garantía oficial, receta). Esto evita 2 problemas:
+
+1. **Contenido duplicado** entre páginas de marca y `/preguntas-frecuentes` (Google penaliza duplicación).
+2. **Schema sin valor SEO**: Google premia FAQ schema cuando responde queries específicas que el usuario realmente busca antes de comprar esa marca puntual.
+
+Además respeté la regla dura de Google: **el contenido del schema debe matchear contenido visible en la página**. Renderizamos `FaqAccordion` con las mismas FAQs que el JSON-LD — sin texto visible, Google considera el schema "spammy" y deja de mostrar el rich snippet.
+
+### Por qué funcionó
+
+FAQ schema es un rich result con altísimo CTR (preguntas expandibles bajo el resultado normal en SERP). Pero solo funciona si:
+- Respuestas concisas y útiles (no marketing puro).
+- Sin duplicación cross-page.
+- Sin CTAs ni texto promocional dentro de las respuestas.
+- Match exacto entre schema y contenido visible.
+
+### Cuándo aplicar
+
+- Cualquier página de marca, categoría o producto con potencial de queries informacionales asociadas.
+- NO reutilizar FAQs genéricas — siempre escribir las específicas al contexto.
+- Mínimo 3 FAQs por página para que valga la pena el rich result.
+
 ## 2026-05-29 — Performance audit basado en RUM, no en code review pre-tráfico
 
 **Categoría**: Performance / Métodos de medición

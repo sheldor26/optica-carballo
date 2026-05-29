@@ -1,8 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BrandStorySection } from '@/components/brand/brand-story-section';
+import { FaqAccordion } from '@/components/faqs/faq-accordion';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
+import { FaqJsonLd } from '@/components/seo/faq-jsonld';
 import {
   ProductCard,
   type ProductCardData,
@@ -13,6 +15,7 @@ import {
   getBrandAssetUrl,
   shouldInvertLogo,
 } from '@/lib/storage/brand-asset-url';
+import { getBrandFaqs } from '@/lib/content/brand-faqs';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type {
   BrandPageData,
@@ -61,6 +64,7 @@ export function BrandCatalogPage({
   const items = products.map((p) =>
     toCardData(p, hrefPrefix, category.slug, brand.slug),
   );
+  const brandFaqs = getBrandFaqs(brand.slug);
 
   return (
     <main className="container py-8 md:py-12">
@@ -83,6 +87,7 @@ export function BrandCatalogPage({
           inStockCount: p.inStockCount,
         }))}
       />
+      <FaqJsonLd items={brandFaqs} />
 
       <nav aria-label="Breadcrumb" className="text-muted-foreground mb-6 text-sm">
         <ol className="flex flex-wrap items-center gap-1">
@@ -147,6 +152,28 @@ export function BrandCatalogPage({
             </RevealOnScroll>
           ))}
         </section>
+      )}
+
+      {brandFaqs.length > 0 && (
+        <RevealOnScroll
+          as="section"
+          aria-labelledby="brand-faqs-heading"
+          className="border-border/60 mt-20 border-t pt-12 md:mt-24"
+        >
+          <h2
+            id="brand-faqs-heading"
+            className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl"
+          >
+            Preguntas frecuentes sobre {brand.name}
+          </h2>
+          <p className="text-muted-foreground mt-2 max-w-2xl text-sm md:text-base">
+            Lo que más nos consultan sobre {brand.name}. Si no encontrás tu
+            respuesta, escribinos por WhatsApp.
+          </p>
+          <div className="mt-6 max-w-3xl">
+            <FaqAccordion items={brandFaqs} />
+          </div>
+        </RevealOnScroll>
       )}
     </main>
   );

@@ -6,6 +6,7 @@ import { buildCategoryIndexMetadata } from '@/lib/catalog/metadata';
 import {
   fetchAvailableFrameShapes,
   fetchCategoryIndex,
+  fetchCategoryPriceRange,
   fetchProductsByCategoryAndShapes,
 } from '@/lib/catalog/queries';
 
@@ -53,6 +54,15 @@ export default async function Page({
   }
 
   // Sin filtros: vista clásica de marcas.
-  const brands = await fetchCategoryIndex(CATEGORY);
-  return <CategoryIndexPage category={CATEGORY} brands={brands} />;
+  const [brands, priceRange] = await Promise.all([
+    fetchCategoryIndex(CATEGORY),
+    fetchCategoryPriceRange(CATEGORY.slug),
+  ]);
+  return (
+    <CategoryIndexPage
+      category={CATEGORY}
+      brands={brands}
+      priceRange={priceRange}
+    />
+  );
 }

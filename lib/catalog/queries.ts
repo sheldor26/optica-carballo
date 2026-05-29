@@ -620,6 +620,64 @@ export async function fetchCategoryIndex(
   }));
 }
 
+export type CategoryPriceRange = {
+  minPriceCents: number;
+  maxPriceCents: number;
+  offerCount: number;
+};
+
+/**
+ * Para schema.org `AggregateOffer` en la página de categoría: devuelve
+ * priceRange (min/max) considerando solo variantes activas con stock > 0.
+ * Si no hay variantes con stock, retorna null (no podemos publicar oferta
+ * que no se puede comprar — es lo que pide Google).
+ */
+export async function fetchCategoryPriceRange(
+  categorySlug: string,
+): Promise<CategoryPriceRange | null> {
+  const supabase = createStaticClient();
+
+  const { data: cat } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', categorySlug)
+    .is('parent_id', null)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<CategoryRow>();
+
+  if (!cat) return null;
+
+  const { data: productIds } = await supabase
+    .from('products')
+    .select('id')
+    .eq('category_id', cat.id)
+    .eq('is_active', true)
+    .returns<{ id: string }[]>();
+
+  if (!productIds || productIds.length === 0) return null;
+
+  const { data: variants } = await supabase
+    .from('product_variants')
+    .select('price_cents')
+    .in(
+      'product_id',
+      productIds.map((p) => p.id),
+    )
+    .eq('is_active', true)
+    .gt('stock_qty', 0)
+    .returns<{ price_cents: number }[]>();
+
+  if (!variants || variants.length === 0) return null;
+
+  const prices = variants.map((v) => v.price_cents);
+  return {
+    minPriceCents: Math.min(...prices),
+    maxPriceCents: Math.max(...prices),
+    offerCount: prices.length,
+  };
+}
+
 /**
  * Para `generateStaticParams` de páginas de marca: devuelve los slugs de
  * todas las marcas activas. Las mismas marcas existen en sol y receta —

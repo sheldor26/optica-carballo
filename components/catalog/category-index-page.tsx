@@ -3,7 +3,10 @@ import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { BrandGridCard } from '@/components/catalog/brand-grid-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { CategoryConfig } from '@/lib/catalog/categories';
-import type { BrandWithProductCount } from '@/lib/catalog/queries';
+import type {
+  BrandWithProductCount,
+  CategoryPriceRange,
+} from '@/lib/catalog/queries';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -18,7 +21,23 @@ function buildCollectionJsonLd(
   category: CategoryConfig,
   brands: BrandWithProductCount[],
   pageUrl: string,
+  priceRange: CategoryPriceRange | null,
 ) {
+  // AggregateOffer: rich result que muestra rango de precios en Google.
+  // Requiere lowPrice, highPrice, priceCurrency, offerCount. Solo se incluye
+  // si hay variantes con stock real (Google no acepta ofertas vacías).
+  const aggregateOffer =
+    priceRange !== null
+      ? {
+          '@type': 'AggregateOffer',
+          lowPrice: (priceRange.minPriceCents / 100).toFixed(2),
+          highPrice: (priceRange.maxPriceCents / 100).toFixed(2),
+          priceCurrency: 'ARS',
+          offerCount: priceRange.offerCount,
+          availability: 'https://schema.org/InStock',
+        }
+      : undefined;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -34,18 +53,21 @@ function buildCollectionJsonLd(
         name: b.name,
       })),
     },
+    ...(aggregateOffer ? { offers: aggregateOffer } : {}),
   };
 }
 
 export function CategoryIndexPage({
   category,
   brands,
+  priceRange,
 }: {
   category: CategoryConfig;
   brands: BrandWithProductCount[];
+  priceRange: CategoryPriceRange | null;
 }) {
   const pageUrl = `${SITE_URL}/${category.slug}`;
-  const jsonLd = buildCollectionJsonLd(category, brands, pageUrl);
+  const jsonLd = buildCollectionJsonLd(category, brands, pageUrl, priceRange);
 
   return (
     <main className="container py-8 md:py-12">
