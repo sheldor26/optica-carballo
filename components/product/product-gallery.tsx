@@ -89,18 +89,13 @@ export function ProductGallery({ productName, images }: Props) {
         type="button"
         onClick={() => setLightboxOpen(true)}
         aria-label={`Ampliar imagen: ${active.alt_text}`}
-        className="bg-background border-border/40 group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border p-10 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-14 md:p-20"
+        className="bg-background border-border/40 group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border p-4 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-6 md:p-8"
       >
-        {/* Inner wrapper para que `fill` respete el padding del outer.
-            `Image fill` se posiciona absolute inset-0 del contenedor
-            relative más cercano — el outer tiene padding pero fill lo
-            ignora. Este inner wrapper define el área "post-padding"
-            donde la imagen y su zoom hover deben caber.
-
-            Padding generoso (p-20 = 80px en desktop) porque las fotos
-            originales del fabricante vienen muchas veces sin aire
-            propio — el anteojo toca los bordes del JPG. El padding
-            del wrapper compensa eso. */}
+        {/* Padding moderado (p-8 = 32px en desktop) — suficiente "aire"
+            visual para fotos sin margen propio, sin achicar excesivamente
+            las fotos que ya vienen centradas con margen. Antes era p-20
+            pero achicaba demasiado las fotos del founder (que vienen con
+            anteojo centrado + buen fondo). */}
         <div className="relative h-full w-full">
           <Image
             src={activeUrl}
