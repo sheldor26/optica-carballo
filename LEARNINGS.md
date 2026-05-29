@@ -22,6 +22,27 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — OAuth multi-cuenta: validar identidad de cuenta autorizada antes de operar
+
+**Categoría**: OAuth / Integraciones multi-tenant
+**Confianza**: 🟢 Alta (validado en re-auth ML para import MLA1432137395)
+
+### Qué funcionó
+
+Para el sprint de import MLA1432137395 (producto en cuenta ML distinta a la previamente autorizada), tras el OAuth flow el founder pasó `?ml_oauth=success&user_id=81654493`. Antes de avanzar al endpoint de import, **validé que el `user_id` retornado fuera distinto al anterior** (`1975674`). Si hubiera sido el mismo (cookie de sesión ML re-autorizando la cuenta vieja sin que el founder lo note), todo el flow posterior fallaría con 403 igual que el intento anterior.
+
+Si los IDs hubieran matcheado, mi respuesta hubiera sido: "ML te re-autorizó con la cuenta vieja por cookie de sesión — cerrá sesión en ML primero y volvé a probar". Diagnóstico anticipado en lugar de errores reactivos.
+
+### Por qué funcionó
+
+OAuth no garantiza identidad. La cuenta autorizada depende de qué cuenta tenía sesión activa en el proveedor (ML, Google, etc) al momento de aprobar. En multi-cuenta del mismo usuario, esto produce silent bugs: el flow técnico es OK (tokens válidos, callback exitoso) pero la cuenta semánticamente incorrecta. Validar el identificador retornado (sub, user_id, sub-account ID) es la única protección.
+
+### Cuándo aplicar
+
+- Cualquier OAuth con proveedor donde el usuario puede tener múltiples cuentas (Google personal/work, ML personal/empresa, GitHub personal/org).
+- Si el caso de uso requiere una cuenta específica, mostrar el ID autorizado al usuario para confirmación visual ANTES de operaciones.
+- Para multi-tenancy genuino: guardar el `account_id` retornado junto al token y usarlo como discriminator en queries.
+
 ## 2026-05-29 — Hipótesis "factor externo" solo DESPUÉS de verificar el código local
 
 **Categoría**: Debugging / Bias de diagnóstico
