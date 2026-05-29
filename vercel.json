@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/check-alerts",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/ml-reconcile-stock",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

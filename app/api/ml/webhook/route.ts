@@ -1,82 +1,105 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { mlWebhookPayloadSchema } from '@/lib/integrations/mercadolibre/schemas';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { syncStockFromMLItem } from '@/lib/integrations/mercadolibre/sync-stock';
+import { logMLSyncError } from '@/lib/integrations/mercadolibre/integrations-repo';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 /**
- * Webhook receiver para notificaciones de Mercado Libre.
+ * Webhook receiver para notificaciones de Mercado Libre — Sprint 2b.
  *
- * **Estado actual: STUB (Sprint 1 ML)**.
+ * Flow:
+ * 1. Parsear + validar shape con Zod.
+ * 2. Idempotencia: si el webhook `_id` ya está en `marketplace_webhook_events`,
+ *    responder 200 OK sin re-procesar.
+ * 3. Procesar según `topic`:
+ *    - `items`: sync stock con `syncStockFromMLItem(resource_id)` — covers
+ *      cambios manuales del seller en panel ML + cambios por ventas.
+ *    - `orders_v2`: ignorar por ahora — el sync via items cubre el efecto
+ *      en stock. Futuro: tracking de órdenes.
+ *    - otros topics: ignorar con status='ignored'.
+ * 4. INSERT en `marketplace_webhook_events` con status (processed/failed/ignored).
+ * 5. Responder 200 OK siempre (incluso si processing falla, para no triggerear
+ *    retries de ML — los errores ya quedaron loggeados).
  *
- * Este endpoint actualmente:
- * 1. Acepta POST con payload de ML.
- * 2. Valida shape con Zod (sin procesar nada todavía).
- * 3. Log del payload para visibilidad durante setup inicial.
- * 4. Devuelve 200 OK siempre — ML reintenta si recibe non-2xx.
- *
- * **Sprint 2 va a expandir este endpoint con**:
- * - Validación de origen (HMAC signature o secret en URL).
- * - Idempotencia por `_id` del webhook.
- * - Fetch del recurso completo via API ML (el webhook solo trae path).
- * - Update de stock en Supabase según topic (items, orders_v2).
- * - Logging a `marketplace_sync_errors` cuando algo falla.
- *
- * Por ahora el endpoint existe para que ML pueda validarlo al guardar
- * la app — sin endpoint que responda 200, ML rechaza la callback URL.
- *
- * Ver ADR-024 en DECISIONS.md para el diseño completo.
+ * Validation HMAC: ML NO firma webhooks por default. Si en algún momento
+ * configurás un secret, agregar header check acá. Por ahora confiamos en que
+ * el endpoint está atrás de HTTPS y la URL es semi-secreta.
  */
 export async function POST(request: NextRequest) {
+  let body: unknown;
   try {
-    const body = await request.json();
-
-    // Validar shape con Zod (no procesar todavía, solo verificar formato).
-    const result = mlWebhookPayloadSchema.safeParse(body);
-
-    if (!result.success) {
-      console.warn('[ml-webhook] payload con formato inesperado', {
-        errors: result.error.flatten(),
-        receivedKeys: Object.keys(body ?? {}),
-      });
-      // Igual respondemos 200 — ML interpreta non-2xx como retry necesario,
-      // y un payload mal formed no se va a arreglar reintentando.
-      return NextResponse.json({ ok: true, ignored: true });
-    }
-
-    // Sprint 1: solo log. Sprint 2 procesará según `topic`.
-    console.log('[ml-webhook] payload recibido (stub)', {
-      topic: result.data.topic,
-      resource: result.data.resource,
-      user_id: result.data.user_id,
-      attempts: result.data.attempts,
-      sent: result.data.sent,
-    });
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error('[ml-webhook] error procesando webhook', err);
-    // Respondemos 200 igual — el error es nuestro (no de ML), reintenta
-    // no ayuda. Sprint 2 va a manejar errores con retry inteligente.
-    return NextResponse.json({ ok: true, error: 'processing_failed' });
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ ok: true, ignored: 'invalid_json' });
   }
-}
 
-/**
- * ML a veces hace GET para validar que el endpoint existe + responde 200
- * al momento de guardar la app. Respondemos 200 OK con info mínima.
- */
-export async function GET() {
-  return NextResponse.json({
-    ok: true,
-    endpoint: 'mercadolibre-webhook',
-    status: 'stub',
-    note: 'Este endpoint acepta webhooks de ML pero todavía no procesa nada. Sprint 2 implementa el procesamiento real. Ver DECISIONS.md ADR-024.',
+  const parsed = mlWebhookPayloadSchema.safeParse(body);
+  if (!parsed.success) {
+    console.warn('[ml-webhook] payload con formato inesperado', {
+      errors: parsed.error.flatten(),
+    });
+    return NextResponse.json({ ok: true, ignored: 'invalid_shape' });
+  }
+
+  const payload = parsed.data;
+  const supabase = createAdminClient();
+
+  const { data: existing } = await supabase
+    .from('marketplace_webhook_events')
+    .select('id')
+    .eq('id', payload._id)
+    .maybeSingle();
+
+  if (existing) {
+    return NextResponse.json({ ok: true, deduped: true });
+  }
+
+  let status: 'processed' | 'failed' | 'ignored' = 'ignored';
+  let errorMessage: string | null = null;
+
+  if (payload.topic === 'items') {
+    const itemId = payload.resource.replace(/^\/items\//, '');
+
+    if (itemId && /^MLA\d+$/.test(itemId)) {
+      try {
+        const result = await syncStockFromMLItem(itemId);
+        if (result.ok) {
+          status = 'processed';
+        } else {
+          status = 'failed';
+          errorMessage = result.reason ?? 'sync_failed';
+        }
+      } catch (err) {
+        status = 'failed';
+        errorMessage = err instanceof Error ? err.message : String(err);
+        await logMLSyncError({
+          operation: 'webhook_items',
+          errorPayload: {
+            webhook_id: payload._id,
+            item_id: itemId,
+            error: errorMessage,
+          },
+        });
+      }
+    } else {
+      errorMessage = 'invalid_resource_path';
+    }
+  }
+  // Otros topics (orders_v2, etc) caen a status='ignored'.
+
+  await supabase.from('marketplace_webhook_events').insert({
+    id: payload._id,
+    marketplace: 'mercadolibre',
+    topic: payload.topic,
+    resource: payload.resource,
+    external_user_id: String(payload.user_id),
+    status,
+    payload: payload as unknown as Record<string, unknown>,
+    error_message: errorMessage,
   });
-}
 
-/**
- * Algunos sistemas (CDN, monitoring de ML) hacen HEAD para verificar el endpoint.
- */
-export async function HEAD() {
-  return new NextResponse(null, { status: 200 });
+  return NextResponse.json({ ok: true, status });
 }

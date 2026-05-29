@@ -65,6 +65,11 @@ export async function createOrderFromCart(args: {
     };
   }
 
+  // ===== 1.5. Sync stock outbound a ML (best-effort, no bloquea checkout) =====
+  // Reserva exitosa → bajar stock en ML para no oversell allá.
+  // Errors quedan en marketplace_sync_errors; el cron de reconcile corrige drift.
+  void syncStockOutboundForVariants(reserveItems.map((it) => it.variant_id));
+
   // ===== 2. INSERT orders =====
   const totalCents = cart.subtotalCents + shipping.cents;
 
@@ -170,5 +175,23 @@ async function revertStock(
       p_variant_id: it.variant_id,
       p_amount: it.quantity,
     });
+  }
+  // Sync outbound del revert también (devolver stock a ML).
+  void syncStockOutboundForVariants(items.map((it) => it.variant_id));
+}
+
+/**
+ * Helper para sync outbound de N variantes después de un cambio de stock.
+ * Best-effort — errors quedan en marketplace_sync_errors via syncVariantStockToML.
+ * Lazy import para no bloquear módulo en tests / type-check sin env vars ML.
+ */
+async function syncStockOutboundForVariants(variantIds: string[]): Promise<void> {
+  try {
+    const { syncVariantStockToML } = await import(
+      '@/lib/integrations/mercadolibre/sync-stock'
+    );
+    await Promise.all(variantIds.map((id) => syncVariantStockToML(id)));
+  } catch (err) {
+    console.error('[checkout] sync outbound ML falló', err);
   }
 }
