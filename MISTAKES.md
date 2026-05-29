@@ -24,6 +24,55 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Capturé exception class equivocado en mi fix de idempotencia (42P07 ≠ 42710)
+
+**Estado**: 🟡 Mitigado v2 — IF NOT EXISTS check explícito (commit `a4c1d6a`).
+**Categoría**: Postgres / Migrations / Manejo de errores
+
+### Qué pasó
+
+Tras el mistake anterior (ADD CONSTRAINT no idempotente), apliqué fix v1: wrappear en `DO $$ ... EXCEPTION WHEN duplicate_object`. Founder reintentó migration y falló con MISMO error:
+```
+ERROR: 42P07: relation "..." already exists
+```
+
+`duplicate_object` es SQLSTATE `42710`. El error real era `42P07` = `duplicate_table` (referido al índice subyacente del UNIQUE constraint). Mi catch no aplicaba.
+
+### Causa raíz
+
+Asumí que `ADD CONSTRAINT UNIQUE` falla con `duplicate_object`. Realidad: UNIQUE constraint crea índice subyacente con mismo nombre, y Postgres puede tirar el error como `duplicate_table` (referido a la relation del índice) en lugar de `duplicate_object` (referido a la constraint definition).
+
+NO verifiqué qué SQLSTATE específico tira el error antes de capturarlo.
+
+### Regla preventiva (refinada)
+
+Para idempotencia de objetos DB que NO tienen `IF NOT EXISTS` nativo:
+- **NO confiar en capturar SQLSTATE específico** con `EXCEPTION WHEN xxx`. Múltiples SQLSTATEs son posibles según contexto.
+- **Mejor**: query a `information_schema` para hacer `IF NOT EXISTS` check explícito. Funciona independiente del error class.
+
+```sql
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.X WHERE ...) THEN
+    -- crear objeto
+  END IF;
+END $$;
+```
+
+### Fix v2 aplicado
+
+Commit `a4c1d6a`: cambio EXCEPTION → IF NOT EXISTS check sobre `information_schema.table_constraints`.
+
+### Documentado en LEARNINGS
+
+Entry "IF NOT EXISTS check explícito > EXCEPTION catch" — pattern refinado + lista de excepciones que tienen este problema (UNIQUE, CHECK, FOREIGN KEY, triggers, policies).
+
+### Anti-pattern descubierto
+
+Confiar en capturar 1 SQLSTATE específico cuando el objeto puede tirar varios según contexto. **Solución**: check explícito antes de la operación.
+
+---
+
 ## 2026-05-29 — Migration `ADD CONSTRAINT` sin idempotencia rompió re-aplicación
 
 **Estado**: 🟡 Mitigado — fix aplicado en commit `fce3a08` con DO block + EXCEPTION.

@@ -664,6 +664,33 @@ SQL no soporta `IF NOT EXISTS` en `ADD CONSTRAINT`. Si la migration corrió parc
 2. Si las 3 ✅ → reintentar `/api/ml/oauth/initiate` directo (sin re-aplicar migration).
 3. Si falla → visitar `/api/ml/debug-last-error` (ahora SÍ debería tener errores guardados ya que la tabla existe).
 
+### Update 2026-05-29: fix 2do intento — IF NOT EXISTS check explícito
+
+Founder reintentó migration con el fix v1 (DO block + EXCEPTION) y falló con MISMO error:
+```
+ERROR: 42P07: relation "product_variants_mercadolibre_item_id_unique" already exists
+```
+
+**Causa**: `42P07` es `duplicate_table` (índice subyacente del UNIQUE constraint), NO `42710 duplicate_object`. Mi `EXCEPTION WHEN duplicate_object` no captura el error correcto.
+
+**Fix v2 aplicado (commit `a4c1d6a`)**: cambiar a `IF NOT EXISTS` check explícito sobre `information_schema.table_constraints`. Más robusto que catchear SQLSTATE específico — funciona independiente del error class que tire Postgres.
+
+**Acción founder revisada**: en lugar de re-aplicar migration, correr SQL diagnóstico:
+```sql
+SELECT
+  EXISTS (SELECT 1 FROM information_schema.tables
+          WHERE table_schema='public' AND table_name='marketplace_integrations') AS tabla_marketplace_integrations,
+  EXISTS (SELECT 1 FROM information_schema.tables
+          WHERE table_schema='public' AND table_name='marketplace_sync_errors') AS tabla_marketplace_sync_errors,
+  EXISTS (SELECT 1 FROM information_schema.columns
+          WHERE table_schema='public' AND table_name='product_variants'
+          AND column_name='mercadolibre_item_id') AS columna_mercadolibre_item_id,
+  EXISTS (SELECT 1 FROM information_schema.table_constraints
+          WHERE constraint_name='product_variants_mercadolibre_item_id_unique') AS constraint_unique;
+```
+
+Si los 4 son TRUE → todo OK, reintentar OAuth. Si alguno FALSE → SQL específico para crear lo faltante.
+
 ---
 
 ## Status anterior

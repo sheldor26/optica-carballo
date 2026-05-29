@@ -22,6 +22,66 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — IF NOT EXISTS check explícito > EXCEPTION catch para idempotencia de UNIQUE constraints
+
+**Categoría**: Postgres / Migrations / Idempotencia (refinamiento)
+**Confianza**: 🟢 Alta (caso real validó el patrón)
+
+### Qué pasó
+
+Refinamiento del entry anterior. Mi primer fix wrappeaba `ADD CONSTRAINT` en `DO block + EXCEPTION WHEN duplicate_object`. Founder reintentó y falló con MISMO error:
+```
+ERROR: 42P07: relation "..." already exists
+```
+
+`42P07` es `duplicate_table` (porque UNIQUE constraint crea índice subyacente con mismo nombre como relation), NO `42710 duplicate_object`. Mi catch no aplicaba.
+
+### Solución refinada
+
+En lugar de capturar exception por SQLSTATE específico (frágil — depende de cuál SQLSTATE tire Postgres), usar `IF NOT EXISTS` check explícito sobre `information_schema`:
+
+```sql
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.table_constraints
+    WHERE constraint_name = 'product_variants_mercadolibre_item_id_unique'
+      AND table_schema = 'public'
+      AND table_name = 'product_variants'
+  ) THEN
+    ALTER TABLE public.product_variants
+      ADD CONSTRAINT product_variants_mercadolibre_item_id_unique
+      UNIQUE (mercadolibre_item_id) DEFERRABLE INITIALLY DEFERRED;
+  END IF;
+END $$;
+```
+
+### Por qué es mejor
+
+- **Funciona independiente del SQLSTATE** que tire Postgres. UNIQUE constraints pueden tirar `42P07` o `42710` según contexto. IF NOT EXISTS check ignora eso.
+- **Más legible**: "si no existe, créalo" es declarativo. El EXCEPTION catch requiere conocer SQLSTATEs.
+- **Estándar SQL**: information_schema es portable.
+
+### Aplicar a futuro
+
+Para idempotencia de cualquier objeto DB que NO soporte `IF NOT EXISTS` nativo:
+- **UNIQUE constraints**: check sobre `information_schema.table_constraints`.
+- **CHECK constraints**: idem.
+- **FOREIGN KEY constraints**: idem.
+- **Triggers**: check sobre `information_schema.triggers` o `pg_trigger`.
+- **Policies (RLS)**: `DROP POLICY IF EXISTS` primero + `CREATE POLICY`.
+
+### Patrón meta refinado
+
+Anti-pattern: confiar en `EXCEPTION WHEN duplicate_X` cuando el objeto puede tirar múltiples SQLSTATEs según contexto. Pattern positivo: query directa a `information_schema` para condicional explícito.
+
+### Supersedes entry anterior
+
+Este entry refina/supersedes el del DO block con EXCEPTION. La versión con IF NOT EXISTS es la robusta.
+
+---
+
 ## 2026-05-29 — `DO $$ ... EXCEPTION WHEN duplicate_object` para idempotencia en `ADD CONSTRAINT`
 
 **Categoría**: Postgres / Migrations / Idempotencia

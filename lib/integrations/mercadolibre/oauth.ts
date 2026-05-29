@@ -94,6 +94,14 @@ export async function exchangeCodeForTokens(
     json = await response.json();
   } catch (err) {
     console.error('[ml-oauth] error parsing token response', err);
+    await logMLSyncError({
+      operation: 'oauth',
+      errorPayload: {
+        stage: 'parse_response',
+        status: response.status,
+        error: err instanceof Error ? err.message : String(err),
+      },
+    });
     return { ok: false, error: 'unknown', retryable: false };
   }
 
@@ -103,6 +111,19 @@ export async function exchangeCodeForTokens(
       '[ml-oauth] token response con formato inesperado',
       parsed.error.flatten(),
     );
+    // Loguear a DB con el JSON crudo recibido — útil para debugging
+    // cuando ML cambia el formato o devuelve error con shape inesperado.
+    // CUIDADO: este JSON PUEDE contener tokens parciales si ML cambió
+    // el shape. Remover `received_json` antes de Sprint 3 estable.
+    await logMLSyncError({
+      operation: 'oauth',
+      errorPayload: {
+        stage: 'zod_validation',
+        status: response.status,
+        zod_errors: parsed.error.flatten(),
+        received_json: json,
+      },
+    });
     return { ok: false, error: 'validation_error', retryable: false };
   }
 
@@ -117,6 +138,13 @@ export async function exchangeCodeForTokens(
   });
 
   if (!integration) {
+    await logMLSyncError({
+      operation: 'oauth',
+      errorPayload: {
+        stage: 'upsert_integration',
+        external_user_id: String(tokens.user_id),
+      },
+    });
     return { ok: false, error: 'unknown', retryable: true };
   }
 
