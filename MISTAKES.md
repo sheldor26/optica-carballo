@@ -24,6 +24,52 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — 13MA VEZ: omití documentar patrón "stub endpoint" aunque era genuinamente reutilizable
+
+**Estado**: 🔴 Abierto — nuevo sub-patrón identificado dentro del meta-patrón del cierre formal.
+**Categoría**: Proceso / Detección de patrones documentables
+
+### Qué pasó
+
+En el turno del endpoint stub (`/api/ml/webhook` con stub que devuelve 200), apliqué el check de regla v7:
+- ¿Hubo decisión técnica? Sí — crear stub vs esperar Sprint 2.
+- ¿Es no-obvia? Lo evalué como "es ejecución estándar, no patrón nuevo".
+- Conclusión: declaré "Sin cambios" en LEARNINGS y MISTAKES.
+
+El hook intervino correctamente: la decisión SÍ era documentable como patrón reutilizable ("endpoint stub para integraciones con upfront-validation"). Es el 3er caso del meta-patrón "feature mínima viable para desbloquear stakeholder externo" — eso lo vuelve consolidado, no incidente.
+
+### Causa raíz
+
+Subestimo el valor de patrones que ya conozco implícitamente. Cuando una técnica me parece "obvia" (ej: stub endpoint), tiendo a no documentarla. Pero "obvia para mí" ≠ "ya documentada como patrón explícito reutilizable". Si el patrón vale para 3+ casos del proyecto, debe estar en LEARNINGS.
+
+### Regla preventiva v8
+
+Refinamiento del check v7:
+
+**Antes de declarar "Sin cambios" en LEARNINGS, hacer este check específico**:
+
+1. ¿Hice algo técnico hoy que un dev nuevo NO inferiría leyendo el código sin contexto? (sí/no)
+2. ¿Hay 2+ casos similares ya en el proyecto donde apliqué el mismo principio implícito? (sí/no)
+3. Si ambas son SÍ → DEBE haber entry en LEARNINGS aunque el patrón parezca "estándar".
+
+Casos típicos donde aplica:
+- Stubs / placeholders deployados para desbloquear flow externo.
+- Decisiones de scope mínimo (permissions, topics, fields).
+- Fallbacks gracefuls que evitan blocker en chain (X falla → Y sigue funcionando).
+- Separación de side-effects no-críticos (welcome email no bloquea suscripción).
+
+Estos patrones se SIENTEN obvios pero son la diferencia entre código bien estructurado y código frágil. Documentarlos refuerza el patrón y enseña a "mi yo futuro" o a otro dev.
+
+### Mitigación específica
+
+Aplicación inmediata: agregué entry en LEARNINGS "Endpoint stub para integraciones con upfront-validation" reconociendo:
+- El patrón concreto.
+- Otros casos donde aplica (OAuth callbacks, verification webhooks, CDN preview).
+- Trade-offs (riesgo de oversell si founder confía que sync funciona).
+- El meta-patrón "separar setup externo del valor entregable" (3er caso confirmado).
+
+---
+
 ## 2026-05-29 — 12MA VEZ: stop hook intervino en mensaje técnicamente conforme — necesidad de hook real, no auto-disciplina
 
 **Estado**: 🔴 Abierto — agotamos las refinaciones de auto-disciplina (v4-v7). Necesita escalación técnica real.

@@ -431,12 +431,26 @@ Mismo principio (scope mínimo) aplicado a los webhook topics. ML ofrece 7 topic
 1. ✅ **Dominio confirmado**: `opticacarballo.com.ar`.
 2. ✅ **Callback URL final**: `https://opticacarballo.com.ar/api/ml/webhook`.
 3. ✅ **Redirect URI OAuth final**: `https://opticacarballo.com.ar/api/ml/oauth/callback` (Sprint 2).
-4. ✅ **Endpoint stub deployado**: `/api/ml/webhook` devuelve 200 OK + log + valida shape Zod. Permite al founder guardar la app en ML sin esperar Sprint 2. Sprint 2 reemplaza la lógica del POST handler.
-5. ⏳ **Guardar la app en ML** con permisos + topics + callback URL configurados.
-6. ⏳ **Pasar App ID + Secret Key** (idealmente directo a Vercel Environment Variables).
-7. ⏳ **Aplicar migration `20260529000000_marketplace_integrations.sql`** en Supabase Dashboard.
+4. ✅ **Endpoint stub deployado**: `/api/ml/webhook` devuelve 200 OK + log + valida shape Zod.
+5. ✅ **App ID recibido**: `911228948616104`. Es client_id público — va a env var `ML_CLIENT_ID`.
+6. ⏳ **Secret Key** — founder lo pega directo en Vercel como `ML_CLIENT_SECRET` (NO por chat).
+7. ⏳ **APP_ENCRYPTION_KEY** — founder genera con `openssl rand -hex 32` + configura en Vercel.
+8. ⏳ **Aplicar migration `20260529000000_marketplace_integrations.sql`** en Supabase Dashboard.
 
-Cuando los 3 pendientes estén ✅, arrancamos Sprint 2 (OAuth flow + webhook receiver real).
+Cuando 6-8 estén ✅, arrancamos Sprint 2 (OAuth flow + webhook receiver real).
+
+### Mapping de env vars Vercel ↔ código (contrato)
+
+Nombres exactos que `lib/integrations/mercadolibre/config.ts` espera leer:
+
+| Env var Vercel | Valor | Visibilidad | Quién lo carga |
+|---|---|---|---|
+| `ML_CLIENT_ID` | `911228948616104` | Público (server-only de todos modos) | Founder en Vercel UI |
+| `ML_CLIENT_SECRET` | (lo da ML al guardar la app) | Secreto — solo server | Founder en Vercel UI |
+| `ML_REDIRECT_URI` | `https://opticacarballo.com.ar/api/ml/oauth/callback` | Público | Founder en Vercel UI |
+| `APP_ENCRYPTION_KEY` | (output de `openssl rand -hex 32`) | Secreto — solo server | Founder en Vercel UI |
+
+**Configurar en environment**: "Production" + "Preview" + "Development" según corresponda. Para arranque de Sprint 2 alcanza con Production.
 
 ### Endpoint stub (commit este turno)
 

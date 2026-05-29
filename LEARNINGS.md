@@ -22,6 +22,62 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Endpoint stub para integraciones con upfront-validation desbloquea al founder sin esperar al sprint completo
+
+**Categoría**: Arquitectura / Patrones de integración / Project management
+**Confianza**: 🟢 Alta (patrón estándar industria + caso aplicado en ML webhook)
+
+### Qué pasó
+
+Mercado Libre, al guardar una app, hace ping de validación a la URL del webhook configurada. Si el endpoint no responde 200, ML rechaza la URL y no permite guardar la app. Problema: el endpoint **real** se construye en Sprint 2 (con procesamiento de payload, update de DB, validación de origen). Pero el founder necesita guardar la app **ahora** para pasarme las credenciales.
+
+Solución: **endpoint stub** que:
+1. Existe en la ruta final (`/api/ml/webhook`).
+2. Responde 200 OK al instante.
+3. Valida shape del payload con Zod (sin procesar).
+4. Log mínimo para visibilidad.
+5. Acepta POST + GET + HEAD (algunas plataformas validan con cualquiera).
+
+Sprint 2 reemplaza el handler POST con la lógica real. La interfaz (URL + status code + shape) se mantiene.
+
+### Por qué funciona
+
+- **Desbloquea trabajo del founder**: sin endpoint, founder no puede completar el registro de la app → no me pasa credenciales → Sprint 2 bloqueado. Con stub, todo lo del founder se completa hoy.
+- **Costo bajo**: ~50 líneas de código. La validación Zod ya estaba lista de Sprint 1.
+- **Interfaz contractual estable**: la URL final se registra desde hoy. Cuando Sprint 2 implementa el procesamiento real, el founder no toca nada en ML.
+- **Observabilidad inicial**: el log del stub me sirve para ver qué payloads llegan ANTES de implementar la lógica — útil para diseñar el procesador.
+
+### Otros casos donde aplica
+
+- **OAuth callbacks**: muchos providers validan la redirect URI al guardarla. Stub que devuelve 200.
+- **Webhooks de cualquier integration** (Stripe, Shopify, Tiendanube, etc): mismo patrón.
+- **Verification webhooks** (Slack apps, Discord bots): incluyen challenge string que hay que retornar. Stub que solo maneja ese caso, sin lógica de negocio.
+- **CDN preview validation**: algunos CDNs pingean para verificar headers.
+
+### Trade-offs
+
+- Si el founder accidentalmente activa la integración antes de Sprint 2, ML va a enviar webhooks reales al stub → se loggean y se ignoran. Stock NO se sincroniza. Riesgo: oversell si confía que el sync ya funciona. **Mitigación**: log explícito de "stub" + comunicación clara al founder de que Sprint 2 está pendiente.
+
+### Aplicar a futuro
+
+Cualquier integration que requiere validación upfront del endpoint:
+1. Identificar qué request hace el provider para validar (típicamente GET / POST con payload challenge).
+2. Implementar stub que devuelve 200 OK + responde el shape esperado.
+3. Documentar como STUB en el código (header comment).
+4. Listar en `CURRENT_STATE.md` como "stub deployado, lógica real pendiente sprint X".
+5. Sprint posterior: reemplazar handler manteniendo URL + response shape estables.
+
+### Patrón meta
+
+Este es el **3er caso** de "feature mínima viable para desbloquear stakeholder externo":
+1. Welcome email no-bloqueante en newsletter (si Resend no configurado, suscripción funciona).
+2. Foundations ML sin credenciales (Sprint 1).
+3. Stub endpoint para validation upfront (este caso).
+
+3 casos → patrón consolidado: **separar lo que requiere setup externo de lo que no**, y entregar valor incremental sin esperar el setup completo.
+
+---
+
 ## 2026-05-29 — Scope mínimo en OAuth permissions: pedir solo lo crítico ahora reduce riesgo si tokens se comprometen
 
 **Categoría**: Seguridad / OAuth / Integraciones
