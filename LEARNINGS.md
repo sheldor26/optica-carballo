@@ -22,6 +22,35 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Padding por defecto pensado para data hipotética: revisarlo cuando llegue data real
+
+**Categoría**: UI / Decisiones de defaults
+**Confianza**: 🟢 Alta (validado por iteración con foto real del founder)
+
+### Qué funcionó (tras corrección)
+
+ProductGallery tenía `p-10 sm:p-14 md:p-20` (40/56/80px de padding interno) con un comentario justificando: "Padding generoso porque las fotos originales del fabricante vienen muchas veces sin aire propio — el anteojo toca los bordes del JPG. El padding del wrapper compensa eso."
+
+Decisión defensible en abstracto, pero cuando el founder subió fotos reales (Rusty Yau con anteojo centrado y margen propio), el padding del contenedor + el margen de la foto = **double padding**: anteojo ocupaba solo ~60% del cuadrado visible. Founder feedback inmediato: "Fotos se ven muy pequeñas, hay que agrandarlas".
+
+Reduje a `p-4 sm:p-6 md:p-8` (16/24/32px). Para fotos con aire propio (mayoría hoy), el anteojo ocupa ~80%. Para fotos sin aire (caso hipotético del comentario original), el padding moderado sigue dando algo de respiro.
+
+### Por qué pasó originalmente
+
+Sesgo de "hace falta cubrir el peor caso". Diseñé defensivo para fotos sin margen, sin tener data real. Cuando llegó la data real, el default era 2x más conservador de lo necesario.
+
+### Regla preventiva
+
+Para defaults que afectan presentación visual (padding, font-size, gap, max-width):
+1. **Empezar conservador del lado opuesto** (menos padding/spacing) y agregar si la data real lo pide.
+2. **Recibir feedback de data real** ANTES de fijar el default. Si todavía no hay productos cargados, dejarlo como TODO en lugar de elegir un valor "razonable" en abstracto.
+3. **Cuando elegís default defensivo "por las dudas"**, marcar comentario explícito tipo `// TODO: revisar cuando haya 5+ productos reales` para no olvidarlo.
+
+### Cuándo aplicar
+
+- Cualquier componente UI que muestra contenido user-generated o de fuente externa (productos, imágenes, copy).
+- Especialmente componentes con espaciado generoso "por estética" — la estética sin contenido real es opinión, no validación.
+
 ## 2026-05-29 — Producto vs variante: el `name`/`slug` del producto NO incluye atributos de variante
 
 **Categoría**: Schema de catálogo / Identidad de producto

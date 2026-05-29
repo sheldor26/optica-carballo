@@ -24,13 +24,17 @@ Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}
 - Modelo decodificado de ML: MBLK/S10 POL YELLOW = MBLK (negro mate, variante) + S10/POL (gris oscuro polarizado, par principal) + YELLOW (amarillas, común a todas las variantes).
 - Bootstrap regenerado: 197 líneas. Path bucket: `rusty-yau/` (NO `rusty-yau-polarizado/`).
 
-**Próximo paso exacto founder**:
-1. Subir 3 fotos al bucket `products/rusty-yau/` con nombres: `01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`.
-2. Aplicar `supabase/cloud-bootstrap.sql` (197 líneas) en Dashboard SQL Editor.
-3. Verificar en `https://opticacarballo.com.ar/anteojos-de-sol/rusty/rusty-yau`.
-4. Avisar "cloud aplicado" → registrar en CLOUD_APPLIED.md + borrar bootstrap derivado.
+**Cloud aplicado por founder + 2 fixes UI iter 2** (2026-05-29 commit `3c5edad`):
+- Bloque blanco a la derecha empeoró tras el sidebar cross-sell (más alto que col izquierda).
+- Foto del producto se veía demasiado chica (~60% del contenedor).
 
-GAP único restante: `weight_grams` (UPDATE simple cuando founder mida).
+Fixes aplicados:
+- `product-gallery.tsx`: padding `p-10 sm:p-14 md:p-20` → `p-4 sm:p-6 md:p-8` (fotos ocupan ~80% del cuadrado).
+- `related-products-sidebar.tsx`: 3 items → 2, thumb 64→48, padding contenedor + items reducido, text-sm → text-xs (altura del bloque -~50%).
+
+Próximo paso: founder verifica en `/anteojos-de-sol/rusty/rusty-yau` tras Vercel auto-deploy del commit `3c5edad`. Si todavía queda bloque blanco visible, ajustar adicional (alinear grid, agregar contenido al sidebar, etc).
+
+GAP único restante (no bloqueante): `weight_grams` para UPDATE simple.
 
 GAP único restante: `weight_grams` (founder mide con balanza después, UPDATE simple).
 

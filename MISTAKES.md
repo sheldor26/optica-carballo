@@ -24,6 +24,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Cross-sell sidebar EMPEORÓ el problema que vino a resolver (más alto que col izquierda)
+
+**Estado**: ✅ Cerrado — compactado a 2 items + dimensiones reducidas en iter 2.
+**Categoría**: UI / Dimensionamiento de componentes en contexto
+
+### Qué pasó
+
+Sprint anterior: founder vio bloque blanco en columna derecha del producto detail (col izquierda con gallery + "Lo que incluye" más alta que col derecha con info + medidas). Solución implementada: agregar `RelatedProductsSidebar` con cross-sell de 3 productos al pie de la col derecha.
+
+Founder verificó tras apply de Rusty Yau (con cross-sell real visible): **el sidebar quedó MÁS ALTO que la col izquierda**. El bloque blanco no se eliminó — se hizo MÁS GRANDE porque ahora la col derecha pasaba el final de la col izquierda, generando espacio vacío al pie izquierdo.
+
+### Causa raíz
+
+Dimensioné el componente "aislado": 3 items con padding/spacing generoso para que cada producto se viera prolijo individualmente. NO consideré la restricción real: el sidebar debe CABER dentro de la altura disponible (= altura col izquierda - altura info/medidas col derecha).
+
+En abstracto el componente se ve bien. En contexto rompe el layout porque dimensioné por estética individual, no por encaje.
+
+### Regla preventiva
+
+Componentes que ocupan "espacio sobrante" en un layout deben:
+1. **Dimensionarse para CABER**, no para "verse bien aislados". Si el espacio disponible es ~250px de alto, el componente debe ser ≤ 250px.
+2. **Considerar el peor caso del contexto** (col izquierda más corta = espacio sobrante chico) y ajustar para ese caso.
+3. **Permitir compactarse**: si tenés 3 items posibles, mostrar 2 cuando el espacio es chico. Mejor menos items con buen layout que más items extendiendo el problema.
+
+### Fix aplicado
+
+Commit `3c5edad`: 3 items → 2, thumb 64→48, padding contenedor + items reducido, text-sm → text-xs. Altura del bloque -~50%.
+
+### Bonus diagnóstico
+
+LEARNING del mismo día sobre "Padding por defecto pensado para data hipotética" aplica también acá — ambas decisiones (gallery padding + sidebar dimensions) fueron tomadas "en abstracto" sin probar con data real. Patrón: hay que verificar UI con data real ANTES de fijar dimensiones, no después.
+
 ## 2026-05-29 — Incluí atributo de variante en el name/slug del producto base — "Rusty Yau Polarizado" en vez de "Rusty Yau"
 
 **Estado**: ✅ Cerrado — refactor del seed antes de apply al cloud, sin impacto en prod (slug nunca llegó a indexarse).
