@@ -93,9 +93,8 @@ export function buildSolMegaMenu(): MegaMenu {
           {
             heading: 'Para vos',
             items: [
-              // Linkeamos a hijas de marca con mayor vol SEO (Rusty hombre 3.200/mes, Rusty mujer 2.600/mes).
-              { label: 'Para mujer', href: '/anteojos-de-sol/rusty/mujer' },
-              { label: 'Para hombre', href: '/anteojos-de-sol/rusty/hombre' },
+              { label: 'Para mujer', href: '/anteojos-de-sol/mujer' },
+              { label: 'Para hombre', href: '/anteojos-de-sol/hombre' },
               { label: 'Ver todos los anteojos de sol', href: '/anteojos-de-sol' },
             ],
           },
@@ -147,8 +146,8 @@ export function buildRecetaMegaMenu(): MegaMenu {
           {
             heading: 'Para vos',
             items: [
-              { label: 'Para mujer', href: '/anteojos-de-receta/vulk/mujer' },
-              { label: 'Para hombre', href: '/anteojos-de-receta/vulk/hombre' },
+              { label: 'Para mujer', href: '/anteojos-de-receta/mujer' },
+              { label: 'Para hombre', href: '/anteojos-de-receta/hombre' },
               { label: 'Ver todos los anteojos de receta', href: '/anteojos-de-receta' },
             ],
           },

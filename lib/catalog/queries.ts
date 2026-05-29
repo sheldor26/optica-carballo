@@ -860,6 +860,64 @@ export async function fetchProductsByCategoryAndShapes(args: {
 }
 
 /**
+ * Sub-categoría global por género SIN marca, ej:
+ * `/anteojos-de-sol/hombre` (todos los anteojos de sol para hombre de
+ * cualquier marca, incluyendo unisex). Captura queries genéricas tipo
+ * "anteojos sol hombre", "lentes mujer", etc.
+ */
+export async function fetchCategoryByGender(args: {
+  categorySlug: string;
+  target: BrandGenderTarget;
+}): Promise<FilteredCatalogCard[]> {
+  const supabase = createStaticClient();
+  const genderValues =
+    args.target === 'hombre' ? ['male', 'unisex'] : ['female', 'unisex'];
+
+  const { data } = await supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        short_description,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug, is_active),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order)
+      `,
+    )
+    .eq('is_active', true)
+    .eq('category.slug', args.categorySlug)
+    .in('attributes->>gender', genderValues)
+    .returns<FilteredCatalogRow[]>();
+
+  if (!data) return [];
+
+  return data
+    .filter((row) => row.brand.is_active && row.category.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
+      const sortedImages = [...row.images].sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return a.sort_order - b.sort_order;
+      });
+      return {
+        slug: row.slug,
+        name: row.name,
+        brandSlug: row.brand.slug,
+        brandName: row.brand.name,
+        categorySlug: row.category.slug,
+        shortDescription: row.short_description,
+        minPriceCents:
+          inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
+        inStockCount: inStock.length,
+        primaryImagePath: sortedImages[0]?.storage_path ?? null,
+        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+      };
+    });
+}
+
+/**
  * Sub-categoría global por forma/material/treatment SIN marca, ej:
  * `/anteojos-de-sol/aviador` (todos los aviadores de cualquier marca).
  * Mismo BrandFilter shape que `fetchBrandPageByFilter` pero sin filtrar

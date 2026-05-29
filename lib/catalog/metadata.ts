@@ -49,6 +49,30 @@ export async function buildBrandMetadata(
   };
 }
 
+/**
+ * Metadata para sub-categoría global por género SIN marca — `/anteojos-de-{sol,receta}/{hombre,mujer}`.
+ * Captura queries genéricas tipo "anteojos sol hombre", "lentes mujer".
+ */
+export function buildCategoryGenderMetadata(args: {
+  category: CategoryConfig;
+  target: 'hombre' | 'mujer';
+}): Metadata {
+  const targetLabel = args.target === 'hombre' ? 'Hombre' : 'Mujer';
+  const title = `${args.category.name} ${targetLabel} | Originales con Envío - Óptica Carballo`;
+  const description = `${capitalize(args.category.metaPhrase)} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const url = `${SITE_URL}/${args.category.slug}/${args.target}`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'website' },
+  };
+}
+
 type CategoryShapeMetaInput = {
   category: CategoryConfig;
   filterLabel: string;

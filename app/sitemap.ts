@@ -201,5 +201,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  return [...staticUrls, ...brandUrls, ...shapeUrls, ...productUrls];
+  // Sub-categorías globales por género SIN marca. Captura queries genéricas
+  // tipo "anteojos sol hombre", "lentes mujer". Priority alta (0.8) por
+  // volumen SEO esperado superior a shape sin marca.
+  const genderUrls: MetadataRoute.Sitemap = [
+    'anteojos-de-sol',
+    'anteojos-de-receta',
+  ].flatMap((cat) =>
+    ['hombre', 'mujer'].map((target) => ({
+      url: `${SITE_URL}/${cat}/${target}`,
+      lastModified: NOW_LAST_MODIFIED,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
+  );
+
+  return [
+    ...staticUrls,
+    ...brandUrls,
+    ...shapeUrls,
+    ...genderUrls,
+    ...productUrls,
+  ];
 }

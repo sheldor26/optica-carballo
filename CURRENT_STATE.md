@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Sprint Sub-categorías globales por género CERRADO** (2026-05-29). 4 URLs SEO nuevas: `/anteojos-de-{sol,receta}/{hombre,mujer}`. Capturan queries genéricas tipo "anteojos sol hombre" (alto vol SEO) sin estar atadas a una marca específica. `GenderCatalogPage` componente, `buildCategoryGenderMetadata` helper, `fetchCategoryByGender` query (incluye unisex). Sitemap +4 URLs priority 0.8. Mega-menu "Para vos" saca el hack anterior (linkeaba a `/rusty/mujer` por falta de página global) y ahora apunta a las URLs canónicas.
+
 ✅ **Sprint Sub-categorías globales por forma CERRADO** (2026-05-29). 13 URLs SEO nuevas: `/anteojos-de-{sol,receta}/{wayfarer,aviador,cat-eye,rectangular,acetato,metal}` + polarizados solo sol. Capturan queries genéricas tipo "anteojos aviador", "lentes wayfarer" — antes solo accesibles vía `?forma=` searchParam (no indexable bien). Componente `ShapeCatalogPage`, helper `buildCategoryShapeMetadata`, query `fetchCategoryByFilter`, sitemap +13 URLs priority 0.75. Mega-menu actualizado para apuntar a estas URLs en vez de `?forma=`.
 
 ✅ **Sprint Mega-menu v2 CERRADO** (2026-05-29). Tras referencia visual de LensCrafters por el founder, refactor del desktop nav a 3 columnas con panel CTA destacado a la derecha. Estructura: 2 columnas de contenido (Para vos + Por marca / Por forma + Destacados o Por material) + 1 columna CTA con WhatsApp asesoramiento + links a herramientas IA. Mobile no cambia (drawer simple). `lib/site/mega-nav.ts` ahora con tipo expresivo `MegaMenu = { columns: (MegaContentColumn | MegaCtaColumn)[] }`.
