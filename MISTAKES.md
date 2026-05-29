@@ -26,7 +26,7 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ## 2026-05-29 — Fallback silencioso a localhost en URLs de auth produce emails inservibles en prod
 
-**Estado**: 🟡 Mitigado — log loud en producción registra ocurrencia, founder aplica config pendiente.
+**Estado**: ✅ Cerrado — config aplicada (Vercel env var + Supabase URL Configuration) + redeploy confirmado por founder.
 **Categoría**: Configuración / Bug silencioso / Env vars
 
 ### Qué pasó
