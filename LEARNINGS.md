@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Founder llena GAPS asincrónicamente con foto + datos en 1 mensaje (complemento al import ML)
+
+**Categoría**: UX founder no-técnico / Import workflow
+**Confianza**: 🟢 Alta (validado completo con Rusty Yau)
+
+### Qué funcionó
+
+Tras generar seed con GAPS marcados explícitamente (peso, medidas, SKU, imágenes), el founder envió en UN SOLO mensaje:
+- Las 3 fotos directo en el chat
+- El SKU como texto plano: "SKU 126080"
+- La aclaración: "la foto 3 son las medidas"
+
+Procesé las medidas leyendo la imagen (135mm ancho, 66x45mm lente, 16mm puente, 120mm varilla) sin requerir que el founder las transcribiera. Edit del seed + bootstrap regenerado + commit en ~2 minutos.
+
+Esto cerró 4 de 5 GAPS (peso queda pendiente) sin necesidad de back-and-forth con preguntas estructuradas.
+
+### Por qué funcionó
+
+El founder, al mandar la foto del esquema técnico, transmitió las 5 medidas con CERO esfuerzo de transcripción. Si hubiera usado AskUserQuestion pidiendo cada medida individualmente, hubieran sido 5 preguntas + 5 respuestas tipiadas + riesgo de error de tipeo.
+
+La capacidad del modelo de leer datos estructurados de imágenes (medidas, etiquetas, fichas técnicas) hace que el patrón "mandame foto" sea más eficiente que "transcribime los datos" cuando los datos están en formato visual.
+
+### Cuándo aplicar
+
+- GAPS de data que existen en formato visual (esquemas técnicos, etiquetas de producto, fichas del fabricante, recibos).
+- NO aplicar cuando los datos no están en formato visual (precios de costo del distribuidor, decisiones de marketing, copy).
+- Combinar con "marcar GAPS explícitos en seed" del patrón complementario — sin marcar gaps, founder no sabe qué traer; sin patrón visual, transcribir es fricción.
+
+### Validación del patrón completo (2 entries combinadas)
+
+`patrón import ML` (entry previa) + `gaps via foto/mensaje` (esta entry) = **workflow completo**:
+1. Genero seed con GAPS marcados como comentarios.
+2. Founder responde con foto/datos para cerrar gaps.
+3. Edit seed in-place, regenero bootstrap, commit.
+4. Founder aplica + sube assets.
+
+Tiempo total desde JSON ML hasta producto listo para cloud apply: ~30 min de mi lado, ~10 min del founder.
+
 ## 2026-05-29 — Import producto desde ML: parsear JSON → schema + marcar GAPS explícitos en SQL
 
 **Categoría**: Integraciones ML / Import de catálogo

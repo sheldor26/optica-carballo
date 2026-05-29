@@ -24,6 +24,30 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Asumí formato de imagen (.webp) sin preguntar — founder mandó .jpg, edit del seed
+
+**Estado**: ✅ Cerrado — edit del seed antes de apply al cloud, sin impacto en prod.
+**Categoría**: Asunciones implícitas / UX
+
+### Qué pasó
+
+Al generar seed 10 para Rusty Yau, usé `.webp` para los paths de imagen (`01-frontal.webp`, `02-lateral.webp`). Asumí que founder iba a convertir / usar webp porque es el formato "moderno y óptimo".
+
+Cuando founder envió las 3 fotos por chat, llegaron como `.jpg` (formato nativo de cámaras, lo más común). Tuve que editar el seed para cambiar todas las extensiones + actualizar comentarios. Cambio chico pero evitable si hubiera preguntado o defaulteado a `.jpg` desde el inicio.
+
+### Causa raíz
+
+Asumí preferencia técnica óptima (.webp = mejor compresión, soporte Next/Image) sin considerar el flujo natural del founder no-técnico (saca foto con celular o descarga de ML → archivo .jpg, no convierte). Forcé al founder a adaptarse a mi default en lugar de adaptar el seed al default del founder.
+
+### Regla preventiva
+
+Cuando elijo defaults técnicos en flows que dependen del founder:
+1. **Defaultear al formato más común del founder** (.jpg para fotos, .csv para data tabular, etc).
+2. Si querés el formato "óptimo" (.webp), preguntar antes de generar SQL: "Tenés las fotos en .webp o .jpg? Si .jpg ajusto el seed".
+3. Next/Image re-comprime automáticamente .jpg a .webp en runtime — no hay beneficio real de almacenar .webp si fuente es .jpg.
+
+Patrón general: optimizaciones técnicas no deberían imponer trabajo manual al founder. Si la herramienta ya hace la optimización (Next/Image), no agregar fricción upstream.
+
 ## 2026-05-29 — Enum de frame_shape duplicado en N lugares de TypeScript (sin source of truth)
 
 **Estado**: 🟡 Mitigado — agregué `wraparound` a `FRAME_SHAPE_LABELS` en product-attributes.tsx, pero no a otros consumers que pueda haber.

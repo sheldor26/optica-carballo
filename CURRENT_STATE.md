@@ -14,17 +14,21 @@ Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}
 
 **Item localizado con éxito** vía `/items?ids=MLA...`: producto está active, es del seller correcto (OPTICACARBALLO), título "Rusty Yau Polarizado Ciclismo", precio $98.350,02, stock 4. Causa del 404 original con `/items/{id}` singular: probablemente tema de listing_type `gold_pro` con `user_product_id` (catalog listing) requiere endpoint plural.
 
-**Sprint Import Rusty Yau CERRADO en código** (2026-05-29). Seed `10_rusty_yau_polarizado.sql` generado con:
-- Producto + 1 variante + 2 imágenes placeholder
-- `frame_shape: 'wraparound'` (nuevo valor) — agregado label en español a `FRAME_SHAPE_LABELS` de `product-attributes.tsx`
-- `mercadolibre_item_id: 'MLA1432137395'` en la variante (para sync futuro Sprint 2b)
-- 3 GAPS marcados en comentarios: weight_grams (founder mide anteojo solo), frame_width_mm + lens_height_mm (founder mide con regla), SKU (founder verifica si Rusty tiene código real)
+**Sprint Import Rusty Yau CERRADO en código + DATA COMPLETA** (2026-05-29). Founder pasó: SKU real `126080`, las 2 medidas faltantes (frame_width=135mm, lens_height=45mm), y 3 fotos JPG (vista lateral 3/4, frontal, esquema técnico de medidas). Seed corregido (commit `7c4976f`):
+- SKU placeholder → `126080`
+- measurements completas: 135/66/45/16/120mm
+- Imágenes: 2 → 3 (sumada esquema de medidas con variant_id=NULL aplicando al modelo entero)
+- Formato `.webp` → `.jpg` para matchear lo que founder envió
+- 01-frontal renombrado a 01-lateral (la primary es vista 3/4)
+- Bootstrap regenerado: 163 líneas
 
-**Acciones pendientes founder**:
-1. Subir 2 fotos al bucket Supabase Storage path `products/rusty-yau-polarizado/01-frontal.webp` + `02-lateral.webp` (1200x1200, sino productos sin foto).
-2. Aplicar `supabase/cloud-bootstrap.sql` (155 líneas) en Dashboard SQL Editor.
-3. Avisar "cloud aplicado".
-4. (Opcional) Completar los 3 GAPS con UPDATE statements cuando tenga las medidas reales.
+GAP único restante: `weight_grams` (founder mide con balanza después, UPDATE simple).
+
+**Próximo paso exacto del founder**:
+1. Subir 3 fotos al bucket `products/rusty-yau-polarizado/` con nombres exactos: `01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`.
+2. Aplicar `supabase/cloud-bootstrap.sql` (163 líneas) en Dashboard SQL Editor.
+3. Verificar en `https://opticacarballo.com.ar/anteojos-de-sol/rusty/rusty-yau-polarizado` — esperamos 3 fotos en gallery, ficha técnica completa, precio $98.350,02, variante "Negro mate / Gris oscuro - Amarilla" stock 4.
+4. Avisar "cloud aplicado" para registrar en CLOUD_APPLIED.md + borrar bootstrap derivado.
 
 Aprendizaje del flow: ML tiene 2 tipos de IDs en URLs — `MLA<digits>` (item del seller, lo que usa el endpoint `/items/{id}`) y `MLAU<digits>` (catalog product que agrupa múltiples sellers). El `wid` query param en URLs de catálogo es el item ID del seller específico. Pasamos el correcto al endpoint.
 
