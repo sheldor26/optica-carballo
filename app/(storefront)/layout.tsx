@@ -1,6 +1,7 @@
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { CompareBarWrapper } from '@/components/compare/compare-bar-wrapper';
+import { CookiesBanner } from '@/components/legal/cookies-banner';
 import { BackToTop } from '@/components/ui/back-to-top';
 import { CursorFollower } from '@/components/ui/cursor-follower';
 import { FloatingWhatsapp } from '@/components/ui/floating-whatsapp';
@@ -28,6 +29,7 @@ export default function StorefrontLayout({
           defaultMessage="Hola, te consulto por anteojos."
         />
       )}
+      <CookiesBanner />
     </div>
   );
 }
