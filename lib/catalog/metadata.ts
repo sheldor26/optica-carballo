@@ -50,6 +50,43 @@ export async function buildBrandMetadata(
 }
 
 /**
+ * Metadata para sub-página `/anteojos-de-{sol,receta}/[brand]/sobre-la-marca`
+ * — página dedicada con texto SEO largo separada del catálogo para mantener
+ * el catálogo limpio. Captura queries informacionales sobre la marca.
+ */
+export async function buildBrandAboutMetadata(
+  category: CategoryConfig,
+  brandSlug: string,
+): Promise<Metadata> {
+  const supabase = await createClient();
+  const { data: brand } = await supabase
+    .from('brands')
+    .select('name')
+    .eq('slug', brandSlug)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<BrandMetaRow>();
+
+  if (!brand) {
+    return { title: 'Marca no encontrada' };
+  }
+
+  const title = `Sobre ${brand.name} — Historia, Líneas y Catálogo en Óptica Carballo`;
+  const description = `Conocé ${brand.name}: historia, identidad y propuesta de la marca aplicada al mundo de la óptica. Distribución oficial en Argentina con asesoramiento de técnico óptico matriculado.`;
+  const url = `${SITE_URL}/${category.slug}/${brandSlug}/sobre-la-marca`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'article' },
+  };
+}
+
+/**
  * Metadata para páginas hijas SEO de marca por género —
  * `/anteojos-de-sol/[brand]/hombre` y `.../mujer`.
  *

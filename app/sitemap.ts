@@ -124,6 +124,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
+    // Sub-páginas /sobre-la-marca con texto SEO largo (separado del catálogo
+    // para mantener UX limpia). Captura queries informacionales sobre la marca.
+    {
+      url: `${SITE_URL}/anteojos-de-sol/${b.slug}/sobre-la-marca`,
+      lastModified: new Date(b.updated_at),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    },
+    {
+      url: `${SITE_URL}/anteojos-de-receta/${b.slug}/sobre-la-marca`,
+      lastModified: new Date(b.updated_at),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    },
     // Páginas hijas SEO por género (4 por marca). Volumen target alto
     // según SEO_STRATEGY (3.200/2.600 vol/mes para "rusty hombre/mujer", etc).
     {

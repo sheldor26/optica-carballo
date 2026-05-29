@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { BrandStorySection } from '@/components/brand/brand-story-section';
 import { FaqAccordion } from '@/components/faqs/faq-accordion';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
@@ -135,18 +136,16 @@ export function BrandCatalogPage({
         )}
       </RevealOnScroll>
 
-      {brand.seo_intro && (
-        <RevealOnScroll
-          as="section"
-          aria-label={`Sobre los anteojos ${brand.name}`}
-          className="text-muted-foreground mb-12 max-w-3xl space-y-4 text-base leading-relaxed md:text-lg"
-        >
-          {brand.seo_intro.split('\n\n').map((paragraph, idx) => (
-            <p key={idx} className="whitespace-pre-line">
-              {paragraph}
-            </p>
-          ))}
-        </RevealOnScroll>
+      {(brand.seo_intro || brand.seo_outro) && (
+        <div className="mb-8">
+          <Link
+            href={`${hrefPrefix}/sobre-la-marca`}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm underline-offset-4 hover:underline"
+          >
+            Conocé más sobre {brand.name}
+            <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
+        </div>
       )}
 
       <BrandStorySection brandSlug={brand.slug} brandName={brand.name} />
@@ -190,15 +189,6 @@ export function BrandCatalogPage({
         </RevealOnScroll>
       )}
 
-      {brand.seo_outro && (
-        <RevealOnScroll
-          as="section"
-          aria-label={`Más información sobre ${brand.name}`}
-          className="text-muted-foreground mt-16 max-w-3xl text-sm leading-relaxed md:mt-20 md:text-base"
-        >
-          <p className="whitespace-pre-line">{brand.seo_outro}</p>
-        </RevealOnScroll>
-      )}
     </main>
   );
 }

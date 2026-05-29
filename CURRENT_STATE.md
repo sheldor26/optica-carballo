@@ -2,7 +2,9 @@
 
 ## Status
 
-✅ **Sprint Texto SEO por marca CERRADO + APLICADO A CLOUD** (2026-05-29). Renderiza intro extenso (150-300 palabras) y outro (80-150 palabras) en `/anteojos-de-{sol,receta}/[brand]` para mejorar profundidad semántica + keyword coverage. Migración `20260529100000_brands_seo_text.sql` + seed `09_brands_seo_text.sql` aplicados al cloud por founder (confirmado).
+✅ **Sub-página `/sobre-la-marca` CERRADA** (2026-05-29). Tras feedback del founder ("el catálogo debe ser catálogo, no texto largo"), separé el texto SEO largo en sub-páginas dedicadas `/anteojos-de-{sol,receta}/[brand]/sobre-la-marca`. El catálogo quedó limpio (solo grid + FAQs específicas), con link discreto "Conocé más sobre {marca} →". Las sub-páginas están en sitemap (10 nuevas URLs indexables, priority 0.6).
+
+✅ **Sprint Texto SEO por marca CERRADO + APLICADO A CLOUD** (2026-05-29). Renderiza intro extenso (150-300 palabras) y outro (80-150 palabras) en `/anteojos-de-{sol,receta}/[brand]/sobre-la-marca` para mejorar profundidad semántica + keyword coverage. Migración `20260529100000_brands_seo_text.sql` + seed `09_brands_seo_text.sql` aplicados al cloud por founder (confirmado).
 
 ✅ **Sprint SEO+ CERRADO** (2026-05-29). 3 quick wins del backlog para mejorar rich results en Google:
 - **FAQPage JSON-LD** en `/anteojos-de-sol/[brand]` y `/anteojos-de-receta/[brand]` (5 FAQs específicas por marca en `lib/content/brand-faqs.ts` + sección visible con `FaqAccordion`).

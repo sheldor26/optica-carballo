@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Separar texto SEO largo del catálogo: catálogo = catálogo
+
+**Categoría**: UX / CRO / SEO / Arquitectura de información
+**Confianza**: 🟢 Alta (validado por founder post-implementación)
+
+### Qué funcionó
+
+Inicialmente puse el texto SEO largo (intro 300 palabras + outro 100) directo en `/anteojos-de-sol/[brand]`. Founder lo vio en producción y rechazó: "el catálogo debe ser catálogo, no texto largo que la gente saltea". Movido a sub-página dedicada `/[brand]/sobre-la-marca` con link discreto desde el catálogo.
+
+### Por qué funcionó
+
+Trade-off clásico SEO vs UX/CRO:
+- **Argumento SEO**: texto largo en página principal concentra PageRank, mejora ranking de keyword principal.
+- **Argumento UX/CRO**: comprador entra a catálogo para comprar — texto largo arriba lo distrae, baja conversión.
+
+La separación resuelve ambos:
+- Catálogo limpio → mejor UX → mejor conversión.
+- Sub-página `/sobre-la-marca` indexada en sitemap captura queries informacionales ("historia rusty", "vulk argentina") sin ensuciar el catálogo.
+- Link discreto desde catálogo → internal linking + PageRank flow a la sub-página.
+- FAQs específicas siguen en catálogo porque tienen valor utilitario (responden dudas pre-compra), no informacional puro.
+
+### Cuándo aplicar
+
+- Cualquier página transaccional (catálogo, producto, checkout) — NO meter contenido largo "para SEO".
+- Si necesitás contenido largo, sub-página dedicada con link discreto.
+- Regla mental: ¿el usuario que viene a comprar lo va a leer? Si no → no va en la página de compra.
+- Excepción: FAQs cortas + específicas pueden ir al pie del catálogo porque ayudan a comprar.
+
+### Anti-pattern relacionado
+
+Falacia común: "más palabras = más SEO". Google ya no premia eso desde hace años — premia contenido **profundo y útil** que coincide con la intención de búsqueda. Texto largo en página de compra = mala UX = bounce rate alto = peor SEO, no mejor.
+
 ## 2026-05-29 — Texto SEO largo en columnas DB, no hardcoded en componente
 
 **Categoría**: SEO / Arquitectura de contenido
