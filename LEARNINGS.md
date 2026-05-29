@@ -22,6 +22,42 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Import producto desde ML: parsear JSON → schema + marcar GAPS explícitos en SQL
+
+**Categoría**: Integraciones ML / Import de catálogo
+**Confianza**: 🟡 Media (1 producto importado — confirmar con N=3 antes de promoverlo a regla)
+
+### Qué funcionó
+
+Para importar Rusty Yau (MLA1432137395), seguí este flujo:
+
+1. **Fetch JSON crudo** via endpoint admin (`/api/admin/ml-find-item/{id}`).
+2. **Mapear JSON → schema del proyecto** (PRODUCT_SCHEMA.md): qué campos hay match directo, qué falta, qué necesita enum nuevo.
+3. **Identificar GAPS antes de presentar al founder**: peso real (ML reporta el del paquete, no el anteojo), 2 medidas (frame_width + lens_height) que ML no incluye, SKU interno (ML solo tiene su MLA).
+4. **AskUserQuestion con preview**: 3 preguntas (frame_shape mapping, gaps handling, imágenes) — founder decidió en 1 turno.
+5. **Generar seed SQL con GAPS marcados en comentarios explícitos** (no inventar valores ni dejar `null` silencioso).
+6. **Bootstrap derivado** para founder aplicar al cloud.
+
+### Por qué funcionó
+
+JSON ML tiene info abundante pero NO matchea 100% el schema del proyecto. La tentación es:
+- (a) Inventar lo que falta → contamina catálogo con data falsa.
+- (b) Dejar campos NULL silencioso → casilleros vacíos en comparador, peor UX.
+
+Marcar GAPS en comentarios del seed (`-- ⚠️ founder mide peso real y hace UPDATE`) hace 2 cosas:
+- Founder ve qué falta cuando aplica el SQL.
+- Documenta la deuda técnica del registro (alguien que lea el seed en 6 meses entiende qué pasó).
+
+### Cuándo aplicar
+
+- Cualquier import bulk desde fuente externa (ML, distribuidor, scrap de web fabricante).
+- NO aplicar para registros manuales del founder (ahí cada campo lo confirma, no hay gaps).
+- Para promoverlo a regla operativa estable, necesito ver el patrón funcionar con 2-3 imports más (otras marcas, otros catálogos).
+
+### Decisión clave de schema
+
+`frame_shape: 'wraparound'` (nuevo valor) agregado solo a `FRAME_SHAPE_LABELS` en TypeScript — NO migration SQL porque DB usa JSONB free-form. Cualquier valor string es válido en DB; los labels en TS son el "enum de UI". Esto es más rápido pero requiere mantenerlos sincronizados (futuro: extraer a `lib/catalog/enums.ts` compartido).
+
 ## 2026-05-29 — Verificar comportamiento real de query params antes de basar lógica en asunción
 
 **Categoría**: API integration / Debugging

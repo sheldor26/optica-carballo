@@ -24,6 +24,37 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Enum de frame_shape duplicado en N lugares de TypeScript (sin source of truth)
+
+**Estado**: 🟡 Mitigado — agregué `wraparound` a `FRAME_SHAPE_LABELS` en product-attributes.tsx, pero no a otros consumers que pueda haber.
+**Categoría**: Drift de enums / DRY
+
+### Qué pasó
+
+Al importar Rusty Yau con `frame_shape: 'wraparound'` (nuevo valor), necesité agregar el label en español. Encontré 3 lugares distintos relacionados con frame_shape:
+1. `components/product/product-attributes.tsx` — `FRAME_SHAPE_LABELS` (es el que importa para ficha técnica del producto)
+2. `lib/face-shape/copy.ts` — `FRAME_SHAPE_COPY` con type `FrameShape` distinto (es del recomendador de monturas, otro dominio)
+3. `lib/catalog/brand-filters.ts` — `BRAND_FILTERS` que tiene wayfarer/aviador/cat-eye/rectangular/acetato/metal como sub-rutas SEO (no aparece wraparound — no hay sub-categoría /wraparound aún)
+
+Decisión correcta: actualicé solo (1). Los otros 2 son dominios distintos (analyzer no recomienda wraparound porque es deportivo, no para uso general; rutas SEO no las creé porque catalog tiene 1 producto wraparound — no hay vol justifica nueva ruta).
+
+PERO: la falta de **single source of truth** crea riesgo de drift. Si en futuro alguien agrega `frame_shape: 'clubmaster'`, va a tener que decidir caso por caso dónde agregarlo, sin reglas claras.
+
+### Causa raíz
+
+Schema de productos usa JSONB free-form (cualquier string vale en DB). Los enums TypeScript existen como labels de UI pero **no hay un módulo único** que centralice "estos son los frame_shapes válidos del catálogo". Cada consumer redefinió su propio mapeo.
+
+### Regla preventiva
+
+Cuando uses un enum en JSONB (sin DB constraint):
+1. **Centralizar en `lib/catalog/enums.ts` o equivalente** con: lista de valores válidos + labels español + opcionalmente metadata (icon, color, etc).
+2. Consumers (cards, filtros, comparador, ficha) importan del módulo central.
+3. Si surgen dominios paralelos con enums distintos (caso recomendador IA), documentar explícitamente que son distintos (no es DRY violation, es separación de dominios).
+
+### Acción diferida (no urgente)
+
+Agregar `lib/catalog/frame-shapes.ts` con `FRAME_SHAPES` array + `FRAME_SHAPE_LABELS_ES` map. Refactorear `product-attributes.tsx` para importar de ahí. Cuando catalog tenga 3+ productos wraparound, evaluar sumar sub-ruta SEO `/anteojos-de-sol/wraparound`.
+
 ## 2026-05-29 — Single-account model implícito + `.maybeSingle()` silencioso = falso "no integration"
 
 **Estado**: ✅ Cerrado en código (founder pendiente re-autorizar para validar end-to-end).
