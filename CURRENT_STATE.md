@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Micro-sprint Herramientas en mega-menu CERRADO** (2026-05-29). Panel CTA del mega ahora promociona 4 herramientas (antes 2): Recomendador IA, Lector receta IA, Comparar modelos, Mis favoritos. Decisión: heading "Herramientas" (no "con IA") más inclusivo, con la marca "con IA" inline solo en las 2 que la usan. Las páginas `/comparar` y `/favoritos` ya existían pero no estaban promocionadas desde el header.
+
 ✅ **Sprint Internal Linking CERRADO** (2026-05-29). Bloque "También podría interesarte" al pie de todas las sub-categorías (shape, gender, brand). Builder contextual `buildRelatedLinks` devuelve hasta 6 links curados según tipo de página: shape → 2 género + 3 shape + 1 brand; gender → 4 shape + 2 brand; brand → 2 género + 3 shape + 1 brand. Refuerza SEO interno (PageRank flow) + descubrimiento UX sin saturar el catálogo. Componente `RelatedCategoriesBlock` reusable con UI de chips (pill style).
 
 ✅ **Sprint Sub-categorías globales por género CERRADO** (2026-05-29). 4 URLs SEO nuevas: `/anteojos-de-{sol,receta}/{hombre,mujer}`. Capturan queries genéricas tipo "anteojos sol hombre" (alto vol SEO) sin estar atadas a una marca específica. `GenderCatalogPage` componente, `buildCategoryGenderMetadata` helper, `fetchCategoryByGender` query (incluye unisex). Sitemap +4 URLs priority 0.8. Mega-menu "Para vos" saca el hack anterior (linkeaba a `/rusty/mujer` por falta de página global) y ahora apunta a las URLs canónicas.
