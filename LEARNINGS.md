@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Sprint completo con cuenta (no MVP) cuando la feature lo justifica
+
+**Categoría**: Scope de sprint / Decisiones de producto
+**Confianza**: 🟢 Alta (validado en sprint alertas — founder eligió scope completo conscientemente)
+
+### Qué funcionó
+
+Cuando founder pidió "Alertas de precio o de disponibilidad de stock", en vez de tirar código del scope que YO pensaba correcto, presenté `AskUserQuestion` con 3 opciones de scope (MVP 1h / Intermedio 3h / Completo con cuenta 1d+) con previews ASCII de cada flujo + tradeoffs explícitos (conversión vs UX vs costo de mantenimiento).
+
+Founder eligió "Completo con cuenta" — lo opuesto a lo que un instinto MVP recomendaría. Razón implícita: ya hay base de auth + mi-cuenta funcional, sumar feature ahí escala mejor que tener emails anónimos que no se pueden gestionar.
+
+### Por qué funcionó
+
+Dos lecciones combinadas:
+1. **Tradeoff explícito > recomendación dogmática**. El instinto "siempre arrancá con MVP" no aplica cuando la infraestructura ya soporta lo correcto. El MVP hubiera sido deuda técnica desde el día 1 (tabla anónima que después hay que migrar).
+2. **El founder no-técnico decide mejor con tradeoffs claros**. Sin las 3 opciones lado a lado, hubiera dicho "lo que vos creas" — y yo hubiera ido al MVP por sesgo. Las opciones le dieron lenguaje para decir "completo" sin tener que justificarlo en tech.
+
+### Cuándo aplicar
+
+- Features con scope grande (>1 hora) donde hay decisiones de producto.
+- Sistemas que tocan auth, DB persistente, emails, webhooks — son irreversibles, conviene decidirlo bien.
+- NO aplicar para features chicas (<1h) o tweaks UI — preguntar overkilla.
+- NO aplicar si la opción "completa" es obviamente over-engineering — solo presentar opciones realistas para el momento del proyecto.
+
 ## 2026-05-29 — Baseline snapshot al crear alerta para detectar cambios
 
 **Categoría**: Diseño de schema / Anti-spam en notificaciones
