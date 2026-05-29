@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Sub-categoría por género incluye `unisex` (no es excluyente)
+
+**Categoría**: Decisión de producto / Modelado de datos
+**Confianza**: 🟢 Alta (estándar de la industria óptica)
+
+### Qué funcionó
+
+Al crear `/anteojos-de-sol/hombre` y `/mujer`, la query `fetchCategoryByGender` filtra `gender IN ('male' | 'female', 'unisex')` en lugar de solo `gender = 'male' | 'female'`. Un anteojo unisex aparece en AMBAS páginas (hombre + mujer), no se excluye de ninguna.
+
+### Por qué funcionó
+
+En óptica (especialmente con marcas como Vulk, Rusty, Mormaii), una porción significativa de modelos son neutros — pensados para ser usados por cualquier género. Excluirlos de las páginas de género produce dos problemas:
+
+1. **Falsos negativos**: usuario entra a "anteojos hombre" y no ve modelos neutros que le servirían perfecto. Catálogo se siente vacío.
+2. **Producto desperdiciado**: si solo aparece en `/unisex` (que no existe como ruta SEO porque vol cero), el modelo nunca se descubre vía navegación por género.
+
+Incluir unisex en ambos preserva la intención del filtro (descubrimiento de productos relevantes para el target) sin sacrificar coverage.
+
+### Cuándo aplicar
+
+- Cualquier filtro categórico donde exista una categoría "neutra" o "universal" (unisex, todos los tamaños, todas las edades).
+- NO aplicar si el filtro es realmente excluyente por naturaleza (color, talla específica).
+- Documentar la decisión en el código (comentario en la query) para que un mantenedor futuro no "corrija" la query a igualdad estricta pensando que es un bug.
+
 ## 2026-05-29 — Rutas estáticas para sub-categorías (no querystring) — SEO indexable
 
 **Categoría**: SEO / Arquitectura de rutas
