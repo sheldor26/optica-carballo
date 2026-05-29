@@ -3,6 +3,8 @@ import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { BRAND_FILTERS } from '@/lib/catalog/brand-filters';
 import { createStaticClient } from '@/lib/supabase/static';
 
+const NOW_LAST_MODIFIED = new Date();
+
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -187,5 +189,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  return [...staticUrls, ...brandUrls, ...productUrls];
+  // Sub-categorías globales por forma/material/treatment SIN marca, ej:
+  // `/anteojos-de-sol/aviador` (todos los aviadores de cualquier marca).
+  // Captura queries genéricas tipo "anteojos aviador", "lentes wayfarer".
+  const shapeUrls: MetadataRoute.Sitemap = BRAND_FILTERS.flatMap((filter) =>
+    filter.categories.map((cat) => ({
+      url: `${SITE_URL}/${cat === 'sol' ? 'anteojos-de-sol' : 'anteojos-de-receta'}/${filter.urlSlug}`,
+      lastModified: NOW_LAST_MODIFIED,
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    })),
+  );
+
+  return [...staticUrls, ...brandUrls, ...shapeUrls, ...productUrls];
 }

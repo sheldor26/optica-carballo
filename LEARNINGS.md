@@ -22,6 +22,36 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Rutas estáticas para sub-categorías (no querystring) — SEO indexable
+
+**Categoría**: SEO / Arquitectura de rutas
+**Confianza**: 🟢 Alta (consenso en SEO técnico)
+
+### Qué funcionó
+
+Las sub-categorías por forma estaban accesibles vía `/anteojos-de-sol?forma=wayfarer` (searchParam), no via path estático. Google ESO no indexa bien — los searchParams se consideran filtros de la misma URL canónica, no páginas distintas. Las queries "anteojos wayfarer" iban a la página de catálogo general, no a una página específica con title/H1/contenido optimizados.
+
+Refactor: creé 13 rutas estáticas `/anteojos-de-{sol,receta}/{shape}` con title, meta description, canonical, breadcrumb, H1, JSON-LD CollectionPage propios. Cada una es una página SEO independiente que puede rankear para su keyword target.
+
+### Por qué funcionó
+
+Reglas de SEO técnico vigentes:
+- **Cada cluster de keywords merece su URL canónica única**. "Anteojos wayfarer" ≠ "anteojos de sol" en intent search.
+- **Path estático > querystring** para canonicalidad y crawl budget. Google trata `?forma=X` con desconfianza (¿es filtro? ¿paginación? ¿variante?).
+- **Mismo backend, distinta presentación**: la query `fetchCategoryByFilter` es la misma, pero las URLs cambian semántica + ranking opportunity.
+
+Adicionalmente, mega-menu actualizado para apuntar a las rutas nuevas — internal linking refuerza la canonicidad y distribuye PageRank a las páginas optimizables.
+
+### Cuándo aplicar
+
+- Cualquier filtro que represente una **categoría comercial real** (forma, material, género, color) → ruta propia.
+- Cualquier filtro **utilitario o personal** (orden, precio rango, paginación) → searchParam OK.
+- Regla heurística: si querés rankear para esa combinación específica → ruta. Si es solo UX → searchParam.
+
+### Restricción técnica relacionada
+
+Static segments y dynamic segments hermanos: Next 15 prioriza static sobre dynamic. `/anteojos-de-sol/aviador/page.tsx` (static) gana a `/anteojos-de-sol/[brand]/page.tsx` (dynamic) para path `/anteojos-de-sol/aviador`. Esto significa que **ningún brand slug puede coincidir con un shape slug** (aviador, wayfarer, etc.) — restricción registrada implícitamente en `BRAND_FILTERS`.
+
 ## 2026-05-29 — AskUserQuestion con preview ASCII para decisiones de UI
 
 **Categoría**: Comunicación con founder no-técnico / UX de decisión

@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Sprint Sub-categorías globales por forma CERRADO** (2026-05-29). 13 URLs SEO nuevas: `/anteojos-de-{sol,receta}/{wayfarer,aviador,cat-eye,rectangular,acetato,metal}` + polarizados solo sol. Capturan queries genéricas tipo "anteojos aviador", "lentes wayfarer" — antes solo accesibles vía `?forma=` searchParam (no indexable bien). Componente `ShapeCatalogPage`, helper `buildCategoryShapeMetadata`, query `fetchCategoryByFilter`, sitemap +13 URLs priority 0.75. Mega-menu actualizado para apuntar a estas URLs en vez de `?forma=`.
+
 ✅ **Sprint Mega-menu v2 CERRADO** (2026-05-29). Tras referencia visual de LensCrafters por el founder, refactor del desktop nav a 3 columnas con panel CTA destacado a la derecha. Estructura: 2 columnas de contenido (Para vos + Por marca / Por forma + Destacados o Por material) + 1 columna CTA con WhatsApp asesoramiento + links a herramientas IA. Mobile no cambia (drawer simple). `lib/site/mega-nav.ts` ahora con tipo expresivo `MegaMenu = { columns: (MegaContentColumn | MegaCtaColumn)[] }`.
 
 ✅ **Sub-página `/sobre-la-marca` CERRADA** (2026-05-29). Tras feedback del founder ("el catálogo debe ser catálogo, no texto largo"), separé el texto SEO largo en sub-páginas dedicadas `/anteojos-de-{sol,receta}/[brand]/sobre-la-marca`. El catálogo quedó limpio (solo grid + FAQs específicas), con link discreto "Conocé más sobre {marca} →". Las sub-páginas están en sitemap (10 nuevas URLs indexables, priority 0.6).

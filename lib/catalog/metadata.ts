@@ -49,6 +49,39 @@ export async function buildBrandMetadata(
   };
 }
 
+type CategoryShapeMetaInput = {
+  category: CategoryConfig;
+  filterLabel: string;
+  filterUrlSlug: string;
+  filterMetaPhrase: string;
+};
+
+/**
+ * Metadata para sub-categoría global por forma/material/treatment SIN marca —
+ * `/anteojos-de-{sol,receta}/[shape]`. Captura queries genéricas tipo
+ * "anteojos aviador", "lentes wayfarer", "anteojos polarizados".
+ */
+export function buildCategoryShapeMetadata({
+  category,
+  filterLabel,
+  filterUrlSlug,
+  filterMetaPhrase,
+}: CategoryShapeMetaInput): Metadata {
+  const title = `${category.name} ${filterLabel} | Originales con Envío - Óptica Carballo`;
+  const description = `${capitalize(category.metaPhrase)} ${filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const url = `${SITE_URL}/${category.slug}/${filterUrlSlug}`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'website' },
+  };
+}
+
 /**
  * Metadata para sub-página `/anteojos-de-{sol,receta}/[brand]/sobre-la-marca`
  * — página dedicada con texto SEO largo separada del catálogo para mantener

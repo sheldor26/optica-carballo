@@ -114,20 +114,18 @@ export function buildSolMegaMenu(): MegaMenu {
           {
             heading: 'Por forma',
             items: [
-              { label: 'Wayfarer', href: '/anteojos-de-sol?forma=wayfarer' },
-              { label: 'Aviador', href: '/anteojos-de-sol?forma=aviator' },
-              { label: 'Cat eye', href: '/anteojos-de-sol?forma=cat_eye' },
-              { label: 'Rectangulares', href: '/anteojos-de-sol?forma=rectangular' },
-              { label: 'Redondos', href: '/anteojos-de-sol?forma=round' },
+              { label: 'Wayfarer', href: '/anteojos-de-sol/wayfarer' },
+              { label: 'Aviador', href: '/anteojos-de-sol/aviador' },
+              { label: 'Cat eye', href: '/anteojos-de-sol/cat-eye' },
+              { label: 'Rectangulares', href: '/anteojos-de-sol/rectangular' },
             ],
           },
           {
             heading: 'Destacados',
             items: [
-              { label: 'Vulk polarizados', href: '/anteojos-de-sol/vulk/polarizados' },
-              { label: 'Rusty acetato', href: '/anteojos-de-sol/rusty/acetato' },
-              { label: 'Mormaii metal', href: '/anteojos-de-sol/mormaii/metal' },
-              { label: 'Paula Cahen mujer', href: '/anteojos-de-sol/paula-cahen-danvers/mujer' },
+              { label: 'Polarizados', href: '/anteojos-de-sol/polarizados' },
+              { label: 'Acetato', href: '/anteojos-de-sol/acetato' },
+              { label: 'Metal', href: '/anteojos-de-sol/metal' },
             ],
           },
         ],
@@ -169,18 +167,17 @@ export function buildRecetaMegaMenu(): MegaMenu {
           {
             heading: 'Por forma',
             items: [
-              { label: 'Wayfarer', href: '/anteojos-de-receta?forma=wayfarer' },
-              { label: 'Aviador', href: '/anteojos-de-receta?forma=aviator' },
-              { label: 'Cat eye', href: '/anteojos-de-receta?forma=cat_eye' },
-              { label: 'Rectangulares', href: '/anteojos-de-receta?forma=rectangular' },
-              { label: 'Redondos', href: '/anteojos-de-receta?forma=round' },
+              { label: 'Wayfarer', href: '/anteojos-de-receta/wayfarer' },
+              { label: 'Aviador', href: '/anteojos-de-receta/aviador' },
+              { label: 'Cat eye', href: '/anteojos-de-receta/cat-eye' },
+              { label: 'Rectangulares', href: '/anteojos-de-receta/rectangular' },
             ],
           },
           {
             heading: 'Por material',
             items: [
-              { label: 'Acetato', href: '/anteojos-de-receta/rusty/acetato' },
-              { label: 'Metal', href: '/anteojos-de-receta/mormaii/metal' },
+              { label: 'Acetato', href: '/anteojos-de-receta/acetato' },
+              { label: 'Metal', href: '/anteojos-de-receta/metal' },
             ],
           },
         ],

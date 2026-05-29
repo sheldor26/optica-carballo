@@ -860,6 +860,73 @@ export async function fetchProductsByCategoryAndShapes(args: {
 }
 
 /**
+ * Sub-categoría global por forma/material/treatment SIN marca, ej:
+ * `/anteojos-de-sol/aviador` (todos los aviadores de cualquier marca).
+ * Mismo BrandFilter shape que `fetchBrandPageByFilter` pero sin filtrar
+ * por brand_id. Pensada para capturar queries SEO genéricas como
+ * "anteojos aviador", "lentes wayfarer", etc.
+ */
+export async function fetchCategoryByFilter(args: {
+  categorySlug: string;
+  filter:
+    | { type: 'frame_shape'; value: string }
+    | { type: 'frame_material'; value: string }
+    | { type: 'lens_treatment_includes'; value: string };
+}): Promise<FilteredCatalogCard[]> {
+  const supabase = createStaticClient();
+
+  let query = supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        short_description,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug, is_active),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order)
+      `,
+    )
+    .eq('is_active', true)
+    .eq('category.slug', args.categorySlug);
+
+  if (args.filter.type === 'frame_shape') {
+    query = query.eq('attributes->>frame_shape', args.filter.value);
+  } else if (args.filter.type === 'frame_material') {
+    query = query.eq('attributes->>frame_material', args.filter.value);
+  } else {
+    query = query.contains('attributes->lens_treatment', [args.filter.value]);
+  }
+
+  const { data } = await query.returns<FilteredCatalogRow[]>();
+  if (!data) return [];
+
+  return data
+    .filter((row) => row.brand.is_active && row.category.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
+      const sortedImages = [...row.images].sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return a.sort_order - b.sort_order;
+      });
+      return {
+        slug: row.slug,
+        name: row.name,
+        brandSlug: row.brand.slug,
+        brandName: row.brand.name,
+        categorySlug: row.category.slug,
+        shortDescription: row.short_description,
+        minPriceCents:
+          inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
+        inStockCount: inStock.length,
+        primaryImagePath: sortedImages[0]?.storage_path ?? null,
+        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+      };
+    });
+}
+
+/**
  * Para mostrar chips de filtros en el catálogo: cuáles frame_shapes
  * existen REALMENTE en productos activos de la categoría. Evita mostrar
  * chips de "wayfarer" si no hay ningún wayfarer cargado.
