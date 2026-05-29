@@ -10,8 +10,8 @@ import type { WishlistEntry } from '@/lib/wishlist/cookie';
 
 type Props = {
   entry: WishlistEntry;
-  /** Variante 'card' = botón flotante absoluto sobre la card. 'inline' = inline con texto. */
-  variant?: 'card' | 'inline';
+  /** Variante 'card' = botón flotante absoluto sobre la card. 'inline' = inline con texto. 'title' = icono grande sin borde a la altura del título. */
+  variant?: 'card' | 'inline' | 'title';
   className?: string;
 };
 
@@ -68,7 +68,45 @@ export function WishlistButton({
         />
       );
     }
+    if (variant === 'title') {
+      return (
+        <div
+          aria-hidden="true"
+          className={cn('size-11 shrink-0 rounded-full', className)}
+        />
+      );
+    }
     return null;
+  }
+
+  if (variant === 'title') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={isSaved ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        aria-pressed={isSaved}
+        className={cn(
+          'group/wish hover:bg-muted/60 flex size-11 shrink-0 items-center justify-center rounded-full transition-all duration-200 hover:scale-110',
+          className,
+        )}
+      >
+        <motion.span
+          animate={isSaved ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Heart
+            className={cn(
+              'size-6 transition-colors',
+              isSaved
+                ? 'fill-red-500 text-red-500'
+                : 'text-foreground/70 fill-none',
+            )}
+            strokeWidth={1.75}
+          />
+        </motion.span>
+      </button>
+    );
   }
 
   if (variant === 'inline') {

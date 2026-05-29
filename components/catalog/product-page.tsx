@@ -204,18 +204,30 @@ export async function ProductDetailPage({
 
         <div className="flex flex-col gap-6 md:col-start-2 md:row-span-2 md:row-start-1">
           <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <Link
-                href={`/${category.slug}/${product.brand.slug}`}
-                className="text-muted-foreground hover:text-foreground text-sm font-medium uppercase tracking-wide"
-              >
-                {product.brand.name}
-              </Link>
-              <NewArrivalBadge attributes={product.attributes} />
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/${category.slug}/${product.brand.slug}`}
+                    className="text-muted-foreground hover:text-foreground text-sm font-medium uppercase tracking-wide"
+                  >
+                    {product.brand.name}
+                  </Link>
+                  <NewArrivalBadge attributes={product.attributes} />
+                </div>
+                <h1 className="text-balance font-serif text-4xl font-medium leading-[1.05] tracking-[-0.02em] md:text-5xl">
+                  {product.name}
+                </h1>
+              </div>
+              <WishlistButton
+                entry={{
+                  slug: product.slug,
+                  category: category.slug,
+                  brand: product.brand.slug,
+                }}
+                variant="title"
+              />
             </div>
-            <h1 className="text-balance font-serif text-4xl font-medium leading-[1.05] tracking-[-0.02em] md:text-5xl">
-              {product.name}
-            </h1>
             <p className="text-muted-foreground mt-2 text-base font-medium md:text-lg">
               {subtitle}
             </p>
@@ -270,14 +282,6 @@ export async function ProductDetailPage({
 
           <div className="flex flex-wrap items-center gap-2">
             <WhatsappCta productName={product.name} inStock={isInStock} />
-            <WishlistButton
-              entry={{
-                slug: product.slug,
-                category: category.slug,
-                brand: product.brand.slug,
-              }}
-              variant="inline"
-            />
           </div>
         </div>
 
