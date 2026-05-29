@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { BrandsSection } from '@/components/home/brands-section';
 import { CategoriesSection } from '@/components/home/categories-section';
+import { HomeFaqs } from '@/components/home/home-faqs';
 import { HomeHero } from '@/components/home/home-hero';
 import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
@@ -44,6 +45,7 @@ export default async function HomePage() {
       <TrustMarquee />
       <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
       <BrandsSection brands={allBrands} />
+      <HomeFaqs />
       <ValueProps />
     </>
   );

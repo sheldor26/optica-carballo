@@ -2,7 +2,60 @@
 
 ## Status
 
-🟡 **WhatsApp Advisor Card en página de producto — implementado, build verde, pendiente push**
+🟡 **FAQs implementadas iter 1: estructura completa de datos + accordion + JSON-LD + página + home subset, pendiente push y verificación**
+
+Founder dijo "sigamos con las FAQs". Implementé con drafts actuales + marcas `[A CONFIRMAR: ...]` para datos pendientes (plazos exactos de envío, dirección/horario del local, cantidad de cuotas, política exacta de envío de devolución, umbral técnico de "graduación elevada").
+
+**Archivos nuevos**:
+- `lib/content/faqs.ts`: source of truth de las 18 FAQs categorizadas en 6 grupos (envíos, pagos, garantía, receta, nosotros, técnicas). Types `FaqItem` + `FaqCategory`. Helpers `getFeaturedFaqs()` (subset 6 marcadas con `featured:true` para home) + `groupFaqsByCategory()` (agrupa por categoría para vista completa). Para editar contenido = editar este archivo + redeploy.
+- `components/faqs/faq-accordion.tsx`: client component con framer-motion AnimatePresence (height + opacity), a11y completo (`aria-expanded`, `aria-controls`, `role=region`), keyboard nav (focus visible), chevron que rota al abrir. Soporte para bullets simples (`\n- item`) en respuestas.
+- `components/seo/faq-jsonld.tsx`: schema FAQPage para rich snippets en Google. Recibe array de items y devuelve `<script type="application/ld+json">`.
+- `app/(storefront)/preguntas-frecuentes/page.tsx`: página completa con header serif + 6 secciones categorizadas (label + description por categoría) + accordion por sección + CTA al final ("¿No encontraste lo que buscás?"). Metadata SEO + ISR 1h.
+- `components/home/home-faqs.tsx`: sección en home con subset de 6 FAQs destacadas (`featured:true`) + link "Ver todas las preguntas frecuentes →" a la página completa. Incluye su propio JSON-LD del subset.
+
+**Modificados**:
+- `app/(storefront)/page.tsx`: agregado `<HomeFaqs />` entre `BrandsSection` y `ValueProps`.
+- `app/sitemap.ts`: agregada `/preguntas-frecuentes` priority 0.6.
+
+**Build verde, typecheck verde**. Tamaños:
+- `/preguntas-frecuentes`: `2.96 kB / 153 kB First Load`, ISR 1h.
+- `/` (home): subió `5.22 kB → 7.75 kB / 169 kB → 172 kB` por el subset + JSON-LD.
+
+**Decisiones técnicas**:
+- **Source of truth en código** (`lib/content/faqs.ts`), no en DB. Razón: editorial / no transaccional, no requiere CRUD admin, founder edita el archivo y redeploya. Si el volumen crece a 100+ FAQs o se necesita admin UI, migrar a Supabase.
+- **Mismo accordion para home y página**: 1 componente reutilizable. Subset filtrado por `featured:true` flag.
+- **JSON-LD por página**: el del home solo lleva las 6 featured. El de `/preguntas-frecuentes` lleva las 18 completas. Google indexa ambos sin penalty.
+- **Sin búsqueda en iter 1**: 18 FAQs caben en una página, navegación visual es suficiente.
+
+**Pendiente del founder** (no urgente):
+1. Verificar visualmente en producción (después de push).
+2. Revisar texto de las 18 FAQs y completar 5 marcas `[A CONFIRMAR: ...]` en `lib/content/faqs.ts`. Editar el archivo y push (o pasarme los datos y los actualizo).
+3. Si necesita ajustes de tono/copy en alguna FAQ, decirme y los aplico.
+
+**Próximo paso técnico**: push.
+
+
+
+Founder confirmó 2026-05-28:
+- Advisor card: "me gusta" tras ver en producción.
+- Simetría brand cards: "quedaron bien simetricamente" tras ver fix.
+
+Ambos frentes cerrados sin pendientes.
+
+
+
+WhatsApp Advisor Card (`7012bff`):
+- Pusheado y aprobado visualmente por founder ("me gusta").
+- Componente `whatsapp-advisor-card.tsx` con verde emerald + glow + CTA contextual.
+- Ubicación: entre descripción y productos similares en página de producto.
+
+Fix simetría brand cards (`490673b`):
+- Founder detectó en producción: cards de Rusty y Vulk con alturas distintas según largo de la description (Rusty 4 líneas vs Vulk 2 líneas).
+- Causa: `<Card>` interno tenía `h-full` pero `<Link>` wrapper era solo `block` → no se propagaba el alto desde el grid row.
+- Fix: agregar `h-full` a la cadena completa (`RevealOnScroll className="h-full"` + `<Link className="block h-full">` + `<Card className="flex h-full flex-col">` ya estaba).
+- Resultado: todas las cards mismo alto, footer "Ver catálogo →" alineado abajo, descripciones de distinto largo dejan más/menos espacio interno pero card simétrica.
+
+
 
 Founder pidió: "en la parte de los productos, podriamos agregar... tenes dudas sobre el producto? no terminas de decidirte? Escribinos al whatsapp y te asesoramos". Patrón de captura de duda en el momento exacto (entre descripción y productos relacionados).
 

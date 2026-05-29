@@ -22,6 +22,171 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Marcas `[A CONFIRMAR: ...]` inline en código de contenido permiten despliegue + edición posterior sin bloquear
+
+**Categoría**: Generación de contenido / Workflow founder no-técnico
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente validar utilidad real cuando founder edite)
+
+### Qué pasó
+
+Al implementar las FAQs, tenía 5 puntos de datos sin confirmar (plazos exactos, dirección/horario, cantidad de cuotas, política de devolución, umbral graduación elevada). Dos caminos posibles:
+
+**Camino A**: NO implementar hasta que founder confirme los 5 datos. Costo: feature queda bloqueada, infraestructura técnica no se valida.
+
+**Camino B**: Implementar TODO con drafts + marcas literales `[A CONFIRMAR: ...]` en el contenido. Costo: el sitio muestra texto con esa marca temporal hasta que founder la reemplace.
+
+Elegí B. Las marcas son:
+- **Visibles en producción** (no escondidas en comentarios HTML), así el founder las ve y se acuerda.
+- **Self-documenting**: indican exactamente qué falta confirmar.
+- **Fácil de buscar**: `grep "A CONFIRMAR" lib/content/faqs.ts` lista todo lo pendiente.
+- **No bloqueante**: el sitio funciona, schema SEO funciona, accordion funciona — solo el dato exacto está pendiente.
+
+### Por qué funciona
+
+- **Desacopla deploy de contenido completo**. Implementación técnica + estructura + UI/UX no esperan datos finales.
+- **Compromiso visible**: founder ve el `[A CONFIRMAR]` cada vez que abre la página → presión social suave para completarlo.
+- **Tracking gratuito**: grep o búsqueda en código revela todos los pendientes sin necesidad de tracker externo.
+- **Rollback fácil**: si el founder no completa nunca, las marcas siguen siendo info parcial mejor que nada.
+
+### Cómo replicar
+
+Para CUALQUIER contenido del sitio donde:
+- La infraestructura técnica está clara.
+- Algunos datos puntuales requieren info del founder.
+- El founder puede tardar días/semanas en consolidar la info.
+
+1. **Implementar con drafts + marcas** `[A CONFIRMAR: contexto específico]`.
+2. **Centralizar contenido** en un archivo único (`lib/content/X.ts`) para que el founder edite UN solo lugar.
+3. **Documentar en CURRENT_STATE.md** qué marcas hay pendientes para que no se pierdan.
+4. **Pasarle al founder la lista exacta** UNA vez (en el mensaje de cierre de iter 1). NO repetirla en cada turno (regla de "no saturar con pendientes").
+
+### Anti-patrón a evitar
+
+- Esconder pendientes en comentarios `// TODO` que el founder no ve.
+- Usar lorem ipsum como placeholder (sugiere "nada pensado", no comunica qué falta).
+- Implementar con datos inventados sin marca (riesgo: founder no se entera que están mal hasta que un cliente los usa).
+- Bloquear deploy esperando datos completos cuando la infra técnica vale la pena tener live.
+
+### Próxima vez aplicar a
+
+- Páginas legales (cuando se completen política de privacidad / términos).
+- Copy del checkout (mensajes de confirmación con datos del negocio).
+- Email templates de confirmación de orden.
+- Descripciones de marcas en brand pages.
+- Datos de contacto en footer (si en algún momento se agregan datos parciales).
+
+---
+
+## 2026-05-28 — Confirmación visual del founder cierra el ciclo de validación — su "quedaron bien" es el gate
+
+**Categoría**: Workflow / Validación / Cierre de ciclo
+**Confianza**: 🟢 Alta (patrón consistente: typecheck/build verde no implica fix correcto; founder visual sí)
+
+### Qué pasó
+
+Implementé fix de simetría de brand cards (propagación de `h-full` por toda la cadena de wrappers). Build verde, typecheck verde. Pero hasta que el founder no confirma "quedaron bien simetricamente" tras verlo en producción, el fix queda en estado 🟡 pendiente.
+
+Esto se repite consistentemente en el proyecto:
+- Crop visual del producto (3 iteraciones documentadas en MISTAKES).
+- Logos de marcas (5 iteraciones de tamaño hasta llegar a la versión que funcionó).
+- Hero del founder ("muy estático" → ajustar animación; "se pierde la J de anteojos" → bug del LetterReveal).
+- Cards de marca asimétricas.
+
+### Por qué esto es estructural, no anomalía
+
+Build/typecheck validan **corrección sintáctica y de tipos**. NO validan:
+- Resultado visual (alturas, alineación, tamaños).
+- Resultado UX (¿se entiende?, ¿es claro?, ¿no satura?).
+- Resultado con datos reales (descripciones de distinto largo, SVGs de proporción distinta).
+
+El único loop de validación efectivo para fixes visuales/UX es founder visual en producción. Por eso el patrón "implementar → typecheck verde → push → esperar feedback" es correcto para este tipo de cambios.
+
+### Cómo aplicar
+
+Para cualquier cambio visual/UX:
+1. Implementar.
+2. Typecheck + build (gate técnico mínimo).
+3. Push.
+4. **NO declarar "fix definitivo" hasta que founder confirme visualmente**.
+5. Lenguaje hipotético en el mensaje de cierre ("debería resolver", "si todavía corta…"), nunca declarativo.
+
+Para cambios de lógica pura (queries, validaciones, calculations):
+- Tests automáticos pueden cerrar el ciclo sin founder visual.
+- Confirmation no se necesita para cada cambio.
+
+### Próxima vez aplicar a
+
+- Tunings visuales del checkout cuando se active.
+- Iter 2 del recomendador (links a catálogo filtrado, share por WhatsApp).
+- Cualquier feature de UI que se agregue al sitio.
+- Diseño de páginas legales / FAQs cuando se implementen.
+
+---
+
+## 2026-05-28 — `h-full` debe propagarse por TODA la cadena de wrappers (grid → wrapper anim → Link → Card), no solo en el elemento final
+
+**Categoría**: CSS / Flexbox/Grid / Componentes con wrappers anidados
+**Confianza**: 🟢 Alta (caso concreto detectado y resuelto)
+
+### Qué pasó
+
+Las brand cards de Rusty y Vulk en `/anteojos-de-sol` se veían con alturas distintas según el largo de su `description` (Rusty 4 líneas → card más alta; Vulk 2 líneas → card más baja). El `<Card>` interno tenía `h-full flex flex-col` y el `CardContent` tenía `flex-1` — el setup correcto para alto uniforme.
+
+**Pero la cadena de wrappers era**:
+```
+grid (items-stretch default)
+  └ RevealOnScroll (sin h-full)
+      └ Link (block, sin h-full)
+          └ Card (h-full ✅)
+```
+
+`h-full` necesita que el parent tenga altura definida. Si algún parent intermedio no propaga la altura, el `h-full` del descendiente no funciona.
+
+### Causa raíz
+
+CSS `height: 100%` (= Tailwind `h-full`) requiere que el padre tenga altura calculable. En una cadena de wrappers, **cada nivel intermedio que sea `display: block` por default trunca la propagación**. El alto del grid row no llega hasta el `<Card>` porque `<Link>` y `<RevealOnScroll>` no son `h-full`.
+
+### Fix
+
+Agregar `h-full` a TODA la cadena, no solo al elemento final:
+```tsx
+<RevealOnScroll className="h-full">
+  <Link href={...} className="block h-full">
+    <Card className="flex h-full flex-col">
+      ...
+    </Card>
+  </Link>
+</RevealOnScroll>
+```
+
+Ahora la altura del grid row se propaga: grid → RevealOnScroll → Link → Card. Todas las cards se igualan al alto de la más alta. `flex-1` en CardContent absorbe el espacio sobrante (las descripciones más cortas dejan más aire interno, no rompen simetría del exterior).
+
+### Cómo replicar
+
+Cuando armes una grilla de cards con altura uniforme deseada:
+
+1. **El grid container** ya tiene `items-stretch` por default → no hace falta agregar nada.
+2. **CADA wrapper intermedio** entre el grid y la card final debe tener `h-full`. Incluyendo:
+   - Componentes de animación (RevealOnScroll, motion.div, etc.).
+   - Links (`<Link>` o `<a>`).
+   - Decoradores (TiltSpotlightCard, MagneticButton, etc.).
+3. **La card final** debe ser `flex flex-col h-full` para que `flex-1` en un child absorba espacio sobrante.
+
+### Anti-patrón a evitar
+
+- Poner `h-full` solo en el elemento más profundo asumiendo que CSS "lo entiende".
+- Olvidar que componentes wrapper custom (RevealOnScroll, TiltSpotlightCard, etc.) son `<div>` por default → necesitan `h-full` explícito.
+- Validar simetría con datos demo de igual largo (las descripciones lorem ipsum de la misma longitud no revelan el bug).
+
+### Próxima vez aplicar a
+
+- Cualquier grid de cards (productos, marcas, categorías, blog posts).
+- Featured products en home (cuando se agreguen).
+- Bento grid (si lo implementamos a futuro).
+- Cards de comparación de productos.
+
+---
+
 ## 2026-05-28 — Cuando founder pide "guíame con X", entregar template pre-rellenado con drafts + marcas `[CONFIRMAR]` — no preguntas abiertas
 
 **Categoría**: Comunicación / Reducción de fricción / Generación de contenido
