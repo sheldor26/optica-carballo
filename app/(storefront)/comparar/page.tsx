@@ -1,17 +1,15 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
-import { CompareRemoveButton } from '@/components/compare/compare-remove-button';
+import { CompareTable, type CompareRow } from '@/components/compare/compare-table';
 import {
   fetchProductsForCompareBySlugs,
   type CompareProductCard,
 } from '@/lib/catalog/queries';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 import { readCompareCookie } from '@/lib/compare/cookie';
-import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { formatPriceCents } from '@/lib/format/currency';
 
 const SLUG = 'comparar';
@@ -94,12 +92,7 @@ function measurementMm(
   return n !== null ? `${n} mm` : null;
 }
 
-type Row = {
-  label: string;
-  values: (string | null)[];
-};
-
-function buildRows(products: CompareProductCard[]): Row[] {
+function buildRows(products: CompareProductCard[]): CompareRow[] {
   const getPrice = (p: CompareProductCard) =>
     p.minPriceCents !== null
       ? formatPriceCents(p.minPriceCents)
@@ -203,91 +196,6 @@ export default async function Page() {
         <CompareTable products={ordered} rows={rows} />
       )}
     </main>
-  );
-}
-
-function CompareTable({
-  products,
-  rows,
-}: {
-  products: CompareProductCard[];
-  rows: Row[];
-}) {
-  return (
-    <section className="mt-10 md:mt-14" aria-label="Tabla de comparación">
-      <div className="overflow-x-auto pb-2">
-        <table className="w-full min-w-[640px] border-separate border-spacing-0">
-          <thead>
-            <tr>
-              <th className="bg-background sticky left-0 w-32 align-bottom text-left text-xs font-medium uppercase tracking-wider text-muted-foreground sm:w-40">
-                <span className="sr-only">Atributo</span>
-              </th>
-              {products.map((p) => (
-                <th
-                  key={p.slug}
-                  className="border-border/60 border-b align-bottom p-3 text-left"
-                >
-                  <div className="flex flex-col gap-2">
-                    <div className="border-border/60 bg-muted/30 flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg border">
-                      {p.primaryImagePath ? (
-                        <Image
-                          src={getProductImageUrl(p.primaryImagePath)}
-                          alt={p.name}
-                          width={200}
-                          height={200}
-                          className="size-full object-contain p-3"
-                        />
-                      ) : (
-                        <span className="text-muted-foreground text-xs">
-                          sin foto
-                        </span>
-                      )}
-                    </div>
-                    <Link
-                      href={`/${p.categorySlug}/${p.brandSlug}/${p.slug}`}
-                      className="hover:text-brand text-foreground font-serif text-base font-medium leading-tight tracking-tight transition-colors md:text-lg"
-                    >
-                      {p.name}
-                    </Link>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wide">
-                      {p.brandName}
-                    </p>
-                    <CompareRemoveButton slug={p.slug} />
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, idx) => (
-              <tr
-                key={row.label}
-                className={idx % 2 === 0 ? 'bg-muted/15' : ''}
-              >
-                <th
-                  scope="row"
-                  className="bg-background sticky left-0 w-32 px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground sm:w-40"
-                >
-                  {row.label}
-                </th>
-                {row.values.map((value, i) => (
-                  <td
-                    key={i}
-                    className="border-border/60 border-t px-3 py-3 text-sm text-foreground"
-                  >
-                    {value ?? <span className="text-muted-foreground/60">—</span>}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <p className="text-muted-foreground mt-6 text-center text-xs">
-        Tu comparador se guarda en tu navegador. No requiere cuenta.
-      </p>
-    </section>
   );
 }
 

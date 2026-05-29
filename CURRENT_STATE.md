@@ -2,6 +2,66 @@
 
 ## Status
 
+🟡 **Iter 2 del comparador (mobile UX + product schema) — implementado, pendiente push.**
+
+## Iter 2 del comparador — feedback del founder
+
+Founder usó el comparador y reportó 2 cosas:
+1. La tabla en mobile no era amigable — necesita ser "suave, fácil de leer, no un dolor de cabeza".
+2. **Para que el comparador sea útil, todos los casilleros de cada producto deben estar llenos**. Si falta data → tabla queda con "—" → se ve mal. Pidió que al cargar productos le pidamos los datos faltantes.
+
+### Refactor mobile de la tabla
+
+**Antes** (commit a1a5c5e): `<table>` con `border-separate border-spacing-0`, sticky first col sin shadow, `min-w-[640px]`, padding `p-3`, no había hint visual de scroll, no había CTA "Ver producto" en cada columna.
+
+**Ahora** (`components/compare/compare-table.tsx` — extraído a client component porque necesita detectar overflow):
+- `border-collapse` (más simple y robusto en browsers).
+- Sticky first col con `z-10` + **shadow dinámica** `shadow-[6px_0_8px_-4px_rgba(0,0,0,0.08)]` que solo aparece cuando `scrollLeft > 4` (indica visualmente que hay contenido a la izquierda fijo).
+- Hint "Deslizá para ver más →" con `ChevronRight` animado, solo visible si `scrollWidth > clientWidth` (detectado con `ResizeObserver`). Oculto en `md:hidden`.
+- Min-width de cada columna de producto: 168px mobile, 200px sm+. Permite ver 1.5-2 productos por viewport en mobile.
+- Filas alternadas con `bg-muted/30` más visibles (antes era `bg-muted/15`).
+- Padding más generoso: `px-3 py-3.5` mobile, `px-4 py-4` sm+.
+- Tipografía más grande mobile: `text-sm` base, `text-base` sm+.
+- Header de columna: imagen aspect-square + brand (uppercase tracking) + nombre (font-serif clamp-2) + **CTA "Ver producto" outline btn** + Quitar (text link).
+- Container con `-mx-3 sm:mx-0` para hacer overflow desde el edge del viewport en mobile (sin border lateral).
+
+### Por qué client component (no server)
+
+El hint de scroll y la shadow dinámica requieren detectar `scrollWidth` y `scrollLeft` en runtime + `ResizeObserver`. Eso es client-only. Refactor: extraje `CompareTable` a `'use client'` y la página `/comparar` server le pasa `products` y `rows` ya calculadas (data fetch sigue en server).
+
+### PRODUCT_SCHEMA.md (nuevo, fuente de verdad de campos)
+
+Documento nuevo que lista los **13 campos exactos** del comparador + identidad del producto + variantes + imágenes. Niveles:
+- 🔴 OBLIGATORIO (bloquea `is_active=true`).
+- 🟡 RECOMENDADO (no bloquea pero degrada UX).
+- ⚪ OPCIONAL.
+
+Incluye **checklist operativa** para pegar al founder y pedir uno por uno. La regla es: si falta un 🔴, no se activa el producto. Si el founder no tiene el dato, buscarlo en web del fabricante / Mercado Libre / preguntar de nuevo. NO inventar.
+
+### Skill `/product` actualizada
+
+Agregada sección "⚠️ Regla bloqueante (founder 2026-05-28)" al inicio que:
+- Apunta a `PRODUCT_SCHEMA.md` como fuente de verdad.
+- Obliga a pegar checklist al founder ANTES de implementar.
+- Bloquea `is_active=true` si quedan 🔴 vacíos.
+
+### CLAUDE.md
+
+Agregada referencia a `PRODUCT_SCHEMA.md` en la sección "Otros archivos importantes" con label en negrita.
+
+### Próximo paso
+
+Push + verificación visual del founder (probar `/comparar` en mobile real). Cuando confirme que la UX está OK, podemos cargar el próximo producto siguiendo la checklist del schema.
+
+### Pendientes detectados
+
+- Validación automática del schema (`scripts/validate-product.ts`). Por ahora la validación es manual vía checklist. Es candidato para iter cuando tengamos 10+ productos.
+- Migrar ProductAttributes / ProductMeasurements / Comparador a usar las MISMAS constantes de labels (hoy hay 3 archivos con `FRAME_SHAPE_LABELS` duplicado). Refactor menor, no urgente.
+
+---
+
+## Status anterior
+
 🟡 **Comparador de productos completo — implementado, pendiente push y verificación visual.**
 
 ## Comparador de productos (cookie-first, mismo patrón wishlist/recientes)

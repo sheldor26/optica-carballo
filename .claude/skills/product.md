@@ -4,9 +4,22 @@
 
 Cuando se va a agregar un producto al catálogo (anteojos de sol, recetados, lentes de contacto, accesorios). Es la operación más repetida del proyecto, por eso está sistematizada.
 
+## ⚠️ Regla bloqueante (founder 2026-05-28)
+
+**El comparador de productos exige TODOS los casilleros llenos** para que la tabla quede prolija. El schema completo está en `PRODUCT_SCHEMA.md` (fuente de verdad).
+
+**Antes de cualquier paso de implementación**:
+
+1. Leer `PRODUCT_SCHEMA.md`.
+2. Pegar la "Checklist operativa" del schema al founder.
+3. **Recibir uno por uno los campos OBLIGATORIOS (🔴) marcados ahí**. Si el founder dice "no tengo X", buscar X en la web del fabricante / Mercado Libre del mismo modelo / preguntar de nuevo. NO inventar valores.
+4. **No proceder a `is_active=true` si quedan 🔴 vacíos**. Mejor dejar `is_active=false` y volver cuando tengamos la data.
+5. Los 🟡 se piden también pero no bloquean activación.
+
 ## Antes de arrancar
 
 Leer:
+- `PRODUCT_SCHEMA.md` (contrato de datos — CRÍTICO)
 - `BRANDS.md` (verificar que la marca esté registrada)
 - `PRODUCTS_INVENTORY.md` (verificar progreso del catálogo)
 - `SEO_STRATEGY.md` (estructura de URLs)

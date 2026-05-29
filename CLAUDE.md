@@ -113,6 +113,7 @@ Si tomaste una decisión importante: agregala a `DECISIONS.md` con formato ADR.
 | `BUSINESS_POLICIES.md` | Políticas universales del negocio (incluye estuche+franela+garantía, envíos, devoluciones, receta) |
 | `CONTENT_PLAN.md` | Plan editorial: qué artículos escribir y cuándo |
 | `BRANDS.md` | Marcas con stock real, líneas, segmento |
+| `PRODUCT_SCHEMA.md` | **Contrato de datos por producto** — campos OBLIGATORIOS / RECOMENDADOS para el comparador y ficha técnica. Leer al cargar productos. |
 | `AI_PROMPTS.md` | Biblioteca versionada de prompts de producción |
 | `PRODUCTS_INVENTORY.md` | Tracker de qué productos están cargados |
 | `DECISIONS.md` | ADRs — decisiones tomadas, vigentes y revertidas |

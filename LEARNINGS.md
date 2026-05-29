@@ -22,6 +22,78 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Feedback de founder sobre nueva feature = oportunidad para sistematizar requisitos cross-cutting (PRODUCT_SCHEMA)
+
+**Categoría**: Proceso / Sistematización / Calidad de datos
+**Confianza**: 🟡 Media (1 caso, primera aplicación del patrón "feedback → schema")
+
+### Qué pasó
+
+Founder probó el comparador y reportó 2 problemas:
+1. UX mobile no era amigable (problema visual concreto, fácil de fijar).
+2. **"Todos los casilleros deben coincidir, debe estar prolijo"** → problema estructural: si los productos no tienen TODOS los campos llenos, la tabla queda con "—" y se ve mal.
+
+El segundo es el interesante. Podía resolverlo "tactico" (filtrar productos sin data en el comparador), pero la causa raíz es: **no había un contrato explícito de qué campos debe tener un producto para ser "completo"**.
+
+Creé `PRODUCT_SCHEMA.md` que:
+- Lista los 13 campos exactos del comparador (lo que el founder ve cuando dice "casilleros").
+- Marca cada campo con nivel 🔴/🟡/⚪.
+- Tiene una **checklist operativa para pegar al founder** y pedir uno por uno.
+- Actualicé skill `/product` con regla bloqueante explícita + apuntador a este schema.
+
+### Por qué funciona
+
+- **Convierte un feedback puntual en regla permanente**. El founder no va a tener que recordarme "che, cargá todo" cada vez. Está escrito.
+- **Cierra el loop**: schema → skill `/product` → CLAUDE.md (referencia). Tres lugares apuntan al mismo contrato.
+- **Es accionable inmediatamente**: la checklist se puede copiar y mandar al founder. No es un schema teórico, es operativo.
+
+### Patrón a replicar
+
+Cada vez que el founder de feedback tipo "esto tiene que estar siempre X" o "no quiero ver Y" sobre una feature ya implementada, evaluar:
+- ¿Es solo este caso, o es una regla cross-cutting?
+- Si es cross-cutting → buscar el lugar correcto (schema, contrato, regla en CLAUDE.md, skill) y escribirlo ahí.
+- Linkear desde 2+ lugares para que sea descubrible.
+
+Próximas oportunidades del patrón:
+- "Las imágenes deben ser X" → IMAGE_SCHEMA.md o sección en PRODUCT_SCHEMA.md.
+- "Las descripciones deben tener Y" → ya cubierto por skill `/article` y `content-writer-medical`.
+- "Los meta-tags deben Z" → ya cubierto por `seo-strategist`.
+
+### Costo
+
+~30min escribir PRODUCT_SCHEMA.md vs ~5min "filtro tactico". Pero el schema se amortiza desde el siguiente producto cargado.
+
+---
+
+## 2026-05-28 — Detección de overflow + sticky shadow = patrón mobile-friendly para tablas comparativas
+
+**Categoría**: UX / Mobile / Component patterns
+**Confianza**: 🟡 Media (1 caso aplicado, pero el patrón es industria estándar)
+
+### Qué pasó
+
+Refactor del comparador mobile. La tabla con sticky first col por sí sola no comunica visualmente que hay contenido scrolleable. UX rompe.
+
+Aplicación: 3 visual cues complementarios:
+1. **Hint textual**: "Deslizá para ver más →" arriba de la tabla, **solo visible si hay overflow real** (`scrollWidth > clientWidth`). Detectado con ResizeObserver + recalculado en resize.
+2. **Sticky shadow dinámica**: la first col tiene `box-shadow` lateral derecha que **solo aparece cuando `scrollLeft > 4`**. Comunica "esa col está fija, hay contenido scrolleado a la izquierda".
+3. **Min-width por columna**: 168px mobile, 200px sm+ → garantiza que cada producto tenga espacio legible aunque no entre todo en pantalla.
+
+### Por qué funciona
+
+Los 3 cues no se pisan. Hint + shadow + min-width son ortogonales:
+- Hint: orienta antes de tocar.
+- Shadow: feedback DURANTE el scroll.
+- Min-width: garantiza legibilidad de cada celda.
+
+Sin uno solo de los tres, la UX se degrada (testeable mentalmente: sin hint, ¿cómo sabe que hay más? Sin shadow, ¿cómo sabe que la col fija es intencional? Sin min-width, ¿cómo se ve algo con 4 cols de 50px?).
+
+### Aplicar a futuro
+
+Cualquier tabla con scroll horizontal en mobile (pricing comparisons, specs side-by-side, dashboards) debe incluir los 3 cues.
+
+---
+
 ## 2026-05-28 — 3era app del patrón cookie-first: comparador valida que es pattern, NO incidente. Candidato a regla de CLAUDE.md.
 
 **Categoría**: Arquitectura / Persistencia / Patrones consolidados

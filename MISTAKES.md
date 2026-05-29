@@ -24,6 +24,33 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Iter 1 del comparador NO consideró que los productos podrían tener data incompleta
+
+**Estado**: 🟡 Mitigado vía PRODUCT_SCHEMA.md + actualización de skill /product.
+**Categoría**: Diseño / Asunciones implícitas sobre datos
+
+### Qué pasó
+
+Implementé el comparador asumiendo que los productos tienen TODOS los campos (`frame_shape`, `weight_grams`, las 5 medidas, etc) llenos. La realidad: hoy hay 3 productos cargados y algunos tienen campos vacíos. Cuando el founder probó, vio celdas con "—" y reportó: "todos los casilleros deben coincidir, debe estar prolijo".
+
+### Causa raíz
+
+**No verifiqué la calidad de datos del catálogo actual ANTES de diseñar la tabla**. Si hubiese mirado los 3 productos existentes y sus attributes, hubiese visto que algunos no tienen `weight_grams`, otros faltan `measurements.bridge_mm`, etc. La tabla con "—" hubiese sido predecible.
+
+Es un patrón más general: **asumir que data está bien sin verificarla**. Aparece cada vez que diseño un feature que depende de campos opcionales.
+
+### Regla preventiva
+
+Antes de implementar cualquier feature que muestre data lado a lado (comparador, dashboard, ficha técnica), seguir este orden:
+1. **Listar los campos que el feature va a mostrar**.
+2. **Query rápida** en supabase: para cada campo, ¿cuántos productos lo tienen llenos? (`SELECT COUNT(*) WHERE attributes->>'weight_grams' IS NOT NULL`).
+3. Si la coverage es <100% → crear/actualizar schema doc con el contrato, y diseñar la feature asumiendo que el founder va a llenar los gaps (no graceful-degradation que esconde el problema).
+4. Si el feature lo amerita, agregar validación que bloquee `is_active=true` cuando faltan campos requeridos.
+
+Aplicación inmediata: `PRODUCT_SCHEMA.md` (creado) cubre el comparador. Para próximos features con tabla de specs (ej: filtros avanzados por material/peso), pre-verificar coverage.
+
+---
+
 ## 2026-05-28 — Sesión comparador: cierre EXITOSO (docs actualizados ANTES de mensaje al founder)
 
 **Estado**: 🟢 Cumplido — sin mistake nuevo.
