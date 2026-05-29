@@ -17,6 +17,7 @@ const FRAME_SHAPE_LABELS: Record<string, string> = {
   rectangular: 'Rectangular',
   cat_eye: 'Cat eye',
   oversized: 'Oversized',
+  wraparound: 'Envolvente deportivo',
 };
 
 const LENS_TREATMENT_LABELS: Record<string, string> = {

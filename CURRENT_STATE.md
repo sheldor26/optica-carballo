@@ -12,9 +12,19 @@
 
 Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}` probablemente es porque el item está **pausado/cerrado/finalizado** — ML 404ea ese endpoint para items no-active. Creado endpoint `/api/admin/ml-find-item/[itemId]` (commit `d77cf05`) que usa `/users/{seller_id}/items/search?ids=MLA...` — devuelve item con su status real sin importar si está closed.
 
-Iteración endpoint ml-find-item v2 (commit `c65e131`): el v1 usaba `/users/{seller_id}/items/search?ids=MLA...` pero ML ignoró el `?ids=` query (devolvió los primeros 50 de 895 items del seller, sin filtrar). v2 usa `/items?ids=MLA...` (multi-get directo) que devuelve array `[{code, body}]` por cada ID con status real del item (active/paused/closed) sin importar si está cerrado.
+**Item localizado con éxito** vía `/items?ids=MLA...`: producto está active, es del seller correcto (OPTICACARBALLO), título "Rusty Yau Polarizado Ciclismo", precio $98.350,02, stock 4. Causa del 404 original con `/items/{id}` singular: probablemente tema de listing_type `gold_pro` con `user_product_id` (catalog listing) requiere endpoint plural.
 
-Próximo paso exacto: founder abre `https://opticacarballo.com.ar/api/admin/ml-find-item/MLA1432137395` tras deploy del commit `c65e131`. Esperamos JSON con `response.body[0].code` (200 si existe, 404 si no) + `response.body[0].body.status` (active/paused/closed/under_review) que explica el 404 original.
+**Sprint Import Rusty Yau CERRADO en código** (2026-05-29). Seed `10_rusty_yau_polarizado.sql` generado con:
+- Producto + 1 variante + 2 imágenes placeholder
+- `frame_shape: 'wraparound'` (nuevo valor) — agregado label en español a `FRAME_SHAPE_LABELS` de `product-attributes.tsx`
+- `mercadolibre_item_id: 'MLA1432137395'` en la variante (para sync futuro Sprint 2b)
+- 3 GAPS marcados en comentarios: weight_grams (founder mide anteojo solo), frame_width_mm + lens_height_mm (founder mide con regla), SKU (founder verifica si Rusty tiene código real)
+
+**Acciones pendientes founder**:
+1. Subir 2 fotos al bucket Supabase Storage path `products/rusty-yau-polarizado/01-frontal.webp` + `02-lateral.webp` (1200x1200, sino productos sin foto).
+2. Aplicar `supabase/cloud-bootstrap.sql` (155 líneas) en Dashboard SQL Editor.
+3. Avisar "cloud aplicado".
+4. (Opcional) Completar los 3 GAPS con UPDATE statements cuando tenga las medidas reales.
 
 Aprendizaje del flow: ML tiene 2 tipos de IDs en URLs — `MLA<digits>` (item del seller, lo que usa el endpoint `/items/{id}`) y `MLAU<digits>` (catalog product que agrupa múltiples sellers). El `wid` query param en URLs de catálogo es el item ID del seller específico. Pasamos el correcto al endpoint.
 
