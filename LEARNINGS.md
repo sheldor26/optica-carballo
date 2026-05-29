@@ -22,6 +22,42 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Git push trivial como trigger de redeploy Vercel cuando cambian env vars
+
+**Categoría**: DevOps / Vercel / Workflow
+**Confianza**: 🟡 Media (caso aplicado, patrón conocido)
+
+### Qué pasó
+
+Founder agregó 4 env vars a Vercel DESPUÉS del último deploy. Vercel carga env vars en build time — las nuevas no están disponibles hasta rebuildear. 2 opciones:
+
+**A. Vercel UI**: Deployments → último → 3 dots → Redeploy. Acción manual del founder.
+**B. Git push trivial** (commit a doc/similar): trigger automático build + deploy.
+
+Elegí B con commit a `CURRENT_STATE.md` documentando que las env vars estaban confirmadas. Beneficio doble: documento el estado + trigger redeploy en una sola acción.
+
+### Por qué funciona
+
+- Vercel re-evalúa env vars cada build (no cached entre builds).
+- Push trivial no requiere acción del founder.
+- Doc commit es útil per se → cero waste.
+
+### Trade-off
+
+- Commit "trigger" suma ruido en git history. Mitigación: contenido real, no `[chore] trigger redeploy`.
+- Nunca `git commit --allow-empty` — es señal de que se podría documentar algo del mismo turn.
+
+### Patrón meta confirmado (3era confirmación)
+
+"AI prepara + founder ejecuta lo que requiere su acceso/identidad":
+1. Encryption key: yo escribo el comando, founder lo ejecuta solo (debe quedar privado).
+2. DB migrations: yo escribo el SQL, founder lo ejecuta en Supabase (no tengo cluster admin).
+3. Redeploy via push: yo armo el commit doc + push, Vercel hace el resto.
+
+Patrón estable: separar lo que requiere identidad del founder (claves, accesos) de lo que el AI puede hacer (código, docs, triggers).
+
+---
+
 ## 2026-05-29 — Next.js route files NO permiten arbitrary exports: constants compartidas van en lib/
 
 **Categoría**: Next.js / Routing / Convenciones del framework

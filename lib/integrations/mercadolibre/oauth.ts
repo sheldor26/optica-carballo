@@ -6,6 +6,7 @@ import {
 import { oauthTokenResponseSchema } from '@/lib/integrations/mercadolibre/schemas';
 import {
   getActiveMLIntegration,
+  logMLSyncError,
   markMLIntegrationError,
   upsertMLIntegration,
 } from '@/lib/integrations/mercadolibre/integrations-repo';
@@ -68,6 +69,18 @@ export async function exchangeCodeForTokens(
     console.error('[ml-oauth] code exchange failed', {
       status: response.status,
       body,
+      redirectUriSent: config.redirectUri,
+    });
+    // Persistir el error en DB para que el founder/yo podamos consultarlo
+    // después si los logs de Vercel no muestran detalle.
+    await logMLSyncError({
+      operation: 'oauth',
+      errorPayload: {
+        stage: 'exchange_code',
+        status: response.status,
+        body: body.slice(0, 1000),
+        redirect_uri_sent: config.redirectUri,
+      },
     });
     return {
       ok: false,
