@@ -22,6 +22,96 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Sprint 2a ML OAuth CERRADO: debugging incremental con DB logging desbloqueó root cause en 2 iteraciones
+
+**Categoría**: Project management / Debugging incremental / Validación de integración
+**Confianza**: 🟢 Alta (validado end-to-end con OAuth funcionando)
+
+### Qué pasó
+
+Sprint 2a ML OAuth pasó por varios fallos: redirect URI sospechoso (descartado), migration parcial (verificada), logging incompleto (corregido), y finalmente root cause encontrado (Zod schema esperaba `'bearer'` lowercase, ML devuelve `"Bearer"` con B mayúscula).
+
+Total iteraciones: ~5 ciclos de "founder reintenta → reviso → fix → push". Tiempo total: ~1 sesión completa. Sin DB logging, hubiera tomado mucho más por dependencia de Vercel logs flaky.
+
+### Por qué el debugging funcionó
+
+**Two-tier logging** (DB + console) fue crítico:
+- Vercel logs via MCP timeouteaban consistentemente.
+- DB endpoint `/api/ml/debug-last-error` accesible directo, devolvió el JSON exacto.
+- Sanitización de tokens en el segundo paso evitó leak permanente.
+
+**Endpoint debug temporal** permitió que el founder me pasara info estructurada sin necesidad de Supabase Dashboard SQL.
+
+**Incremental fix** vs "big bang":
+- Sprint 2a NO incluyó procesamiento webhook real — solo OAuth flow.
+- Cada fallo OAuth se aisla del resto del sistema.
+- Si hubiera incluido todo el sync en Sprint 2, debugging era 10x más complejo.
+
+### Trade-off realizado
+
+- 5 iteraciones de "spinning wheel" con el founder. Costó tiempo + paciencia.
+- Pero cada iteración nos dio info concreta. Sin debugging incremental, hubiera sido "no funciona, no sé por qué".
+
+### Aplicar a futuro
+
+Cualquier integración con tercero (Resend, Tusfacturas, Tiendanube, Shopify):
+1. **Sprint inicial sólo OAuth/auth**. NO sumar procesamiento real hasta validar auth.
+2. **Two-tier logging desde día 1**: console + DB.
+3. **Endpoint debug temporal** que el founder pueda consultar sin SQL.
+4. **Sanitización ya implementada**: nunca loguear credenciales crudas.
+
+### Métrica del éxito
+
+Sprint 2a tomó 5 iteraciones de debugging pero **cerró sin necesidad de revertir nada**. Cada commit fue aditivo. Sin DB logging, hubiera necesitado al menos 2x el tiempo.
+
+---
+
+## 2026-05-29 — Sanitización de payloads sensibles ANTES de loguear, no después
+
+**Categoría**: Seguridad / Logging / Datos sensibles
+**Confianza**: 🟢 Alta (caso real con tokens leakeados a DB)
+
+### Qué pasó
+
+Para diagnosticar Zod fail en OAuth ML, logueé `received_json: json` crudo a DB. El bug se reprodujo, log SÍ ayudó a encontrar la causa ('Bearer' vs 'bearer'), pero TAMBIÉN persistió `access_token` y `refresh_token` reales en la tabla.
+
+DB tiene RLS service_role, pero los tokens quedaron en lugar "menos protegido" que el cifrado AES-256 que usamos en `marketplace_integrations.access_token`.
+
+### Solución
+
+Función `sanitizeReceivedJson()` reemplaza valores de keys sensibles con `[REDACTED]` ANTES de persistir:
+
+```ts
+const SENSITIVE_KEYS = new Set([
+  'access_token', 'refresh_token', 'id_token',
+  'client_secret', 'code',
+]);
+
+function sanitizeReceivedJson(json) {
+  const keys = Object.keys(json);
+  const redacted = {};
+  for (const k of keys) {
+    redacted[k] = SENSITIVE_KEYS.has(k) ? '[REDACTED]' : json[k];
+  }
+  return { keys, redacted };
+}
+```
+
+Log guarda `received_keys` + `received_redacted`. Diagnóstico preservado, seguridad protegida.
+
+### Aplicar a futuro
+
+Cualquier log de payload externo (OAuth callback, webhook body, API response):
+- Identificar keys sensibles del provider/protocol.
+- Sanitizar ANTES de loguear.
+- Mantener shape (keys + valores no sensibles) para debugging.
+
+### Anti-pattern descubierto
+
+Loguear payload crudo "por si necesitamos debuguear" → credenciales leakean a logs persistentes. Pattern positivo: sanitizar al INPUT del logger, no después.
+
+---
+
 ## 2026-05-29 — Logging a DB debe cubrir TODOS los branches de error, no solo el "obvio"
 
 **Categoría**: Observabilidad / Cobertura

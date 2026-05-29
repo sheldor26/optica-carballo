@@ -24,6 +24,77 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint 2a ML OAuth CERRADO con éxito tras 5 iteraciones de debugging
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Resultado positivo / Validación de patrones
+
+OAuth ML completo end-to-end: founder autorizó, ML redirigió a `?ml_oauth=success&user_id=1975674`, tokens cifrados guardados, refresh automático activo. Sin necesidad de revertir nada — todos los commits fueron aditivos.
+
+Patrones validados durante el debugging:
+- Two-tier logging (DB + console).
+- Endpoint debug temporal accesible por founder sin SQL.
+- Sanitización tokens al input del logger.
+- Schema permissive (case-insensitive) cuando el spec permite ambigüedad.
+- Idempotencia de migration con IF NOT EXISTS check.
+
+5 mistakes registrados durante el sprint (logging incompleto + Zod estricto + exception class equivocado + tokens en logs + meta-cierre). Todos resueltos. Sprint sirvió como case study completo de debugging colaborativo founder + AI.
+
+Pendiente operativo: founder elimina entry de log con tokens crudos (SQL DELETE 1 línea).
+
+Próximo paso: Sprint 2b (procesamiento webhook real) o continuar backlog.
+
+---
+
+## 2026-05-29 — Tokens reales leakeados a `marketplace_sync_errors` por loguear `received_json` crudo
+
+**Estado**: 🟡 Mitigado — sanitización aplicada en commit `0ed5db5`. Pendiente DELETE de entry comprometida.
+**Categoría**: Seguridad / Logging / Datos sensibles
+
+### Qué pasó
+
+Para diagnosticar Zod fail en OAuth ML, agregué `received_json: json` al log a DB (commit `c2b951f`). Comenté "CUIDADO: puede contener tokens parciales — remover antes de Sprint 3 estable" pensando que era un risk hipotético.
+
+Cuando el bug se reprodujo, el log ayudó a encontrar la causa MUY rápido — pero TAMBIÉN persistió `access_token` (`APP_USR-911228948616104-...-1975674`) y `refresh_token` (`TG-...-1975674`) reales en la tabla `marketplace_sync_errors`.
+
+Los tokens estaban protegidos por RLS service_role (DB no expuesta públicamente), pero quedaron en un lugar "menos protegido" que el cifrado AES-256 que usa el resto del sistema para `marketplace_integrations.access_token`.
+
+### Causa raíz
+
+Pensé "voy a sanitizar después" en lugar de "voy a sanitizar antes". El "después" era una excusa para no hacerlo ya. Cuando llegó el bug, el log corrió tal cual.
+
+Mistake doble:
+1. Loguear payload crudo cuando puede contener credenciales.
+2. Justificar el risk como "temporal" → temporal se vuelve permanente bajo presión.
+
+### Regla preventiva
+
+Para CUALQUIER log de payload externo (OAuth callback, webhook body, API response, user input crudo):
+- **NUNCA** loguear payload crudo si PUEDE contener credenciales o data sensible.
+- **SIEMPRE** sanitizar al input del logger:
+  ```ts
+  const SENSITIVE_KEYS = new Set(['access_token', 'refresh_token', 'password', 'client_secret', 'code', 'token']);
+  function sanitize(obj) { /* redact those keys */ }
+  await log({ payload: sanitize(rawPayload) });
+  ```
+- **NUNCA** justificar "es temporal, lo arreglo después" — apenas se merguea, queda en producción.
+
+### Fix aplicado
+
+Commit `0ed5db5`: función `sanitizeReceivedJson()` redacta `access_token` / `refresh_token` / `id_token` / `client_secret` / `code`. Log ahora guarda `received_keys` + `received_redacted`.
+
+**Pendiente founder**: `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'` para eliminar la entry vieja con tokens crudos.
+
+### Anti-pattern descubierto
+
+Loguear crudo "para debugging" cuando hay possibility de credenciales en el payload. Pattern positivo: sanitize-at-input siempre, NUNCA confiar en "lo arreglo después".
+
+### Documentado en LEARNINGS
+
+Entry "Sanitización de payloads sensibles ANTES de loguear, no después" — patrón positivo con código del sanitize.
+
+---
+
 ## 2026-05-29 — Logging incompleto en `exchangeCodeForTokens`: cubrí solo 1 de 4 error branches
 
 **Estado**: 🟡 Mitigado — fix aplicado en commit `c2b951f` con logging en los 4 branches.

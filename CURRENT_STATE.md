@@ -2,6 +2,17 @@
 
 ## Status
 
+✅ **Sprint 2a ML OAuth CERRADO** (2026-05-29). Founder autorizó app, OAuth funcionando end-to-end, tokens cifrados guardados en `marketplace_integrations`. Seller ID `1975674`. Sprint 2b (procesamiento webhook real + stock sync) pendiente de arrancar.
+
+**Pendientes inmediatos**:
+1. ⚠️ Founder ejecuta `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'` para limpiar entry comprometida del debugging.
+2. Cargar `mercadolibre_item_id` en `product_variants` para productos que estén en ambos canales (sin esto el sync no tiene a quién apuntar).
+3. Decidir si arrancar Sprint 2b ahora o continuar con otros items del backlog.
+
+---
+
+## Status anterior
+
 🟡 **Triple sprint: Polish checkout + 45 URLs SEO + Quick View modal — pusheado en 3 commits.**
 
 ## Triple sprint en 1 turno (cfd23be / e100d7f / Quick View este commit)
@@ -708,6 +719,33 @@ El branch que SÍ loguea es `response.status === 400`. Si ML responde 200 OK per
 **Riesgo conocido**: `received_json` puede contener tokens parciales si ML cambió el shape. Marcado TODO para remover ese campo específico antes de Sprint 3 estable.
 
 **Pendiente founder**: reintentar OAuth post-redeploy + revisar `/api/ml/debug-last-error`. Ahora SÍ debería aparecer un error con `stage: 'zod_validation'` (probable) + `received_json` con la causa.
+
+### Update 2026-05-29: ROOT CAUSE encontrado — Zod schema esperaba 'bearer' lowercase, ML devuelve 'Bearer'
+
+Founder corrió el debug post-fix. **Resultado**:
+```json
+"zod_errors": {"fieldErrors":{"token_type":["Invalid input"]}}
+"received_json": {"token_type":"Bearer", ...} ← B mayúscula
+```
+
+**Causa raíz definitiva**: el schema Zod tenía `z.literal('bearer')` (lowercase). ML devuelve `"Bearer"` con B mayúscula (estándar HTTP Authorization header). El flow OAuth funcionaba — tokens válidos llegaron — pero mi validation los rechazaba.
+
+**Fix aplicado (commit `0ed5db5`)**:
+1. **Schema**: `token_type` ahora `z.string().regex(/^bearer$/i, ...)` — case-insensitive.
+2. **Type**: `OAuthTokenResponse.token_type` cambió de literal `'bearer'` a `string` + comment.
+3. **Sanitization**: tokens NUNCA MÁS quedan en logs. Función nueva `sanitizeReceivedJson()` redacta `access_token` / `refresh_token` / `id_token` / `client_secret` / `code` antes de loguear. El log ahora guarda `received_keys` + `received_redacted` en lugar de JSON crudo.
+
+**⚠️ Acción de seguridad pendiente del founder**: la entry de log del debug previo contiene tokens crudos. Borrar con:
+```sql
+DELETE FROM marketplace_sync_errors
+WHERE id = '232bde47-522b-41f0-a05c-f2319207b251';
+```
+
+Tokens en logs solo accesibles via RLS service_role (no expuestos públicamente), pero conviene limpiar.
+
+**Próximo paso**: post-redeploy → reintentar `/api/ml/oauth/initiate` → debería terminar en `/?ml_oauth=success&user_id=1975674`. Si funciona, Sprint 2a CERRADO ✅ — arrancamos Sprint 2b (procesamiento webhook real).
+
+**Data confirmada del founder**: `external_user_id = '1975674'` (seller ID ML). Lo necesitamos en Sprint 2b para procesar webhooks.
 
 ---
 
