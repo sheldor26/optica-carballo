@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Verificar comportamiento real de query params antes de basar lógica en asunción
+
+**Categoría**: API integration / Debugging
+**Confianza**: 🟢 Alta (validado en bug ml-find-item v1→v2)
+
+### Qué funcionó (tras error inicial)
+
+Implementé endpoint admin que usaba `/users/{seller_id}/items/search?ids=MLA1432137395` asumiendo que `?ids=` filtraba a un item específico. Cuando founder lo abrió, devolvió los **primeros 50 items del seller** (paging.total=895), sin filtrar — el `?ids=` query param fue silently ignored.
+
+Refactor v2: cambio al endpoint correcto para lookup `/items?ids=MLA...` (multi-get). Este SÍ acepta `?ids=` como filtro y devuelve array `[{code, body}]` por cada ID solicitado.
+
+### Por qué pasó
+
+Asumí que `?ids=` filtraba en cualquier endpoint que lo aceptara como query param. Pero ML tiene dos endpoints distintos:
+- **`/users/{seller_id}/items/search`**: pensado para LISTAR items del seller con filtros (status, category, etc). `?ids=` no es un filtro válido — se ignora.
+- **`/items?ids=...`** (plural): pensado para LOOKUP de items específicos por IDs (multi-get). Acá `?ids=` SÍ es el filtro principal.
+
+Sin docs claras de ML, la única forma de saber era probarlo o leer docs específicas de cada endpoint.
+
+### Regla preventiva
+
+Cuando uses un query param que no es estándar HTTP (ej `?ids=` que no es como `?filter=` u `?offset=`):
+1. **Probar con un query trivial primero** (`curl` o browser) antes de basar lógica en su comportamiento.
+2. Si el response no tiene el shape esperado (ej trae más items de los pedidos), sospechar que el param fue ignorado.
+3. Revisar docs específicas del endpoint, no asumir comportamiento por familia (ej "todos los endpoints de items aceptan ?ids=").
+
+### Cuándo aplicar
+
+- Integraciones con APIs externas con docs parciales (ML, AFIP, etc).
+- Especialmente para endpoints "search" / "list" / "lookup" que pueden tener semánticas distintas.
+- Patrón general: si la respuesta no matchea el query, el query probablemente fue ignorado — no asumir bug del servidor.
+
 ## 2026-05-29 — ML usa endpoints distintos según status del item — usar el correcto para diagnóstico
 
 **Categoría**: Mercado Libre / API design quirks

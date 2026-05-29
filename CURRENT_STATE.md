@@ -12,7 +12,9 @@
 
 Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}` probablemente es porque el item está **pausado/cerrado/finalizado** — ML 404ea ese endpoint para items no-active. Creado endpoint `/api/admin/ml-find-item/[itemId]` (commit `d77cf05`) que usa `/users/{seller_id}/items/search?ids=MLA...` — devuelve item con su status real sin importar si está closed.
 
-Próximo paso exacto: founder abre `https://opticacarballo.com.ar/api/admin/ml-find-item/MLA1432137395` tras deploy del commit `d77cf05`. Si `response.body.results` está vacío → item no es de OPTICACARBALLO (malentendido). Si tiene `["MLA1432137395"]` → status del item (active/paused/closed) explica el 404.
+Iteración endpoint ml-find-item v2 (commit `c65e131`): el v1 usaba `/users/{seller_id}/items/search?ids=MLA...` pero ML ignoró el `?ids=` query (devolvió los primeros 50 de 895 items del seller, sin filtrar). v2 usa `/items?ids=MLA...` (multi-get directo) que devuelve array `[{code, body}]` por cada ID con status real del item (active/paused/closed) sin importar si está cerrado.
+
+Próximo paso exacto: founder abre `https://opticacarballo.com.ar/api/admin/ml-find-item/MLA1432137395` tras deploy del commit `c65e131`. Esperamos JSON con `response.body[0].code` (200 si existe, 404 si no) + `response.body[0].body.status` (active/paused/closed/under_review) que explica el 404 original.
 
 Aprendizaje del flow: ML tiene 2 tipos de IDs en URLs — `MLA<digits>` (item del seller, lo que usa el endpoint `/items/{id}`) y `MLAU<digits>` (catalog product que agrupa múltiples sellers). El `wid` query param en URLs de catálogo es el item ID del seller específico. Pasamos el correcto al endpoint.
 
