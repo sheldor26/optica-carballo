@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint search global: cierre EXITOSO
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint search global (server action + Dialog + Trigger + integración header + atajos teclado) ejecutado limpio. Sin mistake nuevo de proceso. Aplicación correcta de la regla v5 (bloque ✅ Archivos actualizados explícito en mensaje al founder).
+
+10 sprints consecutivos sin mistake nuevo de cumplimiento docs. Patrón estable.
+
+---
+
 ## 2026-05-29 — Sprint FAQ search: cierre EXITOSO con bloque ✅ Archivos actualizados explícito
 
 **Estado**: 🟢 Cumplido — primer cierre tras refinamiento de regla.

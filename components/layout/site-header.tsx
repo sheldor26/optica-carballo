@@ -8,6 +8,7 @@ import { isCheckoutEnabled } from '@/lib/features';
 import { DesktopNav } from '@/components/layout/desktop-nav';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { ScrollAwareHeader } from '@/components/layout/scroll-aware-header';
+import { SearchTrigger } from '@/components/search/search-trigger';
 import { WishlistBadge } from '@/components/wishlist/wishlist-badge';
 import { PRIMARY_NAV } from '@/lib/site/nav';
 import { getBusinessInfo } from '@/lib/site/business';
@@ -44,6 +45,7 @@ export function SiteHeader() {
         </div>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <SearchTrigger />
           <WishlistBadge />
           {checkoutEnabled && <CartBadge />}
           <AuthMenu />

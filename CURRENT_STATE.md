@@ -147,6 +147,56 @@ Push + verificación visual.
 
 ---
 
+## Search global en header
+
+Feature standard de e-commerce. Cliente que busca "Vulk", "Rusty", "wayfarer" ahora llega directo desde cualquier página.
+
+### Arquitectura
+
+**Server action** (`lib/catalog/search.ts`):
+- `searchAction(query)` → `SearchResults` con productos + marcas.
+- ilike `%query%` con escape de `%` y `_` para evitar inyección de pattern.
+- Productos: solo activos + brand/category activos + max 8.
+- Marcas: solo activas + max 5.
+- Validación: 1-100 chars. Empty → results vacío.
+
+**SearchDialog** (`components/search/search-dialog.tsx`, client):
+- Radix Dialog reutilizando wrapper `components/ui/dialog.tsx`.
+- Input con clear button + ESC kbd hint.
+- Debounce 200ms entre keystroke y `searchAction`.
+- Min query length 2 chars (evita matching trivial).
+- Resultados agrupados: **Marcas** (icon Tag) → **Productos** (thumbnail + brand + precio).
+- 3 estados: hint, empty + CTA, results.
+- Auto-focus al abrir, clear al cerrar.
+
+**SearchTrigger** (`components/search/search-trigger.tsx`, client):
+- 2 variantes: `icon` (default header) y `inline` (botón ancho con kbd hint).
+- **Atajos**: ⌘K / Ctrl+K (toggle) + `/` (abre, solo si no estás escribiendo en input).
+- Detecta Mac vs PC para mostrar `⌘K` vs `Ctrl+K`.
+
+**Integración** (`components/layout/site-header.tsx`):
+- `<SearchTrigger />` antes del `<WishlistBadge />`. Visible siempre.
+
+### Decisiones técnicas
+
+- **`ilike` simple vs full-text search**: catálogo chico (3-30 productos a corto plazo), `ilike '%query%'` suficiente. Migrar a `pg_trgm` con index GIN o `tsvector` cuando lleguemos a 200+ productos.
+- **Debounce 200ms**: balance responsiveness vs server load.
+- **Min query 2 chars**: evita queries inútiles.
+- **Atajos ⌘K + /**: GitHub-style. ⌘K es estándar de search modals.
+- **NO recent searches iter 1**: requeriría localStorage + UI. Scope chico iter 1.
+
+### Pendientes opcionales
+
+- Recent searches (localStorage).
+- Highlight de match en results.
+- "Marcas que también podrían interesarte" cuando no hay match.
+
+### Próximo paso
+
+Push + verificación visual. Probar ⌘K en cualquier página.
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**

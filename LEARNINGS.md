@@ -22,6 +22,56 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — ⌘K + `/` como atajos de search es lo que el usuario power-user espera
+
+**Categoría**: UX / Keyboard shortcuts / DX
+**Confianza**: 🟡 Media (1 caso aplicado pero patrón industria establecido)
+
+### Qué pasó
+
+Al agregar el search global, sumé 2 atajos de teclado:
+- `⌘K` / `Ctrl+K`: toggle del dialog. Estándar en apps modernas (GitHub, Linear, Notion, Slack, Vercel).
+- `/`: abre el dialog. Estilo GitHub. Más rápido para mouse-less users.
+
+Pero el `/` tiene un edge case: si el usuario está escribiendo en un input/textarea/contenteditable, NO debe interceptar — sino, no podés tipear `/` en ningún form. Check explícito en el handler.
+
+### Por qué funciona
+
+- **⌘K es muscle memory** para usuarios técnicos. Lo van a probar sin que lo digas.
+- **`/` es discoverable** porque GitHub lo popularizó. Power users lo asocian con "search".
+- **Edge case bien manejado**: el check `target.tagName.toLowerCase() in ['input', 'textarea']` + `isContentEditable` cubre 99% de los casos donde no querés interceptar.
+
+### Snippet clave
+
+```ts
+const target = e.target as HTMLElement | null;
+const tag = target?.tagName.toLowerCase();
+const isEditable =
+  tag === 'input' ||
+  tag === 'textarea' ||
+  target?.isContentEditable === true;
+if (!isEditable) {
+  e.preventDefault();
+  setOpen(true);
+}
+```
+
+### Aplicar a futuro
+
+Cualquier global keyboard shortcut que comparta tecla con input común (`/`, `\`, letras solas):
+- Check si el target es editable antes de interceptar.
+- Si no, prevent default + actuar.
+
+Para shortcuts con modificador (⌘K, Ctrl+P): no necesitan el check porque modificador + tecla raramente es input legítimo.
+
+### Otros atajos que valen la pena
+
+- **`?`**: shortcuts help dialog.
+- **`g h`**: ir a home (gh git-style).
+- **`Esc`**: cerrar modal/cancelar (Radix Dialog ya lo maneja).
+
+---
+
 ## 2026-05-29 — In-memory filter cliente para N pequeños (28 items) gana vs server-side filter con URL params
 
 **Categoría**: UX / Performance / Trade-offs
