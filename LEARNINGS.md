@@ -22,6 +22,39 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Verificar nickname público de user_id ML antes de re-autorizar a ciegas
+
+**Categoría**: OAuth diagnóstico / Mercado Libre
+**Confianza**: 🟢 Alta
+
+### Qué funcionó
+
+Tras el OAuth flow, founder pasó `user_id=81654493`. Pero el endpoint admin devolvió 404 para el item que el founder afirmaba era de su Tienda Oficial OPTICACARBALLO. Antes de pedir re-autorización (acción costosa: founder tiene que loguear/deslogear cuentas múltiples), propuse verificación rápida con endpoint público de ML: `https://api.mercadolibre.com/users/{user_id}` devuelve nickname público.
+
+Si nickname = OPTICACARBALLO → autorización correcta, 404 es por otra razón (item cerrado, etc).
+Si nickname ≠ OPTICACARBALLO → confirmar cuenta equivocada → re-autorizar con logout previo.
+
+### Por qué funcionó
+
+Endpoints `/users/{id}` de ML son públicos (no requieren auth) — diseñados para mostrar perfil del seller a compradores. Devuelven nickname, registration_date, reputación, etc. Para diagnóstico de "¿qué cuenta autorizó OAuth?", esto es 1 click vs alternativas costosas:
+- Agregar endpoint admin `/api/admin/ml-me` que use el token (requiere deploy).
+- Pedir al founder loguearse/deslogearse a ciegas (frustrante si después era otra cosa).
+
+### Cuándo aplicar
+
+- Cualquier OAuth donde el proveedor expone endpoint público de identidad por user_id (ML, GitHub `/users/{id}`, etc).
+- Especialmente útil en flows multi-cuenta donde la identidad autorizada es ambigua.
+- NO aplicar para OAuth donde la identidad NO es pública (Google, Auth0 con datos sensibles) — ahí necesitás endpoint que use el access_token.
+
+### Bonus: distinguir IDs de Mercado Libre
+
+URLs de ML tienen 2 tipos de IDs:
+- **`MLA<digits>`** (ej `MLA1432137395`): item específico de un seller. Es el ID que acepta el endpoint `/items/{id}` para fetch.
+- **`MLAU<digits>`** (ej `MLAU384055931`): catalog product (Catalogación) que agrupa múltiples sellers de un mismo modelo.
+- En URLs de catálogo, el `wid=MLA...` query param es el item ID del seller específico que la página muestra.
+
+Cuando founder pasa una URL, parsear con cuidado para extraer el ID correcto.
+
 ## 2026-05-29 — OAuth multi-cuenta: validar identidad de cuenta autorizada antes de operar
 
 **Categoría**: OAuth / Integraciones multi-tenant

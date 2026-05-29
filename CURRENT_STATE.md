@@ -2,12 +2,11 @@
 
 ## Status
 
-🟡 **Re-autorización ML OAuth + import MLA1432137395 — BLOQUEADO en 404** (2026-05-29). Founder re-autorizó con `user_id=81654493` (distinto al `1975674` previo, validado vía `?ml_oauth=success&user_id=`). Pero al ejecutar `/api/admin/ml-import-preview/MLA1432137395`, ML devolvió HTTP 404 → endpoint mapea a `{ok:false, error:'not_found'}`. 3 causas posibles a verificar por founder en ML web:
-1. ID mal escrito (verificar URL de listing en ML — formato `articulo.mercadolibre.com.ar/MLA-XXX-...`).
-2. Item Cerrado/Finalizado (panel ML → Mis publicaciones → status).
-3. Cuenta `81654493` no es la dueña del item (verificar nickname/cuenta visible en ML web).
+🟡 **Re-autorización ML OAuth + import MLA1432137395 — DIAGNÓSTICO EN CURSO (hipótesis cuenta equivocada)** (2026-05-29). Founder re-autorizó con `user_id=81654493`, endpoint admin devolvió 404 para MLA1432137395. Founder pasó URL del listing real: `mercadolibre.com.ar/.../up/MLAU384055931?...&wid=MLA1432137395` — el item es de **Tienda Oficial OPTICACARBALLO** (`official_store:260502`). Pero `user_id=81654493` puede NO ser la cuenta OPTICACARBALLO (founder posiblemente autorizó OAuth con cuenta personal/hermano por cookie de sesión ML sticky).
 
-Próximo paso exacto: founder verifica los 3 puntos arriba en ML web y reporta hallazgos. Según resultado: corregir el MLA, reactivar listing, o re-autorizar con cuenta correcta (cerrar sesión ML antes para evitar cookie sticky).
+Verificación pendiente del founder: abrir `https://api.mercadolibre.com/users/81654493` (endpoint público ML) → leer campo `nickname`. Si ≠ OPTICACARBALLO, re-autorizar tras logout completo de ML + login explícito con cuenta OPTICACARBALLO.
+
+Aprendizaje del flow: ML tiene 2 tipos de IDs en URLs — `MLA<digits>` (item del seller, lo que usa el endpoint `/items/{id}`) y `MLAU<digits>` (catalog product que agrupa múltiples sellers). El `wid` query param en URLs de catálogo es el item ID del seller específico. Pasamos el correcto al endpoint.
 
 ✅ **Incident Password Reset RESUELTO** (2026-05-29). Founder confirmó que puede entrar al dashboard de cuenta end-to-end: reset password → email → click → form → submit → loguea correctamente. Fix aplicado: `passwordResetForEmail.redirectTo` ahora va por `/auth/callback?next=/recuperar-clave/restablecer` para que el callback haga `exchangeCodeForSession` antes de mostrar el form. Sistema de cuentas funcional en producción.
 
