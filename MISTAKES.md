@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Sprint 3 brand pages: cierre EXITOSO sin mistake nuevo
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint 3 (páginas de marca) ejecutado limpio: copy editorial verificado para 5 marcas + componente + integración. Typecheck verde, build verde. Docs actualizados ANTES del mensaje al founder.
+
+Decisiones sin agente: copy en TS (no DB) por velocidad de iteración con N=5 marcas, fallback gracioso si una marca no tiene entry, fechas verificables sin inventar (Vulk sin foundedYear por falta de fuente pública confirmada).
+
+Sin mistake nuevo. Patrón de cierre estable a 4 sprints consecutivos.
+
+---
+
 ## 2026-05-28 — Newsletter: cierre EXITOSO sin mistake nuevo
 
 **Estado**: 🟢 Cumplido.

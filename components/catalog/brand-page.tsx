@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { BrandStorySection } from '@/components/brand/brand-story-section';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
 import {
@@ -128,6 +129,8 @@ export function BrandCatalogPage({
           </p>
         )}
       </RevealOnScroll>
+
+      <BrandStorySection brandSlug={brand.slug} brandName={brand.name} />
 
       {items.length === 0 ? (
         <p className="text-muted-foreground">

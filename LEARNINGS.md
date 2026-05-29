@@ -22,6 +22,58 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Copy editorial en TS (no DB) gana en velocidad de iteración para 5-10 entidades
+
+**Categoría**: Arquitectura / Velocidad de iteración / Data
+**Confianza**: 🟡 Media (1 caso aplicado en brands)
+
+### Qué pasó
+
+Para las páginas de marca necesitaba copy editorial (story, tagline, differentials) por marca. 2 opciones:
+
+**A. DB**: agregar columnas a tabla `brands` (`tagline`, `story_md`, `founded_year`, `differentials jsonb`). Founder edita via SQL o admin UI. Bueno para multilenguaje futuro, admin sin redeploy.
+
+**B. TS dict**: `lib/brands/copy.ts` con `Record<slug, BrandCopy>`. Code edits + redeploy.
+
+Elegí B. Razones:
+- 5 marcas activas (no 50). El dict es manejable a ojo.
+- Founder no tiene admin UI. Editar SQL es más fricción que editar TS para él.
+- Sin necesidad de multilenguaje (proyecto es es-AR puro).
+- Cambios en copy son raros (no diarios) → redeploy no es costo real.
+- Type-safe: si me equivoco con un slug, TS me avisa al compilar.
+
+### Por qué funciona
+
+Para N entidades chico (3-10) con copy estático, **TS dict gana** sobre DB. Si N > 20 o el copy cambia con frecuencia, considerar DB.
+
+Costo evitado: migración + admin UI + texto deserializado de markdown.
+
+### Trade-offs explícitos
+
+- Cambiar copy requiere PR + deploy. OK porque cambios son raros.
+- No hay versionado de copy (DB con `updated_at` daría history). OK por ahora.
+- Si el founder quiere editar en producción sin pedirme, se complica. OK por ahora.
+
+### Cuándo migrar a DB
+
+- Si llegamos a 15+ marcas activas con copy.
+- Si necesitamos multilenguaje (en-US, pt-BR).
+- Si el founder quiere un admin UI propio para editar copy.
+- Si el copy cambia muy frecuente (varias veces al mes).
+
+Hasta entonces, default a TS dict.
+
+### Patrón a confirmar
+
+Mismo patrón aplicable a:
+- Copy de skill IA (prompts editoriales). YA ESTÁ EN TS.
+- Copy de páginas info (sobre nosotros, envíos). Si crece, evaluar DB.
+- Copy de categorías (sol vs receta). YA ESTÁ EN TS (`lib/catalog/categories.ts`).
+
+3 casos del patrón → ya es regla efectiva. No promover formal a CLAUDE.md hasta que sea contraintuitivo (cuando alguien proponga DB para algo chico).
+
+---
+
 ## 2026-05-28 — Welcome email NO bloquea suscripción → captura siempre, email es nice-to-have
 
 **Categoría**: Resiliencia / Email / UX

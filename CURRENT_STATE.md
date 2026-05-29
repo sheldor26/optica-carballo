@@ -2,6 +2,70 @@
 
 ## Status
 
+🟡 **Páginas de marca mejoradas (sprint 3 de 4) — implementado, pendiente push y verificación visual.**
+
+## Páginas de marca
+
+Sprint 3 del plan "hagamos todas". Las páginas `/anteojos-de-sol/[brand]` y `/anteojos-de-receta/[brand]` ahora tienen story editorial + meta strip + 3 differentials antes de la grid de productos.
+
+### Arquitectura
+
+**Copy editorial** (`lib/brands/copy.ts`):
+- Dict `BRAND_COPY: Record<slug, BrandCopy>` para las 5 marcas activas (Vulk, Rusty, Mormaii, Reef, Paula Cahen D'Anvers).
+- Cada marca tiene: tagline, story (2 párrafos honestos), country, foundedYear (opcional — solo cuando se verifica), segment, audience, differentials (3 con icono + título + descripción).
+- **Reglas de copy**: información pública verificable. NO inventar fechas. Si dudo de algo, omito.
+- Founder puede editar este archivo directo. Si escala a 10+ marcas, migrar a columnas en tabla `brands`.
+
+**Componente** (`components/brand/brand-story-section.tsx`):
+- Server component. Lee del dict por slug.
+- Si la marca NO tiene entry → no renderiza nada (gracefully fallback al header simple actual).
+- Layout: 2 cols desktop (story + meta strip) → divider → 3 differentials grid.
+- Iconos lucide mapeados desde string para safe SSR.
+
+### Integración
+
+`BrandCatalogPage` (`components/catalog/brand-page.tsx`):
+- Mantiene el header existente (logo + h1 + description corta).
+- Suma `<BrandStorySection brandSlug brandName />` entre el header y la grid de productos.
+- Aplica a sol y receta (mismo componente).
+
+### Cobertura iter 1
+
+- ✅ Vulk
+- ✅ Rusty
+- ✅ Mormaii
+- ✅ Reef
+- ✅ Paula Cahen D'Anvers
+- ⏳ Resto de marcas en BRANDS.md (Infinit, Prune, Wanama, etc) → cuando se confirmen stock real, agregar copy.
+
+### Decisiones técnicas
+
+- **Copy hardcoded en TS vs DB**: TS es más rápido iterar (no migration), founder edita texto directo. DB sería mejor si necesitamos UI admin o copy multilenguaje — fuera de scope iter 1.
+- **NO inventar fechas/datos**: si Vulk no tiene año de fundación verificable público, lo omito. Mejor un campo menos que un dato falso.
+- **Iconos mapeados desde string**: el dict usa string identifier (`'Award'`, `'Heart'`) y el componente mapea a Lucide components. Permite que el dict sea pure data, no React.
+- **Fallback gracioso**: si una marca no tiene copy, la página queda como antes. Sin error, sin placeholder feo.
+
+### Pendientes
+
+- **Founder puede sugerir ajustes al copy de cada marca** — son strings editables.
+- **Lookbook por marca** (galería de fotos hero): fuera de scope iter 1, requiere assets que probablemente no tenemos.
+- **Tabla "modelos más vendidos"** por marca: requiere data de ventas que no tenemos aún.
+
+### Próximo paso
+
+Push + verificación visual. Si el copy está bien, queda el sprint 4 (RAG) para otra sesión más grande.
+
+### Plan del sprint completo
+
+1. ✅ UX PDP (commit b0e96e1)
+2. ✅ Newsletter signup (commit ba408c0) — pendiente aplicar migration en cloud
+3. ✅ Páginas de marca mejoradas (este commit)
+4. ⏳ Asistente RAG (sesión grande dedicada, mejor con catálogo más grande)
+
+---
+
+## Status anterior
+
 🟡 **Newsletter signup (sprint 2 de 4) — implementado, pendiente push + aplicar migration en cloud.**
 
 ## Newsletter signup
