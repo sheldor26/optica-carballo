@@ -3,8 +3,19 @@ import { getBusinessInfo } from '@/lib/site/business';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
 /**
- * Organization schema con sub-tipo Optician. Sólo emite campos del negocio
- * que están realmente configurados en env vars (sin inventar data).
+ * Optician (LocalBusiness sub-type) schema con campos completos para SEO
+ * local Argentina + rich snippets Google.
+ *
+ * Regla: SOLO emite data verificable o universal para todas las ópticas
+ * AR. Si falta una env var opcional (ej street, postal), se omite ese campo.
+ * NUNCA inventar horarios, dirección o nombres.
+ *
+ * Campos universales aplicados:
+ * - priceRange: $$ (segmento medio — todas las marcas trabajadas son medio).
+ * - currenciesAccepted: ARS.
+ * - paymentAccepted: tarjeta de crédito (vía Mercado Pago), efectivo (retiro local).
+ * - areaServed: Argentina (envíos a todo el país).
+ * - foundingDate: 1994 (30+ años a 2026-05-28).
  */
 export function OrganizationJsonLd() {
   const business = getBusinessInfo();
@@ -19,15 +30,45 @@ export function OrganizationJsonLd() {
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': ['Organization', 'Optician'],
+    '@id': `${SITE_URL}#organization`,
     name: business.siteName,
     url: SITE_URL,
+    image: `${SITE_URL}/og-image.png`,
     address: {
       '@type': 'PostalAddress',
       ...addressParts,
     },
+    priceRange: '$$',
+    currenciesAccepted: 'ARS',
+    paymentAccepted: 'Credit Card, Cash',
+    areaServed: {
+      '@type': 'Country',
+      name: 'Argentina',
+    },
+    foundingDate: '1994',
+    knowsAbout: [
+      'Anteojos de sol',
+      'Anteojos recetados',
+      'Lentes de contacto',
+      'Cristales oftálmicos',
+      'Atención óptica',
+    ],
   };
 
   if (business.phone) jsonLd.telephone = business.phone;
+
+  // Regente matriculada como `employee`/`founder` aporta E-E-A-T.
+  if (business.regenteName) {
+    const employee: Record<string, unknown> = {
+      '@type': 'Person',
+      name: business.regenteName,
+      jobTitle: 'Óptica matriculada (regente)',
+    };
+    if (business.regenteMatricula) {
+      employee.identifier = `Matrícula ${business.regenteMatricula}`;
+    }
+    jsonLd.employee = employee;
+  }
 
   const sameAs: string[] = [];
   if (business.whatsappNumber) {

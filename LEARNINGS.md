@@ -22,6 +22,46 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Coordinación de overlays fijos via cookie polling (CompareBar + FloatingWhatsapp) — patrón confirmado
+
+**Categoría**: UX / Componentes globales / Estado compartido
+**Confianza**: 🟢 Alta (3era aplicación del patrón cookie polling: WishlistBadge + CompareBar + FloatingWhatsapp)
+
+### Qué pasó
+
+Al sumar FloatingWhatsapp surgió un problema visual: si hay items en CompareBar (barra inferior sticky con CTA), y FloatingWhatsapp también está fixed bottom, se PISAN. UX rota.
+
+Solución: FloatingWhatsapp lee la cookie `oc_compare` con el mismo helper que CompareBar (`readCompareClientSide`) cada 1.5s. Si hay items, FloatingWhatsapp se OCULTA via AnimatePresence.
+
+### Por qué funciona
+
+- **Cero estado global**. Sin Context, sin Zustand, sin Redux.
+- **Cada overlay decide solo**. No hay master coordinator.
+- **El estado fuente es la cookie**, que ya tiene su propio mecanismo de sync (server actions + revalidatePath).
+- Polling 1.5s es suficientemente rápido para UX (no percibís lag) y suficientemente bajo para no impactar performance.
+
+### Trade-off
+
+- Mini-polling en cada componente que necesita reaccionar. Si tuviéramos 5 componentes haciendo polling, sumaría. Por ahora: WishlistBadge (1.5s), CompareBar (1.5s), FloatingWhatsapp (1.5s) = 3. Aceptable.
+- Si crece, considerar custom event que se dispare en `toggleCompareAction` para que todos los componentes lo escuchen. Pero KISS por ahora.
+
+### Aplicar a futuro
+
+Cualquier componente que necesita reaccionar al estado de wishlist/compare/recently-viewed:
+- Lee la cookie en useEffect.
+- setInterval cada 1.5s + focus listener.
+- Sin context.
+
+Cuando promover a custom event:
+- Si llegamos a 5+ componentes con polling.
+- O si el founder reporta lag perceptible.
+
+### Patrón meta confirmado
+
+Este es el **tercer caso** del "cookie como source-of-truth para estado client UI" en este proyecto. Ya es regla efectiva. Cuando aparezca un 4to caso, considerar agregar a CLAUDE.md / ARCHITECTURE.md como pattern oficial.
+
+---
+
 ## 2026-05-28 — Carpetas estáticas en Next 15 ganan a [dynamic] para evitar conflict con sibling routes
 
 **Categoría**: Next.js routing / Arquitectura SEO

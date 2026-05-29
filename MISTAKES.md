@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Bundle UX+SEO+/sobre-nosotros: cierre EXITOSO sin mistake nuevo
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Bundle de 3 cosas en 1 sprint (FloatingWhatsapp + BackToTop, Optician schema completo, /sobre-nosotros con E-E-A-T) ejecutado limpio: typecheck verde, build verde, /sobre-nosotros pasó de InfoPageShell genérico a layout custom de 7 secciones.
+
+Decisiones sin agente: coordinar overlays vía cookie polling (mismo patrón ya confirmado 3 veces), schema con campos universales sin inventar horarios/geo, foundingDate 1994 como honest "30+ años", FloatingWhatsapp con delay 800ms para no afectar LCP, reescritura completa de /sobre-nosotros (no incremental).
+
+6 sprints consecutivos sin mistake nuevo. Patrón de cierre completamente estable.
+
+---
+
 ## 2026-05-28 — Sprint páginas hijas SEO: cierre EXITOSO sin mistake nuevo
 
 **Estado**: 🟢 Cumplido.

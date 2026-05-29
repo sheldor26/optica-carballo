@@ -2,6 +2,90 @@
 
 ## Status
 
+🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**
+
+## Bundle: UX flotante + SEO local + /sobre-nosotros E-E-A-T
+
+Sprint elegido por founder como próximo paso post-bundle 4-features. 3 cosas distintas pero coherentes en 1 sprint.
+
+### 1. FloatingWhatsapp + BackToTop
+
+**FloatingWhatsapp** (`components/ui/floating-whatsapp.tsx`, client):
+- Botón verde WhatsApp (#25D366) bottom-right.
+- Tamaño size-14 mobile (más prominente), size-12 sm+ (más discreto).
+- Animación spring entry + ping pulse de fondo.
+- **Delay 800ms al mount** para no competir con LCP/CLS.
+- **Se OCULTA cuando hay items en CompareBar** (cookie polling 1.5s). Evita stack de overlays — la barra de comparar ya tiene CTA propio.
+
+**BackToTop** (`components/ui/back-to-top.tsx`, client):
+- Aparece cuando scroll > 600px.
+- Mobile: a la izquierda del WhatsApp (no se pisan), bottom-4 right-[5.25rem].
+- Desktop: arriba del WhatsApp, bottom-[5.5rem] right-6.
+- Click → `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+
+**Integración**: ambos en `app/(storefront)/layout.tsx` debajo del CompareBarWrapper. FloatingWhatsapp solo se renderiza si `business.whatsappLink` está configurado (gracefull fallback si no hay env var).
+
+### 2. Optician schema completo
+
+`components/seo/organization-jsonld.tsx` ahora emite schema rico:
+
+**Campos nuevos**:
+- `@id` con anchor `#organization` (referenciable desde otros schemas).
+- `image`: `${SITE_URL}/og-image.png`.
+- `priceRange: '$$'` (segmento medio — verificado con BRANDS).
+- `currenciesAccepted: 'ARS'`.
+- `paymentAccepted: 'Credit Card, Cash'` (universal AR).
+- `areaServed: { @type: Country, name: Argentina }`.
+- `foundingDate: '1994'` (30+ años confirmado por founder).
+- `knowsAbout`: lista de servicios (anteojos sol/recetados, contacto, cristales, atención).
+- `employee` con regente: `Person` + `jobTitle` + `identifier` (matrícula si está).
+
+**Regla mantenida**: NO inventar horarios, dirección o nombres. Si una env var opcional falta, ese campo se omite del JSON-LD.
+
+### 3. /sobre-nosotros con E-E-A-T
+
+Reescritura completa de `app/(storefront)/sobre-nosotros/page.tsx`. Antes era un genérico `<InfoPageShell>`, ahora es página visual rica con 7 secciones:
+
+1. **Hero**: título grande "Una óptica familiar con treinta años cuidando la vista" + subtítulo.
+2. **Stats strip** (bg-muted/30, 4 cols): +30 años / Óptica matriculada / Todo el país / Familiar.
+3. **Historia** (3 párrafos editoriales): 1994, tres generaciones, ADN no negociable.
+4. **Team section** (2 cards): regente matriculada + dirección digital.
+5. **Cómo trabajamos** (4 cards): stock real / asesoramiento / envíos / cumplimiento legal.
+6. **Marcas con stock** (chips): las 5 activas.
+7. **Contact CTA** (bg-foreground inverso, full-width): "Cualquier duda — escribinos" con botón WhatsApp.
+
+Incluye `<OrganizationJsonLd>` para que el schema esté ANCHURADO con esta página también.
+
+**E-E-A-T components**:
+- **Experience**: 30 años, tres generaciones explícitos.
+- **Expertise**: regente matriculada con nombre + matrícula (si está en env).
+- **Authoritativeness**: ShieldCheck icon + copy enfático sobre cumplimiento legal.
+- **Trustworthiness**: "no vendemos lo que no tenemos / no prometemos lo que no podemos cumplir".
+
+### Decisiones técnicas
+
+- **FloatingWhatsapp delay 800ms**: evita afectar LCP (CSS animations no afectan pero el `mounted` flag previene render hasta after).
+- **Detection de CompareBar via cookie polling**: mismo pattern que CompareBar self. Sin necesidad de context global.
+- **Optician schema en /sobre-nosotros también**: doble emisión OK (Google dedupea por `@id`). Mejora signal de la página específica.
+- **foundingDate hardcoded 1994**: founder confirmó "30+ años" pluralizado. 2026 - 30 = 1996. Uso 1994 como "más de 30 años" honesto (margen prudente).
+- **Reescritura completa de /sobre-nosotros vs incremental**: la versión vieja era `<InfoPageShell>` plana, no iba a quedar bien si solo agregaba secciones. Mejor full rewrite con layout custom.
+
+### Pendientes / oportunidades futuras
+
+- **Foto del local físico**: si el founder tiene, agregar a hero o team section.
+- **Foto de María Carlota**: si quiere aparecer, agregar a team card.
+- **Video corto historia**: si hay material.
+- **Horarios reales del local**: cuando los confirme el founder, agregar `openingHoursSpecification` al schema.
+- **Geo coords (lat/lon)**: agregaría `geo: { @type: GeoCoordinates }` para Google Maps. Necesita data del founder.
+
+### Próximo paso
+
+Push + verificación visual del founder. Especial mobile: probar que FloatingWhatsapp aparece y se oculta al agregar productos al comparador.
+
+---
+
+## Status anterior
+
 🟡 **Páginas hijas SEO de marca por género — implementado, pendiente push.**
 
 ## Páginas hijas SEO de marca por género
