@@ -79,6 +79,7 @@ function buildAdvisoryCta(categoryWord: 'anteojos de sol' | 'anteojos de receta'
       { label: 'Lector de receta con IA', href: '/lector-de-receta' },
       { label: 'Comparar modelos', href: '/comparar' },
       { label: 'Mis favoritos', href: '/favoritos' },
+      { label: 'Alertas de precio y stock', href: '/mi-cuenta/alertas' },
     ],
   };
 }

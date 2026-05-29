@@ -51,6 +51,7 @@ export type ProductImage = {
 };
 
 export type ProductDetailData = {
+  id: string;
   slug: string;
   name: string;
   short_description: string | null;
@@ -301,6 +302,7 @@ export async function fetchProductPage(
     .from('products')
     .select(
       `
+        id,
         slug,
         name,
         short_description,

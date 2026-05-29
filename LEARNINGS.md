@@ -22,6 +22,31 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Baseline snapshot al crear alerta para detectar cambios
+
+**Categoría**: Diseño de schema / Anti-spam en notificaciones
+**Confianza**: 🟢 Alta
+
+### Qué funcionó
+
+Al crear una alerta, capturé `baseline_price_cents` + `baseline_in_stock` del estado actual del producto. El CRON compara state ACTUAL vs BASELINE para decidir si disparar email. Tras notificar, actualizo el baseline al nuevo state.
+
+Sin baseline, hubiera necesitado:
+- Comparar contra un histórico (tabla `price_history` separada → más complejo).
+- O usar solo `last_notified_at` como anti-spam (peor: dispara cualquier baja pequeña repetidamente cuando el cooldown pasa).
+
+### Por qué funcionó
+
+El baseline es un anti-spam estructural, no temporal. Si una alerta sin target tiene baseline $100 y price baja a $90, dispara. Tras notificar, baseline pasa a $90. Para volver a disparar, tiene que bajar de $90 (no rebote a $95 y vuelva a $90 mismo). 
+
+Combinado con cooldown 24h temporal, el usuario solo recibe emails cuando hay cambio REAL relevante. Cero spam.
+
+### Cuándo aplicar
+
+- Cualquier sistema de notificación basado en cambio de state.
+- Cualquier feature donde "te avisamos cuando X cambie a Y" — el baseline es lo que define qué es "cambio".
+- NO aplicar si el state cambia muy rápido (intraday trading, métricas live) — ahí necesitás threshold % o tiempo.
+
 ## 2026-05-29 — Builder contextual de related links — un componente, N comportamientos
 
 **Categoría**: Arquitectura de componentes / DRY pragmático

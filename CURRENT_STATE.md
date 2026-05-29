@@ -2,6 +2,23 @@
 
 ## Status
 
+✅ **Sprint Alertas de precio + stock CERRADO** (2026-05-29). Sistema completo de alertas con cuenta (scope completo elegido por founder vs MVP). Componentes:
+- **DB**: tabla `product_alerts` con RLS strict (user solo ve/edita propias). alert_type enum (price_drop/stock_back/both), target_price_cents opcional, baseline snapshot para detectar cambios, unsubscribe_token único.
+- **Server Actions** (`lib/alerts/actions.ts`): createAlert (con check duplicado via UNIQUE constraint), deleteAlert, toggleAlert, getMyAlertFor.
+- **UI producto**: `CreateAlertButton` con modal (tipo + precio objetivo opcional). Si no logueado, redirige a `/ingresar?next=`. Si ya hay alerta, deshabilita con "Alerta activa".
+- **Página `/mi-cuenta/alertas`**: lista con AlertCard (pausar/reactivar/eliminar + status actual de precio + último aviso).
+- **Email Resend** (`send-alert-email.ts`): HTML inline mobile-first con headline contextual, precio antes/ahora si aplica, CTA al producto, link unsubscribe.
+- **Unsubscribe endpoint** (`/api/alerts/unsubscribe`): usa token sin login (admin client), marca is_active=false (no delete — user puede reactivar).
+- **CRON** (`/api/cron/check-alerts`): autorizado via `CRON_SECRET` header, query alerts activos con cooldown 24h, evalúa triggers vs baseline, manda emails, actualiza baseline + last_notified_at.
+- **vercel.json**: cron cada hora `0 * * * *`.
+- **Mega-menu**: sumado "Alertas de precio y stock" como 5ta herramienta.
+
+**⚠️ Pendientes founder (BLOQUEA feature en prod)**:
+1. Aplicar `supabase/cloud-bootstrap.sql` (135 líneas, migración brands.alerts) en Dashboard SQL Editor.
+2. Setear env var `CRON_SECRET` en Vercel (Production + Preview). Valor: cualquier string aleatorio largo (`openssl rand -hex 32`). Sin esto, el CRON tira 401.
+3. Verificar `RESEND_API_KEY` + `RESEND_FROM_EMAIL` setteadas (deberían estar de antes).
+4. Tras deploy, Vercel auto-activa el cron — no requiere acción adicional.
+
 ✅ **Micro-sprint Herramientas en mega-menu CERRADO** (2026-05-29). Panel CTA del mega ahora promociona 4 herramientas (antes 2): Recomendador IA, Lector receta IA, Comparar modelos, Mis favoritos. Decisión: heading "Herramientas" (no "con IA") más inclusivo, con la marca "con IA" inline solo en las 2 que la usan. Las páginas `/comparar` y `/favoritos` ya existían pero no estaban promocionadas desde el header.
 
 ✅ **Sprint Internal Linking CERRADO** (2026-05-29). Bloque "También podría interesarte" al pie de todas las sub-categorías (shape, gender, brand). Builder contextual `buildRelatedLinks` devuelve hasta 6 links curados según tipo de página: shape → 2 género + 3 shape + 1 brand; gender → 4 shape + 2 brand; brand → 2 género + 3 shape + 1 brand. Refuerza SEO interno (PageRank flow) + descubrimiento UX sin saturar el catálogo. Componente `RelatedCategoriesBlock` reusable con UI de chips (pill style).

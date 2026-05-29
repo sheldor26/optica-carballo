@@ -19,6 +19,9 @@ import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-vie
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
+import { CreateAlertButton } from '@/components/alerts/create-alert-button';
+import { getCurrentUser } from '@/lib/auth/server';
+import { getMyAlertFor } from '@/lib/alerts/actions';
 import { CompareButton } from '@/components/compare/compare-button';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
@@ -140,6 +143,15 @@ export async function ProductDetailPage({
     frameShape: extractFrameShape(product.attributes),
   });
 
+  // Alertas: paralelizamos user + existing alert (a nivel producto, no variante,
+  // para mantener UX simple en iter 1).
+  const [user, existingAlert] = await Promise.all([
+    getCurrentUser(),
+    getMyAlertFor({ productId: product.id, variantId: null, alertType: 'both' }),
+  ]);
+  const isAuthenticated = user !== null;
+  const hasExistingAlert = existingAlert !== null;
+
   // Default seleccionado: primera variante en stock activa, sino la
   // primera activa, sino null.
   const defaultVariantId =
@@ -244,6 +256,16 @@ export async function ProductDetailPage({
             <p className="text-muted-foreground mt-2 text-base font-medium md:text-lg">
               {subtitle}
             </p>
+            <div className="mt-3">
+              <CreateAlertButton
+                productId={product.id}
+                variantId={null}
+                productName={product.name}
+                inStock={isInStock}
+                isAuthenticated={isAuthenticated}
+                hasExistingAlert={hasExistingAlert}
+              />
+            </div>
             {product.short_description && (
               <p className="text-muted-foreground mt-2 text-sm md:text-base">
                 {product.short_description}
