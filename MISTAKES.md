@@ -24,6 +24,42 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Sesión comparador: cierre EXITOSO (docs actualizados ANTES de mensaje al founder)
+
+**Estado**: 🟢 Cumplido — sin mistake nuevo.
+**Categoría**: Proceso / Disciplina documental (cumplimiento)
+
+Aplicación correcta de la regla v4 + refinamiento del 8VO mistake: el feature comparador (8 archivos nuevos + integración en layout + tabla en /comparar) se ejecutó completo, build verde, y ANTES de enviar el mensaje de cierre al founder actualicé CURRENT_STATE (sección nueva con arquitectura completa, decisiones, próximo paso) + LEARNINGS (3era confirmación del patrón cookie-first → candidato a promoción a regla) + esta entry breve en MISTAKES.
+
+No hubo mistake nuevo en la sesión. Decisiones técnicas tomadas sin agente (cap 4 productos, NO botón en card, NO badge en header, mobile sin sticky first col) — todas defendidas con razonamiento en CURRENT_STATE.
+
+Marcar éxito refuerza el patrón. Si volviera a fallar, sería 9VA VEZ del mismo mistake conocido.
+
+---
+
+## 2026-05-28 — 8VA VEZ: cerrar mensaje técnico ("Avisame cuándo lo veas vivo") tras push sin actualizar docs
+
+**Estado**: 🔴 Abierto — patrón hipersistente. Mismo trigger ya enumerado en CLAUDE.md como bloqueante ("avisame cuándo lo veas vivo" cae en "esperando feedback").
+**Categoría**: Proceso / Disciplina documental (escalación)
+
+### Qué pasó
+
+Sesión productiva corta: founder pidió heart wishlist más visible, lo moví al lado del título con variant nueva, typecheck verde, commit 4f7a030, push. Cerré con "Push limpio. Lo que vas a ver. Avisame cuándo lo veas vivo." — sin tocar CURRENT_STATE / LEARNINGS / MISTAKES. Stop hook intervino.
+
+### Causa raíz
+
+Mismo patrón que las 7 veces anteriores. Esta vez con un agravante: el turno previo en esta sesión (también auto-compactado) sí cerró con `"✅ Archivos actualizados"` correcto. **Pero al siguiente turno volví al patrón viejo**. La disciplina dura 1 turno, no se sostiene a través de la sesión.
+
+### Regla preventiva — refinamiento
+
+Las regla en CLAUDE.md y la sección de cierre operacional están bien. El gap es **continuidad cross-turn**: cuando un turno cierra exitosamente con docs actualizados, el siguiente turno empieza limpio y se olvida del patrón. Necesito tratarlo como **estado permanente de sesión**, no como checklist ad-hoc.
+
+Mitigación concreta para próximos turnos:
+- Al INICIO de cada turno donde voy a hacer trabajo técnico (commits, pushes, fixes visibles), pre-cargar mentalmente: "este turno va a cerrar con docs actualizados, sí o sí".
+- Si el trabajo es trivial (1 commit pequeño), igual aplicar la checklist — los 3 docs admiten entries cortos ("sin mistake nuevo, sin learning nuevo, CURRENT_STATE +1 sección breve").
+
+---
+
 ## 2026-05-28 — Declarar "fix definitivo" de un bug visual sin verificación del founder → 3 iteraciones consecutivas del mismo problema
 
 **Estado**: 🟢 RESUELTO — iter 3 (p-20 + scale 1.03 + double wrapper) verificado por founder 2026-05-28: "solucionado el crop visual". La regla preventiva "lenguaje 'debería resolver' en vez de 'fix definitivo' + esperar confirmación visual antes de cerrar" funcionó implícitamente en iter 3 — el mensaje que acompañó el commit `3c5d379` ya usaba lenguaje hipotético ("Si todavía corta...") en vez de declarativo.

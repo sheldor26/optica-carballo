@@ -22,6 +22,72 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — 3era app del patrón cookie-first: comparador valida que es pattern, NO incidente. Candidato a regla de CLAUDE.md.
+
+**Categoría**: Arquitectura / Persistencia / Patrones consolidados
+**Confianza**: 🟢 Alta (3 casos: wishlist + recientes + comparador)
+
+### Qué pasó
+
+Founder pidió comparador. Lo planeé y ejecuté en 30min sin agente porque ya tenía mapa mental del patrón:
+- Cookie con array de entries serializados.
+- Server helpers (`'use server'`): read + toggle/track + remove + clear.
+- Client helper para leer cookie sin server round-trip.
+- Server actions con `revalidatePath` de la página personal.
+- Server wrapper que pre-fetchea data por slugs → pasa a client component.
+- Polling 1.5s + focus listener para captar cambios cross-tab.
+- Página personal `/X` con `force-dynamic` + `robots: noindex` + empty state con `<RecentlyViewed>` fallback.
+
+### Por qué funciona
+
+Los 3 casos (wishlist, vistos recientemente, comparador) tienen estructura idéntica: lista de slugs con metadata mínima, persistencia sin auth, una página personal para verlos juntos. El patrón es **el approach correcto para todo feature de persistencia client-side ligera en este proyecto**.
+
+### Promoción a regla
+
+Después de 3 confirmaciones, esto es candidato fuerte a:
+- Agregar a `CLAUDE.md` (ARCHITECTURE.md tal vez mejor) bajo "Patrones consolidados" como "Persistencia cookie-first" con los 5 puntos de arquitectura listados.
+- Cuando aparezca un 4to caso (probablemente "items en checkout anon" o "preferencias UI"), aplicar el patrón directamente sin replantear.
+
+Riesgo a vigilar: si los entries crecen mucho (>200 bytes/entry × 50 items en wishlist = 10KB cookie), empezar a sentir el costo. El comparador con cap 4 está fuera de ese riesgo.
+
+### Costos del patrón vs alternativas
+
+vs DB-first: cero fricción (no requiere login). Sync a DB en login es trivial cuando se active.
+vs localStorage: cookie permite SSR (server lee → render server). localStorage requiere client-only render → hydration delays / flashes.
+
+---
+
+## 2026-05-28 — Visibilidad de features = nueva variant explícita, no override por className
+
+**Categoría**: Component API / UX
+**Confianza**: 🟡 Media (1 caso aplicado)
+
+### Qué pasó
+
+Founder reportó que el botón de wishlist en página de producto era poco visible (estaba como variant `inline` debajo del CTA WhatsApp, ya scrolleado). Pidió moverlo arriba al lado del título, patrón ML. Tuve 2 caminos:
+
+**A. Override por className**: usar `variant="inline"` con `className="..."` para mover layout, ocultar texto, etc.
+**B. Nueva variant `'title'`**: declarar explícito como tercer modo (`'card' | 'inline' | 'title'`), con su propio estilo y esqueleto SSR.
+
+Elegí B. El icon-only con tamaño grande, sin borde y posicionamiento al lado del h1 no es un "tweak del inline", es un layout distinto.
+
+### Por qué funciona
+
+- **Discoverabilidad**: cualquier dev (o yo en futuro) lee la prop `variant` y entiende los 3 modos sin tener que parsear className overrides.
+- **Esqueleto SSR específico**: cada variant tiene su tamaño de placeholder durante hydration. Override por className hubiese roto el esqueleto del 'inline' o forzado a condicionar el className del esqueleto.
+- **Animación y a11y consistentes**: el mismo `motion.span` + Heart + aria-pressed se repite en los 3 branches, pero el contenedor (border, padding, hover) cambia. Variant explícita modela bien ese eje.
+
+### Costo: 30 líneas duplicadas
+
+El branch de `variant === 'title'` tiene su propio `<button>` y esqueleto. Hay ~30% código repetido vs un único componente parametrizable. Acepto porque la lectura es 5x más simple y la prop type es self-documenting.
+
+### Aplicar a futuro
+
+- Comparador de productos (próximo backlog): si tiene 2 ubicaciones (card flotante + barra inferior), declarar variants explícitas en vez de className override.
+- Cualquier botón que tenga >2 ubicaciones con layout distintos → variants enum, no className.
+
+---
+
 ## 2026-05-28 — Cookies funcionan para 2 features de persistencia ligera (wishlist + vistos recientemente) — patrón confirmado
 
 Aplicación 2da del approach "cookie-first para persistencia sin auth". Ahora con tracker automático (vistos recientemente) en lugar de toggle manual (wishlist). Confirma:

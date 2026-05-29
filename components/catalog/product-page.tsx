@@ -17,6 +17,7 @@ import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-vie
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
+import { CompareButton } from '@/components/compare/compare-button';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
@@ -219,14 +220,24 @@ export async function ProductDetailPage({
                   {product.name}
                 </h1>
               </div>
-              <WishlistButton
-                entry={{
-                  slug: product.slug,
-                  category: category.slug,
-                  brand: product.brand.slug,
-                }}
-                variant="title"
-              />
+              <div className="flex shrink-0 items-center gap-1">
+                <CompareButton
+                  entry={{
+                    slug: product.slug,
+                    category: category.slug,
+                    brand: product.brand.slug,
+                  }}
+                  variant="title"
+                />
+                <WishlistButton
+                  entry={{
+                    slug: product.slug,
+                    category: category.slug,
+                    brand: product.brand.slug,
+                  }}
+                  variant="title"
+                />
+              </div>
             </div>
             <p className="text-muted-foreground mt-2 text-base font-medium md:text-lg">
               {subtitle}

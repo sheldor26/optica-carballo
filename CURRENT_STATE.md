@@ -2,6 +2,70 @@
 
 ## Status
 
+🟡 **Comparador de productos completo — implementado, pendiente push y verificación visual.**
+
+## Comparador de productos (cookie-first, mismo patrón wishlist/recientes)
+
+Founder eligió "comparador" del backlog. 3era feature de persistencia client-side sin auth.
+
+**Arquitectura**:
+- Cookie `oc_compare`: JSON array de `CompareEntry` (slug + category + brand). Max **4 items** (cap más bajo que wishlist porque la tabla con 5+ columnas se vuelve ilegible). 30 días (info volátil — intención de compra es de sesión, no largo plazo).
+- `lib/compare/cookie.ts`: server-side `readCompareCookie`, `toggleCompare`, `removeFromCompare`, `clearCompare`. `toggleCompare` devuelve `{ added, full }` para que el client pueda mostrar mensaje si está full.
+- `lib/compare/client.ts`: `readCompareClientSide` para polling de barra y botón.
+- `lib/compare/actions.ts`: 3 server actions con `revalidatePath('/comparar')`.
+
+**Componentes**:
+- `components/compare/compare-button.tsx`: 2 variantes (`title` con icono `Scale` ámbar / `inline` con texto). Estado optimista. Si al togglear el server devuelve `full: true` (ya hay 4), usa `window.alert` simple — sin lib de toast, KISS.
+- `components/compare/compare-bar.tsx`: client component. Barra sticky inferior con thumbs (1-4). 1 producto → "Agregá otro". 2+ productos → CTA "Comparar →" al `/comparar`. Polling 1.5s + focus listener para captar cambios en otros tabs (mismo patrón que WishlistBadge). X grande para clear completo (también X chico por thumb).
+- `components/compare/compare-bar-wrapper.tsx`: **server wrapper** de la barra. Lee cookie en SSR + fetchea `name + primaryImagePath` por slug → pasa al client como `thumbsBySlug`. Si el client agrega productos vía polling (otro tab), aparece sin thumb hasta navegar. Aceptable iter 1.
+- `components/compare/compare-remove-button.tsx`: para tabla de comparación. `removeFromCompareAction` + `router.refresh()` para que la columna desaparezca sin recarga manual.
+
+**Página `/comparar`**:
+- `force-dynamic`, `robots: noindex` (personal del usuario).
+- Tabla minimal con 1 col de labels + 2-4 cols de producto. Rows: marca, categoría, precio, forma, material, tratamientos lente, género, ancho total, altura, puente, calibre, patillas, peso. Rows con TODOS los valores null se filtran (no se muestran).
+- Mobile: scroll horizontal (no sticky first column — complicado de hacer accesible, scroll es OK con `min-w-[640px]`).
+- Empty state con icono `Scale`, glow ámbar, dual CTA + `<RecentlyViewed minToRender=2>` como fallback.
+- Header: thumb del producto + nombre (link al PDP) + marca + botón "Quitar" (CompareRemoveButton).
+
+**Integración**:
+- `product-page.tsx`: `CompareButton variant="title"` al lado del `WishlistButton variant="title"` (ambos en flex `gap-1` shrink-0 al lado derecho del bloque del título).
+- `app/(storefront)/layout.tsx`: `CompareBarWrapper` montado al final del body, visible en todas las páginas del storefront.
+
+**Query nueva en `lib/catalog/queries.ts`**:
+- `fetchProductsForCompareBySlugs()` → `CompareProductCard[]` con attributes completos + categoryName. Reutiliza patrón de `fetchProductsBySlugs` pero pide más campos.
+
+**Decisiones técnicas**:
+- **Cap 4 vs cap más alto**: tabla con 5 columnas en mobile (incluso con scroll) se vuelve confusa. 4 es industry standard (Amazon, MercadoLibre, Falabella). Founder no especificó pero asumí razonable.
+- **NO botón en ProductCard**: el flujo natural es PDP → guardar → volver al catálogo → PDP siguiente. Card minimal queda intacto (decisión consistente con el redesign Acne/Cartier).
+- **NO badge en header**: la barra sticky inferior cubre discoverability. Agregar otro badge en header es ruido visual.
+- **window.alert para "full"**: sin lib de toast nueva. Si en el futuro instalamos `sonner` o `react-hot-toast` para otras notifs, migramos.
+- **Mobile sin sticky first column**: la tabla con `min-w-[640px]` + scroll horizontal funciona. Sticky con `position: sticky` en celdas de tabla es frágil cross-browser y a11y problemática.
+
+**Próximo paso**: push + verificación visual del founder.
+
+---
+
+## Status anterior
+
+✅ **Heart wishlist visible al lado del título (commit 4f7a030, pusheado)** — pendiente verificación visual del founder.
+
+## Heart wishlist en producto — patrón ML-like (commit 4f7a030)
+
+Founder pidió que el botón de favoritos sea más visible. Antes estaba como `variant="inline"` debajo del CTA WhatsApp ("Guardar" con borde y texto), poco visible y debajo del fold en mobile. Referencia visual del founder: ML — corazón grande al lado del título.
+
+**Cambios**:
+- `components/wishlist/wishlist-button.tsx`: nueva variante `'title'` (icon-only, size-11 contenedor, ícono size-6, sin borde, hover bg-muted/60 + scale-110, animación rojo al toggle igual que las otras variantes). Esqueleto `size-11 shrink-0 rounded-full` para hydration-safe.
+- `components/catalog/product-page.tsx`: el bloque del título ahora es `flex items-start justify-between gap-4` con el contenido a la izquierda (`min-w-0 flex-1` para evitar overflow del h1) y el WishlistButton variant="title" como sibling a la derecha (`shrink-0`).
+- Sacado el `<WishlistButton variant="inline">` que estaba debajo de `<WhatsappCta>` (era redundante con el nuevo corazón visible).
+
+**Decisión**: variant nueva en vez de override por className porque el icon-only sin borde es un layout distinto, no un tweak. Mantiene la variant API explícita ('card' | 'inline' | 'title').
+
+**Próximo paso**: esperar verificación del founder. Si OK, seguir con backlog (asistente RAG, comparador, calculadora cuotas — esta última founder rechazó hace 1 sprint).
+
+---
+
+## Status anterior
+
 🟡 **Vistos recientemente + Filtros catálogo + Iter 2 recomendador — implementados, pendiente push**
 
 Founder eligió ambas features (no calculadora de cuotas). Implementadas las 2 en este sprint.

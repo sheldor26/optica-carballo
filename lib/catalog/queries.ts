@@ -706,6 +706,93 @@ export async function fetchProductsBySlugs(
     });
 }
 
+export type CompareProductCard = {
+  slug: string;
+  name: string;
+  brandSlug: string;
+  brandName: string;
+  categorySlug: string;
+  categoryName: string;
+  shortDescription: string | null;
+  minPriceCents: number | null;
+  inStockCount: number;
+  primaryImagePath: string | null;
+  /** JSON attributes — el caller decide qué claves leer. */
+  attributes: Record<string, unknown>;
+};
+
+type CompareProductRow = {
+  slug: string;
+  name: string;
+  short_description: string | null;
+  attributes: Record<string, unknown>;
+  brand: { slug: string; name: string; is_active: boolean };
+  category: { slug: string; name: string; is_active: boolean };
+  variants: Array<{ price_cents: number; stock_qty: number; is_active: boolean }>;
+  images: Array<{ storage_path: string; is_primary: boolean; sort_order: number }>;
+};
+
+/**
+ * Fetch productos para el comparador. Idéntico a `fetchProductsBySlugs`
+ * pero incluye `attributes` completos (para mostrar specs en la tabla
+ * de comparación) y `categoryName` (para mostrar en cabecera). Solo
+ * primary image — el comparador no necesita gallery.
+ */
+export async function fetchProductsForCompareBySlugs(
+  slugs: string[],
+): Promise<CompareProductCard[]> {
+  if (slugs.length === 0) return [];
+
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        short_description,
+        attributes,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug, name, is_active),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order)
+      `,
+    )
+    .in('slug', slugs)
+    .eq('is_active', true)
+    .returns<CompareProductRow[]>();
+
+  if (!data) return [];
+
+  return data
+    .filter((row) => row.brand.is_active && row.category.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter(
+        (v) => v.is_active && v.stock_qty > 0,
+      );
+      const sortedImages = [...row.images].sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return a.sort_order - b.sort_order;
+      });
+      return {
+        slug: row.slug,
+        name: row.name,
+        brandSlug: row.brand.slug,
+        brandName: row.brand.name,
+        categorySlug: row.category.slug,
+        categoryName: row.category.name,
+        shortDescription: row.short_description,
+        attributes: row.attributes ?? {},
+        minPriceCents:
+          inStock.length > 0
+            ? Math.min(...inStock.map((v) => v.price_cents))
+            : null,
+        inStockCount: inStock.length,
+        primaryImagePath: sortedImages[0]?.storage_path ?? null,
+      };
+    });
+}
+
 /**
  * Para `generateStaticParams` de páginas de producto: devuelve las
  * combinaciones {brand, product} para una categoría específica.
