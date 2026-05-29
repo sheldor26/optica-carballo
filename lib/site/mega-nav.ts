@@ -73,10 +73,12 @@ function buildAdvisoryCta(categoryWord: 'anteojos de sol' | 'anteojos de receta'
     title: 'Te asesoramos sin cargo',
     body: 'Dudas con tu receta, el modelo que te queda mejor o el material — te respondemos en horario comercial.',
     primaryCta: wa ?? { label: 'Ver preguntas frecuentes', href: '/preguntas-frecuentes' },
-    secondaryHeading: 'Herramientas con IA',
+    secondaryHeading: 'Herramientas',
     secondaryLinks: [
-      { label: 'Recomendador de monturas', href: '/recomendador-de-monturas' },
-      { label: 'Lector de receta', href: '/lector-de-receta' },
+      { label: 'Recomendador de monturas con IA', href: '/recomendador-de-monturas' },
+      { label: 'Lector de receta con IA', href: '/lector-de-receta' },
+      { label: 'Comparar modelos', href: '/comparar' },
+      { label: 'Mis favoritos', href: '/favoritos' },
     ],
   };
 }
