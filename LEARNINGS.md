@@ -22,6 +22,55 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — AskUserQuestion con preview ASCII para decisiones de UI
+
+**Categoría**: Comunicación con founder no-técnico / UX de decisión
+**Confianza**: 🟢 Alta (validado con el sprint mega-menu v2)
+
+### Qué funcionó
+
+Cuando el founder mandó la captura del mega-menu de LensCrafters pidiendo "algo por el estilo y mejor", en vez de implementar a ciegas, usé `AskUserQuestion` con 2 opciones que tenían **preview ASCII del layout** propuesto. Founder eligió en segundos sin tener que leer descripciones largas — vio los rectángulos ASCII y supo cuál quería.
+
+### Por qué funcionó
+
+Founder es no-técnico de programación. Describir layouts con palabras ("3 columnas con panel a la derecha") es ambiguo y la interpretación del modelo puede no coincidir con la mental del founder. ASCII art elimina esa ambigüedad: lo que ve es lo que se va a construir (en estructura, no en estética).
+
+Ventajas concretas:
+- Decisión en 1 turno en vez de 3-4 idas y vueltas iterando.
+- Founder mantiene control de producto sin necesidad de hablar tech.
+- Reduce el riesgo de re-trabajo (founder no rechaza después de implementado).
+
+### Cuándo aplicar
+
+- Cualquier decisión de **layout, jerarquía visual, o estructura de información** donde haya 2-3 opciones distintas.
+- NO aplicar para decisiones de estilo fino (colores, tipografía, spacing) — eso necesita verlo real, no ASCII.
+- NO aplicar para decisiones tech sin impacto visual (qué librería usar, etc).
+- El ASCII debe mostrar **proporciones reales** (columnas, jerarquía de cajas), no detalles de UI.
+
+## 2026-05-29 — Validar URLs linkeables antes de armar nav/mega-menu
+
+**Categoría**: Calidad de código / SEO interno
+**Confianza**: 🟢 Alta
+
+### Qué funcionó
+
+Al refactorear el mega-menu, antes de mandar el commit revisé que TODAS las URLs propuestas estén implementadas hoy. Reemplacé `/anteojos-de-sol?genero=mujer` (que no existe — el filtro por género solo aplica con marca) por `/anteojos-de-sol/rusty/mujer` (que sí existe, además con mayor vol SEO según `SEO_STRATEGY.md`).
+
+### Por qué funcionó
+
+Linkear a páginas placeholder o futuras desde el nav:
+- **Frustra usuarios**: click → 404 = bounce inmediato.
+- **Daña SEO interno**: Google penaliza navegaciones rotas + dilución de PageRank en URLs muertas.
+- **Inflate sitemap**: si las URLs no existen, no deberían estar referenciadas.
+
+Aprovechar URLs hijas existentes con mayor vol SEO duplica el beneficio: navegación funcional + PageRank flow hacia páginas que ya estamos intentando rankear.
+
+### Cuándo aplicar
+
+- Cualquier nav, mega-menu, breadcrumb, footer link, sitemap entry.
+- Antes de commit: grep o ls de cada URL propuesta contra `app/(storefront)/` y consultar `SEO_STRATEGY.md` para confirmar prioridad SEO.
+- Si una URL "ideal" no existe, evaluar: ¿la creo en este sprint, o uso un proxy existente?
+
 ## 2026-05-29 — Separar texto SEO largo del catálogo: catálogo = catálogo
 
 **Categoría**: UX / CRO / SEO / Arquitectura de información
