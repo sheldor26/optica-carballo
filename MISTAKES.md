@@ -285,6 +285,12 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Sin mistake en este turno (cambio de cursor por feedback del founder)
+
+Aplicación de regla v4. Este turno fue cambio simple de cursor follower a versión "ambiental" por feedback del founder ("un poco invasivo"). Decisión técnica correcta basada en su preferencia. Sin error de proceso ni anti-pattern.
+
+---
+
 ## 2026-05-28 — Sin mistake en este turno (implementación de FAQs completa, drafts con marcas `[A CONFIRMAR]`)
 
 Aplicación de regla v4 del 7mo mistake: registrar entry explícito aunque no haya error nuevo. Este turno fue implementación completa de FAQs iter 1 con decisiones técnicas explícitas (source of truth en código, marcas `[A CONFIRMAR]` inline, JSON-LD por página). Sin error de proceso. Sin anti-pattern detectado.

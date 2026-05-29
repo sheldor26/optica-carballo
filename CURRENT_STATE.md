@@ -2,7 +2,21 @@
 
 ## Status
 
-🟡 **FAQs implementadas iter 1: estructura completa de datos + accordion + JSON-LD + página + home subset, pendiente push y verificación**
+🟡 **Cursor follower cambiado a glow/halo ámbar sutil — pendiente push**
+
+Founder pidió cursor menos invasivo. Le pasé 4 opciones (glow / solo dot mini / amorfo líquido / desactivar). Eligió **glow/halo radial sutil**.
+
+**Implementación**:
+- `components/ui/cursor-follower.tsx` reescrito completo.
+- Removido: dot 8px, ring 32px, `mix-blend-difference`, detección de target clickeable (no se necesita).
+- Reemplazado por: 1 solo div `size-[280px] bg-brand/20 blur-3xl rounded-full` con spring suave (stiffness 180, damping 28, mass 0.6).
+- NO reemplaza cursor del SO — el SO sigue visible normalmente, el glow es solo decoración ambiental.
+- Sin reacción al hover de interactivos (se eliminó la lógica `hovering` + `closest(...)`). El efecto es ambiental, no "respondes a algo". Las micro-interacciones específicas (spotlight, magnetic, tilt) las manejan otros componentes.
+- Sigue respetando `(pointer: fine)` + `prefers-reduced-motion`.
+
+**Decisión técnica**: simplificación significativa del componente (de ~85 líneas a ~70). Menos state, menos motion values, menos lógica de detección. Es coherente con el approach "el cursor es ambiental, no funcional".
+
+
 
 Founder dijo "sigamos con las FAQs". Implementé con drafts actuales + marcas `[A CONFIRMAR: ...]` para datos pendientes (plazos exactos de envío, dirección/horario del local, cantidad de cuotas, política exacta de envío de devolución, umbral técnico de "graduación elevada").
 

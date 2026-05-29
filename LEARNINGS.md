@@ -22,6 +22,53 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Cursor "ambiental" (no reemplaza SO + sin reacción a interactivos) supera cursor "funcional" cuando se busca premium pero sutil
+
+**Categoría**: UI/UX / Cursor design / Decisiones de invasión visual
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente confirmar en producción)
+
+### Qué pasó
+
+Cursor follower original tenía 2 elementos (dot + ring) + `mix-blend-difference` + detección de target clickeable (ring escalaba 1.5x sobre links/buttons). Founder lo reportó como "un poco invasivo".
+
+Le ofrecí 4 alternativas y eligió **glow/halo radial sutil**. La diferencia clave NO es "menos color" o "más blur", sino el cambio conceptual:
+
+- **Cursor funcional (anterior)**: reemplaza el cursor del SO, RESPONDE a elementos interactivos. El usuario procesa "el cursor cambió, este elemento es importante".
+- **Cursor ambiental (nuevo)**: NO reemplaza el cursor del SO, NO responde a nada. Solo decoración persistente. El usuario procesa "hay luz, el sitio se siente premium".
+
+### Por qué el ambiental gana cuando se busca "premium pero sutil"
+
+- **Cero overhead cognitivo**: el ambiental no requiere atención. Funciona en periférico visual.
+- **No compite con micro-interacciones específicas** (spotlight en cards, magnetic buttons, tilt). Antes el cursor "anunciaba" hover; ahora cada elemento maneja su propio feedback.
+- **Cursor del SO siempre visible**: el usuario nunca pierde el feedback estándar de "qué tipo de elemento es" (text cursor, pointer, grab, etc.).
+- **Más fácil de calibrar**: 1 parámetro de "intensidad" (size, opacity, blur). Cursor funcional tiene N parámetros (dot size, ring size, spring stiffness, scale on hover, blend mode).
+
+### Cuándo usar cada uno
+
+- **Ambiental** (glow/halo, trail, sutil): sitio comercial / brand-driven donde se busca "premium pero limpio".
+- **Funcional** (reemplazo + reacción): sitio editorial / portfolio donde el cursor ES parte de la firma visual (ej Awwwards). Costo: requiere ser consistente y diseñado con cuidado.
+
+### Cómo aplicar
+
+Default a **ambiental** salvo que haya razón explícita para funcional. Si se elige funcional:
+- Validar en mobile (touch devices NO deben verlo).
+- Validar `prefers-reduced-motion` (usuarios con sensibilidad NO deben verlo).
+- Documentar la decisión y los parámetros de calibración.
+
+### Anti-patrón a evitar
+
+- Asumir que más efectos = más premium. A veces "menos es más" (especialmente para sitios comerciales).
+- Combinar cursor funcional con otras micro-interacciones de hover (spotlight, magnetic). Saturan.
+- No proveer opt-out — touch + reduced-motion deben siempre poder desactivarlo.
+
+### Próxima vez aplicar a
+
+- Cuando se evalúe cursor / efecto similar en próximas iteraciones de polish visual.
+- Cuando se diseñen efectos de hover en cards / botones / links — preguntarse si compiten con un cursor "funcional" ya existente.
+- Cualquier feature visual que tape o reemplace una affordance del SO (cursor, scroll, selección de texto).
+
+---
+
 ## 2026-05-28 — Marcas `[A CONFIRMAR: ...]` inline en código de contenido permiten despliegue + edición posterior sin bloquear
 
 **Categoría**: Generación de contenido / Workflow founder no-técnico
