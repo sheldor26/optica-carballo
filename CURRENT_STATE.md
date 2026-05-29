@@ -24,15 +24,14 @@ Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}
 - Modelo decodificado de ML: MBLK/S10 POL YELLOW = MBLK (negro mate, variante) + S10/POL (gris oscuro polarizado, par principal) + YELLOW (amarillas, común a todas las variantes).
 - Bootstrap regenerado: 197 líneas. Path bucket: `rusty-yau/` (NO `rusty-yau-polarizado/`).
 
-**Cloud aplicado por founder + 2 fixes UI iter 2** (2026-05-29 commit `3c5edad`):
-- Bloque blanco a la derecha empeoró tras el sidebar cross-sell (más alto que col izquierda).
-- Foto del producto se veía demasiado chica (~60% del contenedor).
+**Refactor estructural product-page iter 3** (2026-05-29 commit `5752a61`). Iter 1 (sumar sidebar cross-sell) y iter 2 (sidebar compacto) no resolvieron — sidebar SIEMPRE va a romper el balance del grid porque su altura no matchea la columna izquierda. Solución estructural:
+- ELIMINADO `RelatedProductsSidebar` (cross-sell sigue accesible en grid full-width al pie).
+- `ProductIncludes` ("Lo que incluye tu compra") movido de col izquierda a col DERECHA (debajo de medidas, antes de WhatsApp).
+- Grid simplificado: `md:grid-rows-[auto_1fr] + row-span-2` → `md:items-start`.
+- Col izquierda: solo gallery. Col derecha: info + ficha + medidas + incluye + CTA (alta).
+- Foto +50% más grande: gallery padding `p-4/6/8` → `p-2/3/4` (foto ocupa ~90% del cuadrado).
 
-Fixes aplicados:
-- `product-gallery.tsx`: padding `p-10 sm:p-14 md:p-20` → `p-4 sm:p-6 md:p-8` (fotos ocupan ~80% del cuadrado).
-- `related-products-sidebar.tsx`: 3 items → 2, thumb 64→48, padding contenedor + items reducido, text-sm → text-xs (altura del bloque -~50%).
-
-Próximo paso: founder verifica en `/anteojos-de-sol/rusty/rusty-yau` tras Vercel auto-deploy del commit `3c5edad`. Si todavía queda bloque blanco visible, ajustar adicional (alinear grid, agregar contenido al sidebar, etc).
+Próximo paso: founder verifica en `/anteojos-de-sol/rusty/rusty-yau` tras deploy del commit `5752a61`. Esperamos: foto grande, NO más bloque blanco, "Lo que incluye" en col derecha.
 
 GAP único restante (no bloqueante): `weight_grams` para UPDATE simple.
 

@@ -22,6 +22,35 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Refactor estructural > sucesivos parches cuando el problema es del layout, no del componente
+
+**Categoría**: UI / Layout structure / Iteración
+**Confianza**: 🟢 Alta (validado tras 3 iteraciones del producto page)
+
+### Qué funcionó
+
+Founder reportó bloque blanco en col derecha. Iter 1: agregué cross-sell sidebar en la col derecha para llenar el espacio. Iter 2: founder dijo "sigue mal", compacté el sidebar (2 items, padding chico). Iter 3: founder dijo "sigue mal, ahora a un costado". Recién en iter 3 entendí que el problema NO era el contenido del sidebar — era la asimetría estructural del grid. La col izquierda tenía gallery + "Lo que incluye"; la col derecha tenía info + ficha + medidas. SIEMPRE una iba a ser más alta que la otra.
+
+Solución estructural en iter 3: mover "Lo que incluye" de col izquierda a col derecha. Col izquierda queda solo con gallery (siempre la misma altura sin importar contenido); col derecha junta toda la info en orden lineal de venta. NO más sidebar. NO más asimetría.
+
+### Por qué pasé 2 iteraciones sin verlo
+
+Sesgo "ya implementé X, ajustemos X". Cada iter optimicé el sidebar como si fuera la solución. Cuando founder dijo "sigue mal" la 2da vez, todavía pensaba en achicarlo más. Recién al tercer feedback abstraje: "el problema no es el sidebar, es que existe una col más alta que la otra estructuralmente".
+
+### Regla preventiva
+
+Cuando un feedback se repite tras un fix:
+1. **Si el 1er fix no resolvió, el 2do fix del MISMO componente probablemente tampoco lo haga.** Hay que cuestionar la premisa del approach.
+2. **Volver al problema original** (no al fix iterado). "El bloque blanco está mal" — ¿el bloque blanco existe por X solución o por estructura del layout?
+3. **Refactor estructural** (cambiar layout, mover componentes) suele ser más barato que N parches del mismo componente.
+4. Patrón: si vas por la 3ra iteración del mismo file/componente y el problema sigue, hay 90% de probabilidad que la solución está en otro lado.
+
+### Cuándo aplicar
+
+- UI iterativa con feedback del founder.
+- Especialmente layouts donde el "vacío" o "exceso" es síntoma de mismatch entre dos columnas/secciones.
+- NO aplicar para bug fixes específicos (un fix de prop name o un null check es local — refactor estructural sería overkill).
+
 ## 2026-05-29 — Padding por defecto pensado para data hipotética: revisarlo cuando llegue data real
 
 **Categoría**: UI / Decisiones de defaults

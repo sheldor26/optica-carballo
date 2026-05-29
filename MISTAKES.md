@@ -24,6 +24,31 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — 2 iteraciones del MISMO componente sin cuestionar la premisa estructural
+
+**Estado**: ✅ Cerrado — refactor estructural en iter 3 (eliminado sidebar + ProductIncludes a col derecha).
+**Categoría**: Iteración / Sesgo de sunk cost
+
+### Qué pasó
+
+Founder señaló bloque blanco en col derecha del product page. Iter 1: agregué `RelatedProductsSidebar`. Founder: "sigue mal, MÁS ALTO ahora". Iter 2: compacté el sidebar (3 items → 2, padding reducido). Founder: "sigue mal, ahora aparece a un costado". Iter 3: ELIMINÉ el sidebar y refactoreé el grid (`ProductIncludes` a col derecha, `items-start` en lugar de row-span).
+
+Recién iter 3 resolvió porque el problema NO era del sidebar — era que el grid tenía dos columnas asimétricas estructuralmente (una con gallery + incluye = larga; otra con info + ficha + medidas = más corta).
+
+### Causa raíz
+
+Sesgo de "ya invertí en X, optimicemos X". Cada feedback del founder lo interpreté como "el sidebar no está bien dimensionado" en lugar de "el sidebar no debería existir". Tardé 2 vueltas en cuestionar la premisa.
+
+### Regla preventiva (link con LEARNING del mismo día)
+
+Si vas por la 3ra iteración del mismo componente y el founder sigue reportando el mismo problema con leves variaciones ("queda mal" → "sigue mal" → "ahora está a un costado"), cuestionar la PREMISA, no el dimensionamiento. Patrón concreto:
+
+1. Iter 1 falla → ok, ajustar.
+2. Iter 2 falla → STOP. Releer el feedback original sin sesgo del approach actual.
+3. Si el feedback original NO era específico al componente que iteré, probablemente el componente no es la solución.
+
+Aplicado al caso: feedback original era "bloque blanco a la derecha". Nunca fue "el sidebar es chico" o "el sidebar tiene poco padding". Yo solo asumí que el sidebar era la solución porque lo había implementado primero.
+
 ## 2026-05-29 — Cross-sell sidebar EMPEORÓ el problema que vino a resolver (más alto que col izquierda)
 
 **Estado**: ✅ Cerrado — compactado a 2 items + dimensiones reducidas en iter 2.
