@@ -2,22 +2,20 @@
 
 ## Status
 
-✅ **Sprint Alertas de precio + stock CERRADO** (2026-05-29). Sistema completo de alertas con cuenta (scope completo elegido por founder vs MVP). Componentes:
-- **DB**: tabla `product_alerts` con RLS strict (user solo ve/edita propias). alert_type enum (price_drop/stock_back/both), target_price_cents opcional, baseline snapshot para detectar cambios, unsubscribe_token único.
-- **Server Actions** (`lib/alerts/actions.ts`): createAlert (con check duplicado via UNIQUE constraint), deleteAlert, toggleAlert, getMyAlertFor.
-- **UI producto**: `CreateAlertButton` con modal (tipo + precio objetivo opcional). Si no logueado, redirige a `/ingresar?next=`. Si ya hay alerta, deshabilita con "Alerta activa".
-- **Página `/mi-cuenta/alertas`**: lista con AlertCard (pausar/reactivar/eliminar + status actual de precio + último aviso).
-- **Email Resend** (`send-alert-email.ts`): HTML inline mobile-first con headline contextual, precio antes/ahora si aplica, CTA al producto, link unsubscribe.
-- **Unsubscribe endpoint** (`/api/alerts/unsubscribe`): usa token sin login (admin client), marca is_active=false (no delete — user puede reactivar).
-- **CRON** (`/api/cron/check-alerts`): autorizado via `CRON_SECRET` header, query alerts activos con cooldown 24h, evalúa triggers vs baseline, manda emails, actualiza baseline + last_notified_at.
-- **vercel.json**: cron cada hora `0 * * * *`.
-- **Mega-menu**: sumado "Alertas de precio y stock" como 5ta herramienta.
+✅ **Sprint Alertas de precio + stock CERRADO + EN PROD** (2026-05-29). Sistema completo end-to-end activo en producción. Migration aplicada, CRON_SECRET seteado, Resend env vars verificadas, redeploy hecho. CRON `/api/cron/check-alerts` corre cada hora automático.
 
-**⚠️ Pendientes founder (BLOQUEA feature en prod)**:
-1. Aplicar `supabase/cloud-bootstrap.sql` (135 líneas, migración brands.alerts) en Dashboard SQL Editor.
-2. Setear env var `CRON_SECRET` en Vercel (Production + Preview). Valor: cualquier string aleatorio largo (`openssl rand -hex 32`). Sin esto, el CRON tira 401.
-3. Verificar `RESEND_API_KEY` + `RESEND_FROM_EMAIL` setteadas (deberían estar de antes).
-4. Tras deploy, Vercel auto-activa el cron — no requiere acción adicional.
+Componentes:
+- **DB**: tabla `product_alerts` con RLS strict (user solo ve/edita propias). alert_type enum, baseline snapshot, unsubscribe_token único.
+- **Server Actions**: createAlert/delete/toggle/getMyAlertFor con check duplicado via UNIQUE.
+- **UI producto**: `CreateAlertButton` con modal (tipo + precio objetivo opcional). Redirige a /ingresar si no logueado.
+- **Página `/mi-cuenta/alertas`**: AlertCard CRUD (pausar/reactivar/eliminar).
+- **Email Resend**: HTML inline mobile-first + link unsubscribe sin login.
+- **CRON**: anti-spam vía baseline + cooldown 24h, actualiza baseline tras notificar.
+- **Mega-menu**: 5ta herramienta promocionada.
+
+Cómo probar end-to-end:
+1. Loguearse y entrar a un producto → clic "Crear alerta".
+2. Editar manualmente en Supabase Dashboard el `price_cents` de la variante a un valor MENOR que el baseline → en la próxima hora el CRON dispara email.
 
 ✅ **Micro-sprint Herramientas en mega-menu CERRADO** (2026-05-29). Panel CTA del mega ahora promociona 4 herramientas (antes 2): Recomendador IA, Lector receta IA, Comparar modelos, Mis favoritos. Decisión: heading "Herramientas" (no "con IA") más inclusivo, con la marca "con IA" inline solo en las 2 que la usan. Las páginas `/comparar` y `/favoritos` ya existían pero no estaban promocionadas desde el header.
 
