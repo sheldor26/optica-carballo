@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Cierre formal del ciclo apply: registrar en CLOUD_APPLIED.md + borrar bootstrap derivado tras "todo aplicado"
+
+**Categoría**: Workflow / Schema management operativo
+**Confianza**: 🟢 Alta (validado en 4+ ciclos apply hoy)
+
+### Qué funcionó
+
+El ciclo end-to-end de cada SQL apply tiene 3 fases ortogonales:
+
+1. **Generación**: asistente crea migration/seed + concatena en `supabase/cloud-bootstrap.sql` (gitignored).
+2. **Apply**: founder copia bootstrap → SQL Editor → Run → confirma "aplicado".
+3. **Cierre**: asistente registra en `supabase/CLOUD_APPLIED.md` la fila correspondiente + borra `cloud-bootstrap.sql` (es derivado, regenerable).
+
+Saltarse la fase 3 produce drift entre lo que está aplicado en cloud y lo que el repo dice. Si tras 5 sprints el founder olvida qué aplicó, el archivo CLOUD_APPLIED.md se vuelve inconfiable.
+
+Hoy mantuve el ciclo riguroso: cada "aplicado" del founder → entry inmediato en CLOUD_APPLIED.md con fecha + descripción + notas relevantes (env vars seteadas, GAPS pendientes, dependencias). Resultado: el archivo es source of truth confiable.
+
+### Por qué funcionó
+
+CLOUD_APPLIED.md no es solo log histórico — es **input crítico para asistente en sesiones futuras**. Sin él, al inicio de cada sesión tengo que preguntar al founder "¿está la migration X aplicada?" — costo de fricción. Con él, leo el archivo y sé el estado.
+
+### Cuándo aplicar
+
+- Cualquier proyecto con DB managed remoto donde el flujo apply NO es automático (cloud SQL Editor, ServerlessSQL apply, etc).
+- Especialmente cuando hay múltiples apply en una sola sesión (el riesgo de olvidar registrar uno crece linealmente).
+- NO aplicar para DB con CI/CD automático (Supabase CLI / GitHub Actions) — ahí el commit del migration ES el registro.
+
+### Bonus: borrar bootstrap derivado tras apply
+
+`cloud-bootstrap.sql` queda gitignored porque es regenerable. Tras apply, borrarlo evita que: (a) en la próxima sesión se confunda con un apply pendiente, (b) el founder lo aplique 2 veces por error.
+
 ## 2026-05-29 — UNIQUE composite (item_id, variation_code) para multi-variation en marketplaces
 
 **Categoría**: Schema design / Integraciones de marketplaces

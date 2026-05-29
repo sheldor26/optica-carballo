@@ -24,6 +24,32 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Combinar 2 operaciones SQL en un solo bootstrap genera ambigüedad de "qué ya aplicaste"
+
+**Estado**: 🟡 Mitigado — detectado durante el ML mapping (le dije al founder "si ya aplicaste cleanup, salteá" — explícito el problema).
+**Categoría**: Workflow / Cloud apply
+
+### Qué pasó
+
+Hoy generé bootstrap1 con DELETE de zombie `rusty-yau-polarizado`. Founder no lo aplicó inmediatamente. Después generé bootstrap2 con migration ML multi-variation + seed mapping Vulk. Para no perder el cleanup pendiente, concatené todo en un solo `cloud-bootstrap.sql`. Tuve que decirle al founder: "Si ya aplicaste el cleanup, salteá; si no, aplicá todo".
+
+Esto crea ambigüedad: si founder ya aplicó cleanup y aplica de nuevo el bootstrap, el DELETE se vuelve a correr (idempotente con WHERE slug=X DELETE 0 rows — OK), PERO si founder NO aplicó cleanup y ejecuta solo la parte ML del bootstrap (mentalmente "salteando"), el zombie queda.
+
+### Causa raíz
+
+Falta de ciclo apply atómico: cada operación SQL debería tener su propio bootstrap + apply + registro + borrado, completos antes de generar el siguiente. Acumular 2+ operaciones pendientes en un solo bootstrap convierte el apply en un step manual de decisión ("¿ya hice X?").
+
+### Regla preventiva
+
+Para cada SQL pendiente:
+1. **Generar bootstrap atómico** (1 operación lógica por archivo).
+2. **No combinar con operaciones previas pendientes** salvo que sean parte del mismo cambio lógico (ej: migration + seed que la usa).
+3. **Si founder no aplica entre 2 operaciones generadas**, pedir confirmación explícita en lugar de concatenar: "El cleanup anterior queda pendiente. ¿Lo aplicaste? Si no, generá un bootstrap combinado o aplico secuencial".
+
+### Bonus
+
+Hoy salí bien porque las operaciones eran idempotentes (DELETE con WHERE inexistente = no-op, UPDATE/INSERT con ON CONFLICT). En operaciones NO idempotentes (ej: INCREMENT, INSERT sin DO NOTHING), aplicar 2 veces el bootstrap concatenado puede corromper data.
+
 ## 2026-05-29 — Sprint 2a ML asumió 1 variante = 1 MLA — multi-variation requirió migration retroactiva
 
 **Estado**: ✅ Cerrado — migration 20260529300000 + seed mapping (pendiente apply del founder).
