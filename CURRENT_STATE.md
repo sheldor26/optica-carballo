@@ -41,7 +41,21 @@ Founder confirmó "Mucho mejor!" tras deploy iter 4 — fix gallery + sticky res
 - Seed `11_vulk_day_light_ml_mapping.sql`: UPDATE SKU 194185 (Carey) → MLA2726903920/SDEMI/DRWG15C3, SKU 194180 (Rosa) → MLA2726903920/LPINK/DRT25.
 - Bootstrap concatenado: 87 líneas en `supabase/cloud-bootstrap.sql`.
 
-**TODO APLICADO POR FOUNDER (2026-05-29)**: cleanup zombie `rusty-yau-polarizado` + migration ML multi-variation + mapping Vulk Day Light. Registrado en `supabase/CLOUD_APPLIED.md`. Bootstrap derivado borrado.
+🟡 **Sprint 2b ML SYNC BIDIRECCIONAL implementado** (2026-05-29 commit `36a3d2d`). Founder confirmó scope completo (webhook + cron + outbound) tras pregunta de sync. Implementación:
+- **Inbound**: webhook real `/api/ml/webhook` con idempotencia via tabla `marketplace_webhook_events` (id PK del webhook). Procesa topic `items` con `syncStockFromMLItem(MLA)` — matchea variations por `seller_custom_field`. Otros topics → `ignored`. Responde 200 siempre.
+- **CRON backup** `/api/cron/ml-reconcile-stock` cada 6h. Loop por DISTINCT mercadolibre_item_id, reconcile stock_qty.
+- **Outbound** helper `syncVariantStockToML(variantId)` llamado post `reserve_stock` y post `revertStock` en checkout. Best-effort (errors a `marketplace_sync_errors` sin bloquear).
+- Migration `20260529400000_marketplace_webhook_events`: tabla idempotencia con RLS strict.
+- `vercel.json`: cron `0 */6 * * *` para reconcile.
+
+**Acciones founder pendientes**:
+1. Aplicar migration en SQL Editor (50 líneas bootstrap).
+2. Configurar webhook en ML Dashboard → tu app → Notificaciones → URL `https://opticacarballo.com.ar/api/ml/webhook` + topics `items` (mínimo) y `orders_v2` (opcional).
+3. Verificar 2 crons activos en Vercel Dashboard tras deploy.
+4. Test inbound: editar stock manualmente en panel ML de MLA1432137395 → verificar en <1 min que DB refleja el cambio.
+5. Avisar "ML sync aplicado".
+
+**TODO APLICADO POR FOUNDER (2026-05-29 antes de Sprint 2b)**: cleanup zombie `rusty-yau-polarizado` + migration ML multi-variation + mapping Vulk Day Light. Registrado en `supabase/CLOUD_APPLIED.md`.
 
 Estado actual del catálogo ML-mapped:
 - **Rusty Yau** (SKU 126080) ↔ `MLA1432137395` (single-variation)

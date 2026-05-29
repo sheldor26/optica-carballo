@@ -22,6 +22,40 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Defense in depth para sync stock: webhook + cron + idempotencia + best-effort outbound
+
+**Categoría**: Integraciones / Resiliencia
+**Confianza**: 🟢 Alta (patrón estándar de la industria)
+
+### Qué funcionó
+
+Sprint 2b ML sync NO confía en un solo mecanismo. 4 capas:
+
+1. **Webhook real-time** (inbound): bajo lag, pero ML puede fallar al mandarlo.
+2. **CRON cada 6h** (backup inbound): pesca drift si webhook falla. Lag aceptable.
+3. **Idempotencia explícita** (tabla `marketplace_webhook_events` con id PK): webhook duplicado por retry de ML no procesa 2 veces.
+4. **Outbound best-effort** post-checkout: si ML rechaza el PUT por timeout/rate-limit, el cron de la siguiente hora reconcilia. Sin bloquear el checkout.
+
+Sin defense in depth, fallos serían:
+- Solo webhook → ML no manda + perdés ventas con stock divergent.
+- Solo cron → lag de 6h en updates de stock → oversell durante esa ventana.
+- Sin idempotencia → ML retry → procesar la misma venta 2 veces → stock_qty negativo.
+- Outbound bloqueante → ML down → checkout falla → pierden clientes que pagaron OK en Mercado Pago.
+
+### Por qué funcionó
+
+Cada capa cubre un modo de falla del resto. La combinación tiene "soft failure": si UNA capa falla, las otras compensan; si TODAS fallan simultáneamente, hay alertas (logs en `marketplace_sync_errors`) para diagnóstico manual.
+
+### Cuándo aplicar
+
+- Cualquier sync bidireccional con servicio externo (ML, Stripe, Shopify, contabilidad).
+- Donde el costo de drift es alto (oversell, doble cobro, contadores inflados).
+- NO aplicar para data read-only que se refresca de un solo lado (ej: catálogo importado donde el sitio es fuente de verdad).
+
+### Patrón replicable
+
+Webhook + CRON + idempotencia + outbound es el cuádruple defense in depth estándar. Para futuras integraciones (MP webhook real, Andreani tracking, etc), reusar este shape.
+
 ## 2026-05-29 — Cierre formal del ciclo apply: registrar en CLOUD_APPLIED.md + borrar bootstrap derivado tras "todo aplicado"
 
 **Categoría**: Workflow / Schema management operativo

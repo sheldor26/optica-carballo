@@ -24,6 +24,36 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint 2a expuso webhook como STUB sin advertir que ML lo usaría inmediatamente al guardar la app
+
+**Estado**: ✅ Cerrado — Sprint 2b implementó procesamiento real en commit `36a3d2d`.
+**Categoría**: Asunciones de timing en integraciones / Stubs prematuros
+
+### Qué pasó
+
+Sprint 2a (commit 2a más temprano hoy) implementó el endpoint `/api/ml/webhook` como STUB con comentario "responder 200 OK siempre porque ML valida la URL al guardar la app". Lo dejé deliberadamente sin procesamiento.
+
+PERO: en este punto, ML ya tenía la URL del webhook configurada en el panel del founder. Cualquier venta en ML mandaba webhook al endpoint stub → respondíamos 200 OK → ML registraba la entrega como exitosa → NO reintenta. **Las ventas en ML entre Sprint 2a y Sprint 2b habían dejado stock divergent silenciosamente.**
+
+Recién en esta sesión (al sync_check del founder "stock cambia automático?") entendí que el stub creaba un riesgo activo, no pasivo. Sprint 2b cerró el gap pero hubo ventana de exposición.
+
+### Causa raíz
+
+Asumí que "stub" = "inofensivo hasta implementación". Pero stub con response 200 es **silenciador**: el servicio externo asume éxito y deja de retry. Diferente a stub con 500 (que ML reintenta + queda en logs externos como pendiente).
+
+### Regla preventiva
+
+Para endpoints integration STUB que aún no procesan:
+
+1. **Responder con código que represente la realidad**: 503 Service Unavailable o 425 Too Early indican "todavía no listo, reintenta más tarde".
+2. **Loggear cada entrada** en una tabla temporal (`webhook_stub_received`) para tener visibilidad de qué eventos llegaron mientras no había procesamiento.
+3. **NO configurar el webhook URL en el panel del proveedor** hasta tener procesamiento real. Si la URL está activa pero el código stubbed, hay drift silencioso.
+4. **Documentar el modo de falla**: comentario en el stub que diga "STUB — NO ACTIVAR EN PANEL DEL PROVEEDOR HASTA SPRINT N".
+
+### Mitigación aplicada
+
+Sprint 2b: webhook real + idempotencia + cron de reconcile cada 6h. El cron es el net que pesca todo el drift de la ventana stub. Tras apply del founder, el primer run del cron va a reconciliar todo lo que el stub recibió.
+
 ## 2026-05-29 — Combinar 2 operaciones SQL en un solo bootstrap genera ambigüedad de "qué ya aplicaste"
 
 **Estado**: 🟡 Mitigado — detectado durante el ML mapping (le dije al founder "si ya aplicaste cleanup, salteá" — explícito el problema).
