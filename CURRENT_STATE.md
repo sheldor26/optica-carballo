@@ -524,9 +524,9 @@ Founder ya pasó App ID + aplicó migration + guardó Secret Key en Vercel. Arra
 
 ### Pendientes para activar Sprint 2
 
-1. ⏳ Founder configura las 3 env vars faltantes en Vercel (ML_CLIENT_ID, ML_REDIRECT_URI, APP_ENCRYPTION_KEY).
-2. ⏳ Redeploy (push trigger o manual).
-3. ⏳ Founder visita `/api/ml/oauth/initiate` para autorizar la app primera vez.
+1. ✅ Founder configuró las 4 env vars en Vercel (ML_CLIENT_ID, ML_CLIENT_SECRET, ML_REDIRECT_URI, APP_ENCRYPTION_KEY) — confirmado 2026-05-29.
+2. ⏳ Redeploy en Vercel UI o esperar próximo push (las env vars agregadas después del último deploy `410c5ca` necesitan trigger explícito para cargarse).
+3. ⏳ Founder visita `/api/ml/oauth/initiate` para autorizar la app primera vez. Si funciona → redirect a `/?ml_oauth=success&user_id=XXXXX` y tokens cifrados quedan guardados en `marketplace_integrations`.
 
 ### Sprint 2b (próximo)
 
