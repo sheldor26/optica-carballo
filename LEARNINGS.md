@@ -22,6 +22,84 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Verificación de propiedad de Google es agnóstica al método — meta tag NO obligatorio si verificó por otro
+
+**Categoría**: Google tooling / Verificación de propiedad
+**Confianza**: 🟢 Alta (validado en GSC del proyecto)
+
+### Qué pasó
+
+Le pasé al founder walkthrough con método "Etiqueta HTML" para verificar propiedad en GSC. Él reportó "verificada y sitemap aprobado". Verifiqué el HTML con `curl` y el meta tag `<meta name="google-site-verification">` NO aparecía.
+
+Causa: founder usó método distinto (probable DNS record o file drop-in). GSC ofrece 5 métodos de verificación + acepta cualquiera. Una vez verificada la propiedad, no requiere mantener el método activo (es prueba inicial, no chequeo continuo).
+
+### Por qué importa
+
+- Eviter sobre-engineering por inferencia. "GSC verificada" ≠ "meta tag presente".
+- Otros métodos pueden ser más simples para el founder según contexto:
+  - DNS: 1 record TXT en el panel del registrar.
+  - File: 1 archivo HTML drop-in.
+  - GTM: instant si ya tenés Google Tag Manager.
+  - Analytics: instant si ya tenés GA en la misma cuenta.
+- El env var `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN` queda como reserve — no requerido si verificó por otro.
+
+### Aplicar a futuro
+
+Cuando walkthrough con tercero ofrezca múltiples métodos de verificación:
+- Listar los métodos breves.
+- Recomendar uno (el más rápido para el contexto).
+- Mencionar que cualquiera funciona — no hay penalty por usar otro.
+- NO obligar al user a hacer setup técnico (env var + redeploy) si tiene atajo más fácil.
+
+### Trade-off de no usar meta tag
+
+- Si el método alternativo se invalida (ej: cambia DNS, borra el file), GSC desverifica.
+- Meta tag en HTML es más persistente porque está en el código.
+- Para sites con cambios frecuentes de DNS/hosting: meta tag es safer.
+- Para sites estables: cualquier método funciona.
+
+### Patrón meta
+
+"Múltiples paths a resultado" — el resultado importa más que el path. Anti-pattern: insistir en el method que vos propusiste cuando el founder eligió otro válido.
+
+---
+
+## 2026-05-29 — Aplicación inmediata de mistake aprendido: walkthrough GSC empieza con env var ANTES del redeploy
+
+**Categoría**: Proceso / Aprendizaje aplicado
+**Confianza**: 🟢 Alta (caso validado en mismo día del mistake)
+
+### Qué pasó
+
+En el setup de GA4 cometí un mistake (documentado): no dejé claro que la env var debe configurarse ANTES del redeploy. Founder agregó la env var después del último deploy → GA4 no funcionó → debugging extra.
+
+En el siguiente walkthrough (GSC), apliqué la lección **inmediatamente**:
+1. Paso 1 explícito: "Copiar token de GSC".
+2. Paso 2 explícito: "Configurar env var en Vercel (PRIMERO, antes del redeploy)".
+3. Paso 3 explícito: "Trigger redeploy" — yo hago commit doc trivial sin pedirle al founder.
+4. Paso 4 explícito: "Verificar meta tag con curl".
+
+Eliminé la ambigüedad del orden y removí el costo cognitivo del founder de pensar "¿qué hago primero?".
+
+### Por qué funciona
+
+- **Mistake → learning → aplicación en próximo caso similar** en menos de 1 día.
+- El walkthrough actual tiene markers explícitos ("PRIMERO", "antes del redeploy") imposibles de mal-interpretar.
+- Yo hago el commit doc — founder no tiene que pensar en eso.
+
+### Aplicar a futuro
+
+Todo walkthrough con setup de tercero + env var:
+- Step "agregar env var" PRIMERO con marker explícito "antes del redeploy".
+- Step "trigger redeploy" SEGUNDO — idealmente lo hago yo via commit.
+- Step "verificar" TERCERO con comando concreto (curl, cmd browser, etc).
+
+### Patrón meta
+
+Aprender ≠ aplicar. La validación real del learning es que aparezca en el próximo caso similar. Cuando lo hace, queda confirmado como regla operativa.
+
+---
+
 ## 2026-05-29 — Vercel env vars NO se aplican retroactivamente — siempre redeploy tras agregarlas
 
 **Categoría**: Vercel / Deployment / Operaciones

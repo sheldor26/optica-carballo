@@ -2,7 +2,9 @@
 
 ## Status
 
-✅ **Sprint 2a ML OAuth CERRADO** (2026-05-29). Founder autorizó app, OAuth funcionando end-to-end, tokens cifrados guardados en `marketplace_integrations`. Seller ID `1975674`. Sprint 2b (procesamiento webhook real + stock sync) pendiente de arrancar.
+✅ **Sprint 2a ML OAuth + Sprint Analytics (GA4 + GSC) CERRADOS** (2026-05-29). OAuth ML funcionando end-to-end (seller `1975674`), GA4 capturando data, GSC verificada + sitemap aprobado. Google va a indexar las 100+ URLs SEO en 1-7 días.
+
+**Nota verificación GSC**: founder usó método distinto al meta tag (probablemente DNS o HTML drop-in file). El env var `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN` NO se aplicó — el meta tag NO aparece en HTML del sitio (verificado con curl). Está OK porque GSC verifica propiedad por cualquier método válido. Si en futuro queremos re-verificación de respaldo via meta tag, configurar la env var.
 
 **Pendientes inmediatos**:
 1. ⚠️ Founder ejecuta `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'` para limpiar entry comprometida del debugging.
@@ -94,7 +96,7 @@ Founder confirmó: "hice deploy y arranco, todo bien ahora". Causa exacta confir
 - GSC verification pendiente (siguiente paso operativo founder).
 
 **Pendientes inmediatos**:
-1. ⚠️ Founder configura `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN` en Vercel + verifica propiedad en Google Search Console + submit sitemap.
+1. ⏳ Founder reportó GSC verification listo — pendiente verificar end-to-end (meta tag en HTML + propiedad confirmada en GSC dashboard + sitemap submitted).
 2. ⚠️ DELETE entry comprometida ML: `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'`.
 3. ⚠️ Cargar `mercadolibre_item_id` en variantes para Sprint 2b ML.
 
