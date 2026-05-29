@@ -31,9 +31,16 @@ lib/integrations/mercadolibre/
 ```
 ML_CLIENT_ID=...                  # App ID público
 ML_CLIENT_SECRET=...              # Secret Key (NUNCA committear)
-ML_REDIRECT_URI=https://[dominio]/api/ml/oauth/callback
+ML_REDIRECT_URI=https://opticacarballo.com.ar/api/ml/oauth/callback
 APP_ENCRYPTION_KEY=...            # 32+ chars random para cifrar tokens (AES-256)
 ```
+
+## URLs confirmadas (founder 2026-05-29)
+
+- **Dominio del sitio**: `opticacarballo.com.ar`.
+- **Callback URL para webhooks ML**: `https://opticacarballo.com.ar/api/ml/webhook`.
+- **Redirect URI OAuth**: `https://opticacarballo.com.ar/api/ml/oauth/callback` (Sprint 2).
+- **Endpoint stub deployado**: `/api/ml/webhook` responde 200 OK + log (sin procesar). Permite al founder guardar la app en ML sin esperar Sprint 2.
 
 ## Para arrancar Sprint 2
 

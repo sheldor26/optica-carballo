@@ -22,6 +22,47 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Scope mínimo en OAuth permissions: pedir solo lo crítico ahora reduce riesgo si tokens se comprometen
+
+**Categoría**: Seguridad / OAuth / Integraciones
+**Confianza**: 🟢 Alta (principio de seguridad establecido)
+
+### Qué pasó
+
+Al configurar permisos de la app ML para integración de stock, ML mostraba 8 categorías de permisos posibles. Tenía 2 caminos:
+
+**A. "Lectura y escritura" en todos**: máxima flexibilidad para el futuro, una sola configuración.
+**B. Scope mínimo**: solo lo que necesitamos AHORA para sync de stock — 1 permiso con escritura (Publicación), 2 con lectura (Usuarios + Venta), resto sin acceso.
+
+Elegí B. Razones:
+- Si los tokens OAuth se comprometen (leak en logs, bug en el cifrado, etc), el blast radius es chico.
+- Atacante en peor caso modifica stock — pero no factura, no maneja pagos, no cambia cuenta, no envía mensajes a clientes.
+- Si en el futuro necesitamos otro permiso (ej: leer métricas para dashboard), pedimos al founder que re-autorice con scope ampliado. Fricción baja vs riesgo permanente.
+
+### Por qué funciona
+
+- **Principle of Least Privilege** aplicado: tokens solo pueden hacer lo necesario.
+- **Re-authorization cost is low**: ML permite ampliar scopes pidiendo nueva autorización al user. No es "blocker permanente".
+- **Auditable**: si veo en logs que la app hizo algo fuera de scope (ej: intentó crear factura), sé que es bug nuestro, no permiso configurado mal.
+
+### Trade-off
+
+- Cada feature nueva que necesite scope adicional requiere re-autorización del founder (1 click cada N meses cuando se sume feature). Costo bajo, founder lo entiende.
+
+### Aplicar a futuro
+
+Cualquier integración OAuth con terceros (Tiendanube, Shopify, Stripe Connect, etc):
+- Listar permisos disponibles.
+- Marcar solo los que se usan en el sprint actual.
+- Documentar en ADR cuáles se eligieron + razón.
+- Cuando se sume feature que necesite más, ampliar scope explícito.
+
+### Caso límite
+
+Si la integración es ÚNICAMENTE consumo (read-only, sin acciones del usuario), pedir solo `read` aunque parezca obvio. Refuerza el patrón.
+
+---
+
 ## 2026-05-29 — Sprints separados por dependencia de credenciales externas: Sprint 1 sin creds, 2-3 con
 
 **Categoría**: Project management / Dependencies / Sprint planning

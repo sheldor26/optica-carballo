@@ -391,6 +391,62 @@ Migration `20260529000000_marketplace_integrations.sql` marcada como **⏳ pendi
 3. **Confirmar dominio final** del sitio (para registrar redirect URI bien la primera vez).
 4. **Aplicar migration** `20260529000000` en Supabase Dashboard cuando arranquemos Sprint 2.
 
+### Permisos OAuth definidos con founder (2026-05-29)
+
+En diálogo con el founder via screenshot, definí los permisos exactos a marcar en la app ML. Principio aplicado: **scope mínimo**.
+
+| Permiso ML | Acción | Razón |
+|---|---|---|
+| Usuarios | Lectura | Solo identificar user en OAuth callback |
+| Comunicaciones pre/post ventas | Sin acceso | No manejamos mensajes |
+| **Publicación y sincronización** | **Lectura y escritura** | CRÍTICO — único permiso con escritura, necesario para `PUT /items/{id}` |
+| Publicidad | Sin acceso | No manejamos ads |
+| Facturación | Sin acceso | Tusfacturas separado |
+| Métricas | Sin acceso | No iter 1 |
+| Promociones | Sin acceso | No manejamos cupones |
+| Venta y envíos | Lectura | Procesar webhooks de orders (saber qué se vendió) |
+
+**Total**: 1 permiso con escritura (Publicación), 2 con lectura (Usuarios + Venta), resto sin acceso.
+
+**Razón del scope mínimo**: si los tokens se ven comprometidos en el futuro, atacante en peor caso modifica stock pero no factura, no gestiona pagos, no cambia cuenta.
+
+### Webhook topics definidos con founder (2026-05-29)
+
+Mismo principio (scope mínimo) aplicado a los webhook topics. ML ofrece 7 topics; activamos solo los 2 críticos:
+
+| Topic | Estado | Razón |
+|---|---|---|
+| **Orders** | ✅ Activado | Webhook al vender un item ML → procesamos en `/api/ml/webhook` → bajamos stock en Supabase. Evento clave del sync. |
+| **Items** | ✅ Activado | Webhook al cambiar stock/estado del item (incluyendo ediciones manuales del founder en ML). Mantiene Supabase sincronizado con cambios fuera del flow de venta. |
+| Messages | ❌ No | No manejamos mensajes desde el sitio. |
+| Prices | ❌ No | Precios gestionados en ML directo, sin sync iter 1. |
+| Catalog | ❌ No | Info pública/maestra, no aplica al sync. |
+| Shipments | ❌ No | Envíos manuales en ML. Iter 2: si queremos tracking en `/mi-cuenta`, activamos. |
+| Promotions | ❌ No | Sin cupones desde el sitio. |
+
+**Razón scope mínimo en topics**: cada topic activado = más payloads a parsear + más superficie de bugs. Los 2 críticos cubren el sync completo (ventas + ediciones manuales).
+
+### Pendiente del founder antes de Sprint 2 (estado consolidado al 2026-05-29)
+
+1. ✅ **Dominio confirmado**: `opticacarballo.com.ar`.
+2. ✅ **Callback URL final**: `https://opticacarballo.com.ar/api/ml/webhook`.
+3. ✅ **Redirect URI OAuth final**: `https://opticacarballo.com.ar/api/ml/oauth/callback` (Sprint 2).
+4. ✅ **Endpoint stub deployado**: `/api/ml/webhook` devuelve 200 OK + log + valida shape Zod. Permite al founder guardar la app en ML sin esperar Sprint 2. Sprint 2 reemplaza la lógica del POST handler.
+5. ⏳ **Guardar la app en ML** con permisos + topics + callback URL configurados.
+6. ⏳ **Pasar App ID + Secret Key** (idealmente directo a Vercel Environment Variables).
+7. ⏳ **Aplicar migration `20260529000000_marketplace_integrations.sql`** en Supabase Dashboard.
+
+Cuando los 3 pendientes estén ✅, arrancamos Sprint 2 (OAuth flow + webhook receiver real).
+
+### Endpoint stub (commit este turno)
+
+Archivo nuevo: `app/api/ml/webhook/route.ts`. Exporta 3 handlers:
+- `POST`: valida shape con `mlWebhookPayloadSchema` (Zod), log payload, devuelve 200. NO procesa nada todavía.
+- `GET`: devuelve info del endpoint (status: stub). Para que ML pueda validar al guardar.
+- `HEAD`: 200 OK con response vacío.
+
+Razón de existencia ahora (no en Sprint 2): ML hace ping de validación al momento de guardar la app, rechaza URLs que no responden. Con el stub deployado, el founder puede completar el registro de la app en ML hoy sin esperar Sprint 2 que requiere credenciales + sus permisos + setup completo del flow OAuth.
+
 ### Sprints 2 y 3 (próximos)
 
 **Sprint 2** — OAuth + webhook:
