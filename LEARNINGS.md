@@ -22,6 +22,86 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Config declarativa (BRAND_FILTERS) + helper resolver = 9 archivos route casi vacíos sin perder claridad
+
+**Categoría**: Arquitectura / Code reuse / Routing
+**Confianza**: 🟢 Alta (1 caso aplicado pero el patrón es estándar)
+
+### Qué pasó
+
+Para 9 rutas hijas SEO (polarizados + 4 formas × 2 categorías) había 2 caminos:
+
+**A. 9 archivos completos**: cada uno con su own `generateStaticParams`, `generateMetadata`, `Page` función. ~80 líneas c/u = 720 líneas.
+
+**B. Config + helper + 9 archivos finos**:
+- Config declarativa: `lib/catalog/brand-filters.ts` con `BRAND_FILTERS: BrandFilter[]`.
+- Helper resolver: `lib/catalog/brand-filter-page-helper.ts` con `resolveBrandFilterPage()` + `resolveBrandFilterMetadata()`.
+- 9 archivos route ~50 líneas c/u (cambia solo CATEGORY + FILTER_URL_SLUG).
+- Total: ~450 líneas + config 80 + helper 60 = 590 líneas.
+
+Elegí B. ~130 líneas menos pero el real win es:
+
+### Por qué funciona
+
+- **Cambios cross-cutting (1 lugar)**: si quiero ajustar cómo se construye la query o el meta tag, edito 1 archivo (helper), no 9.
+- **Agregar nuevo filtro = 1 archivo**: si decido agregar `/[brand]/redondo`, agrego 1 entry en BRAND_FILTERS + 1 archivo route fino + 0 cambios en helper/component.
+- **Sitemap auto-gen**: el sitemap itera `BRAND_FILTERS.flatMap(...)` — sin necesidad de actualizar manualmente cuando se agregan filtros.
+- **Type-safety**: si me equivoco con el filter type en algún route, TS me avisa al compilar.
+
+### Trade-off
+
+- Indirección: para entender qué hace `/anteojos-de-sol/vulk/polarizados`, hay que leer el route → helper → query → config. 4 saltos.
+- Mitigación: comentarios JSDoc en cada archivo apuntan al patrón. Y los 9 archivos route son tan finos que el dev los puede skipear directo al helper.
+
+### Aplicar a futuro
+
+Cualquier set de N rutas que siguen el mismo patrón con datos parametrizables (filtros, categorías secundarias, vistas alternativas):
+- N <= 3: archivos completos OK.
+- N > 3: config + helper + thin routes.
+
+### Patrón meta confirmado
+
+Este es el **segundo caso** de "config declarativa + helper para N rutas casi-iguales" (1ro fue gender pages — aunque ahí no tenía helper formal, había 4 archivos casi idénticos). Promover a regla informal: cuando aparezca un 3er caso (probablemente material/lente_color filters), formalizar en CLAUDE.md.
+
+---
+
+## 2026-05-29 — Quick view modal con lazy fetch (server action al primer click) = cero N+1 en catálogo
+
+**Categoría**: Performance / Server actions / UX
+**Confianza**: 🟡 Media (1 caso aplicado, patrón conocido)
+
+### Qué pasó
+
+Para el quick view del producto en card, tuve 2 opciones:
+
+**A. Pre-fetch en server component**: incluir TODA la data del modal en la card prop. Sin delay al click, pero N queries adicionales × N cards visibles (potencialmente decenas).
+
+**B. Lazy fetch en server action al primer click**: card lleva solo data básica (slug + href). Click → server action → modal con detalles.
+
+Elegí B. Razones:
+- N cards visibles × 5+ campos extra (variants, brand details) = bandwidth significativo.
+- 99% de usuarios NO van a hacer click en quick view. Pre-fetch = waste.
+- 1% que sí lo hace tolera 200-400ms de latency (es un modal, expectativa de carga existe).
+
+### Por qué funciona
+
+- **Catálogo principal NO se ralentiza**. Card data sigue mismo size que antes.
+- **Lazy es per-click**: si el usuario abre 3 quick views, son 3 fetches (no 30).
+- **Cache local por card**: si abrís → cerrás → reabrís el mismo quick view, hit cache local (state) sin refetch.
+
+### Trade-off
+
+- Primera abertura del modal tiene loading skeleton breve. Si fuera crítico (e.g. modal con add-to-cart immediate), pre-fetch.
+- Server action vs API route: server action es más simple, NO hay JSON serialización manual, type-safe end-to-end.
+
+### Aplicar a futuro
+
+Cualquier modal/popover/dropdown con data del backend:
+- Data probablemente no visitada por el usuario → lazy fetch.
+- Data crítica primera-vista → pre-fetch en server component.
+
+---
+
 ## 2026-05-28 — Coordinación de overlays fijos via cookie polling (CompareBar + FloatingWhatsapp) — patrón confirmado
 
 **Categoría**: UX / Componentes globales / Estado compartido

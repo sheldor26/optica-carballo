@@ -24,6 +24,25 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Triple sprint (carrito + SEO + quick view): cierre EXITOSO
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+3 sprints en 1 turno (carrito polish + 45 URLs SEO + quick view modal) con commits separados (cfd23be / e100d7f / próximo). Typecheck verde + build verde en cada sprint.
+
+Decisiones sin agente:
+- Cuotas en cart sin "sin interés" prometido (depende del banco real).
+- Config declarativa BRAND_FILTERS para 9 rutas (vs 9 archivos completos).
+- Lazy fetch para QuickView (vs pre-fetch que ralentizaría catálogo).
+- Radix Dialog en lugar de custom (a11y nativa).
+- State local del modal (no context global).
+- NO add-to-cart desde quick view iter 1.
+
+7 sprints consecutivos sin mistake nuevo. Patrón de cierre completamente estable a lo largo del proyecto.
+
+---
+
 ## 2026-05-28 — Bundle UX+SEO+/sobre-nosotros: cierre EXITOSO sin mistake nuevo
 
 **Estado**: 🟢 Cumplido.

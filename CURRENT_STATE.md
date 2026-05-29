@@ -2,6 +2,92 @@
 
 ## Status
 
+🟡 **Triple sprint: Polish checkout + 45 URLs SEO + Quick View modal — pusheado en 3 commits.**
+
+## Triple sprint en 1 turno (cfd23be / e100d7f / Quick View este commit)
+
+Founder eligió "los 3 primeros" del backlog. Ejecutados secuenciales con commits separados.
+
+### Sprint A: Polish carrito + checkout (commit cfd23be)
+
+**Cart `/carrito`**:
+- Empty state ahora muestra `<RecentlyViewed minToRender=2>` debajo.
+- Summary card agrega `<InstallmentsHint>`: ejemplos de 3 y 6 cuotas calculadas del subtotal con disclaimer honesto sobre tasas reales MP.
+
+**`/checkout/exito`**:
+- Reescritura UX completa. Icon emerald en círculo grande + h1 serif italic "¡Gracias por tu compra!".
+- 3 next-steps (Mail / Package / Truck) con copy claro.
+- CTA secundario WhatsApp con mensaje pre-cargado incluyendo order# si está.
+
+**`/checkout/pendiente`**:
+- Reescritura UX. Icon amber + h1 italic "Pago pendiente".
+- Explica 3 escenarios (efectivo / transferencia / problema).
+- CTA WhatsApp + Ver mis pedidos.
+
+**`/checkout/error`**:
+- Reescritura UX. Icon red + h1 italic "El pago no se completó".
+- "No se te cobró nada" → calma al usuario.
+- 3 next-steps actionables (verificar datos / otro medio / escribir).
+
+Mismo lenguaje visual cross-pages (cards con icon-circles + h1 italic).
+
+### Sprint B: 45 URLs SEO por filtro (commit e100d7f)
+
+Patrón mismo que `hombre/mujer` pero por atributo (`frame_shape` o `lens_treatment_includes`).
+
+**Filtros (BRAND_FILTERS)**:
+- `polarizados` (solo sol — no aplica recetados).
+- `wayfarer` / `aviador` / `cat-eye` / `rectangular` (sol + receta).
+
+**Total rutas generadas**: 1 + (4 × 2) = 9 archivos route × 5 marcas activas = **45 nuevas URLs SSG**.
+
+**Arquitectura**:
+- `lib/catalog/brand-filters.ts`: config declarativa con urlSlug + label + categories + filter type + metaPhrase.
+- `lib/catalog/queries.ts`: `fetchBrandPageByFilter()` — `eq()` para frame_shape, `contains()` jsonb array para lens_treatment.
+- `lib/catalog/metadata.ts`: `buildBrandFilterMetadata()` con keyword target.
+- `lib/catalog/brand-filter-page-helper.ts`: `resolveBrandFilterPage()` + `resolveBrandFilterMetadata()` — centraliza lógica.
+- `components/catalog/brand-filter-page.tsx`: shared component (mismo patrón que BrandGenderCatalogPage).
+- 9 archivos route thin (cada uno ~50 líneas, solo cambia CATEGORY + FILTER_URL_SLUG).
+- Sitemap: itera BRAND_FILTERS para generar URLs dinámicas por marca.
+
+**Restricción documentada**: ningún producto puede tener slug igual a urlSlug de filter (sería sobrescrito por static segment).
+
+### Sprint C: Quick View modal (este commit)
+
+Modal con detalles del producto al click "Vista rápida" en card del catálogo, sin entrar al PDP.
+
+**Arquitectura**:
+- `components/ui/dialog.tsx`: wrapper shadcn-style sobre `@radix-ui/react-dialog` (ya estaba en deps). Overlay + Content + Title + Description + Close. Animaciones Tailwind `data-[state=open]:animate-in`.
+- `lib/catalog/quick-view.ts`: server action `getProductQuickViewAction(slug)`. Devuelve QuickViewData (name + brand + variants + images) o null si no existe/inactivo.
+- `components/product/quick-view.tsx`: client component. Botón "Vista rápida" con icon Eye + Dialog modal.
+- `ProductCard`: integra `<QuickView>` como sibling del Link (mismo patrón HTML que WishlistButton).
+
+**Comportamiento**:
+- **Desktop**: botón aparece on-hover de la card (opacity 0 → 1 + slide-up).
+- **Mobile**: botón visible permanente en esquina inferior izq de la imagen.
+- **Click**: lazy fetch (primera vez) → mostrar modal. Datos cacheados en state local mientras la card está montada.
+- **Modal**: 2 cols (imagen | detalles). Imagen + brand + nombre + short_description + precio + variantes seleccionables (color_frame) + CTA "Ver detalles" → PDP.
+
+**Decisiones técnicas**:
+- **Lazy fetch en click**: evita N queries al renderizar el catálogo (4 productos × N+1 = 4*detalles). Trade-off: pequeño delay al primer click.
+- **State local por card**: NO context global. Cada card tiene su propio modal state. Si el founder abre 2 cards diferentes secuencialmente, ambos se cachean.
+- **Radix Dialog vs custom**: ya estaba `@radix-ui/react-dialog` en deps. Wrapper en 90 líneas mantiene a11y nativa (focus trap, Escape, click outside).
+- **NO incluye add-to-cart desde modal**: scope iter 1. Solo "Ver detalles" → PDP. Si el founder quiere quick-add, iter 2.
+
+**Tamaño**: brand-page subió de ~161kB a ~176kB First Load JS por el Dialog. Aceptable (UX > 15kB extra).
+
+### Plan del sprint completo
+
+1. ✅ Sprint A: Polish carrito + checkout pages (commit cfd23be)
+2. ✅ Sprint B: 45 URLs SEO por filtro (commit e100d7f)
+3. ✅ Sprint C: Quick view modal (este commit)
+
+**Próximo paso**: push del Sprint C + verificación visual del founder.
+
+---
+
+## Status anterior
+
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**
 
 ## Bundle: UX flotante + SEO local + /sobre-nosotros E-E-A-T

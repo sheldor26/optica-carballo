@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { QuickView } from '@/components/product/quick-view';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
 export type ProductCardData = {
@@ -40,7 +41,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
     : null;
 
   return (
-    <article className="relative flex h-full flex-col">
+    <article className="group/card relative flex h-full flex-col">
       <WishlistButton
         entry={{
           slug: product.slug,
@@ -49,9 +50,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         }}
         variant="card"
       />
+      <QuickView slug={product.slug} href={product.href} />
       <Link
         href={product.href}
-        className="group/card flex h-full flex-col"
+        className="flex h-full flex-col"
         aria-label={product.name}
       >
         <div
