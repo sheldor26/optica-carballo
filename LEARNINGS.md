@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Hipótesis "factor externo" solo DESPUÉS de verificar el código local
+
+**Categoría**: Debugging / Bias de diagnóstico
+**Confianza**: 🟢 Alta (validado por error propio en incident password reset)
+
+### Qué pasó
+
+Founder reportó "El link de reset password me da error apenas lo uso". Hipótesis instintiva mía: Microsoft Safe Links (Hotmail prefetchea URLs y consume el code). Pregunté al founder qué cliente de email usa → confirmó Hotmail → mi hipótesis se reforzó falsamente. Estaba a punto de proponer soluciones complejas (página intermedia con confirmación manual, OTP flow, etc).
+
+Auditoría del código reveló que el flow estaba **estructuralmente roto** independiente del cliente de email: `passwordResetForEmail.redirectTo` apuntaba directo a la página final sin pasar por `/auth/callback`, así que nunca se ejecutaba `exchangeCodeForSession`. El error pasaba con cualquier cliente de email — Gmail, Hotmail, lo que fuera.
+
+### Por qué pasó
+
+Bias de confirmación: el síntoma encajaba con un problema conocido (Safe Links). El founder confirmó la variable que reforzaba mi hipótesis. Salté a "solución" antes de descartar causas más simples.
+
+### Regla preventiva
+
+Orden de hipótesis al debuggear bugs de auth/network/email:
+
+1. **Primero**: el código local está bien implementado? (refactor pequeño puede resolver)
+2. **Segundo**: configuración (env vars, dashboard externo) está correcta?
+3. **Tercero**: comportamiento del servicio externo (Supabase rate limit, RLS, etc).
+4. **Cuarto** y último: factor "externo al sistema" (cliente de email, browser, red corporativa, antivirus, proxies).
+
+Las 1-3 son verificables con herramientas del developer. La 4 requiere coordinación con usuario y suele ser difícil de fixear. Saltar a 4 primero es eficiente cuando el síntoma es muy específico (ej: "solo me pasa en Safari iOS"), pero pernicioso cuando es genérico ("no funciona") — ahí casi siempre es 1-3.
+
+### Cuándo aplicar
+
+- Cualquier bug reportado por usuario donde un "factor externo" parece plausible.
+- Especialmente sistemas que tocan: emails, OAuth, webhooks, callbacks, redirects, cookies cross-domain.
+- NO aplicar si el síntoma es altísimo-específico de un cliente (ej: solo Safari, solo Firefox iOS) — ahí probablemente sí es 4.
+
 ## 2026-05-29 — Auditar primero, NUNCA "arreglar a ciegas" un bug de configuración
 
 **Categoría**: Debugging / Diagnóstico

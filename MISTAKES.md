@@ -24,6 +24,42 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Password reset flow saltea el callback → updateUser falla "Auth session missing!"
+
+**Estado**: ✅ Cerrado en commit (founder pendiente verificar tras redeploy).
+**Categoría**: Auth / Supabase PKCE flow
+
+### Qué pasó
+
+Founder pidió reset password en producción. Email llegó, clickeó link, llegó a `/recuperar-clave/restablecer`, llenó nueva contraseña, submit → error "El link expiró o ya fue usado. Pedí uno nuevo...".
+
+Hipótesis inicial mía: Microsoft Safe Links (Hotmail) prefetchea links y consume el code de Supabase. **Hipótesis equivocada** — PKCE flow protege contra eso (Safe Links no tiene el cookie `code_verifier` del browser del founder, así que no puede ejecutar exchange exitoso ni consumir el code).
+
+Causa real: el `resetPasswordForEmail` action tenía `redirectTo: '/recuperar-clave/restablecer'` (directo, sin pasar por `/auth/callback`). La página renderiza el form pero **nunca ejecuta `exchangeCodeForSession(code)`**. Cookie `code_verifier` queda en el browser pero nunca se usa para obtener sesión. Form submit ejecuta `updateUser({password})` sin sesión → error.
+
+El email de signup SÍ pasa por `/auth/callback` (donde se hace exchange) — solo password reset estaba mal.
+
+### Causa raíz
+
+Asunción tácita: "redirectTo del email puede apuntar directo a la página final del flow". Falso para Supabase con PKCE — el code del URL necesita ser exchanged contra el verifier (que vive en cookie) ANTES de poder operar (updateUser, getSession, etc). El callback handler es el lugar canónico para ese exchange.
+
+### Regla preventiva
+
+Para cualquier flow de Supabase Auth que use `redirectTo`/`emailRedirectTo` con PKCE:
+- **SIEMPRE apuntar a `/auth/callback?next=<página-destino>`**, no a la página destino directamente.
+- El callback hace `exchangeCodeForSession(code)` y redirige al `next` con sesión válida.
+- La página destino solo necesita asumir que ya hay sesión.
+
+Aplicar a futuras integraciones: magic links, OAuth providers, email change confirmation, etc.
+
+### Fix aplicado
+
+Commit `[pendiente push]`: cambio en `app/(auth)/actions.ts` línea ~177 — `redirectTo` de `passwordResetForEmail` ahora es `/auth/callback?next=/recuperar-clave/restablecer` (URL-encoded). Comentario explícito documenta la regla para futuros mantenedores.
+
+### Bonus diagnóstico
+
+Lección de proceso: presenté Safe Links como causa antes de leer el código. Founder confirmó cliente Hotmail → mi hipótesis se reforzó falsamente. La auditoría del código reveló que el flow estaba estructuralmente roto, independiente del cliente de email. Regla: hipótesis de "factor externo" (cliente de email, navegador, red) solo después de verificar que el código local es correcto.
+
 ## 2026-05-29 — Fallback silencioso a localhost en URLs de auth produce emails inservibles en prod
 
 **Estado**: ✅ Cerrado — config aplicada (Vercel env var + Supabase URL Configuration) + redeploy confirmado por founder.

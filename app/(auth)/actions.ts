@@ -173,7 +173,12 @@ export async function requestPasswordReset(
 
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${getSiteUrlForEmails()}/recuperar-clave/restablecer`,
+    // IMPORTANTE: pasar por /auth/callback (NO directo a /recuperar-clave/
+    // restablecer). El callback intercambia el `?code=` por sesión válida vía
+    // exchangeCodeForSession antes de mostrar el form. Sin esto, updateUser
+    // falla con "Auth session missing!" en el submit del form. El `next` param
+    // valida con safeNextPath en el callback (anti open-redirect).
+    redirectTo: `${getSiteUrlForEmails()}/auth/callback?next=${encodeURIComponent('/recuperar-clave/restablecer')}`,
   });
 
   // Mensaje neutro intencionalmente (no revelar si el email existe — anti-enumeration).
