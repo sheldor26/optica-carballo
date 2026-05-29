@@ -24,6 +24,36 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Fallback silencioso a localhost en URLs de auth produce emails inservibles en prod
+
+**Estado**: 🟡 Mitigado — log loud en producción registra ocurrencia, founder aplica config pendiente.
+**Categoría**: Configuración / Bug silencioso / Env vars
+
+### Qué pasó
+
+Founder reportó: tras registrarse en producción, el email de confirmación de Supabase llegaba con link a `http://localhost:3000/auth/callback?code=...` en lugar del dominio de producción. Sin la env var correcta en Vercel, ningún usuario podía completar registro.
+
+Auditoría reveló: el código en `app/(auth)/actions.ts` usaba:
+```typescript
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+```
+El fallback silencioso "?? localhost" enmascaró la falta de env var en Vercel. No hubo error, warning ni log — solo emails inservibles.
+
+### Causa raíz
+
+Patrón "?? fallback útil para dev" aplicado a una env var crítica de producción. El fallback es razonable para developer experience local (no requiere `.env.local`), pero **convierte un misconfig en silent bug** en producción.
+
+### Regla preventiva
+
+Para env vars que tienen efectos visibles externos (URLs en emails, links públicos, callbacks de servicios externos):
+- **NO usar fallback silencioso** en producción. Si falta la env var en `NODE_ENV === 'production'`, mínimo `console.error` con mensaje accionable (mejor: throw cuando la action se ejecuta, no en module-load).
+- En `lib/site/business.ts` o equivalente, hacer un check al startup que loguee qué env vars críticas faltan.
+- Las env vars que solo afectan dev (analytics dev, dummy keys) sí pueden tener fallback silencioso.
+
+### Fix aplicado
+
+Commit `8800fb3`: helper `getSiteUrlForEmails()` lazy con `console.error` en `NODE_ENV === 'production'` si falta `NEXT_PUBLIC_SITE_URL`. Sigue fallback localhost para no romper el flujo, pero los logs de Vercel ahora muestran el error explícito para diagnóstico.
+
 ## 2026-05-29 — `dynamic({ ssr: false })` desde Server Component (Next 15)
 
 **Estado**: ✅ Cerrado — Next 15 rompe el build, error es inmediato.

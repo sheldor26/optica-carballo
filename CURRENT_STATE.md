@@ -2,6 +2,19 @@
 
 ## Status
 
+🟡 **Incident Auth URLs con localhost — CÓDIGO FIXEADO, FOUNDER PENDIENTE CONFIG** (2026-05-29). Founder reportó que emails de Supabase de registro/reset llegan con links a `localhost`. Auditoría del código (Explore agent): el código YA estaba parametrizado correctamente con `process.env.NEXT_PUBLIC_SITE_URL`, pero con fallback silencioso a `http://localhost:3000` cuando la env var faltaba. Causa raíz probable: `NEXT_PUBLIC_SITE_URL` no seteada en Vercel Production.
+
+Fix de código pusheado (`8800fb3`):
+- Helper `getSiteUrlForEmails()` lazy (no module-load) en `app/(auth)/actions.ts` — log loud (`console.error`) en producción si la env var falta + sigue fallback localhost para no romper.
+- Aplicado a `signUp.emailRedirectTo` + `resetPasswordForEmail.redirectTo`.
+
+**Acciones del founder pendientes (BLOQUEA flujo auth en prod)**:
+1. Vercel → Settings → Environment Variables: agregar `NEXT_PUBLIC_SITE_URL=https://opticacarballo.com.ar` (Production + Preview).
+2. Supabase Dashboard → Authentication → URL Configuration:
+   - Site URL: `https://opticacarballo.com.ar`
+   - Additional Redirect URLs: `https://opticacarballo.com.ar/auth/callback`, `https://opticacarballo.com.ar/recuperar-clave/restablecer`, + las de localhost para dev.
+3. Vercel redeploy + verificar registrándose con email propio que el link llegue con dominio prod.
+
 ✅ **Micro-sprint Sidebar cross-sell en producto CERRADO** (2026-05-29). Founder identificó bloque blanco en col derecha de página producto (debajo de MEDIDAS) — la col izquierda con gallery + "Lo que incluye" era más alta. Decisión vía AskUserQuestion con preview ASCII: opción cross-sell. Nuevo componente `RelatedProductsSidebar` compact (thumb 64x64 + nombre + precio, 3 items max) reusando `relatedProducts` ya fetcheado en la página (sin nueva query). Distingue visualmente del `RelatedProducts` grande full-width que sigue al pie. Link "Ver todos abajo →" hace anchor scroll al grid grande.
 
 ✅ **Sprint Alertas de precio + stock CERRADO + EN PROD** (2026-05-29). Sistema completo end-to-end activo en producción. Migration aplicada, CRON_SECRET seteado, Resend env vars verificadas, redeploy hecho. CRON `/api/cron/check-alerts` corre cada hora automático.

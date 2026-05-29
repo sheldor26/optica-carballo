@@ -22,6 +22,36 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Auditar primero, NUNCA "arreglar a ciegas" un bug de configuración
+
+**Categoría**: Debugging / Diagnóstico
+**Confianza**: 🟢 Alta (validado en incident auth URLs)
+
+### Qué funcionó
+
+Founder reportó "los emails llegan con localhost". Tentación inmediata: cambiar el código a `https://opticacarballo.com.ar` hardcodeado. En lugar de eso, despleé `Explore` subagent con prompt específico (audit auth code para URLs de redirect — 7 puntos concretos). Resultado: el código YA estaba correcto. El bug era de configuración (env var faltante en Vercel).
+
+Sin la auditoría, hubiera:
+- Hardcodeado el dominio → roto el dev local.
+- O cambiado el código sin necesidad → commit ruidoso que no solucionaba nada.
+- O culpado al Supabase Dashboard → founder cambiaba config inútilmente.
+
+### Por qué funcionó
+
+Bugs reportados por usuarios suelen tener síntomas claros y causas confusas. El reflejo de "veo el síntoma, lo cambio" produce 3 tipos de errores:
+
+1. **Fix superficial**: arreglás el síntoma sin entender la causa → vuelve a aparecer en otro contexto.
+2. **Fix dañino**: cambiás algo que estaba bien → introducís un bug nuevo.
+3. **Fix tardío**: el usuario sigue bloqueado porque tu hipótesis era incorrecta.
+
+Una auditoría previa (5-10 minutos con un Explore agent) elimina las 3 fuentes de error y produce un diagnóstico que el founder puede actuar directamente (en este caso: "es config de Vercel + Supabase Dashboard, no código").
+
+### Cuándo aplicar
+
+- Cualquier bug reportado por usuario con síntoma claro pero causa no obvia.
+- Especialmente: emails, redirects, callbacks, webhooks, autenticación — sistemas donde el síntoma puede venir de config, código local, código remoto o servicio externo.
+- NO aplicar si la causa es trivialmente obvia (error message claro apunta a línea exacta) — auditar ahí es overhead.
+
 ## 2026-05-29 — Sprint completo con cuenta (no MVP) cuando la feature lo justifica
 
 **Categoría**: Scope de sprint / Decisiones de producto
