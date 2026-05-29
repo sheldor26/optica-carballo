@@ -628,6 +628,24 @@ Founder autorizó la app pero ML redirigió a `?ml_oauth=error&reason=validation
 
 Identificar causa exacta con body de error de ML, aplicar fix correspondiente. Una vez OAuth pase → Sprint 2b (procesamiento real del webhook stub).
 
+### Update 2026-05-29: redirect URI descartado + tabla sync_errors vacía
+
+Founder confirmó que el redirect URI registrado en ML es **EXACTAMENTE** `https://opticacarballo.com.ar/api/ml/oauth/callback`. Descartado como causa.
+
+Founder visitó `/api/ml/debug-last-error` después del intento OAuth y recibió: **`{count: 0, errors: []}`**.
+
+**Interpretación crítica**: la tabla `marketplace_sync_errors` está vacía. 2 escenarios posibles:
+1. **Migration `20260529000000_marketplace_integrations.sql` NO aplicada al cloud** → tablas no existen, ni el logging ni el upsert funcionan. ML retorna validation_error pero NO podemos guardar el error. Match con el síntoma observado.
+2. Founder no reintentó OAuth después del deploy del fix de DB logging (`5ed752f`) → el error del intento original NO se guardó.
+
+Más probable: escenario 1. Aplicar la migration es paso siguiente. Si después de aplicar la migration el reintento sigue fallando, ya tendremos el body de ML en la tabla.
+
+### Limitación MCP confirmada
+
+Intenté usar MCP Supabase para consultar `marketplace_sync_errors` directo y skip al founder, pero el proyecto de Óptica Carballo (`tuddpfspnbnmafsqdvat`) NO está conectado a mi MCP. Solo veo "Neuralroute.io" y "Pedi de una" (otros proyectos del founder en distintas orgs). Para queries SQL al sitio dependo del founder via Dashboard o endpoint debug.
+
+Vercel MCP también flaky — queries con filter de query string dan timeout. Confirma valor del two-tier logging (commit `5ed752f`).
+
 ---
 
 ## Status anterior

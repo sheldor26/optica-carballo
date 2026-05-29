@@ -22,6 +22,39 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Endpoint debug con count=0 es DATA — descarta una causa, indica próxima
+
+**Categoría**: Debugging / Diagnóstico / Patrones de evidencia
+**Confianza**: 🟡 Media (1 caso aplicado, principio sólido)
+
+### Qué pasó
+
+Founder visitó `/api/ml/debug-last-error` y recibió `{count: 0, errors: []}`. Mi reacción inicial: "no hay info, no se puede diagnosticar".
+
+Reframe: `count=0` ES información. Significa:
+- Logging code corrió pero NO encontró errores → causa NO está en lo que loguea (exchange code → tokens).
+- O: logging code NUNCA corrió por errores ANTES (tabla no existe, crash en config, etc).
+
+Aplicado al caso: founder había aplicado migrations PRE-Sprint 2a. La migration `20260529000000_marketplace_integrations.sql` (que crea las tablas ML) es del MISMO día pero POSTERIOR a la sesión de "aplique migraciones". Probable: nunca se aplicó la migration ML específica.
+
+### Por qué funciona
+
+- "Sin data" NO es "sin diagnóstico". Es **evidencia negativa** que excluye hipótesis.
+- Hipótesis previa: "ML está rechazando el code". Pero si fuera eso, el código logueaba el error → count > 0.
+- count=0 + intento fallido → algo más fundamental está pasando: tablas no existen, env vars rotas, deploy stale.
+
+### Aplicar a futuro
+
+Endpoints debug que devuelven empty NO son fallas — son data útil:
+- Si esperabas X items y hay 0 → la causa NO está en lo que esos items rastrean.
+- Forzar nueva línea de hipótesis (qué pasa upstream).
+
+### Patrón meta
+
+**Falta de error es información**. Anti-pattern: descartar empty responses como "no me sirve para nada".
+
+---
+
 ## 2026-05-29 — Mega-menu hover-intent: 120ms open / 220ms close evita flickering
 
 **Categoría**: UX / Hover patterns

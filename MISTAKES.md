@@ -24,6 +24,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Olvidé verificar migration ML aplicada antes de pedir flow OAuth real
+
+**Estado**: 🟡 Mitigado — identificado retrospectivamente con count=0 del debug endpoint.
+**Categoría**: Setup / Pre-flight checks / Asunciones sobre estado del cloud
+
+### Qué pasó
+
+Sprint 2a: pedí al founder reintente flow OAuth visitando `/api/ml/oauth/initiate`. Asumí que la migration `20260529000000_marketplace_integrations.sql` ya estaba aplicada porque el founder dijo "aplique el sql de migraciones" en otro turn — pero esa frase era ANTES de Sprint 1 ML, y la migration ML vino DESPUÉS.
+
+Resultado: el flow intenta `upsertMLIntegration` sobre tabla inexistente → error silencioso. `marketplace_sync_errors` tampoco existe → no podemos siquiera guardar el error como diagnóstico. Endpoint debug devuelve `count=0` (porque no hay tabla, no porque no haya errores).
+
+### Causa raíz
+
+Frase ambigua del founder ("aplique migraciones") interpretada como "TODAS las migraciones del momento". Realidad: aplicó las que existían entonces, no las posteriores.
+
+`CLOUD_APPLIED.md` SÍ mantiene status correcto (`⏳ pendiente` para la migration ML). Yo NO consulté ese archivo antes de pedir el flow real.
+
+### Regla preventiva
+
+Antes de pedir al founder ejecutar un flow que depende de DB state cloud:
+1. Consultar `supabase/CLOUD_APPLIED.md` — verificar que TODAS las migrations relevantes estén `✅`.
+2. Si alguna `⏳`, pedirla aplicar PRIMERO + verificar.
+3. Solo entonces pedir el flow real.
+
+Aplicación inmediata en próximo mensaje: pedir al founder que aplique migration ML antes de reintentar OAuth.
+
+### Documentado en LEARNINGS
+
+Entry "Endpoint debug con count=0 es DATA" — el patrón positivo que sale de este mistake.
+
+---
+
 ## 2026-05-29 — Triple sprint cierre EXITOSO (legales + cookies + mega-menu)
 
 **Estado**: 🟢 Cumplido.

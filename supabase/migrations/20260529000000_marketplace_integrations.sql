@@ -98,9 +98,18 @@ CREATE INDEX IF NOT EXISTS product_variants_mercadolibre_item_id_idx
 
 -- UNIQUE constraint: un item ML no puede mapear a 2 variantes distintas.
 -- Constraint deferrable para permitir UPDATEs masivos en migrations futuras.
-ALTER TABLE public.product_variants
-  ADD CONSTRAINT product_variants_mercadolibre_item_id_unique
-  UNIQUE (mercadolibre_item_id) DEFERRABLE INITIALLY DEFERRED;
+-- Wrappeada en DO block para idempotencia — SQL no soporta IF NOT EXISTS
+-- en ADD CONSTRAINT.
+DO $$
+BEGIN
+  ALTER TABLE public.product_variants
+    ADD CONSTRAINT product_variants_mercadolibre_item_id_unique
+    UNIQUE (mercadolibre_item_id) DEFERRABLE INITIALLY DEFERRED;
+EXCEPTION
+  WHEN duplicate_object THEN
+    -- Constraint ya existe — ignorar, la migration es safe re-applicable.
+    NULL;
+END $$;
 
 -- ============================================================================
 -- 3. Tabla de logs de errores de sync (para observabilidad)
