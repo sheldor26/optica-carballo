@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — UNIQUE composite (item_id, variation_code) para multi-variation en marketplaces
+
+**Categoría**: Schema design / Integraciones de marketplaces
+**Confianza**: 🟢 Alta (validado con Vulk Day Light 2 variantes / 1 MLA)
+
+### Qué funcionó
+
+ML soporta **listings con variations** (un MLA con N color/talle/etc, cada uno con stock y seller_sku propio). El schema original del sprint 2a asumía 1 variante DB = 1 MLA distinto (UNIQUE en `mercadolibre_item_id`). Cuando founder pidió vincular 2 variantes Vulk al mismo MLA, la constraint las rechazaba.
+
+Fix: DROP UNIQUE individual + ADD column `mercadolibre_variation_code` + UNIQUE composite `(item_id, variation_code)`. Esto:
+- Permite 2 variantes con el mismo MLA (caso multi-variation).
+- Sigue garantizando unicidad: un (MLA, variation_code) → 1 variante DB.
+- NULLs DISTINCT (default Postgres): variantes sin mapping ML (`NULL, NULL`) no chocan entre sí.
+
+### Por qué pasó el sprint 2a con asunción equivocada
+
+Sprint 2a iter 1 mapeaba items single-variation (modelo simple). Founder me dio un caso single-variation primero (rusty-yau MLA1432137395), validamos el patrón. Recién con el 2do producto (Vulk Day Light) emergió el caso multi-variation. La asunción "1:1" sobrevivió porque no había caso adversarial al principio.
+
+### Regla preventiva
+
+Para integraciones con marketplaces que soportan multi-variation:
+1. **Investigar el modelo de variations del marketplace** ANTES del primer mapping. ML, MercadoShops, Tiendanube, Shopify — todos soportan variations pero con APIs distintas.
+2. **Modelar el schema con composite key desde el inicio** si el marketplace lo soporta, aunque iter 1 solo use single-variation. Refactorear después tiene costo de migration + posible pérdida de data si no manejas el rename con cuidado.
+3. **`mercadolibre_variation_code`** debe ser el campo que el seller controla en ML (seller_custom_field o seller_sku), no el variation_id numérico generado por ML — el primero es estable y editable, el segundo cambia si el seller borra y recrea variations.
+
+### Cuándo aplicar
+
+- Cualquier integración con marketplace que tenga variation_id concept.
+- Cuando el sync va a ser bidireccional (marketplace ↔ DB local con stock real).
+- NO aplicar para listings 100% catalog (donde tu DB es la fuente y marketplace es solo display) — ahí el variation_id local alcanza.
+
 ## 2026-05-29 — RAISE NOTICE pre-DELETE en cleanups SQL para verificación visual
 
 **Categoría**: SQL operations / Cleanup safety

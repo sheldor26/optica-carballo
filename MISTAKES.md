@@ -24,6 +24,43 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint 2a ML asumió 1 variante = 1 MLA — multi-variation requirió migration retroactiva
+
+**Estado**: ✅ Cerrado — migration 20260529300000 + seed mapping (pendiente apply del founder).
+**Categoría**: Schema design / Asunciones tempranas en integraciones
+
+### Qué pasó
+
+Sprint 2a ML (commit 2a más temprano hoy) modeló `product_variants.mercadolibre_item_id text UNIQUE`. Asumí que 1 variante DB = 1 MLA distinto. Pasamos validación con el primer producto importado (rusty-yau, single-variation).
+
+Cuando founder pidió vincular las 2 variantes del Vulk Day Light al MISMO MLA (`MLA2726903920`), la constraint UNIQUE las rechazaba. Necesité migration retroactiva: DROP UNIQUE + ADD column + UNIQUE composite.
+
+### Causa raíz
+
+No investigué el modelo de variations de ML antes de modelar el schema. Asumí "marketplace_item_id es único por SKU" sin verificar que ML soporta listings agrupando variations.
+
+Combinado con: el primer caso de prueba (rusty-yau) era single-variation, no challengeo la asunción. Si el primer caso hubiera sido multi-variation, lo veía iter 1.
+
+### Regla preventiva
+
+Cuando modeles schema para integración con servicio externo (marketplace, payment, shipping):
+
+1. **Leer docs del modelo de data del servicio antes de modelar tu DB**. ML doc tiene una sección entera sobre variations — la salteé.
+2. **Buscar el caso edge desde el principio**: ¿el servicio agrupa N entidades bajo 1 ID? ¿Permite duplicates? ¿Tiene jerarquía? Modelar para el caso complejo aunque iter 1 solo use el simple.
+3. **Composite UNIQUE > UNIQUE individual** cuando hay potencial de variations, sub-products, etc. Postgres permite `NULLs DISTINCT` así que no rompe el caso 1:1.
+
+### Costo concreto del refactor retroactivo
+
+- Migration nueva con DROP + ADD (no es destructive porque el column nuevo es nullable + UNIQUE composite incluye NULLs).
+- Founder tuvo que aplicar 2 SQL bootstraps en lugar de 1.
+- Hubo 1 explanation completa a founder de por qué el cambio era necesario.
+
+Costo del modelo composite desde iter 1 hubiera sido: ~5 min más en el sprint 2a iter 1. Costo del refactor retroactivo: ~30 min de explicación + migration + apply.
+
+### Fix aplicado
+
+Migration `20260529300000_ml_variation_support.sql` + seed `11_vulk_day_light_ml_mapping.sql` + bootstrap concatenado.
+
 ## 2026-05-29 — Rename de slug sin cleanup del registro viejo deja zombie en DB
 
 **Estado**: 🟡 Mitigado tras descubrimiento — cleanup SQL generado, pendiente apply del founder.

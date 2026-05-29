@@ -36,7 +36,18 @@ Tradeoff: 3ra imagen (medidas, 1500x1500 cuadrada) queda con barras laterales cu
 
 Founder confirmó "Mucho mejor!" tras deploy iter 4 — fix gallery + sticky resuelve el problema. Sprint Rusty Yau visualmente cerrado.
 
-**Cleanup pendiente** (founder aplica): producto residual con slug viejo `rusty-yau-polarizado` quedó en DB tras refactor de identidad (commit `7ebcb1c`). Generado `supabase/cloud-bootstrap.sql` con DELETE + RAISE NOTICE para verificación previa. CASCADE en migrations limpia variantes/imágenes/alertas automáticamente. Founder aplica + URL vieja `/anteojos-de-sol/rusty/rusty-yau-polarizado` pasa a 404.
+**Migration ML multi-variation + mapping Vulk Day Light** (2026-05-29 commit `495be21`). Founder pidió vincular las 2 variantes del Vulk Day Light al MISMO MLA (caso multi-variation: un listing ML con N color/talle, diferenciados por seller_custom_field). Schema original asumía 1:1 — incompatible. Cambios:
+- Migration `20260529300000_ml_variation_support.sql`: DROP UNIQUE mercadolibre_item_id + ADD mercadolibre_variation_code text + UNIQUE composite (item_id, variation_code).
+- Seed `11_vulk_day_light_ml_mapping.sql`: UPDATE SKU 194185 (Carey) → MLA2726903920/SDEMI/DRWG15C3, SKU 194180 (Rosa) → MLA2726903920/LPINK/DRT25.
+- Bootstrap concatenado: 87 líneas en `supabase/cloud-bootstrap.sql`.
+
+**Acciones pendientes founder** (en orden):
+1. Aplicar cleanup `rusty-yau-polarizado` si todavía no lo hiciste (estaba en bootstrap anterior — si ya aplicaste, salteá).
+2. Aplicar bootstrap nuevo (migration ML variation + mapping Vulk Day Light) en SQL Editor.
+3. Verificar `SELECT sku, mercadolibre_item_id, mercadolibre_variation_code FROM product_variants WHERE sku IN ('194185', '194180')` retorna los datos esperados.
+4. Avisar "ML mapping aplicado" → registrar CLOUD_APPLIED.md + borrar bootstrap derivado.
+
+Sprint 2b ML (sync futuro) va a usar `variation_code` como key para matchear cada variation del listing ML con la variante DB. Sin este mapping, Rusty Yau MLA1432137395 + Vulk Day Light MLA2726903920 no se sincronizan.
 
 GAP único restante (no bloqueante): `weight_grams` para UPDATE simple.
 
