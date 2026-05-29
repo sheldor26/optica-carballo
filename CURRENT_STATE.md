@@ -2,7 +2,7 @@
 
 ## Status
 
-✅ **Sprint Texto SEO por marca CERRADO** (2026-05-29). Renderiza intro extenso (150-300 palabras) y outro (80-150 palabras) en `/anteojos-de-{sol,receta}/[brand]` para mejorar profundidad semántica + keyword coverage. Migración + seed listos en `supabase/cloud-bootstrap.sql` — **pendiente que founder los aplique al cloud via Dashboard SQL Editor**.
+✅ **Sprint Texto SEO por marca CERRADO + APLICADO A CLOUD** (2026-05-29). Renderiza intro extenso (150-300 palabras) y outro (80-150 palabras) en `/anteojos-de-{sol,receta}/[brand]` para mejorar profundidad semántica + keyword coverage. Migración `20260529100000_brands_seo_text.sql` + seed `09_brands_seo_text.sql` aplicados al cloud por founder (confirmado).
 
 ✅ **Sprint SEO+ CERRADO** (2026-05-29). 3 quick wins del backlog para mejorar rich results en Google:
 - **FAQPage JSON-LD** en `/anteojos-de-sol/[brand]` y `/anteojos-de-receta/[brand]` (5 FAQs específicas por marca en `lib/content/brand-faqs.ts` + sección visible con `FaqAccordion`).
@@ -16,16 +16,10 @@
 **Nota verificación GSC**: founder usó método distinto al meta tag (probablemente DNS o HTML drop-in file). El env var `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN` NO se aplicó — el meta tag NO aparece en HTML del sitio (verificado con curl). Está OK porque GSC verifica propiedad por cualquier método válido. Si en futuro queremos re-verificación de respaldo via meta tag, configurar la env var.
 
 **Pendientes inmediatos (próximo paso exacto)**:
-1. 🔴 **APLICAR cloud-bootstrap al cloud** (BLOQUEA visibilidad del texto SEO largo en producción):
-   - Founder abre [Supabase Dashboard SQL Editor](https://supabase.com/dashboard/project/tuddpfspnbnmafsqdvat/sql/new).
-   - Copia el contenido de `supabase/cloud-bootstrap.sql` (64 líneas, ALTER TABLE + UPDATE 5 marcas con copy SEO).
-   - Pega + Run.
-   - Avisa "cloud aplicado" → asistente registra en `supabase/CLOUD_APPLIED.md` y borra el bootstrap derivado.
-   - **Alternativa**: founder me autoriza explícitamente a aplicar via Supabase MCP (`apply_migration`) — Auto Mode lo denegó por ser DB de producción.
-2. ⚠️ Founder ejecuta `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'` para limpiar entry comprometida del debugging.
-3. Cargar `mercadolibre_item_id` en `product_variants` para productos que estén en ambos canales (sin esto el sync no tiene a quién apuntar).
-4. Re-autorizar OAuth ML con la cuenta que tiene MLA1432137395 (requiere papá del founder).
-5. Decidir si arrancar Sprint 2b ML ahora o continuar con otros items del backlog (sub-categorías por forma, filtros dentro de marca, etc.).
+1. ⚠️ Founder ejecuta `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'` para limpiar entry comprometida del debugging.
+2. Cargar `mercadolibre_item_id` en `product_variants` para productos que estén en ambos canales (sin esto el sync no tiene a quién apuntar).
+3. Re-autorizar OAuth ML con la cuenta que tiene MLA1432137395 (requiere papá del founder).
+4. Decidir si arrancar Sprint 2b ML ahora o continuar con otros items del backlog (sub-categorías por forma, filtros dentro de marca, sub-categorías `categories.parent_id`, etc.).
 
 ## Analytics Sprint (2026-05-29, post ML 2a)
 

@@ -23,6 +23,7 @@ re-aplicar o saltarse algo.
 | `20260528170000_product_images_unique_path.sql` | ⏳ pendiente | Bug fix: dedupe de `product_images` (conservar la más antigua por product_id + storage_path) + ADD UNIQUE constraint (product_id, storage_path) para que ON CONFLICT funcione. Detectado tras feedback founder "cada vez que elijo una variante se me van sumando fotos". Causa raíz: seeds 03/07 usaban ON CONFLICT DO NOTHING sin target → cada re-ejecución insertaba duplicados. |
 | `20260528180000_newsletter_subscribers.sql` | ✅ 2026-05-29 (confirmado por founder) | Tabla `newsletter_subscribers` para captura de leads (single opt-in iter 1). Email UNIQUE + CHECK formato + CHECK lowercase. RLS estricto: sin policies para anon/authenticated → solo `service_role` accede (todas las ops pasan por `createAdminClient()` desde server actions). Trigger `updated_at`. Newsletter signup operativo en producción tras esta aplicación. |
 | `20260529000000_marketplace_integrations.sql` | ⏳ pendiente | Foundations integración ML (ver ADR-024). Tabla `marketplace_integrations` (tokens OAuth + estado) + columna `mercadolibre_item_id` en `product_variants` (UNIQUE deferrable) + tabla `marketplace_sync_errors` (logs). Todas las tablas con RLS estricto solo service_role. **No es bloqueante hasta Sprint 2 (OAuth flow)** — sin esta tabla aplicada, el código de Sprint 2 va a fallar al intentar guardar tokens. Aplicar antes de avanzar con Sprint 2 de la integración ML. |
+| `20260529100000_brands_seo_text.sql` | ✅ 2026-05-29 (confirmado por founder) | ALTER TABLE brands ADD seo_intro TEXT + seo_outro TEXT (ambos nullable). Renderizado en `BrandCatalogPage` (intro bajo H1, outro al pie). Aplicado junto con seed 09 vía bootstrap concatenado. |
 
 ## Seeds aplicados a cloud
 
@@ -35,6 +36,7 @@ re-aplicar o saltarse algo.
 | `seeds/05_vulk_day_light_seo_polish.sql` | ✅ 2026-05-28 | UPDATE copy + meta v2 con keywords de Ubersuggest (cluster Vulk en SEO_STRATEGY.md). meta_title arranca con "Lentes de Sol Vulk" (1.300 vol/mes). Aplicado por founder. |
 | `seeds/06_vulk_day_light_callouts.sql` | ✅ 2026-05-28 | UPDATE attributes.callouts con 3 callouts validados por optical-expert (info / recommendation / tip), cada uno con `position` y ~250 chars (tweet length). Aplicado por founder. |
 | `seeds/07_vulk_day_light_variant_rosa.sql` | ✅ 2026-05-28 | UPDATE description del modelo a genérica (sin colores) + UPDATE variant_id de fotos viejas a la variante Carey + INSERT 2da variante Rosa Pálido (SKU 194180, $88.037, stock 3 confirmado por founder) + INSERT 2 imágenes nuevas. Aplicado por founder. ⚠️ **Verificar que founder subió `04-lateral-rosa.jpg` y `05-frontal-rosa.jpg` al bucket Storage** — sin esos archivos las imágenes de la variante rosa devuelven 404. |
+| `seeds/09_brands_seo_text.sql` | ✅ 2026-05-29 (confirmado por founder) | UPDATE 5 marcas con copy SEO largo: `seo_intro` (150-300 palabras, render bajo H1) + `seo_outro` (80-150 palabras, render al pie). Aplicado junto con migración `20260529100000` vía bootstrap concatenado. |
 
 ---
 
