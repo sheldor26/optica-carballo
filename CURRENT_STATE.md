@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Micro-sprint Sidebar cross-sell en producto CERRADO** (2026-05-29). Founder identificó bloque blanco en col derecha de página producto (debajo de MEDIDAS) — la col izquierda con gallery + "Lo que incluye" era más alta. Decisión vía AskUserQuestion con preview ASCII: opción cross-sell. Nuevo componente `RelatedProductsSidebar` compact (thumb 64x64 + nombre + precio, 3 items max) reusando `relatedProducts` ya fetcheado en la página (sin nueva query). Distingue visualmente del `RelatedProducts` grande full-width que sigue al pie. Link "Ver todos abajo →" hace anchor scroll al grid grande.
+
 ✅ **Sprint Alertas de precio + stock CERRADO + EN PROD** (2026-05-29). Sistema completo end-to-end activo en producción. Migration aplicada, CRON_SECRET seteado, Resend env vars verificadas, redeploy hecho. CRON `/api/cron/check-alerts` corre cada hora automático.
 
 Componentes:

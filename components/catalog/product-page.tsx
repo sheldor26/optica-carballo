@@ -13,6 +13,7 @@ import { ProductMeasurements } from '@/components/product/product-measurements';
 import { ProductTrustSignals } from '@/components/product/product-trust-signals';
 import { ProductFaqs } from '@/components/product/product-faqs';
 import { RelatedProducts } from '@/components/product/related-products';
+import { RelatedProductsSidebar } from '@/components/product/related-products-sidebar';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
@@ -331,6 +332,8 @@ export async function ProductDetailPage({
           <ProductAttributes attributes={product.attributes} />
 
           <ProductMeasurements attributes={product.attributes} />
+
+          <RelatedProductsSidebar products={relatedProducts} />
 
           <div className="flex flex-wrap items-center gap-2">
             <WhatsappCta productName={product.name} inStock={isInStock} />
