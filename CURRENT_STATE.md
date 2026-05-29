@@ -2,7 +2,12 @@
 
 ## Status
 
-🟡 **Re-autorización ML OAuth + import MLA1432137395 — EN CURSO** (2026-05-29). Founder confirmó que tiene sesión iniciada en ML con la cuenta correcta (la que tiene el producto MLA1432137395). Próximo paso: founder va a `https://opticacarballo.com.ar/api/ml/oauth/initiate` para re-autorizar con la cuenta nueva. Una vez confirmado el `user_id` en URL success, ejecutar endpoint admin `/api/admin/ml-import-preview/MLA1432137395` para fetchear JSON crudo del producto → generar SQL de import al catálogo. Si el user_id retornado es el mismo `1975674` (cuenta anterior), founder debe cerrar sesión en ML primero (cookie de sesión de ML interfiere).
+🟡 **Re-autorización ML OAuth + import MLA1432137395 — BLOQUEADO en 404** (2026-05-29). Founder re-autorizó con `user_id=81654493` (distinto al `1975674` previo, validado vía `?ml_oauth=success&user_id=`). Pero al ejecutar `/api/admin/ml-import-preview/MLA1432137395`, ML devolvió HTTP 404 → endpoint mapea a `{ok:false, error:'not_found'}`. 3 causas posibles a verificar por founder en ML web:
+1. ID mal escrito (verificar URL de listing en ML — formato `articulo.mercadolibre.com.ar/MLA-XXX-...`).
+2. Item Cerrado/Finalizado (panel ML → Mis publicaciones → status).
+3. Cuenta `81654493` no es la dueña del item (verificar nickname/cuenta visible en ML web).
+
+Próximo paso exacto: founder verifica los 3 puntos arriba en ML web y reporta hallazgos. Según resultado: corregir el MLA, reactivar listing, o re-autorizar con cuenta correcta (cerrar sesión ML antes para evitar cookie sticky).
 
 ✅ **Incident Password Reset RESUELTO** (2026-05-29). Founder confirmó que puede entrar al dashboard de cuenta end-to-end: reset password → email → click → form → submit → loguea correctamente. Fix aplicado: `passwordResetForEmail.redirectTo` ahora va por `/auth/callback?next=/recuperar-clave/restablecer` para que el callback haga `exchangeCodeForSession` antes de mostrar el form. Sistema de cuentas funcional en producción.
 
