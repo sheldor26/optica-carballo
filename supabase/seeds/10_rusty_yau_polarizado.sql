@@ -15,15 +15,13 @@
 -- - Línea: Deportiva (ciclismo)
 -- - Medidas ML: bridge 16mm, lens_width 66mm, temple 120mm
 --
--- ⚠️ GAPS pendientes (cargados como NULL, founder completa después):
--- - weight_grams: ML reporta 100g del PAQUETE, no del anteojo. Founder mide
---   anteojo solo en balanza y hace UPDATE.
--- - measurements.frame_width_mm: no en JSON ML, founder mide con regla.
--- - measurements.lens_height_mm: no en JSON ML, founder mide.
--- - SKU: usado SKU placeholder 'RUSTY-YAU-MBLKS10-POL' — si Rusty tiene
---   código interno, founder hace UPDATE.
--- - Imágenes: founder sube 2 fotos al bucket products/rusty-yau-polarizado/
---   antes de aplicar (sino productos sin foto en grid).
+-- Datos completados por founder (2026-05-29):
+-- - SKU real: 126080 (código Rusty/distribuidor)
+-- - measurements: frame_width 135mm, lens_height 45mm (medidos)
+-- - 3 imágenes JPG provistas (frontal, lateral 3/4, esquema de medidas)
+--
+-- ⚠️ GAP restante: weight_grams (ML reporta 100g del PAQUETE, no del anteojo).
+-- Founder mide anteojo solo en balanza después y hace UPDATE.
 -- ============================================
 
 BEGIN;
@@ -60,8 +58,10 @@ VALUES (
     "line": "deportiva",
     "model_code": "YAU MBLK/S10 POL YELLOW",
     "measurements": {
-      "bridge_mm": 16,
+      "frame_width_mm": 135,
       "lens_width_mm": 66,
+      "lens_height_mm": 45,
+      "bridge_mm": 16,
       "temple_length_mm": 120
     },
     "includes": ["estuche", "franela"],
@@ -89,8 +89,8 @@ ON CONFLICT (slug) DO UPDATE SET
 -- Variante única — Negro Mate / Gris Oscuro - Amarilla
 -- precio ML: $98.350,02 → 9835002 centavos
 -- stock disponible ML al 2026-05-29: 4 unidades
+-- SKU real: 126080 (confirmado por founder)
 -- mercadolibre_item_id: MLA1432137395 (para sync futuro Sprint 2b)
--- ⚠️ SKU placeholder — si Rusty/Vulk distribuidor tiene código real, UPDATE.
 -- =====================================================================
 INSERT INTO public.product_variants (
   product_id, sku, attributes,
@@ -99,7 +99,7 @@ INSERT INTO public.product_variants (
 )
 VALUES (
   (SELECT id FROM public.products WHERE slug = 'rusty-yau-polarizado'),
-  'RUSTY-YAU-MBLKS10-POL',
+  '126080',
   '{
     "frame_color": "negro-mate",
     "lens_color": "gris-oscuro-amarilla",
@@ -119,31 +119,39 @@ ON CONFLICT (sku) DO UPDATE SET
   updated_at           = now();
 
 -- =====================================================================
--- Imágenes — 2 archivos en bucket "products"
+-- Imágenes — 3 archivos JPG en bucket "products"
 -- Path canónico: rusty-yau-polarizado/<filename>
--- ⚠️ Founder sube los 2 archivos vía Supabase Dashboard ANTES de aplicar
+-- ⚠️ Founder sube los 3 archivos vía Supabase Dashboard ANTES de aplicar
 --    este seed (sino productos sin foto en grid → bounce inmediato).
--- Sugerencia: descargar de ML https://articulo.mercadolibre.com.ar/MLA-1432137395
---   o usar fotos propias del local con buena iluminación.
 -- =====================================================================
 INSERT INTO public.product_images (
   product_id, variant_id, storage_path, alt_text,
   width, height, sort_order, is_primary
 )
 VALUES
+  -- Foto principal: vista lateral 3/4 (la del founder con armazón negro mate)
   (
     (SELECT id FROM public.products WHERE slug = 'rusty-yau-polarizado'),
-    (SELECT id FROM public.product_variants WHERE sku = 'RUSTY-YAU-MBLKS10-POL'),
-    'rusty-yau-polarizado/01-frontal.webp',
-    'Rusty Yau anteojos deportivos polarizados vista frontal, armazón envolvente negro mate',
-    1200, 1200, 0, true
+    (SELECT id FROM public.product_variants WHERE sku = '126080'),
+    'rusty-yau-polarizado/01-lateral.jpg',
+    'Rusty Yau anteojos deportivos polarizados vista lateral 3/4, armazón envolvente negro mate G-Flex',
+    1500, 1000, 0, true
   ),
+  -- Vista frontal — para hover crossfade en cards
   (
     (SELECT id FROM public.products WHERE slug = 'rusty-yau-polarizado'),
-    (SELECT id FROM public.product_variants WHERE sku = 'RUSTY-YAU-MBLKS10-POL'),
-    'rusty-yau-polarizado/02-lateral.webp',
-    'Rusty Yau anteojos deportivos polarizados vista lateral, patilla negra G-Flex',
-    1200, 1200, 1, false
+    (SELECT id FROM public.product_variants WHERE sku = '126080'),
+    'rusty-yau-polarizado/02-frontal.jpg',
+    'Rusty Yau anteojos deportivos polarizados vista frontal, armazón envolvente negro mate',
+    1500, 1000, 1, false
+  ),
+  -- Esquema técnico de medidas (aplica a todo el modelo, no a variante específica)
+  (
+    (SELECT id FROM public.products WHERE slug = 'rusty-yau-polarizado'),
+    NULL,
+    'rusty-yau-polarizado/03-medidas.jpg',
+    'Esquema técnico de medidas Rusty Yau: frente 135mm, lente 66x45mm, puente 16mm, varilla 120mm',
+    1500, 1500, 2, false
   )
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id  = EXCLUDED.variant_id,
