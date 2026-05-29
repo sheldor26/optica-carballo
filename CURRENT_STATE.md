@@ -2,7 +2,187 @@
 
 ## Status
 
-🔴 **Logos en producción: estado mixto tras subir 3 marcas más (Mormaii, Reef, Paula)**
+🟡 **WhatsApp Advisor Card en página de producto — implementado, build verde, pendiente push**
+
+Founder pidió: "en la parte de los productos, podriamos agregar... tenes dudas sobre el producto? no terminas de decidirte? Escribinos al whatsapp y te asesoramos". Patrón de captura de duda en el momento exacto (entre descripción y productos relacionados).
+
+**Implementado**:
+- `components/product/whatsapp-advisor-card.tsx` NUEVO: card con gradient sutil verde, ícono WhatsApp en círculo, eyebrow "ASESORAMIENTO PERSONALIZADO" con Sparkles, H3 serif "¿Tenés dudas sobre este modelo?", subtexto persuasivo sin presión, botón CTA verde "Consultar" que abre WhatsApp con mensaje pre-armado contextual al producto + marca.
+- Mensaje WhatsApp: `Hola! Tengo una consulta sobre {brandName} {productName}, ¿pueden asesorarme?`
+- Ubicación: entre `DescriptionWithCallouts` y `RelatedProducts`. Justificación: momento en que el cliente leyó toda la info y está en pico de decisión.
+- Estética: coherente con sistema (serif headers + accent ámbar reservado para marca + verde emerald reservado para "trust/positivo"). Glow blur arriba-derecha para vida visual.
+
+**Decisión técnica**: NO reusar `WhatsappCta` (botón solo, usado cuando no hay stock). El advisor card es un componente DISTINTO (rich, persuasivo, full-width) con propósito diferente (captura de duda, no consulta de stock).
+
+**Build verde, typecheck verde**.
+
+**Próximo paso**: push + verificación visual del founder en página de Vulk Day Light.
+
+---
+
+🟡 **FAQs iter 2: founder pasó regla de negocio crítica sobre limitaciones de venta online vs presencial. Correcciones aplicadas a drafts, esperando confirmación de detalles técnicos**
+
+Founder (técnico óptico matriculado) corrigió drafts iniciales con regla de negocio importante: **multifocales, bifocales, graduaciones elevadas y traspasos de lentes se hacen SOLO de forma presencial** en la óptica. No es una preferencia comercial — es una limitación técnica real (mediciones de altura pupilar, compatibilidad física de armazones, re-bordeado, etc.).
+
+**Implicaciones más allá de FAQs**:
+- **Descripciones de productos de armazones de receta** deben aclarar qué casos requieren presencia.
+- **Flujo del checkout** (cuando se active): potencial redirección a WhatsApp cuando el cliente declare necesidad de multifocales/bifocales/grad elevadas.
+- **Política universal** debe agregar esta limitación.
+
+**Correcciones aplicadas a FAQs**:
+- 4.1 (venta con receta) → agregada limitación: monofocales + graduación estándar OK online; el resto presencial.
+- 4.3 (traspaso) → CORREGIDA: solo presencial (mi draft inicial decía que se podía con consulta WhatsApp, técnicamente incorrecto).
+- 4.4 nueva: multifocales/bifocales solo presencial.
+- 4.5 nueva: graduaciones elevadas presencial.
+
+**Pendiente del founder**:
+1. Umbral técnico de "graduación elevada" (esférico > X, cilindro > Y) o decisión de dejar la FAQ sin umbral e invitar a consulta.
+2. Otros casos que requieran presencia (niños, lentes de contacto, anisometrías, etc.).
+3. Confirmar approach para checkout futuro: form en checkout pregunta tipo de receta → redirige a WhatsApp si entra en casos presenciales.
+
+**Pendiente para futuro** (anotado en backlog):
+- Actualizar BUSINESS_POLICIES.md con regla "limitaciones de venta online de productos de receta" cuando founder confirme detalles.
+
+
+
+Founder pidió "guiame con el tema de los FAQs, que podemos agregar". Le entregué set inicial de 18 FAQs organizadas en 6 temas:
+
+1. **Envíos** (5): cobertura, plazos, costo, retiro local, paquete perdido.
+2. **Pagos y facturación** (3): medios, cuotas, factura electrónica.
+3. **Garantía y devoluciones** (3): garantía 1 año fabricante, arrepentimiento 10 días, cambios 30 días.
+4. **Recetas** (3): venta con receta, qué receta acepto, traspaso de lentes.
+5. **Sobre Óptica Carballo** (2): productos originales con respaldo, local físico Virasoro Corrientes + regente.
+6. **Técnicas SEO** (2): polarizado, UV400.
+
+Cada FAQ con **draft de respuesta** basado en BUSINESS_POLICIES.md + lo que ya sé del negocio. Marcado `[CONFIRMAR]` en datos que necesito reales (plazos exactos, dirección/horario del local, cantidad de cuotas, política exacta de envío de devolución, si aceptan efectivo).
+
+**Mi plan post-feedback del founder**:
+1. Implementar componente `<FaqAccordion>` con animaciones suaves + a11y (`aria-expanded`, keyboard nav).
+2. Agregar `FAQPage` JSON-LD schema por página para rich snippets en Google.
+3. Conectar al home, páginas de categoría (`/anteojos-de-sol`, `/anteojos-de-receta`), `/sobre-nosotros`.
+4. Estructura modular: cada página renderiza solo FAQs relevantes a su contexto.
+
+**Bloqueado por**: feedback del founder con versiones finales + datos `[CONFIRMAR]`.
+
+**Próximo paso del founder**: leer las 18 FAQs, marcar las que están bien tal cual, ajustar drafts donde necesite, completar `[CONFIRMAR]` con datos reales, agregar las que falten. Sin urgencia.
+
+---
+
+🟢 **Logos: 5 de 5 marcas funcionando bien en producción. Sistema cerrado.**
+
+Founder resolvió Reef sin asistencia adicional. Las 5 marcas (Rusty, Vulk, Mormaii, Paula, Reef) renderizan correctamente en home (brands-section dark), brand cards (catalog index) y brand pages (header).
+
+Frente de logos cerrado completo. Convención + flujo establecidos para futuras marcas:
+- Bucket: `brand-assets` (público) → carpeta `brand-logos/`
+- Naming: `{slug}-logo-dark.svg` (paths negros) o `-light.svg` (paths blancos)
+- Render: invert smart según contexto del fondo, tamaño calibrado `h-16 md:h-20` + `max-w-[170/200px]`
+- Si SVG tiene mucho aire interno: técnica de viewBox crop documentada en LEARNINGS.
+
+
+
+| Marca | Estado | Notas |
+|---|---|---|
+| Rusty | 🟢 | Funciona de entrada, naming correcto |
+| Vulk | 🟢 | Funciona tras rename `-light` → `-dark` y UPDATE |
+| Mormaii | 🟢 | Funciona tras corregir path en bucket |
+| Paula Cahen D'Anvers | 🟢 | Funciona tras fix de `viewBox` (recortado a `80 280 625 210`) + cache invalidation |
+| Reef | 🟡 | Carga pero con bloque blanco rectangular alrededor del símbolo. Issue del SVG (probable `<rect fill="white">` interno). Founder no priorizó por ahora. |
+
+**Sistema de logos completo y validado**. Convención documentada:
+- Bucket: `brand-assets` (público)
+- Path: `brand-logos/{slug}-logo-dark.svg`
+- Sufijo `-dark`/`-light` = COLOR del logo (paths negros / blancos)
+- Render: `shouldInvertLogo()` decide si aplicar `brightness-0 invert` según contexto del fondo
+- Tamaño: `h-16 md:h-20` + `max-w-[170/200px]` (calibrado para SVGs heterogéneos)
+
+**Para futuras marcas**: el sistema funciona automáticamente. Founder solo:
+1. Sube SVG con paths negros a `brand-assets/brand-logos/{nuevo-slug}-logo-dark.svg`
+2. Corre `UPDATE brands SET logo_url = '...' WHERE slug = '...';`
+3. Si el SVG tiene mucho aire interno, ajustar viewBox primero (técnica documentada en LEARNINGS).
+
+**Próximo paso libre**: el founder puede priorizar la dirección que prefiera. Pendientes activos en backlog:
+- Reef: arreglar `<rect>` interno del SVG (bajo, no urgente)
+- Más productos al catálogo (Rusty, Reef, Mormaii, Paula — solo Vulk Day Light cargado)
+- FAQs reales para FAQ schema
+- Habilitar checkout (env vars MP + webhook + flip flag)
+- Guest checkout + form AFIP (`argentine-ecom`)
+- Iter 2 del recomendador IA (link a catálogo filtrado, share por WhatsApp)
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder respondió "qué tengo que hacer?" tras instrucciones de editar el archivo local. Señal de fricción demasiado alta. **Simplifiqué de "abrí editor + editá línea 2 + guardá" a "copiá este SVG completo + creá archivo nuevo + subí"**. Eliminé el paso de "editar archivo existente" — el founder solo necesita pegar y guardar.
+
+Cambios respecto al turno anterior:
+- Pasé el SVG completo (~9KB) con el `viewBox="80 280 625 210"` ya aplicado en la primera línea.
+- Ya no hay riesgo de que founder edite mal o toque algún `<path>` por accidente.
+- Pasos finales reducidos a 3: pegar, guardar como `paula-cahen-danvers-logo-dark.svg`, subir reemplazando.
+
+**Próximo paso**: founder ejecuta los 3 pasos. Hard refresh tras upload para invalidar cache. Si Paula se ve grande → 🟢. Si sigue chico → algo del cache, o issue distinto.
+
+**Issues remanentes**:
+- Reef: bloque blanco en SVG (founder no priorizó).
+- Resto de funcionamiento del sitio sin issues.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Founder eligió Opción 1 (mandarme el SVG para que yo lo edite). Pegó el contenido completo del SVG de Paula. Analicé:
+- SVG width/height = 768×768 (cuadrado).
+- Sin `viewBox` definido (implícito sería `0 0 768 768`).
+- Contenido visual real (corona + texto "PAULA CAHEN D'ANVERS") concentrado en aprox `(80, 280)` a `(705, 490)` = rectángulo de **625×210**.
+- Aire vacío: ~74% del viewBox.
+
+**Fix calculado**: cambiar la primera línea del SVG agregando `viewBox="80 280 625 210"` + ajustar `width="625"` y `height="210"` para que el aspect ratio del archivo matchee el contenido real. NO toca paths internos. NO requiere UPDATE en DB porque el path del archivo no cambia.
+
+**Resultado esperado**: cuando mi código pone `h-20` (80px), todo el alto del logo va a ser ese contenido visual (~3.2x más grande que antes). Sin cambios de código necesarios.
+
+**Próximo paso**: founder edita el archivo local con un editor de texto, guarda, sube al bucket reemplazando el actual. Mismo path → cache de browser/CDN puede demorar unos minutos en invalidar; si se sigue viendo igual tras 5 min, hard refresh.
+
+**Issue de Reef pendiente** (separado de Paula): el SVG sigue con bloque blanco. Founder no priorizó por ahora. Cuando quiera, mismo proceso: pegarme el SVG, yo diagnostico si tiene `<rect fill="white">` o fondo opaco y propongo fix.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Tras el deploy del 2do fix de tamaño (`62f28c9`), founder reportó que todos crecieron como esperado pero **Paula sigue muy chico**. Confirmé que el problema es el **viewBox del SVG con mucho aire interno** — el contenido visual (corona + texto "PAULA CAHEN D'ANVERS") ocupa ~30% del cuadrado del SVG, así que cuando se escala a `h-20` el contenido real queda en ~24px.
+
+**Decisión técnica explícita**: NO seguir aumentando tamaño en código. Los otros 4 logos (Rusty, Vulk, Mormaii — wordmarks horizontales que llenan su viewBox; Reef que es cuadrado) ya están en buen tamaño visual con `h-16 md:h-20`. Aumentar más empeoraría su UX para resolver el problema de UN asset mal optimizado. Anti-patrón: "subir el volumen del estéreo porque una canción está grabada bajita".
+
+**Solución correcta**: arreglar el SVG (recortar viewBox al bounding box del contenido visible). 2 opciones ofrecidas al founder:
+1. Pegarme el contenido del SVG → yo lo edito → devuelvo arreglado.
+2. Buscar otra versión del logo "apretada" al contenido.
+
+Recomendé opción 1 (predecible, 2 min).
+
+**Issue de Reef independiente**: el SVG tiene un `<rect fill="white">` interno o fondo opaco. No es CSS. Pendiente decisión del founder: vivir con el bloque blanco o conseguir versión sin `<rect>`.
+
+**Próximo paso**: founder elige opción para Paula. Si Opción 1: me manda el SVG, lo edito (cambio `viewBox` a las coordenadas del bounding box del contenido), devuelvo. Si Opción 2: espera respuesta del proveedor / búsqueda.
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
+
+Tras el push del 1er fix de tamaño (`6e848d9`), founder reportó: Rusty 🟢, Vulk 🟢 (lo arregló renombrando), Reef 🟡 (carga pero con fondo blanco rectangular alrededor del símbolo), Mormaii 🟢, Paula 🟡 (sigue achicado por composición vertical con aire interno en viewBox).
+
+**2do fix de tamaño aplicado y pusheado** (commit `62f28c9`):
+- Logo: `h-12 md:h-14` → `h-16 md:h-20` (64-80px).
+- Card: `h-24` → `h-28 md:h-32`.
+- `max-w`: 140 → 170 / 200 md.
+- `width/height` props Image: 160/64 → 200/96.
+- Padding card: `p-4` → `p-3`.
+
+**Issues remanentes que requieren acción del founder fuera del código**:
+1. **Reef con bloque blanco**: el SVG tiene un `<rect fill="white">` interno o un fondo opaco. No es problema de CSS. Si lo quiere limpio, conseguir versión sin ese rectángulo.
+2. **Paula chico (si sigue mal tras 2do fix)**: el SVG tiene viewBox con mucho aire interno. La solución es optimizar el SVG (crop al bounding box del contenido visible). No es problema de CSS.
+
+**Próximo paso**: founder verifica visualmente tras el deploy del `62f28c9`. Si Paula y/o Reef siguen mal, son problemas de los SVGs en sí (no del código).
+
+---
+
+🟡 **Checkout pre-launch: modernización visual + retiro en local + shipping calculator inline — implementado, build verde**
 
 Founder subió las 3 marcas faltantes con sufijo `-dark.svg`. Resultado en producción:
 

@@ -285,6 +285,108 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Inventar/asumir detalles técnicos en drafts de contenido sin marcarlos `[CONFIRMAR]` cuando el founder es source of truth técnico
+
+**Estado**: 🟡 Detectado por feedback del founder ("multifocales/bifocales/grad elevadas/traspasos solo presencial"). Drafts corregidos.
+**Categoría**: Generación de contenido / Asumir conocimiento que no tengo / Validación con founder técnico
+
+### Qué pasó
+
+Al armar el template de 18 FAQs incluí esta respuesta para "¿Puedo cambiar las lentes de mis anteojos viejos a un armazón nuevo?":
+
+> "Sí, podemos hacer el traspaso siempre que el armazón sea compatible con los lentes. Consultanos por WhatsApp con el modelo de armazón y los datos de los lentes."
+
+**Eso era técnicamente incorrecto**. El founder (técnico óptico matriculado, regente) aclaró que los traspasos requieren presencia para verificar compatibilidad física del armazón con los lentes + a veces re-bordeado. No es algo que se resuelva con consulta WhatsApp.
+
+Tampoco anticipé el caso de multifocales/bifocales/graduaciones elevadas — todos requieren presencia por mediciones precisas (altura pupilar, postura natural, adaptación) que no se pueden tomar a distancia.
+
+### Causa raíz
+
+**Asumí conocimiento técnico-óptico que no tengo**. El traspaso de lentes sonaba como "operación simple, ajustar acá" desde la perspectiva de e-commerce, sin entender las limitaciones reales de fabricación + adaptación óptica.
+
+El founder ES la fuente de verdad técnica del proyecto (TS en Óptica y Contactología, hijo de la regente matriculada — explícito en CLAUDE.md). Debería haber marcado como `[CONFIRMAR]` cualquier afirmación técnica sobre QUÉ se puede hacer remoto vs presencial, en lugar de redactar respuesta afirmativa basada en mi intuición.
+
+Patrón meta: **el sistema `[CONFIRMAR]` que usé para datos cuantitativos (precios, plazos, dirección) no lo extendí a afirmaciones cualitativas/técnicas**. Tendía a marcar "datos" pero no "decisiones técnicas".
+
+### Regla preventiva
+
+Al armar drafts de contenido para validación del founder:
+
+1. **Datos cuantitativos** (precios, plazos, métricas, direcciones, números) → marcar `[CONFIRMAR]`.
+2. **Afirmaciones técnicas/profesionales** ("se puede hacer X", "X es compatible con Y", "X requiere/no requiere Z") → **TAMBIÉN marcar `[CONFIRMAR]` o redactar como pregunta** cuando entran en el dominio de la profesión del founder.
+3. **Default conservador**: si no estoy 100% seguro que la afirmación es técnicamente correcta desde lo documentado en BUSINESS_POLICIES.md u optical-expert, marcar.
+4. **Especialmente cuidadoso** con:
+   - Procesos ópticos (armado de lentes, traspasos, adaptaciones).
+   - Limitaciones legales/regulatorias (qué se puede vender sin receta, qué requiere matrícula).
+   - Promesas de servicio (qué incluye el envío, qué cubre la garantía, qué hace el técnico).
+   - Materiales y especificaciones (resistencia, tratamientos, durabilidad).
+
+### Aplicaciones inmediatas
+
+- **Para próximas FAQs**: revisar el set restante y marcar `[CONFIRMAR]` cualquier afirmación técnica que no esté en BUSINESS_POLICIES.md.
+- **Para descripciones de productos**: nunca afirmar features técnicas sin verificar (ej "lentes anti-rayadura permanente" cuando en realidad es resistencia limitada).
+- **Para contenido educativo futuro** (artículos, guías): pasarlo siempre por `optical-expert` antes de publicar.
+
+### Estado de mitigación
+
+- Drafts corregidos en este turno con info del founder.
+- Documentado.
+- Si en próximas iteraciones de contenido vuelvo a afirmar técnicas sin verificar, elevar regla a CLAUDE.md.
+
+---
+
+## 2026-05-28 — Pedirle al founder que edite un archivo manualmente cuando yo podría entregárselo ya editado
+
+**Estado**: 🟡 Detectado por respuesta del founder ("qué tengo que hacer?"). Cambio de approach aplicado.
+**Categoría**: Comunicación / Fricción operativa innecesaria
+
+### Qué pasó
+
+Tras calcular el `viewBox` correcto para el SVG de Paula, le dije al founder:
+1. Abrí el archivo en un editor de texto.
+2. Reemplazá la primera línea por X.
+3. Guardá → subí.
+
+Founder respondió: **"que tengo que hacer?"** — señal clara de fricción alta.
+
+**Yo podía haber producido el SVG modificado yo mismo** (todo el contenido lo tenía: founder me lo pegó en el chat) y entregárselo ya listo para subir. Pero opté por la versión "explicale cómo modificarlo" cuando "modificalo vos y dáselo" era opción.
+
+### Causa raíz
+
+Subestimé la fricción del paso "editar archivo local en editor de texto". Para mí es trivial (ctrl+H, save). Para el founder no-técnico es:
+- Decidir qué editor abrir.
+- Encontrar la línea exacta.
+- Cambiarla sin tocar nada más.
+- Guardar con encoding correcto (UTF-8 sin BOM).
+- Confirmar que el archivo no se rompió.
+
+Es el mismo patrón que el mistake de "los agentes pueden ser overly conservative" pero en versión "asistente": **delegué al founder un paso técnico que YO podía absorber**, sin razón válida.
+
+Patrón meta: **cada vez que le pido al founder que "edite" / "modifique" / "cambie" algo, evaluar primero si YO podría entregarle el resultado final**. El founder se queda con el flujo en el que YA es eficiente (subir archivo al bucket), yo me quedo con el flujo en el que YO soy eficiente (editar contenido).
+
+### Regla preventiva
+
+Antes de pedirle al founder editar/modificar/cambiar contenido (archivo, SQL, config, texto):
+
+1. **Pregunta**: ¿tengo el contenido original disponible? (lo pegó en chat, está en el repo, está en DB).
+2. **Si sí** → producir el resultado final yo mismo, entregárselo listo para usar.
+3. **Si no** → pedirle el contenido primero, después producir el resultado final.
+4. **Nunca instruirlo a editar** salvo que sea genuinamente la única vía (ej: necesita autenticación de él en algún sistema externo).
+
+Casos típicos:
+- **SVG / imagen / asset**: pasarle archivo completo modificado, no diff.
+- **SQL**: pasarle statement completo listo para correr, no instrucciones de qué cambiar.
+- **Env var en Vercel**: pasarle valor exacto, no "calculá X y pegalo".
+- **Webhook URL / secret**: armar el formato final, no fragmentos.
+
+### Estado de mitigación
+
+- Aplicado en este turno: cambié de "editá la línea" a "copiá este SVG entero, creá archivo, subí".
+- Documentado.
+- Si en próximas interacciones vuelvo a delegar edición que yo podría hacer, escalar regla a CLAUDE.md.
+
+---
+
 ## 2026-05-28 — Elegir tamaño de render `h-10` para logos sin validar contra assets de aspect ratios y composiciones internas heterogéneas
 
 **Estado**: 🟡 Detectado por feedback del founder ("Paula muy chico"). Fix aplicado en código (h-12/h-14 + max-w-140).

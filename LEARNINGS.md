@@ -22,6 +22,227 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Cuando founder pide "guíame con X", entregar template pre-rellenado con drafts + marcas `[CONFIRMAR]` — no preguntas abiertas
+
+**Categoría**: Comunicación / Reducción de fricción / Generación de contenido
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente confirmar utilidad real cuando founder devuelva feedback)
+
+### Qué pasó
+
+Founder pidió "guiame con el tema de los FAQs, que podemos agregar". Tenía 2 caminos posibles:
+
+**Camino A**: hacerle preguntas abiertas — "qué temas querés cubrir?", "cuántas FAQs?", "qué tono?". Fricción alta: founder tiene que pensar la estructura desde cero.
+
+**Camino B**: armar yo la estructura completa con drafts pre-rellenados desde lo que ya sé del negocio (BUSINESS_POLICIES.md, CLAUDE.md), organizada por temas, y dejarle solo el trabajo de **revisar/ajustar/completar datos puntuales**. Fricción baja: founder lee, marca lo que está bien, ajusta lo que no, completa datos `[CONFIRMAR]`.
+
+Elegí B. Le entregué 18 FAQs en 6 temas con drafts + marcas explícitas de qué datos necesito que él confirme (plazos, dirección, cuotas, política exacta de envío de devolución).
+
+### Por qué funciona
+
+- **Founder hace VALIDACIÓN, no GENERACIÓN**. Validar texto pre-armado es 5x más rápido que generar texto desde cero.
+- **Drafts revelan mi modelo mental** del negocio. Si me equivoco en alguno, founder lo corrige en 30 segundos. Si lo dejara abierto, podríamos estar 5 mensajes ida y vuelta resolviendo el mismo punto.
+- **Marcas `[CONFIRMAR]` explícitas** dicen al founder exactamente qué datos faltan. No queda dudando "¿qué más necesita Claude?".
+- **Estructura por temas + numeración** permite respuestas selectivas ("FAQ 1.2 cambiá X, el resto está bien").
+- **Aplicable a contenido en general**, no solo FAQs.
+
+### Cómo replicar
+
+Cuando founder pida "guíame con X", "armemos X", "qué podemos agregar a X":
+
+1. **NO** hacer preguntas abiertas inicialmente.
+2. **SÍ** armar yo una propuesta concreta:
+   - Estructura clara (categorías, secciones, items numerados).
+   - Drafts pre-rellenados desde fuentes de verdad disponibles (BUSINESS_POLICIES, CLAUDE.md, código, conversación previa).
+   - Marcas `[CONFIRMAR]` explícitas donde necesito dato real del founder.
+   - Camino claro para responder ("marcá lo que está bien, ajustá lo que no, completá datos").
+3. Si me equivoco en estructura → founder me lo dice en 1 turno, ajusto.
+4. Si me equivoco en algunos drafts → founder los corrige y aplico al resto.
+
+### Casos típicos
+
+- **Contenido del sitio**: FAQs, descripciones de páginas legales, copy de CTAs, micro-copy de error states.
+- **Definiciones de política**: hacer draft de la política, founder ajusta/aprueba.
+- **Email templates**: armar draft, founder ajusta tono / data.
+- **Comunicación con proveedores**: redactar primer mail, founder ajusta.
+- **Planning de roadmap**: armar propuesta de prioridades, founder reordena.
+
+### Anti-patrón a evitar
+
+- Responder "qué temas querés cubrir?" cuando puedo proponer 6 temas relevantes desde lo que ya sé.
+- Dar instrucciones de "tomate tiempo y pensá X" — el founder no es content creator, no tiene framework para generar desde cero.
+- Hacer la propuesta DEMASIADO larga sin ser claro qué espero del founder. Cerrar con "tu tarea ahora..." explícito.
+
+### Próxima vez aplicar a
+
+- Definir política de devoluciones / cambios detallada (cuando se active checkout).
+- Armar copy de páginas de marca cuando se agregue 2da marca con productos.
+- Definir guía de cómo medir DNP / probarse anteojos (si se agrega contenido educativo).
+- Estructurar webinar / blog editorial si el negocio crece a esa dirección.
+
+---
+
+## 2026-05-28 — Cuando founder responde "qué tengo que hacer?" tras instrucciones técnicas, la solución es REDUCIR pasos, no explicar más
+
+**Categoría**: Comunicación / Reducción de fricción para founder no-técnico
+**Confianza**: 🟢 Alta (caso claro, solución obvia en retrospectiva)
+
+### Qué pasó
+
+Le entregué instrucciones al founder para fixear el SVG de Paula:
+1. Abrí el archivo `paula-cahen-danvers-logo-dark.svg` en un editor de texto.
+2. Reemplazá la primera línea por esto: `<svg... viewBox="80 280 625 210" ...>`.
+3. Guardá → subí al bucket reemplazando.
+
+Founder respondió: **"que tengo que hacer?"**.
+
+Mi reacción correcta: NO repetir las instrucciones con más detalle. La respuesta del founder revelaba que el flujo "editar archivo local" era demasiado fricción (requiere editor de texto + encontrar la línea + cambiarla sin romper nada + guardar con encoding correcto).
+
+**Cambié de approach**: en lugar de pedirle que editara, **le entregué el SVG completo con el fix ya aplicado** y los pasos quedaron en 3: copiar → crear archivo nuevo (pegando) → subir reemplazando. Eliminé el paso "editar archivo existente" que era el cuello de botella.
+
+### Por qué funciona
+
+Cuando el founder dice "qué tengo que hacer?" tras instrucciones, está señalizando que **el costo cognitivo de las instrucciones supera su threshold**. Las causas típicas:
+
+- **Pasos involucran herramientas que no usa diariamente** (editor de texto plano para SVG).
+- **Riesgo percibido de "romper algo"** (¿qué pasa si edito mal la línea?).
+- **Pasos requieren conocimiento implícito** (¿qué editor uso? ¿qué encoding? ¿cómo guardo?).
+
+La solución NO es "explicar mejor cada paso". La solución es **eliminar pasos**.
+
+### Cómo replicar
+
+Cuando le pase al founder instrucciones técnicas, antes de enviar mensaje preguntarme:
+
+1. ¿Las instrucciones requieren que el founder ABRA / EDITE / TRANSFORME un archivo?
+2. ¿Podría YO hacer esa edición y entregarle el resultado final?
+3. Si sí → entregar resultado final, no instrucciones para producirlo.
+
+Específicamente:
+- **Edición de SVG**: pasarle el SVG completo modificado, no instrucciones de qué línea cambiar.
+- **Edición de SQL**: pasarle el statement completo listo para correr, no instrucciones de qué WHERE agregar.
+- **Edición de config files**: pasarle el archivo completo o el diff exacto en formato copy-paste.
+- **Edición de texto largo**: pasarle el texto final, no diffs textuales.
+
+Si el founder ya tiene un workflow para X (ej "subir archivo al bucket"), apoyarse en ESE flujo, no inventar uno nuevo (ej "editar archivo local").
+
+### Anti-patrón a evitar
+
+- Tras "qué tengo que hacer?" → repetir las mismas instrucciones más detalladas. Empeora.
+- Asumir que "editor de texto" es una herramienta universal trivial. Para el founder no-técnico es fricción real.
+- Pedirle al founder que haga un paso intermedio cuando YO podría producir el resultado final.
+
+### Próxima vez aplicar a
+
+- Edición de cualquier archivo de configuración / asset / SQL.
+- Cualquier flujo donde el founder tiene que "tocar" algo entre que yo le doy info y que sube el resultado.
+- Cuando proponga "fix manual" como solución → evaluar si lo puedo entregar como "fix automático" (archivo completo, statement completo, config completa).
+
+---
+
+## 2026-05-28 — Recortar `viewBox` al bounding box del contenido es el fix correcto para SVGs con mucho aire interno
+
+**Categoría**: SVG / Optimización de assets / Edición directa de archivos
+**Confianza**: 🟢 Alta (técnica estándar SVG, predecible, no requiere cambios de código)
+
+### Qué pasó
+
+SVG de Paula Cahen D'Anvers venía con `width="768" height="768"` y sin `viewBox` explícito (implícito = `0 0 768 768`). El contenido visual real ocupaba solo ~26% del cuadrado.
+
+Diagnosticé el bounding box analizando los `transform="translate(x,y)"` de cada `<path>` + las coordenadas internas:
+- **Símbolo (corona)**: paths con `translate(371, 326)`, `translate(383, 367)`, `translate(377, 292)`. Coords internas iban de -50 a +80 aprox. Resultado: símbolo ocupa `(319, 292)` a `(448, 397)`.
+- **Texto**: paths con `translate(x, 452-453)` donde `x` iba de 92 (primer carácter) a 671.9 (último). Cada path tiene ancho ~24 unidades. Resultado: texto ocupa `(92, 452)` a `(696, 477)`.
+- **Bounding box total**: `(80, 280)` a `(705, 490)` = **625×210** (con padding 10-15 unidades).
+
+Fix aplicado: cambiar la primera línea del SVG agregando `viewBox="80 280 625 210"` + ajustar `width="625"` y `height="210"`. **Sin tocar ningún `<path>` interno**.
+
+### Por qué funciona
+
+- `viewBox` define qué porción del "espacio infinito" del SVG es visible. Al recortar al bounding box del contenido, todo el "aire" alrededor se elimina del render.
+- Las coordenadas internas de los paths NO cambian (siguen siendo las mismas absolute coords). Solo cambia lo que el navegador renderiza dentro del `<img>`.
+- `width/height` del root SVG ahora matchean el aspect ratio real del contenido → `object-contain` escala todo el contenido al ancho/alto del contenedor.
+- Resultado: cuando el container es `h-20` (80px), todo el contenido visual ocupa esos 80px, no el 26%.
+
+### Cómo replicar
+
+Para CUALQUIER SVG (logo, ícono, ilustración) que se ve "chico dentro de su contenedor":
+
+1. **Diagnóstico**: ¿el contenedor está bien dimensionado y el contenido visual se ve achicado? → problema es del SVG.
+2. **Calcular bounding box**:
+   - Mirar todos los `transform="translate(x,y)"` de cada `<path>` / `<g>`.
+   - Para cada uno, analizar las coordenadas internas y calcular `min_x`, `min_y`, `max_x`, `max_y` absolutos.
+   - El bounding box es `(min_x, min_y, max_x - min_x, max_y - min_y)`.
+3. **Setear `viewBox`** con el bounding box + 5-15 unidades de padding a cada lado para que no quede pegado.
+4. **Ajustar `width/height`** del root SVG para que el aspect ratio matchee el viewBox.
+5. **Reemplazar archivo en bucket** (mismo path → no cambia DB).
+6. Hard refresh para invalidar cache si no se ve actualizado.
+
+### Anti-patrón a evitar
+
+- Intentar ajustar el SVG con CSS (transform: scale) — más complejo, frágil, mantiene el aire.
+- Re-exportar el SVG desde Illustrator / Figma "con padding 0" sin entender qué hace — capaz no resuelve.
+- Pedirle al founder "buscar otro asset" cuando el fix en el actual es 30 segundos.
+
+### Próxima vez aplicar a
+
+- Cualquier asset SVG futuro que se vea chico en su contenedor.
+- Íconos custom de medios de pago, badges, sellos de certificación.
+- Banners promocionales si vienen con padding interno.
+- Ilustraciones de cómo medir DNP o probarte un armazón (si en algún momento se agregan).
+
+---
+
+## 2026-05-28 — Cuando UN asset individual no se ve bien, arreglar el asset — NO ajustar el render global que afecta a todos los demás
+
+**Categoría**: Diseño / Decisión técnica / Defaults vs excepciones
+**Confianza**: 🟢 Alta (caso claro identificado y decisión documentada con razonamiento explícito)
+
+### Qué pasó
+
+Tras 2 fixes de tamaño en `brands-section.tsx` (h-10 → h-12/h-14 → h-16/h-20), el founder reportó que Paula Cahen D'Anvers seguía chico. Me pidió: "podés aumentarlo más de tamaño o busco otra imagen?".
+
+**Resistí la tentación de aumentar tamaño en código una 3ra vez**. Razonamiento explícito:
+
+- Los otros 4 logos (Rusty, Vulk, Mormaii — wordmarks horizontales; Reef — cuadrado) YA están en buen tamaño visual.
+- Paula es un outlier: su SVG tiene viewBox con mucho aire interno (contenido ocupa ~30% del cuadrado).
+- Aumentar tamaño global empeora 4 logos para arreglar 1.
+
+**Solución correcta**: arreglar el SVG de Paula (recortar viewBox al bounding box del contenido visible) o conseguir otra versión optimizada.
+
+### Por qué este patrón es importante
+
+Es la versión específica del principio "**fix at the source, not downstream**". Cuando un asset individual está mal, el costo de "arreglarlo en el renderer" es:
+- Empeorar la UX de todos los assets bien hechos.
+- Esconder el problema real del asset.
+- Acumular hacks específicos (Paula = h-24, resto = h-20).
+- Si en el futuro Paula se reemplaza, los hacks quedan dañando los nuevos assets.
+
+El costo de "arreglarlo en el asset" es:
+- 2 minutos editando el SVG (ajustar `viewBox`).
+- Un asset bien optimizado funciona para CUALQUIER tamaño de render futuro.
+
+### Cómo aplicar el principio
+
+Antes de hacer un ajuste en el código que afecta múltiples assets para resolver un problema de UNO:
+
+1. **Pregunta**: ¿el problema es del asset (mal exportado, viewBox aireado, formato incorrecto) o del código?
+2. **Si es del asset** → arreglar el asset. Costo predecible, beneficio duradero.
+3. **Si es del código** → ajustar el código. Verificar que el ajuste mejora la UX de todos los assets, no solo el problemático.
+
+### Anti-patrón a evitar
+
+- "Subir el tamaño otro escalón a ver si Paula se ve bien" → vas a ver que se ve "mejor" pero los otros se ven "demasiado grandes" sin que lo notes hasta que el founder lo señale. Pérdida progresiva de calidad visual.
+- Hardcodear excepciones por slug ("si brand.slug === 'paula' → h-24"). Acopla el código a datos específicos, difícil de mantener.
+- Considerar "arreglar el SVG" como tarea "de diseño" fuera del alcance del developer. Editar un `viewBox` en un SVG es 30 segundos con un editor de texto, está dentro del alcance.
+
+### Próxima vez aplicar a
+
+- Cualquier feature de assets visuales (logos, fotos producto, banners, íconos).
+- Cuando un producto puntual no se vea bien en el grid pero los demás sí.
+- Cuando un email render se vea raro para UN destinatario pero bien para todos.
+- Cuando UN dato en DB rompe una query agregada pero el resto funciona — fix the data, not the query.
+
+---
+
 ## 2026-05-28 — SVGs de logos tienen aspect ratios y composiciones internas muy heterogéneas — el render con altura fija necesita margen para el peor caso
 
 **Categoría**: Diseño / Rendering / Assets variables

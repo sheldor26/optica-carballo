@@ -11,6 +11,7 @@ import { ProductHighlights } from '@/components/product/product-highlights';
 import { ProductIncludes } from '@/components/product/product-includes';
 import { ProductMeasurements } from '@/components/product/product-measurements';
 import { RelatedProducts } from '@/components/product/related-products';
+import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
@@ -286,6 +287,13 @@ export async function ProductDetailPage({
           />
         </RevealOnScroll>
       )}
+
+      <RevealOnScroll>
+        <WhatsappAdvisorCard
+          productName={product.name}
+          brandName={product.brand.name}
+        />
+      </RevealOnScroll>
 
       <RelatedProducts products={relatedProducts} />
     </main>
