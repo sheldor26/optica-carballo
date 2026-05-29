@@ -25,6 +25,8 @@ export const FOOTER_INFO_LINKS: NavLink[] = [
   { href: '/sobre-nosotros', label: 'Sobre nosotros' },
   { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
   { href: '/politica-de-devolucion', label: 'Política de cambios y devoluciones' },
+  { href: '/politica-de-privacidad', label: 'Política de privacidad' },
+  { href: '/terminos-y-condiciones', label: 'Términos y condiciones' },
   { href: '/boton-de-arrepentimiento', label: 'Botón de arrepentimiento' },
   { href: '/defensa-del-consumidor', label: 'Defensa del consumidor' },
 ];

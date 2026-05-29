@@ -24,6 +24,46 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Asumí que `console.error` en Vercel iba a ser suficiente para debugging post-mortem
+
+**Estado**: 🟡 Mitigado — agregué DB logging como backup en oauth.ts.
+**Categoría**: Observabilidad / Asunciones implícitas sobre infra
+
+### Qué pasó
+
+Sprint 2a: agregué `console.error('[ml-oauth] code exchange failed', {status, body})` confiando que aparecería en Vercel logs si fallaba. Al primer fallo real (validation_error de ML):
+- MCP `get_runtime_logs` con query `oauth` / `[ml]` → "timed out before all pages were fetched".
+- Sin query, no aparecía el log específico — solo el 307 del redirect.
+- Asumí consistencia de logs; realidad: `console.error` desde route handlers tiene comportamiento flaky en Vercel.
+
+### Causa raíz
+
+Asunción no verificada sobre infra de logs. "Es Vercel, los logs funcionan" — no siempre. MCP queries timeout, `console.error` puede no persistir en algunos tiers/configs, sampling/buffering reduce visibilidad.
+
+### Regla preventiva
+
+Para CUALQUIER endpoint nuevo que maneje integración con tercero (OAuth, webhooks, API externa):
+- `console.error` con prefix consistente → mínimo.
+- PERO también `await logToDB({...})` con tabla específica → backup permanente.
+- Endpoint debug temporal `/api/X/debug-last-error` durante setup.
+- Eliminar endpoint debug tras feature estable.
+
+### Aplicación
+
+En este turn:
+- `lib/integrations/mercadolibre/oauth.ts` persiste error en `marketplace_sync_errors`.
+- `app/api/ml/debug-last-error/route.ts` lee últimos 5 sin auth (temporal).
+
+### Documentado positivo en LEARNINGS
+
+Entry "Two-tier logging: DB como backup cuando runtime logs son flaky" — patrón positivo que sale de este mistake.
+
+### Anti-pattern descubierto
+
+Confiar SOLO en runtime logs para debugging de errores críticos en integraciones externas.
+
+---
+
 ## 2026-05-29 — 15VA VEZ: hook insiste con updates aunque el turn sea operativo puro — ajusto a documentar siempre
 
 **Estado**: 🔴 Abierto — auto-disciplina v4-v8 no es suficiente.

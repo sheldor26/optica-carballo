@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Two-tier logging: DB como backup cuando runtime logs son flaky
+
+**Categoría**: Observability / Debugging / Resiliencia
+**Confianza**: 🟡 Media (caso aplicado, principio establecido)
+
+### Qué pasó
+
+OAuth callback ML falló con `validation_error`. Necesitaba ver el body de ML al rechazar el code. Tenía `console.error` en el código — debería aparecer en Vercel logs.
+
+Pero: MCP `get_runtime_logs` con query "oauth" daba timeout. Sin query, no aparecía el log específico — solo el 307 del redirect. `console.error` desde route handlers no aparece consistente.
+
+Solución: `await logMLSyncError(...)` que persiste el error en `marketplace_sync_errors` (Supabase). DB queryable por SQL, persistente, estructurado, independiente del runtime.
+
+### Por qué funciona
+
+- **Resiliencia**: si Vercel tiene outage o MCP timeout, DB sigue accesible.
+- **Permanencia**: logs de Vercel rotan (24h-30 días). DB queda para forensics.
+- **Análisis SQL**: `SELECT, count, group by operation`.
+- **Endpoint debug temporal**: `/api/ml/debug-last-error` lee últimos 5 sin auth.
+
+### Trade-off
+
+- Tabla crece sin pruning. Mitigación: cron periódico que purga errores resueltos > 90 días.
+- Duplicación (console.error + DB). Acepto — costo bajo, beneficio alto.
+
+### Aplicar a futuro
+
+Cualquier integración crítica con tercero (ML, MP, Resend, Tusfacturas):
+- Logs de runtime SIEMPRE (rapidez).
+- DB logging adicional para errores que requieren forensics.
+- Endpoint debug temporal hasta tener admin UI propia.
+
+### Patrón meta
+
+"Two-tier logging": logs efímeros para visibilidad realtime + DB para análisis histórico. **Anti-pattern**: confiar SOLO en runtime logs cuando son flaky.
+
+---
+
 ## 2026-05-29 — Git push trivial como trigger de redeploy Vercel cuando cambian env vars
 
 **Categoría**: DevOps / Vercel / Workflow

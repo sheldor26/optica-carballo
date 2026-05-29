@@ -545,6 +545,37 @@ Admin UI `/mi-cuenta/marketplace` + cron reconciliación + push stock sitio→ML
 
 ---
 
+## OAuth callback retornó validation_error — debugging infrastructure (2026-05-29)
+
+Founder autorizó la app pero ML redirigió a `?ml_oauth=error&reason=validation_error`. Tokens NO se guardaron. Vercel logs via MCP no muestran detalle del error.
+
+### Diagnóstico inicial
+
+`validation_error` se dispara cuando `exchangeCodeForTokens` recibe 400 de ML al intercambiar code → tokens. Causa más probable: `redirect_uri` enviado no matchea EXACTAMENTE el registrado en la app ML (diferencias sutiles: www vs sin, trailing slash, http vs https, mayúsculas).
+
+### Cambios técnicos en este turn
+
+**`lib/integrations/mercadolibre/oauth.ts`**:
+- `exchangeCodeForTokens` ahora persiste error en `marketplace_sync_errors` cuando ML rechaza el code. Payload: `stage='exchange_code'` + `status` + `body` (truncado 1000 chars) + `redirect_uri_sent`.
+- Razón: Vercel logs no son confiables via MCP (timeouts en queries) y `console.error` desde server routes a veces no aparece. DB es backup permanente y queryable por SQL desde Supabase Dashboard.
+
+**`app/api/ml/debug-last-error/route.ts`** (nuevo, TEMPORAL):
+- GET devuelve últimos 5 errores de sync ML desde DB.
+- Sin auth (estamos en setup, payload no expone tokens).
+- TODO: eliminar después de Sprint 2b + admin UI en Sprint 3.
+
+### Acciones del founder pendientes
+
+1. Verificar redirect URI registrado en developers.mercadolibre.com.ar matchea EXACTO `https://opticacarballo.com.ar/api/ml/oauth/callback`.
+2. Reintentar `/api/ml/oauth/initiate`.
+3. Si falla de nuevo, GET `/api/ml/debug-last-error` y mandar JSON.
+
+### Próximo paso
+
+Identificar causa exacta con body de error de ML, aplicar fix correspondiente. Una vez OAuth pase → Sprint 2b (procesamiento real del webhook stub).
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**

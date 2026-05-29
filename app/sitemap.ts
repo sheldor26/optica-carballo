@@ -97,6 +97,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.5,
     },
+    {
+      url: `${SITE_URL}/politica-de-privacidad`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${SITE_URL}/terminos-y-condiciones`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
   ];
 
   const brandUrls: MetadataRoute.Sitemap = (brands ?? []).flatMap((b) => [
