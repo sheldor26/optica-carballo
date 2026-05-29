@@ -22,6 +22,67 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Mega-menu hover-intent: 120ms open / 220ms close evita flickering
+
+**Categoría**: UX / Hover patterns
+**Confianza**: 🟡 Media (caso aplicado, timings industria estándar)
+
+### Qué pasó
+
+Mega-menu desktop sin hover-intent (delay 0) flickerea al mover el mouse rápido entre nav links. Con delay alto se siente lento.
+
+Aplicé timings estándar industria:
+- **120ms open**: cursor < 120ms = transit, no abre. ≥120ms = intencional, abre.
+- **220ms close**: tras mouseleave, espera antes de cerrar. Permite cruzar gap entre nav y panel.
+
+### Por qué funciona
+
+- 120ms < threshold "intencional vs accidental" (~150ms).
+- 220ms close > 120ms open: asimetría para forgiveness — empezar a salir y volver no cierra.
+- Cancel timers en cada interacción: si abrís A → mouseenter B → cancel open de A + schedule open B.
+
+### Aplicar a futuro
+
+Cualquier hover overlay (dropdowns, tooltips ricos, mega-menus):
+- Open delay 80-150ms.
+- Close delay 200-300ms.
+- Cancel timers en cada hover event para evitar leaks.
+
+### Anti-pattern
+
+Sin hover-intent = flickering. Mucha gente lo hace mal en sus primeros mega-menus.
+
+---
+
+## 2026-05-29 — Position fixed para overlays full-viewport dentro de container con padding
+
+**Categoría**: CSS / Layout / Overlays
+**Confianza**: 🟢 Alta (limitación CSS conocida + caso aplicado)
+
+### Qué pasó
+
+Mega-menu inicialmente `absolute inset-x-0 top-full` dentro de `<nav>` dentro de `<div className="container">`. Resultado: panel limitado al padding del container, NO full viewport.
+
+`inset-x-0` se resuelve respecto al ancestor positioned. Container con padding limita el ancho real.
+
+Solución: `position: fixed inset-x-0 top-14 md:top-16`. Fixed va al viewport, no al ancestor.
+
+### Por qué funciona
+
+- `fixed inset-x-0` → viewport completo.
+- `top-{header-h}` → debajo del header sticky.
+- z-index calibrado: 30 (sobre contenido, debajo de cursor follower).
+
+### Trade-off
+
+- Si el header cambia altura, hay que actualizar `top-X`. Mitigación futura: CSS var `--header-h`.
+
+### Anti-pattern
+
+Usar `absolute inset-x-0` dentro de container con padding esperando full width. NO funciona.
+
+---
+
 ## 2026-05-29 — Two-tier logging: DB como backup cuando runtime logs son flaky
 
 **Categoría**: Observability / Debugging / Resiliencia

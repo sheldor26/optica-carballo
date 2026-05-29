@@ -545,6 +545,60 @@ Admin UI `/mi-cuenta/marketplace` + cron reconciliación + push stock sitio→ML
 
 ---
 
+## Bundle "vamos con todos" mientras ML standby (2026-05-29) — 3 sprints
+
+ML en standby (founder no puede chequear redirect URI en ML hasta más tarde). Avancé con 3 sprints del backlog que NO requieren credenciales.
+
+### Sprint A — Legales (commit `001631c`)
+
+2 páginas nuevas usando `InfoPageShell`:
+- **`/politica-de-privacidad`**: ley 25.326 cumplida. Responsable, datos (incluyendo recetas como sensibles), terceros (MP/Andreani/Resend/Supabase/Vercel), ARCO, cookies, seguridad, menores.
+- **`/terminos-y-condiciones`**: identidad vendedor, productos, stock, pagos, AFIP, envíos, devoluciones (link), receta mandatoria, garantía, propiedad intelectual, limitación responsabilidad, ley aplicable + jurisdicción.
+
+Campos `[A CONFIRMAR]` marcados donde necesito data del founder (CUIT, razón social, domicilio). **Requirement legal mínimo para activar checkout con MP en producción.**
+
+Links sumados a `FOOTER_INFO_LINKS` + sitemap (priority 0.4).
+
+### Sprint B — Cookies banner (commit `6ee52d0`)
+
+`components/legal/cookies-banner.tsx`:
+- Aparece primer visit con delay 600ms.
+- 2 botones: "Aceptar todas" + "Solo necesarias".
+- Link a /politica-de-privacidad.
+- localStorage `oc_cookies_consent` con `{version, choice, timestamp}` (bump VERSION fuerza re-consent).
+- AnimatePresence + spring entry/exit.
+
+Compliance ley 25.326. Si activamos GA4 en futuro, leer consent antes de cargar el script.
+
+### Sprint C — Mega-menu desktop (este turn, próximo push)
+
+**Config declarativa** `lib/site/mega-nav.ts`:
+- `BRAND_SLUGS` + `BRAND_LABELS`: 5 marcas activas.
+- 3 builders: `buildSolMegaColumns` (3 cols: Por forma con `?forma=X` / Por marca / Por marca y filtro hijas SEO), `buildRecetaMegaColumns` (3 cols), `buildMarcasMegaColumns` (1 col).
+
+**DesktopNav refactor**:
+- Hover en sol/receta/marcas → abre mega panel.
+- Hover-intent: 120ms open / 220ms close (evita flickering).
+- Panel `position: fixed top-14 md:top-16 inset-x-0` para full viewport width.
+- AnimatePresence + slide-fade.
+- ESC cierra. Click en link cierra (navigation).
+- A11y: `aria-haspopup` + `aria-expanded`.
+- Mobile no se renderiza (`md:flex`) — drawer existente sigue.
+
+### Decisiones técnicas
+
+- **Páginas legales template**: `[A CONFIRMAR]` explícito, NO inventar.
+- **Cookies localStorage vs cookie**: localStorage por simplicidad client-only.
+- **Mega-menu config declarativa**: nueva marca = 1 edición en BRAND_SLUGS → se refleja en todos los megas.
+- **Hover timings 120/220 ms**: industria estándar.
+- **Panel `position: fixed`**: resuelve `inset-x-0` dentro de container con padding lateral.
+
+### Próximo paso
+
+Push Sprint C. Cuando ML se destrabe, vuelvo a Sprint 2b (procesamiento webhook real).
+
+---
+
 ## OAuth callback retornó validation_error — debugging infrastructure (2026-05-29)
 
 Founder autorizó la app pero ML redirigió a `?ml_oauth=error&reason=validation_error`. Tokens NO se guardaron. Vercel logs via MCP no muestran detalle del error.

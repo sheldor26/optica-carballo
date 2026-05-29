@@ -24,6 +24,24 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Triple sprint cierre EXITOSO (legales + cookies + mega-menu)
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+3 sprints en 1 turn con commits separados (`001631c`, `6ee52d0`, próximo Sprint C). Build verde cada uno. Aplicación correcta de regla v5 + v7 + v9.
+
+Decisiones técnicas tomadas sin agente:
+- Páginas legales con `[A CONFIRMAR]` explícito (no inventar).
+- Cookies banner localStorage vs cookie (client-only simplicidad).
+- Mega-menu config declarativa (1 edit → todos los megas).
+- Hover timings 120/220 ms estándar.
+- `position: fixed` para mega panel (resuelve `inset-x-0` issue).
+
+Sin mistake nuevo. 16 sprints consecutivos sin proceso fallido.
+
+---
+
 ## 2026-05-29 — Asumí que `console.error` en Vercel iba a ser suficiente para debugging post-mortem
 
 **Estado**: 🟡 Mitigado — agregué DB logging como backup en oauth.ts.
