@@ -23,6 +23,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 function toCardData(
   p: ProductCardSource,
   hrefPrefix: string,
+  categorySlug: string,
+  brandSlug: string,
 ): ProductCardData {
   const inStock = p.variants.filter((v) => v.is_active && v.stock_qty > 0);
   const sortedImages = [...(p.images ?? [])].sort((a, b) => {
@@ -39,6 +41,8 @@ function toCardData(
     primaryImagePath: sortedImages[0]?.storage_path ?? null,
     secondaryImagePath: sortedImages[1]?.storage_path ?? null,
     href: `${hrefPrefix}/${p.slug}`,
+    categorySlug,
+    brandSlug,
   };
 }
 
@@ -53,7 +57,9 @@ export function BrandCatalogPage({
 }) {
   const pageUrl = `${SITE_URL}/${category.slug}/${brand.slug}`;
   const hrefPrefix = `/${category.slug}/${brand.slug}`;
-  const items = products.map((p) => toCardData(p, hrefPrefix));
+  const items = products.map((p) =>
+    toCardData(p, hrefPrefix, category.slug, brand.slug),
+  );
 
   return (
     <main className="container py-8 md:py-12">

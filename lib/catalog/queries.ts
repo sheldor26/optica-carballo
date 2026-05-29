@@ -509,6 +509,88 @@ export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | 
   return null;
 }
 
+type WishlistProductRow = {
+  slug: string;
+  name: string;
+  short_description: string | null;
+  brand: { slug: string; name: string; is_active: boolean };
+  category: { slug: string; is_active: boolean };
+  variants: Array<{ price_cents: number; stock_qty: number; is_active: boolean }>;
+  images: Array<{ storage_path: string; is_primary: boolean; sort_order: number }>;
+};
+
+export type WishlistProductCard = {
+  slug: string;
+  name: string;
+  brandSlug: string;
+  brandName: string;
+  categorySlug: string;
+  shortDescription: string | null;
+  minPriceCents: number | null;
+  inStockCount: number;
+  primaryImagePath: string | null;
+  secondaryImagePath: string | null;
+};
+
+/**
+ * Fetch productos por slugs (para página /favoritos). Devuelve solo los
+ * que están activos + brand activa + categoría activa. Si un producto del
+ * wishlist fue desactivado, no aparece (el usuario verá menos items que
+ * los guardados — comportamiento esperado).
+ */
+export async function fetchProductsBySlugs(
+  slugs: string[],
+): Promise<WishlistProductCard[]> {
+  if (slugs.length === 0) return [];
+
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        short_description,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug, is_active),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order)
+      `,
+    )
+    .in('slug', slugs)
+    .eq('is_active', true)
+    .returns<WishlistProductRow[]>();
+
+  if (!data) return [];
+
+  return data
+    .filter((row) => row.brand.is_active && row.category.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter(
+        (v) => v.is_active && v.stock_qty > 0,
+      );
+      const sortedImages = [...row.images].sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return a.sort_order - b.sort_order;
+      });
+      return {
+        slug: row.slug,
+        name: row.name,
+        brandSlug: row.brand.slug,
+        brandName: row.brand.name,
+        categorySlug: row.category.slug,
+        shortDescription: row.short_description,
+        minPriceCents:
+          inStock.length > 0
+            ? Math.min(...inStock.map((v) => v.price_cents))
+            : null,
+        inStockCount: inStock.length,
+        primaryImagePath: sortedImages[0]?.storage_path ?? null,
+        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+      };
+    });
+}
+
 /**
  * Para `generateStaticParams` de páginas de producto: devuelve las
  * combinaciones {brand, product} para una categoría específica.

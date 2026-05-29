@@ -2,7 +2,47 @@
 
 ## Status
 
-🟡 **Herramientas IA: visibilidad agregada (footer + home section destacada) — pendiente push**
+🟡 **Wishlist / Favoritos implementado — sistema completo iter 1, pendiente push**
+
+Founder eligió wishlist como próxima feature. Implementación con cookies (sin auth) para máxima accesibilidad — sync a DB queda para iter 2 si se activa remarketing por email.
+
+**Arquitectura**:
+- **Cookie `oc_wishlist`**: JSON array de `WishlistEntry` (slug + category + brand). Max 50 items, 90 días de duración, sameSite lax, no httpOnly (necesitamos leer client-side para el badge).
+- **Server-side (`lib/wishlist/cookie.ts`)**: `readWishlistCookie()`, `toggleWishlist()`. Marcado `'use server'`.
+- **Client-side (`lib/wishlist/client.ts`)**: `readWishlistClientSide()` para badge sin server round-trip.
+- **Server action (`lib/wishlist/actions.ts`)**: `toggleWishlistAction()` con `revalidatePath('/favoritos')`.
+
+**UI components**:
+- `components/wishlist/wishlist-button.tsx`: 2 variantes (`card` = corazón flotante absoluto sobre card, `inline` = botón con texto al lado de CTAs). Estado optimista + transition. Animación scale al toggle. Hydration-safe (esquele en SSR).
+- `components/wishlist/wishlist-badge.tsx`: en el header, link a `/favoritos` con count. Badge se actualiza al focus de la ventana + polling cada 1.5s para captar cambios en otro tab.
+
+**Integración**:
+- `ProductCard` ahora tiene WishlistButton flotante. **Fix HTML**: el button está como sibling del Link (no dentro), porque `<button>` dentro de `<a>` es HTML inválido. `<article>` wrapper es relative para que el botón posicionado absolute funcione.
+- `ProductCardData` extendido con `categorySlug` + `brandSlug` (necesarios para construir WishlistEntry).
+- `toCardData()` en brand-page recibe los 2 slugs nuevos.
+- `product-page.tsx`: WishlistButton variant=inline al lado del WhatsappCta.
+- `site-header.tsx`: WishlistBadge antes del CartBadge.
+
+**Página `/favoritos`** (`app/(storefront)/favoritos/page.tsx`):
+- Server component que lee cookie + `fetchProductsBySlugs()` (nuevo helper en `queries.ts`).
+- Filtra productos con brand/category inactivos (si se desactiva un favorito, no aparece).
+- Ordena según el orden del wishlist (más reciente primero).
+- Empty state con gradient + glow ámbar + dual CTA.
+- Privacy note al final.
+- `robots: { index: false }` porque es página personal del usuario.
+- ISR no aplica (`force-dynamic`).
+
+**Decisiones técnicas**:
+- **Cookie en vez de DB**: cero fricción, funciona sin login. Si activamos remarketing por email en futuro, sync en login a tabla wishlist Supabase con RLS.
+- **No httpOnly**: necesitamos leer client-side para el badge en header. Tradeoff seguridad acceptable (no es info sensible, sólo slugs públicos).
+- **Polling de 1.5s en badge**: alternativa a evento custom (más complejidad). Si se vuelve problema de performance, agregamos custom event en `toggleWishlistAction` para que actualice todos los badges abiertos.
+- **Max 50 items**: cookie ~2KB con 50 entries, dentro del límite seguro.
+
+**Build verde, typecheck verde**. Tamaños:
+- `/favoritos`: `1.66 kB / 160 kB First Load`, dynamic.
+- Otros bundles sin cambio significativo.
+
+
 
 Founder reportó "no veo el lector de receta ni el probador de monturas". Diagnóstico: páginas existían pero NO había navegación que las descubriera (solo accesibles por URL directa o sitemap). Fix:
 

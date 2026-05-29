@@ -14,6 +14,7 @@ import { RelatedProducts } from '@/components/product/related-products';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
+import { WishlistButton } from '@/components/wishlist/wishlist-button';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
@@ -265,7 +266,17 @@ export async function ProductDetailPage({
 
           <ProductMeasurements attributes={product.attributes} />
 
-          <WhatsappCta productName={product.name} inStock={isInStock} />
+          <div className="flex flex-wrap items-center gap-2">
+            <WhatsappCta productName={product.name} inStock={isInStock} />
+            <WishlistButton
+              entry={{
+                slug: product.slug,
+                category: category.slug,
+                brand: product.brand.slug,
+              }}
+              variant="inline"
+            />
+          </div>
         </div>
 
         <div className="md:col-start-1 md:row-start-2">

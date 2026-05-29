@@ -22,6 +22,61 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Wishlist con cookies (no DB) baja la fricción a CERO: funciona sin login + es trivial sumar sync a DB después
+
+**Categoría**: Arquitectura / E-commerce / Decisiones de persistencia
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente confirmar uso real)
+
+### Qué pasó
+
+Al implementar wishlist tuve 2 opciones:
+
+**A. DB-first**: tabla Supabase `wishlist` con RLS, requiere login. Pros: persistencia entre devices, datos para remarketing. Contras: cliente NO logueado no puede usar (alta fricción), implementación con cookie fallback duplica trabajo.
+
+**B. Cookie-first**: array de slugs en cookie, sin login required. Pros: cero fricción (cualquier visitante puede usar), implementación más simple, no toca DB. Contras: no sync entre devices, no datos para remarketing en iter 1.
+
+Elegí B. Razones específicas:
+- Iter 1 de wishlist en sitio sin tráfico real: validar primero si la feature se USA antes de complejizar.
+- La auth está implementada pero NADIE se va a registrar solo para guardar favoritos. Forzar login = matar el feature.
+- Sync a DB en iter 2 es trivial: en `auth/callback` chequear si cookie tiene items → INSERT en tabla wishlist con user_id + clear cookie.
+- Los slugs son data PÚBLICA, no hay riesgo de exponerlos en cookie no httpOnly.
+
+### Por qué funciona
+
+- **Cero fricción** = máxima adopción. El cliente toca corazón → guardado. No hay paso intermedio.
+- **Cookie ~2KB** con 50 entries es seguro (límite browser ~4KB).
+- **Server actions + revalidatePath** permiten que `/favoritos` siempre muestre lo actual.
+- **Client-side read** del cookie (no httpOnly) permite badge en header sin server round-trip.
+
+### Cómo aplicar este pattern
+
+Para CUALQUIER feature de persistencia ligera que NO requiere auth crítica:
+
+1. **Empezar con cookies/localStorage** si:
+   - Data es pública (slugs, IDs públicos, preferencias UI).
+   - Volumen es bajo (<5KB).
+   - No requiere sync entre devices en iter 1.
+2. **Pasar a DB** cuando:
+   - Necesitás sync entre devices.
+   - Querés remarketing/analytics sobre la data.
+   - Volumen excede cookie limits.
+3. **Migración cookie → DB** se hace en el momento de login del user (callback de auth) — simple, sin sync continuo.
+
+### Anti-patrón a evitar
+
+- Forzar login para features de baja sensibilidad (wishlist, último visto, carrito anónimo). Mata adopción.
+- Sobre-ingeniería en iter 1: implementar DB + cookie + sync sin saber si la feature se usa.
+- Confundir "feature requiere persistencia" con "feature requiere DB". A veces cookie basta.
+
+### Aplicaciones futuras
+
+- "Productos vistos recientemente": cookie con array de slugs, max 10.
+- Preferencias UI (dark mode toggle, idioma): cookie.
+- "Tu lista de comparación" (cuando se implemente): cookie array de slugs hasta 4.
+- "Tu carrito" anónimo (ya implementado con cookie en el proyecto).
+
+---
+
 ## 2026-05-28 — Crear página + API ≠ feature live. Sin navegación visible para el cliente, la feature no existe en producción.
 
 **Categoría**: Discoverability / UX / Cierre de loop de implementación

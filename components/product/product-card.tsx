@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
 export type ProductCardData = {
   slug: string;
@@ -15,6 +16,9 @@ export type ProductCardData = {
    * hacer hover sobre la card — patrón clásico de e-commerce de óptica/moda. */
   secondaryImagePath: string | null;
   href: string;
+  /** Para construir entry de wishlist. */
+  categorySlug: string;
+  brandSlug: string;
 };
 
 /**
@@ -22,10 +26,9 @@ export type ProductCardData = {
  * Sin Card wrapper visible (sin border/shadow/padding). Foto domina,
  * nombre uppercase + precio centrados debajo. "Sin stock" sutil.
  *
- * Decisión 2026-05-28 (founder): el nombre NO incluye marca porque la
- * página del catálogo ya está scopeada por marca en la URL — sería
- * redundante. La descripción corta tampoco se muestra en el listado;
- * el usuario la ve en la página de detalle.
+ * El WishlistButton va como sibling del Link (no DENTRO) para evitar
+ * HTML inválido (<button> dentro de <a> es ilegal). El article wrapper
+ * es relative para que el botón posicionado absolute funcione.
  */
 export function ProductCard({ product }: { product: ProductCardData }) {
   const outOfStock = product.inStockCount === 0;
@@ -37,12 +40,20 @@ export function ProductCard({ product }: { product: ProductCardData }) {
     : null;
 
   return (
-    <Link
-      href={product.href}
-      className="group/card block h-full"
-      aria-label={product.name}
-    >
-      <article className="flex h-full flex-col">
+    <article className="relative flex h-full flex-col">
+      <WishlistButton
+        entry={{
+          slug: product.slug,
+          category: product.categorySlug,
+          brand: product.brandSlug,
+        }}
+        variant="card"
+      />
+      <Link
+        href={product.href}
+        className="group/card flex h-full flex-col"
+        aria-label={product.name}
+      >
         <div
           className="bg-background relative aspect-[4/3] w-full overflow-hidden"
           aria-hidden="true"
@@ -93,7 +104,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <p className="text-muted-foreground/70 mt-0.5 text-xs">Sin stock</p>
           )}
         </div>
-      </article>
-    </Link>
+      </Link>
+    </article>
   );
 }

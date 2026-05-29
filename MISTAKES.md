@@ -285,6 +285,70 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — `<button>` dentro de `<a>` es HTML inválido — refactor a sibling con wrapper relative
+
+**Estado**: 🟡 Detectado mientras implementaba wishlist en ProductCard. Corregido en el mismo turno.
+**Categoría**: HTML semántico / Validación / Componentes interactivos
+
+### Qué pasó
+
+Al sumar el WishlistButton dentro del ProductCard, inicialmente lo metí adentro del `<Link>` (que renderiza como `<a>`). El botón quedó como descendiente del link. Estructura:
+
+```tsx
+<Link>
+  <article>
+    <div>
+      <WishlistButton /> // <button> adentro de <a>
+      <Image />
+    </div>
+    ...
+  </article>
+</Link>
+```
+
+**Eso es HTML inválido**. La especificación dice: **interactive content (button, a, input) NO puede ser descendiente de un `<a>` o `<button>`**. Aunque visualmente funciona, el browser corrige el DOM en runtime de forma impredecible, afectando accesibilidad y eventos.
+
+### Causa raíz
+
+Por inercia mental: "el botón está sobre la card, tiene que ir adentro del wrapper de la card". Pero el wrapper de la card ES un `<a>` (Link). El botón debe ser sibling, no descendiente.
+
+### Fix
+
+```tsx
+<article className="relative ..."> {/* wrapper relative para posicionar el botón */}
+  <WishlistButton /> {/* sibling del Link, posicionado absolute */}
+  <Link>
+    <div>
+      <Image />
+    </div>
+    ...
+  </Link>
+</article>
+```
+
+El `<button>` queda como hermano del `<a>` dentro del `<article>` relative. `position: absolute` con `top-2 right-2` lo posiciona sobre la imagen. Click del botón funciona normal sin conflicto con el link.
+
+### Regla preventiva
+
+Cuando un componente con contenido interactivo (botón, link, input) vaya **sobre** otro contenido interactivo (típicamente un Link wrapper):
+
+1. NO meterlo adentro del wrapper interactivo.
+2. **SÍ** envolver ambos en un wrapper relative neutro (`<article>`, `<div>`).
+3. El elemento "principal" puede ser el wrapper interactivo (Link), el secundario va como sibling con position absolute.
+
+Casos típicos donde aplica:
+- Wishlist heart sobre product card.
+- Botón "agregar al carrito" sobre product card.
+- Botón "compartir" sobre cualquier card clickeable.
+- Acciones rápidas sobre cards de orden/cita/cualquier listing.
+
+### Estado de mitigación
+
+- Fix aplicado en este turno. Pattern documentado.
+- Si vuelvo a meter contenido interactivo dentro de Links sin pensar, escalar regla a CLAUDE.md.
+
+---
+
 ## 2026-05-28 — Declarar features IA "listas" sin agregar navegación visible para el cliente
 
 **Estado**: 🟡 Detectado por feedback del founder ("no veo el lector de receta ni el probador de monturas"). Fix aplicado en mismo turno.
