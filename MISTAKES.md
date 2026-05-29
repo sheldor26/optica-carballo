@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint /marcas índice: cierre EXITOSO
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint /marcas (query + página + nav update + sitemap) ejecutado limpio. Build verde. Sin mistake nuevo.
+
+CLOUD_APPLIED.md actualizado: migration `20260528180000_newsletter_subscribers.sql` ahora ✅ confirmada por founder (estaba ⏳ pendiente).
+
+11 sprints consecutivos sin mistake de proceso. Sigo aplicando regla v5 (bloque ✅ Archivos actualizados explícito en mensaje de cierre).
+
+---
+
 ## 2026-05-29 — Sprint search global: cierre EXITOSO
 
 **Estado**: 🟢 Cumplido.

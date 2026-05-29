@@ -22,6 +22,43 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Hub `/marcas` linkea a las brand pages (que ya tienen story editorial) = SEO + UX gratis
+
+**Categoría**: Arquitectura de información / Reuso
+**Confianza**: 🟡 Media (1 caso aplicado)
+
+### Qué pasó
+
+Necesitaba una página índice de marcas. Tenía 2 opciones:
+
+**A. Página standalone con su propio contenido**: hero + descripción + reuse parcial de info.
+**B. Página índice "thin" que linkea a las brand pages ya existentes** (donde está toda la story editorial gracias al sprint anterior de brand-story-section).
+
+Elegí B. Razones:
+- Las brand pages YA tienen story + tagline + meta strip + differentials (5 marcas cubiertas).
+- `/marcas` solo necesita: nombre + logo + tagline corto + count + link.
+- Sin duplicar copy. Si el founder edita `lib/brands/copy.ts`, ambas páginas se actualizan.
+
+### Por qué funciona
+
+- **Single source of truth**: `lib/brands/copy.ts` provee tagline para `/marcas` y story completa para `/[brand]`.
+- **Funnel claro**: `/marcas` (browse) → `/anteojos-de-sol/[brand]` (story + catálogo) → `/anteojos-de-sol/[brand]/wayfarer` (filtrado SEO) → `/[brand]/[product]` (PDP).
+- **SEO**: cada step tiene su propio keyword target sin duplicate content.
+- **Mobile**: el grid se colapsa a 1 col, las cards son tappeables fácil.
+
+### Trade-off
+
+- Si el founder ajusta tagline en `lib/brands/copy.ts`, debe revisar visualmente que el texto entre bien en la card de `/marcas` (~150 chars max razonables). Sin guardrails técnicos para esto iter 1.
+
+### Aplicar a futuro
+
+Cualquier "hub" page que existe sobre entidades ya con páginas propias (categorías, marcas, autores, colecciones):
+- NO duplicar contenido. Solo: identidad mínima + descriptor corto + link.
+- Reusar el dict/source-of-truth existente.
+- El usuario que quiere detalle entra a la página específica.
+
+---
+
 ## 2026-05-29 — ⌘K + `/` como atajos de search es lo que el usuario power-user espera
 
 **Categoría**: UX / Keyboard shortcuts / DX

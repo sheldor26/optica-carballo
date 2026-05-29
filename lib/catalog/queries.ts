@@ -496,6 +496,72 @@ export async function fetchAllActiveBrands(): Promise<
   return data ?? [];
 }
 
+export type BrandIndexEntry = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  is_argentine: boolean;
+  logo_url: string | null;
+  productCount: number;
+};
+
+type BrandWithProductsRow = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  is_argentine: boolean;
+  logo_url: string | null;
+  sort_order: number;
+  products: Array<{ id: string; is_active: boolean }>;
+};
+
+/**
+ * Devuelve TODAS las marcas activas con count total de productos activos
+ * (sumando sol + receta). Para la página índice `/marcas`.
+ *
+ * Marcas sin productos activos NO aparecen (inner join + filter).
+ */
+export async function fetchBrandsIndex(): Promise<BrandIndexEntry[]> {
+  const supabase = createStaticClient();
+
+  // Trae todas las marcas activas + productos activos como array embebido.
+  // `inner` filtra brands con >= 1 product. El filter `products.is_active`
+  // se aplica dentro de cada brand.
+  const { data } = await supabase
+    .from('brands')
+    .select(
+      `
+        id,
+        slug,
+        name,
+        description,
+        is_argentine,
+        logo_url,
+        sort_order,
+        products(id, is_active)
+      `,
+    )
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+    .returns<BrandWithProductsRow[]>();
+
+  if (!data) return [];
+
+  return data
+    .map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      description: row.description,
+      is_argentine: row.is_argentine,
+      logo_url: row.logo_url,
+      productCount: row.products.filter((p) => p.is_active).length,
+    }))
+    .filter((b) => b.productCount > 0);
+}
+
 /**
  * Página índice de categoría (`/anteojos-de-sol`, `/anteojos-de-receta`):
  * devuelve las marcas que tienen al menos 1 producto activo en la

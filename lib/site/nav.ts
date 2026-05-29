@@ -13,6 +13,7 @@ export type NavLink = {
 export const PRIMARY_NAV: NavLink[] = [
   { href: '/anteojos-de-sol', label: 'Anteojos de sol' },
   { href: '/anteojos-de-receta', label: 'Anteojos de receta' },
+  { href: '/marcas', label: 'Marcas' },
 ];
 
 /**

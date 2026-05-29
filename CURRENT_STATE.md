@@ -197,6 +197,52 @@ Push + verificación visual. Probar ⌘K en cualquier página.
 
 ---
 
+## Página /marcas índice + nav
+
+Founder confirmó migration newsletter aplicada ✅. Avanzo con backlog: `/marcas` como hub central para descubrimiento.
+
+### Lo que se agregó
+
+**Query nueva** (`lib/catalog/queries.ts`):
+- `fetchBrandsIndex()` → `BrandIndexEntry[]` con productCount total (sol + receta) por marca.
+- Inner join `brands → products` con `is_active = true` en ambos.
+- Marcas SIN productos activos NO aparecen (filtrado client-side post-fetch).
+
+**Página `/marcas`** (`app/(storefront)/marcas/page.tsx`):
+- Hero centrado con título serif italic.
+- Subtítulo dinámico: "5 marcas con stock real confirmado. N modelos en total."
+- Grid responsive (1 / 2 / 3 cols) de cards de marca.
+- **Card de marca**: logo grande arriba en bg muted → nombre → tagline (de `lib/brands/copy.ts`) → divider → footer con count modelos + país + "Ver catálogo →".
+- Hover: border foreground + shadow + arrow translate.
+- Empty state si no hay marcas con productos.
+- ContactCta al final ("¿Buscás otra marca?").
+- `ItemList` JSON-LD con marcas en orden.
+
+**Nav primario** (`lib/site/nav.ts`):
+- Sumado link "Marcas" entre Anteojos de receta y nada (3era posición).
+- Aparece en `DesktopNav` y `MobileNav` automáticamente.
+- También aparece en footer (sección "Catálogo").
+
+**Sitemap**: agregada URL `/marcas` con priority 0.8 (alta — hub de marcas).
+
+### Decisiones técnicas
+
+- **Card link a `/anteojos-de-sol/[brand]` (no a `/anteojos-de-receta/[brand]`)**: las marcas trabajan sol como entrada principal. Si el usuario quiere receta, está el switch desde la página de marca o nav.
+- **Logo grande + bg muted detrás**: replica el patrón de las brand pages individuales. Visual coherente.
+- **`brightness-0` para logos light**: reusa `shouldInvertLogo` para que negros se vean en fondo claro.
+- **productCount sumando sol+receta**: total relevante; si querés breakdown por categoría, se ve al entrar a cada marca.
+- **`ItemList` JSON-LD**: estándar Schema.org para listas — Google muestra rich result en algunos casos.
+
+### Build
+
+`/marcas` 731 B (server component pura, sin client logic). 118 kB First Load JS.
+
+### Próximo paso
+
+Push + verificación visual.
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**
