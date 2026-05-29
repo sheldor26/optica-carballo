@@ -61,9 +61,9 @@ export function ProductGallery({ productName, images }: Props) {
 
   if (sorted.length === 0) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 md:sticky md:top-20">
         <div
-          className="bg-muted text-muted-foreground flex aspect-square w-full items-center justify-center rounded-lg text-sm"
+          className="bg-muted text-muted-foreground flex aspect-[3/2] w-full items-center justify-center rounded-lg text-sm"
           aria-label={`Imagen pendiente de ${productName}`}
         >
           Foto pendiente
@@ -84,12 +84,17 @@ export function ProductGallery({ productName, images }: Props) {
   const activeUrl = getProductImageUrl(active.storage_path);
 
   return (
-    <div className="flex flex-col gap-3">
+    // Sticky en desktop: la gallery sigue al scroll mientras user lee la info
+    // de la derecha — elimina sensación de "bloque blanco" debajo de la col
+    // izquierda cuando la derecha es más larga (caso típico con producto
+    // detallado: variantes + ficha + medidas + incluye).
+    // top-20 ≈ alto del header sticky (16) + margin.
+    <div className="flex flex-col gap-3 md:sticky md:top-20">
       <button
         type="button"
         onClick={() => setLightboxOpen(true)}
         aria-label={`Ampliar imagen: ${active.alt_text}`}
-        className="bg-background border-border/40 group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border p-2 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-3 md:p-4"
+        className="bg-background border-border/40 group relative aspect-[3/2] w-full cursor-zoom-in overflow-hidden rounded-lg border p-2 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-3 md:p-4"
       >
         {/* Padding mínimo (p-4 = 16px en desktop) — las fotos del founder
             vienen con buen margen propio. Iter previo (p-8) seguía dando
