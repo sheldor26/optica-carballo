@@ -22,6 +22,32 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — ML usa endpoints distintos según status del item — usar el correcto para diagnóstico
+
+**Categoría**: Mercado Libre / API design quirks
+**Confianza**: 🟢 Alta (validado en debug MLA1432137395)
+
+### Qué funcionó
+
+`/items/{id}` de ML devuelve **404** para items que NO están en status `active` (paused, closed, finalized). Si esperabas un "item con status=paused" en la respuesta, te quedás sin info: el 404 no diferencia entre "no existe" y "no está active".
+
+Para diagnóstico (saber si el item ES tuyo y en qué status está), usar `/users/{seller_id}/items/search?ids=MLA...`:
+- Devuelve el item con su status real (active/paused/closed/under_review).
+- `results` vacío = item no es de esa cuenta.
+- `results` con el ID = item es tuyo + status disponible.
+
+### Por qué funcionó
+
+Endpoint `/items/{id}` está pensado para CONSUMERS (compradores viendo un producto activo) — 404 si no se puede comprar es UX correcta para ellos. Endpoint `/users/{seller_id}/items/search` está pensado para SELLERS gestionando su catálogo — devuelve TODO sin filtrar.
+
+Usar el endpoint correcto según contexto (consumer vs seller) evita falsos negativos.
+
+### Cuándo aplicar
+
+- Cualquier integración con API que tenga endpoints "vista pública" vs "vista admin/seller".
+- Diagnóstico de "item desapareció": probar el endpoint de seller antes de asumir que fue borrado.
+- Patrón general: si un GET devuelve 404 para algo que el usuario CONFIRMA que existe, probablemente hay un endpoint alternativo con visibilidad más amplia.
+
 ## 2026-05-29 — Enforce single-account model en el WRITE path, no solo en el read
 
 **Categoría**: Diseño de schema / Integraciones multi-cuenta

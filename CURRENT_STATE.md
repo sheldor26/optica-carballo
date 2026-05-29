@@ -4,11 +4,15 @@
 
 🟡 **Re-autorización ML OAuth + import MLA1432137395 — DIAGNÓSTICO EN CURSO (hipótesis cuenta equivocada)** (2026-05-29). Founder re-autorizó con `user_id=81654493`, endpoint admin devolvió 404 para MLA1432137395. Founder pasó URL del listing real: `mercadolibre.com.ar/.../up/MLAU384055931?...&wid=MLA1432137395` — el item es de **Tienda Oficial OPTICACARBALLO** (`official_store:260502`). Pero `user_id=81654493` puede NO ser la cuenta OPTICACARBALLO (founder posiblemente autorizó OAuth con cuenta personal/hermano por cookie de sesión ML sticky).
 
-**Bug encontrado**: el endpoint v2 reportó `stage: 'no_integration'` — `getActiveMLIntegration` retornaba `null` aunque había integraciones. Causa: dos rows activas (vieja `1975674` + nueva `81654493`) → `.maybeSingle()` throws con multi-row → catch silent returns null. Fix en commit `[pendiente push]`:
-- `getActiveMLIntegration`: cambio a `.order('updated_at', desc).limit(1)` — defensa de borde, siempre devuelve la más reciente.
-- `upsertMLIntegration`: ANTES del upsert, marca como `revoked` cualquier otra integración activa con distinto `external_user_id` (single-account enforcement).
+**Bug fixed + verificado**: tras commit `57971a1` (single-account enforcement + defensive read) + re-auth del founder, `/api/admin/ml-me` confirma integración correcta:
+- `nickname: "ÓPTICACARBALLO"`, `id: 81654493`, `email: juanmirande@yahoo.com.ar`
+- `corporate_name: "JUAN MIRANDE"`, `brand_name: "Optica Carballo"`, ubicación Virasoro
+- `seller_reputation: 5_green / silver`, 2517 transactions históricas
+- Token válido hasta `2026-05-30T03:22:18Z`
 
-Próximo paso exacto del founder: tras deploy del fix, re-autorizar ML en `https://opticacarballo.com.ar/api/ml/oauth/initiate` (logueado con la cuenta correcta de OPTICACARBALLO). El nuevo upsert va a revocar automáticamente todas las integraciones viejas. Después abrir `/api/admin/ml-me` y verificar que `external_user_id` matchee la cuenta OPTICACARBALLO real.
+Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}` probablemente es porque el item está **pausado/cerrado/finalizado** — ML 404ea ese endpoint para items no-active. Creado endpoint `/api/admin/ml-find-item/[itemId]` (commit `d77cf05`) que usa `/users/{seller_id}/items/search?ids=MLA...` — devuelve item con su status real sin importar si está closed.
+
+Próximo paso exacto: founder abre `https://opticacarballo.com.ar/api/admin/ml-find-item/MLA1432137395` tras deploy del commit `d77cf05`. Si `response.body.results` está vacío → item no es de OPTICACARBALLO (malentendido). Si tiene `["MLA1432137395"]` → status del item (active/paused/closed) explica el 404.
 
 Aprendizaje del flow: ML tiene 2 tipos de IDs en URLs — `MLA<digits>` (item del seller, lo que usa el endpoint `/items/{id}`) y `MLAU<digits>` (catalog product que agrupa múltiples sellers). El `wid` query param en URLs de catálogo es el item ID del seller específico. Pasamos el correcto al endpoint.
 
