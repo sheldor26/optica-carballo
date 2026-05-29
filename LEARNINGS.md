@@ -22,6 +22,49 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Patrón "2 agentes especialistas en paralelo" SIGUE funcionando para feature de IA (2do caso confirmado: lector de receta)
+
+**Categoría**: Sistema de agentes / Workflow / Validación de pattern
+**Confianza**: 🟢 Alta (2 casos exitosos: recomendador de monturas + lector de receta)
+
+### Confirma
+
+Para implementar el lector de receta, invoqué EXACTAMENTE el mismo patrón que con el recomendador: `optical-expert` (estructura técnica de receta argentina + rangos plausibles + umbrales presencial) + `ai-features-engineer` (modelo, PDF nativo, schema, anti-injection, privacy). Ambos respondieron en ~45-60s con outputs accionables. Implementación completa en 1 sprint sin re-trabajo.
+
+### Outputs específicos de máximo valor
+
+**optical-expert**:
+- Umbrales operativos exactos para "graduación elevada" (|ESF|>6, |CIL|>2, |ESF|+|CIL|>7, anisometropía≥2). Sin esto, hubiera dejado el umbral vago.
+- Convención clave: **cilindro siempre negativo en Argentina** (vs internacional). Sin esto, validation del backend rechazaría recetas válidas.
+- Disclaimer ley 25.326 (datos sensibles de salud).
+
+**ai-features-engineer**:
+- **PDF nativo soportado** en Anthropic API (no hacía falta convertir a JPG en cliente). Ahorró ~150 líneas de código.
+- Schema con `confidence` POR campo (no global) → permite resaltar campos low-confidence individualmente en el form.
+- Anti-injection EXPLÍCITO en prompt (las recetas digitales pueden tener texto que el modelo malinterprete como instrucciones).
+
+### Filtro crítico aplicado (regla del 7mo mistake)
+
+Antes de implementar, rechacé 2 recomendaciones del ai-features-engineer:
+- **Upstash en iter 1**: rate limit in-memory simple por IP basta. Si vemos abuse, escalamos.
+- **HEIC conversion con heic2any**: librería nueva ~200KB. Si hay demanda real, agregamos en iter 2.
+
+Sin este filtro, hubiera agregado complejidad sin justificación.
+
+### Promoción a CLAUDE.md
+
+2 casos exitosos = candidato a promoción. Si el próximo feature de IA (3er caso) confirma el pattern, agregar a CLAUDE.md como guideline:
+
+> "Antes de implementar feature con IA Vision/RAG/etc, invocar `optical-expert` + `ai-features-engineer` en paralelo con prompts específicos pidiendo entregables accionables (NO código)."
+
+---
+
+## 2026-05-28 — Verificación visual del founder de un rediseño grande (rediseño catálogo minimal "quedó perfecto") valida el approach v4 sobre el aire/spacing como parte del diseño
+
+Confirmación del learning previo sobre "minimal premium = más relaciones espaciales bien calibradas". El founder no sugirió ajustes tras ver en producción → el calibrado (spacing, columnas, tipografía) estuvo bien al primer intento. Convalida el approach holístico (no solo quitar el border).
+
+---
+
 ## 2026-05-28 — "Sin Card wrapper" estilo Acne/Cartier requiere `<article>` semántico + grid con más spacing, no solo quitar el border
 
 **Categoría**: UI/UX / Diseño minimal / Adaptación de patrones premium

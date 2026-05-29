@@ -285,6 +285,18 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Sin mistake en este turno (lector de receta implementado con filtro crítico exitoso)
+
+Aplicación de regla v4. Implementación del lector de receta con IA Vision. Apliqué correctamente el filtro crítico del 7mo mistake: rechacé 2 recomendaciones del ai-features-engineer (Upstash, HEIC conversion) por overkill en iter 1. Decisiones técnicas explícitas documentadas. Sin error de proceso, sin anti-pattern.
+
+---
+
+## 2026-05-28 — Sin mistake en este turno (cierre positivo del rediseño minimal del catálogo, verificado por founder)
+
+Aplicación de regla v4. Este turno fue verificación positiva del rediseño minimal por parte del founder ("quedó perfecto"). Sin acción técnica nueva, sin error de proceso, sin anti-pattern. Founder mencionó carga de productos como tarea continua sin urgencia.
+
+---
+
 ## 2026-05-28 — Sin mistake en este turno (rediseño minimal del catálogo implementado con decisiones explícitas)
 
 Aplicación de regla v4. Este turno fue implementación del rediseño minimal tras "push" del founder como aprobación. Decisiones técnicas explícitas (sin marca en nombre, aspect-[4/3], grid con más spacing) documentadas en CURRENT_STATE + LEARNINGS. Sin error de proceso, sin anti-pattern.
