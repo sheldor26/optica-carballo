@@ -12,11 +12,45 @@ type VariantRow = {
   mercadolibre_variation_code: string | null;
 };
 
+type MLAttributeCombination = {
+  id: string;
+  value_name: string | null;
+};
+
 type MLVariation = {
   id: number;
   seller_custom_field: string | null;
   available_quantity: number;
+  attribute_combinations?: MLAttributeCombination[];
 };
+
+/**
+ * Extrae el código de variation desde la respuesta de ML.
+ *
+ * ML guarda el código en 2 lugares posibles según cómo el seller cargó el item:
+ * 1. `seller_custom_field`: campo dedicado, lo seteás explícito al crear/editar variation.
+ * 2. `attribute_combinations[DESIGN].value_name`: el "name" de la variation
+ *    con formato "CODIGO - Descripción descriptiva". El código va al inicio
+ *    antes del primer ` - ` separator.
+ *
+ * Caso Vulk Day Light (Sprint 2b debug 2026-05-29): el seller NO setea
+ * seller_custom_field, lo guarda dentro del nombre del diseño.
+ *
+ * Si ambos son null, devuelve null → no se puede matchear.
+ */
+function getVariationCode(v: MLVariation): string | null {
+  if (v.seller_custom_field && v.seller_custom_field.length > 0) {
+    return v.seller_custom_field;
+  }
+  const designCombo = v.attribute_combinations?.find(
+    (c) => c.id === 'DESIGN' || c.id === 'COLOR',
+  );
+  if (designCombo?.value_name) {
+    const code = designCombo.value_name.split(' - ')[0]?.trim();
+    if (code && code.length > 0) return code;
+  }
+  return null;
+}
 
 type MLItem = {
   id: string;
@@ -111,7 +145,7 @@ export async function syncVariantStockToML(variantId: string): Promise<{
   }
 
   const matchedVariation = variations.find(
-    (v) => v.seller_custom_field === variant.mercadolibre_variation_code,
+    (v) => getVariationCode(v) === variant.mercadolibre_variation_code,
   );
 
   if (!matchedVariation) {
@@ -123,7 +157,7 @@ export async function syncVariantStockToML(variantId: string): Promise<{
         sku: variant.sku,
         ml_item_id: variant.mercadolibre_item_id,
         ml_variation_code: variant.mercadolibre_variation_code,
-        available_variation_codes: variations.map((v) => v.seller_custom_field),
+        available_variation_codes: variations.map((v) => getVariationCode(v)),
       },
     });
     return { ok: false, reason: 'variation_not_found_in_item' };
@@ -220,7 +254,7 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
         continue;
       }
       const matched = variations.find(
-        (v) => v.seller_custom_field === variant.mercadolibre_variation_code,
+        (v) => getVariationCode(v) === variant.mercadolibre_variation_code,
       );
       if (!matched) {
         skipped++;
