@@ -22,6 +22,33 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Builder contextual de related links — un componente, N comportamientos
+
+**Categoría**: Arquitectura de componentes / DRY pragmático
+**Confianza**: 🟡 Media (validado en este caso, ver si escala)
+
+### Qué funcionó
+
+Para el bloque "También podría interesarte" en sub-categorías, en lugar de:
+- Opción A: 3 componentes distintos (`RelatedFromShape`, `RelatedFromGender`, `RelatedFromBrand`) con templates similares pero diferente lógica de selección.
+- Opción B: 1 componente con prop `links: RelatedLink[]` + 1 función builder `buildRelatedLinks(ctx)` que computa los links según el contexto.
+
+Elegí B. La función pura `buildRelatedLinks` toma un discriminated union (`{type: 'shape' | 'gender' | 'brand', ...}`) y devuelve `RelatedLink[]`. El componente solo renderiza. Separación clara: lógica de selección (data) vs lógica de presentación (UI).
+
+### Por qué funcionó
+
+Ventajas concretas:
+- **Una sola UI a mantener** — cambio de estilo se hace en 1 file, no 3.
+- **Lógica de selección testeable** sin renderizar — función pura, fácil de validar combinaciones.
+- **Extensible**: agregar un nuevo `type: 'product'` (para related products en página detalle) es agregar un branch al switch, sin tocar UI.
+- **Sin abstracciones prematuras** — el "ctx" tiene los campos específicos que cada tipo necesita, no un objeto genérico vago.
+
+### Cuándo aplicar
+
+- UI compartida con lógica de población contextual (related links, recommendations, breadcrumbs custom).
+- NO aplicar si los renders divergen significativamente — entonces son componentes distintos, no variantes de uno.
+- La función builder debe ser pura (sin side effects, sin fetch) — la data viene precomputada del Server Component padre.
+
 ## 2026-05-29 — Sub-categoría por género incluye `unisex` (no es excluyente)
 
 **Categoría**: Decisión de producto / Modelado de datos

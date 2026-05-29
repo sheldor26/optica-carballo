@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductCard } from '@/components/product/product-card';
+import { RelatedCategoriesBlock } from '@/components/catalog/related-categories-block';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { Button } from '@/components/ui/button';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { BrandFilter } from '@/lib/catalog/brand-filters';
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';
+import { buildRelatedLinks } from '@/lib/site/related-categories';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -27,6 +29,11 @@ export function ShapeCatalogPage({
 }) {
   const pageUrl = `${SITE_URL}/${category.slug}/${filter.urlSlug}`;
   const categoryUrl = `${SITE_URL}/${category.slug}`;
+  const relatedLinks = buildRelatedLinks({
+    type: 'shape',
+    categorySlug: category.slug,
+    filterUrlSlug: filter.urlSlug,
+  });
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -127,6 +134,8 @@ export function ShapeCatalogPage({
           ))}
         </section>
       )}
+
+      <RelatedCategoriesBlock links={relatedLinks} />
     </main>
   );
 }

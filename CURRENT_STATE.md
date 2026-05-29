@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Sprint Internal Linking CERRADO** (2026-05-29). Bloque "También podría interesarte" al pie de todas las sub-categorías (shape, gender, brand). Builder contextual `buildRelatedLinks` devuelve hasta 6 links curados según tipo de página: shape → 2 género + 3 shape + 1 brand; gender → 4 shape + 2 brand; brand → 2 género + 3 shape + 1 brand. Refuerza SEO interno (PageRank flow) + descubrimiento UX sin saturar el catálogo. Componente `RelatedCategoriesBlock` reusable con UI de chips (pill style).
+
 ✅ **Sprint Sub-categorías globales por género CERRADO** (2026-05-29). 4 URLs SEO nuevas: `/anteojos-de-{sol,receta}/{hombre,mujer}`. Capturan queries genéricas tipo "anteojos sol hombre" (alto vol SEO) sin estar atadas a una marca específica. `GenderCatalogPage` componente, `buildCategoryGenderMetadata` helper, `fetchCategoryByGender` query (incluye unisex). Sitemap +4 URLs priority 0.8. Mega-menu "Para vos" saca el hack anterior (linkeaba a `/rusty/mujer` por falta de página global) y ahora apunta a las URLs canónicas.
 
 ✅ **Sprint Sub-categorías globales por forma CERRADO** (2026-05-29). 13 URLs SEO nuevas: `/anteojos-de-{sol,receta}/{wayfarer,aviador,cat-eye,rectangular,acetato,metal}` + polarizados solo sol. Capturan queries genéricas tipo "anteojos aviador", "lentes wayfarer" — antes solo accesibles vía `?forma=` searchParam (no indexable bien). Componente `ShapeCatalogPage`, helper `buildCategoryShapeMetadata`, query `fetchCategoryByFilter`, sitemap +13 URLs priority 0.75. Mega-menu actualizado para apuntar a estas URLs en vez de `?forma=`.

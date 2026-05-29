@@ -10,6 +10,7 @@ import {
   ProductCard,
   type ProductCardData,
 } from '@/components/product/product-card';
+import { RelatedCategoriesBlock } from '@/components/catalog/related-categories-block';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { cn } from '@/lib/utils';
 import {
@@ -17,6 +18,7 @@ import {
   shouldInvertLogo,
 } from '@/lib/storage/brand-asset-url';
 import { getBrandFaqs } from '@/lib/content/brand-faqs';
+import { buildRelatedLinks } from '@/lib/site/related-categories';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type {
   BrandPageData,
@@ -66,6 +68,11 @@ export function BrandCatalogPage({
     toCardData(p, hrefPrefix, category.slug, brand.slug),
   );
   const brandFaqs = getBrandFaqs(brand.slug);
+  const relatedLinks = buildRelatedLinks({
+    type: 'brand',
+    categorySlug: category.slug,
+    brandSlug: brand.slug,
+  });
 
   return (
     <main className="container py-8 md:py-12">
@@ -189,6 +196,7 @@ export function BrandCatalogPage({
         </RevealOnScroll>
       )}
 
+      <RelatedCategoriesBlock links={relatedLinks} />
     </main>
   );
 }
