@@ -67,6 +67,37 @@ Founder crea las 2 cuentas (GA4 + GSC) → configura las 2 env vars en Vercel �
 
 **Pendiente founder**: ejecutar los 10 pasos → reportar Measurement ID configurado en Vercel + verificación visual en Realtime tab.
 
+### Update 2026-05-29: GA4 no muestra data — diagnóstico de 3 checks
+
+Founder configuró GA4 (Measurement ID `G-MVS03GD1TG`) pero reportó "no figura nada en Google Analytics". Causas posibles (en orden de probabilidad):
+1. **Env var no configurada en Vercel** o configurada después del último deploy (necesita redeploy).
+2. **Cookies no aceptadas** en el sitio (GA4 NO carga sin consent — compliance ley 25.326).
+3. **Delay normal** de GA4 Realtime (30-90s tras primer pageview con consent).
+
+Le entregué walkthrough de 3 checks de diagnóstico client-side:
+- **Check 1 — Vercel UI**: verificar que `NEXT_PUBLIC_GA_ID = G-MVS03GD1TG` aparece + es de Production. Si se agregó después del último deploy, trigger redeploy.
+- **Check 2 — Network DevTools (F12)**: buscar request a `googletagmanager.com/gtag/js?id=G-MVS03GD1TG`. Si aparece con 200 → GA4 cargó; si no → consent o env var.
+- **Check 3 — localStorage**: inspeccionar `oc_cookies_consent`. Si `choice=necessary_only` o no existe → GA4 no carga.
+
+Verifiqué via MCP Vercel: último deploy `70f4e0f` está READY con el código GA4. El issue no es del código sino de config (env var o consent).
+
+**Pendiente founder**: ejecutar los 3 checks + reportar cuál falla. Con esa info aplicamos fix puntual.
+
+### Update 2026-05-29: GA4 funcionando ✅ tras redeploy
+
+Founder confirmó: "hice deploy y arranco, todo bien ahora". Causa exacta confirmada: env var `NEXT_PUBLIC_GA_ID` configurada en Vercel DESPUÉS del último deploy → necesitaba redeploy explícito para que el código la cargue. Tras nuevo deploy, GA4 se conecta correctamente.
+
+**Sprint Analytics CERRADO ✅**:
+- GA4 capturando data en producción.
+- Cookie banner respeta consent.
+- 6 eventos custom integrados disparándose.
+- GSC verification pendiente (siguiente paso operativo founder).
+
+**Pendientes inmediatos**:
+1. ⚠️ Founder configura `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN` en Vercel + verifica propiedad en Google Search Console + submit sitemap.
+2. ⚠️ DELETE entry comprometida ML: `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'`.
+3. ⚠️ Cargar `mercadolibre_item_id` en variantes para Sprint 2b ML.
+
 ---
 
 ## Status anterior

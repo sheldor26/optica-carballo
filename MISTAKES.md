@@ -24,6 +24,60 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint Analytics CERRADO ✅ (GA4 capturing data en producción)
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Resultado positivo / Cierre exitoso
+
+GA4 funcionando end-to-end en producción tras 2 iteraciones de debugging:
+- Iter 1: founder reportó "no aparece nada" → diagnóstico de 3 checks (Vercel env / Network / localStorage).
+- Iter 2: founder hizo redeploy → "todo bien ahora".
+
+Causa raíz confirmada: env var agregada después del último deploy. Vercel no aplica env vars retroactivamente.
+
+Patrones validados:
+- 3 checks paralelos para debugging client-side de scripts (Vercel env / Network DevTools / localStorage).
+- Two-tier docs (resumen + walkthrough granular) confirmado útil para founder no-técnico.
+- Orden de operaciones explícito ("env var ANTES de deploy") debería ir en todo walkthrough con env vars.
+
+Sin mistake nuevo. Sprint Analytics queda como referencia futura para próximas integraciones con scripts externos (GSC, Sentry, Posthog, etc).
+
+Pendientes operativos founder:
+1. GSC verification (similar a GA4 setup pero más corto).
+2. ML: DELETE entry comprometida + cargar mercadolibre_item_id en variantes.
+
+---
+
+## 2026-05-29 — En walkthrough de GA4 NO dejé claro que env var debe configurarse ANTES del redeploy
+
+**Estado**: 🟡 Mitigado — se detectó al primer "GA4 no muestra nada" del founder.
+**Categoría**: Documentación / Orden de operaciones
+
+### Qué pasó
+
+Walkthrough tenía 10 pasos: 1-7 crear GA4, 8 configurar env var en Vercel, 9 trigger redeploy. Pero NO especifiqué que el orden importa: si el founder agrega la env var DESPUÉS de mi commit que triggerea redeploy, el código no la tiene → GA4 no carga.
+
+Vercel no aplica env vars retroactivamente. Solo builds nuevos.
+
+### Causa raíz
+
+Orden implícito en walkthrough vs orden ejecutado por founder.
+
+### Regla preventiva
+
+Cualquier walkthrough con env vars en hosting:
+- Decir explícito: "AGREGÁ la env var ANTES de hacer push o redeploy".
+- Si se agrega DESPUÉS, mencionar: "necesitás otro redeploy para que se cargue".
+- Idealmente: chequear ambos órdenes posibles en el walkthrough.
+
+### Aplicación en futuros walkthroughs
+
+- Step "agregar env var" PRIMERO.
+- Step "trigger redeploy" SEGUNDO.
+- Explicación clara de por qué ese orden importa.
+
+---
+
 ## 2026-05-29 — Doc resumen no fue suficiente para founder no-familiarizado con GA4
 
 **Estado**: 🟡 Mitigado — entregué walkthrough granular cuando el founder lo pidió.

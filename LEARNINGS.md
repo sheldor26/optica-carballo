@@ -22,6 +22,80 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Vercel env vars NO se aplican retroactivamente — siempre redeploy tras agregarlas
+
+**Categoría**: Vercel / Deployment / Operaciones
+**Confianza**: 🟢 Alta (limitación confirmada del platform + caso validado end-to-end)
+
+### Qué pasó
+
+Founder configuró GA4 cuenta + Measurement ID correcto + lo agregó como env var `NEXT_PUBLIC_GA_ID` en Vercel. Pero GA4 NO mostraba data — el script ni siquiera aparecía en Network tab del browser.
+
+Diagnóstico: la env var se agregó DESPUÉS del último deploy (commit `70f4e0f`). Vercel carga env vars EN BUILD time — un build viejo no las tiene. Tras nuevo deploy (commit doc trivial), el código pickup la env var y GA4 empezó a funcionar.
+
+### Por qué es confuso
+
+- Vercel UI muestra la env var como "Production" y verde. Visualmente parece activa.
+- Pero el deploy actual fue construido SIN esa env var → para él, no existe.
+- Diferencia entre "env var configurada en panel" y "env var aplicada al deploy actual".
+
+### Aplicar a futuro
+
+Cualquier vez que se agrega/cambia una env var en Vercel:
+1. Configurar en Settings → Environment Variables.
+2. **OBLIGATORIO** después: trigger redeploy (manual desde UI o push trivial).
+3. Verificar que el deploy nuevo tiene timestamp posterior a cuando se agregó la env var.
+
+Hint útil al founder cuando algo "no funciona después de agregar env var":
+- Preguntar: "¿agregaste la env var antes o después del último deploy?"
+- Si después → "necesitás redeploy".
+
+### Patrón meta
+
+"Configuración panel ≠ configuración activa" — válido para cualquier hosting con build-time env vars (Vercel, Netlify, Cloudflare Pages). Anti-pattern: asumir que agregar config en panel basta.
+
+---
+
+## 2026-05-29 — Diagnóstico client-side con 3 checks (Vercel env / Network DevTools / localStorage) para scripts no cargando
+
+**Categoría**: Debugging / Frontend / Browser tooling
+**Confianza**: 🟡 Media (1 caso aplicado en GA4 troubleshooting)
+
+### Qué pasó
+
+Founder reportó "GA4 no muestra nada". El componente GoogleAnalytics tiene 3 conditions de no carga:
+1. `NEXT_PUBLIC_GA_ID` env var ausente o vacía.
+2. Consent `oc_cookies_consent` no es `'all'`.
+3. Race condition (consent llegó después del primer pageview).
+
+Cada uno requiere look distinto: Vercel UI / Network DevTools / localStorage. Sin saber cuál fallaba, debugging era hipótesis ciega.
+
+### Solución
+
+3 checks específicos en paralelo, founder reporta cuál falla:
+1. **Vercel UI**: env var aparece + Production check.
+2. **Network DevTools (F12)**: filter `google` → buscar `googletagmanager.com/gtag/js?id=...`. Si aparece → carga OK. Si no → consent o env var.
+3. **localStorage**: `oc_cookies_consent` choice.
+
+Permite al founder no-técnico diagnosticar sin tirar todo el contexto al chat.
+
+### Por qué funciona
+
+- **Checks independientes**: cada uno cubre 1 hipótesis. Founder puede hacerlos en cualquier orden.
+- **Resultados binarios**: cada check es "aparece" o "no aparece". Sin ambigüedad.
+- **DevTools = ground truth**: lo que el browser realmente está cargando, no lo que asumo del código.
+
+### Aplicar a futuro
+
+Cualquier troubleshooting de "script externo no carga / no funciona" (analytics, chat widgets, ad pixels, A/B tests):
+- Check 1: env vars en hosting (¿la key existe?).
+- Check 2: Network tab (¿el browser está request-eando el script?).
+- Check 3: localStorage / cookies (¿alguna condition pre-load lo bloquea?).
+
+3 checks paralelos > 1 check secuencial cuando hay múltiples causas posibles independientes.
+
+---
+
 ## 2026-05-29 — Docs operativas necesitan 2 niveles: resumen + walkthrough granular
 
 **Categoría**: Documentación / Comunicación al founder
