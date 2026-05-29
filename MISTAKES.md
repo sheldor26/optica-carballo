@@ -24,6 +24,34 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Incluí atributo de variante en el name/slug del producto base — "Rusty Yau Polarizado" en vez de "Rusty Yau"
+
+**Estado**: ✅ Cerrado — refactor del seed antes de apply al cloud, sin impacto en prod (slug nunca llegó a indexarse).
+**Categoría**: Schema design / Identidad de producto
+
+### Qué pasó
+
+Al generar seed 10 para importar el item ML, copié el espíritu del título de ML ("Anteojos De Sol Lente Rusty Yau Mblk/s10 Polarizado Ciclismo...") y nombré al producto `name: "Rusty Yau Polarizado"` + `slug: rusty-yau-polarizado`. Founder corrigió: el modelo se llama "Rusty Yau", y "Polarizado" es atributo del par de lentes que viene con CADA variante (no del producto base). Variantes futuras pueden tener lentes espejadas en lugar de polarizadas — el producto sigue siendo "Rusty Yau".
+
+Requirió: editar `name` + `slug` + `meta_title` + bucket path + `git mv` del archivo del seed + regenerar bootstrap.
+
+### Causa raíz
+
+Mapeé el JSON ML al schema del proyecto sin separar identity del modelo vs atributos de variante. ML guarda todo en un solo título (porque ML usa modelo-flat-listing, no products+variants), pero nuestro schema tiene esa separación. Al hacer "copy título corto" perdí la distinción.
+
+Combinado con: NO me imaginé la 2da variante antes de generar SQL. Si lo hubiera hecho, la frase "Rusty Yau Espejado" hubiera revelado que "Polarizado" no es del producto.
+
+### Regla preventiva
+
+Al generar producto desde fuente externa (ML, distribuidor, web fabricante):
+1. **Imaginar 1-2 variantes hipotéticas antes de definir name/slug**. Si las variantes hipotéticas requerirían cambiar el name del producto, entonces ese atributo NO va en el name.
+2. **Atributos que pueden variar entre SKUs del mismo modelo nunca van en `products.name`**: color frame, color lens, tratamiento de lente, tamaño, longitud.
+3. **Atributos que SÍ van en `products.name`**: modelo (Yau, Day Light, Aviator Classic), serie (Originals, Active, Sport), línea cuando es separable.
+
+### Acción aplicada
+
+Seed reescrito (commit `7ebcb1c`): `name: "Rusty Yau"`, `slug: rusty-yau`, bucket path `rusty-yau/`. `attributes.interchangeable_lenses=true` + `lenses_included` array estructurado para que el copy refleje el 2-en-1 sin ensuciar el modelo.
+
 ## 2026-05-29 — Asumí formato de imagen (.webp) sin preguntar — founder mandó .jpg, edit del seed
 
 **Estado**: ✅ Cerrado — edit del seed antes de apply al cloud, sin impacto en prod.

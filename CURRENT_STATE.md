@@ -14,13 +14,23 @@ Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}
 
 **Item localizado con éxito** vía `/items?ids=MLA...`: producto está active, es del seller correcto (OPTICACARBALLO), título "Rusty Yau Polarizado Ciclismo", precio $98.350,02, stock 4. Causa del 404 original con `/items/{id}` singular: probablemente tema de listing_type `gold_pro` con `user_product_id` (catalog listing) requiere endpoint plural.
 
-**Sprint Import Rusty Yau CERRADO en código + DATA COMPLETA** (2026-05-29). Founder pasó: SKU real `126080`, las 2 medidas faltantes (frame_width=135mm, lens_height=45mm), y 3 fotos JPG (vista lateral 3/4, frontal, esquema técnico de medidas). Seed corregido (commit `7c4976f`):
-- SKU placeholder → `126080`
-- measurements completas: 135/66/45/16/120mm
-- Imágenes: 2 → 3 (sumada esquema de medidas con variant_id=NULL aplicando al modelo entero)
-- Formato `.webp` → `.jpg` para matchear lo que founder envió
-- 01-frontal renombrado a 01-lateral (la primary es vista 3/4)
-- Bootstrap regenerado: 163 líneas
+**Sprint Import Rusty Yau REFACTOR identidad + COPY SEO** (2026-05-29). Founder corrigió decisiones de producto erradas en mi primer pass:
+- `name`: "Rusty Yau Polarizado" → "Rusty Yau" (el modelo es Yau, polarizado es atributo del par de lentes incluidas en cada variante — no del producto base)
+- `slug`: `rusty-yau-polarizado` → `rusty-yau` (mantenible cuando se agreguen variantes con lentes espejadas)
+- `short_description`: copy genérico → "Anteojos de Sol Deportivos 2 en 1: lentes intercambiables polarizadas + amarillas. Ciclismo, running, outdoor."
+- `description`: 4 párrafos cubriendo (1) propósito + 2 en 1, (2) cuándo brillan polarizadas, (3) cuándo brillan amarillas, (4) armazón envolvente G-Flex.
+- `attributes`: agregado `interchangeable_lenses: true` + array estructurado `lenses_included` con cada par + tratamiento + use_case (data preparada para feature futura).
+- 3 callouts nuevos sobre 2 en 1 (estilo Vulk Day Light): "Sabías que… amarillas no son polarizadas a propósito" / "Cuándo usar cada par" / "Cuidado del par no usado + cloro/sal".
+- Modelo decodificado de ML: MBLK/S10 POL YELLOW = MBLK (negro mate, variante) + S10/POL (gris oscuro polarizado, par principal) + YELLOW (amarillas, común a todas las variantes).
+- Bootstrap regenerado: 197 líneas. Path bucket: `rusty-yau/` (NO `rusty-yau-polarizado/`).
+
+**Próximo paso exacto founder**:
+1. Subir 3 fotos al bucket `products/rusty-yau/` con nombres: `01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`.
+2. Aplicar `supabase/cloud-bootstrap.sql` (197 líneas) en Dashboard SQL Editor.
+3. Verificar en `https://opticacarballo.com.ar/anteojos-de-sol/rusty/rusty-yau`.
+4. Avisar "cloud aplicado" → registrar en CLOUD_APPLIED.md + borrar bootstrap derivado.
+
+GAP único restante: `weight_grams` (UPDATE simple cuando founder mida).
 
 GAP único restante: `weight_grams` (founder mide con balanza después, UPDATE simple).
 

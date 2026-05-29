@@ -22,6 +22,42 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Producto vs variante: el `name`/`slug` del producto NO incluye atributos de variante
+
+**Categoría**: Schema de catálogo / Identidad de producto
+**Confianza**: 🟢 Alta (validado tras corrección del founder en Rusty Yau)
+
+### Qué funcionó (tras corrección)
+
+Founder corrigió: el nombre del producto era "Rusty Yau Polarizado" (mi versión inicial) cuando debería ser solo "Rusty Yau" (el modelo). Polarizado es atributo del PAR DE LENTES que viene incluido en la variante específica (variante actual: gris oscuro polarizado + amarilla; variantes futuras pueden tener: negro espejado + amarilla, plata espejado + amarilla, etc.).
+
+Refactor:
+- `name`: "Rusty Yau" (modelo)
+- `slug`: `rusty-yau` (URL canónica del modelo)
+- Atributos como polarización/color de lente → en variant attributes o en `attributes.lenses_included` del producto base si son comunes.
+
+### Por qué pasó originalmente
+
+ML guarda título como "Anteojos De Sol Lente Rusty Yau Mblk/s10 Polarizado Ciclismo Gris Oscuro - Amarilla Negro Mate" — toda la info del producto + variante en un solo string. Cuando mapeé al schema del proyecto, copié el espíritu del título de ML sin separar:
+- **Identity del modelo** ("Rusty Yau") → al producto
+- **Atributos de variante** (polarizado, gris oscuro, negro mate) → a la variante
+
+Resultado: incluí "Polarizado" en el nombre del producto cuando debía estar solo en la variante.
+
+### Regla preventiva
+
+Al generar producto base + variantes:
+1. **`products.name/slug` = MODELO** (nombre comercial del producto independiente de variante: "Rusty Yau", "Vulk Day Light", "Ray-Ban Aviator").
+2. **`product_variants.attributes` = ATRIBUTOS QUE VARÍAN** entre variantes del mismo modelo (color frame, color lens, tratamiento de lente si es específico de la variante).
+3. **`products.attributes` = COMÚN A TODAS LAS VARIANTES** (forma del armazón, material del frame si no cambia, género target, medidas).
+4. Si dudás: imaginá la 2da variante hipotética. Si cambiar un campo entre las dos rompe la analogía → ese campo NO va en `products`.
+
+### Cuándo aplicar
+
+- Cualquier import / carga manual de producto con potencial de N variantes.
+- Especialmente productos con lentes intercambiables, colores múltiples, tamaños — donde la tentación de "describir lo que veo ahora" mete atributos de variante en producto.
+- NO aplicar para productos verdaderamente single-SKU sin posibilidad de variantes (raro en óptica).
+
 ## 2026-05-29 — Founder llena GAPS asincrónicamente con foto + datos en 1 mensaje (complemento al import ML)
 
 **Categoría**: UX founder no-técnico / Import workflow
