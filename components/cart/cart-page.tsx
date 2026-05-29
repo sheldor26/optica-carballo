@@ -3,6 +3,7 @@ import { CreditCard, ShieldCheck, ShoppingBag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CartItemRow } from '@/components/cart/cart-item-row';
 import { ShippingCalculator } from '@/components/cart/shipping-calculator';
+import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { formatPriceCents } from '@/lib/format/currency';
 import { FREE_SHIPPING_THRESHOLD_CENTS } from '@/lib/shipping';
 import type { ResolvedCart } from '@/lib/cart/types';
@@ -60,6 +61,8 @@ export function CartPage({
                 </dd>
               </div>
             </dl>
+
+            <InstallmentsHint subtotalCents={cart.subtotalCents} />
 
             {remainingForFree > 0 && (
               <div className="bg-brand/10 border-brand/30 mt-4 rounded-lg border p-3">
@@ -156,7 +159,51 @@ function EmptyCart() {
           </div>
         </div>
       </div>
+
+      <RecentlyViewed
+        heading="Mientras tanto, mirá lo que viste antes"
+        limit={6}
+        minToRender={2}
+      />
     </main>
+  );
+}
+
+/**
+ * Hint informativa de cuotas con tarjeta de crédito.
+ * Muestra ejemplos de 3 y 6 cuotas calculadas a partir del subtotal.
+ * NO promete "sin interés" porque depende del banco — copy honesto.
+ */
+function InstallmentsHint({ subtotalCents }: { subtotalCents: number }) {
+  if (subtotalCents <= 0) return null;
+  const three = Math.round(subtotalCents / 3);
+  const six = Math.round(subtotalCents / 6);
+
+  return (
+    <div className="border-border/40 mt-3 border-t pt-3">
+      <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
+        Ejemplos en cuotas
+      </p>
+      <ul className="mt-1.5 space-y-1 text-xs">
+        <li className="text-foreground flex items-baseline justify-between">
+          <span className="text-muted-foreground">3 cuotas</span>
+          <span className="font-medium tabular-nums">
+            {formatPriceCents(three)}
+            <span className="text-muted-foreground ml-1 text-[10px]">/ mes</span>
+          </span>
+        </li>
+        <li className="text-foreground flex items-baseline justify-between">
+          <span className="text-muted-foreground">6 cuotas</span>
+          <span className="font-medium tabular-nums">
+            {formatPriceCents(six)}
+            <span className="text-muted-foreground ml-1 text-[10px]">/ mes</span>
+          </span>
+        </li>
+      </ul>
+      <p className="text-muted-foreground/80 mt-1.5 text-[10px] leading-snug">
+        Cuotas reales según banco y tarjeta vía Mercado Pago.
+      </p>
+    </div>
   );
 }
 

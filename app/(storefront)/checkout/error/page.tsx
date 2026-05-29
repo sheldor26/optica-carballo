@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, MessageCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
 import { isCheckoutEnabled } from '@/lib/features';
@@ -36,58 +36,74 @@ export default async function Page({
 
   const whatsappLink = orderNumber
     ? getWhatsappLinkWithContext(
-        `Hola! Mi pago para el pedido ${orderNumber} no se completó. ¿Podemos coordinar?`,
+        `Hola, mi pago para el pedido ${orderNumber} no se completó. ¿Podemos coordinar?`,
       )
     : getWhatsappLinkWithContext(
-        'Hola! Tuve un problema al pagar online. ¿Podemos coordinar?',
+        'Hola, tuve un problema al pagar online. ¿Podemos coordinar?',
       );
 
   return (
     <main className="container max-w-2xl py-12 md:py-16">
-      <div className="text-center">
-        <AlertCircle
-          className="text-destructive mx-auto size-12"
-          aria-hidden="true"
-        />
-        <h1 className="text-foreground mt-4 text-3xl font-bold tracking-tight md:text-4xl">
-          El pago no se completó
+      <header className="text-center">
+        <div className="bg-red-100 dark:bg-red-950/40 mx-auto flex size-16 items-center justify-center rounded-full">
+          <AlertCircle
+            className="size-9 text-red-600 dark:text-red-400"
+            aria-hidden="true"
+            strokeWidth={1.75}
+          />
+        </div>
+        <h1 className="text-foreground mt-6 text-balance font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl">
+          El pago <span className="italic">no se completó</span>
         </h1>
-        <p className="text-muted-foreground mt-3 text-sm">
-          Mercado Pago rechazó o canceló la operación.
+        <p className="text-muted-foreground mx-auto mt-4 max-w-md text-balance text-sm md:text-base">
+          Mercado Pago rechazó o canceló la operación. No te preocupes — no se
+          te cobró nada y podés intentar de nuevo.
         </p>
-        {orderNumber && (
-          <p className="text-muted-foreground mt-2 text-xs">
-            Orden:{' '}
-            <span className="text-foreground font-mono">{orderNumber}</span>
-          </p>
-        )}
-      </div>
+      </header>
 
-      <section className="border-border mt-8 rounded-lg border p-6">
-        <h2 className="text-foreground text-base font-semibold">
-          ¿Qué podés hacer?
+      {orderNumber && (
+        <section className="border-border/60 bg-muted/30 mt-8 rounded-xl border p-5 text-center">
+          <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+            Número de orden
+          </p>
+          <p className="text-foreground mt-1 font-mono text-base font-semibold">
+            {orderNumber}
+          </p>
+        </section>
+      )}
+
+      <section className="mt-8">
+        <h2 className="text-foreground font-serif text-2xl font-medium tracking-tight md:text-3xl">
+          Qué podés hacer
         </h2>
-        <ul className="text-muted-foreground mt-3 space-y-2 text-sm">
-          <li>Verificá los datos de tu tarjeta y reintentá desde el carrito.</li>
-          <li>Probá con otro medio de pago habilitado en Mercado Pago.</li>
+        <ul className="text-muted-foreground mt-5 space-y-3 text-sm leading-relaxed md:text-base">
           <li>
-            Si el problema persiste, contactanos por WhatsApp y coordinamos
-            el pago.
+            <strong className="text-foreground">Verificá los datos</strong> de tu
+            tarjeta (número, vencimiento, código de seguridad) y reintentá
+            desde el carrito.
+          </li>
+          <li>
+            <strong className="text-foreground">Probá con otro medio</strong>:
+            otra tarjeta, transferencia o Pago Fácil / Rapipago.
+          </li>
+          <li>
+            <strong className="text-foreground">Si persiste</strong>: escribinos
+            por WhatsApp y coordinamos el pago de otra forma.
           </li>
         </ul>
       </section>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button asChild>
-          <Link href="/carrito">Volver al carrito</Link>
+      <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <Button asChild size="lg">
+          <Link href="/carrito">
+            <RefreshCw className="mr-2 size-4" strokeWidth={2} />
+            Volver al carrito
+          </Link>
         </Button>
         {whatsappLink && (
-          <Button asChild variant="outline">
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+          <Button asChild size="lg" variant="outline">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="mr-2 size-4" strokeWidth={2} />
               Consultar por WhatsApp
             </a>
           </Button>
