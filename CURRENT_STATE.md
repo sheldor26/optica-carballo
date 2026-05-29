@@ -293,6 +293,61 @@ Push + verificación visual. Probar:
 
 ---
 
+## Páginas hijas SEO por material (acetato + metal)
+
+Extensión natural del patrón `BRAND_FILTERS`. Casi sin código nuevo gracias al config + helper armado en el sprint anterior.
+
+### Lo que se agregó
+
+**`BrandFilter` type** (`lib/catalog/brand-filters.ts`): nuevo discriminador `frame_material` en la union del campo `filter` (antes solo `frame_shape | lens_treatment_includes`).
+
+**Config**: 2 nuevas entries en `BRAND_FILTERS`:
+- `acetato` (DB: `acetate`) → "con marco de acetato".
+- `metal` (DB: `metal`) → "con marco de metal".
+- Ambos aplican a `sol` y `receta`.
+
+**Query** (`fetchBrandPageByFilter`): rama nueva en el switch — `frame_material` usa `eq('attributes->>frame_material', value)` (idéntico patrón al de `frame_shape`).
+
+**Routes**: 4 archivos thin nuevos siguiendo el mismo patrón del sprint anterior:
+- `/anteojos-de-sol/[brand]/acetato`
+- `/anteojos-de-sol/[brand]/metal`
+- `/anteojos-de-receta/[brand]/acetato`
+- `/anteojos-de-receta/[brand]/metal`
+
+**Sitemap**: itera `BRAND_FILTERS.flatMap` → 20 URLs nuevas se agregan automáticamente sin tocar nada (5 marcas × 4 nuevas rutas).
+
+### Por qué tan poco código
+
+El sprint del sprint anterior (config declarativa + helper + componente shared) ya hizo el trabajo pesado. Sumar un nuevo filter es:
+1. Sumar entry al config (1 objeto).
+2. Sumar rama al switch del filter (1 if).
+3. Crear N archivos route thin (~50 líneas c/u, 95% copy del template).
+
+### Cobertura SEO total
+
+Páginas hijas SEO acumuladas:
+- **Género** (4 archivos × 5 marcas = 20 URLs).
+- **Filtros polarizados + 4 formas** (9 archivos × 5 marcas = 45 URLs).
+- **Materiales acetato + metal** (4 archivos × 5 marcas = 20 URLs).
+- **TOTAL: 85 URLs hijas SEO indexables** (multiplicado por catálogo creciente).
+
+### Decisiones técnicas
+
+- **NO incluí titanio**: nicho, volumen SEO bajo. Sumar cuando el founder tenga producto titanio cargado.
+- **NO incluí `injected`, `tr-90`, `g-flex`**: muy técnicos, volumen SEO inexistente. Si aparece producto, se lista en la ficha técnica pero no genera ruta SEO propia.
+- **Acetato es el más cargado**: cubre 70%+ de monturas urbanas modernas. Vale la página SEO.
+- **Metal**: el otro 25-30%. Vale la página SEO especialmente para target masculino + clásico.
+
+### Build
+
+Cada route 255 B (server component thin). 175 kB First Load (con catálogo grid + Dialog + WishlistButton etc).
+
+### Próximo paso
+
+Push + verificación visual. Los URLs como `/anteojos-de-sol/vulk/acetato` deberían rendear igual que `/anteojos-de-sol/vulk/wayfarer`, filtrando solo productos con `frame_material = "acetate"`.
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**

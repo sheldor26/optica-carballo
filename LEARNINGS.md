@@ -22,6 +22,53 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Config declarativa paga sus costos en el SEGUNDO uso: sumar filter material = 4 archivos thin + 1 entry + 1 if
+
+**Categoría**: Arquitectura / Validación de inversión inicial
+**Confianza**: 🟢 Alta (caso confirma el patrón armado en sprint anterior)
+
+### Qué pasó
+
+En el sprint del 29 hice config declarativa `BRAND_FILTERS` + helper + componente shared para los 9 archivos de filtros (polarizados + 4 formas). Costó ~590 líneas iniciales pero argumenté que el costo se amortiza en futuros usos.
+
+Hoy sumé 2 nuevos filtros (acetato + metal). Costo real:
+- 1 entry en `BRAND_FILTERS` (5 líneas c/u).
+- 1 if en el switch del filter query (3 líneas).
+- 1 alternativa en el type union (2 líneas).
+- 4 archivos route thin (~50 líneas c/u, mismo template).
+
+**Total: ~210 líneas para 20 URLs SSG nuevas**.
+
+Sin la config declarativa, hubiera sido: 4 archivos completos con su propio fetchByMaterial, su propio buildMaterialMetadata, su propio componente catalog. Estimado ~500+ líneas y mayor riesgo de divergencia entre versiones.
+
+### Por qué funciona
+
+- **Costo de cambio = costo de agregar entry al config**. Mínimo, predecible.
+- **0 cambios en el componente shared** (`BrandFilterCatalogPage`). Renders correcto sin tocar.
+- **0 cambios en el helper resolver**. Funciona para cualquier nuevo filter automático.
+- **0 cambios en el sitemap**. Itera `BRAND_FILTERS.flatMap()` — las nuevas URLs aparecen solas.
+
+### El criterio de inversión confirmado
+
+Cuando el patrón se aplica:
+1. **Primer uso**: invertir en config + helper + shared component es costoso vs solución directa.
+2. **Segundo uso**: la inversión empieza a pagar.
+3. **Tercer uso en adelante**: cada nuevo caso cuesta ~10-20% del esfuerzo de un caso "from scratch".
+
+Regla práctica: **si vas a tener 3+ casos del mismo patrón, vale armarlo declarativo desde el inicio**. Para 1-2 casos, hacerlo directo es OK.
+
+### Aplicar a futuro
+
+Próximos filters que valdrían la pena agregar al config cuando haya producto cargado:
+- `lens_treatment_includes: 'mirrored'` → /espejados
+- `lens_treatment_includes: 'photochromic'` → /fotocromaticos
+- `attributes->>'gender': 'unisex'` → /unisex (capaz combinado con género existente)
+- `frame_material: 'titanium'` → /titanio (nicho)
+
+Cada uno cuesta lo mismo que acetato y metal hoy: 1 entry + 1 archivo route (o el if del switch si es un nuevo tipo de filter).
+
+---
+
 ## 2026-05-29 — 404 page como "última estación útil" en vez de dead-end → 3+ atajos + WhatsApp
 
 **Categoría**: UX / Retención / Error states

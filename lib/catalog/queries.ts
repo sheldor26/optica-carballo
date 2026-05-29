@@ -227,6 +227,7 @@ export async function fetchBrandPageByFilter(args: {
   category: CategoryConfig;
   filter:
     | { type: 'frame_shape'; value: string }
+    | { type: 'frame_material'; value: string }
     | { type: 'lens_treatment_includes'; value: string };
 }): Promise<{ brand: BrandPageData; products: ProductCardSource[] } | null> {
   const supabase = await createClient();
@@ -263,6 +264,8 @@ export async function fetchBrandPageByFilter(args: {
 
   if (args.filter.type === 'frame_shape') {
     query = query.eq('attributes->>frame_shape', args.filter.value);
+  } else if (args.filter.type === 'frame_material') {
+    query = query.eq('attributes->>frame_material', args.filter.value);
   } else {
     // jsonb array contains: para `lens_treatment: ["polarized", "uv400"]`
     // matchear cuando contiene `["polarized"]`.

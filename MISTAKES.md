@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint materiales SEO: cierre EXITOSO + config declarativa validada
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs + validación de patrón
+
+Sprint materiales (acetato + metal × sol + receta = 4 archivos + 20 URLs) ejecutado en ~10 min real gracias al config declarativo + helper armado en sprint anterior. Build verde. Aplicación correcta regla v5.
+
+Confirma el ROI del config declarativo: segundo uso del patrón cuesta ~30% del primer uso.
+
+13 sprints consecutivos sin mistake nuevo de proceso. Patrón estable.
+
+---
+
 ## 2026-05-29 — Sprint 404 + recent searches: cierre EXITOSO
 
 **Estado**: 🟢 Cumplido.

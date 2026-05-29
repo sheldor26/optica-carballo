@@ -23,6 +23,7 @@ export type BrandFilter = {
   /** Cómo filtrar en la query de productos. */
   filter:
     | { type: 'frame_shape'; value: string }
+    | { type: 'frame_material'; value: string }
     | { type: 'lens_treatment_includes'; value: string };
   /** Descripción del filtro para meta description / intro. */
   metaPhrase: string;
@@ -63,6 +64,20 @@ export const BRAND_FILTERS: BrandFilter[] = [
     categories: ['sol', 'receta'],
     filter: { type: 'frame_shape', value: 'rectangular' },
     metaPhrase: 'forma rectangular',
+  },
+  {
+    urlSlug: 'acetato',
+    label: 'Acetato',
+    categories: ['sol', 'receta'],
+    filter: { type: 'frame_material', value: 'acetate' },
+    metaPhrase: 'con marco de acetato',
+  },
+  {
+    urlSlug: 'metal',
+    label: 'Metal',
+    categories: ['sol', 'receta'],
+    filter: { type: 'frame_material', value: 'metal' },
+    metaPhrase: 'con marco de metal',
   },
 ];
 
