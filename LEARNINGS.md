@@ -22,6 +22,51 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Helper `track()` no-op silencioso desacopla código de negocio de GA4 disponibilidad
+
+**Categoría**: Analytics / Privacy / Arquitectura
+**Confianza**: 🟢 Alta (caso aplicado en 6 features)
+
+### Qué pasó
+
+Integré GA4 con compliance ley 25.326: gtag solo carga si user acepta cookies. `window.gtag` puede o no existir según consent. Si cada componente defensive-checkea, código se llena de boilerplate y dev puede olvidar el check → crash.
+
+### Solución
+
+Helper `track(eventName, params)` centralizado en `lib/analytics/track.ts`:
+
+```ts
+export function track(eventName, params?) {
+  if (typeof window === 'undefined') return;
+  if (typeof window.gtag !== 'function') return;
+  try {
+    window.gtag('event', eventName, cleanParams);
+  } catch (err) { /* no-op */ }
+}
+```
+
+Componentes solo escriben `track(Events.WISHLIST_TOGGLE, {...})` — sin defensive code, sin worry sobre consent.
+
+### Por qué funciona
+
+- **Una capa de abstracción** business code ↔ analytics provider.
+- **No-op por default**: caso seguro es no hacer nada.
+- **Enum `Events`** evita typos.
+- **Cambio de provider trivial**: si migramos a Plausible/Posthog, edito solo el helper.
+
+### Aplicar a futuro
+
+Cualquier integración condicional opcional (Sentry, Posthog, Datadog):
+- Wrap en helper centralizado.
+- No-op si no disponible.
+- Componentes nunca chequean directo.
+
+### Patrón meta
+
+"Defensive checks centralizados en helper" — componentes confían en el helper. Reduce cognitive load + risk de typos.
+
+---
+
 ## 2026-05-29 — Sprint 2a ML OAuth CERRADO: debugging incremental con DB logging desbloqueó root cause en 2 iteraciones
 
 **Categoría**: Project management / Debugging incremental / Validación de integración

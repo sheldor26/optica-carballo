@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { readCompareClientSide } from '@/lib/compare/client';
+import { track, Events } from '@/lib/analytics/track';
 
 type Props = {
   whatsappLink: string;
@@ -60,6 +61,7 @@ export function FloatingWhatsapp({
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Escribinos por WhatsApp"
+          onClick={() => track(Events.WHATSAPP_CLICK, { source: 'floating' })}
           initial={{ opacity: 0, scale: 0.6, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.6, y: 12 }}

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Inter } from 'next/font/google';
+import { GoogleAnalytics } from '@/components/analytics/google-analytics';
 import './globals.css';
 
 const inter = Inter({
@@ -16,6 +17,7 @@ const fraunces = Fraunces({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const gscVerificationToken = process.env.NEXT_PUBLIC_GSC_VERIFICATION_TOKEN;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -29,6 +31,11 @@ export const metadata: Metadata = {
     canonical: '/',
     languages: { 'es-AR': '/' },
   },
+  // Google Search Console verification — meta tag automático cuando hay token.
+  // Sin token (env var faltante) → no se incluye, no error.
+  verification: gscVerificationToken
+    ? { google: gscVerificationToken }
+    : undefined,
 };
 
 export const viewport: Viewport = {
@@ -43,7 +50,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es-AR" className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        {children}
+        <GoogleAnalytics />
+      </body>
     </html>
   );
 }

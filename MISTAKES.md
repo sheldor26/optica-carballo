@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint Analytics cierre exitoso (GA4 + GSC + eventos + doc founder)
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Resultado positivo
+
+Sprint Analytics ejecutado limpio: GA4 con compliance ley 25.326 (gtag solo carga con consent), GSC verification meta tag, helper `track()` con 6 eventos integrados (search, quick_view, wishlist_toggle, compare_toggle, whatsapp_click, newsletter_signup), doc `ANALYTICS_SETUP.md` para founder.
+
+Skip de Vercel Analytics por error npm install — GA4 cubre lo importante iter 1. Si founder quiere Web Vitals automáticos, activación desde Vercel Dashboard sin paquete npm.
+
+Sin mistake nuevo de proceso. Aplicación correcta regla v9 (docs reales en los 3 archivos).
+
+---
+
 ## 2026-05-29 — Sprint 2a ML OAuth CERRADO con éxito tras 5 iteraciones de debugging
 
 **Estado**: 🟢 Cumplido.

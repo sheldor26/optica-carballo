@@ -14,6 +14,7 @@ import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { searchAction } from '@/lib/catalog/search';
 import type { SearchResults } from '@/lib/catalog/search';
+import { track, Events } from '@/lib/analytics/track';
 
 const DEBOUNCE_MS = 200;
 const MIN_QUERY_LENGTH = 2;
@@ -90,11 +91,18 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     startTransition(async () => {
       const data = await searchAction(q);
       setResults(data);
+      const hasResults =
+        data.products.length > 0 || data.brands.length > 0;
       // Si la search devolvió resultados, persistir como "recent".
-      if (data.products.length > 0 || data.brands.length > 0) {
+      if (hasResults) {
         const next = pushRecent(q);
         setRecent(next);
       }
+      track(Events.SEARCH, {
+        query: q,
+        results_count: data.products.length + data.brands.length,
+        has_results: hasResults,
+      });
     });
   }, []);
 

@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { getProductQuickViewAction } from '@/lib/catalog/quick-view';
+import { track, Events } from '@/lib/analytics/track';
 import type { QuickViewData } from '@/lib/catalog/quick-view';
 
 type Props = {
@@ -45,6 +46,7 @@ export function QuickView({ slug, href, className }: Props) {
 
     if (data) {
       setOpen(true);
+      track(Events.QUICK_VIEW, { slug, cached: true });
       return;
     }
 
@@ -53,6 +55,11 @@ export function QuickView({ slug, href, className }: Props) {
       if (result) {
         setData(result);
         setOpen(true);
+        track(Events.QUICK_VIEW, {
+          slug,
+          brand: result.brandSlug,
+          cached: false,
+        });
       }
     });
   };

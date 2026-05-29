@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { toggleWishlistAction } from '@/lib/wishlist/actions';
 import { readWishlistClientSide } from '@/lib/wishlist/client';
 import type { WishlistEntry } from '@/lib/wishlist/cookie';
+import { track, Events } from '@/lib/analytics/track';
 
 type Props = {
   entry: WishlistEntry;
@@ -48,6 +49,11 @@ export function WishlistButton({
       try {
         const result = await toggleWishlistAction(entry);
         setIsSaved(result.added);
+        track(Events.WISHLIST_TOGGLE, {
+          slug: entry.slug,
+          brand: entry.brand,
+          action: result.added ? 'add' : 'remove',
+        });
       } catch {
         // Revertir si falla
         setIsSaved(prev);

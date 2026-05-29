@@ -6,6 +6,7 @@ import { Check, Mail, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { subscribeNewsletterAction } from '@/lib/newsletter/actions';
 import type { NewsletterSource } from '@/lib/newsletter/types';
+import { track, Events } from '@/lib/analytics/track';
 
 type Props = {
   source: NewsletterSource;
@@ -46,6 +47,10 @@ export function NewsletterForm({ source, variant = 'hero', className }: Props) {
             alreadyExisted: result.alreadyExisted,
           });
           setEmail('');
+          track(Events.NEWSLETTER_SIGNUP, {
+            source,
+            already_existed: result.alreadyExisted,
+          });
         } else {
           setState({
             kind: 'error',

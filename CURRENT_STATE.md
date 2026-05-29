@@ -9,6 +9,58 @@
 2. Cargar `mercadolibre_item_id` en `product_variants` para productos que estén en ambos canales (sin esto el sync no tiene a quién apuntar).
 3. Decidir si arrancar Sprint 2b ahora o continuar con otros items del backlog.
 
+## Analytics Sprint (2026-05-29, post ML 2a)
+
+Sprint nuevo: GA4 + GSC + eventos custom. Razón: tras armar 85+ URLs SEO + 6+ features, no estábamos midiendo nada. Sin analytics estamos navegando ciegos.
+
+### Implementado
+
+**Google Analytics 4**:
+- `components/analytics/google-analytics.tsx`: gtag.js cargado con `next/script` afterInteractive.
+- **Respeta cookie banner**: SOLO carga si user eligió "Aceptar todas". Sin consent → no se carga (compliance ley 25.326).
+- Re-evalúa consent al focus + polling 2s (sync entre tabs).
+- Configuración: anonymize_ip + SameSite=Lax;Secure.
+- Activación: env var `NEXT_PUBLIC_GA_ID` (formato `G-XXXXXXXXXX`).
+
+**Google Search Console**:
+- Meta tag de verificación en `app/layout.tsx` (`metadata.verification.google`).
+- Activación: env var `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN`.
+
+**Helper de tracking** (`lib/analytics/track.ts`):
+- Función `track(eventName, params)` no-op silencioso si gtag no disponible.
+- Enum `Events` para evitar typos (search, quick_view, wishlist_toggle, compare_toggle, whatsapp_click, newsletter_signup, etc).
+
+**Eventos integrados** (6):
+- `search` en SearchDialog (query + results_count + has_results).
+- `quick_view` en QuickView modal (slug + brand + cached).
+- `wishlist_toggle` en WishlistButton (slug + brand + action).
+- `compare_toggle` en CompareButton (slug + brand + action, incluyendo rejected_full).
+- `whatsapp_click` en FloatingWhatsapp (source).
+- `newsletter_signup` en NewsletterForm (source + already_existed).
+
+**Eventos TODO sprint futuro**:
+- `checkout_initiated` cuando click "Iniciar compra" (Sprint MP).
+- `prescription_upload` (lector receta IA — sumar al action).
+- `face_shape_analysis` (recomendador — sumar al action).
+
+### Vercel Analytics — SKIP
+
+Intenté `npm install @vercel/analytics --legacy-peer-deps` 2 veces, npm tira "Cannot read properties of null (reading 'matches')" — probable conflict con peer deps de Next 15 / React 19. NO crítico — GA4 cubre lo importante.
+
+Si el founder quiere Web Vitals automáticos en el futuro: activar desde Vercel Dashboard (no requiere paquete npm — Vercel inyecta el script si está enabled en Project Settings).
+
+### Doc para founder
+
+Creado `ANALYTICS_SETUP.md` en root con:
+- Qué está integrado (GA4, GSC, eventos).
+- Acciones del founder (crear cuenta GA4, GSC, configurar env vars, submit sitemap).
+- Qué métricas mirar después de 1-2 semanas con tráfico.
+- Compliance privacy (no se carga sin consent, IP anonymization, etc).
+
+### Próximo paso
+
+Founder crea las 2 cuentas (GA4 + GSC) → configura las 2 env vars en Vercel → tras redeploy + cookie banner accept, eventos empiezan a fluir. Después de 1-2 semanas con tráfico, podemos tomar decisiones basadas en datos reales (qué páginas funcionan, qué se busca, qué CTAs convierten).
+
 ---
 
 ## Status anterior

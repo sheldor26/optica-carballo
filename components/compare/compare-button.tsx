@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { toggleCompareAction } from '@/lib/compare/actions';
 import { readCompareClientSide } from '@/lib/compare/client';
 import type { CompareEntry } from '@/lib/compare/cookie';
+import { track, Events } from '@/lib/analytics/track';
 
 type Props = {
   entry: CompareEntry;
@@ -48,6 +49,16 @@ export function CompareButton({ entry, variant = 'title', className }: Props) {
           if (typeof window !== 'undefined') {
             window.alert('Ya tenés 4 productos para comparar. Sacá uno antes de agregar otro.');
           }
+          track(Events.COMPARE_TOGGLE, {
+            slug: entry.slug,
+            action: 'rejected_full',
+          });
+        } else {
+          track(Events.COMPARE_TOGGLE, {
+            slug: entry.slug,
+            brand: entry.brand,
+            action: result.added ? 'add' : 'remove',
+          });
         }
       } catch {
         setIsInList(prev);
