@@ -105,6 +105,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
+    // Páginas hijas SEO por género (4 por marca). Volumen target alto
+    // según SEO_STRATEGY (3.200/2.600 vol/mes para "rusty hombre/mujer", etc).
+    {
+      url: `${SITE_URL}/anteojos-de-sol/${b.slug}/hombre`,
+      lastModified: new Date(b.updated_at),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    },
+    {
+      url: `${SITE_URL}/anteojos-de-sol/${b.slug}/mujer`,
+      lastModified: new Date(b.updated_at),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    },
+    {
+      url: `${SITE_URL}/anteojos-de-receta/${b.slug}/hombre`,
+      lastModified: new Date(b.updated_at),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    },
+    {
+      url: `${SITE_URL}/anteojos-de-receta/${b.slug}/mujer`,
+      lastModified: new Date(b.updated_at),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    },
   ]);
 
   // Excluir productos placeholder [PH] del sitemap: no deben indexarse hasta

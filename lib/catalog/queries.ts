@@ -146,6 +146,70 @@ export async function fetchBrandPage(
   return { brand, products: products ?? [] };
 }
 
+export type BrandGenderTarget = 'hombre' | 'mujer';
+
+/**
+ * Página hija SEO de marca por género — `/anteojos-de-sol/[brand]/hombre`.
+ *
+ * Filtra productos por `attributes->>gender`:
+ * - `target='hombre'` → `gender IN ('male', 'unisex')`
+ * - `target='mujer'` → `gender IN ('female', 'unisex')`
+ *
+ * Productos sin `gender` definido NO aparecen en ninguna página hija
+ * (PRODUCT_SCHEMA lo lista como 🔴 OBLIGATORIO — todo producto debe tener
+ * `attributes.gender` seteado para aparecer en estas páginas SEO).
+ *
+ * Devuelve `null` si la marca no existe o no está activa. Si la marca
+ * existe pero no tiene productos del género filtrado, devuelve
+ * `{ brand, products: [] }` — la página renderiza empty state.
+ */
+export async function fetchBrandPageByGender(args: {
+  brandSlug: string;
+  category: CategoryConfig;
+  target: BrandGenderTarget;
+}): Promise<{ brand: BrandPageData; products: ProductCardSource[] } | null> {
+  const supabase = await createClient();
+
+  const { data: brand } = await supabase
+    .from('brands')
+    .select('id, slug, name, description, is_argentine, logo_url')
+    .eq('slug', args.brandSlug)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<BrandPageData>();
+
+  if (!brand) return null;
+
+  const { data: cat } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', args.category.slug)
+    .is('parent_id', null)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<CategoryRow>();
+
+  if (!cat) return null;
+
+  const genderValues =
+    args.target === 'hombre' ? ['male', 'unisex'] : ['female', 'unisex'];
+
+  const { data: products } = await supabase
+    .from('products')
+    .select(
+      'slug, name, short_description, is_featured, variants:product_variants(price_cents, stock_qty, is_active), images:product_images(storage_path, is_primary, sort_order)',
+    )
+    .eq('brand_id', brand.id)
+    .eq('category_id', cat.id)
+    .eq('is_active', true)
+    .in('attributes->>gender', genderValues)
+    .order('is_featured', { ascending: false })
+    .order('name', { ascending: true })
+    .returns<ProductCardSource[]>();
+
+  return { brand, products: products ?? [] };
+}
+
 /**
  * Página de producto: trae el producto con 3 validaciones de seguridad —
  * producto activo, brand matchea, category matchea. Cualquier mismatch

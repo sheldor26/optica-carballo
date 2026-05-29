@@ -2,6 +2,81 @@
 
 ## Status
 
+🟡 **Páginas hijas SEO de marca por género — implementado, pendiente push.**
+
+## Páginas hijas SEO de marca por género
+
+Founder pidió esto como ROI-alto: pelear posiciones por "anteojos de sol rusty hombre" (3.200 vol/mes), "rusty mujer" (2.600), análogos para Vulk, Mormaii, Reef, Paula.
+
+### Arquitectura
+
+**4 rutas estáticas nuevas**:
+- `app/(storefront)/anteojos-de-sol/[brand]/hombre/page.tsx`
+- `app/(storefront)/anteojos-de-sol/[brand]/mujer/page.tsx`
+- `app/(storefront)/anteojos-de-receta/[brand]/hombre/page.tsx`
+- `app/(storefront)/anteojos-de-receta/[brand]/mujer/page.tsx`
+
+Cada una thin wrapper: `generateStaticParams` reusa `getStaticBrandParams()` + `generateMetadata` llama `buildBrandGenderMetadata`, page llama `fetchBrandPageByGender`.
+
+**Por qué static segment (no dynamic `[gender]`)**: la ruta `[brand]/[X]` ya está ocupada por `[brand]/[product]` (PDP). Para evitar conflict Next 15, los segments hombre/mujer son **carpetas estáticas** que toman precedencia sobre el dynamic. Trade-off: 4 archivos casi idénticos (~50 líneas c/u) vs 1 archivo. Acepto por claridad y porque cualquier cambio de UX se hace en el componente compartido `<BrandGenderCatalogPage>`.
+
+**Query nueva** (`lib/catalog/queries.ts`):
+- `fetchBrandPageByGender({ brandSlug, category, target })`.
+- Filtra `attributes->>gender IN ('male' | 'unisex')` para hombre, `IN ('female' | 'unisex')` para mujer.
+- **Productos sin `gender` definido NO aparecen** en ninguna página hija. Refuerza que `gender` sea OBLIGATORIO en PRODUCT_SCHEMA.
+
+**Componente** (`components/catalog/brand-gender-page.tsx`):
+- Reusa `toCardData` con misma lógica que `BrandCatalogPage`.
+- **Diferencias vs página parent**:
+  - Breadcrumb 4 niveles.
+  - H1 con keyword target ("Anteojos de Sol Vulk Hombre" en italic la palabra "Hombre").
+  - SIN `<BrandStorySection>` (la story va en la página parent — evita duplicate content SEO).
+  - Empty state apunta al parent para que el usuario explore el resto.
+
+**Meta tags** (`buildBrandGenderMetadata`):
+- Title: `Anteojos de Sol Vulk Hombre | Originales con Envío - Óptica Carballo`.
+- Description: con `${category.metaPhrase} ${brand.name} para hombre/mujer + 30+ años experiencia + cuotas`.
+- Canonical + hreflang `es-AR` + `x-default`.
+- OG tags.
+
+**Sitemap**: agregadas 4 URLs por marca (20 nuevas URLs en sitemap.xml).
+
+### Cobertura SEO
+
+20 URLs nuevas indexables. Ejemplos:
+- `/anteojos-de-sol/rusty/hombre` ← target "anteojos de sol rusty hombre" (3.200 vol)
+- `/anteojos-de-sol/vulk/mujer` ← target "anteojos de sol vulk mujer"
+- ...
+
+### Decisiones técnicas
+
+- **Carpetas estáticas hombre/mujer**: evita conflict con [product] dynamic. Cuesta 4 archivos vs 1 pero es claro y robusto.
+- **Productos unisex aparecen en ambas**: hombre incluye `male|unisex`, mujer incluye `female|unisex`. UX correcto.
+- **NO duplicate del story**: evita penalización Google por duplicate content.
+- **Sin h1 con género para infantil iter 1**: hay 2 géneros target, no 3. Si se suma infantil, agregar `/[brand]/ninos` con nueva carpeta.
+
+### Pendientes
+
+- **Productos cargados deben tener `attributes.gender`**: ya marcado 🔴 OBLIGATORIO en PRODUCT_SCHEMA. Los pocos productos que ya hay con `gender` definido van a aparecer ✅. Los que no tienen → no aparecen hasta que el founder lo agregue.
+- **Iter 2**: si keyword research confirma volumen, agregar `/[brand]/polarizados`, `/[brand]/aviador`, etc. Mismo patrón.
+
+### Próximo paso
+
+Push + ver en sitemap.xml local + verificar que `/anteojos-de-sol/vulk/hombre` carga (incluso si por filtro queda vacío, el empty state es OK).
+
+### Plan del sprint completo
+
+1. ✅ UX PDP (commit b0e96e1)
+2. ✅ Newsletter signup (commit ba408c0) — pendiente migration cloud
+3. ✅ Páginas de marca (commit 1109506)
+4. ✅ Páginas hijas SEO (este commit)
+
+**Sprint completo. Próxima sesión**: cargar más productos (con schema), Asistente RAG cuando catálogo crezca, o lo que decida el founder.
+
+---
+
+## Status anterior
+
 🟡 **Páginas de marca mejoradas (sprint 3 de 4) — implementado, pendiente push y verificación visual.**
 
 ## Páginas de marca

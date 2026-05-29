@@ -22,6 +22,49 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Carpetas estáticas en Next 15 ganan a [dynamic] para evitar conflict con sibling routes
+
+**Categoría**: Next.js routing / Arquitectura SEO
+**Confianza**: 🟢 Alta (patrón estándar Next.js + caso aplicado)
+
+### Qué pasó
+
+Quería crear `/anteojos-de-sol/[brand]/hombre` y `/mujer` (páginas hijas SEO). Pero la ruta `[brand]/[X]` ya estaba ocupada por `[brand]/[product]/page.tsx` (PDP). Tenía 2 opciones:
+
+**A. Usar `[gender]/page.tsx` dynamic**: conflict directo con `[product]/page.tsx` — Next 15 NO permite 2 dynamic segments en el mismo nivel con nombres diferentes.
+
+**B. Carpetas estáticas `hombre/` y `mujer/`**: el router de Next 15 **prioriza static sobre dynamic** en el mismo nivel. Cuando hay `[brand]/hombre/page.tsx` y `[brand]/[product]/page.tsx`, la URL `/vulk/hombre` matchea PRIMERO el static, y `/vulk/vulk-day-light` cae al dynamic. Sin conflict.
+
+Elegí B.
+
+### Por qué funciona
+
+- Next 15 documenta este precedence rule explícito: static > dynamic en el mismo nivel.
+- Cero ambigüedad runtime — el matching es determinístico.
+- SEO control fino: cada static folder es su propia ruta con metadata propia.
+
+### Trade-off
+
+- 4 archivos `page.tsx` casi idénticos (hombre/mujer × sol/receta) vs 1 archivo `[gender]/page.tsx` con validation.
+- ~150 líneas duplicadas total (50 c/u, casi idéntico salvo 2 constantes).
+
+Acepto porque:
+- Cambios de comportamiento se hacen en el componente compartido `<BrandGenderCatalogPage>`, no en los wrappers.
+- Cualquier dev (o yo en 6 meses) entiende el routing al ver el filesystem.
+- Es el patrón canónico de Next.js para este caso.
+
+### Aplicar a futuro
+
+- Páginas hijas SEO de filtros (ej `/anteojos-de-sol/vulk/polarizados`, `/aviador`) → mismo patrón static folder.
+- **Restricción**: ningún producto puede tener slug igual a un static segment hermano. Documentado implícito en routing.
+- Para 2+ static segments con la misma estructura (caso de esta sesión), el archivo wrapper se replica. Es OK hasta 10 archivos. Si crece más, considerar generador de código o config-driven routes.
+
+### Mistake a evitar
+
+Si llego a usar `[X]` dynamic en un nivel donde ya hay otro `[Y]` dynamic en sibling, Next 15 tira error de compilación. Mensaje cripta — vale identificarlo rápido.
+
+---
+
 ## 2026-05-28 — Copy editorial en TS (no DB) gana en velocidad de iteración para 5-10 entidades
 
 **Categoría**: Arquitectura / Velocidad de iteración / Data

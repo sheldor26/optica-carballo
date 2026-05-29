@@ -50,6 +50,49 @@ export async function buildBrandMetadata(
 }
 
 /**
+ * Metadata para páginas hijas SEO de marca por género —
+ * `/anteojos-de-sol/[brand]/hombre` y `.../mujer`.
+ *
+ * Target keywords (SEO_STRATEGY.md):
+ * - "anteojos de sol rusty hombre" (3.200 vol/mes)
+ * - "anteojos de sol rusty mujer" (2.600 vol/mes)
+ * - patrón análogo para otras marcas.
+ */
+export async function buildBrandGenderMetadata(args: {
+  category: CategoryConfig;
+  brandSlug: string;
+  target: 'hombre' | 'mujer';
+}): Promise<Metadata> {
+  const supabase = await createClient();
+  const { data: brand } = await supabase
+    .from('brands')
+    .select('name')
+    .eq('slug', args.brandSlug)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<BrandMetaRow>();
+
+  if (!brand) {
+    return { title: 'Marca no encontrada' };
+  }
+
+  const targetLabel = args.target === 'hombre' ? 'Hombre' : 'Mujer';
+  const title = `${args.category.name} ${brand.name} ${targetLabel} | Originales con Envío - Óptica Carballo`;
+  const description = `${capitalize(args.category.metaPhrase)} ${brand.name} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const url = `${SITE_URL}/${args.category.slug}/${args.brandSlug}/${args.target}`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'website' },
+  };
+}
+
+/**
  * Metadata para páginas de producto (sol o receta). Productos `[PH]` reciben
  * `robots: noindex, follow` para no contaminar Google con placeholders.
  */

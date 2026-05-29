@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Sprint páginas hijas SEO: cierre EXITOSO sin mistake nuevo
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint páginas hijas SEO (sol+receta × hombre+mujer = 4 rutas estáticas, 20 URLs nuevas indexables) ejecutado limpio: query + componente + meta helper + 4 archivos route + sitemap update. Typecheck verde, build verde, todas las rutas pre-renderizadas correctamente.
+
+Decisiones sin agente: carpetas estáticas en vez de [dynamic] (evita conflict Next 15), productos sin `gender` no aparecen (refuerza PRODUCT_SCHEMA), sin BrandStorySection en hijas (evita duplicate content), unisex aparece en ambas hombre y mujer.
+
+Sin mistake nuevo. 5 sprints consecutivos sin fallar el patrón de cierre.
+
+---
+
 ## 2026-05-28 — Sprint 3 brand pages: cierre EXITOSO sin mistake nuevo
 
 **Estado**: 🟢 Cumplido.
