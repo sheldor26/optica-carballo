@@ -34,7 +34,9 @@ Fixes iter 4:
 
 Tradeoff: 3ra imagen (medidas, 1500x1500 cuadrada) queda con barras laterales cuando se selecciona. Aceptable — es esquema técnico, no foto principal.
 
-Próximo paso: founder verifica en `/anteojos-de-sol/rusty/rusty-yau` tras deploy commit `9bd9f3b`.
+Founder confirmó "Mucho mejor!" tras deploy iter 4 — fix gallery + sticky resuelve el problema. Sprint Rusty Yau visualmente cerrado.
+
+**Cleanup pendiente** (founder aplica): producto residual con slug viejo `rusty-yau-polarizado` quedó en DB tras refactor de identidad (commit `7ebcb1c`). Generado `supabase/cloud-bootstrap.sql` con DELETE + RAISE NOTICE para verificación previa. CASCADE en migrations limpia variantes/imágenes/alertas automáticamente. Founder aplica + URL vieja `/anteojos-de-sol/rusty/rusty-yau-polarizado` pasa a 404.
 
 GAP único restante (no bloqueante): `weight_grams` para UPDATE simple.
 

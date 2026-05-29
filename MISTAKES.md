@@ -24,6 +24,34 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Rename de slug sin cleanup del registro viejo deja zombie en DB
+
+**Estado**: 🟡 Mitigado tras descubrimiento — cleanup SQL generado, pendiente apply del founder.
+**Categoría**: Schema management / Refactors de identidad
+
+### Qué pasó
+
+Sprint 10 original creó producto con slug `rusty-yau-polarizado`. Founder aplicó. Detectamos que el nombre/slug era incorrecto (debía ser solo `rusty-yau`). Refactor del seed con nuevo slug. Founder aplicó el nuevo.
+
+Resultado: **2 filas en `products`**: la vieja con `rusty-yau-polarizado` y la nueva con `rusty-yau`. La vieja queda zombie — aparece en `/anteojos-de-sol/rusty` con foto rota (bucket path nuevo no existe) + duplica navegación. URL pública `/anteojos-de-sol/rusty/rusty-yau-polarizado` sigue resolviendo a la fila vieja.
+
+### Causa raíz
+
+Asumí que la migración del seed con `ON CONFLICT (slug) DO UPDATE` manejaba la situación. Pero ON CONFLICT solo aplica si el slug nuevo (`rusty-yau`) matchea uno existente — no toca registros con slugs DISTINTOS al nuevo. La fila vieja no entra al ON CONFLICT y sobrevive.
+
+### Regla preventiva
+
+Cuando refactoreás identidad de un registro (slug, sku, code) en un seed que ya fue aplicado:
+
+1. **Generar 2 statements en el seed nuevo**: DELETE de la fila vieja PRIMERO + INSERT del registro nuevo SEGUNDO. Ambos en la misma transacción.
+2. Alternativa: UPDATE del slug en la fila existente en lugar de INSERT (preserva ID + relaciones).
+3. NUNCA confiar en ON CONFLICT para manejar rename — solo maneja duplicación de la KEY de conflict.
+4. Pre-apply checklist: si el slug nuevo existe en producción Y es distinto al viejo Y la fila vieja sigue existiendo → cleanup explícito requerido.
+
+### Fix aplicado
+
+`supabase/cloud-bootstrap.sql` con DELETE + RAISE NOTICE pre-verify. CASCADE en migrations limpia variants/images/alerts automáticamente.
+
 ## 2026-05-29 — 3 iteraciones de PADDING cuando el problema era el aspect ratio del contenedor
 
 **Estado**: ✅ Cerrado — fix en iter 4 (aspect-square → aspect-[3/2] + sticky).

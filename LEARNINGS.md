@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — RAISE NOTICE pre-DELETE en cleanups SQL para verificación visual
+
+**Categoría**: SQL operations / Cleanup safety
+**Confianza**: 🟢 Alta
+
+### Qué funcionó
+
+Para el cleanup del producto residual `rusty-yau-polarizado`, en lugar de un `DELETE` directo, agregué un bloque `DO $$` previo con `RAISE NOTICE 'Productos a borrar: %', v_count;`. Antes de que la transacción ejecute el DELETE, el founder ve en logs del SQL Editor cuántas filas va a borrar.
+
+Bonus: si el cleanup ya se aplicó previamente (idempotencia), el NOTICE dice "Ya está limpio" en lugar de un silent 0-row delete que daría sensación de error.
+
+### Por qué funcionó
+
+`DELETE FROM ... WHERE slug = '...'` no devuelve info útil al founder (no-técnico) cuando lo ejecuta en SQL Editor. Sin verificación, no sabe:
+- ¿Borró algo? ¿Ya estaba limpio? ¿El WHERE estaba mal?
+
+RAISE NOTICE convierte la operación silenciosa en feedback visible. Cero costo de performance (es un SELECT COUNT antes del DELETE), gran mejora de confianza.
+
+### Cuándo aplicar
+
+- Cualquier DELETE / UPDATE de cleanup ejecutado manualmente por non-tech (founder, ops).
+- Especialmente para operaciones idempotentes (si las corrés 2 veces, no debería pasar nada — RAISE NOTICE confirma).
+- NO aplicar para DELETEs de alta frecuencia desde código (overhead innecesario, plus no hay log a leer).
+
 ## 2026-05-29 — Aspect ratio del contenedor debe matchear el aspect ratio de la data, no la convención
 
 **Categoría**: UI / Aspect ratio / Iteración con feedback de data real
