@@ -1,48 +1,103 @@
 import { NextResponse } from 'next/server';
-import { mlFetch } from '@/lib/integrations/mercadolibre/api-client';
+import { getValidAccessToken } from '@/lib/integrations/mercadolibre/oauth';
+import { getActiveMLIntegration } from '@/lib/integrations/mercadolibre/integrations-repo';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * Endpoint TEMPORAL admin para verificar qué cuenta ML autorizó OAuth.
- * Usa el access_token guardado en `marketplace_integrations` para llamar
- * `/users/me` de ML. Devuelve nickname + user_id + datos públicos.
+ * Endpoint TEMPORAL admin con diagnóstico crudo del estado de OAuth ML.
+ * Hace fetch RAW a `/users/me` (bypass mlFetch) para devolver status+body
+ * sin mapping. Permite diagnosticar 404 / 401 / etc.
  *
- * Caso de uso: diagnóstico cuando el founder no sabe si la cuenta
- * autorizada es la correcta (ej: cookie sticky de ML autorizó cuenta
- * equivocada en multi-cuenta).
- *
- * **Sin auth iter 1** — endpoint temporal de admin.
- *
- * TODO: eliminar cuando admin UI esté operativo en `/mi-cuenta/marketplace`.
+ * Sin auth iter 1 — temporal de admin.
  */
 export async function GET() {
-  const result = await mlFetch<Record<string, unknown>>('/users/me', {
-    operation: 'fetch_me_admin',
-  });
-
-  if (!result.ok) {
+  // 1. Estado de la integración guardada
+  const integration = await getActiveMLIntegration();
+  if (!integration) {
     return NextResponse.json(
       {
         ok: false,
-        error: result.error,
-        retryable: result.retryable,
-        note: 'Si error es token_expired o token_invalid, re-autorizar en /api/ml/oauth/initiate.',
+        stage: 'no_integration',
+        note: 'No hay integración ML activa en DB. Re-autorizar en /api/ml/oauth/initiate.',
       },
       { status: 500 },
     );
   }
 
-  // Devolvemos solo campos relevantes (no exponer datos sensibles del seller).
-  const data = result.data as Record<string, unknown>;
+  // 2. Obtener access token (refresh automático si expira)
+  const tokenResult = await getValidAccessToken();
+  if (!tokenResult.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        stage: 'token_error',
+        error: tokenResult.error,
+        retryable: tokenResult.retryable,
+        integration_summary: {
+          external_user_id: integration.externalUserId,
+          status: integration.status,
+          token_expires_at: integration.tokenExpiresAt,
+          last_sync_at: integration.lastSyncAt,
+          last_error_at: integration.lastErrorAt,
+          last_error_message: integration.lastErrorMessage,
+        },
+      },
+      { status: 500 },
+    );
+  }
+
+  // 3. Fetch RAW a /users/me — capturar status + body sin mapping
+  const url = 'https://api.mercadolibre.com/users/me';
+  let response: Response;
+  let bodyText: string;
+  try {
+    response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${tokenResult.data.accessToken}`,
+        Accept: 'application/json',
+      },
+    });
+    bodyText = await response.text();
+  } catch (err) {
+    return NextResponse.json(
+      {
+        ok: false,
+        stage: 'network_error',
+        error: err instanceof Error ? err.message : String(err),
+      },
+      { status: 500 },
+    );
+  }
+
+  // 4. Devolver TODO el detalle para diagnóstico
+  let bodyParsed: unknown;
+  try {
+    bodyParsed = JSON.parse(bodyText);
+  } catch {
+    bodyParsed = bodyText;
+  }
+
   return NextResponse.json({
-    ok: true,
-    note: 'Cuenta ML autorizada actualmente vía OAuth.',
-    nickname: data.nickname,
-    user_id: data.id,
-    email: data.email,
-    site_id: data.site_id,
-    registration_date: data.registration_date,
-    seller_reputation: data.seller_reputation,
+    ok: response.ok,
+    stage: 'fetch_complete',
+    request: {
+      url,
+      method: 'GET',
+    },
+    response: {
+      status: response.status,
+      statusText: response.statusText,
+      body: bodyParsed,
+    },
+    integration_summary: {
+      external_user_id: integration.externalUserId,
+      status: integration.status,
+      token_expires_at: integration.tokenExpiresAt,
+      last_sync_at: integration.lastSyncAt,
+      last_error_at: integration.lastErrorAt,
+      last_error_message: integration.lastErrorMessage,
+      token_preview: tokenResult.data.accessToken.slice(0, 8) + '...',
+    },
   });
 }
