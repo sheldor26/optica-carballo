@@ -93,6 +93,50 @@ export async function buildBrandGenderMetadata(args: {
 }
 
 /**
+ * Metadata para páginas hijas SEO de marca filtradas por atributo —
+ * `/anteojos-de-sol/[brand]/polarizados`, `.../wayfarer`, etc.
+ *
+ * Target keywords (SEO_STRATEGY.md):
+ * - "anteojos de sol vulk polarizados"
+ * - "anteojos de sol ray-ban wayfarer" (1.400 vol específico)
+ * - patrón análogo para otras combinaciones.
+ */
+export async function buildBrandFilterMetadata(args: {
+  category: CategoryConfig;
+  brandSlug: string;
+  filterLabel: string;
+  filterUrlSlug: string;
+  filterMetaPhrase: string;
+}): Promise<Metadata> {
+  const supabase = await createClient();
+  const { data: brand } = await supabase
+    .from('brands')
+    .select('name')
+    .eq('slug', args.brandSlug)
+    .eq('is_active', true)
+    .maybeSingle()
+    .returns<BrandMetaRow>();
+
+  if (!brand) {
+    return { title: 'Marca no encontrada' };
+  }
+
+  const title = `${args.category.name} ${brand.name} ${args.filterLabel} | Originales con Envío - Óptica Carballo`;
+  const description = `${capitalize(args.category.metaPhrase)} ${brand.name} ${args.filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`;
+  const url = `${SITE_URL}/${args.category.slug}/${args.brandSlug}/${args.filterUrlSlug}`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: url,
+      languages: { 'es-AR': url, 'x-default': url },
+    },
+    openGraph: { title, description, url, type: 'website' },
+  };
+}
+
+/**
  * Metadata para páginas de producto (sol o receta). Productos `[PH]` reciben
  * `robots: noindex, follow` para no contaminar Google con placeholders.
  */

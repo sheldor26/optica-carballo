@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
+import { BRAND_FILTERS } from '@/lib/catalog/brand-filters';
 import { createStaticClient } from '@/lib/supabase/static';
 
 const SITE_URL =
@@ -131,6 +132,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.75,
     },
+    // Páginas hijas SEO por filtro (polarizados + formas). Generadas por
+    // BRAND_FILTERS — cada filtro × cada categoría aplicable.
+    ...BRAND_FILTERS.flatMap((filter) =>
+      filter.categories.map((cat) => ({
+        url: `${SITE_URL}/${cat === 'sol' ? 'anteojos-de-sol' : 'anteojos-de-receta'}/${b.slug}/${filter.urlSlug}`,
+        lastModified: new Date(b.updated_at),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      })),
+    ),
   ]);
 
   // Excluir productos placeholder [PH] del sitemap: no deben indexarse hasta
