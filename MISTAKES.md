@@ -26,7 +26,7 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ## 2026-05-29 — Password reset flow saltea el callback → updateUser falla "Auth session missing!"
 
-**Estado**: ✅ Cerrado en commit (founder pendiente verificar tras redeploy).
+**Estado**: ✅ Cerrado — founder confirmó reset password funcional end-to-end en producción.
 **Categoría**: Auth / Supabase PKCE flow
 
 ### Qué pasó
