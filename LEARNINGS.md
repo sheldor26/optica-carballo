@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Pedir solo el subset relevante del JSON, no el JSON entero gigante
+
+**Categoría**: Comunicación con founder / Diagnóstico
+**Confianza**: 🟢 Alta (validado en debug Vulk ML)
+
+### Qué funcionó
+
+Para verificar el `variations[]` de ML para MLA2726903920, sabía que el endpoint `ml-find-item` devuelve un JSON gigante (5+ KB con item completo: title, pictures, sale_terms, attributes, etc). En lugar de pedirle al founder el JSON entero, le pedí UNA SECCIÓN específica:
+
+> Buscá específicamente la sección **`response.body[0].body.variations`** (es un array). Cada entry tiene: `id`, `seller_custom_field`, `available_quantity`. Pasame **solo esa parte**.
+
+Sin esa precisión, founder pegaría 5KB en chat con 95% de ruido + 5% de info relevante. Yo tendría que parsear mentalmente para encontrar el subset que importa. Con la precisión, founder pega 200 bytes y la data está enfocada.
+
+### Por qué funcionó
+
+JSON de APIs maduras (ML, Stripe, Google) tiene MUCHA info por endpoint. La mayoría es contextual (descripción producto, fotos, etc) y NO ayuda al debug específico. Pedir solo el path relevante hace 3 cosas:
+
+- **Founder entiende mejor**: solo ve lo que importa, sin scroll por 5KB.
+- **Yo proceso más rápido**: el LLM no tiene que filtrar ruido del relevante.
+- **Mensaje queda buscable**: si volvemos a este debug en otra sesión, las variations específicas están claramente identificadas.
+
+### Cuándo aplicar
+
+- Cualquier debug donde la respuesta del servicio tiene > 10 campos.
+- Cuando hay sub-paths específicos relevantes al bug (variations[], errors[], headers).
+- Idealmente, pre-decirle al founder qué shape esperás: `[{id, seller_custom_field, available_quantity}, ...]`. Eso le da template visual.
+
+### Anti-pattern al evitar
+
+"Pasame el JSON completo" → founder pega 5KB → yo proceso 200 bytes relevantes → resto es ruido. Costo de chat alto, baja claridad.
+
 ## 2026-05-29 — "El cambio no impactó" tiene 3 capas: data, cache servidor, cache browser
 
 **Categoría**: Debugging UX / Comunicación con founder

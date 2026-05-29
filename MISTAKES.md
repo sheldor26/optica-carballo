@@ -24,6 +24,39 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Asumí que el código de variation que pasó founder es lo que ML guarda exactamente
+
+**Estado**: 🟡 Mitigado — endpoint diagnóstico creado, esperando confirmación caso A/B/C.
+**Categoría**: Asunciones implícitas en integraciones / Datos del founder vs realidad
+
+### Qué pasó
+
+Founder me pasó los códigos de variation: "LPINK/DRT25" y "SDEMI/DRWG15C3". Generé seed para `mercadolibre_variation_code` con esos strings exactos. Asumí que founder estaba pasando el campo `seller_custom_field` literal de ML.
+
+Pero "LPINK/DRT25" podría ser:
+- El `seller_custom_field` literal de ML (si founder lo copió del panel).
+- Un código interno que founder usa con sus distribuidores (Vulk).
+- Un código que él MEMORIZÓ pero está mal escrito (con guión vs slash).
+- Algo que ML transformó internamente.
+
+Tras founder reportar drift, vi que mi suposición no se había verificado contra el JSON real de ML. El sync pudo estar fallando silenciosamente porque el matching `seller_custom_field === mercadolibre_variation_code` nunca matchea.
+
+### Causa raíz
+
+Confianza ciega en data del founder sin verificación contra fuente externa (ML API). Asunción operativa: "founder me dijo el código, debe ser el correcto". Pero founders no-técnicos manejan códigos de múltiples fuentes (interno del distribuidor, código ML, código de inventario, etc) — pueden confundirse.
+
+### Regla preventiva
+
+Cuando founder pasa identificadores que se usarán para matching contra un servicio externo:
+
+1. **Verificar contra la fuente externa antes de hardcodear**. Llamar GET al endpoint del servicio y mostrar el campo real al founder para que confirme: "ML reporta seller_custom_field = X, ¿coincide con lo que me pasaste?".
+2. **Si el sistema permite múltiples campos de matching**, ofrecer fallback: matchear por seller_custom_field Y por seller_sku, etc.
+3. **Loguear matchin no encontrados**: en mi `syncStockFromMLItem`, el `skipped++` con `matched === undefined` debería loguear EXPLÍCITAMENTE qué seller_custom_field disponibles había vs qué buscábamos. Sin ese log, debugar es ciego.
+
+### Fix aplicado
+
+Endpoint `ml-find-item` ya existente sirve para diagnóstico: founder lo abre y compara directamente las variations[] de ML con lo que tenemos en DB. Si hay mismatch, generamos UPDATE explícito con el campo correcto. Si caso A (ML reporta 3 OK), founder verifica el cambio en panel ML.
+
 ## 2026-05-29 — Acción crítica para founder marcada en mensaje largo en lugar de bloqueante explícito
 
 **Estado**: 🟡 Mitigado — detectado tras founder reportó drift, agregué endpoint de diagnóstico.

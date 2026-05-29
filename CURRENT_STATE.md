@@ -59,14 +59,17 @@ Implementación base (commit 36a3d2d):
 3. Verificar en Vercel Dashboard → Cron Jobs que aparecen 2 crons (check-alerts hourly + ml-reconcile-stock hourly).
 4. Test inbound real-time: editar stock manualmente de MLA1432137395 en panel ML → en <30 seg verificar con `SELECT sku, stock_qty FROM product_variants WHERE sku = '126080'` + verificar que `/anteojos-de-sol/rusty/rusty-yau` muestra el stock nuevo (revalidatePath debería invalidar).
 
-**🟡 DIAGNÓSTICO PARCIAL OK** (2026-05-29). JSON del endpoint admin reveló:
-- Webhook configurado y funcionando: 1 webhook recibido para MLA2726903920 procesado a las 23:30:57 (status='processed').
-- DB y ML sincronizadas: ambas variantes Vulk con stock_qty=3.
-- Force sync corrió OK: `updated:0, skipped:2` (nada que actualizar porque ya están iguales).
+**🟡 DIAGNÓSTICO ITER 2 EN CURSO** (2026-05-29). Tras verificación en incógnito, founder confirmó que **el sitio sigue en 3 cuando debería ser menor**. Eso descarta cache del browser y revela que **ML también está reportando stock=3**.
 
-Causa probable del "no impactó en sitio" reportado por founder: **cache del browser** (Cmd+R no fuerza re-fetch, necesita Cmd+Shift+R) o **el cambio en ML era 3→3 (no hubo cambio neto)**.
+3 hipótesis nuevas a verificar via endpoint `ml-find-item` para inspeccionar el array `variations[]` de ML:
 
-Próximo paso: founder verifica en pestaña incógnita (`/anteojos-de-sol/vulk/vulk-day-light`) qué stock muestra. Si muestra 3 → todo OK, cierre del flow. Si muestra otro número → investigar revalidatePath.
+**Caso A** — `seller_custom_field` matchea (SDEMI/DRWG15C3, LPINK/DRT25) Y `available_quantity` es 3: ML está reportando 3, el cambio en panel ML no se guardó. Founder vuelve a hacer el cambio + verifica que aparece guardado en panel ML.
+
+**Caso B** — `seller_custom_field` NO matchea (diferente o vacío): nuestro `mercadolibre_variation_code` en DB no matchea con lo que ML guarda. Necesitamos UPDATE de las variantes con el código correcto.
+
+**Caso C** — `available_quantity` muestra el menor número: ML reporta bien pero sync no aplicó → bug en código.
+
+Próximo paso founder: abrir `https://opticacarballo.com.ar/api/admin/ml-find-item/MLA2726903920` y pasar las 2 entries del array `variations[]` (cada una con `seller_custom_field` y `available_quantity`).
 
 **TODO APLICADO POR FOUNDER (2026-05-29 antes de Sprint 2b)**: cleanup zombie `rusty-yau-polarizado` + migration ML multi-variation + mapping Vulk Day Light. Registrado en `supabase/CLOUD_APPLIED.md`.
 
