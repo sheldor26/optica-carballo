@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Sprint Performance Audit CERRADO** (2026-05-29). Audit técnico completo del sitio — no se encontraron bugs de performance. Base técnica sólida (Next/Image bien usado, fonts con `display:swap`, GA4 con `afterInteractive`, bundle 101 kB shared). Doc `PERFORMANCE_AUDIT.md` creado con plan de acción para el founder (activar Vercel Analytics + correr PageSpeed Insights).
+
 ✅ **Sprint 2a ML OAuth + Sprint Analytics (GA4 + GSC) CERRADOS** (2026-05-29). OAuth ML funcionando end-to-end (seller `1975674`), GA4 capturando data, GSC verificada + sitemap aprobado. Google va a indexar las 100+ URLs SEO en 1-7 días.
 
 **Nota verificación GSC**: founder usó método distinto al meta tag (probablemente DNS o HTML drop-in file). El env var `NEXT_PUBLIC_GSC_VERIFICATION_TOKEN` NO se aplicó — el meta tag NO aparece en HTML del sitio (verificado con curl). Está OK porque GSC verifica propiedad por cualquier método válido. Si en futuro queremos re-verificación de respaldo via meta tag, configurar la env var.
@@ -99,6 +101,74 @@ Founder confirmó: "hice deploy y arranco, todo bien ahora". Causa exacta confir
 1. ⏳ Founder reportó GSC verification listo — pendiente verificar end-to-end (meta tag en HTML + propiedad confirmada en GSC dashboard + sitemap submitted).
 2. ⚠️ DELETE entry comprometida ML: `DELETE FROM marketplace_sync_errors WHERE id = '232bde47-522b-41f0-a05c-f2319207b251'`.
 3. ⚠️ Cargar `mercadolibre_item_id` en variantes para Sprint 2b ML.
+
+### Update 2026-05-29: import desde ML — endpoint admin temporal (commit `2a65e83`)
+
+Founder pidió "importar este anteojo MLA1432137395" como primera prueba del flow de import desde ML al sitio.
+
+**Bloqueante encontrado**: `GET https://api.mercadolibre.com/items/MLA1432137395` devolvió `403 PolicyAgent UNAUTHORIZED`. ML cambió comportamiento — items endpoints que antes eran públicos ahora requieren auth, incluso para sellers. Necesitamos usar el token OAuth guardado.
+
+**Solución (commit `2a65e83`)**: endpoint admin temporal `/api/admin/ml-import-preview/[itemId]` que:
+- Valida formato `MLA\d+`.
+- Usa `mlFetch(/items/{id})` con el token cifrado guardado en `marketplace_integrations`.
+- Devuelve JSON crudo del item para que el founder me lo pase.
+- Sin auth iter 1 (admin temporal). Sprint 3 va a tener admin UI propia con auth.
+
+**Flow del import** (manual iter 1, automatizable iter 2):
+1. Founder GET `/api/admin/ml-import-preview/MLA1432137395`.
+2. Founder copia JSON y me lo pasa.
+3. Yo determino marca + genero SQL (`INSERT products + product_variants + product_images`).
+4. Founder aplica SQL en Supabase Dashboard.
+5. Founder descarga fotos de ML + sube al bucket Storage.
+
+Si este flow funciona como prueba, Sprint 2b/3 puede automatizar end-to-end (endpoint que hace todo en 1 click).
+
+**Pendiente founder**: visitar el endpoint y pasarme el JSON crudo.
+
+### Update 2026-05-29: Vercel ignoró el commit `2a65e83` — force redeploy (`d6ecf12`)
+
+Founder reportó 404 al visitar `/api/admin/ml-import-preview/MLA1432137395`. Auditoría via Vercel MCP reveló: el commit `2a65e83` (endpoint admin) NO se deployó automático — Vercel/GitHub webhook glitch. Último deploy era `b65e58da` (Sprint Analytics CERRADO).
+
+**Solución**: commit allow-empty `d6ecf12` para forzar redeploy con todos los commits acumulados.
+
+**Pendiente verificación end-to-end tras nuevo deploy**: founder reintenta el endpoint → debería devolver JSON del item ML.
+
+**Bug platform-side observado**: Vercel/GitHub webhook puede silenciosamente saltearse commits específicos. Causa exacta desconocida (posible filtro `.vercelignore`, glitch, rate limit). Mitigación: tras cualquier push, verificar en Vercel UI o via MCP que el deploy efectivamente apareció con el SHA correcto.
+
+### Update 2026-05-29: endpoint admin responde pero ML devuelve error genérico
+
+Post deploy `d6ecf12`, founder visitó endpoint y recibió:
+```json
+{"ok":false,"error":"unknown","retryable":false,"note":"Si error es token_expired..."}
+```
+
+`error: unknown + retryable: false` significa ML respondió con status >= 400 que NO es 401/404/429. Probable: **403 Forbidden**.
+
+**Hipótesis del 403**:
+1. `MLA1432137395` es de OTRO seller (no del founder) → ML restringe acceso a items ajenos. Sólo info pública limitada.
+2. Scopes de la app no incluyen permiso para detalles completos de items propios (raro).
+3. ML cambió políticas (consistent con el `403 PolicyAgent` que vimos antes con el endpoint público).
+
+`mlFetch` loguea automático el body real del error a `marketplace_sync_errors`. Founder debe visitar `/api/ml/debug-last-error` y pasar el JSON con `operation: 'fetch_item_admin'` para ver el body crudo de ML.
+
+**Pendiente founder**: 
+1. Visitar `/api/ml/debug-last-error` y mandar JSON.
+2. Confirmar si `MLA1432137395` es producto propio del founder o de otro vendedor.
+
+Si es de otro vendedor: ML API NO permite ver detalles internos de items ajenos. Solución alternativa = scrap de la página pública del producto.
+
+### Update 2026-05-29: producto en otra cuenta ML del founder — re-autorización pendiente
+
+Founder confirmó: `MLA1432137395` ES su producto, pero está publicado en OTRA cuenta ML — no la que autorizó OAuth (user_id `1975674`). ML correctamente niega acceso porque los tokens están scoped al user que autorizó.
+
+**Solución elegida**: re-autorización con la cuenta correcta (1 sola integración activa por seller, no multi-cuenta iter 1). Founder log out de ML actual → log in con cuenta correcta → re-visit `/api/ml/oauth/initiate`. Tokens en DB se UPSERT-ean por `(marketplace, external_user_id)` — el viejo user_id queda como entry separada inactiva.
+
+**Multi-cuenta ML** queda como feature futura si el founder vende desde >1 cuenta regularmente. Effort: 1 sprint serio (rework DB + UI selección + sync por cuenta).
+
+**Pendiente founder**:
+1. Re-autorizar con cuenta correcta + mandar nuevo `user_id`.
+2. Reintentar `/api/admin/ml-import-preview/MLA1432137395`.
+3. Mandar JSON del producto cuando llegue.
 
 ---
 

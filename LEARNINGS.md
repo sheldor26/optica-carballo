@@ -22,6 +22,197 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Performance audit basado en RUM, no en code review pre-tráfico
+
+**Categoría**: Performance / Métodos de medición
+**Confianza**: 🟢 Alta (industria estándar)
+
+### Qué funcionó
+
+Durante audit de performance, después de validar que el código tiene buena base técnica (Next/Image, fonts con swap, scripts afterInteractive, bundle razonable), corté el audit ahí en vez de empezar a optimizar a ciegas. La decisión: documentar findings + plan de acción para activar Vercel Analytics y correr PageSpeed Insights, en vez de aplicar 10 micro-optimizaciones sin data.
+
+### Por qué funcionó
+
+Sin tráfico real, optimizar es teatro. Lighthouse en local mide HTML/CSS/JS pero no caché real, conexiones lentas, dispositivos viejos. Las micro-optimizaciones pre-tráfico:
+- A veces empeoran cosas (ej: `dynamic({ ssr: false })` que rompió build).
+- Consumen tiempo que no genera mejora medible.
+- Crean falsa sensación de "está optimizado" sin baseline real.
+
+El approach correcto: validar fundamentos → documentar plan de medición → optimizar SOLO cuando hay data RUM mostrando un Core Web Vital en rojo.
+
+### Cuándo aplicar
+
+- Cualquier sprint de "optimización" sin métricas de producción.
+- Tentación de pre-optimizar antes de tener users.
+- Regla: si no hay número que mejorar, no hay nada que optimizar.
+
+## 2026-05-29 — OAuth scoped por user — multi-cuenta del mismo founder requiere re-autorización o multi-tenancy
+
+**Categoría**: OAuth / Multi-cuenta / Integraciones
+**Confianza**: 🟢 Alta (caso aplicado en ML)
+
+### Qué pasó
+
+Founder tiene su producto `MLA1432137395` en una cuenta ML distinta a la que autorizó OAuth (user_id 1975674). ML correctamente niega acceso a items ajenos al token holder, aunque el founder sea dueño legal de ambas cuentas.
+
+### Por qué
+
+OAuth tokens son scoped al `user_id` del usuario que autorizó. Es seguridad básica:
+- El token no representa al founder como persona — representa al user_id en ML.
+- ML no sabe (ni debe saber) que múltiples cuentas pertenecen al mismo dueño legal.
+- Token de user A no puede acceder a items de user B.
+
+### Soluciones por nivel de complejidad
+
+**Iter 1 (single-account)**: re-autorización. Founder log out + log in con cuenta correcta + nuevo OAuth flow. Tokens se UPSERT en DB. Trade-off: solo 1 cuenta activa a la vez.
+
+**Iter 2 (multi-account)**: refactor DB para soportar múltiples integraciones simultáneas. Cada producto en el sitio mapea a item + user_id ML específico. UI para elegir desde qué cuenta importar/sincronizar. Effort: 1 sprint serio.
+
+**Iter 3 (multi-marketplace)**: extender a Tiendanube/Shopify además de ML. Misma arquitectura, marketplace_integrations ya soporta `marketplace` field discriminator.
+
+### Aplicar a futuro
+
+Cualquier integración OAuth-based:
+- Asumir SINGLE user/account iter 1. Cuesta nada y resuelve 80%+ casos.
+- Documentar limitación en doc operativa.
+- Multi-tenant solo si hay demanda real (founder con >2 cuentas regulares).
+
+### Patrón meta
+
+"Scope explícito" es fundamental en OAuth. Anti-pattern: asumir que "es mío" da acceso. ML no chequea propiedad legal — solo permission del token.
+
+---
+
+## 2026-05-29 — Endpoints admin deben devolver detalle del error de tercero, no solo el código genérico
+
+**Categoría**: API design / Debugging / DX
+**Confianza**: 🟡 Media (1 caso aplicado en ML import)
+
+### Qué pasó
+
+Founder visitó `/api/admin/ml-import-preview/MLA1432137395` y recibió:
+```json
+{"ok":false,"error":"unknown","retryable":false}
+```
+
+`mlFetch` ya loguea el body real del error de ML a `marketplace_sync_errors`. Pero el endpoint NO devuelve ese body al caller — solo el código genérico (`unknown`). Para diagnosticar, founder tiene que visitar OTRO endpoint (`/api/ml/debug-last-error`) y mapear las entries por timestamp.
+
+UX subóptima: 2 round-trips para diagnosticar 1 error.
+
+### Solución (próximo refactor)
+
+Endpoint admin debería incluir el error_payload del último sync_errors entry en su response cuando hay error. Algo como:
+
+```ts
+if (!result.ok) {
+  const lastError = await getLastSyncError({ operation: 'fetch_item_admin' });
+  return NextResponse.json({
+    ok: false,
+    error: result.error,
+    retryable: result.retryable,
+    detail: lastError?.error_payload,  // ← incluir aquí
+  });
+}
+```
+
+### Por qué importa
+
+- Endpoint admin = para diagnóstico interno. Debería ser self-contained.
+- Founder no-técnico no debería tener que correlacionar JSONs entre 2 endpoints.
+- Reduce iteraciones de debugging founder ↔ AI.
+
+### Aplicar a futuro
+
+Cualquier endpoint admin/debug que falla por causa de tercero:
+- Devolver código genérico para casos esperados.
+- Devolver detalle COMPLETO del error de tercero cuando el caller es admin/debug.
+- No requerir que founder visite otro endpoint para diagnóstico.
+
+### Patrón meta
+
+"Self-contained debugging": cada endpoint admin debe responder con suficiente info para tomar acción, sin obligar a múltiples queries.
+
+---
+
+## 2026-05-29 — Verificar deploys reales via MCP es ground truth, NO el git push
+
+**Categoría**: DevOps / Vercel / Verificación de despliegue
+**Confianza**: 🟢 Alta (caso aplicado en hot-fix de webhook glitch)
+
+### Qué pasó
+
+Push commit `2a65e83` (endpoint admin) → asumí que Vercel triggereaba build automático. Founder reportó 404 → verifiqué via MCP `list_deployments` y NO había deploy del commit `2a65e83`. Vercel saltó ese commit.
+
+Causa desconocida (webhook GitHub glitch, filter weird, rate limit silencioso). Lo importante: **push exitoso ≠ deploy efectuado**.
+
+### Solución
+
+`mcp__claude_ai_Vercel__list_deployments` muestra SHA real de cada deploy. Comparar SHA esperado vs SHA real = ground truth de qué está vivo en producción.
+
+### Por qué importa
+
+- "Push exitoso" da false sense of "deploy done". Webhook events son best-effort.
+- Vercel UI lo muestra pero el founder no chequea — confía en mi confirmación.
+- Para integraciones críticas (endpoints admin, webhooks ML, payment flows), verificación post-push debería ser default.
+
+### Aplicar a futuro
+
+Tras CUALQUIER push de código (no doc-only) con feature nueva crítica:
+- Listar deployments via MCP.
+- Verificar que el SHA del último deploy = SHA del commit recién pusheado.
+- Si no matchea (caso raro) → force redeploy con commit doc o redeploy manual.
+
+### Patrón meta
+
+"Verificar en lugar de asumir" para cualquier paso async fuera de tu control directo. Anti-pattern: declarar "deploy en 1-2 min" sin confirmar después.
+
+---
+
+## 2026-05-29 — Endpoint admin temporal via OAuth guardado para one-off tasks del founder
+
+**Categoría**: Arquitectura / Operaciones / Admin temporal
+**Confianza**: 🟡 Media (1 caso aplicado en ML import)
+
+### Qué pasó
+
+Founder pidió import de un item ML específico. Necesitaba:
+1. Fetch del item desde ML API.
+2. Auth (ML cambió, ya no es público).
+
+Opciones:
+- **A**: Script local con curl — no tenemos los tokens descifrados localmente.
+- **B**: Compartir tokens descifrados via prompt — leak de credenciales.
+- **C**: Endpoint admin temporal en el sitio que use `mlFetch` con tokens guardados — el sitio ya tiene auth + descifrado, solo añadimos endpoint thin.
+
+Elegí C. Endpoint `/api/admin/ml-import-preview/[itemId]` que devuelve JSON crudo.
+
+### Por qué funciona
+
+- **Reutiliza infraestructura existente**: `mlFetch` + tokens cifrados + auto-refresh. Cero código duplicado.
+- **Sin leak de credenciales**: tokens nunca salen del server.
+- **Validación input**: regex sobre `MLA\d+` para evitar SSRF.
+- **Sin auth iter 1**: aceptable porque solo devuelve data pública del seller (items que él vende).
+- **Marker TODO** para Sprint 3: cuando haya admin UI propia, este endpoint se elimina o se integra.
+
+### Trade-off
+
+- Endpoint sin auth = cualquiera puede invocarlo. Mitigación parcial: solo devuelve data que el seller ya expone públicamente en su tienda ML.
+- Adds 1 endpoint público con costo de leer del DB cada call. Negligible para uso one-off.
+
+### Aplicar a futuro
+
+Cualquier one-off task que el founder pide y requiere acceso a tokens/secrets guardados:
+- Endpoint admin temporal `/api/admin/X/[param]` thin wrapper sobre helper existente.
+- Sin auth iter 1 si data no es sensible.
+- TODO explícito para eliminar/integrar en admin UI definitiva.
+- Validación rigurosa de input para evitar SSRF/injection.
+
+### Patrón meta
+
+"Endpoint thin wrapper sobre helper existente" — reutilizar infraestructura, no duplicar. Anti-pattern: script local que pide credenciales por prompt.
+
+---
+
 ## 2026-05-29 — Verificación de propiedad de Google es agnóstica al método — meta tag NO obligatorio si verificó por otro
 
 **Categoría**: Google tooling / Verificación de propiedad
