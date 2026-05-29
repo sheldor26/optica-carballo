@@ -22,6 +22,50 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Crear página + API ≠ feature live. Sin navegación visible para el cliente, la feature no existe en producción.
+
+**Categoría**: Discoverability / UX / Cierre de loop de implementación
+**Confianza**: 🟢 Alta (caso obvio en retrospectiva, founder lo señaló inmediatamente)
+
+### Qué pasó
+
+Implementé 2 herramientas IA (recomendador de monturas + lector de receta) con páginas funcionales en `/recomendador-de-monturas` y `/lector-de-receta`, las pusheé, build verde, y declaré "feature lista". Founder reportó: **"No veo el lector de receta ni el probador de monturas"**.
+
+Causa: las páginas existían pero NO había **ningún link visible** desde el sitio público a ellas. Solo eran accesibles por URL directa o vía sitemap (que Google ve pero el cliente humano no).
+
+### Causa raíz
+
+**Confundí "página existe + indexable" con "feature descubrible"**. Para un developer son lo mismo (las herramientas funcionan, sitemap las lista, Google las indexa). Para un cliente, una página sin link desde el resto del sitio **no existe**.
+
+Patrón meta: **el ciclo de implementación de una feature web no termina en "página funciona", termina en "cliente puede llegar a la página sin saber la URL"**. Es trivial cuando se piensa, pero fácil de olvidar en el sprint de implementación.
+
+### Cómo aplicar
+
+Al implementar CUALQUIER nueva página/feature, antes de declarar "lista":
+
+1. **¿Tiene link desde el header?** Si es navegación principal.
+2. **¿Tiene link desde el footer?** Si es informativa/secundaria.
+3. **¿Tiene sección destacada en home?** Si es diferenciadora.
+4. **¿Tiene link desde páginas relacionadas?** Si es contextual (ej: link al recomendador desde brand pages de sol).
+5. **¿Está en el sitemap?** Para indexación SEO.
+
+Al menos UNO de 1-4 debe estar para que la feature exista para el cliente. Sitemap solo no basta.
+
+### Anti-patrón a evitar
+
+- Declarar feature live tras "build verde + push" sin verificar navegación.
+- Asumir que el cliente "ya sabe" o "buscará" la URL.
+- Pensar "sitemap = descubrible".
+- Dejar la navegación para "iter 2" indefinidamente.
+
+### Próxima vez aplicar a
+
+- Cualquier feature/página nueva (legal, herramienta, blog post, etc.).
+- Especialmente para iter 1 de features experimentales — la descubribilidad es CRÍTICA para validar si se usa.
+- Cuando se agregue una feature dependiente de otra (ej: comparador → desde brand pages).
+
+---
+
 ## 2026-05-28 — Patrón "2 agentes especialistas en paralelo" SIGUE funcionando para feature de IA (2do caso confirmado: lector de receta)
 
 **Categoría**: Sistema de agentes / Workflow / Validación de pattern

@@ -2,7 +2,24 @@
 
 ## Status
 
-🟡 **Lector de receta con IA Vision (Claude Sonnet 4.6) — implementado iter 1, pendiente push y test con receta real**
+🟡 **Herramientas IA: visibilidad agregada (footer + home section destacada) — pendiente push**
+
+Founder reportó "no veo el lector de receta ni el probador de monturas". Diagnóstico: páginas existían pero NO había navegación que las descubriera (solo accesibles por URL directa o sitemap). Fix:
+
+- `lib/site/nav.ts`: nuevo `TOOLS_LINKS` array con las 2 herramientas. También agregada `/preguntas-frecuentes` al footer info (estaba implementada pero sin link).
+- `components/layout/site-footer.tsx`: footer pasó de 4 columnas a 5. Nueva columna "Herramientas" con las 2 features de IA.
+- `components/home/home-tools.tsx` NUEVO: sección destacada en home con cards de las 2 herramientas. Cada card con ícono (ScanFace + FileText), título serif, descripción, CTA. Hover effects sutiles + glow ámbar. Ubicada entre BrandsSection y HomeFaqs (el cliente ya conoció marcas, ahora descubre el diferencial técnico).
+- `app/(storefront)/page.tsx`: import + render de `<HomeTools />`.
+
+**Decisión técnica**: NO agregar al header principal en iter 1. El header ya tiene 4-5 elementos (categorías + WhatsApp + auth + cart) y agregar 2 herramientas más lo satura. Si tras métricas vemos que pocos usuarios llegan a la sección del home, considerar dropdown "Herramientas" en header. Iter 2.
+
+**Build verde, typecheck verde**.
+
+**Próximo paso**: push + verificar visibilidad. Footer + home section deberían ser suficientes para descubribilidad básica.
+
+---
+
+🟢 **Lector de receta con IA Vision (Claude Sonnet 4.6) — pusheado en commit `255439e`, en producción**
 
 Founder eligió "Lector de receta IA" como segunda herramienta (luego del recomendador de monturas). Invoqué 2 agentes especialistas en paralelo (`optical-expert` + `ai-features-engineer`) — mismo patrón exitoso que con el recomendador.
 

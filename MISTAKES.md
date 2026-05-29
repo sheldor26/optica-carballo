@@ -285,6 +285,54 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Declarar features IA "listas" sin agregar navegación visible para el cliente
+
+**Estado**: 🟡 Detectado por feedback del founder ("no veo el lector de receta ni el probador de monturas"). Fix aplicado en mismo turno.
+**Categoría**: Implementación incompleta / Discoverability
+
+### Qué pasó
+
+Implementé 2 herramientas IA (recomendador + lector receta) con páginas funcionales y pusheé. Declaré "feature lista" sin verificar que el cliente pudiera **llegar** a esas páginas desde el resto del sitio. NO había ningún link en header, footer, home, ni páginas relacionadas. Solo URL directa o sitemap.
+
+Founder reportó la ausencia. Causa real: confundí "página existe + indexable" con "feature live para el cliente".
+
+### Causa raíz
+
+Patrón meta: **ciclo de implementación incompleto**. El developer (yo) terminó cuando el código funciona y se deploya. El cliente necesita además **descubrir** la feature. Mi mental model saltó del paso "deploy" al "feature lista" sin pasar por "discoverability".
+
+Específicamente para herramientas IA experimentales en iter 1, este patrón es PEOR porque:
+- Sin tráfico al feature, no se valida si se usa.
+- Sin uso, no se mide costo real (tokens consumidos).
+- Sin uso, no se itera basado en feedback.
+- La inversión en construir la feature queda sin ROI.
+
+### Regla preventiva
+
+Antes de declarar CUALQUIER feature/página "lista":
+
+1. **Checklist de descubribilidad obligatorio**:
+   - [ ] Link en header (si es navegación principal)
+   - [ ] Link en footer (default para todo lo demás)
+   - [ ] Link contextual desde páginas relacionadas (si aplica)
+   - [ ] Sección en home (si es diferenciador del producto)
+2. **Si la respuesta a TODAS es NO**, el feature NO está lista. Sigue siendo "URL accesible" hasta que se agregue al menos UNO.
+3. **Sitemap solo NO basta**. Es para Google, no para humanos.
+
+### Aplicación inmediata
+
+- Para herramientas IA: footer (default) + sección destacada en home (porque son diferenciadoras del producto).
+- Para páginas legales: footer.
+- Para nuevas categorías/marcas: header + sitemap.
+- Para landing pages de campaña: link contextual desde lugares donde se promueva la campaña.
+
+### Estado de mitigación
+
+- Fix aplicado en este turno: `TOOLS_LINKS` en nav.ts + columna "Herramientas" en footer + `HomeTools` section en home.
+- Documentado.
+- Si en próximas features olvido el paso de discoverability, escalar regla a CLAUDE.md.
+
+---
+
 ## 2026-05-28 — Sin mistake en este turno (lector de receta implementado con filtro crítico exitoso)
 
 Aplicación de regla v4. Implementación del lector de receta con IA Vision. Apliqué correctamente el filtro crítico del 7mo mistake: rechacé 2 recomendaciones del ai-features-engineer (Upstash, HEIC conversion) por overkill en iter 1. Decisiones técnicas explícitas documentadas. Sin error de proceso, sin anti-pattern.

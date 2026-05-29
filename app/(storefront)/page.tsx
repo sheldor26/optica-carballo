@@ -3,6 +3,7 @@ import { BrandsSection } from '@/components/home/brands-section';
 import { CategoriesSection } from '@/components/home/categories-section';
 import { HomeFaqs } from '@/components/home/home-faqs';
 import { HomeHero } from '@/components/home/home-hero';
+import { HomeTools } from '@/components/home/home-tools';
 import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
 import { OrganizationJsonLd } from '@/components/seo/organization-jsonld';
@@ -45,6 +46,7 @@ export default async function HomePage() {
       <TrustMarquee />
       <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
       <BrandsSection brands={allBrands} />
+      <HomeTools />
       <HomeFaqs />
       <ValueProps />
     </>

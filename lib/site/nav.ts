@@ -22,7 +22,18 @@ export const PRIMARY_NAV: NavLink[] = [
  */
 export const FOOTER_INFO_LINKS: NavLink[] = [
   { href: '/sobre-nosotros', label: 'Sobre nosotros' },
+  { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
   { href: '/politica-de-devolucion', label: 'Política de cambios y devoluciones' },
   { href: '/boton-de-arrepentimiento', label: 'Botón de arrepentimiento' },
   { href: '/defensa-del-consumidor', label: 'Defensa del consumidor' },
+];
+
+/**
+ * Herramientas con IA que ofrece el sitio. Se muestran en el footer
+ * + sección destacada en home. NO van en el header principal para
+ * no saturarlo (al menos en iter 1).
+ */
+export const TOOLS_LINKS: NavLink[] = [
+  { href: '/recomendador-de-monturas', label: 'Recomendador de monturas' },
+  { href: '/lector-de-receta', label: 'Lector de receta con IA' },
 ];
