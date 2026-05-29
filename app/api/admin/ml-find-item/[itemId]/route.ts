@@ -43,9 +43,11 @@ export async function GET(
     );
   }
 
-  // Endpoint que devuelve items del seller con cualquier status.
-  // `ids=MLAxxx` filtra a un item específico de su catálogo.
-  const url = `https://api.mercadolibre.com/users/${integration.externalUserId}/items/search?ids=${itemId}`;
+  // Endpoint multi-get `/items?ids=...` devuelve array con {code, body} por
+  // cada ID. Si el item existe en cualquier status (active/paused/closed),
+  // code=200 + body con detalle. Si no existe o no es accesible, code=404.
+  // Más confiable que /items/{id} singular que 404 silencioso para no-active.
+  const url = `https://api.mercadolibre.com/items?ids=${itemId}`;
 
   let response: Response;
   let bodyText: string;
@@ -77,7 +79,7 @@ export async function GET(
 
   return NextResponse.json({
     ok: response.ok,
-    note: 'Si results array está vacío, el item NO está en esta cuenta. Si está, mirá el campo "status" del item para saber si está active/paused/closed.',
+    note: 'Mirá response.body[0].code: 200 = item existe (su status en body.body.status), 404 = no existe. Si existe pero status != active, eso explica el 404 de /items/{id}.',
     request: { url, seller_id: integration.externalUserId, item_id: itemId },
     response: {
       status: response.status,
