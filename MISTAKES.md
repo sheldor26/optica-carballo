@@ -24,6 +24,36 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Single-account model implícito + `.maybeSingle()` silencioso = falso "no integration"
+
+**Estado**: ✅ Cerrado en código (founder pendiente re-autorizar para validar end-to-end).
+**Categoría**: Diseño de schema / Asunciones implícitas
+
+### Qué pasó
+
+Sprint OAuth ML asumió single-account (1 sola integración activa por marketplace). Pero el upsert con `onConflict: 'marketplace,external_user_id'` solo previene duplicados del MISMO seller — re-autorizar con OTRO seller crea una row nueva. Ambas quedan `status='active'`.
+
+`getActiveMLIntegration` usaba `.maybeSingle()` que valida 0 o 1 row. Con 2+, PostgREST throws → el catch returns `null` silenciosamente con solo un `console.error`. El endpoint admin reportó `stage: 'no_integration'` — engañoso, había DOS.
+
+### Causa raíz
+
+Asunción implícita "el código garantiza 1 row activa" + `.maybeSingle()` que valida esa asunción **silenciosamente**. Cuando la asunción se rompe (re-auth con cuenta distinta), el error queda como WARN en Vercel logs (que rara vez se mira) y el sistema reporta falsamente "no hay integración".
+
+Combinación tóxica: invariante implícita + validador silencioso + log oculto.
+
+### Regla preventiva
+
+1. **Hacer invariantes explícitas con UNIQUE constraints** o triggers de DB cuando sea posible. En este caso: UNIQUE partial index `WHERE status = 'active'` para `(marketplace)`.
+2. **Enforce invariantes en write path**: el upsert debe REVOKE otras activas antes de crear (no solo confiar en onConflict).
+3. **Defensive read**: usar `.order().limit(1)` en lugar de `.maybeSingle()` cuando la invariante puede romperse — devolver "la mejor" en lugar de fallar.
+4. **Logs silenciosos son trampa**: si una rama del código loguea pero devuelve "all good" (null), el sistema parece funcionar y nadie revisa logs. Mejor throw en módulos críticos o devolver Result<T, E> que el consumer obligadamente maneja.
+
+### Fix aplicado
+
+Commit `[pendiente push]`:
+- `getActiveMLIntegration`: `.order('updated_at', desc).limit(1)` — siempre devuelve la más reciente, no falla con multi-row.
+- `upsertMLIntegration`: REVOKE explícito de otras activas con distinto user_id ANTES del upsert (single-account enforcement en write path).
+
 ## 2026-05-29 — Asumir shape de entity sin verificar — usé snake_case del DB en `MarketplaceIntegration` que está mapeado a camelCase
 
 **Estado**: ✅ Cerrado — corregido en mismo commit antes de pushear.

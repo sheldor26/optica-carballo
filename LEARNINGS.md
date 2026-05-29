@@ -22,6 +22,31 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Enforce single-account model en el WRITE path, no solo en el read
+
+**Categoría**: Diseño de schema / Integraciones multi-cuenta
+**Confianza**: 🟢 Alta (validado tras bug ML "no_integration" con 2 rows activas)
+
+### Qué funcionó
+
+Tras descubrir que `getActiveMLIntegration` returnaba null silencioso porque había 2 rows activas, no me limité a fixear el read path. Modifiqué TAMBIÉN el write path (`upsertMLIntegration`) para que ANTES del upsert revoque cualquier otra integración activa del mismo marketplace con distinto user_id. Esto enforça el single-account model en el momento del cambio, no solo cuando se lee.
+
+### Por qué funcionó
+
+Single-account es una **invariante del dominio** ("solo 1 seller autorizado por marketplace a la vez"). Hay 3 lugares donde enforce:
+
+1. **Schema (DB)**: UNIQUE partial index `WHERE status='active'`. Defensa más fuerte (Postgres rechaza el INSERT).
+2. **Write path (app)**: el upsert revoke otras activas antes de crear. Defensa secundaria, funciona sin schema constraint.
+3. **Read path (app)**: defensive query con `.order().limit(1)`. Solo soft defense, no enforça nada.
+
+Tener SOLO #3 (mi código original) es lo peor de los 3 mundos — el sistema parece funcionar mientras la invariante se rompe silenciosamente.
+
+### Cuándo aplicar
+
+- Cualquier modelo single-tenant / single-active / "el último gana".
+- Idealmente: #1 + #2 (defense in depth). El read path no debería ser el único que mantenga la invariante.
+- Si #1 no es posible (RLS, migrations costosas), #2 es el mínimo aceptable.
+
 ## 2026-05-29 — Endpoints admin de diagnóstico hacen fetch raw + DB summary (bypass abstracciones productivas)
 
 **Categoría**: Observabilidad / Debugging de integraciones

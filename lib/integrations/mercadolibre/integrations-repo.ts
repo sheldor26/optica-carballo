@@ -59,21 +59,26 @@ function rowToIntegration(row: DbRow): MarketplaceIntegration {
  */
 export async function getActiveMLIntegration(): Promise<MarketplaceIntegration | null> {
   const supabase = createAdminClient();
+  // Defensa de borde: en single-account model debería haber MÁXIMO 1 row activa,
+  // pero si el founder autoriza con múltiples cuentas (re-auth con seller distinto)
+  // y la limpieza de las viejas falla, queda inconsistente. Order by updated_at DESC
+  // + limit 1 devuelve la MÁS RECIENTE — siempre la correcta para uso productivo.
   const { data, error } = await supabase
     .from('marketplace_integrations')
     .select('*')
     .eq('marketplace', MARKETPLACE)
     .eq('status', 'active')
-    .maybeSingle();
+    .order('updated_at', { ascending: false })
+    .limit(1);
 
   if (error) {
     console.error('[ml-repo] getActiveMLIntegration error', error);
     return null;
   }
-  if (!data) return null;
+  if (!data || data.length === 0) return null;
 
   try {
-    return rowToIntegration(data as unknown as DbRow);
+    return rowToIntegration(data[0] as unknown as DbRow);
   } catch (err) {
     console.error('[ml-repo] error decrypting tokens', err);
     return null;
@@ -83,6 +88,11 @@ export async function getActiveMLIntegration(): Promise<MarketplaceIntegration |
 /**
  * UPSERT de la integración. Cifra tokens antes de persistir.
  * Acepta UPDATE de tokens (refresh) y marca status='active' + clear errors.
+ *
+ * Single-account enforcement: ANTES del upsert, marca como 'revoked' cualquier
+ * otra integración activa del mismo marketplace con distinto external_user_id.
+ * Sin esto, re-autorizar con otra cuenta deja dos rows activas → break en
+ * lectura (incidente 2026-05-29 con cuenta `1975674` vieja interfiriendo).
  */
 export async function upsertMLIntegration(args: {
   externalUserId: string;
@@ -96,6 +106,21 @@ export async function upsertMLIntegration(args: {
 
   const encryptedAccess = encrypt(args.accessToken);
   const encryptedRefresh = encrypt(args.refreshToken);
+
+  // Revoke otras integraciones activas del mismo marketplace con distinto user_id
+  // (single-account model). No bloquea el upsert si falla — log + continúa.
+  const { error: revokeError } = await supabase
+    .from('marketplace_integrations')
+    .update({ status: 'revoked' })
+    .eq('marketplace', MARKETPLACE)
+    .eq('status', 'active')
+    .neq('external_user_id', args.externalUserId);
+  if (revokeError) {
+    console.warn(
+      '[ml-repo] no se pudo revocar integraciones viejas (no crítico)',
+      revokeError,
+    );
+  }
 
   const { data, error } = await supabase
     .from('marketplace_integrations')
