@@ -611,6 +611,106 @@ Cuentas a confirmar/crear:
 
 ---
 
+## ADR-024 — Integración con Mercado Libre: sync bidireccional de stock vía API + webhooks
+
+**Fecha**: 2026-05-29
+**Estado**: 🟡 En revisión (Sprint 1 implementado, Sprint 2 y 3 pendientes)
+**Categoría**: Arquitectura | Operación | Marketplace
+
+### Contexto
+
+Founder vende activamente en Mercado Libre desde hace años, y ahora también va a vender desde el sitio propio. Surge el riesgo de **oversell**: si un anteojo se vende en un canal y el stock no baja en el otro, podemos comprometer un producto que ya no tenemos físicamente.
+
+Founder pidió "que cuando se vende en ML baje stock en la página y viceversa".
+
+### Decisión
+
+**Sync bidireccional de stock entre Supabase (sitio propio) y Mercado Libre (marketplace) vía API + webhooks**.
+
+**Source of truth: Supabase**. Mercado Libre refleja el estado de stock que figura en Supabase. Cada venta en cualquier canal sincroniza el otro.
+
+**Componentes**:
+
+1. **Mapping explícito por variante**: campo nuevo `mercadolibre_item_id` en `product_variants`. Cuando el founder publica un producto en ambos lados, registra el ID de ML en la variante del sitio. Sin mapping → no se sincroniza.
+
+2. **OAuth 2.0 + token persistido**: el founder autoriza la app una vez vía OAuth (developers.mercadolibre.com.ar). Tokens (`access_token` + `refresh_token`) se guardan cifrados en tabla `marketplace_integrations`. Refresh automático antes de expirar.
+
+3. **Webhook receiver** (`POST /api/ml/webhook`): ML notifica cambios de items u orders. Validamos firma HMAC, parseamos payload, actualizamos stock en Supabase.
+
+4. **Push de stock desde el sitio** (sobre venta confirmada): cuando MP webhook nos confirma una venta del sitio (`mp_webhook`), llamamos `PUT /items/{ml_id}` a la API de ML para bajar stock.
+
+5. **Reconciliación periódica**: cron daily lee stocks de ML para todos los items mapeados y compara contra Supabase. Si hay drift → log + alerta al founder.
+
+6. **Admin UI** en `/mi-cuenta/marketplace`: estado de sincronización, errores recientes, botón de reautorizar OAuth, ver mappings.
+
+### Alternativas consideradas
+
+**A. Source of truth: ML** — Sitio lee stock de ML en tiempo real, no guarda nada local.
+- **Rechazado**: latencia alta (200-500ms por producto en cada PDP), atado a uptime de ML, no escalable a otros marketplaces futuros (TiendaNube, Shopify, etc.).
+
+**B. Polling periódico** — Sin webhooks, cron cada N minutos lee ML y actualiza Supabase.
+- **Rechazado**: ventana de inconsistencia de N minutos = riesgo de oversell. Aceptable solo si ventas/día << 10.
+
+**C. Sync manual** — Founder actualiza ambos a mano.
+- **Rechazado**: no escala. Error humano garantizado tras 1 mes.
+
+**D. Servicio third-party** (BoxFlow, Tray, Shopify Marketplace Sync).
+- **Rechazado**: costo mensual recurrente ($30-100/mes), curva de aprendizaje propia, vendor lock-in. Custom integration es mejor para 1 marca con catálogo chico.
+
+**E. Versión simple iter 1: solo alertas, sin sync automático** — Sitio escucha webhook de ML y nos manda email "actualizá stock".
+- **Rechazado por founder en planning**: prefirió arrancar directo con sync completo.
+
+### Consecuencias
+
+**Positivas**:
+- 0 oversell en condiciones normales (race conditions sub-segundo siguen siendo posibles pero raras).
+- Founder no actualiza manualmente.
+- Arquitectura extensible: el mismo patrón sirve para sumar Tiendanube, Shopify, etc.
+- Logs y observabilidad propias.
+
+**Negativas**:
+- 2-3 sprints de desarrollo iniciales.
+- Mantenimiento ante cambios en API de ML (esperable cada 1-2 años).
+- Founder tiene que registrar app en ML + autorizar (acción manual única).
+- Token OAuth puede expirar/invalidarse si no se refresca → en ese caso el sync se pausa hasta re-autorización.
+
+**Riesgos**:
+- **Race condition sub-segundo**: dos clientes compran al mismo segundo, uno en cada canal. Mitigamos con `reserve_stock` atómico (función SQL ya existente) — el último update gana, el segundo cliente ve "sin stock" si llegamos al sub-segundo, aceptable.
+- **Webhook firma mal validada**: si no validamos HMAC, atacante podría enviarnos fake webhooks. Validación obligatoria.
+- **ML API rate limit**: 1000 calls/hora por usuario. Suficiente para volumen actual y previsible. Si crece, podemos pedir aumento a ML.
+- **Drift no detectado**: si webhook de ML se pierde y la reconciliación cron no corre, stock real puede divergir. Cron daily + alerta al founder mitigamos.
+
+### Cómo se valida
+
+- Después de Sprint 3: hacer venta de prueba en ML → verificar que stock baja en Supabase en < 5 segundos.
+- Hacer venta de prueba en sitio → verificar que stock baja en ML en < 5 segundos.
+- Métricas a trackear:
+  - `marketplace_integrations.last_sync_at` → debería actualizarse cada vez que llega webhook.
+  - Count de items con drift detectado por cron → idealmente 0.
+  - Errores de API ML logged en tabla nueva `marketplace_sync_errors`.
+
+### Sprints
+
+**Sprint 1 (Foundations, 2026-05-29)** — NO requiere credenciales del founder.
+- ✅ ADR (este documento).
+- ✅ Migration tabla `marketplace_integrations` + columna `mercadolibre_item_id` en `product_variants`.
+- ✅ Estructura `lib/integrations/mercadolibre/` con types + Zod schemas.
+- ✅ Update PRODUCT_SCHEMA.md con el nuevo campo.
+
+**Sprint 2 (OAuth + webhook)** — REQUIERE credenciales del founder (App ID + Secret Key registrada en developers.mercadolibre.com.ar).
+- OAuth flow (initiation + callback + token storage).
+- Refresh token automático.
+- Webhook receiver `/api/ml/webhook` con validación HMAC.
+
+**Sprint 3 (sync activo)** — REQUIERE Sprint 2 funcionando + mapping de productos.
+- Server action `pushStockToML(variantId, newQty)`.
+- Procesamiento del webhook ML → update Supabase.
+- Admin UI `/mi-cuenta/marketplace`.
+- Cron de reconciliación diaria.
+- Tabla `marketplace_sync_errors` para logs.
+
+---
+
 ## Notas finales
 
 Este archivo NO se modifica casualmente. Cada cambio:

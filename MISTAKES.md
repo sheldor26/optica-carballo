@@ -24,6 +24,21 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint 1 ML integration: cierre EXITOSO + ADR formal escrito antes de implementar
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Arquitectura / Decisiones formales
+
+Sprint 1 de integración ML ejecutado limpio. Build verde. ADR-024 escrito en DECISIONS.md ANTES de tocar código (decisión arquitectónica grande merece formalización).
+
+Sin mistake nuevo. Aplicación correcta de regla v5 (bloque ✅ Archivos actualizados + Pendientes founder explícitos en mensaje).
+
+14 sprints consecutivos sin mistake de proceso.
+
+Nota interesante de proceso: dividir Sprint 1 (sin credenciales del founder) de Sprints 2-3 (con credenciales) permitió arrancar el trabajo HOY mientras founder hace su parte. Documentado como learning.
+
+---
+
 ## 2026-05-29 — Sprint materiales SEO: cierre EXITOSO + config declarativa validada
 
 **Estado**: 🟢 Cumplido.

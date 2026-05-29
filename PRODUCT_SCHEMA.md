@@ -118,6 +118,14 @@ Estos son los **13 campos exactos** que aparecen como filas en `/comparar`. Si f
 - `attributes.callouts` — array de objetos para las cajas educativas en la descripción larga.
 - `attributes.collaboration_with` — string, para co-brandings (ej: "Las Oreiro").
 
+### 🟡 Integración con Mercado Libre (campo en `product_variants`, no en `products.attributes`)
+
+- `mercadolibre_item_id` — string formato `MLA1234567890`. Si el producto también se vende en ML, mapear la variante al item correspondiente.
+- **Cuándo cargar**: si vendés esta variante en ML Y querés sync automático de stock (ver ADR-024).
+- **Cuándo dejar NULL**: si la variante solo se vende en el sitio o si todavía no querés sync con ML.
+- **Restricción**: UNIQUE — un item ML no puede mapearse a 2 variantes distintas.
+- Sin este campo cargado, la variante NO se sincroniza con ML (sigue funcionando manualmente).
+
 ---
 
 ## Checklist operativa para cargar 1 producto

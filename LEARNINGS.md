@@ -22,6 +22,51 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Sprints separados por dependencia de credenciales externas: Sprint 1 sin creds, 2-3 con
+
+**Categoría**: Project management / Dependencies / Sprint planning
+**Confianza**: 🟡 Media (1 caso aplicado en ML integration)
+
+### Qué pasó
+
+Founder pidió integración Mercado Libre. Es trabajo grande (2-3 sprints). 2 caminos:
+
+**A. Bloquear hasta tener credenciales**: pedir al founder que registre app ML primero, esperar 1-2 días, después arrancar.
+**B. Dividir en Sprint 1 sin credenciales + Sprints 2-3 con credenciales**: Sprint 1 son foundations puras (migrations, types, schemas, ADR) que NO requieren auth. Mientras el founder hace su trámite, tenemos toda la estructura lista.
+
+Elegí B. Razones:
+- Founder tiene su tiempo para registrar la app sin presión.
+- El sitio queda con foundations claras (migrations + types) que NO afectan nada actual.
+- Cuando el founder vuelva con credenciales, arrancamos Sprint 2 con todo armado.
+- Sprint 1 también incluye ADR formal, que es decisión arquitectónica que NO depende de credenciales.
+
+### Por qué funciona
+
+- **Reduce idle time**: el desarrollo no se bloquea esperando al founder.
+- **Reduce pressure al founder**: él no tiene que apurarse "porque te estoy esperando".
+- **Sprint 1 es self-contained**: si nunca arrancamos Sprint 2, las foundations no rompen nada (migration es additive, tipos no se importan en otro lugar todavía).
+- **ADR primero**: la decisión arquitectónica queda escrita ANTES de implementar — referenciable durante Sprints 2-3.
+
+### Trade-off
+
+- Sprint 1 puede sentirse "trabajo invisible" porque no hay UI nueva ni feature usable. Pero es la base.
+- Si el founder cambia de idea entre Sprint 1 y 2, el Sprint 1 queda como código sin usar (low cost — pocas líneas de types/schemas).
+
+### Aplicar a futuro
+
+Cualquier feature que requiere:
+- Credenciales de terceros (APIs externas).
+- Setup operativo del founder (cuenta nueva, verificación de identidad).
+- Hardware / assets fuera del código.
+
+→ Dividir en "Sprint 0/1: foundations que NO requieren X" + "Sprints siguientes: con X".
+
+Casos análogos en este proyecto:
+- Resend email: ya hicimos lo de "Resend OPCIONAL, suscripción no bloquea" — mismo principio.
+- Fotos categorías: tenemos placeholder genérico que funciona sin fotos, se reemplaza cuando llegan.
+
+---
+
 ## 2026-05-29 — Config declarativa paga sus costos en el SEGUNDO uso: sumar filter material = 4 archivos thin + 1 entry + 1 if
 
 **Categoría**: Arquitectura / Validación de inversión inicial

@@ -348,6 +348,75 @@ Push + verificación visual. Los URLs como `/anteojos-de-sol/vulk/acetato` deber
 
 ---
 
+## Integración Mercado Libre — Sprint 1 (Foundations)
+
+Founder pidió sync bidireccional de stock con Mercado Libre. Decisión arquitectónica grande: arrancamos con sprint dedicado de 2-3 sesiones.
+
+### Decisiones formalizadas
+
+**ADR-024 escrito** en `DECISIONS.md`. Cubre:
+- Source of truth: Supabase. ML refleja.
+- Sync bidireccional vía webhooks (no polling).
+- Mapping explícito 1:1 variante ↔ item ML.
+- Reconciliación cron daily.
+- 5 alternativas consideradas y descartadas (ML como source of truth, polling, manual, third-party, alerts-only).
+
+### Sprint 1 — implementado HOY
+
+**Migration `20260529000000_marketplace_integrations.sql`**:
+1. Tabla `marketplace_integrations`: tokens OAuth + estado de sync por marketplace + user externo. UNIQUE en `(marketplace, external_user_id)`. RLS estricto solo service_role. Trigger `updated_at`.
+2. Columna `mercadolibre_item_id` en `product_variants`. UNIQUE (deferrable) — un item ML no mapea a 2 variantes.
+3. Tabla `marketplace_sync_errors`: logs de errores con `operation`, `variant_id` FK, payload jsonb, `retry_count`, `resolved_at`. Index parcial en errores no resueltos. RLS solo service_role.
+
+**Estructura `lib/integrations/mercadolibre/`**:
+- `types.ts`: types puros (MarketplaceIntegration, OAuthTokenResponse, MLItem, MLWebhookPayload, SyncResult, etc).
+- `schemas.ts`: Zod schemas para validación runtime de payloads de ML.
+- `config.ts`: helpers de env vars (lazy validation) + `buildAuthUrl(state)` para Sprint 2.
+- `README.md`: doc interno del estado del sprint + estructura futura.
+
+**Update `PRODUCT_SCHEMA.md`**: agregada sección 🟡 sobre el campo `mercadolibre_item_id` con cuándo cargar / cuándo dejar NULL / restricciones.
+
+### Status `CLOUD_APPLIED.md`
+
+Migration `20260529000000_marketplace_integrations.sql` marcada como **⏳ pendiente**. NO es bloqueante para nada del sitio actual — solo cuando arranquemos Sprint 2 (OAuth) hay que aplicarla en Supabase Dashboard.
+
+### Pendientes del founder antes de Sprint 2
+
+1. **Registrar app en developers.mercadolibre.com.ar**:
+   - Nombre: "Óptica Carballo"
+   - URL del sitio: tu dominio en producción
+   - Redirect URI: `https://[dominio]/api/ml/oauth/callback` (te paso URL exacta en Sprint 2)
+   - Scopes: `read write offline_access`
+2. **Pasarme**: App ID + Secret Key generados por ML.
+3. **Confirmar dominio final** del sitio (para registrar redirect URI bien la primera vez).
+4. **Aplicar migration** `20260529000000` en Supabase Dashboard cuando arranquemos Sprint 2.
+
+### Sprints 2 y 3 (próximos)
+
+**Sprint 2** — OAuth + webhook:
+- `oauth.ts`: initiation + callback + token refresh.
+- `api-client.ts`: cliente HTTP autenticado.
+- `encryption.ts`: AES-256-GCM para tokens.
+- Endpoint `/api/ml/oauth/initiate`.
+- Endpoint `/api/ml/oauth/callback`.
+- Endpoint `/api/ml/webhook`.
+
+**Sprint 3** — sync activo:
+- Server actions `pushStockToML` + procesamiento de webhook.
+- Admin UI `/mi-cuenta/marketplace`.
+- Cron de reconciliación.
+- Manejo de race conditions + retry exponencial.
+
+### Por qué Sprint 1 antes que pedir credenciales
+
+Foundations (migrations + types + schemas + config) NO requieren credenciales del founder. Son trabajo conceptual + estructural que se puede hacer ya. Cuando el founder esté listo con su lado (app ML registrada), arrancamos Sprint 2 sin overhead de empezar de cero.
+
+### Build
+
+Sprint 1 es 100% código nuevo en archivos nuevos. Build verde, sin impacto en routes existentes.
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**
