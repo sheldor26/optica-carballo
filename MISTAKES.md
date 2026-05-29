@@ -24,6 +24,42 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Asumir shape de entity sin verificar — usé snake_case del DB en `MarketplaceIntegration` que está mapeado a camelCase
+
+**Estado**: ✅ Cerrado — corregido en mismo commit antes de pushear.
+**Categoría**: TypeScript / Domain modeling
+
+### Qué pasó
+
+En `ml-me` v2 escribí:
+```typescript
+integration.ml_user_id
+integration.expires_at
+integration.last_synced_at
+```
+Pero el type `MarketplaceIntegration` (en `lib/integrations/mercadolibre/types.ts`) tiene los campos en camelCase:
+```typescript
+integration.externalUserId
+integration.tokenExpiresAt
+integration.lastSyncAt
+```
+La función `rowToIntegration` mapea explícitamente snake_case del DB → camelCase del entity. Yo asumí que el entity reflejaba el row directo.
+
+`pnpm build` reveló el error de tipos (campo no existe). Corregí antes de pushear.
+
+### Causa raíz
+
+Hábito de leer migrations y asumir que el shape DB = shape entity. En este codebase hay una capa de mapping explícita (snake_case ↔ camelCase) — debería haber leído `types.ts` ANTES de escribir el endpoint.
+
+### Regla preventiva
+
+Cuando uses una entity de un módulo nuevo (especialmente integraciones con servicios externos donde la convención de naming puede diferir):
+1. **Leer el type definition primero** (`types.ts` o equivalent).
+2. **NO asumir snake_case del DB ni camelCase del API** — verificar el shape exacto del entity TS.
+3. TypeScript build atrapa este error, pero perdés 30 segundos. Leer el type primero ahorra ese ciclo.
+
+Aplica a: `MarketplaceIntegration`, `ProductDetailData`, `OrderItem`, cualquier entity con mapper explícito row→domain.
+
 ## 2026-05-29 — Password reset flow saltea el callback → updateUser falla "Auth session missing!"
 
 **Estado**: ✅ Cerrado — founder confirmó reset password funcional end-to-end en producción.

@@ -22,6 +22,34 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Endpoints admin de diagnóstico hacen fetch raw + DB summary (bypass abstracciones productivas)
+
+**Categoría**: Observabilidad / Debugging de integraciones
+**Confianza**: 🟢 Alta (validado en debug ml-me v2)
+
+### Qué funcionó
+
+`mlFetch` (cliente HTTP productivo) mapea 404 → `'not_found'` sin más contexto: descarta body, status text, headers. Decisión correcta para consumers normales (no quieren acoplarse a detalles de ML), pero **inútil para debug** cuando el 404 es inesperado y necesitás ver el body raw.
+
+Solución: endpoint admin `ml-me` v2 hace fetch RAW directo a ML (bypass `mlFetch`) + concatena `integration_summary` con state del DB (externalUserId guardado, status, tokenExpiresAt, lastErrorMessage, token_preview). Output tiene 3 capas de info:
+1. **Request**: URL, método.
+2. **Response real de ML**: status, statusText, body parsed/raw.
+3. **DB state**: lo que tenemos guardado (vs lo que ML dice). Detecta drift.
+
+### Por qué funcionó
+
+Endpoints admin de debug NO comparten objetivos con los productivos:
+- Productivos: **abstraer** detalles del proveedor, devolver shape estable, no acoplar consumers.
+- Debug: **exponer** detalles del proveedor, mostrar drift entre estado local y remoto.
+
+Forzarlos a usar la misma capa de cliente (mlFetch) pierde info crítica. La separación clara permite que cada uno cumpla su rol.
+
+### Cuándo aplicar
+
+- Cualquier integración con servicio externo (ML, Stripe, AFIP, Resend, etc) donde tengas: (a) cliente productivo abstracto, (b) state local en DB que debe matchear el remoto.
+- Endpoint admin debe incluir AMBAS perspectivas (raw remoto + DB state) — solo uno no detecta drift.
+- NO aplicar para endpoints productivos — mantener la abstracción ahí es lo correcto.
+
 ## 2026-05-29 — Verificar nickname público de user_id ML antes de re-autorizar a ciegas
 
 **Categoría**: OAuth diagnóstico / Mercado Libre
