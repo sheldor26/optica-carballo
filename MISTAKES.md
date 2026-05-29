@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Newsletter: cierre EXITOSO sin mistake nuevo
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint 2 del plan (newsletter) ejecutado limpio: migration + types + helpers + server action + 2 variantes de form + integración home/footer + welcome email no-bloqueante. Typecheck verde, build verde. Docs (CURRENT_STATE + LEARNINGS + esta entry) actualizados ANTES del mensaje al founder. CLOUD_APPLIED.md actualizado con migration nueva como ⏳ pendiente.
+
+Decisiones sin agente: single opt-in (cero fricción), UPSERT idempotente, welcome email no-bloqueante (lead capture es lo crítico), RLS sin policies anon (todo via service_role).
+
+Sin mistake nuevo en la sesión. Patrón de cierre estable.
+
+---
+
 ## 2026-05-28 — Sprint UX PDP: cierre EXITOSO sin mistake nuevo
 
 **Estado**: 🟢 Cumplido.

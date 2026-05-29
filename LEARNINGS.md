@@ -22,6 +22,51 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Welcome email NO bloquea suscripción → captura siempre, email es nice-to-have
+
+**Categoría**: Resiliencia / Email / UX
+**Confianza**: 🟡 Media (1 caso aplicado)
+
+### Qué pasó
+
+Al integrar newsletter con Resend para welcome email, tuve 2 caminos:
+
+**A. Bloqueante**: si Resend falla (key missing, dominio no verificado, etc), la suscripción tira error y el usuario ve "algo salió mal".
+**B. No bloqueante**: la suscripción se guarda en DB siempre. El welcome es fire-and-forget. Si Resend falla, log warn y seguir.
+
+Elegí B. Razones:
+- **Captura del lead es lo crítico**. El email de welcome es accesorio.
+- Si el founder no configuró Resend todavía, el sistema sigue funcionando.
+- Si Resend tiene rate limit / outage, el lead no se pierde.
+- Si el dominio aún no está verificado (DNS pendiente), seguimos capturando.
+
+### Implementación
+
+```ts
+if (!alreadyExisted) {
+  sendWelcomeEmail(email).catch((err) => {
+    console.warn('[newsletter] welcome email failed (non-blocking)', err);
+  });
+}
+return { ok: true, alreadyExisted };
+```
+
+El `.catch()` es esencial — sin él, una promise rejected sin await tira UnhandledPromiseRejection en Node.
+
+### Aplicar a futuro
+
+Cualquier "side effect" en un flow crítico (analytics, notifications, sync a 3rd party) debe ser no-bloqueante por default. Solo bloquear cuando la integridad de la operación lo requiere (ej: capturar el pago SÍ bloquea la confirmación del pedido).
+
+Reglas mentales:
+- ¿Si esto falla, perdemos data crítica? → bloquear.
+- ¿Si esto falla, perdemos comodidad? → fire-and-forget con log.
+
+### Patrón a confirmar
+
+Este es el 2do caso (1ro fue recently-viewed tracker: si falla no bloquea navegación). Si aparece un 3er caso → promover a regla en CLAUDE.md / ARCHITECTURE.md como "side effects no-bloqueantes por default".
+
+---
+
 ## 2026-05-28 — `<details>/<summary>` nativo para acordeones de FAQ — KISS gana vs framer-motion AnimatePresence
 
 **Categoría**: Componentes / Performance / Accesibilidad

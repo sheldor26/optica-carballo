@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
+import { NewsletterForm } from '@/components/newsletter/newsletter-form';
 import { FOOTER_INFO_LINKS, PRIMARY_NAV, TOOLS_LINKS } from '@/lib/site/nav';
 import { getBusinessInfo } from '@/lib/site/business';
 
@@ -124,7 +125,21 @@ export function SiteFooter() {
           )}
         </div>
 
-        <p className="text-muted-foreground mt-10 border-t pt-6 text-xs">
+        <div className="border-border/60 mt-10 grid gap-4 border-t pt-8 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
+          <div className="max-w-md">
+            <p className="text-foreground text-sm font-semibold">
+              Sumate a las novedades
+            </p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Te avisamos cuando llega algo que valga la pena. Sin spam.
+            </p>
+          </div>
+          <div className="md:w-80">
+            <NewsletterForm source="footer" variant="footer" />
+          </div>
+        </div>
+
+        <p className="text-muted-foreground mt-8 border-t pt-6 text-xs">
           © {year} {business.siteName}. Todos los derechos reservados.
         </p>
       </div>

@@ -2,6 +2,72 @@
 
 ## Status
 
+🟡 **Newsletter signup (sprint 2 de 4) — implementado, pendiente push + aplicar migration en cloud.**
+
+## Newsletter signup
+
+Sprint 2 del plan "hagamos todas". Captura de leads desde ya para tener base de email marketing cuando crezca tráfico.
+
+### Arquitectura
+
+**DB** — Nueva tabla `newsletter_subscribers`:
+- Migration: `supabase/migrations/20260528180000_newsletter_subscribers.sql`.
+- Campos: `email UNIQUE` + `source` + `metadata jsonb` + `confirmed_at` (iter 2 double-opt-in) + `unsubscribed_at` + timestamps + trigger `updated_at`.
+- CHECK constraints: email lowercase + formato regex.
+- RLS estricto: NINGUNA policy para anon/authenticated → solo `service_role` accede (vía `createAdminClient`).
+- Status cloud: ⏳ pendiente aplicar. Founder debe correr el SQL en Dashboard.
+
+**Server-side**:
+- `lib/newsletter/types.ts`: types `NewsletterSource` (`home_hero` | `footer` | `checkout` | `popup` | `other`) y `SubscribeResult`.
+- `lib/newsletter/subscribe.ts`: helper `subscribeEmail()` con normalización (trim + lowercase) + validación regex + UPSERT por email UNIQUE (idempotente — re-suscribirse no rompe).
+- `lib/newsletter/actions.ts`: server action `subscribeNewsletterAction()` thin wrapper.
+
+**Welcome email**:
+- Si `RESEND_API_KEY` está configurada, manda welcome HTML + text plano. Si no está, falla silencioso (warn log) sin bloquear la suscripción.
+- Texto fijo + link al sitio + nota de unsubscribe.
+- Dominio del from: si `RESEND_FROM_EMAIL` no está, usa `onboarding@resend.dev` (default Resend, always verified).
+
+### UI
+
+**`<NewsletterForm>`** (client component, `components/newsletter/newsletter-form.tsx`):
+- 2 variants: `hero` (h-12 sm, side-by-side sm+) y `footer` (h-11 stacked).
+- Estados: `idle` / `submitting` / `success` (alreadyExisted o nuevo) / `error`.
+- Estado optimista con `useTransition`.
+- AnimatePresence: form → success card con check verde.
+- Loading: spinner inline en el botón.
+- Errores con mensaje específico (invalid_email / rate_limited / server_error).
+
+**Dónde aparece**:
+1. **Home**: nueva `<NewsletterSection>` entre `<HomeFaqs>` y `<ValueProps>`. Card ámbar/muted con título "Enterate primero de lo nuevo", subtítulo y form variant `hero`.
+2. **Footer**: nueva fila debajo de los grupos de links, con título "Sumate a las novedades" + form variant `footer` (compact).
+
+### Decisiones técnicas
+
+- **Single opt-in iter 1**: cero fricción de conversión. Iter 2 puede sumar double opt-in vía Resend confirmación link.
+- **No descuento primera compra**: requería lógica de generar/aplicar cupón, fuera de scope iter 1. Founder puede pedir iter 2.
+- **UPSERT idempotente**: re-suscribirse no rompe, actualiza `source` para tracking del último canal de captura.
+- **Welcome email NO bloquea**: si Resend falla, la suscripción se guarda igual. La captura del lead es lo importante.
+- **RLS sin policies anon**: forzar que TODO acceso pase por server action con service_role. Imposible que un cliente público lea/edite la tabla.
+
+### Próximo paso
+
+1. **Founder aplica la migration** en Supabase Dashboard (SQL Editor):
+   - Pega el contenido de `supabase/migrations/20260528180000_newsletter_subscribers.sql`.
+   - Verifica que la tabla aparece en Table Editor.
+2. Después de aplicar la migration, probar signup en home → tabla debería tener 1 fila.
+3. (Opcional) Configurar `RESEND_API_KEY` + `RESEND_FROM_EMAIL` en Vercel para activar welcome email.
+
+### Plan del sprint completo
+
+1. ✅ UX PDP (commit b0e96e1)
+2. ✅ Newsletter signup (este commit) — **pendiente migration en cloud**
+3. ⏳ Página de marca mejorada (próximo)
+4. ⏳ Asistente RAG (sesión grande)
+
+---
+
+## Status anterior
+
 🟡 **Pulir UX PDP iter 1 — trust signals + cuotas + mini-FAQs por categoría. Implementado, pendiente push.**
 
 ## Pulir UX PDP iter 1

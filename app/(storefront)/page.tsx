@@ -6,6 +6,7 @@ import { HomeHero } from '@/components/home/home-hero';
 import { HomeTools } from '@/components/home/home-tools';
 import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
+import { NewsletterSection } from '@/components/newsletter/newsletter-section';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { OrganizationJsonLd } from '@/components/seo/organization-jsonld';
 import { WebsiteJsonLd } from '@/components/seo/website-jsonld';
@@ -50,6 +51,7 @@ export default async function HomePage() {
       <RecentlyViewed heading="Estuviste mirando" limit={6} minToRender={3} />
       <HomeTools />
       <HomeFaqs />
+      <NewsletterSection />
       <ValueProps />
     </>
   );
