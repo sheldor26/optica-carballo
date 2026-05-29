@@ -4,7 +4,7 @@
 
 🟡 **Re-autorización ML OAuth + import MLA1432137395 — DIAGNÓSTICO EN CURSO (hipótesis cuenta equivocada)** (2026-05-29). Founder re-autorizó con `user_id=81654493`, endpoint admin devolvió 404 para MLA1432137395. Founder pasó URL del listing real: `mercadolibre.com.ar/.../up/MLAU384055931?...&wid=MLA1432137395` — el item es de **Tienda Oficial OPTICACARBALLO** (`official_store:260502`). Pero `user_id=81654493` puede NO ser la cuenta OPTICACARBALLO (founder posiblemente autorizó OAuth con cuenta personal/hermano por cookie de sesión ML sticky).
 
-Verificación pendiente del founder: abrir `https://api.mercadolibre.com/users/81654493` (endpoint público ML) → leer campo `nickname`. Si ≠ OPTICACARBALLO, re-autorizar tras logout completo de ML + login explícito con cuenta OPTICACARBALLO.
+Plan B aplicado: endpoint público `/users/{id}` de ML devolvió 403 PA_UNAUTHORIZED (ML lo cerró, ahora requiere auth). Creado endpoint admin temporal `/api/admin/ml-me` (commit `7474f76`) que usa el access_token guardado para llamar `/users/me` → devuelve nickname + user_id de la cuenta autorizada. Founder pendiente: abrir `https://opticacarballo.com.ar/api/admin/ml-me` tras deploy + pasar JSON.
 
 Aprendizaje del flow: ML tiene 2 tipos de IDs en URLs — `MLA<digits>` (item del seller, lo que usa el endpoint `/items/{id}`) y `MLAU<digits>` (catalog product que agrupa múltiples sellers). El `wid` query param en URLs de catálogo es el item ID del seller específico. Pasamos el correcto al endpoint.
 
