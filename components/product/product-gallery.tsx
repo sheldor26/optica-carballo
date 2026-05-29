@@ -89,13 +89,12 @@ export function ProductGallery({ productName, images }: Props) {
         type="button"
         onClick={() => setLightboxOpen(true)}
         aria-label={`Ampliar imagen: ${active.alt_text}`}
-        className="bg-background border-border/40 group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border p-4 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-6 md:p-8"
+        className="bg-background border-border/40 group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg border p-2 ring-offset-background transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-3 md:p-4"
       >
-        {/* Padding moderado (p-8 = 32px en desktop) — suficiente "aire"
-            visual para fotos sin margen propio, sin achicar excesivamente
-            las fotos que ya vienen centradas con margen. Antes era p-20
-            pero achicaba demasiado las fotos del founder (que vienen con
-            anteojo centrado + buen fondo). */}
+        {/* Padding mínimo (p-4 = 16px en desktop) — las fotos del founder
+            vienen con buen margen propio. Iter previo (p-8) seguía dando
+            sensación de foto chica vs contenedor. Ahora la foto ocupa
+            ~90% del cuadrado disponible. */}
         <div className="relative h-full w-full">
           <Image
             src={activeUrl}

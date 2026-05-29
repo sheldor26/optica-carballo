@@ -13,7 +13,6 @@ import { ProductMeasurements } from '@/components/product/product-measurements';
 import { ProductTrustSignals } from '@/components/product/product-trust-signals';
 import { ProductFaqs } from '@/components/product/product-faqs';
 import { RelatedProducts } from '@/components/product/related-products';
-import { RelatedProductsSidebar } from '@/components/product/related-products-sidebar';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
@@ -215,10 +214,10 @@ export async function ProductDetailPage({
         </ol>
       </nav>
 
-      <div className="grid gap-8 md:grid-cols-2 md:grid-rows-[auto_1fr] md:gap-x-12 md:gap-y-6">
+      <div className="grid gap-8 md:grid-cols-2 md:gap-x-12 md:items-start">
         <ProductGallery productName={product.name} images={product.images ?? []} />
 
-        <div className="flex flex-col gap-6 md:col-start-2 md:row-span-2 md:row-start-1">
+        <div className="flex flex-col gap-6">
           <div>
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
@@ -333,16 +332,13 @@ export async function ProductDetailPage({
 
           <ProductMeasurements attributes={product.attributes} />
 
-          <RelatedProductsSidebar products={relatedProducts} />
+          <ProductIncludes attributes={product.attributes} />
 
           <div className="flex flex-wrap items-center gap-2">
             <WhatsappCta productName={product.name} inStock={isInStock} />
           </div>
         </div>
 
-        <div className="md:col-start-1 md:row-start-2">
-          <ProductIncludes attributes={product.attributes} />
-        </div>
       </div>
 
       {product.description && (
