@@ -98,17 +98,25 @@ CREATE INDEX IF NOT EXISTS product_variants_mercadolibre_item_id_idx
 
 -- UNIQUE constraint: un item ML no puede mapear a 2 variantes distintas.
 -- Constraint deferrable para permitir UPDATEs masivos en migrations futuras.
--- Wrappeada en DO block para idempotencia — SQL no soporta IF NOT EXISTS
--- en ADD CONSTRAINT.
+--
+-- IMPORTANTE: UNIQUE constraints en Postgres crean un índice subyacente
+-- con el mismo nombre. Si re-aplicamos, el error puede ser `42P07
+-- duplicate_table` (referido al índice), NO `42710 duplicate_object`.
+-- Por eso usamos IF NOT EXISTS check explícito sobre `information_schema`
+-- (más robusto que capturar EXCEPTION por SQLSTATE específico).
 DO $$
 BEGIN
-  ALTER TABLE public.product_variants
-    ADD CONSTRAINT product_variants_mercadolibre_item_id_unique
-    UNIQUE (mercadolibre_item_id) DEFERRABLE INITIALLY DEFERRED;
-EXCEPTION
-  WHEN duplicate_object THEN
-    -- Constraint ya existe — ignorar, la migration es safe re-applicable.
-    NULL;
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.table_constraints
+    WHERE constraint_name = 'product_variants_mercadolibre_item_id_unique'
+      AND table_schema = 'public'
+      AND table_name = 'product_variants'
+  ) THEN
+    ALTER TABLE public.product_variants
+      ADD CONSTRAINT product_variants_mercadolibre_item_id_unique
+      UNIQUE (mercadolibre_item_id) DEFERRABLE INITIALLY DEFERRED;
+  END IF;
 END $$;
 
 -- ============================================================================

@@ -24,6 +24,55 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Migration `ADD CONSTRAINT` sin idempotencia rompió re-aplicación
+
+**Estado**: 🟡 Mitigado — fix aplicado en commit `fce3a08` con DO block + EXCEPTION.
+**Categoría**: Postgres / Migrations / Idempotencia
+
+### Qué pasó
+
+Sprint 1 ML: escribí migration `20260529000000_marketplace_integrations.sql` con `ALTER TABLE ... ADD CONSTRAINT ... UNIQUE` directo. Asumí que el founder la aplicaría una vez sin problemas.
+
+Realidad: la migration corrió parcialmente antes (probablemente al primer intento de Sprint 1, las tablas se crearon con `CREATE TABLE IF NOT EXISTS`). Al re-aplicar tras descubrir que faltaba algo:
+```
+ERROR: 42P07: relation "product_variants_mercadolibre_item_id_unique" already exists
+```
+
+Toda re-aplicación falla porque SQL no soporta `IF NOT EXISTS` en `ADD CONSTRAINT`.
+
+### Causa raíz
+
+Asumí que las migrations son ejecutadas exactamente una vez. Realidad: founder puede:
+- Re-correr accidentalmente al re-pegar SQL para verificar.
+- Re-correr tras un fix parcial que requiere completar.
+- Re-correr en otro environment (preview/dev).
+
+Si la migration no es idempotente, cualquiera de esos casos rompe.
+
+### Regla preventiva
+
+Toda migration DDL futura debe ser **safe re-applicable**:
+
+- `CREATE TABLE` → `CREATE TABLE IF NOT EXISTS`.
+- `CREATE INDEX` → `CREATE INDEX IF NOT EXISTS`.
+- `CREATE FUNCTION` → `CREATE OR REPLACE FUNCTION`.
+- `ADD COLUMN` → `ALTER TABLE ADD COLUMN IF NOT EXISTS`.
+- `ADD CONSTRAINT` → wrappear en `DO $$ BEGIN ... EXCEPTION WHEN duplicate_object THEN NULL; END $$`.
+- `CREATE TRIGGER` → `DROP TRIGGER IF EXISTS` primero + `CREATE TRIGGER`.
+- `CREATE POLICY` → `DROP POLICY IF EXISTS` primero + `CREATE POLICY`.
+
+Pre-flight check antes de pushear cualquier migration: ¿qué pasa si esto se corre 2 veces?
+
+### Fix aplicado
+
+Commit `fce3a08`: wrappee `ADD CONSTRAINT` con DO block + EXCEPTION. Documentado en LEARNINGS como patrón.
+
+### Documentado en LEARNINGS
+
+Entry "`DO $$ ... EXCEPTION WHEN duplicate_object` para idempotencia en ADD CONSTRAINT" — patrón positivo + lista de excepciones útiles (duplicate_object, duplicate_table, duplicate_column, etc).
+
+---
+
 ## 2026-05-29 — Olvidé verificar migration ML aplicada antes de pedir flow OAuth real
 
 **Estado**: 🟡 Mitigado — identificado retrospectivamente con count=0 del debug endpoint.

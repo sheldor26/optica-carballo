@@ -22,6 +22,59 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — `DO $$ ... EXCEPTION WHEN duplicate_object` para idempotencia en `ADD CONSTRAINT`
+
+**Categoría**: Postgres / Migrations / Idempotencia
+**Confianza**: 🟢 Alta (limitación SQL standard conocida + caso aplicado)
+
+### Qué pasó
+
+Founder intentó re-aplicar `20260529000000_marketplace_integrations.sql` y recibió:
+```
+ERROR: 42P07: relation "product_variants_mercadolibre_item_id_unique" already exists
+```
+
+SQL standard NO soporta `IF NOT EXISTS` en `ADD CONSTRAINT`. Si la migration corrió parcialmente antes (CREATE TABLE IF NOT EXISTS funcionó, ADD CONSTRAINT también) y se re-ejecuta → falla por constraint duplicada.
+
+### Solución
+
+Wrappear `ADD CONSTRAINT` en `DO $$ ... EXCEPTION` block:
+
+```sql
+DO $$
+BEGIN
+  ALTER TABLE public.product_variants
+    ADD CONSTRAINT product_variants_mercadolibre_item_id_unique
+    UNIQUE (mercadolibre_item_id) DEFERRABLE INITIALLY DEFERRED;
+EXCEPTION
+  WHEN duplicate_object THEN
+    NULL;  -- Constraint ya existe, ignorar
+END $$;
+```
+
+### Por qué funciona
+
+- `DO` block ejecuta procedural SQL en línea.
+- `EXCEPTION WHEN duplicate_object` captura específicamente el error 42P07.
+- `NULL` ignora silenciosamente.
+- Migration ahora safe re-applicable sin error.
+
+### Aplicar a futuro
+
+Cualquier `ALTER TABLE ... ADD CONSTRAINT` en migrations debe ir en `DO block` con manejo de `duplicate_object`. NO confiar en `CREATE TABLE IF NOT EXISTS` para evitar este caso — la constraint es separate.
+
+Otras excepciones útiles para idempotencia:
+- `WHEN duplicate_table THEN NULL` (tabla ya existe).
+- `WHEN duplicate_column THEN NULL` (columna ya existe).
+- `WHEN duplicate_function THEN NULL` (función ya existe).
+- `WHEN duplicate_schema THEN NULL`.
+
+### Patrón meta
+
+**Migrations deben ser safe re-applicable** — si el founder corre 2 veces por accidente, debe ser no-op, no error fatal. `CREATE TABLE IF NOT EXISTS` no es suficiente — toda DDL que no soporte IF NOT EXISTS necesita wrapping.
+
+---
+
 ## 2026-05-29 — Endpoint debug con count=0 es DATA — descarta una causa, indica próxima
 
 **Categoría**: Debugging / Diagnóstico / Patrones de evidencia

@@ -646,6 +646,24 @@ Intenté usar MCP Supabase para consultar `marketplace_sync_errors` directo y sk
 
 Vercel MCP también flaky — queries con filter de query string dan timeout. Confirma valor del two-tier logging (commit `5ed752f`).
 
+### Update 2026-05-29: migration corrió parcial — ADD CONSTRAINT sin idempotencia
+
+Founder reintentó aplicar la migration ML en Dashboard y recibió:
+```
+ERROR: 42P07: relation "product_variants_mercadolibre_item_id_unique" already exists
+```
+
+SQL no soporta `IF NOT EXISTS` en `ADD CONSTRAINT`. Si la migration corrió parcialmente antes (las tablas con `CREATE TABLE IF NOT EXISTS` se crearon OK), al re-ejecutar la constraint duplica → error.
+
+**Fix aplicado (commit `fce3a08`)**: wrappear `ADD CONSTRAINT` en `DO $$ ... EXCEPTION WHEN duplicate_object` block. Migration ahora safe re-applicable.
+
+**Interpretación del error en cloud**: las tablas `marketplace_integrations` + `marketplace_sync_errors` + columna `mercadolibre_item_id` PROBABLEMENTE ya existen (la migration corrió hasta la constraint). El error es solo del intento de re-crear la constraint que ya existía.
+
+**Pendiente founder**:
+1. Verificar en Table Editor que las 2 tablas + la columna existen.
+2. Si las 3 ✅ → reintentar `/api/ml/oauth/initiate` directo (sin re-aplicar migration).
+3. Si falla → visitar `/api/ml/debug-last-error` (ahora SÍ debería tener errores guardados ya que la tabla existe).
+
 ---
 
 ## Status anterior
