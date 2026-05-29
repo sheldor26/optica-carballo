@@ -2,6 +2,64 @@
 
 ## Status
 
+🟡 **Pulir UX PDP iter 1 — trust signals + cuotas + mini-FAQs por categoría. Implementado, pendiente push.**
+
+## Pulir UX PDP iter 1
+
+Founder eligió "hagamos todas" del backlog de 4 features (UX PDP, newsletter, página de marca, RAG). Plan: secuencial por velocidad × impacto. Sprint 1 = UX PDP (más rápido, sin migración, sube conversión).
+
+### Lo que se sumó al PDP
+
+3 secciones nuevas:
+
+1. **`<ProductTrustSignals>`** entre el precio block y `<VariantList>`:
+   - 4 signals: +30 años, Óptica matriculada, Envío a todo el país, Cambios y devoluciones 30 días.
+   - Grid 2x2 mobile, 4 cols sm+.
+   - Icono outline + título + sub.
+   - Diseño minimal sin gradientes ni colores chillones — coherente con el estilo del sitio.
+
+2. **Bloque de precio mejorado** (inline en product-page.tsx):
+   - Antes: precio + dot verde "En stock · envío a todo el país".
+   - Ahora: precio + línea "Pagás en cuotas con tarjeta de crédito vía Mercado Pago" + divider + 3 indicators "En stock / Envío a todo el país / Retiro gratis en local".
+   - SIN específicos de cuotas (ej "3 sin interés") hasta que MP esté activo — honesto con la realidad operativa.
+
+3. **`<ProductFaqs>`** entre `<RelatedProducts>` y `<WhatsappAdvisorCard>`:
+   - 4 FAQs por categoría (sol vs receta), curadas para responder dudas top de venta online.
+   - **CRÍTICO para receta**: FAQ #2 dice explícito que multifocales/bifocales/graduaciones elevadas solo presencial. Cumple regla del founder.
+   - Acordeón nativo `<details>/<summary>` — sin JS, accesible, sin hydration.
+   - Chevron rota 180° on open (CSS-only `group-open:rotate-180`).
+   - Acepta los plazos legales correctos: 10 días arrepentimiento (ley 24.240), 30 días cambio sin uso.
+
+### Cumple BUSINESS_POLICIES.md
+
+- Cero claims falsos ("garantía total", "los mejores").
+- Honestidad sobre limitaciones (multifocales presencial, rayaduras NO cubiertas).
+- Plazos legales correctos (10 / 30 / 30 días).
+- "Óptica matriculada" sin matrícula numérica (founder pidió en sesiones previas no exponer la matrícula).
+
+### Archivos nuevos
+
+- `components/product/product-trust-signals.tsx`
+- `components/product/product-faqs.tsx`
+
+### Archivos modificados
+
+- `components/catalog/product-page.tsx`: imports + 2 nuevos componentes integrados + bloque de precio mejorado.
+
+### Próximo paso
+
+Push + verificación visual del founder. Si confirma OK → seguir con Newsletter signup (migración + Resend wireup).
+
+Plan del sprint completo (4 features):
+1. ✅ UX PDP (este commit)
+2. ⏳ Newsletter signup (próximo)
+3. ⏳ Página de marca (requiere data del founder)
+4. ⏳ Asistente RAG (sesión grande, mejor con 10+ productos)
+
+---
+
+## Status anterior
+
 🟡 **Iter 2 del comparador (mobile UX + product schema) — implementado, pendiente push.**
 
 ## Iter 2 del comparador — feedback del founder

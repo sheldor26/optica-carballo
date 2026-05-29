@@ -22,6 +22,39 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — `<details>/<summary>` nativo para acordeones de FAQ — KISS gana vs framer-motion AnimatePresence
+
+**Categoría**: Componentes / Performance / Accesibilidad
+**Confianza**: 🟡 Media (1 caso aplicado en ProductFaqs)
+
+### Qué pasó
+
+Para los mini-FAQs contextuales del PDP necesitaba 4 ítems acordeón. Tenía 2 opciones:
+
+**A. Framer-motion AnimatePresence**: control fino de animaciones (height auto, opacity, easing custom), pero requiere client component + JS runtime + manejo de estado.
+**B. `<details>/<summary>` nativos + CSS transition**: accesible por default, sin JS, sin hydration, sin client component, animation de chevron con `group-open:rotate-180`.
+
+Elegí B. Razones:
+- Para 4 ítems con animación simple, A es overkill.
+- B es 100% server component → 0 JS extra.
+- A11y default: aria-expanded gestionado por browser.
+- El control de styling cubre 95% de los casos (chevron rotation, bg-on-open, padding cambia).
+
+### Por qué funciona
+
+Lo único que se "pierde" con `<details>` es la animación de **height** al expandir (jump visual). Para 4 FAQs de 1-3 líneas cada una, el jump es imperceptible. Para FAQs largas (10+ líneas), sí se notaría — ahí habría que ir con framer.
+
+### Aplicar a futuro
+
+Default a `<details>` para cualquier acordeón con contenido corto. Solo escalar a framer cuando:
+- Hay 6+ items con contenido medio/largo.
+- Necesitamos animación de height.
+- Hay nested state (sub-acordeones).
+
+Skip framer cuando: 1-5 items, contenido <5 líneas, no hay nested.
+
+---
+
 ## 2026-05-28 — Feedback de founder sobre nueva feature = oportunidad para sistematizar requisitos cross-cutting (PRODUCT_SCHEMA)
 
 **Categoría**: Proceso / Sistematización / Calidad de datos

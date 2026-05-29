@@ -10,6 +10,8 @@ import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductHighlights } from '@/components/product/product-highlights';
 import { ProductIncludes } from '@/components/product/product-includes';
 import { ProductMeasurements } from '@/components/product/product-measurements';
+import { ProductTrustSignals } from '@/components/product/product-trust-signals';
+import { ProductFaqs } from '@/components/product/product-faqs';
 import { RelatedProducts } from '@/components/product/related-products';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
@@ -258,16 +260,33 @@ export async function ProductDetailPage({
               <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
                 {priceLabel}
               </p>
+              <p className="text-muted-foreground mt-2 text-xs sm:text-sm">
+                Pagás en cuotas con tarjeta de crédito vía{' '}
+                <span className="text-foreground font-medium">Mercado Pago</span>
+                .
+              </p>
               {isInStock && (
-                <p className="text-muted-foreground mt-2 inline-flex items-center gap-1.5 text-xs">
-                  <span className="size-1.5 rounded-full bg-green-600" />
-                  En stock · envío a todo el país
-                </p>
+                <div className="border-border/40 mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t pt-3 text-xs">
+                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-green-600" />
+                    En stock
+                  </p>
+                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
+                    <span className="size-1 rounded-full bg-foreground/30" />
+                    Envío a todo el país
+                  </p>
+                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
+                    <span className="size-1 rounded-full bg-foreground/30" />
+                    Retiro gratis en local
+                  </p>
+                </div>
               )}
             </div>
           ) : (
             <p className="text-muted-foreground text-base">Sin stock disponible</p>
           )}
+
+          <ProductTrustSignals />
 
           <VariantList
             showVariantCta={!isPlaceholder(product.name)}
@@ -315,6 +334,10 @@ export async function ProductDetailPage({
           />
         </RevealOnScroll>
       )}
+
+      <RevealOnScroll>
+        <ProductFaqs categorySlug={category.slug} />
+      </RevealOnScroll>
 
       <RevealOnScroll>
         <WhatsappAdvisorCard

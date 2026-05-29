@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-28 — Sprint UX PDP: cierre EXITOSO sin mistake nuevo
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint pequeño (3 componentes + ediciones inline) ejecutado limpio: typecheck verde, build verde, docs actualizados ANTES del mensaje al founder. Sin mistake nuevo.
+
+Decisiones tomadas sin agente: usar `<details>` nativo para FAQs (KISS), trust signals sin claims falsos (cumple BUSINESS_POLICIES), no prometer cuotas específicas hasta que MP esté activo (honesto operativo).
+
+Registro la entry para mantener trazabilidad del cumplimiento — regla v4 estable.
+
+---
+
 ## 2026-05-28 — Iter 1 del comparador NO consideró que los productos podrían tener data incompleta
 
 **Estado**: 🟡 Mitigado vía PRODUCT_SCHEMA.md + actualización de skill /product.
