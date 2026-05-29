@@ -20,7 +20,11 @@ export function BrandGridCard({
   const href = `/${category.slug}/${brand.slug}`;
 
   return (
-    <Link href={href} className="group block" aria-label={`Ver ${brand.name}`}>
+    <Link
+      href={href}
+      className="group block h-full"
+      aria-label={`Ver ${brand.name}`}
+    >
       <Card className="flex h-full flex-col transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:border-foreground group-hover:shadow-xl">
         <CardHeader className="pb-3">
           {brand.logo_url ? (

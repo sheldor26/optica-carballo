@@ -95,7 +95,7 @@ export function CategoryIndexPage({
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           {brands.map((brand, idx) => (
-            <RevealOnScroll key={brand.id} delay={80 * idx}>
+            <RevealOnScroll key={brand.id} delay={80 * idx} className="h-full">
               <BrandGridCard brand={brand} category={category} />
             </RevealOnScroll>
           ))}
