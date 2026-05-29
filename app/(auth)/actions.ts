@@ -11,8 +11,21 @@ import {
   signUpSchema,
 } from '@/lib/auth/schemas';
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+// Site URL para emails de signup / reset password. En producción debe estar
+// SIEMPRE seteada en Vercel — sin esto, los emails de Supabase llegan con
+// links a localhost (incident 2026-05-29). Log loud + fallback útil evita
+// silent bug. Se computa lazy (no en module-load) para no romper otras actions
+// del módulo si solo signup/reset están afectadas.
+function getSiteUrlForEmails(): string {
+  const url = process.env.NEXT_PUBLIC_SITE_URL;
+  if (url && url.length > 0) return url;
+  if (process.env.NODE_ENV === 'production') {
+    console.error(
+      '[auth] NEXT_PUBLIC_SITE_URL no está configurada en producción. Los emails de auth pueden llevar a localhost. Setear en Vercel → Environment Variables.',
+    );
+  }
+  return 'http://localhost:3000';
+}
 
 export type FormState = {
   ok: boolean;
@@ -105,7 +118,7 @@ export async function signUp(
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${SITE_URL}/auth/callback`,
+      emailRedirectTo: `${getSiteUrlForEmails()}/auth/callback`,
       data: parsed.data.display_name
         ? { display_name: parsed.data.display_name }
         : undefined,
@@ -160,7 +173,7 @@ export async function requestPasswordReset(
 
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${SITE_URL}/recuperar-clave/restablecer`,
+    redirectTo: `${getSiteUrlForEmails()}/recuperar-clave/restablecer`,
   });
 
   // Mensaje neutro intencionalmente (no revelar si el email existe — anti-enumeration).
