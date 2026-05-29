@@ -285,6 +285,12 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Sin mistake en este turno (vistos recientemente + filtros + iter 2 implementados con decisiones explícitas)
+
+Aplicación regla v4. Implementación de 2 features grandes (vistos recientemente + filtros catálogo + iter 2 recomendador) con decisiones explícitas documentadas en LEARNINGS. Tradeoff conocido: páginas `/anteojos-de-sol` y `/anteojos-de-receta` pasaron a dynamic por `searchParams`, performance impact aceptable. Sin error de proceso.
+
+---
+
 ## 2026-05-28 — `<button>` dentro de `<a>` es HTML inválido — refactor a sibling con wrapper relative
 
 **Estado**: 🟡 Detectado mientras implementaba wishlist en ProductCard. Corregido en el mismo turno.

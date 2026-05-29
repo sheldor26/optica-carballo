@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/product/product-card';
+import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { fetchProductsBySlugs } from '@/lib/catalog/queries';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 import { readWishlistCookie } from '@/lib/wishlist/cookie';
@@ -53,7 +54,14 @@ export default async function Page() {
       </header>
 
       {ordered.length === 0 ? (
-        <EmptyState />
+        <>
+          <EmptyState />
+          <RecentlyViewed
+            heading="Mientras tanto, mirá lo que viste antes"
+            limit={6}
+            minToRender={2}
+          />
+        </>
       ) : (
         <section className="mx-auto mt-12 grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:mt-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20">
           {ordered.map((p) => (

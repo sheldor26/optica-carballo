@@ -2,8 +2,10 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
 import {
   AlertCircle,
+  ArrowRight,
   Camera,
   CheckCircle2,
   Loader2,
@@ -523,6 +525,12 @@ function ResultBlock({
         <p className="text-muted-foreground mt-3 text-sm">{STANDARD_CLOSING}</p>
       </div>
 
+      {analysis.recommendedFrameShapes.length > 0 && (
+        <CatalogCtaForRecommendation
+          shapes={analysis.recommendedFrameShapes}
+        />
+      )}
+
       <div className="text-muted-foreground border-border/40 border-t pt-4 text-xs leading-relaxed">
         <p>{ANALYSIS_DISCLAIMER}</p>
       </div>
@@ -562,5 +570,39 @@ function FrameShapeList({
         })}
       </ul>
     </div>
+  );
+}
+
+/**
+ * CTA al final del resultado: linkea al catálogo de sol filtrado por las
+ * formas recomendadas. Cierra el funnel: cliente termina el test →
+ * descubre productos concretos que matchean.
+ */
+function CatalogCtaForRecommendation({ shapes }: { shapes: string[] }) {
+  const formaParam = shapes.join(',');
+  const href = `/anteojos-de-sol?forma=${encodeURIComponent(formaParam)}`;
+  const labels = shapes
+    .map((s) => FRAME_SHAPE_COPY[s as keyof typeof FRAME_SHAPE_COPY] ?? s)
+    .slice(0, 2)
+    .join(' y ');
+
+  return (
+    <Link
+      href={href}
+      className="group border-brand/30 bg-brand/5 hover:bg-brand/10 flex items-center justify-between gap-3 rounded-xl border p-5 transition-colors"
+    >
+      <div>
+        <p className="text-brand text-xs font-medium uppercase tracking-[0.18em]">
+          Próximo paso
+        </p>
+        <p className="text-foreground mt-1 font-serif text-base font-medium md:text-lg">
+          Ver anteojos {labels.toLowerCase()}
+        </p>
+        <p className="text-muted-foreground mt-0.5 text-xs">
+          Filtramos el catálogo por las formas recomendadas para vos.
+        </p>
+      </div>
+      <ArrowRight className="text-foreground size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+    </Link>
   );
 }

@@ -509,6 +509,121 @@ export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | 
   return null;
 }
 
+export type FilteredCatalogCard = {
+  slug: string;
+  name: string;
+  brandSlug: string;
+  brandName: string;
+  categorySlug: string;
+  shortDescription: string | null;
+  minPriceCents: number | null;
+  inStockCount: number;
+  primaryImagePath: string | null;
+  secondaryImagePath: string | null;
+};
+
+type FilteredCatalogRow = {
+  slug: string;
+  name: string;
+  short_description: string | null;
+  brand: { slug: string; name: string; is_active: boolean };
+  category: { slug: string; is_active: boolean };
+  variants: Array<{ price_cents: number; stock_qty: number; is_active: boolean }>;
+  images: Array<{ storage_path: string; is_primary: boolean; sort_order: number }>;
+};
+
+/**
+ * Lista de productos de una categoría, opcionalmente filtrados por
+ * `attributes.frame_shape` (uno o varios). Pensada para el catálogo
+ * filtrable de `/anteojos-de-sol?forma=X,Y` (usado por el iter 2 del
+ * recomendador y por filtros manuales del usuario).
+ *
+ * Si `frameShapes` está vacío, devuelve TODOS los productos activos de
+ * la categoría. Si tiene 1+, filtra por `attributes->>frame_shape IN (...)`.
+ */
+export async function fetchProductsByCategoryAndShapes(args: {
+  categorySlug: string;
+  frameShapes: string[];
+}): Promise<FilteredCatalogCard[]> {
+  const supabase = createStaticClient();
+
+  let query = supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        short_description,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug, is_active),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order)
+      `,
+    )
+    .eq('is_active', true)
+    .eq('category.slug', args.categorySlug);
+
+  if (args.frameShapes.length === 1) {
+    query = query.eq('attributes->>frame_shape', args.frameShapes[0]!);
+  } else if (args.frameShapes.length > 1) {
+    query = query.in('attributes->>frame_shape', args.frameShapes);
+  }
+
+  const { data } = await query.returns<FilteredCatalogRow[]>();
+  if (!data) return [];
+
+  return data
+    .filter((row) => row.brand.is_active && row.category.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
+      const sortedImages = [...row.images].sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return a.sort_order - b.sort_order;
+      });
+      return {
+        slug: row.slug,
+        name: row.name,
+        brandSlug: row.brand.slug,
+        brandName: row.brand.name,
+        categorySlug: row.category.slug,
+        shortDescription: row.short_description,
+        minPriceCents:
+          inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
+        inStockCount: inStock.length,
+        primaryImagePath: sortedImages[0]?.storage_path ?? null,
+        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+      };
+    });
+}
+
+/**
+ * Para mostrar chips de filtros en el catálogo: cuáles frame_shapes
+ * existen REALMENTE en productos activos de la categoría. Evita mostrar
+ * chips de "wayfarer" si no hay ningún wayfarer cargado.
+ */
+export async function fetchAvailableFrameShapes(
+  categorySlug: string,
+): Promise<string[]> {
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from('products')
+    .select('attributes, category:categories!inner(slug)')
+    .eq('is_active', true)
+    .eq('category.slug', categorySlug)
+    .returns<Array<{ attributes: Record<string, unknown> }>>();
+
+  if (!data) return [];
+
+  const shapes = new Set<string>();
+  for (const row of data) {
+    const shape = row.attributes?.frame_shape;
+    if (typeof shape === 'string' && shape.length > 0) {
+      shapes.add(shape);
+    }
+  }
+  return Array.from(shapes).sort();
+}
+
 type WishlistProductRow = {
   slug: string;
   name: string;

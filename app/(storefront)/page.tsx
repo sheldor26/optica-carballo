@@ -6,6 +6,7 @@ import { HomeHero } from '@/components/home/home-hero';
 import { HomeTools } from '@/components/home/home-tools';
 import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
+import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { OrganizationJsonLd } from '@/components/seo/organization-jsonld';
 import { WebsiteJsonLd } from '@/components/seo/website-jsonld';
 import { CATEGORIES } from '@/lib/catalog/categories';
@@ -46,6 +47,7 @@ export default async function HomePage() {
       <TrustMarquee />
       <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
       <BrandsSection brands={allBrands} />
+      <RecentlyViewed heading="Estuviste mirando" limit={6} minToRender={3} />
       <HomeTools />
       <HomeFaqs />
       <ValueProps />

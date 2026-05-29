@@ -12,6 +12,8 @@ import { ProductIncludes } from '@/components/product/product-includes';
 import { ProductMeasurements } from '@/components/product/product-measurements';
 import { RelatedProducts } from '@/components/product/related-products';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
+import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
+import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
@@ -307,6 +309,20 @@ export async function ProductDetailPage({
       </RevealOnScroll>
 
       <RelatedProducts products={relatedProducts} />
+
+      <RecentlyViewed
+        excludeSlugs={[product.slug]}
+        heading="También estuviste mirando"
+        limit={6}
+      />
+
+      <RecentlyViewedTracker
+        entry={{
+          slug: product.slug,
+          category: category.slug,
+          brand: product.brand.slug,
+        }}
+      />
     </main>
     </VariantSelectionProvider>
   );

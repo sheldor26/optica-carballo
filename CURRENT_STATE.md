@@ -2,7 +2,47 @@
 
 ## Status
 
-🟡 **Wishlist / Favoritos implementado — sistema completo iter 1, pendiente push**
+🟡 **Vistos recientemente + Filtros catálogo + Iter 2 recomendador — implementados, pendiente push**
+
+Founder eligió ambas features (no calculadora de cuotas). Implementadas las 2 en este sprint.
+
+## Vistos recientemente (cookie LRU)
+
+- `lib/recently-viewed/cookie.ts`: `oc_recent` cookie con array de `RecentEntry` (slug + category + brand). Max 10 items, LRU (al ver de nuevo, sube al tope). 30 días duración (vs 90 wishlist — info más volátil).
+- `lib/recently-viewed/actions.ts`: server action `trackRecentAction()`.
+- `components/recently-viewed/recently-viewed-tracker.tsx`: client component invisible que dispara la action al mount. Fire-and-forget.
+- `components/recently-viewed/recently-viewed.tsx`: server component con grid de cards minimal (mismo estilo que ProductCard). Recibe `excludeSlugs`, `limit`, `heading`, `minToRender`. NO renderiza si hay menos items que minToRender.
+
+**Aparece en**:
+- **Home**: entre Marcas y HomeTools (`minToRender=3`).
+- **Página de producto**: después de RelatedProducts (`excludeSlugs=[product.slug]`, heading "También estuviste mirando").
+- **`/favoritos` empty state**: como fallback cuando no hay favoritos (heading "Mientras tanto, mirá lo que viste antes").
+
+**Tracker auto** en página de producto: useEffect al mount → server action → cookie. Si falla, silencioso.
+
+## Filtros en catálogo + Iter 2 recomendador
+
+**Queries nuevas en `lib/catalog/queries.ts`**:
+- `fetchProductsByCategoryAndShapes()`: productos de una categoría filtrados por uno o varios `attributes->>frame_shape`. Si vacío, devuelve TODOS los activos.
+- `fetchAvailableFrameShapes()`: distinct frame_shape values en productos activos de la categoría. Para mostrar solo chips con productos reales.
+
+**Componente `<FrameShapeFilters>`** (`components/catalog/frame-shape-filters.tsx`): chips clickeables con toggle. Persiste estado en URL (`?forma=rectangular,cat_eye`). Botón "Limpiar" cuando hay filtros activos. SHAPE_LABELS dict para display (snake_case DB → Title Case UI), con fallback genérico para shapes no listados.
+
+**Componente `<CategoryFilteredPage>`** (`components/catalog/category-filtered-page.tsx`): vista alternativa cuando hay `?forma=X` en URL. Header con breadcrumb "← Ver todas las marcas". Grid de productos minimal (mismo `<ProductCard>`). Empty state si no hay matches.
+
+**Páginas `/anteojos-de-sol` y `/anteojos-de-receta`** ahora condicionales:
+- Sin `?forma`: render clásico `<CategoryIndexPage>` (marcas).
+- Con `?forma`: render `<CategoryFilteredPage>` (productos filtrados).
+
+**Iter 2 del recomendador**: agregado `<CatalogCtaForRecommendation>` al final del resultado del face-shape-analyzer. CTA clickeable con accent ámbar que linkea a `/anteojos-de-sol?forma=rectangular,cat_eye` (las primeras 2 formas recomendadas). Mensaje: "Ver anteojos rectangulares y cat-eye".
+
+**Tradeoff técnico**: `/anteojos-de-sol` y `/anteojos-de-receta` pasaron de `○ /` ISR (5min) a `ƒ /` dynamic porque ahora dependen de `searchParams`. Performance impact: sin filtros la query es la misma + dynamic render. Aceptable porque el render es rápido (mismo data). Si vemos LCP degradación, considerar cache de la vista sin filtros.
+
+**Edge case**: si un slug del recomendador (ej `cat_eye`) no existe en `availableShapes` (porque ningún producto tiene esa shape), el `<FrameShapeFilters>` NO lo muestra como chip activable, pero la query igual lo procesa (devuelve productos vacíos). El usuario ve "0 productos" + breadcrumb para volver. UX correcto (no esconde el resultado del recomendador).
+
+**Build verde, typecheck verde**.
+
+
 
 Founder eligió wishlist como próxima feature. Implementación con cookies (sin auth) para máxima accesibilidad — sync a DB queda para iter 2 si se activa remarketing por email.
 

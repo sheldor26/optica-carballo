@@ -22,6 +22,20 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Cookies funcionan para 2 features de persistencia ligera (wishlist + vistos recientemente) — patrón confirmado
+
+Aplicación 2da del approach "cookie-first para persistencia sin auth". Ahora con tracker automático (vistos recientemente) en lugar de toggle manual (wishlist). Confirma:
+- LRU (al ver de nuevo un producto, sube al tope) se implementa trivial: `[entry, ...existing.filter(s => s !== entry.slug)].slice(0, MAX)`.
+- Tracker auto se hace con client component invisible que llama server action al mount. Fire-and-forget.
+- Mismo helper `fetchProductsBySlugs` sirve para wishlist Y vistos recientemente. Buena reutilización.
+
+Próximas aplicaciones del patrón ya identificadas:
+- Comparador de productos (array de slugs, max 4).
+- Preferencias UI (dark mode, idioma).
+- Carrito anónimo (ya existe en el proyecto).
+
+---
+
 ## 2026-05-28 — Wishlist con cookies (no DB) baja la fricción a CERO: funciona sin login + es trivial sumar sync a DB después
 
 **Categoría**: Arquitectura / E-commerce / Decisiones de persistencia
