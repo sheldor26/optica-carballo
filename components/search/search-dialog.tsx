@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, X, ArrowRight, Tag } from 'lucide-react';
+import { Clock, Search, X, ArrowRight, Tag } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,50 @@ import type { SearchResults } from '@/lib/catalog/search';
 
 const DEBOUNCE_MS = 200;
 const MIN_QUERY_LENGTH = 2;
+
+const RECENT_KEY = 'oc_recent_searches';
+const RECENT_MAX = 5;
+
+function readRecent(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((v): v is string => typeof v === 'string' && v.length > 0)
+      .slice(0, RECENT_MAX);
+  } catch {
+    return [];
+  }
+}
+
+function pushRecent(query: string): string[] {
+  if (typeof window === 'undefined') return [];
+  const trimmed = query.trim();
+  if (trimmed.length === 0) return readRecent();
+  try {
+    const current = readRecent();
+    const without = current.filter(
+      (q) => q.toLowerCase() !== trimmed.toLowerCase(),
+    );
+    const next = [trimmed, ...without].slice(0, RECENT_MAX);
+    window.localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    return next;
+  } catch {
+    return readRecent();
+  }
+}
+
+function clearRecent(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(RECENT_KEY);
+  } catch {
+    // ignore
+  }
+}
 
 type Props = {
   open: boolean;
@@ -38,6 +82,7 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     products: [],
     brands: [],
   });
+  const [recent, setRecent] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +90,11 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     startTransition(async () => {
       const data = await searchAction(q);
       setResults(data);
+      // Si la search devolvió resultados, persistir como "recent".
+      if (data.products.length > 0 || data.brands.length > 0) {
+        const next = pushRecent(q);
+        setRecent(next);
+      }
     });
   }, []);
 
@@ -60,9 +110,10 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     return () => window.clearTimeout(t);
   }, [query, open, runSearch]);
 
-  // Auto-focus input al abrir + clear al cerrar
+  // Al abrir: cargar recent + auto-focus. Al cerrar: clear input/results.
   useEffect(() => {
     if (open) {
+      setRecent(readRecent());
       const t = window.setTimeout(() => inputRef.current?.focus(), 50);
       return () => window.clearTimeout(t);
     }
@@ -74,6 +125,7 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     results.products.length > 0 || results.brands.length > 0;
   const queryTooShort = query.trim().length < MIN_QUERY_LENGTH;
   const showEmpty = !queryTooShort && !hasResults && !isPending;
+  const showRecent = queryTooShort && recent.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -112,7 +164,16 @@ export function SearchDialog({ open, onOpenChange }: Props) {
 
         {/* Body */}
         <div className="max-h-[60vh] overflow-y-auto">
-          {queryTooShort ? (
+          {showRecent ? (
+            <Recent
+              items={recent}
+              onPick={(q) => setQuery(q)}
+              onClear={() => {
+                clearRecent();
+                setRecent([]);
+              }}
+            />
+          ) : queryTooShort ? (
             <Hint />
           ) : showEmpty ? (
             <EmptyResults query={query} onClose={() => onOpenChange(false)} />
@@ -126,6 +187,56 @@ export function SearchDialog({ open, onOpenChange }: Props) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function Recent({
+  items,
+  onPick,
+  onClear,
+}: {
+  items: string[];
+  onPick: (q: string) => void;
+  onClear: () => void;
+}) {
+  return (
+    <section className="py-2">
+      <div className="flex items-center justify-between px-4 pb-1 pt-2 sm:px-5">
+        <p className="text-muted-foreground text-[10px] font-medium uppercase tracking-[0.15em]">
+          Búsquedas recientes
+        </p>
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-muted-foreground hover:text-foreground text-xs underline-offset-2 hover:underline"
+        >
+          Limpiar
+        </button>
+      </div>
+      <ul>
+        {items.map((q) => (
+          <li key={q}>
+            <button
+              type="button"
+              onClick={() => onPick(q)}
+              className="hover:bg-muted/40 flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors sm:px-5"
+            >
+              <Clock
+                className="text-muted-foreground size-4 shrink-0"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <span className="text-foreground flex-1 text-sm">{q}</span>
+              <ArrowRight
+                className="text-muted-foreground size-4"
+                strokeWidth={2}
+                aria-hidden
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

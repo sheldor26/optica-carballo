@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sprint 404 + recent searches: cierre EXITOSO
+
+**Estado**: 🟢 Cumplido.
+**Categoría**: Proceso / Cumplimiento docs
+
+Sprint UX polish (404 page rediseñada + recent searches en SearchDialog) ejecutado limpio. Build verde. Aplicación correcta regla v5.
+
+12 sprints consecutivos sin mistake nuevo de proceso. Patrón estable.
+
+---
+
 ## 2026-05-29 — Sprint /marcas índice: cierre EXITOSO
 
 **Estado**: 🟢 Cumplido.

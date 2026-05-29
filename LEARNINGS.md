@@ -22,6 +22,84 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — 404 page como "última estación útil" en vez de dead-end → 3+ atajos + WhatsApp
+
+**Categoría**: UX / Retención / Error states
+**Confianza**: 🟡 Media (1 caso aplicado, patrón industria conocido)
+
+### Qué pasó
+
+La 404 anterior era 1 h1 + 1 link. Si el usuario llegaba ahí (link roto, URL mal escrita, producto movido), tenía 1 opción: volver al inicio. Muchos abandonan.
+
+Rediseñé como "última estación útil":
+- 2 CTAs primarios (Inicio + Marcas).
+- 3 atajos rápidos a destinos top (Sol, Receta, FAQs) con descripción.
+- CTA WhatsApp con mensaje pre-cargado.
+
+### Por qué funciona
+
+- **Multi-camino**: en vez de "te equivocaste, volvé", ofrezco 5-6 caminos distintos para retomar.
+- **Mensaje pre-cargado en WhatsApp**: ya pinta el contexto ("Hola, llegué a una página que no existe…"), bajando fricción al chat humano.
+- **Coherencia visual**: usa el mismo lenguaje que /sobre-nosotros y /checkout/error (icon-circle + h1 italic + cards). El usuario reconoce el patrón como "página del sitio", no como "error feo".
+
+### Patrón a confirmar (3era confirmación)
+
+Mismo template visual en:
+1. `/sobre-nosotros` (hero + sections).
+2. `/checkout/exito` / `/pendiente` / `/error` (icon + h1 italic + cards).
+3. `/not-found` (icon + h1 italic + cards).
+
+3 casos → patrón estable. Próxima página informativa o de estado debería seguir este template (icon-circle / h1 serif italic / cards).
+
+### Aplicar a futuro
+
+Cualquier estado "error" o "dead-end" (sin resultados, sin stock global, sin acceso, mantenimiento) debe ofrecer:
+- 2-3 caminos alternativos.
+- WhatsApp con context.
+- Tono amigable (no técnico).
+- Diseño coherente con el resto del sitio (NO una página "error" genérica).
+
+---
+
+## 2026-05-29 — Recent searches en localStorage: persiste solo si la query tuvo results
+
+**Categoría**: UX / localStorage / Patrones de persistencia
+**Confianza**: 🟡 Media (1 caso aplicado)
+
+### Qué pasó
+
+Al sumar recent searches al SearchDialog, decisión: ¿persistir TODAS las queries que tipeó el usuario, o solo las que tuvieron results?
+
+Elegí "solo con results". Razones:
+- Si tipeo "asdfasdf" (error de tipeo), persistirla es ruido.
+- Si tipeo "Ray-Ban" pero no tenemos esa marca, persistirla genera el dilema de "es una recent que NO va a funcionar".
+- Solo persistir queries útiles (con results) → la lista recent es siempre confiable: si reclickeás, vas a ver algo.
+
+### Trade-off
+
+- Si el catalog crece y mañana SÍ tenemos esa marca, la query pasada no aparece como recent. Aceptable: el usuario probablemente la busca de nuevo.
+
+### Combinado con dedup case-insensitive
+
+`Vulk` y `vulk` cuentan como mismo item. La que persiste es la última versión tipeada (mantiene capitalization del usuario).
+
+```ts
+const without = current.filter(
+  (q) => q.toLowerCase() !== trimmed.toLowerCase(),
+);
+const next = [trimmed, ...without].slice(0, RECENT_MAX);
+```
+
+### Aplicar a futuro
+
+Cualquier "history" client-side (recent searches, recent products viewed, recent filters):
+- Persistir solo "completions exitosas".
+- Dedup case-insensitive.
+- Cap razonable (5-10 items).
+- Botón "limpiar" siempre visible.
+
+---
+
 ## 2026-05-29 — Hub `/marcas` linkea a las brand pages (que ya tienen story editorial) = SEO + UX gratis
 
 **Categoría**: Arquitectura de información / Reuso

@@ -243,6 +243,56 @@ Push + verificación visual.
 
 ---
 
+## 404 page custom + Recent searches en SearchDialog
+
+Sprint UX chico: dos polish complementarios.
+
+### 1. Custom 404 page
+
+Antes: 1 h1 + 1 párrafo + link "Volver al inicio". Pobre.
+
+Ahora (`app/not-found.tsx`):
+- Icon Compass en círculo + h1 serif italic "Esta página no **existe**".
+- Subtítulo amigable explicando "link roto / producto movido".
+- 2 CTAs primarios: "Volver al inicio" + "Ver marcas".
+- **Sección "Atajos rápidos"** con 3 cards (Anteojos de sol / receta / FAQs) — minimiza dead-end del usuario.
+- **CTA WhatsApp** "¿Buscabas algo específico?" al final con mensaje pre-cargado ("Hola, llegué a una página que no existe…").
+
+Coherente con el lenguaje visual de `/sobre-nosotros` y `/checkout/error` (icon-circle + h1 italic + cards + WhatsApp).
+
+### 2. Recent searches en SearchDialog
+
+Antes: al abrir el dialog → input vacío + hint "Tipeá 2 letras". Sin memoria.
+
+Ahora (`components/search/search-dialog.tsx`):
+- Cookie/localStorage `oc_recent_searches`: array de strings, max 5 items.
+- Al **abrir** el dialog → si hay recent (y no hay query), muestra sección "Búsquedas recientes" con items + icon Clock.
+- Al **completar** una búsqueda con results > 0 → la query se persiste al tope de recents (dedup case-insensitive).
+- **Botón "Limpiar"** al lado del heading.
+- Click en un item recent → setQuery → re-corre la búsqueda.
+
+UX: estado vacío (sin query) ya no es vacío — ofrece "tu última búsqueda" para retomar rápido.
+
+### Decisiones técnicas
+
+- **localStorage vs cookie**: localStorage es más natural para data puramente client-side (las búsquedas no necesitan llegar al server). Más simple que cookie + server action.
+- **Solo persiste queries con resultados > 0**: si tipeaste algo que no matchea, no se guarda (evita ruido).
+- **Dedup case-insensitive**: "Vulk" y "vulk" cuentan como mismo item.
+- **Max 5**: número razonable. Si crece más se vuelve scroll, pierde el punto.
+- **404 mantiene auto-discovery via header search**: el FloatingWhatsapp + SearchTrigger del header siguen visibles en la 404, no rompemos UX global.
+
+### Build
+
+`/_not-found` 153 B (mínimo, prerendered static). `/` y otras pages se mantienen igual (los helpers de localStorage no se importan en server).
+
+### Próximo paso
+
+Push + verificación visual. Probar:
+1. URL inventada (ej `/algoquenoexiste`) → ver la nueva 404.
+2. Hacer 2-3 búsquedas con results → cerrar el dialog → reabrir → ver "Búsquedas recientes".
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**
