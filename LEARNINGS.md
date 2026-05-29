@@ -22,6 +22,48 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Docs operativas necesitan 2 niveles: resumen + walkthrough granular
+
+**Categoría**: Documentación / Comunicación al founder
+**Confianza**: 🟡 Media (caso aplicado en GA4 setup)
+
+### Qué pasó
+
+Escribí `ANALYTICS_SETUP.md` con resumen de pasos para configurar GA4 ("crear cuenta GA4 → propiedad → flujo web → copiar Measurement ID → env var en Vercel"). Founder lo leyó pero pidió walkthrough detallado — necesitaba saber qué hacer click por click.
+
+Cuando lo escribí pensé "está obvio cada paso porque la UI te guía". Pero founder NO había usado GA4 antes, así que cada pantalla nueva requiere decisión (qué nombre, qué zona, qué sector). Sin walkthrough, fricción alta.
+
+### Solución
+
+Docs operativas para el founder (no-técnico) necesitan **2 niveles**:
+
+**Nivel 1 — Resumen** (`ANALYTICS_SETUP.md` en repo):
+- Para referencia futura.
+- Qué está integrado + qué env vars necesita + dónde mirar métricas.
+- Asume familiaridad con el tooling externo.
+
+**Nivel 2 — Walkthrough** (mensaje chat cuando el founder lo necesita):
+- Para PRIMERA vez usando el tooling.
+- 10 pasos numerados, cada campo a llenar, screenshot textual de cada pantalla.
+- Asume CERO familiaridad.
+
+### Por qué funciona
+
+- Resumen es referencia rápida cuando ya conocés el flow.
+- Walkthrough reduce decisión fatigue + miedo al "qué pongo acá".
+
+### Aplicar a futuro
+
+Cualquier integración nueva con dashboard tercero (MP, Tusfacturas, Resend, GSC, etc):
+- Doc Markdown en repo con resumen.
+- Al pedirle al founder ejecutar por primera vez, mandar walkthrough en chat con cada click.
+
+### Patrón meta
+
+Docs técnicas (resumen) ≠ docs operativas (walkthrough). El proyecto necesita ambas. Anti-pattern: asumir que un resumen sirve para alguien que nunca usó el tooling.
+
+---
+
 ## 2026-05-29 — Helper `track()` no-op silencioso desacopla código de negocio de GA4 disponibilidad
 
 **Categoría**: Analytics / Privacy / Arquitectura

@@ -24,6 +24,32 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Doc resumen no fue suficiente para founder no-familiarizado con GA4
+
+**Estado**: 🟡 Mitigado — entregué walkthrough granular cuando el founder lo pidió.
+**Categoría**: Documentación / Asunciones sobre familiaridad del founder
+
+### Qué pasó
+
+Escribí `ANALYTICS_SETUP.md` con resumen de "crear GA4 → propiedad → flujo web → copiar ID". Asumí que la UI guía. Founder lo leyó y vino con "cómo hacer setup de GA4" — necesitaba walkthrough con cada click.
+
+### Causa raíz
+
+Asumí familiaridad del founder con tooling externo que NUNCA usó. Cada pantalla nueva de GA4 requiere decisión (nombre cuenta, propiedad, zona, sector, moneda) que NO está obvia para alguien sin contexto.
+
+### Regla preventiva
+
+Para tooling externo que el founder NUNCA usó:
+- Resumen en doc (referencia futura) — obligatorio.
+- Walkthrough en chat con cada click — obligatorio en primera ejecución.
+- NO asumir "la UI te guía".
+
+### Documentado en LEARNINGS
+
+Entry "Docs operativas necesitan 2 niveles: resumen + walkthrough granular" con el patrón formalizado.
+
+---
+
 ## 2026-05-29 — Sprint Analytics cierre exitoso (GA4 + GSC + eventos + doc founder)
 
 **Estado**: 🟢 Cumplido.

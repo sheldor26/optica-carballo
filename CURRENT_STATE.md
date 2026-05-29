@@ -61,6 +61,12 @@ Creado `ANALYTICS_SETUP.md` en root con:
 
 Founder crea las 2 cuentas (GA4 + GSC) → configura las 2 env vars en Vercel → tras redeploy + cookie banner accept, eventos empiezan a fluir. Después de 1-2 semanas con tráfico, podemos tomar decisiones basadas en datos reales (qué páginas funcionan, qué se busca, qué CTAs convierten).
 
+### Update 2026-05-29: founder pidió walkthrough detallado de GA4
+
+`ANALYTICS_SETUP.md` tenía resumen pero faltaba walkthrough granular de cada click en analytics.google.com. Founder pidió versión paso-a-paso. Le mandé los 10 pasos numerados con cada campo a llenar (nombre cuenta, propiedad, zona horaria, moneda, sector, etc) + captura textual de cada pantalla + cómo copiar el Measurement ID + cómo verificar end-to-end (incognito + cookie accept + Realtime tab) + troubleshooting de errores comunes.
+
+**Pendiente founder**: ejecutar los 10 pasos → reportar Measurement ID configurado en Vercel + verificación visual en Realtime tab.
+
 ---
 
 ## Status anterior
