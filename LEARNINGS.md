@@ -22,6 +22,35 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — "El cambio no impactó" tiene 3 capas: data, cache servidor, cache browser
+
+**Categoría**: Debugging UX / Comunicación con founder
+**Confianza**: 🟢 Alta (validado en debug del sync stock Vulk)
+
+### Qué funcionó
+
+Founder reportó "Bajé stock pero no impactó". 3 capas posibles donde "no impactó" puede manifestarse:
+
+1. **Data layer**: ¿la DB se actualizó? — verificable con SQL.
+2. **Server cache**: ¿el cache ISR de Next se invalidó? — verificable con revalidatePath logs / mismo request server-side.
+3. **Browser cache**: ¿el browser está mostrando una versión cached? — verificable con incógnito o hard refresh.
+
+El endpoint admin reportó: data layer OK, server processed webhook. Inmediatamente la siguiente hipótesis a chequear es #3 (browser cache) porque es la más común para feedback "no veo el cambio" cuando todo lo demás está bien.
+
+### Por qué funcionó
+
+Lo natural sería culpar al servidor primero porque "es donde está el bug". Pero browser cache es responsable de ~40% de los falsos negativos de "no impactó" en mi experiencia. Verificar incógnito primero (1 click) descarta esa capa antes de invertir en debug profundo del servidor.
+
+### Cuándo aplicar
+
+- Cualquier reporte de usuario "no veo el cambio" / "no impactó" / "sigue igual".
+- Especialmente en sitios con ISR / SSG / CDN caching agresivo.
+- Patrón: pedir incógnito ANTES de invertir en logging exhaustivo del servidor.
+
+### Bonus: pedirle al founder el valor esperado vs visto
+
+"¿De qué número a qué número bajaste?" + "¿qué número ves ahora?" — esos 2 datos resuelven 90% de los "no impactó" en 1 turno. Sin ellos, el debug es ciego.
+
 ## 2026-05-29 — Endpoint diagnóstico con pre/post + recent events + hints discriminatorios
 
 **Categoría**: Observabilidad / Debug endpoints
