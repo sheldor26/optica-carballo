@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 
@@ -12,13 +13,19 @@ export type ProductCardData = {
   minPriceCents: number | null;
   inStockCount: number;
   primaryImagePath: string | null;
+  /** 2da imagen (sort_order después de primary). Si existe, se muestra al
+   * hacer hover sobre la card — patrón clásico de e-commerce de óptica/moda. */
+  secondaryImagePath: string | null;
   href: string;
 };
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const outOfStock = product.inStockCount === 0;
-  const imageUrl = product.primaryImagePath
+  const primaryUrl = product.primaryImagePath
     ? getProductImageUrl(product.primaryImagePath)
+    : null;
+  const secondaryUrl = product.secondaryImagePath
+    ? getProductImageUrl(product.secondaryImagePath)
     : null;
 
   return (
@@ -29,14 +36,33 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             className="bg-background border-border/40 relative aspect-[4/3] w-full overflow-hidden rounded-md border p-2"
             aria-hidden="true"
           >
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt=""
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                className="object-contain transition-transform duration-500 ease-out group-hover/card:scale-[1.04]"
-              />
+            {primaryUrl ? (
+              <>
+                <Image
+                  src={primaryUrl}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className={cn(
+                    'object-contain transition-all duration-500 ease-out',
+                    // Si hay secondary → crossfade (opacity 0 al hover).
+                    // Si NO hay → scale leve como antes (sino la card no
+                    // tendría feedback de hover en la imagen).
+                    secondaryUrl
+                      ? 'group-hover/card:opacity-0'
+                      : 'group-hover/card:scale-[1.04]',
+                  )}
+                />
+                {secondaryUrl && (
+                  <Image
+                    src={secondaryUrl}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100"
+                  />
+                )}
+              </>
             ) : (
               <div className="text-muted-foreground flex h-full items-center justify-center text-xs">
                 Foto pendiente

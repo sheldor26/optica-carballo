@@ -203,6 +203,7 @@ export type RelatedProductCard = {
   minPriceCents: number | null;
   inStockCount: number;
   primaryImagePath: string | null;
+  secondaryImagePath: string | null;
 };
 
 type RelatedRow = {
@@ -233,6 +234,7 @@ function toRelatedCard(row: RelatedRow): RelatedProductCard {
     minPriceCents,
     inStockCount: inStock.length,
     primaryImagePath: sortedImages[0]?.storage_path ?? null,
+    secondaryImagePath: sortedImages[1]?.storage_path ?? null,
   };
 }
 

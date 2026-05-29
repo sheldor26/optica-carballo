@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
+import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import type { RelatedProductCard } from '@/lib/catalog/queries';
@@ -51,8 +52,11 @@ export function RelatedProducts({
 
 function RelatedCard({ product }: { product: RelatedProductCard }) {
   const href = `/${product.categorySlug}/${product.brandSlug}/${product.slug}`;
-  const imageUrl = product.primaryImagePath
+  const primaryUrl = product.primaryImagePath
     ? getProductImageUrl(product.primaryImagePath)
+    : null;
+  const secondaryUrl = product.secondaryImagePath
+    ? getProductImageUrl(product.secondaryImagePath)
     : null;
 
   return (
@@ -60,14 +64,30 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
       <Card className="hover:border-foreground/40 flex h-full flex-col overflow-hidden transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg">
         <CardHeader className="p-2 md:p-3">
           <div className="bg-muted/40 relative aspect-square w-full overflow-hidden rounded-md">
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={product.name}
-                fill
-                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-              />
+            {primaryUrl ? (
+              <>
+                <Image
+                  src={primaryUrl}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  className={cn(
+                    'object-contain transition-all duration-500 ease-out',
+                    secondaryUrl
+                      ? 'group-hover:opacity-0'
+                      : 'group-hover:scale-[1.03]',
+                  )}
+                />
+                {secondaryUrl && (
+                  <Image
+                    src={secondaryUrl}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                  />
+                )}
+              </>
             ) : (
               <div className="text-muted-foreground flex h-full items-center justify-center text-[10px]">
                 Foto pendiente

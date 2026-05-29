@@ -37,6 +37,7 @@ function toCardData(
       inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
     inStockCount: inStock.length,
     primaryImagePath: sortedImages[0]?.storage_path ?? null,
+    secondaryImagePath: sortedImages[1]?.storage_path ?? null,
     href: `${hrefPrefix}/${p.slug}`,
   };
 }

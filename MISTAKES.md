@@ -285,6 +285,12 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Sin mistake en este turno (hover crossfade implementado limpiamente)
+
+Aplicación de regla v4. Este turno fue implementación de feature de hover crossfade con decisión técnica explícita (NO combinar scale + crossfade) que se documentó como learning. Sin error de proceso. Sin anti-pattern.
+
+---
+
 ## 2026-05-28 — Sin mistake en este turno (cambio de cursor por feedback del founder)
 
 Aplicación de regla v4. Este turno fue cambio simple de cursor follower a versión "ambiental" por feedback del founder ("un poco invasivo"). Decisión técnica correcta basada en su preferencia. Sin error de proceso ni anti-pattern.

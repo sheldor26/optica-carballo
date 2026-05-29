@@ -2,7 +2,23 @@
 
 ## Status
 
-🟡 **Cursor follower cambiado a glow/halo ámbar sutil — pendiente push**
+🟡 **Hover crossfade en product cards (catalog + related products) — pendiente push**
+
+Founder pidió patrón clásico de óptica/moda: al hover sobre una card de producto en `/anteojos-de-sol/{brand}`, la imagen cambia automáticamente a la 2da imagen del producto. Referencia: `opticaslookout.com.ar/collections/sol`.
+
+**Implementación**:
+- `lib/catalog/queries.ts`: `RelatedProductCard` type extendido con `secondaryImagePath: string | null`. `toRelatedCard()` toma `sortedImages[1]` (la 2da imagen después de primary).
+- `components/product/product-card.tsx`: `ProductCardData` extendido con `secondaryImagePath`. Render con 2 `<Image>` superpuestas dentro del mismo container relative. Si hay secondary → primary fade out a `opacity-0` + secondary fade in a `opacity-100` al hover. Si NO hay secondary → comportamiento anterior (scale 1.04). Transición 500ms ease-out.
+- `components/catalog/brand-page.tsx`: `toCardData()` ahora pasa `secondaryImagePath: sortedImages[1]?.storage_path ?? null`.
+- `components/product/related-products.tsx`: `RelatedCard` interno con mismo patrón crossfade.
+
+**Decisión técnica**: NO hacer crossfade + scale simultáneos. Si hay secondary, el efecto es solo el cambio de imagen (más limpio). Si no hay secondary, scale para mantener feedback de hover.
+
+**Edge case**: productos con UNA sola imagen → no se rompe nada, mantiene scale como fallback. La 2da imagen es opcional.
+
+**Build verde**.
+
+
 
 Founder pidió cursor menos invasivo. Le pasé 4 opciones (glow / solo dot mini / amorfo líquido / desactivar). Eligió **glow/halo radial sutil**.
 

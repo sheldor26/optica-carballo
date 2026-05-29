@@ -22,6 +22,58 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — Crossfade entre 2 imágenes superpuestas como hover-state: NO combinar con scale (los efectos compiten visualmente)
+
+**Categoría**: UI/UX / Transiciones de hover / Combinación de efectos
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente confirmar en producción)
+
+### Qué pasó
+
+Implementé el patrón "hover sobre card de producto → muestra 2da imagen" (clásico de e-commerce de óptica/moda). El componente anterior tenía `group-hover:scale-[1.04]` como feedback. La nueva implementación tiene 2 imágenes superpuestas con `opacity` controlado por hover.
+
+Combinarlas dio un efecto raro: durante el crossfade, ambas imágenes se escalaban simultáneamente. El resultado es confuso visualmente — el ojo no sabe si la imagen está cambiando o moviéndose.
+
+**Solución**: lógica condicional en el className:
+- Si hay secondary image → solo crossfade (opacity), sin scale.
+- Si NO hay secondary image → mantener scale como antes (sino la card no tendría feedback visual al hover).
+
+```tsx
+className={cn(
+  'object-contain transition-all duration-500 ease-out',
+  secondaryUrl
+    ? 'group-hover/card:opacity-0'
+    : 'group-hover/card:scale-[1.04]',
+)}
+```
+
+### Por qué funciona
+
+- **Un efecto a la vez**: el ojo procesa "cambió la imagen" sin que compita con "se hizo más grande".
+- **Fallback inteligente**: productos con 1 sola foto mantienen feedback de hover (scale). Productos con 2+ fotos tienen el efecto "premium" del crossfade.
+- **Sin breaking changes**: el cambio no rompe cards de productos antiguos sin segunda imagen.
+
+### Cómo replicar
+
+Para CUALQUIER feature que combine 2+ efectos de hover sobre el mismo elemento:
+
+1. **Probar combinaciones**: si los efectos compiten (transformación geométrica + cambio de contenido, ej scale + crossfade), elegir UNO.
+2. **Default fallback**: el efecto "menos rico" debe ser el fallback cuando el dato necesario para el efecto rico no existe.
+3. **Lógica condicional en className**: `cn()` + ternario en base a presencia del dato. Sin breaking changes para casos legacy.
+
+### Anti-patrón a evitar
+
+- Apilar todos los efectos posibles "porque están disponibles". Genera ruido visual.
+- Asumir que más feedback = mejor UX. A veces es lo opuesto.
+- Romper el caso "1 imagen" cuando se introduce el caso "2+ imágenes".
+
+### Próxima vez aplicar a
+
+- Hover sobre cards de blog/artículos cuando se agreguen.
+- Cards de "destacados" en home (bento grid si se hace).
+- Cualquier elemento con múltiples affordances de hover (cambio de color + scale + cursor change).
+
+---
+
 ## 2026-05-28 — Cursor "ambiental" (no reemplaza SO + sin reacción a interactivos) supera cursor "funcional" cuando se busca premium pero sutil
 
 **Categoría**: UI/UX / Cursor design / Decisiones de invasión visual
