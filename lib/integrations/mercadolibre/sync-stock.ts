@@ -1,4 +1,5 @@
 import 'server-only';
+import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { mlFetch } from '@/lib/integrations/mercadolibre/api-client';
 import { logMLSyncError } from '@/lib/integrations/mercadolibre/integrations-repo';
@@ -196,6 +197,8 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
   let updated = 0;
   let skipped = 0;
 
+  const updatedVariantIds: string[] = [];
+
   if (variations.length === 0) {
     const single = variants.find((v) => v.mercadolibre_variation_code === null);
     if (!single) {
@@ -206,34 +209,86 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
         .update({ stock_qty: item.available_quantity })
         .eq('id', single.id);
       updated++;
+      updatedVariantIds.push(single.id);
     } else {
       skipped++;
     }
-    return { ok: true, updated, skipped };
+  } else {
+    for (const variant of variants) {
+      if (!variant.mercadolibre_variation_code) {
+        skipped++;
+        continue;
+      }
+      const matched = variations.find(
+        (v) => v.seller_custom_field === variant.mercadolibre_variation_code,
+      );
+      if (!matched) {
+        skipped++;
+        continue;
+      }
+      if (variant.stock_qty === matched.available_quantity) {
+        skipped++;
+        continue;
+      }
+      await supabase
+        .from('product_variants')
+        .update({ stock_qty: matched.available_quantity })
+        .eq('id', variant.id);
+      updated++;
+      updatedVariantIds.push(variant.id);
+    }
   }
 
-  for (const variant of variants) {
-    if (!variant.mercadolibre_variation_code) {
-      skipped++;
-      continue;
-    }
-    const matched = variations.find(
-      (v) => v.seller_custom_field === variant.mercadolibre_variation_code,
-    );
-    if (!matched) {
-      skipped++;
-      continue;
-    }
-    if (variant.stock_qty === matched.available_quantity) {
-      skipped++;
-      continue;
-    }
-    await supabase
-      .from('product_variants')
-      .update({ stock_qty: matched.available_quantity })
-      .eq('id', variant.id);
-    updated++;
+  if (updatedVariantIds.length > 0) {
+    await revalidatePathsForVariants(updatedVariantIds);
   }
 
   return { ok: true, updated, skipped };
+}
+
+/**
+ * Invalida el cache ISR de Next.js para las páginas afectadas por cambio
+ * de stock. Sin esto, aunque la DB esté actualizada en 1s, la página
+ * estática puede mostrar stock viejo hasta 5 min (`revalidate=300`).
+ *
+ * Páginas invalidadas:
+ * - Página del producto: /{categorySlug}/{brandSlug}/{productSlug}
+ * - Página de marca: /{categorySlug}/{brandSlug} (muestra in_stock_count)
+ * - Página de categoría: /{categorySlug} (AggregateOffer + sub-categorías)
+ */
+async function revalidatePathsForVariants(variantIds: string[]): Promise<void> {
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from('product_variants')
+    .select(
+      'product:products!inner(slug, brand:brands!inner(slug), category:categories!inner(slug))',
+    )
+    .in('id', variantIds)
+    .returns<
+      Array<{
+        product: {
+          slug: string;
+          brand: { slug: string };
+          category: { slug: string };
+        };
+      }>
+    >();
+
+  const pathsSet = new Set<string>();
+  for (const row of data ?? []) {
+    const cat = row.product.category.slug;
+    const brand = row.product.brand.slug;
+    const slug = row.product.slug;
+    pathsSet.add(`/${cat}/${brand}/${slug}`);
+    pathsSet.add(`/${cat}/${brand}`);
+    pathsSet.add(`/${cat}`);
+  }
+
+  for (const path of pathsSet) {
+    try {
+      revalidatePath(path);
+    } catch (err) {
+      console.error('[ml-sync] revalidatePath failed', { path, err });
+    }
+  }
 }
