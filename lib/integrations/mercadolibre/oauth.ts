@@ -17,6 +17,45 @@ import type {
 } from '@/lib/integrations/mercadolibre/types';
 
 /**
+ * Sanitiza un JSON crudo recibido de ML antes de persistirlo en logs.
+ * Devuelve `keys` (lista de keys que venían) + `redacted` (objeto con
+ * los mismos keys pero valores reemplazados por [REDACTED] para
+ * los sensibles, o el valor original para los no sensibles).
+ *
+ * Esto evita que tokens reales queden persistidos en
+ * `marketplace_sync_errors` — esa tabla es para debugging de shape,
+ * NO para backup de credenciales.
+ */
+function sanitizeReceivedJson(json: unknown): {
+  keys: string[];
+  redacted: Record<string, unknown>;
+} {
+  if (typeof json !== 'object' || json === null || Array.isArray(json)) {
+    return { keys: [], redacted: {} };
+  }
+
+  const SENSITIVE_KEYS = new Set([
+    'access_token',
+    'refresh_token',
+    'id_token',
+    'client_secret',
+    'code',
+  ]);
+
+  const obj = json as Record<string, unknown>;
+  const keys = Object.keys(obj);
+  const redacted: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (SENSITIVE_KEYS.has(key)) {
+      redacted[key] = '[REDACTED]';
+    } else {
+      redacted[key] = obj[key];
+    }
+  }
+  return { keys, redacted };
+}
+
+/**
  * OAuth 2.0 flow para Mercado Libre.
  *
  * Flow estándar Authorization Code:
@@ -111,17 +150,18 @@ export async function exchangeCodeForTokens(
       '[ml-oauth] token response con formato inesperado',
       parsed.error.flatten(),
     );
-    // Loguear a DB con el JSON crudo recibido — útil para debugging
-    // cuando ML cambia el formato o devuelve error con shape inesperado.
-    // CUIDADO: este JSON PUEDE contener tokens parciales si ML cambió
-    // el shape. Remover `received_json` antes de Sprint 3 estable.
+    // Loguear a DB SIN tokens crudos. Sanitizamos los campos sensibles
+    // antes de persistir — DB log es para diagnóstico de SHAPE, no
+    // backup de credenciales. Solo guardamos qué keys vinieron + zod errors.
+    const sanitized = sanitizeReceivedJson(json);
     await logMLSyncError({
       operation: 'oauth',
       errorPayload: {
         stage: 'zod_validation',
         status: response.status,
         zod_errors: parsed.error.flatten(),
-        received_json: json,
+        received_keys: sanitized.keys,
+        received_redacted: sanitized.redacted,
       },
     });
     return { ok: false, error: 'validation_error', retryable: false };

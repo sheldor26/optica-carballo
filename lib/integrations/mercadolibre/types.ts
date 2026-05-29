@@ -45,7 +45,10 @@ export type MarketplaceIntegration = {
  */
 export type OAuthTokenResponse = {
   access_token: string;
-  token_type: 'bearer';
+  /** Case-insensitive 'bearer' / 'Bearer'. ML devuelve 'Bearer' (estándar
+   *  HTTP Authorization header), OAuth 2.0 ABNF dice 'bearer'. Schema
+   *  valida con regex /^bearer$/i. */
+  token_type: string;
   expires_in: number; // segundos
   scope: string;
   user_id: number;

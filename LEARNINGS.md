@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Logging a DB debe cubrir TODOS los branches de error, no solo el "obvio"
+
+**Categoría**: Observabilidad / Cobertura
+**Confianza**: 🟢 Alta (caso real validó el patrón)
+
+### Qué pasó
+
+En Sprint 1 ML agregué `logMLSyncError` solo al branch `response.status === 400`. Confié en `console.error` para los otros (Zod fail, parse fail, upsert fail). Tras varios fallos OAuth con `count: 0` en la tabla, descubrí que el error caía en el branch **Zod fail** que NO logueaba → debugging ciego.
+
+### Solución
+
+Cobertura uniforme: log a DB en TODOS los branches que devuelven error:
+- Status non-2xx: ✅ (estaba).
+- JSON parse fail: agregado.
+- Zod schema fail: agregado (con `received_json` raw).
+- DB upsert fail: agregado.
+
+### Por qué funciona
+
+Si TODO branch loguea, la tabla siempre tiene evidencia. Independiente de la causa, el debug endpoint te devuelve detalle preciso. Cero "ceguera selectiva".
+
+### Aplicar a futuro
+
+Cualquier función crítica que devuelve `Result<T, E>` con múltiples paths de error:
+- Audit explícito: ¿cuántos branches devuelven error? ¿Todos logueean?
+- DB log con `stage` específico para identificar cuál branch falló.
+- NO confiar en `console.error` solo para diagnóstico post-mortem.
+
+### Anti-pattern
+
+Logging selectivo (solo el branch "obvio") → debug-blind cuando falla un branch alternativo.
+
+### Refinamiento del "Two-tier logging"
+
+Entry previo: "DB como backup cuando runtime logs son flaky". Este caso refina: NO basta tener el patrón, hay que aplicarlo a **TODOS** los branches de error, no solo el principal.
+
+---
+
 ## 2026-05-29 — IF NOT EXISTS check explícito > EXCEPTION catch para idempotencia de UNIQUE constraints
 
 **Categoría**: Postgres / Migrations / Idempotencia (refinamiento)

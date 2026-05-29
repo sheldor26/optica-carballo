@@ -24,6 +24,48 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Logging incompleto en `exchangeCodeForTokens`: cubrí solo 1 de 4 error branches
+
+**Estado**: 🟡 Mitigado — fix aplicado en commit `c2b951f` con logging en los 4 branches.
+**Categoría**: Observabilidad / Cobertura incompleta
+
+### Qué pasó
+
+Sprint 1 ML: agregué `await logMLSyncError(...)` al branch `if (!response.ok)` de `exchangeCodeForTokens` para capturar errores 400 de ML. Confié en `console.error` para los otros 3 branches que también pueden devolver error:
+- JSON parse fail (response no es JSON).
+- Zod schema fail (response es JSON pero shape distinto).
+- DB upsert fail (exchange OK pero falla al guardar).
+
+Founder reintentó OAuth varias veces — `validation_error` consistente — pero la tabla `marketplace_sync_errors` seguía con `count: 0`. Indicaba que el error caía en un branch que NO logueaba.
+
+### Causa raíz
+
+Cobertura selectiva de logging. Tras escribir el branch obvio (status 400), no audité los otros branches que devuelven error. Asumí "console.error es suficiente" — ya documentado como anti-pattern en mistake del 10MO turn.
+
+### Regla preventiva
+
+Para CUALQUIER función que devuelve `Result<T, E>` con múltiples error paths:
+1. Audit explícito post-implementación: contar branches que devuelven error.
+2. Cada branch debe tener su `await logToDB(...)` con un `stage` específico identificable.
+3. Code review mental: ¿qué pasa si falla cada uno de esos branches? ¿Hay diagnóstico?
+
+### Fix aplicado
+
+Commit `c2b951f`: agregado `logMLSyncError` con `stage` específico en los 3 branches faltantes:
+- `stage: 'parse_response'`.
+- `stage: 'zod_validation'` (con `received_json` raw para debug).
+- `stage: 'upsert_integration'`.
+
+### Documentado en LEARNINGS
+
+Entry "Logging a DB debe cubrir TODOS los branches de error, no solo el obvio" — refinamiento del two-tier logging pattern.
+
+### Anti-pattern
+
+Pensar "ya agregué el log al branch principal, los otros son edge cases" → cuando uno de esos "edge cases" se dispara en producción, no tenés data.
+
+---
+
 ## 2026-05-29 — Capturé exception class equivocado en mi fix de idempotencia (42P07 ≠ 42710)
 
 **Estado**: 🟡 Mitigado v2 — IF NOT EXISTS check explícito (commit `a4c1d6a`).

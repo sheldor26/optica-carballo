@@ -691,6 +691,24 @@ SELECT
 
 Si los 4 son TRUE → todo OK, reintentar OAuth. Si alguno FALSE → SQL específico para crear lo faltante.
 
+### Update 2026-05-29: 4 TRUE confirmados + count=0 sigue → logging incompleto detectado
+
+Founder corrió SQL diagnóstico: los 4 valores TRUE (tablas + columna + constraint todos existen). Reintentó OAuth → mismo `validation_error`. Visitó debug → mismo `count: 0`.
+
+**Diagnóstico nuevo**: el error se devuelve como `validation_error` pero NO se guarda en `marketplace_sync_errors`. Auditoría del código reveló que `exchangeCodeForTokens` tiene **3 branches que devuelven error pero NO logueaban a DB**:
+
+1. **Zod fail** (línea ~100): response 200 OK pero shape inesperado → devuelve `validation_error` sin log.
+2. **JSON parse fail** (línea ~92): response no es JSON parseable → devuelve `unknown` sin log.
+3. **Upsert fail** (línea ~119): exchange OK pero DB insert falla → devuelve `unknown` sin log.
+
+El branch que SÍ loguea es `response.status === 400`. Si ML responde 200 OK pero con error JSON en formato distinto al esperado, cae al Zod fail branch.
+
+**Fix aplicado (commit `c2b951f`)**: agregado `await logMLSyncError({stage: 'zod_validation', received_json, zod_errors})` en los 3 branches. Particularmente útil el `received_json` en el branch Zod — va a mostrar el body crudo que devuelve ML.
+
+**Riesgo conocido**: `received_json` puede contener tokens parciales si ML cambió el shape. Marcado TODO para remover ese campo específico antes de Sprint 3 estable.
+
+**Pendiente founder**: reintentar OAuth post-redeploy + revisar `/api/ml/debug-last-error`. Ahora SÍ debería aparecer un error con `stage: 'zod_validation'` (probable) + `received_json` con la causa.
+
 ---
 
 ## Status anterior

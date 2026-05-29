@@ -14,7 +14,10 @@ import { z } from 'zod';
 
 export const oauthTokenResponseSchema = z.object({
   access_token: z.string().min(1),
-  token_type: z.literal('bearer'),
+  // OAuth 2.0 RFC 6749 dice "bearer" en lower-case ABNF, pero ML devuelve
+  // "Bearer" con B mayúscula (también válido por convención HTTP Authorization
+  // header). Aceptamos cualquier capitalización.
+  token_type: z.string().regex(/^bearer$/i, 'token_type debe ser bearer (case-insensitive)'),
   expires_in: z.number().int().positive(),
   scope: z.string(),
   user_id: z.number().int().positive(),
