@@ -135,6 +135,20 @@ export function BrandCatalogPage({
         )}
       </RevealOnScroll>
 
+      {brand.seo_intro && (
+        <RevealOnScroll
+          as="section"
+          aria-label={`Sobre los anteojos ${brand.name}`}
+          className="text-muted-foreground mb-12 max-w-3xl space-y-4 text-base leading-relaxed md:text-lg"
+        >
+          {brand.seo_intro.split('\n\n').map((paragraph, idx) => (
+            <p key={idx} className="whitespace-pre-line">
+              {paragraph}
+            </p>
+          ))}
+        </RevealOnScroll>
+      )}
+
       <BrandStorySection brandSlug={brand.slug} brandName={brand.name} />
 
       {items.length === 0 ? (
@@ -173,6 +187,16 @@ export function BrandCatalogPage({
           <div className="mt-6 max-w-3xl">
             <FaqAccordion items={brandFaqs} />
           </div>
+        </RevealOnScroll>
+      )}
+
+      {brand.seo_outro && (
+        <RevealOnScroll
+          as="section"
+          aria-label={`Más información sobre ${brand.name}`}
+          className="text-muted-foreground mt-16 max-w-3xl text-sm leading-relaxed md:mt-20 md:text-base"
+        >
+          <p className="whitespace-pre-line">{brand.seo_outro}</p>
         </RevealOnScroll>
       )}
     </main>

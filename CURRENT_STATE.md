@@ -2,6 +2,8 @@
 
 ## Status
 
+✅ **Sprint Texto SEO por marca CERRADO** (2026-05-29). Renderiza intro extenso (150-300 palabras) y outro (80-150 palabras) en `/anteojos-de-{sol,receta}/[brand]` para mejorar profundidad semántica + keyword coverage. Migración + seed listos en `supabase/cloud-bootstrap.sql` — **pendiente que founder los aplique al cloud via Dashboard SQL Editor**.
+
 ✅ **Sprint SEO+ CERRADO** (2026-05-29). 3 quick wins del backlog para mejorar rich results en Google:
 - **FAQPage JSON-LD** en `/anteojos-de-sol/[brand]` y `/anteojos-de-receta/[brand]` (5 FAQs específicas por marca en `lib/content/brand-faqs.ts` + sección visible con `FaqAccordion`).
 - **AggregateOffer JSON-LD** en `/anteojos-de-sol` y `/anteojos-de-receta` con `priceRange` (min/max basado en variantes activas con stock real).

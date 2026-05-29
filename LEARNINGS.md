@@ -22,6 +22,33 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Texto SEO largo en columnas DB, no hardcoded en componente
+
+**Categoría**: SEO / Arquitectura de contenido
+**Confianza**: 🟢 Alta
+
+### Qué funcionó
+
+Para los textos SEO largos por marca (150-300 palabras), usé columnas en `brands` table (`seo_intro`, `seo_outro` TEXT nullable) en vez de hardcodearlos en TypeScript/Markdown del repo. Razones:
+
+- **Editable sin redeploy**: founder o yo puedo updatear texto via SQL Editor sin commit/push/build/deploy.
+- **No infla el bundle**: el texto vive en DB, se trae con la query que ya hace la página de marca, no aumenta el JS shipped al cliente.
+- **Idiomático con el resto del catálogo**: brands ya tiene `description`, `meta_title`, `meta_description` — agregar 2 columnas TEXT extiende el patrón existente, no introduce uno nuevo.
+- **Nullable**: si la marca no tiene texto cargado, la sección no se renderiza (mejor que mostrar placeholder).
+
+### Por qué funcionó
+
+Alternativa rechazada: tener `lib/content/brand-seo-text.ts` con un objeto `{ rusty: { intro, outro }, vulk: {...} }`. Eso:
+- Requiere redeploy para editar 1 párrafo.
+- Acopla "data dinámica" (texto que cambia) con "código" (que rara vez cambia).
+- Hace que un copy editor no técnico no pueda updatearlo solo.
+
+### Cuándo aplicar
+
+- Cualquier contenido editorial que pueda variar por entidad (marca, categoría, producto, autor).
+- Cuando esperás que el founder o un editor no técnico quiera updatearlo sin tocar código.
+- NO aplicar para texto verdaderamente fijo de UI (labels, etc) — eso sí va hardcoded.
+
 ## 2026-05-29 — FAQ schema por marca: específico, no genérico (regla Google)
 
 **Categoría**: SEO / Structured data

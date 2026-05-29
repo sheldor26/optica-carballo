@@ -14,7 +14,12 @@ export type BrandPageData = {
   description: string | null;
   is_argentine: boolean;
   logo_url: string | null;
+  seo_intro: string | null;
+  seo_outro: string | null;
 };
+
+const BRAND_PAGE_SELECT =
+  'id, slug, name, description, is_argentine, logo_url, seo_intro, seo_outro';
 
 export type ProductCardSource = {
   slug: string;
@@ -112,7 +117,7 @@ export async function fetchBrandPage(
 
   const { data: brand } = await supabase
     .from('brands')
-    .select('id, slug, name, description, is_argentine, logo_url')
+    .select(BRAND_PAGE_SELECT)
     .eq('slug', brandSlug)
     .eq('is_active', true)
     .maybeSingle()
@@ -172,7 +177,7 @@ export async function fetchBrandPageByGender(args: {
 
   const { data: brand } = await supabase
     .from('brands')
-    .select('id, slug, name, description, is_argentine, logo_url')
+    .select(BRAND_PAGE_SELECT)
     .eq('slug', args.brandSlug)
     .eq('is_active', true)
     .maybeSingle()
@@ -234,7 +239,7 @@ export async function fetchBrandPageByFilter(args: {
 
   const { data: brand } = await supabase
     .from('brands')
-    .select('id, slug, name, description, is_argentine, logo_url')
+    .select(BRAND_PAGE_SELECT)
     .eq('slug', args.brandSlug)
     .eq('is_active', true)
     .maybeSingle()

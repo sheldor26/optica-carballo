@@ -101,9 +101,6 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 - [ ] **Migrar `pnpm lint`** a la CLI nueva de ESLint (Next 15 deprecó
   `next lint`, en Next 16 se elimina). Comando: `npx @next/codemod@canary
   next-lint-to-eslint-cli .`. No urgente — sigue funcionando bien.
-- [ ] **Texto SEO 150-300 palabras por marca** en `/anteojos-de-sol/[brand]`.
-  Requiere ALTER TABLE para agregar `brands.seo_intro` y `brands.seo_outro`.
-  Sub-feature de mejora de SEO (seo-strategist lo sugirió en ese momento).
 - [ ] **`engines.npm` en package.json** para que falle si alguien usa
   npm en vez de pnpm. Ya hay `packageManager` field, pero engines.npm con
   versión inexistente sería más explícito.
@@ -125,6 +122,7 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## ✅ Hecho
 
+- 2026-05-29: Texto SEO extenso por marca (`brands.seo_intro` 150-300 palabras + `seo_outro` 80-150 palabras). Migración + seed listos para aplicar al cloud. Renderizado en `BrandCatalogPage` (intro arriba, outro al pie).
 - 2026-05-29 (commit pendiente sprint SEO+): `clean` script en package.json (`pnpm clean` = `rm -rf .next`).
 - 2026-05-29 (commit pendiente sprint SEO+): FAQ schema en páginas de marca (5 FAQs específicas por marca en `lib/content/brand-faqs.ts`, renderizadas con `FaqAccordion` + `FaqJsonLd`).
 - 2026-05-29 (commit pendiente sprint SEO+): AggregateOffer a nivel categoría en `/anteojos-de-sol` y `/anteojos-de-receta` (priceRange basado en variantes con stock real).
