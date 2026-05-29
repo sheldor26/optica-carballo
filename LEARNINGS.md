@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Sync real-time end-to-end requiere revalidatePath, no solo UPDATE de DB
+
+**Categoría**: Sync / Cache invalidation / Next.js ISR
+**Confianza**: 🟢 Alta (validado tras feedback "stock debe ser real-time")
+
+### Qué funcionó
+
+Sprint 2b iter 1 sincronizaba ML → DB en segundos vía webhook. Founder pidió "casi tiempo real" y noté el bloqueador: ISR cache de Next.js (`revalidate=300` en páginas de producto) mantenía la página estática con stock viejo hasta 5 min después de la actualización en DB.
+
+Solución: `revalidatePath` automático en `syncStockFromMLItem` post-UPDATE. Invalida cache de:
+- Página producto: `/{cat}/{brand}/{slug}`
+- Página marca: `/{cat}/{brand}` (muestra in_stock_count)
+- Página categoría: `/{cat}` (AggregateOffer + sub-categorías)
+
+Resultado: lag end-to-end del usuario final pasa de 5 min (DB actualizada + cache viejo) a <5 segundos (webhook + revalidate inmediato).
+
+### Por qué funcionó
+
+"Real-time" tiene 2 capas que se confunden:
+1. **Datos actualizados** (DB).
+2. **UI mostrando los datos actualizados** (frontend).
+
+Optimizar solo #1 da falso sentido de seguridad — métricas internas muestran "stock actualizado en 3 segundos" mientras el usuario ve número viejo durante 5 minutos. ISR cache es invisible en métricas de DB pero visible para el usuario.
+
+revalidatePath cierra el loop entre las 2 capas.
+
+### Cuándo aplicar
+
+- Cualquier dato que cambia en DB Y se muestra en página cacheada (ISR, SSG con revalidate, edge cache).
+- Especialmente para datos sensibles a precisión: stock, precio, status de pedido, disponibilidad.
+- NO aplicar para data verdaderamente eventual-consistent (newsletter subscribers count, page views, vistos hoy).
+
+### Trade-off documentado
+
+revalidatePath cada vez que cambia stock genera más rebuilds de página. Para volúmenes bajos-medios (decenas de updates/hora), es despreciable. Para alto volumen (cientos/hora) considerar:
+- Throttle: solo invalidar si pasó >N segundos desde la última invalidación de ese path.
+- Batch: agrupar invalidaciones por minuto.
+
 ## 2026-05-29 — Defense in depth para sync stock: webhook + cron + idempotencia + best-effort outbound
 
 **Categoría**: Integraciones / Resiliencia

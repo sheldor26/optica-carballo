@@ -41,7 +41,12 @@ Founder confirmó "Mucho mejor!" tras deploy iter 4 — fix gallery + sticky res
 - Seed `11_vulk_day_light_ml_mapping.sql`: UPDATE SKU 194185 (Carey) → MLA2726903920/SDEMI/DRWG15C3, SKU 194180 (Rosa) → MLA2726903920/LPINK/DRT25.
 - Bootstrap concatenado: 87 líneas en `supabase/cloud-bootstrap.sql`.
 
-🟡 **Sprint 2b ML SYNC BIDIRECCIONAL implementado** (2026-05-29 commit `36a3d2d`). Founder confirmó scope completo (webhook + cron + outbound) tras pregunta de sync. Implementación:
+🟡 **Sprint 2b ML SYNC BIDIRECCIONAL + REAL-TIME** (2026-05-29 commits `36a3d2d` + `27f3b37`). Founder enfatizó que stock debe ser casi tiempo real (riesgo concreto de oversell). Refactor iter 2:
+- `revalidatePath` automático en `syncStockFromMLItem` post-UPDATE: invalida cache ISR de las 3 páginas afectadas (producto, marca, categoría). Sin esto, ISR cache de 5min mostraba stock viejo aunque DB ya estuviera actualizada.
+- CRON `ml-reconcile-stock` acelerado: 6h → 1h. Si webhook falla por algún motivo, máximo lag de drift es ~1h.
+- Migration `20260529400000_marketplace_webhook_events` ✅ aplicada por founder.
+
+Implementación base (commit 36a3d2d):
 - **Inbound**: webhook real `/api/ml/webhook` con idempotencia via tabla `marketplace_webhook_events` (id PK del webhook). Procesa topic `items` con `syncStockFromMLItem(MLA)` — matchea variations por `seller_custom_field`. Otros topics → `ignored`. Responde 200 siempre.
 - **CRON backup** `/api/cron/ml-reconcile-stock` cada 6h. Loop por DISTINCT mercadolibre_item_id, reconcile stock_qty.
 - **Outbound** helper `syncVariantStockToML(variantId)` llamado post `reserve_stock` y post `revertStock` en checkout. Best-effort (errors a `marketplace_sync_errors` sin bloquear).
@@ -49,11 +54,10 @@ Founder confirmó "Mucho mejor!" tras deploy iter 4 — fix gallery + sticky res
 - `vercel.json`: cron `0 */6 * * *` para reconcile.
 
 **Acciones founder pendientes**:
-1. Aplicar migration en SQL Editor (50 líneas bootstrap).
-2. Configurar webhook en ML Dashboard → tu app → Notificaciones → URL `https://opticacarballo.com.ar/api/ml/webhook` + topics `items` (mínimo) y `orders_v2` (opcional).
-3. Verificar 2 crons activos en Vercel Dashboard tras deploy.
-4. Test inbound: editar stock manualmente en panel ML de MLA1432137395 → verificar en <1 min que DB refleja el cambio.
-5. Avisar "ML sync aplicado".
+1. ✅ Migration aplicada.
+2. **🔴 CRÍTICO**: Configurar webhook en ML Dashboard → tu app → Notificaciones → URL `https://opticacarballo.com.ar/api/ml/webhook` + topic `items`. SIN ESTO no hay real-time — solo el cron cada 1h sirve de backup.
+3. Verificar en Vercel Dashboard → Cron Jobs que aparecen 2 crons (check-alerts hourly + ml-reconcile-stock hourly).
+4. Test inbound real-time: editar stock manualmente de MLA1432137395 en panel ML → en <30 seg verificar con `SELECT sku, stock_qty FROM product_variants WHERE sku = '126080'` + verificar que `/anteojos-de-sol/rusty/rusty-yau` muestra el stock nuevo (revalidatePath debería invalidar).
 
 **TODO APLICADO POR FOUNDER (2026-05-29 antes de Sprint 2b)**: cleanup zombie `rusty-yau-polarizado` + migration ML multi-variation + mapping Vulk Day Light. Registrado en `supabase/CLOUD_APPLIED.md`.
 
