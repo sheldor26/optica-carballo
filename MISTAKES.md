@@ -285,6 +285,18 @@ Esta es la red de seguridad funcionando. Bien. Pero la regla anterior decía "no
 
 ---
 
+## 2026-05-28 — Sin mistake en este turno (rediseño minimal del catálogo implementado con decisiones explícitas)
+
+Aplicación de regla v4. Este turno fue implementación del rediseño minimal tras "push" del founder como aprobación. Decisiones técnicas explícitas (sin marca en nombre, aspect-[4/3], grid con más spacing) documentadas en CURRENT_STATE + LEARNINGS. Sin error de proceso, sin anti-pattern.
+
+---
+
+## 2026-05-28 — Sin mistake en este turno (respuesta a pregunta exploratoria del founder con opinión + tradeoff + clarificación)
+
+Aplicación de regla v4. Este turno fue respuesta a referencia visual del founder ("qué te parece de hacer así los catálogos?"). Apliqué correctamente la regla de exploratory questions de Claude Code (NO implementar hasta confirmación). Sin error de proceso. Sin anti-pattern.
+
+---
+
 ## 2026-05-28 — Sin mistake en este turno (hover crossfade implementado limpiamente)
 
 Aplicación de regla v4. Este turno fue implementación de feature de hover crossfade con decisión técnica explícita (NO combinar scale + crossfade) que se documentó como learning. Sin error de proceso. Sin anti-pattern.

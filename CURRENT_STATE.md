@@ -2,7 +2,47 @@
 
 ## Status
 
-🟡 **Hover crossfade en product cards (catalog + related products) — pendiente push**
+🟡 **Rediseño minimal del catálogo (ProductCard + RelatedCard) — implementado, pendiente push y verificación**
+
+Founder confirmó "push" tras ver mi propuesta. Decisiones tomadas:
+- **Sin marca en el nombre**: la URL ya está scopeada por marca, sería redundante.
+- **Aspect ratio**: `4/3` (coherente con foto del Vulk).
+- **Tipografía**: nombre `uppercase tracking-[0.15em] text-sm font-normal`, precio `text-sm tabular-nums text-muted-foreground`.
+
+**Cambios aplicados**:
+- `components/product/product-card.tsx`: rewrite completo. Removido `Card`, `CardHeader`, `CardContent`, `CardFooter`, `CardTitle`, `ArrowRight`. Reemplazado por `<article>` simple con imagen aspect-[4/3] sin border/padding interno + nombre uppercase centrado + precio debajo. "Sin stock" sutil (text-xs muted) cuando aplique.
+- `components/catalog/brand-page.tsx`: grid con más espaciado (`gap-x-6 gap-y-12` mobile → `gap-x-10 gap-y-20` desktop) + columnas reducidas a 2/3 (antes 1/2/3/4) para que las fotos sean más grandes. `h-full` propagado en RevealOnScroll para simetría.
+- `components/product/related-products.tsx`: `RelatedCard` mismo tratamiento minimal. Brand mantiene visibilidad (es contexto distinto: similar products pueden ser de otras marcas). Eliminados imports de `Card*`.
+- Mantenidos: crossfade entre primary y secondary image al hover (mismo patrón anterior), reveal on scroll, lógica de stock.
+
+**Decisiones técnicas**:
+- **No reutilicé Card del design system de shadcn**: las cards minimalistas no son cards en sentido convencional (sin contenedor visual), un componente nuevo no aporta. `<article>` semánticamente correcto.
+- **Mantener fallback de scale para productos con 1 sola imagen**: si no hay 2da foto, el scale 1.04 sigue dando feedback al hover. Compatible con productos viejos del catálogo.
+- **Mantener brand visible en RelatedCard pero no en ProductCard**: contextualmente distintos. En catálogo de marca, todos son de la misma marca; en related products, pueden ser de marcas diferentes.
+
+**Build verde, typecheck verde**.
+
+**Próximo paso**: push + verificación visual del founder.
+
+
+
+Founder pasó screenshot de catálogo estilo Acne Studios / Cartier: sin Card wrapper, sin border/shadow/padding visible, imagen grande aspect-square o 4/3 sobre fondo blanco directo, solo nombre uppercase tracking-wider + precio debajo centrados, "sin stock" sutil. Mantiene el crossfade al hover.
+
+**Tradeoff registrado**: perdemos descripción corta + indicador visual de stock en listado, ganamos premium feel + jerarquía clara (foto = protagonista).
+
+**Cambios propuestos al founder**:
+- Eliminar `Card` wrapper completo.
+- Imagen aspect-square o 4/3 sin border interno.
+- Solo nombre uppercase + precio, centrados.
+- "Sin stock" gris sutil debajo del precio (no badge).
+- Mantener crossfade.
+- Mismo tratamiento en `RelatedProducts` para coherencia.
+
+**Pregunta abierta al founder**: ¿incluir marca en el nombre o no? El catálogo ya está filtrado por marca, podríamos dejar solo el modelo ("Day Light" en vez de "Vulk Day Light") para más limpieza.
+
+**Próximo paso**: esperar respuesta del founder. Si confirma → implementar. Si quiere ajustes → tunear el approach.
+
+
 
 Founder pidió patrón clásico de óptica/moda: al hover sobre una card de producto en `/anteojos-de-sol/{brand}`, la imagen cambia automáticamente a la 2da imagen del producto. Referencia: `opticaslookout.com.ar/collections/sol`.
 

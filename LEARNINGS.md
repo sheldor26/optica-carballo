@@ -22,6 +22,113 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-28 — "Sin Card wrapper" estilo Acne/Cartier requiere `<article>` semántico + grid con más spacing, no solo quitar el border
+
+**Categoría**: UI/UX / Diseño minimal / Adaptación de patrones premium
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente confirmar)
+
+### Qué pasó
+
+Implementé el rediseño minimal del catálogo siguiendo la referencia del founder (Acne Studios / Cartier-style). El cambio NO fue solo "sacar el border y la sombra" — eso hubiera dejado un layout claustrofóbico con productos pegados unos a otros.
+
+Cambios necesarios para que el efecto "premium minimal" funcione realmente:
+
+1. **Reemplazar `<Card>` con `<article>`**: semánticamente correcto y sin sobreescribir estilos heredados de shadcn.
+2. **Eliminar CardHeader/Content/Footer**: estos imponen padding interno que no encaja con el approach minimal.
+3. **Más spacing en el grid**: pasar de `gap-4` a `gap-y-12 md:gap-y-20`. El "aire" entre productos ES parte del estilo minimal.
+4. **Reducir columnas**: de 4 columnas máximo a 3. Las fotos son más grandes, hay mejor jerarquía visual.
+5. **Tipografía uppercase tracking-wide**: el nombre del producto se vuelve "label" más que "título". Combinado con el centrado debajo de la foto, da onda "etiqueta de boutique".
+6. **Eliminar arrows, badges, descripciones**: cualquier elemento que compita por la atención con la foto.
+
+### Por qué no es "solo quitar el wrapper"
+
+Un Card típico (border + shadow + padding) **compensa** la falta de spacing entre cards. Cuando lo sacás, la falta de spacing queda expuesta. Por eso minimal sin más spacing se ve "apretado", no "premium".
+
+Patrón meta: **estilos premium minimalistas no son "menos elementos", son "más relaciones espaciales bien calibradas"**. El aire es parte del diseño, no su ausencia.
+
+### Cómo replicar
+
+Para CUALQUIER componente que se quiera transformar de "card tradicional" a "minimal editorial":
+
+1. **Remover el contenedor visual** (border/shadow/bg).
+2. **Aumentar spacing del grid** parent por 2-3x (de `gap-4` a `gap-y-12 md:gap-y-20`).
+3. **Reducir densidad de columnas** (de 4 a 3, de 6 a 4).
+4. **Limpiar elementos secundarios** (description, badges, arrows, footer separator).
+5. **Convertir título a label**: uppercase + tracking-wider + font-normal (no bold).
+6. **Centrar contenido**: alinear texto debajo de la imagen al centro horizontal.
+7. **Asegurar contexto fuera del card**: si se quita descripción/marca, asegurarse que el contexto está en el header de la página o URL.
+
+### Anti-patrón a evitar
+
+- Quitar Card sin aumentar spacing → claustrofóbico.
+- Quitar Card pero mantener 4 columnas → fotos diminutas, peor que antes.
+- Mantener título en font-bold text-base → grita más que la foto, rompe la jerarquía.
+- Eliminar TODA la info (precio, stock) → user no sabe si puede comprar.
+
+### Próxima vez aplicar a
+
+- Galerías de fotos del local físico (cuando se agreguen).
+- Listado de marcas si se decide rediseñar también (`/anteojos-de-sol`).
+- Bento grid de productos featured en home (si se implementa a futuro).
+- Cards de blog/artículos si se agrega contenido editorial.
+
+---
+
+## 2026-05-28 — Cuando founder pasa referencia visual con "qué te parece?", responder con opinión + tradeoff + preguntas que clarifican ANTES de implementar
+
+**Categoría**: Comunicación / Decisiones exploratorias / Prevención de re-trabajo
+**Confianza**: 🟡 Media (1 caso aplicado, pendiente confirmar)
+
+### Qué pasó
+
+Founder mostró screenshot de catálogo de la competencia con caption "que te parece de hacer asi los catalogos? mas limpios minimalistas?". Era pregunta exploratoria, NO instrucción de implementación.
+
+Apliqué la regla de Claude Code para exploratory questions:
+> "respond in 2-3 sentences with a recommendation and the main tradeoff. Present it as something the user can redirect, not a decided plan. Don't implement until the user agrees."
+
+Mi respuesta tuvo:
+1. **Opinión + razón**: "me gusta, va con la onda premium-editorial del resto del sitio".
+2. **Tradeoff principal**: "perdemos descripción corta + indicador de stock, ganamos premium feel".
+3. **Cambios concretos** que haría (lista de bullets).
+4. **Pregunta abierta clarificadora**: "¿incluir marca en el nombre o no? podríamos dejar solo el modelo".
+5. **Pedido explícito de confirmación**: "¿avanzo?".
+
+### Por qué importa
+
+- **Previene re-trabajo**: si el founder no quería exactamente lo que yo entendí, ajustamos en 1 mensaje, no en 3 commits.
+- **Captura preguntas chicas no obvias**: founder puede no haber pensado "incluir marca o no", pero como lo señalé puede decidir.
+- **Mantiene la sensación de "decisión compartida"**: founder es el dueño del producto, yo el implementador.
+
+### Cómo aplicar
+
+Cuando founder pasa:
+- Screenshot con "qué te parece" / "podríamos hacer así" / "te tira esta idea".
+- Idea conceptual sin specs concretas ("podemos agregar más onda").
+- Comparación con sitios de la competencia.
+
+NO implementar de una. Responder en 2-3 sentences con:
+1. **Opinión sintética** (gústame/no me gusta + 1 razón).
+2. **Tradeoff principal** (qué perdemos vs qué ganamos).
+3. **Cambios concretos** que vería (no como decisión final, como propuesta).
+4. **1-3 preguntas clarificadoras** sobre detalles que tendrían múltiples interpretaciones razonables.
+5. **Pedido explícito de confirmación** ("¿avanzo?").
+
+### Anti-patrón a evitar
+
+- Implementar de una sin clarificar. Si me equivoco en una decisión chica (ej "incluir marca o no"), 2 commits para corregir.
+- Responder con sí/no plano sin tradeoff. Founder no aprende qué considerar la próxima vez.
+- Hacer una decisión por mí mismo (en la implementación) en lugar de preguntarla.
+- Hacer 10 preguntas. Limitar a las MÁS impactantes (1-3).
+
+### Próxima vez aplicar a
+
+- Cuando founder pase referencias visuales para hero / page redesign.
+- Cuando proponga features sin specs ("podemos agregar comparador").
+- Cuando comparta links de sitios "queridos" como inspiración.
+- Cuando diga "se podría mejorar X" sin definir el qué.
+
+---
+
 ## 2026-05-28 — Crossfade entre 2 imágenes superpuestas como hover-state: NO combinar con scale (los efectos compiten visualmente)
 
 **Categoría**: UI/UX / Transiciones de hover / Combinación de efectos

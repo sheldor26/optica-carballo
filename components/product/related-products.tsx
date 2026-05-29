@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
@@ -34,7 +33,7 @@ export function RelatedProducts({
           Otros modelos de la misma categoría con stock disponible.
         </p>
       </RevealOnScroll>
-      <ul className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-6">
+      <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 md:gap-y-10 lg:grid-cols-6">
         {products.map((product, idx) => (
           <RevealOnScroll
             as="li"
@@ -60,59 +59,55 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
     : null;
 
   return (
-    <Link href={href} className="group block h-full">
-      <Card className="hover:border-foreground/40 flex h-full flex-col overflow-hidden transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg">
-        <CardHeader className="p-2 md:p-3">
-          <div className="bg-muted/40 relative aspect-square w-full overflow-hidden rounded-md">
-            {primaryUrl ? (
-              <>
+    <Link href={href} className="group block h-full" aria-label={`${product.brandName} ${product.name}`}>
+      <article className="flex h-full flex-col">
+        <div className="bg-background relative aspect-[4/3] w-full overflow-hidden">
+          {primaryUrl ? (
+            <>
+              <Image
+                src={primaryUrl}
+                alt=""
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                className={cn(
+                  'object-contain transition-all duration-500 ease-out',
+                  secondaryUrl
+                    ? 'group-hover:opacity-0'
+                    : 'group-hover:scale-[1.03]',
+                )}
+              />
+              {secondaryUrl && (
                 <Image
-                  src={primaryUrl}
-                  alt={product.name}
+                  src={secondaryUrl}
+                  alt=""
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                  className={cn(
-                    'object-contain transition-all duration-500 ease-out',
-                    secondaryUrl
-                      ? 'group-hover:opacity-0'
-                      : 'group-hover:scale-[1.03]',
-                  )}
+                  className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
                 />
-                {secondaryUrl && (
-                  <Image
-                    src={secondaryUrl}
-                    alt=""
-                    fill
-                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                    className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
-                  />
-                )}
-              </>
-            ) : (
-              <div className="text-muted-foreground flex h-full items-center justify-center text-[10px]">
-                Foto pendiente
-              </div>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="flex-1 px-3 pb-1 pt-0">
-          <p className="text-muted-foreground text-[10px] font-medium uppercase tracking-wider">
+              )}
+            </>
+          ) : (
+            <div className="text-muted-foreground flex h-full items-center justify-center text-[10px]">
+              Foto pendiente
+            </div>
+          )}
+        </div>
+        <div className="mt-3 flex flex-1 flex-col items-center gap-0.5 text-center">
+          <p className="text-muted-foreground/80 text-[10px] font-medium uppercase tracking-[0.18em]">
             {product.brandName}
           </p>
-          <p className="text-foreground mt-0.5 line-clamp-2 text-sm font-medium leading-tight">
+          <h3 className="text-foreground text-xs font-normal uppercase tracking-[0.12em] line-clamp-2 leading-tight">
             {product.name}
-          </p>
-        </CardContent>
-        <CardFooter className="px-3 pb-3 pt-1">
+          </h3>
           {product.minPriceCents !== null ? (
-            <p className="text-foreground text-sm font-semibold">
+            <p className="text-muted-foreground mt-1 text-xs tabular-nums">
               {formatPriceCents(product.minPriceCents)}
             </p>
           ) : (
-            <p className="text-muted-foreground text-xs">Sin stock</p>
+            <p className="text-muted-foreground/70 mt-1 text-xs">Sin stock</p>
           )}
-        </CardFooter>
-      </Card>
+        </div>
+      </article>
     </Link>
   );
 }

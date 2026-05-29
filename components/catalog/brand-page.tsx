@@ -130,10 +130,10 @@ export function BrandCatalogPage({
       ) : (
         <section
           aria-label={`Productos de ${brand.name} en ${category.name.toLowerCase()}`}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          className="grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20"
         >
           {items.map((item, idx) => (
-            <RevealOnScroll key={item.slug} delay={60 * idx}>
+            <RevealOnScroll key={item.slug} delay={60 * idx} className="h-full">
               <ProductCard product={item} />
             </RevealOnScroll>
           ))}
