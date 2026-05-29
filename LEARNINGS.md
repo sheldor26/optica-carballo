@@ -22,6 +22,35 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Aspect ratio del contenedor debe matchear el aspect ratio de la data, no la convención
+
+**Categoría**: UI / Aspect ratio / Iteración con feedback de data real
+**Confianza**: 🟢 Alta (validado tras iter 4 del product page)
+
+### Qué funcionó
+
+Tras 3 iteraciones intentando agrandar la foto (reducir padding p-20 → p-8 → p-4 → p-2), founder seguía viendo la foto chica. Recién en iter 4 vi: el contenedor era `aspect-square` (1:1) pero las fotos del founder eran 1500x1000 (3:2 horizontal). Con `object-contain`, la foto se centra dentro del cuadrado y deja barras vacías arriba/abajo del 33% del alto cada una. No importa cuánto reduzcas el padding, la barra vacía sigue ahí.
+
+Fix: `aspect-[3/2]` matchea la foto real → 100% del contenedor ocupado por la foto.
+
+### Por qué pasaron 3 iteraciones sin verlo
+
+Asumí "aspect-square es estándar para producto" (Amazon, ML, etc usan cuadrado). Pero esas tiendas tienen fotos cuadradas o cuadran las fotos antes de subirlas. Las fotos del founder vienen 3:2 porque son fotos profesionales con composición horizontal.
+
+Bias de "default web estándar". El default web no es universal — depende de qué data real tenés.
+
+### Regla preventiva
+
+Cuando elijas aspect ratio para contenedor de imagen/video:
+1. **Calcular el ratio promedio de las fuentes de data reales**. Si tenés 10 productos con fotos, qué ratios tienen.
+2. **No copiar "lo que hace Amazon"** sin verificar que tus fotos tengan el mismo ratio.
+3. Si los ratios son inconsistentes, considerar: (a) normalizar uploads (pedir al uploader cropear a un ratio fijo), (b) usar `object-cover` que llena el contenedor cortando lo que no entra, (c) aceptar barras vacías como costo.
+
+### Cuándo aplicar
+
+- Cualquier UI con contenedor de imagen donde la foto NO la genera el sitio (UGC, importada, fotos del fabricante).
+- Especialmente cuando el feedback recurrente es "se ve chica" pese a reducciones de padding/spacing — pista clara de mismatch de aspect ratio.
+
 ## 2026-05-29 — Refactor estructural > sucesivos parches cuando el problema es del layout, no del componente
 
 **Categoría**: UI / Layout structure / Iteración

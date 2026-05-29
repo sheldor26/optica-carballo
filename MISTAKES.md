@@ -24,6 +24,39 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — 3 iteraciones de PADDING cuando el problema era el aspect ratio del contenedor
+
+**Estado**: ✅ Cerrado — fix en iter 4 (aspect-square → aspect-[3/2] + sticky).
+**Categoría**: Diagnóstico / Sesgo
+
+### Qué pasó
+
+Founder reportó "foto se ve chica" tras Rusty Yau import. Iter 1: padding p-20 → p-8 (reduje 60%). Founder: sigue chica. Iter 2: pasar al sidebar cross-sell (fix lateral). Founder: sigue el problema. Iter 3: refactor estructural + padding p-8 → p-2 (reduje 80% del original). Founder: "sigue del mismo tamaño + bloque blanco MÁS GRANDE".
+
+Recién al ver la captura con TRES intentos fallidos abstraje: si reducir padding al casi-cero no agranda la foto, el problema NO ES PADDING. Inspeccioné dimensions: fotos 1500x1000 (3:2), contenedor aspect-square (1:1) — con `object-contain` la foto deja 33% de barras vacías. **3 iteraciones reduciendo padding no afectaban las barras vacías** porque son del object-contain interno, no del padding del contenedor.
+
+### Causa raíz
+
+Sesgo "ya probé X (padding), ajustemos X". Cada iter optimicé padding sin cuestionar la premisa de aspect-square. Founder feedback consistente debió haberme alertado iter 2, no iter 4.
+
+### Combinación tóxica de 2 sesgos del mismo día
+
+- **Sesgo del MISTAKE anterior**: "cross-sell sidebar no funciona, ajusto" → 2 iteraciones perdidas.
+- **Sesgo de este MISTAKE**: "padding no resuelve, reduzco más" → 3 iteraciones perdidas.
+- Mismo meta-patrón en ambos casos: cuando el feedback no cambia tras un fix, la solución probablemente no es la que estoy iterando.
+
+### Regla preventiva (refuerza la del MISTAKE anterior)
+
+Si en una sesión llevás 2-3 iteraciones del mismo file con el mismo problema reportado por el founder:
+
+1. **Sospechar de la premisa fundamental** del approach. No optimizar más.
+2. **Ver con qué datos concretos está trabajando el usuario** (foto real, screenshot, dimensiones). Frecuentemente el problema está en la diferencia entre tu modelo mental y la realidad de la data.
+3. **Inspeccionar el output renderizado pixel a pixel** si tenés acceso. La captura del founder mostraba la foto centrada con barras vacías arriba/abajo claras — debería haberlo visto iter 1.
+
+### Fix aplicado
+
+Commit `9bd9f3b`: `aspect-square` → `aspect-[3/2]` (foto ocupa 100% del contenedor) + `md:sticky md:top-20` (gallery sigue scroll, elimina sensación de bloque blanco abajo).
+
 ## 2026-05-29 — 2 iteraciones del MISMO componente sin cuestionar la premisa estructural
 
 **Estado**: ✅ Cerrado — refactor estructural en iter 3 (eliminado sidebar + ProductIncludes a col derecha).

@@ -24,14 +24,17 @@ Founder confirmó que MLA1432137395 ES de OPTICACARBALLO. El 404 de `/items/{id}
 - Modelo decodificado de ML: MBLK/S10 POL YELLOW = MBLK (negro mate, variante) + S10/POL (gris oscuro polarizado, par principal) + YELLOW (amarillas, común a todas las variantes).
 - Bootstrap regenerado: 197 líneas. Path bucket: `rusty-yau/` (NO `rusty-yau-polarizado/`).
 
-**Refactor estructural product-page iter 3** (2026-05-29 commit `5752a61`). Iter 1 (sumar sidebar cross-sell) y iter 2 (sidebar compacto) no resolvieron — sidebar SIEMPRE va a romper el balance del grid porque su altura no matchea la columna izquierda. Solución estructural:
-- ELIMINADO `RelatedProductsSidebar` (cross-sell sigue accesible en grid full-width al pie).
-- `ProductIncludes` ("Lo que incluye tu compra") movido de col izquierda a col DERECHA (debajo de medidas, antes de WhatsApp).
-- Grid simplificado: `md:grid-rows-[auto_1fr] + row-span-2` → `md:items-start`.
-- Col izquierda: solo gallery. Col derecha: info + ficha + medidas + incluye + CTA (alta).
-- Foto +50% más grande: gallery padding `p-4/6/8` → `p-2/3/4` (foto ocupa ~90% del cuadrado).
+**Refactor gallery iter 4** (2026-05-29 commit `9bd9f3b`). Founder confirmó tras iter 3: "imagen sigue del mismo tamaño + bloque blanco cada vez más grande". Causa raíz REAL (no era padding):
+- Fotos del founder son **1500x1000 (3:2 horizontal)**, contenedor era `aspect-square` → con object-contain, foto ocupaba solo 66% del alto del contenedor (33% en barras vacías arriba/abajo).
+- Col izquierda (solo gallery ~600px) vs col derecha (info+ficha+medidas+incluye+CTA ~1200px) = bloque blanco enorme abajo izquierda.
 
-Próximo paso: founder verifica en `/anteojos-de-sol/rusty/rusty-yau` tras deploy del commit `5752a61`. Esperamos: foto grande, NO más bloque blanco, "Lo que incluye" en col derecha.
+Fixes iter 4:
+- `aspect-square` → `aspect-[3/2]`: foto ocupa 100% del contenedor (sensación +33%).
+- `md:sticky md:top-20` en el wrapper del gallery: la gallery sigue al scroll del usuario mientras lee info derecha — elimina sensación de vacío.
+
+Tradeoff: 3ra imagen (medidas, 1500x1500 cuadrada) queda con barras laterales cuando se selecciona. Aceptable — es esquema técnico, no foto principal.
+
+Próximo paso: founder verifica en `/anteojos-de-sol/rusty/rusty-yau` tras deploy commit `9bd9f3b`.
 
 GAP único restante (no bloqueante): `weight_grams` para UPDATE simple.
 
