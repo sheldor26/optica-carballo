@@ -22,6 +22,53 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Endpoint diagnóstico con pre/post + recent events + hints discriminatorios
+
+**Categoría**: Observabilidad / Debug endpoints
+**Confianza**: 🟢 Alta (validado para diagnosticar drift de stock)
+
+### Qué funcionó
+
+Founder reportó "bajé stock en ML pero no impactó en sitio". 3 causas posibles, todas con síntomas idénticos al ojo del founder. Endpoint diagnóstico `/api/admin/ml-force-sync/[mlItemId]` que en un solo JSON devuelve:
+
+1. **State pre** del sistema (variantes con stock_qty antes de force sync).
+2. **Acción** ejecutada (force sync bypass webhook).
+3. **State post** (variantes con stock_qty después).
+4. **Eventos relacionados** (últimos 5 webhooks recibidos para ese MLA).
+5. **Diagnosis hints** human-readable: "Si X entonces problema en Y, mirá Z".
+
+Esto permite al founder no-técnico mandarme un solo JSON y yo identifico la causa exacta sin necesidad de ping-pong de "y ahora mirá esto otro".
+
+### Por qué funcionó
+
+3 causas con MISMO síntoma para el usuario:
+- Webhook no configurado → ningún evento llega.
+- Webhook configurado pero procesamiento falla → eventos con status=failed.
+- ML reporta el mismo stock (cambio no se guardó) → events OK pero sync.skipped > 0.
+
+Un endpoint que mide cada una en respuesta única elimina la necesidad de check separados por SQL/logs/etc. Diagnosis hints en respuesta convierte raw data en acción concreta para el founder.
+
+### Cuándo aplicar
+
+- Bugs reportados por usuario donde hay 3+ causas posibles con síntoma idéntico.
+- Sistemas con múltiples capas (webhook + DB + cache + UI) — el bug puede estar en cualquiera.
+- NO aplicar para bugs con causa única obvia — overkill.
+
+### Patrón replicable
+
+Shape de endpoint debug:
+```
+{
+  pre: <estado antes>,
+  action_result: <qué intentó hacer>,
+  post: <estado después>,
+  recent_related_events: <últimos N eventos relacionados>,
+  diagnosis_hints: { case_A: "...", case_B: "...", case_C: "..." }
+}
+```
+
+Aplicar a futuros debugs (MP webhook drift, Andreani tracking, etc).
+
 ## 2026-05-29 — Sync real-time end-to-end requiere revalidatePath, no solo UPDATE de DB
 
 **Categoría**: Sync / Cache invalidation / Next.js ISR

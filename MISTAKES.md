@@ -24,6 +24,40 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Acción crítica para founder marcada en mensaje largo en lugar de bloqueante explícito
+
+**Estado**: 🟡 Mitigado — detectado tras founder reportó drift, agregué endpoint de diagnóstico.
+**Categoría**: UX de comunicación con founder no-técnico
+
+### Qué pasó
+
+Sprint 2b iter 2 entregó: webhook + cron + revalidatePath. Mensaje al founder marcó "🔴 CRÍTICO: configurar webhook en panel ML" como una de 4 acciones. El founder leyó el mensaje, aplicó la migration (paso 1), tal vez vio el paso 2 pero NO lo ejecutó.
+
+Founder después reportó "Bajé stock pero no impactó en sitio" — síntoma esperado si el paso 2 no se hizo, porque sin webhook configurado en ML, el sync solo corre via cron horario (próximo en hasta 60 min) y el revalidatePath nunca se dispara.
+
+Yo asumí que el "🔴 CRÍTICO" era suficiente alerta. No fue.
+
+### Causa raíz
+
+Dos issues combinados:
+
+1. **Información crítica enterrada en mensaje largo**: Mi mensaje tenía 4 acciones + 4 archivos modificados + commits + comandos SQL + explicaciones técnicas. "🔴 CRÍTICO" se perdió entre el ruido.
+
+2. **No bloqueé la sesión esperando confirmación de la acción crítica**: cerré la sesión normalmente esperando "ML sync aplicado". El founder tenía permiso implícito de aplicar parcial y moverse a otra cosa.
+
+### Regla preventiva
+
+Para acciones DEL FOUNDER que son prerequisito de funcionalidad real-time / crítica:
+
+1. **Mensaje aparte** (no mezclado con otros pasos): "ANTES de hacer cualquier otra cosa, hacé X. Avisame cuando lo hagas".
+2. **AskUserQuestion con opciones de status**: "¿Configuraste el webhook? [Sí ya está / No todavía / No sé cómo]". Fuerza confirmación explícita.
+3. **NO declarar "sesión cerrada"** hasta confirmación de la acción crítica si era prerequisito.
+4. Si la acción es muy crítica, hacer test post-acción inmediato (no esperar que el founder lo pruebe horas después).
+
+### Fix aplicado
+
+Endpoint admin `/api/admin/ml-force-sync/[mlItemId]` (commit `9944dce`) que diagnostica end-to-end. Tras el JSON del founder, identifico la causa exacta. Si causa #1 (webhook no configurado), proceso es: parar todo + AskUserQuestion + esperar confirmación antes de seguir.
+
 ## 2026-05-29 — Sprint 2a expuso webhook como STUB sin advertir que ML lo usaría inmediatamente al guardar la app
 
 **Estado**: ✅ Cerrado — Sprint 2b implementó procesamiento real en commit `36a3d2d`.

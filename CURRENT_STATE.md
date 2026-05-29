@@ -59,6 +59,8 @@ Implementación base (commit 36a3d2d):
 3. Verificar en Vercel Dashboard → Cron Jobs que aparecen 2 crons (check-alerts hourly + ml-reconcile-stock hourly).
 4. Test inbound real-time: editar stock manualmente de MLA1432137395 en panel ML → en <30 seg verificar con `SELECT sku, stock_qty FROM product_variants WHERE sku = '126080'` + verificar que `/anteojos-de-sol/rusty/rusty-yau` muestra el stock nuevo (revalidatePath debería invalidar).
 
+**🟡 DIAGNÓSTICO EN CURSO** (2026-05-29 commit `9944dce`). Founder reportó: "Bajé stock de variante Day Light en ML pero no impactó en sitio". Creado endpoint admin `/api/admin/ml-force-sync/[mlItemId]` que: (a) ejecuta `syncStockFromMLItem` manualmente bypass webhook, (b) devuelve estado pre/post de las variantes, (c) lista últimos 5 webhooks recibidos para ese MLA, (d) incluye `diagnosis_hints` human-readable. Próximo paso: founder abre `https://opticacarballo.com.ar/api/admin/ml-force-sync/MLA2726903920` y pasa JSON. Diagnóstico esperado: si webhook no llegó → falta config en panel ML; si llegó pero status=failed → bug procesamiento; si force sync no cambia nada → ML reporta mismo stock que DB (cambio no se guardó en panel ML).
+
 **TODO APLICADO POR FOUNDER (2026-05-29 antes de Sprint 2b)**: cleanup zombie `rusty-yau-polarizado` + migration ML multi-variation + mapping Vulk Day Light. Registrado en `supabase/CLOUD_APPLIED.md`.
 
 Estado actual del catálogo ML-mapped:
