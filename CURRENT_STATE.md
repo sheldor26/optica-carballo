@@ -86,6 +86,67 @@ Modal con detalles del producto al click "Vista rápida" en card del catálogo, 
 
 ---
 
+## Cierre de sesión 2026-05-29
+
+Al final del triple sprint el founder preguntó qué tipo/tamaño de foto necesita para las categorías en la landing (placeholder "Foto pendiente" en `components/home/categories-section.tsx`).
+
+**Specs entregadas al founder**:
+- Aspect ratio 16:9 (estricto).
+- 1600×900 px ideal (mínimo 1200×675).
+- WebP/AVIF, <250 KB.
+- 2 fotos coherentes (sol = exterior casual urbano; receta = indoor cotidiano).
+- Subir a bucket `brand-assets` en `home/categoria-sol.webp` y `home/categoria-receta.webp`.
+
+**Pendiente del founder**: conseguir/generar las 2 imágenes y subirlas al bucket. Cuando avise, hay que:
+1. Modificar `CategoryCard` para aceptar `imagePath: string | null`.
+2. Renderizar `<Image>` de Next con `fill` + `object-cover` + sizes responsive si hay path. Si no → mantener placeholder actual.
+3. Pasar paths desde la home (`app/(storefront)/page.tsx`).
+
+Trabajo estimado: ~10 minutos.
+
+---
+
+## /preguntas-frecuentes editorial + buscador
+
+Continuación del backlog mientras quedan pendientes del founder (migration newsletter + fotos categorías).
+
+### Lo que se agregó
+
+**FAQs nuevas** (`lib/content/faqs.ts`): de 20 → 28 items. 8 FAQs nuevas:
+- **Técnicas** (+5): fotocromáticos, blue light (honesto sobre evidencia limitada), limpieza, material acetato/metal, lentes alto índice.
+- **Receta** (+2): demora armado lentes, sin receta no se vende.
+- **Garantía** (+1): rotura accidental no cubierta + repuestos a costo servicio.
+- **Nosotros** (+1): regente matriculada (María Carlota).
+
+Copy cumple BUSINESS_POLICIES: honestidad sobre limitaciones (blue light evidencia limitada), sin claims falsos, garantía clara.
+
+**Componente nuevo** (`components/faqs/faq-search.tsx`): client component con:
+- Input search con icon Search + clear button.
+- Chips de categoría arriba (botón "Todas" + 1 por categoría con productos).
+- Filter in-memory por texto (case-insensitive en pregunta + respuesta) + categoría activa.
+- Empty state cuando no matchea + botón "limpiar filtros".
+- Animación `whileTap` en chips.
+
+**Página** (`app/(storefront)/preguntas-frecuentes/page.tsx`): refactor para usar `<FaqSearch>` en lugar de iteración server-side. Sigue siendo `revalidate: 3600` (FAQs cambian poco).
+
+### Decisiones técnicas
+
+- **Client component vs server**: server era más rápido pero no permite search/filter sin JS extra. Client + filter local es la UX correcta para 28+ items.
+- **In-memory filter (no debounced)**: 28 items, filtro trivial. Sin necesidad de useDeferredValue.
+- **Chips por categoría**: para encontrar rápido en mobile sin scroll largo.
+- **Buscador case-insensitive en pregunta + respuesta**: aumenta recall vs solo pregunta.
+- **JSON-LD `FaqPage` mantiene TODAS las FAQs**: no se filtra por categoría activa (Google ve el set completo para SEO).
+
+### Build
+
+`/preguntas-frecuentes` pasó de 2.94 kB → 4.46 kB (client component). 155 kB First Load. Aceptable trade-off vs valor UX.
+
+### Próximo paso
+
+Push + verificación visual.
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**

@@ -218,7 +218,7 @@ export const FAQS: FaqItem[] = [
   },
 
   // ===========================================================================
-  // Detalles técnicos (2 SEO-friendly)
+  // Detalles técnicos (10 SEO-friendly)
   // ===========================================================================
   {
     id: 'que-son-polarizados',
@@ -233,6 +233,81 @@ export const FAQS: FaqItem[] = [
     question: '¿Las lentes filtran rayos UV?',
     answer:
       'Todas las lentes que vendemos tienen filtro UV400, que bloquea el 100% de los rayos UVA y UVB. Es la protección que recomienda la Organización Mundial de la Salud para evitar daño ocular por exposición al sol.',
+  },
+  {
+    id: 'fotocromaticos',
+    category: 'tecnicas',
+    question: '¿Qué son los lentes fotocromáticos?',
+    answer:
+      'Los lentes fotocromáticos se oscurecen automáticamente con la luz solar y se aclaran en interiores. Son útiles si no querés cambiar entre dos anteojos. La velocidad de transición y el oscurecimiento dependen de la temperatura — funcionan mejor en clima fresco que en pleno verano caluroso.',
+  },
+  {
+    id: 'blue-light',
+    category: 'tecnicas',
+    question: '¿Sirven las lentes blue light contra pantallas?',
+    answer:
+      'Las lentes con filtro blue light bloquean parcialmente la luz azul de pantallas. La evidencia científica robusta sobre que reduzcan fatiga visual digital es limitada — lo que sí ayuda al ojo es alternar foco cada 20 minutos, mantener distancia adecuada y descansar. Si te interesan, las tenemos, pero no las prometemos como "solución milagro".',
+  },
+  {
+    id: 'limpieza-lentes',
+    category: 'tecnicas',
+    question: '¿Cómo limpio mis anteojos sin rayarlos?',
+    answer:
+      'Con la franela de microfibra incluida y agua tibia con una gota de jabón neutro si es necesario. Nunca usar la remera, papel, alcohol, ni productos abrasivos. Si tienen polvo, enjuagar con agua antes de pasar la franela. La garantía no cubre rayaduras de uso por limpieza incorrecta.',
+  },
+  {
+    id: 'material-armazon',
+    category: 'tecnicas',
+    question: '¿Qué material de armazón es mejor: acetato o metal?',
+    answer:
+      'Depende del uso. El acetato es liviano, hipoalergénico, viene en muchos colores y patrones y se puede ajustar al calor. El metal (acero inoxidable, titanio) es más resistente y delgado, pero menos cómodo en climas muy fríos. No hay "mejor" universal — elegí el que te guste estéticamente y se adapte a tu cabeza.',
+  },
+  {
+    id: 'alto-indice',
+    category: 'tecnicas',
+    question: '¿Qué son las lentes de alto índice?',
+    answer:
+      'Las lentes de alto índice son más finas y livianas que las estándar para una misma graduación. Se recomiendan cuando tu graduación es elevada (a partir de +/-3 dioptrías aprox) para evitar lentes muy gruesos. Hay índices 1.60, 1.67 y 1.74 — cuanto mayor el índice, más fina la lente.',
+  },
+
+  // ===========================================================================
+  // Receta — adicionales
+  // ===========================================================================
+  {
+    id: 'demora-armado-lentes',
+    category: 'receta',
+    question: '¿Cuánto tarda el armado de lentes graduadas?',
+    answer:
+      'Una vez confirmado el pedido y recibida la receta, el armado tarda entre 5 y 15 días hábiles según el tipo de cristal y disponibilidad del laboratorio. Lentes monofocales estándar son más rápidas, multifocales personalizados pueden tardar más. Antes de empezar te confirmamos plazos por WhatsApp.',
+  },
+  {
+    id: 'sin-receta',
+    category: 'receta',
+    question: '¿Puedo comprar anteojos de receta sin tener receta?',
+    answer:
+      'No. Por ley, ningún anteojo recetado se vende sin receta válida de oftalmólogo o técnico óptico matriculado. Es por tu salud visual: una graduación incorrecta puede causar fatiga, mareos o empeorar tu visión. Si no tenés receta vigente, te recomendamos hacerte un control antes.',
+  },
+
+  // ===========================================================================
+  // Garantía — adicionales
+  // ===========================================================================
+  {
+    id: 'rotura-accidental',
+    category: 'garantia',
+    question: '¿La garantía cubre rotura accidental?',
+    answer:
+      'No, la garantía solo cubre defectos de fabricación. Las rupturas por caída, golpe o uso indebido no están cubiertas. Si rompiste un armazón nuestro, escribinos por WhatsApp — muchas veces conseguimos repuestos directo del fabricante (varillas, tornillos, etc) y podemos hacer la reparación a costo de servicio.',
+  },
+
+  // ===========================================================================
+  // Nosotros — adicionales
+  // ===========================================================================
+  {
+    id: 'regente-matriculada',
+    category: 'nosotros',
+    question: '¿Quién es la regente óptica?',
+    answer:
+      'María Carlota Carballo es la regente óptica matriculada de la óptica. Toda venta de anteojos de receta y lentes de contacto en Argentina requiere supervisión profesional matriculada — en Óptica Carballo lo respetamos a rajatabla: las recetas se revisan, los cristales se gradúan según prescripción real, y el armado final lo hace personal capacitado.',
   },
 ];
 

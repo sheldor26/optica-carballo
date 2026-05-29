@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { FaqAccordion } from '@/components/faqs/faq-accordion';
+import { FaqSearch } from '@/components/faqs/faq-search';
 import { FaqJsonLd } from '@/components/seo/faq-jsonld';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
-import { FAQS, groupFaqsByCategory } from '@/lib/content/faqs';
+import { FAQS } from '@/lib/content/faqs';
 
 const SLUG = 'preguntas-frecuentes';
 const TITLE = 'Preguntas frecuentes';
@@ -20,8 +20,6 @@ export function generateMetadata(): Metadata {
 }
 
 export default function Page() {
-  const groups = groupFaqsByCategory();
-
   return (
     <main className="container py-10 md:py-16">
       <FaqJsonLd items={FAQS} />
@@ -39,26 +37,8 @@ export default function Page() {
         </p>
       </header>
 
-      <div className="mx-auto mt-12 max-w-3xl space-y-12 md:mt-16">
-        {groups.map((group) => (
-          <section
-            key={group.category}
-            aria-labelledby={`category-${group.category}`}
-          >
-            <header className="mb-5">
-              <h2
-                id={`category-${group.category}`}
-                className="text-foreground font-serif text-2xl font-medium tracking-tight md:text-3xl"
-              >
-                {group.meta.label}
-              </h2>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {group.meta.description}
-              </p>
-            </header>
-            <FaqAccordion items={group.items} />
-          </section>
-        ))}
+      <div className="mt-12 md:mt-14">
+        <FaqSearch allItems={FAQS} />
       </div>
 
       <ContactCta />

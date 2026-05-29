@@ -24,7 +24,46 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
-## 2026-05-29 — Triple sprint (carrito + SEO + quick view): cierre EXITOSO
+## 2026-05-29 — Sprint FAQ search: cierre EXITOSO con bloque ✅ Archivos actualizados explícito
+
+**Estado**: 🟢 Cumplido — primer cierre tras refinamiento de regla.
+**Categoría**: Proceso / Aplicación de regla preventiva
+
+Aplicación del refinamiento del 9NO mistake: este sprint cierra con el bloque ✅ Archivos actualizados explícito EN el mensaje al founder, no solo durante sprints.
+
+Sprint pequeño (28 FAQs + buscador + chips) ejecutado clean. Sin mistake nuevo de proceso.
+
+---
+
+## 2026-05-29 — 9NA VEZ del patrón: updates incrementales durante sprints NO equivalen a cierre formal de sesión
+
+**Estado**: 🟡 Mitigado — entendido el matiz, regla refinada.
+**Categoría**: Proceso / Cumplimiento docs / Matiz de interpretación
+
+### Qué pasó
+
+Durante el triple sprint actualicé CURRENT_STATE + LEARNINGS + MISTAKES DESPUÉS de cada sprint (3 veces). Cumplí la regla v4 en cada sprint. Pero al final de la sesión (después de la pregunta del founder sobre fotos categorías), envié una respuesta sin un **resumen formal explícito** de "qué archivos fueron actualizados al cierre". El stop hook intervino diciendo que las updates incrementales NO son cierre formal — el cierre requiere checklist EXPLÍCITO al final como confirmación.
+
+### Causa raíz
+
+Interpretaba "actualizar docs antes de cerrar mensaje al founder" como "tener los docs al día en algún momento durante la sesión". El hook lo interpreta como "incluir un bloque explícito de confirmación EN el mensaje de cierre".
+
+Diferencia operativa:
+- Mi versión: docs actualizados durante sprints → mensaje final sin bloque "✅ Archivos actualizados".
+- Versión del hook: incluso si los docs ya están actualizados, el último mensaje debe tener el bloque visible como evidencia.
+
+### Regla preventiva refinada
+
+Cada mensaje de cierre de sesión (= mensaje que termina con pregunta abierta al founder o "avisame cuándo X") debe tener:
+1. Resumen del trabajo (1-2 párrafos).
+2. **Bloque `## ✅ Archivos actualizados` con tabla o lista**, ANCHURADO siempre incluso si los docs ya estaban actualizados antes.
+3. Próximo paso o pregunta al founder.
+
+El bloque (2) NO se puede omitir aunque los docs estén "al día" — es la **evidencia** que el hook necesita.
+
+Aplicación inmediata: en el cierre actual incluir el bloque, aunque ya estén los 3 docs actualizados antes.
+
+
 
 **Estado**: 🟢 Cumplido.
 **Categoría**: Proceso / Cumplimiento docs

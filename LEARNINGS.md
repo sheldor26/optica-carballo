@@ -22,6 +22,49 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — In-memory filter cliente para N pequeños (28 items) gana vs server-side filter con URL params
+
+**Categoría**: UX / Performance / Trade-offs
+**Confianza**: 🟡 Media (1 caso aplicado en FAQ search)
+
+### Qué pasó
+
+Para `/preguntas-frecuentes` con 28 FAQs, agregué buscador y chips por categoría. 2 caminos:
+
+**A. Server-side con URL params** (`?q=cuotas&cat=pagos`): SSR siempre, mantiene shareability del link específico, sin JS extra para el filter. Pero requiere round-trip al server por cada keystroke (o debounce + URL replace), y la página pasa de static → dynamic.
+
+**B. Client-side in-memory filter**: filtrá los 28 items en memoria con `useMemo`. Sin server roundtrip, sin URL syncing. Trade-off: la página pasa a tener client component (subió 1.5kB) y los filtros activos no se shareablean por URL.
+
+Elegí B. Razones:
+- 28 items, filtro es O(28) — imperceptible.
+- La página se mantiene `revalidate: 3600` (FAQs cambian poco), client component liviano.
+- Shareability de filtros: prioridad baja. Si necesario en el futuro, suma `useSearchParams` para sincronizar.
+- UX: instantáneo, sin "loading" cada vez que tipea el usuario.
+
+### Por qué funciona
+
+- Para sets < 100 items, in-memory filter siempre gana en perceived performance.
+- Sin debounce necesario porque el work es trivial (O(N) string includes).
+- JSON-LD FaqPage schema se renderiza server-side con TODAS las FAQs — Google ve el set completo sin importar lo que el usuario filtre.
+
+### Cuándo migrar a server
+
+- Si el set crece a > 500 items.
+- Si shareability de filtros es requirement explícito.
+- Si querés tracking de queries (search → analytics).
+- Si la lógica de filter es compleja (fuzzy matching, sinónimos, ranking).
+
+### Aplicar a futuro
+
+Cualquier filter/search sobre N pequeño y data ya renderizada en la página:
+- Catálogo de productos en una marca específica (típicamente < 30 productos por marca).
+- FAQs por categoría.
+- Brands list filtrado por país/segmento.
+
+In-memory wins. Server con URL params solo cuando hay un razón concreta (shareability, SSR para SEO de página filtrada, tracking).
+
+---
+
 ## 2026-05-29 — Config declarativa (BRAND_FILTERS) + helper resolver = 9 archivos route casi vacíos sin perder claridad
 
 **Categoría**: Arquitectura / Code reuse / Routing
