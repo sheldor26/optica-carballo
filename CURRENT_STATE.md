@@ -59,17 +59,15 @@ Implementación base (commit 36a3d2d):
 3. Verificar en Vercel Dashboard → Cron Jobs que aparecen 2 crons (check-alerts hourly + ml-reconcile-stock hourly).
 4. Test inbound real-time: editar stock manualmente de MLA1432137395 en panel ML → en <30 seg verificar con `SELECT sku, stock_qty FROM product_variants WHERE sku = '126080'` + verificar que `/anteojos-de-sol/rusty/rusty-yau` muestra el stock nuevo (revalidatePath debería invalidar).
 
-**🟡 DIAGNÓSTICO ITER 2 EN CURSO** (2026-05-29). Tras verificación en incógnito, founder confirmó que **el sitio sigue en 3 cuando debería ser menor**. Eso descarta cache del browser y revela que **ML también está reportando stock=3**.
+**🟢 BUG ENCONTRADO Y FIXEADO** (2026-05-29 commit `a632504`). Caso B confirmado: ML tiene `seller_custom_field: null` en todas las variations del Vulk Day Light. El código real va dentro del `attribute_combinations[DESIGN].value_name` con formato "CODIGO - Descripción". Nuestro código asumía siempre seller_custom_field → matching fallaba → todas las variantes skipped → DB siempre stale.
 
-3 hipótesis nuevas a verificar via endpoint `ml-find-item` para inspeccionar el array `variations[]` de ML:
+Caso real: founder bajó stock Carey de 3 a 2 en ML. Webhook procesado OK pero matching falló silenciosamente.
 
-**Caso A** — `seller_custom_field` matchea (SDEMI/DRWG15C3, LPINK/DRT25) Y `available_quantity` es 3: ML está reportando 3, el cambio en panel ML no se guardó. Founder vuelve a hacer el cambio + verifica que aparece guardado en panel ML.
+Fix: helper `getVariationCode(v)` con fallback: si seller_custom_field vacío, parsea prefijo del value_name (split por ` - `). Aplicado a inbound y outbound.
 
-**Caso B** — `seller_custom_field` NO matchea (diferente o vacío): nuestro `mercadolibre_variation_code` en DB no matchea con lo que ML guarda. Necesitamos UPDATE de las variantes con el código correcto.
+Bonus hallazgo: el listing ML tiene 4 variations (Rosa, Carey, Marrón, Negro mate), DB solo tiene 2 (Rosa + Carey). Cuando founder tenga fotos podemos sumar Marrón (0 stock ML) y Negro mate (5 stock ML).
 
-**Caso C** — `available_quantity` muestra el menor número: ML reporta bien pero sync no aplicó → bug en código.
-
-Próximo paso founder: abrir `https://opticacarballo.com.ar/api/admin/ml-find-item/MLA2726903920` y pasar las 2 entries del array `variations[]` (cada una con `seller_custom_field` y `available_quantity`).
+Próximo paso founder: tras deploy commit `a632504`, abrir `https://opticacarballo.com.ar/api/admin/ml-force-sync/MLA2726903920`. Esperamos `sync_result.updated: 1` (Carey 3→2). Después verificar en incógnito que la página del producto muestra 2 para el Carey.
 
 **TODO APLICADO POR FOUNDER (2026-05-29 antes de Sprint 2b)**: cleanup zombie `rusty-yau-polarizado` + migration ML multi-variation + mapping Vulk Day Light. Registrado en `supabase/CLOUD_APPLIED.md`.
 

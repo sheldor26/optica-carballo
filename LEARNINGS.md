@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Marketplaces guardan identificadores en N campos posibles, fallback es obligatorio
+
+**Categoría**: Integraciones / Marketplaces
+**Confianza**: 🟢 Alta (validado con bug Vulk Day Light)
+
+### Qué funcionó
+
+Tras debug, descubrí que ML guarda el código del seller en 2 lugares posibles según cómo cargó el seller:
+1. `seller_custom_field` (campo dedicado).
+2. `attribute_combinations[DESIGN].value_name` con prefijo "CODIGO - Descripción".
+
+Lo que el seller carga depende de cómo accedió al panel ML, qué wizard usó, qué versión del API. Asumir un solo campo es frágil.
+
+Solución: helper `getVariationCode(v)` que devuelve seller_custom_field si existe, fallback a parsear value_name. Single point of truth para "qué string representa la variation a nivel seller".
+
+### Por qué pasó originalmente
+
+Doc de ML menciona ambos campos pero el ejemplo más común usa `seller_custom_field`. Implementación basada en "el ejemplo principal de la doc" sin verificar contra el item real del founder.
+
+### Regla preventiva
+
+Para matchin de identifiers en integraciones:
+1. **Helper único `getXFromY(v)`** con N fallbacks en orden de preferencia. Nunca acceder directo al campo en código de business.
+2. **Fallback final que devuelva null**, no crashee. Si todos los fallbacks fallan, el caller decide (skip, error, alerta).
+3. **Logear cuál fallback se usó** (al menos en debug). Si todo el tráfico usa el fallback 2 y no el 1, eso es señal de que el campo "principal" no aplica a la realidad.
+
+### Cuándo aplicar
+
+- Cualquier integración con servicio externo donde el seller / merchant puede haber configurado el listing de N maneras (ML, Shopify, Amazon).
+- Especialmente para campos que el servicio "permite vacíos" — si permitir vacío es opción, probablemente muchos sellers lo dejan vacío.
+
+### Bonus: el bug fue silencioso por matchin fallido
+
+El sync devolvía `ok: true` con `skipped > 0`. Status del webhook era `processed`. Todos los signals indicaban "todo bien". Lo único que mostraba el problema era comparar stock_qty pre/post manualmente. Patrón: matching fallido es MÁS peligroso que error explícito porque pasa desapercibido en logs y métricas.
+
 ## 2026-05-29 — Pedir solo el subset relevante del JSON, no el JSON entero gigante
 
 **Categoría**: Comunicación con founder / Diagnóstico

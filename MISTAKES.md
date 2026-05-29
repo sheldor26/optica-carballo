@@ -24,6 +24,47 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Sync ML mateó por seller_custom_field cuando ML lo guarda como null → bug silencioso
+
+**Estado**: ✅ Cerrado — helper `getVariationCode` con fallback a `attribute_combinations[DESIGN].value_name` en commit `a632504`.
+**Categoría**: Integraciones / Matching de identifiers / Bugs silenciosos
+
+### Qué pasó
+
+Sprint 2b iter 1 mateó variations por `seller_custom_field === mercadolibre_variation_code`. Validé el patrón en abstracto con el founder (él me pasó SDEMI/DRWG15C3 y LPINK/DRT25 como códigos). No verifiqué qué campo de ML guardaba esos códigos realmente.
+
+Cuando founder bajó stock Carey de 3 a 2 en ML:
+1. ML mandó webhook ✅
+2. Webhook procesó con status 'processed' ✅
+3. `syncStockFromMLItem` corrió ✅
+4. `matched = variations.find(v => v.seller_custom_field === code)` → **undefined** porque ML tenía `seller_custom_field: null` en todas las variations.
+5. `skipped++` → no se actualizó nada.
+6. Webhook log dice "processed". sync_result dice "skipped: 2". Todo "OK" según métricas.
+
+DB seguía mostrando 3. Founder reportó "no impactó". 3 horas de debug después encontré que ML guarda el código real en `attribute_combinations[DESIGN].value_name` con prefijo "CODIGO - Desc".
+
+### Causa raíz combinada
+
+1. **Asunción no verificada**: tomé los códigos del founder + asumí que matcheaban `seller_custom_field`. Nunca llamé GET /items/{MLA} para verificar.
+2. **Matching fallido = bug silencioso**: el código diferenciaba "matched found pero stock igual" vs "matched not found" pero ambos terminaban en `skipped++` sin distinción en logs. Si hubiera loggeado "matching no encontrado para variation_code X (disponibles: [...])", lo veía en iter 1.
+
+### Regla preventiva (combina 2 lecciones)
+
+1. **Verificar shape real del payload del servicio externo** antes de modelar matching. GET un sample del recurso real + ver qué campos tienen data vs null.
+2. **Distinguir explícitamente "matching not found" de "matching OK pero sin cambio"** en logs y métricas. Son semánticamente opuestos:
+   - "No found" = problema (matching roto, schema cambió, etc).
+   - "OK sin cambio" = sano (data ya estaba consistente).
+3. **Loggear los IDs disponibles cuando no encuentra match**: futuro debug usa esos logs para identificar mismatch.
+
+### Fix aplicado
+
+Commit `a632504`: helper `getVariationCode(v)` con fallback ordered:
+1. `v.seller_custom_field` si está seteado.
+2. `v.attribute_combinations[DESIGN/COLOR].value_name.split(' - ')[0]` como fallback.
+3. null si ambos faltan.
+
+Logging en `logMLSyncError` ahora muestra `available_variation_codes` (con el getter, así muestra qué encontró ML para diagnóstico).
+
 ## 2026-05-29 — Asumí que el código de variation que pasó founder es lo que ML guarda exactamente
 
 **Estado**: 🟡 Mitigado — endpoint diagnóstico creado, esperando confirmación caso A/B/C.
