@@ -24,6 +24,73 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-29 — Export desde route file rompió build: Next.js permite SOLO handlers + configs
+
+**Estado**: 🟢 Mitigado — refactor con módulo separado en lib/.
+**Categoría**: Next.js / Build errors / Convenciones del framework
+
+### Qué pasó
+
+Al implementar OAuth flow ML, exporté `STATE_COOKIE` desde `app/api/ml/oauth/initiate/route.ts` para que el callback la pudiera reusar. Build falló con error críptico: "Route does not match the required types of a Next.js Route". El mensaje no aclara qué hicimos mal.
+
+### Causa raíz
+
+Next.js valida que route files solo exporten HTTP handlers + un set limitado de config consts (`dynamic`, `revalidate`, `runtime`, etc). Cualquier otro export rompe el contract de Route.
+
+### Regla preventiva
+
+Antes de exportar algo desde un route file, evaluar si es:
+- ✅ HTTP handler (GET, POST, etc).
+- ✅ Config const específico (`dynamic`, `revalidate`, `runtime`, etc).
+- ❌ Otra cosa → módulo separado en `lib/`.
+
+### Aplicación
+
+Creé `lib/integrations/mercadolibre/oauth-state.ts` con las constantes compartidas. Documentado también en LEARNINGS como 3era confirmación del patrón "route files contractuales".
+
+---
+
+## 2026-05-29 — replace_all en Edit tool duplicó prefijo al renombrar STATE_COOKIE → ML_OAUTH_STATE_COOKIE
+
+**Estado**: 🟡 Mitigado — refactor manual.
+**Categoría**: Tooling / Edit tool
+
+### Qué pasó
+
+Usé `Edit` con `replace_all: true` para renombrar `STATE_COOKIE` → `ML_OAUTH_STATE_COOKIE` en el callback. El tool matcheó TODAS las ocurrencias incluyendo el import que recién había agregado:
+
+```ts
+// Antes:
+import { ML_OAUTH_STATE_COOKIE } from '...';
+// ...usos de STATE_COOKIE...
+
+// Después del replace_all (BUG):
+import { ML_OAUTH_ML_OAUTH_STATE_COOKIE } from '...';
+//        ^^^^^^^ duplicado porque STATE_COOKIE está dentro de ML_OAUTH_STATE_COOKIE
+```
+
+Typecheck detectó el typo, fix manual de 1 línea.
+
+### Causa raíz
+
+`replace_all` con `old_string` que es substring del `new_string` genera duplicación cuando el archivo ya contiene el `new_string` (en este caso del import que agregué primero).
+
+### Regla preventiva
+
+Antes de `Edit` con `replace_all`:
+1. Grep las ocurrencias del `old_string` primero.
+2. Si el archivo ya contiene el `new_string` por otra razón (ej: import ya agregado) Y el `old_string` es substring → NO usar replace_all.
+3. Alternativa segura: reemplazos individuales con context único.
+
+### Alternativa estructurada
+
+Para renames de identifier:
+- Cambiar import primero.
+- Cambiar usages con context (el `=` o `(` adyacentes) en reemplazos individuales.
+- Verificar con grep final.
+
+---
+
 ## 2026-05-29 — 13MA VEZ: omití documentar patrón "stub endpoint" aunque era genuinamente reutilizable
 
 **Estado**: 🔴 Abierto — nuevo sub-patrón identificado dentro del meta-patrón del cierre formal.

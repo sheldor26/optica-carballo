@@ -487,6 +487,64 @@ Sprint 1 es 100% código nuevo en archivos nuevos. Build verde, sin impacto en r
 
 ---
 
+## Sprint 2a — Encryption + OAuth flow (HOY)
+
+Founder ya pasó App ID + aplicó migration + guardó Secret Key en Vercel. Arranqué Sprint 2a implementando toda la infraestructura OAuth.
+
+### Archivos nuevos (lib + endpoints)
+
+**`lib/integrations/mercadolibre/`**:
+- `encryption.ts`: AES-256-GCM con `APP_ENCRYPTION_KEY`. Formato `iv:authTag:encrypted` hex. Authenticated encryption detecta tampering.
+- `integrations-repo.ts`: CRUD `marketplace_integrations` via service_role. Cifra/descifra automático. Helpers: getActive, upsert, markError, touchSync, logSyncError.
+- `oauth.ts`: 3 funciones core:
+  - `exchangeCodeForTokens(code)` — intercambia authorization code por tokens, persiste.
+  - `refreshAccessToken(integration)` — refresh proactivo, marca expired si ML rechaza 400/401.
+  - `getValidAccessToken()` — refresh automático dentro de buffer 15 min.
+- `api-client.ts`: `mlFetch<T>` wrapper de fetch con auto-refresh on 401 + log errores a DB. Devuelve `SyncResult<T>` con retryable flag.
+- `oauth-state.ts`: constantes `ML_OAUTH_STATE_COOKIE` + `ML_OAUTH_STATE_TTL_SECONDS`. Separado porque Next.js no permite exports arbitrarios en route files.
+
+**Endpoints**:
+- `app/api/ml/oauth/initiate/route.ts`: GET → state CSRF + cookie httpOnly + redirect a ML.
+- `app/api/ml/oauth/callback/route.ts`: GET → valida state (CSRF) → exchange code → guarda integration → redirect con flag de éxito/error.
+
+### Decisiones técnicas
+
+- **AES-256-GCM vs CBC**: authenticated encryption + no padding manual.
+- **IV random por cifrado**: crítico para GCM (reusar IV con misma key rompe seguridad).
+- **Key derivation flexible**: si es 64 chars hex se decodifica directo, sino SHA-256 fallback.
+- **Cookie samesite=lax**: sobrevive redirect cross-origin ML→sitio.
+- **Retry on 401 con refresh**: maneja race condition de invalidación mid-request.
+- **Errores logged a DB**: best-effort, no propaga si el log mismo falla.
+
+### URLs operativas tras este push
+
+- `https://opticacarballo.com.ar/api/ml/oauth/initiate` → arranca OAuth.
+- `https://opticacarballo.com.ar/api/ml/oauth/callback` → recibe callback ML.
+- `https://opticacarballo.com.ar/api/ml/webhook` → stub (Sprint 2b reemplaza).
+
+### Pendientes para activar Sprint 2
+
+1. ⏳ Founder configura las 3 env vars faltantes en Vercel (ML_CLIENT_ID, ML_REDIRECT_URI, APP_ENCRYPTION_KEY).
+2. ⏳ Redeploy (push trigger o manual).
+3. ⏳ Founder visita `/api/ml/oauth/initiate` para autorizar la app primera vez.
+
+### Sprint 2b (próximo)
+
+Reemplazar handler POST del webhook stub con procesamiento real:
+- Topic 'orders_v2' → fetch order via api-client → find variant by `mercadolibre_item_id` → decrement stock atomic.
+- Topic 'items' → fetch item → update stock en Supabase.
+- Idempotency por `_id` del webhook.
+
+### Sprint 3
+
+Admin UI `/mi-cuenta/marketplace` + cron reconciliación + push stock sitio→ML.
+
+### Build
+
+3 endpoints ML pre-renderizados (161 B c/u + 102 kB shared). Sin impacto en routes existentes.
+
+---
+
 ## Status anterior
 
 🟡 **Bundle UX + SEO local + /sobre-nosotros — implementado, pendiente push.**

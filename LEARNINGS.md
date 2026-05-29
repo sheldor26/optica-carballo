@@ -22,6 +22,50 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-29 — Next.js route files NO permiten arbitrary exports: constants compartidas van en lib/
+
+**Categoría**: Next.js / Routing / Convenciones del framework
+**Confianza**: 🟢 Alta (limitación oficial del framework + caso aplicado)
+
+### Qué pasó
+
+En el OAuth flow ML necesitaba compartir `STATE_COOKIE` entre `initiate/route.ts` y `callback/route.ts`. Inicial: exporté desde initiate con `export { STATE_COOKIE }`. Build falló:
+`Route "..." does not match the required types of a Next.js Route`.
+
+### Causa
+
+Route files (`app/**/route.ts`) solo permiten exportar:
+- Handlers HTTP: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`.
+- Config specifics: `dynamic`, `revalidate`, `runtime`, `fetchCache`, `preferredRegion`, `maxDuration`, `metadata`, `generateMetadata`, `generateStaticParams`.
+
+Cualquier otro export rompe el contract.
+
+### Solución aplicada
+
+Módulo separado en `lib/integrations/mercadolibre/oauth-state.ts`:
+
+```ts
+export const ML_OAUTH_STATE_COOKIE = 'oc_ml_oauth_state';
+export const ML_OAUTH_STATE_TTL_SECONDS = 600;
+```
+
+Ambos routes importan desde ahí.
+
+### Aplicar a futuro
+
+Cualquier route file que necesite compartir constantes / schemas / helpers / types con otro route file → módulo separado en `lib/`.
+
+### Patrón meta confirmado (3era confirmación)
+
+3 casos donde separamos constants/utilities de route files a lib/:
+1. `lib/mp/webhook.ts` (MP webhook + carrito).
+2. `lib/integrations/mercadolibre/schemas.ts` (webhook + endpoints futuros).
+3. `lib/integrations/mercadolibre/oauth-state.ts` (este caso).
+
+**Regla confirmada**: route files son contractuales (solo handlers + configs), todo lo demás vive en lib/.
+
+---
+
 ## 2026-05-29 — Endpoint stub para integraciones con upfront-validation desbloquea al founder sin esperar al sprint completo
 
 **Categoría**: Arquitectura / Patrones de integración / Project management
