@@ -22,6 +22,42 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cargar producto en 2 fases (seed base + seed complete) cuando founder pasa info en chunks
+
+**Categoría**: Workflow / Founder collaboration
+**Confianza**: 🟢 Alta (validado iter Vulk Stray)
+
+### Qué funcionó
+
+Founder pasó info parcial inicial (4 SKUs + link ML). Generé seed 20 con esa data + auto-extracción ML. Después founder pasó info adicional (5ta variante CRY + measurements + materials + bisagras flex). Generé seed 21 "complete" con UPDATE producto + INSERT 5ta variante + 2 imágenes nuevas.
+
+Pattern: seed base + seed complementario en lugar de esperar info completa antes de empezar. Founder no bloqueado por preguntas, dev no bloqueado esperando data, sistema avanza incremental.
+
+### Por qué funciona
+
+Founders no-técnicos rara vez tienen TODA la info perfecta de un producto en la primera pasada. Si esperás "completitud" antes de cargar, frenás iteraciones. Si cargás iterativo (lo que hay → ajustes posteriores), avanzás más rápido.
+
+Costo: 2 seeds en vez de 1. Beneficio: founder feedback más temprano + corrección antes de aplicar al cloud.
+
+### Cómo aplicar
+
+Cuando founder pasa info de producto nuevo:
+1. **Seed base**: cargar lo que tenés (auto-extract ML + SKUs explícitos del founder).
+2. Mensaje al founder: lista clara de pendientes (data faltante, decisiones pendientes, fotos).
+3. **Seed complete** (cuando founder responde): UPDATE producto con nueva info + INSERT variantes nuevas + fotos.
+4. Aplicar al cloud en orden (base → complete).
+5. Documentar en `CLOUD_APPLIED.md` la dependencia.
+
+### Trade-off
+
+Más seeds = más archivos = más overhead organizacional. Pero el alternativo (esperar info completa) suele tomar días en flow founder no-técnico. Compromise: 2 seeds vale la pena.
+
+### Cross-link
+
+Aplicación de [[founder-iteracion-vs-perfeccion]] — pattern relacionado con grids de scale empíricos (iter 14): mejor iterar rápido que perfeccionar antes.
+
+---
+
 ## 2026-05-30 — Producto en ML con feature opcional que NO se vende: omitir en description, no mencionar feature ausente
 
 **Categoría**: Content / Conversion / Product positioning

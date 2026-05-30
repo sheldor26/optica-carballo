@@ -24,6 +24,41 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Asumí SKU placeholder para variante CRY en seed 21 sin preguntar al founder primero
+
+**Estado**: 🟡 Mitigado (documentado como placeholder, pendiente confirmación founder)
+**Categoría**: Code / Data integrity
+
+### Qué pasó
+
+Cargando seed 21 Vulk Stray complete, founder confirmó la 5ta variante "Gris" (en ML) es realmente CRY transparente. Pero NO me pasó el SKU. En vez de preguntar el SKU antes de generar el seed, asumí `126892` como placeholder (siguiendo el patrón 12689X de los SKUs explícitos del founder).
+
+Riesgo: si el SKU real es diferente (ej. 126893), va a chocar con futura carga + requiere UPDATE correctivo. Si el SKU real es 126892 (coincidencia), todo OK.
+
+### Causa raíz
+
+Quise avanzar rápido en lugar de bloquear con pregunta. Pero los SKUs son IDENTIFICADORES ÚNICOS y no se pueden adivinar. Aún si el patrón parece predecible (12689X), no es safe.
+
+### Costo
+
+- Seed 21 aplicado con SKU placeholder = potencialmente requiere UPDATE correctivo.
+- Si founder no nota el placeholder y pasa a producción, puede chocar cuando se carguen otros productos Vulk con SKUs cercanos.
+
+### Regla preventiva
+
+**Para datos OBLIGATORIOS y UNIQUE (SKU, IDs, slugs)**:
+1. NUNCA asumir / inventar / usar placeholder.
+2. Si founder no pasó el dato, **bloquear** con pregunta antes de generar seed.
+3. Si urgente avanzar (founder en otra cosa), generar seed pero marcar **explícito** en código (`-- ⚠️ SKU PLACEHOLDER`) + bloquear apply hasta confirmación.
+
+Para datos OPCIONALES (descripción, tags, callouts): OK iterar con asunciones razonables.
+
+### Trade-off vs learning iter 2-fases
+
+El learning "cargar en 2 fases" promueve avanzar con info parcial. PERO eso aplica a info OPCIONAL/ENRIQUECIMIENTO (descripción, medidas, features). Para IDENTIFICADORES ÚNICOS (SKU), NO. Esa es la línea.
+
+---
+
 ## 2026-05-30 — Diseñé fix UX mobile thumbs como "3 thumbs + texto +N afuera" sin pensar visualmente — founder pidió cuadrito +N
 
 **Estado**: 🟢 Corregido en iter siguiente
