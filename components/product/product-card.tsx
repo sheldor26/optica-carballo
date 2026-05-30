@@ -250,7 +250,7 @@ function VariantThumbnails({
                 ? 'border-foreground'
                 : 'border-border/60 hover:border-foreground/40',
               !v.inStock && 'opacity-50',
-              hideOnMobile && 'hidden sm:block',
+              hideOnMobile && 'hidden md:block',
             )}
           >
             {url ? (
@@ -269,15 +269,15 @@ function VariantThumbnails({
           </button>
         );
       })}
-      {/* Mobile: indicador "+N" si hay más de 3. Solo visible <sm. */}
+      {/* Mobile/tablet (<md=768px): indicador "+N" si hay más de 3 variantes. */}
       {hiddenCountMobile > 0 && (
-        <span className="text-muted-foreground text-xs sm:hidden">
+        <span className="text-muted-foreground text-xs md:hidden">
           +{hiddenCountMobile}
         </span>
       )}
-      {/* Desktop: indicador "+N" si hay más de 5. Solo visible sm+. */}
+      {/* Desktop (md+): indicador "+N" si hay más de 5 variantes. */}
       {hiddenCount > 0 && (
-        <span className="text-muted-foreground hidden text-xs sm:inline">
+        <span className="text-muted-foreground hidden text-xs md:inline">
           +{hiddenCount}
         </span>
       )}

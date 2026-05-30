@@ -62,12 +62,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   //   - Frontales (vista directa, anteojo más ancho proporcionalmente):
   //     scale 1.2 → anteojo ocupa ~84% del card
   // Aplica a las 3 variantes del Rusty Yau (S10/POL, Revo Blue, Revo Green).
-  'rusty-yau/01-lateral.jpg': 1.5,
-  'rusty-yau/02-frontal.jpg': 1.2,
-  'rusty-yau/04-revo-blue-lateral.jpg': 1.5,
-  'rusty-yau/05-revo-blue-frontal.jpg': 1.2,
-  'rusty-yau/06-revo-green-lateral.jpg': 1.5,
-  'rusty-yau/07-revo-green-frontal.jpg': 1.2,
+  // Founder feedback: 1.5/1.2 quedó chico vs Vulk. Subir a 1.8/1.4.
+  'rusty-yau/01-lateral.jpg': 1.8,
+  'rusty-yau/02-frontal.jpg': 1.4,
+  'rusty-yau/04-revo-blue-lateral.jpg': 1.8,
+  'rusty-yau/05-revo-blue-frontal.jpg': 1.4,
+  'rusty-yau/06-revo-green-lateral.jpg': 1.8,
+  'rusty-yau/07-revo-green-frontal.jpg': 1.4,
 };
 
 export function getImageScale(path: string | null | undefined): number {

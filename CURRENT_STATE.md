@@ -2,6 +2,33 @@
 
 ## Status
 
+🔴→🟢 **Bug sync precio Yamain TRULY fixed: variationMatches() prueba todos los formatos en paralelo** (2026-05-30). Fix anterior (agregar variation.id como fallback en cascada) NO funcionó porque DESIGN devolvía valor que satisfacía la condición ANTES de llegar al fallback.
+
+Diagnóstico nuevo del JSON founder + curl ML actual:
+- ML Yamain: `item.price = 79800` (cambió desde el 79832.39 original)
+- Variations: TODAS tienen `DESIGN: "Ovalado"` (no discrimina entre variants)
+- `seller_custom_field: None`
+- `getVariationCode(v)` viejo: parse de DESIGN → return "Ovalado" para TODAS → no llegaba al fallback variation.id
+
+Fix REAL:
+- Reemplazar `getVariationCode(v): string` (devolvía 1 formato priorizado) con:
+  - `getAllVariationCodes(v): string[]` (devuelve TODOS los formatos)
+  - `variationMatches(v, dbCode): boolean` (prueba si dbCode matchea cualquiera)
+- Match en `syncStockFromMLItem` y `syncVariantStockToML` usa `variationMatches`
+- Sin orden de prioridad — match si CUALQUIER formato coincide
+
+Esto soporta robust:
+- Vulk Day Light (seller usa DESIGN parseable como SDEMI/DRWG15C3)
+- Yamain (variation.id literal porque DESIGN es genérico)
+- Cualquier producto futuro con cualquier convention
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**:
+1. Push
+2. `curl https://opticacarballo.com.ar/api/admin/ml-force-sync/MLA1391497225`
+3. Esperado: `updated: 2`, `post.price_cents = 7980000`
+
 🟢 **Rusty Yau scale overrides (laterales 1.5, frontales 1.2)** (2026-05-30). Founder: "Rusty se ve muy pequeño comparado con Vulk".
 
 Medición empírica de las 6 fotos Rusty Yau (848×537, aspect 1.58:1):

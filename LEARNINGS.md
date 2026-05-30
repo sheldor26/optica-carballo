@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Parser cross-system: devolver TODOS los formatos posibles, no 1 priorizado
+
+**Categoría**: Code / Defensive parsing / Refactor pattern
+**Confianza**: 🟢 Alta (validado tras fix fallido del bug Yamain → refactor)
+
+### Qué funcionó
+
+Refactor de `getVariationCode(v): string` (devuelve 1 formato priorizado) a `getAllVariationCodes(v): string[]` + `variationMatches(v, dbCode): boolean`.
+
+Antes: el parser devolvía 1 código → cascada de formatos con orden de prioridad. Problema: cuando un formato superior devolvía un valor VÁLIDO PERO NO DISCRIMINADOR (ej. DESIGN="Ovalado" para todas las variations), cortocircuitaba el fallback al formato más confiable (ID literal).
+
+Después: el parser devuelve TODOS los códigos posibles. El match es OR lógico (¿dbCode coincide con cualquiera?). Sin orden de prioridad.
+
+### Por qué funciona
+
+Cuando un sistema externo no garantiza qué formato del código vas a recibir (depende de cómo el seller cargó el item, qué API endpoint, etc.), la priorización es contraproducente:
+- Formato A satisface pero no discrimina → match falla (false negative)
+- Formato B (ID literal) garantiza discriminación pero nunca se prueba
+
+Devolver TODOS los formatos + match OR garantiza que UNO funcione, sin asumir qué formato es "el preferido".
+
+### Cómo aplicar
+
+Para parser que devuelve ID/código de algo cross-system (ML, MP, AFIP, etc.):
+1. Listar TODOS los lugares donde el sistema externo guarda el ID/código.
+2. Si más de 1 puede aplicar simultáneamente: devolver `string[]` con todos, no `string` priorizado.
+3. Match con DB: helper `matches(record, dbCode): boolean` que prueba TODOS los formatos.
+4. Type signature explícito: la función promete devolver "los posibles formatos", no "el formato".
+
+### Costo si se ignora
+
+Bug silencioso tipo "el código que devuelve la función es válido pero no es el que está en DB". El parser parece funcionar pero match falla en cases reales.
+
+### Cross-link
+
+Refinamiento de [[parser-fallback-final]] (learning previo iter Yamain). Aquel learning agregó variation.id como fallback. Este lo MEJORA: fallback no basta cuando un formato anterior cortocircuita.
+
+---
+
 ## 2026-05-30 — Dentro del mismo producto, las fotos lateral/frontal pueden necesitar scales DISTINTOS
 
 **Categoría**: Visual tuning / Photo composition

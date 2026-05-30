@@ -29,40 +29,43 @@ type MLVariation = {
 };
 
 /**
- * Extrae el código de variation desde la respuesta de ML.
+ * Devuelve TODOS los códigos posibles de una variation ML.
+ * Usado para matching robusto: probamos cada formato hasta encontrar uno
+ * que matchee con el `mercadolibre_variation_code` cargado en DB.
  *
- * ML guarda el código en 3 lugares posibles según cómo el seller cargó el item:
- * 1. `seller_custom_field`: campo dedicado, lo seteás explícito al crear/editar variation.
- * 2. `attribute_combinations[DESIGN].value_name`: el "name" de la variation
- *    con formato "CODIGO - Descripción descriptiva". El código va al inicio
- *    antes del primer ` - ` separator.
- * 3. **Fallback**: `variation.id` (número largo tipo 182035179595). Útil
- *    cuando el seller NO seteó custom_field NI usa DESIGN/COLOR parseable
- *    (caso Vulk Yamain — discriminator es solo color frame/lens, sin
- *    convención de naming).
+ * Formatos soportados (orden no importa — todos se prueban):
+ * 1. `variation.id` (ej. '182035179595'): siempre presente. Confiable.
+ * 2. `seller_custom_field` (ej. 'SDEMI/DRWG15C3'): si seller lo seteó.
+ * 3. `attribute_combinations[DESIGN/COLOR].value_name` parseado antes
+ *    de ` - ` (ej. 'SDEMI'): si seller usa convención de naming.
  *
- * Convención al cargar producto en seed: si el producto tiene
- * seller_custom_field o DESIGN parseable, usar ese código. Si no,
- * usar el variation.id directamente.
- *
- * Bug detectado 2026-05-30: seed 16 Yamain puso variation.id pero esta
- * función SOLO consideraba opciones 1 y 2 → nunca matcheaba → sync price
- * skipped. Fix: agregar fallback opción 3.
+ * Bug detectado 2026-05-30 iter posterior: getVariationCode previa
+ * devolvía 1 SOLO formato priorizado (seller_custom_field → DESIGN →
+ * variation.id). Pero Yamain tiene DESIGN='Ovalado' para TODAS las
+ * variations (no discrimina). La función devolvía 'Ovalado' para todas
+ * y nunca llegaba al fallback variation.id. Fix: probar TODOS los
+ * formatos en paralelo via variationMatches().
  */
-function getVariationCode(v: MLVariation): string {
+function getAllVariationCodes(v: MLVariation): string[] {
+  const codes: string[] = [String(v.id)];
   if (v.seller_custom_field && v.seller_custom_field.length > 0) {
-    return v.seller_custom_field;
+    codes.push(v.seller_custom_field);
   }
   const designCombo = v.attribute_combinations?.find(
     (c) => c.id === 'DESIGN' || c.id === 'COLOR',
   );
   if (designCombo?.value_name) {
-    const code = designCombo.value_name.split(' - ')[0]?.trim();
-    if (code && code.length > 0) return code;
+    const parsed = designCombo.value_name.split(' - ')[0]?.trim();
+    if (parsed && parsed.length > 0) {
+      codes.push(parsed);
+    }
   }
-  // Fallback: el ID interno de la variation (número largo). El seed
-  // debe haber cargado el mismo valor en mercadolibre_variation_code.
-  return String(v.id);
+  return codes;
+}
+
+/** Match variation contra código DB. Prueba todos los formatos posibles. */
+function variationMatches(v: MLVariation, dbCode: string): boolean {
+  return getAllVariationCodes(v).includes(dbCode);
 }
 
 type MLItem = {
@@ -168,8 +171,8 @@ export async function syncVariantStockToML(variantId: string): Promise<{
     return { ok: false, reason: 'item_has_variations_but_variation_code_missing' };
   }
 
-  const matchedVariation = variations.find(
-    (v) => getVariationCode(v) === variant.mercadolibre_variation_code,
+  const matchedVariation = variations.find((v) =>
+    variationMatches(v, variant.mercadolibre_variation_code!),
   );
 
   if (!matchedVariation) {
@@ -181,7 +184,7 @@ export async function syncVariantStockToML(variantId: string): Promise<{
         sku: variant.sku,
         ml_item_id: variant.mercadolibre_item_id,
         ml_variation_code: variant.mercadolibre_variation_code,
-        available_variation_codes: variations.map((v) => getVariationCode(v)),
+        available_variation_codes: variations.map((v) => getAllVariationCodes(v)),
       },
     });
     return { ok: false, reason: 'variation_not_found_in_item' };
@@ -294,8 +297,8 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
         skipped++;
         continue;
       }
-      const matched = variations.find(
-        (v) => getVariationCode(v) === variant.mercadolibre_variation_code,
+      const matched = variations.find((v) =>
+        variationMatches(v, variant.mercadolibre_variation_code!),
       );
       if (!matched) {
         skipped++;

@@ -24,6 +24,52 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Mi fix "agregar variation.id como fallback" del bug Yamain NO funcionó porque DESIGN parseable cortocircuitaba el fallback
+
+**Estado**: 🟢 Re-fixed con `variationMatches()` (prueba todos formatos en paralelo)
+**Categoría**: Code / Logic / Order-of-conditions
+
+### Qué pasó
+
+Tras founder reportar bug sync Yamain, mi fix iter previa fue agregar `variation.id` como fallback final en `getVariationCode()`. Sonaba lógico. Founder retesteó: `updated: 0` igual.
+
+Causa real (no diagnosticada en iter previa): para Yamain las variations tienen `DESIGN: "Ovalado"` en TODAS. Mi `getVariationCode` parseaba DESIGN → return "Ovalado" → SATISFACÍA la condición ANTES del fallback. Nunca llegaba a `String(v.id)`.
+
+Resultado: 2 variations de Yamain devolvían el MISMO código "Ovalado" → match siempre fallaba contra los variation_ids literales en DB ('182035179595', '180172684195').
+
+### Causa raíz
+
+Fix "agregar fallback final" asume que los caminos anteriores devuelven null/empty cuando no aplican. Pero en este caso, DESIGN existía y se parseaba a "Ovalado" — un string válido aunque NO discriminador. La función no tenía forma de saber que "Ovalado" no era útil sin contexto.
+
+### Costo
+
+- 1 iteración adicional (founder retest → ver que sigue fallando).
+- "Fix" anterior commiteado y deployado pero inefectivo.
+
+### Regla preventiva REFORZADA
+
+Para parser cross-system que devuelve "el código" de algo:
+1. NO devolver 1 solo formato priorizado. Devolver TODOS los posibles.
+2. Match contra el código DB usa OR lógico sobre todos los formatos.
+3. Esto evita que un formato "satisface pero no discrimina" oculte a un formato más confiable (ID literal).
+
+Refactor: `getVariationCode(v): string` → `getAllVariationCodes(v): string[]` + helper `variationMatches(v, dbCode): boolean`.
+
+**Trigger fuerte**: si una función devuelve "el código" priorizado y los códigos posibles pueden colisionar (mismo valor para variants distintos), refactorizar a "devuelve todos los códigos" + match OR.
+
+### Pattern dominante de la sesión — 4TA recurrencia
+
+1. sync price extended → endpoint debug no actualizado
+2. image-scale-overrides → comparador no aplicado
+3. seed Yamain variation_id → getVariationCode no soportaba
+4. fix "agregar fallback" → DESIGN cortocircuitaba el fallback ← ESTE
+
+Pattern dominante: **"extender feature sin probar el caso real"**. Cada fix anterior fue lógico en abstracto pero falló al primer test del caso concreto.
+
+Escalation: si se repite UNA vez más → CLAUDE.md regla 13 ("antes de declarar fix, probar contra el caso original que reportó el bug").
+
+---
+
 ## 2026-05-30 — Cargué seed 16 Yamain con variation_id literal en `mercadolibre_variation_code` pero `getVariationCode()` no soportaba ese formato
 
 **Estado**: 🟢 Resuelto (agregué fallback variation.id en getVariationCode)
