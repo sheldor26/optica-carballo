@@ -2,6 +2,19 @@
 
 ## Status
 
+🟡 **2 decisiones pendientes founder**: (a) URL real foto hero, (b) ¿agregar regla 13 a CLAUDE.md? (2026-05-30, post-explicación regla)
+
+Founder preguntó "qué significa regla 13". Expliqué en simple (mental check antes de cierre, ⚪ vs ✅, ejemplo del turno fallido). Le pasé 3 opciones:
+- **A: Agregar regla 13 a CLAUDE.md** → previene Pattern B en futuras sesiones (yo lo leo al inicio sesión)
+- **B: Dejar como propuesta en MISTAKES** → seguirá ocurriendo (lecciones pasivas no fuerzan comportamiento)
+- **C: No agregar, ignorar stop hook** → ruido persistente pero sin acción
+
+**Recomendación**: A. 1 línea agregada a CLAUDE.md previene 6+ recurrencias futuras.
+
+**2 decisiones pendientes founder simultáneamente**:
+1. URL real de la foto subida al bucket (HTTP 400 en `brands-shared/hero-editorial.jpg`)
+2. A / B / C sobre regla 13
+
 🟡 **Hero C1 código implementado, foto HTTP 400 pendiente URL real founder** (2026-05-30, post-implementación). Founder dijo "ya puse hero-editorial.jpg pero no aparece" + "ya hice push". Investigué + implementé:
 
 **Investigación**: la foto NO está accesible en el path canónico (`brands-shared/hero-editorial.jpg` → HTTP 400). Probé variantes (.png, .webp, .jpeg, mayúsculas) → todas 400. Posibles causas: subida a otro bucket, subcarpeta, nombre distinto al canónico, o upload incompleto.
