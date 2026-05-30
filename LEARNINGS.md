@@ -22,6 +22,47 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Uniformidad de fotos tiene 2 dimensiones distintas: framing relativo vs padding interno absoluto
+
+**Categoría**: Asset specs / Domain knowledge
+**Confianza**: 🟢 Alta (validado tras 3 iteraciones iter 6 → 7 → 8 → 9)
+
+### Qué funcionó
+
+Tras iter 9, identifiqué que el problema de fotos NO uniformes tiene **2 dimensiones independientes** que confundí entre sí:
+
+1. **Framing relativo entre variantes del mismo modelo**: ¿el anteojo está en la misma posición/orientación en cada foto? Esto el founder lo reprocesó después de iter 7 (las 4 variantes del Vulk quedaron alineadas entre sí).
+
+2. **Padding interno absoluto de cada foto JPG**: ¿qué porcentaje del frame ocupa el anteojo? Esto NO se resuelve uniformando framing relativo. Una foto puede tener anteojo al 50% del frame; otra al 85%. Ambas con framing alineado pero radicalmente distintas en cuánto blanco hay alrededor.
+
+El `scale CSS` agresivo es sensible a la dimensión #2, no a la #1. La uniformidad relativa entre variantes (#1) NO garantiza que un scale uniforme funcione.
+
+### Por qué funciona
+
+Un `scale-[1.4]` aplica zoom 40% uniforme. Si el sujeto ocupa 85% del frame, 85% × 1.4 = 119% → corta. Si ocupa 50%, 50% × 1.4 = 70% → drama visual sin recorte. La fórmula es matemática y depende SOLO del % del frame ocupado por el sujeto, no del framing relativo entre fotos hermanas.
+
+### Cómo aplicar
+
+Standard de fotos del catálogo a documentar en `PRODUCT_SCHEMA.md`:
+- 1500×1000 px (aspect 3:2)
+- JPG calidad 90+
+- Fondo blanco puro #FFFFFF
+- **Anteojo ocupando 60-65% del ancho del frame** (dimensión #2: padding interno)
+- Centrado vertical y horizontal
+- Mismo padding entre variantes del mismo modelo + entre modelos diferentes (dimensión #1: framing relativo)
+
+Con AMBAS dimensiones cumplidas, scale CSS agresivo (1.3-1.4) funciona uniforme. Con solo una, falla.
+
+### Costo si se ignora
+
+Mismo costo que la iteración 6→7→8→9: 3-4 commits resolviendo síntomas en lugar de establecer pre-condiciones claras de los assets. La distinción entre las 2 dimensiones es fácil de ver una vez explicada pero invisible si se piensa "fotos uniformes" como una sola cosa.
+
+### Relación con learning anterior
+
+Refuerza el learning previo del mismo día ("Patrones ASIMÉTRICOS = problema en datos"). El detalle nuevo es que "datos uniformes" puede significar cosas distintas — establecer cuáles dimensiones importan para tu CSS antes de pedir uniformidad.
+
+---
+
 ## 2026-05-30 — Patrones ASIMÉTRICOS de bug = problema en datos, no en código
 
 **Categoría**: Debugging / Diagnóstico
