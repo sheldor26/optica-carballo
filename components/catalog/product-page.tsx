@@ -1,5 +1,11 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import {
+  getBrandAssetUrl,
+  shouldInvertLogo,
+} from '@/lib/storage/brand-asset-url';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
@@ -318,9 +324,26 @@ export async function ProductDetailPage({
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <Link
                     href={`/${category.slug}/${product.brand.slug}`}
-                    className="text-muted-foreground hover:text-foreground text-sm font-medium uppercase tracking-wide"
+                    className="hover:opacity-70 transition-opacity"
+                    aria-label={`Ver todos los productos ${product.brand.name}`}
                   >
-                    {product.brand.name}
+                    {product.brand.logo_url ? (
+                      <Image
+                        src={getBrandAssetUrl(product.brand.logo_url)}
+                        alt={product.brand.name}
+                        width={120}
+                        height={32}
+                        className={cn(
+                          'h-7 w-auto object-contain md:h-8',
+                          shouldInvertLogo(product.brand.logo_url, 'light-bg') &&
+                            'brightness-0',
+                        )}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground text-sm font-medium uppercase tracking-wide">
+                        {product.brand.name}
+                      </span>
+                    )}
                   </Link>
                   <NewArrivalBadge attributes={product.attributes} />
                 </div>

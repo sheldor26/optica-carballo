@@ -22,6 +22,39 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — `overflow-x-auto` también recorta vertical (limitación CSS). Para badges/X que sobresalen: padding interno al container
+
+**Categoría**: CSS / Layout
+**Confianza**: 🟢 Alta (validado iter CompareBar)
+
+### Qué funcionó
+
+Botón X de remove en CompareBar tenía `absolute -right-1.5 -top-1.5` (sobresale del `<li>` thumb). Pero el `<ul>` padre tenía `overflow-x-auto` para permitir scroll horizontal. Resultado: la X se cortaba arriba (overflow recorta también vertical).
+
+Fix: agregar `px-1.5 py-2` al `<ul>`. El padding interno expande el área visible dentro del overflow, dejando espacio para que los botones con offsets negativos (-top-1.5 = -6px) caigan dentro del área renderizada.
+
+### Por qué funciona
+
+Limitación CSS conocida: `overflow-x: auto` + `overflow-y: visible` NO es soportado. El browser auto-convierte a `overflow: auto` (ambos). Si necesitás scroll horizontal pero contenido que sobresale vertical, las opciones son:
+1. **Padding interno**: agregar padding al container = espacio visible que NO se corta. Funciona para offsets pequeños (-1.5 = -6px, padding y-2 = 8px ✓).
+2. **Wrapper externo**: poner el scroll en un wrapper externo, contenido sobresalido en hijo. Más complejo.
+3. **Reposicionar la X**: ponerla DENTRO del thumb sin offset negativo. Cambia el design.
+
+Opción 1 (padding interno) preserva el design existente con cambio mínimo.
+
+### Cómo aplicar
+
+Cuando un overflow container recorta badges/X/decoraciones que tienen offsets negativos:
+1. Calcular cuánto sobresale el elemento (en px o rem).
+2. Agregar padding equivalente al container (`px-N py-N`).
+3. Verificar que el scroll horizontal sigue funcionando.
+
+### Costo si se ignora
+
+Founder ve elementos visualmente cortados sin entender por qué. Reportes recurrentes de "ese botón se ve mal".
+
+---
+
 ## 2026-05-30 — Para modals/overlays full-screen: createPortal hacia document.body para escapar stacking context
 
 **Categoría**: React / CSS / Modals

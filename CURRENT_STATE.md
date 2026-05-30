@@ -2,6 +2,24 @@
 
 ## Status
 
+🟢 **2 fixes UX + logo brand en PDP** (2026-05-30). Founder testeó iter anterior y reportó 2 issues + 1 mejora estética:
+
+**Fix 1 — X cortada en CompareBar**: el botón `-right-1.5 -top-1.5` sobresalía del `<li>` pero el `<ul>` padre tenía `overflow-x-auto` que recorta tanto horizontal como vertical (limitación CSS conocida). Fix: agregar `px-1.5 py-2` al ul para padding interno que cubra los negative offsets de los botones.
+
+**Mejora — Logo brand en PDP en lugar de texto "VULK"**: founder eligió mostrar el logo de marca en el título del PDP (estilo Ray-Ban Meta). Cambios:
+- `ProductDetailData.brand`: agregar campo `logo_url: string | null`
+- SELECT en `fetchProductPage`: incluir `logo_url`
+- `product-page.tsx`: condicional render del logo (Image con `getBrandAssetUrl` + `shouldInvertLogo`) o fallback al texto si no hay logo. Tamaño `h-7 md:h-8` (similar a header).
+
+**Pendiente — Buscador inline en CompareBar**: feature pedida hace 2 turnos atrás también. Cuando agregás 1er producto, debería poder buscar otros desde el bar sin volver al catálogo. Estimación: 1-2 hs (search-autocomplete + endpoint lookup + integración compare context). Esperando decisión founder cuándo atacarlo.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**:
+1. Push + hard refresh PDPs Vulk para ver logo de marca en título
+2. Hard refresh tras agregar producto al comparador → X debe verse completa
+3. Decidir cuándo implemento (a) buscador inline en CompareBar, (b) sync precio ML→sitio (pendiente de turno anterior)
+
 🟢 **Fixes founder post-deploy: imagen brand bucket + lightbox portal + respuesta ML sync** (2026-05-30).
 
 **Fix 1 — Imagen brand-wide kit Vulk**: founder creó bucket SEPARADO `brands-shared` (no carpeta dentro de `products`). Mi código asumía carpeta dentro de `products` → URL final duplicaba `brands-shared/brands-shared/...` → 404.

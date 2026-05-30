@@ -101,7 +101,11 @@ export function CompareBar({ thumbsBySlug }: Props) {
             <span className="text-foreground">({items.length}/4)</span>
           </div>
 
-          <ul className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+          {/* py-2 + px-1.5 dentro del ul: padding interno para que los
+              botones X con posición negativa (-top-1.5 -right-1.5) caigan
+              dentro del área visible. Sin esto, overflow-x-auto los recorta
+              porque también recorta vertical (limitación CSS conocida). */}
+          <ul className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto px-1.5 py-2">
             {thumbs.map((t) => (
               <li key={t.slug} className="group relative shrink-0">
                 <div className="border-border/60 bg-muted/40 flex size-12 items-center justify-center overflow-hidden rounded-lg border sm:size-14">

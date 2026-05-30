@@ -69,6 +69,10 @@ export type ProductDetailData = {
     description: string | null;
     is_argentine: boolean;
     is_active: boolean;
+    /** Path al logo de la marca en bucket `brand-assets` (storage path).
+     * Se usa para reemplazar el texto del nombre en el PDP. Fallback a
+     * `name` si NULL. */
+    logo_url: string | null;
     /** Imagen brand-wide del kit incluido (estuche+franela+stickers).
      * Se renderiza al final de la galería de PDP de TODOS los productos
      * de esta marca. Excepción: producto con
@@ -320,7 +324,7 @@ export async function fetchProductPage(
         attributes,
         meta_description,
         is_active,
-        brand:brands!inner(slug, name, description, is_argentine, is_active, includes_image_path, includes_image_alt),
+        brand:brands!inner(slug, name, description, is_argentine, is_active, logo_url, includes_image_path, includes_image_alt),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, attributes, is_active, sort_order),
         images:product_images(storage_path, alt_text, width, height, sort_order, is_primary, variant_id)
