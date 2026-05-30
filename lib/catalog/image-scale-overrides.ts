@@ -52,6 +52,22 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-yamain-sol/04-mblk-frontal.jpg': 1.15,
   'vulk-yamain-sol/05-sblk-lateral.jpg': 1.15,
   'vulk-yamain-sol/06-sblk-frontal.jpg': 1.15,
+
+  // Rusty Yau — fotos 848x537 (aspect 1.58:1, cerca de 3:2). Pero el
+  // anteojo ocupa MUY POCO del frame (laterales 52% W, frontales 70% W)
+  // vs Day Light que ocupa 99% W. Founder reportó "Rusty se ve muy
+  // pequeño comparado con Vulk". Scales necesarios:
+  //   - Laterales (perspectiva 3/4 con patillas extendidas): scale 1.5
+  //     (50% más grande) → anteojo ocupa ~78% del card
+  //   - Frontales (vista directa, anteojo más ancho proporcionalmente):
+  //     scale 1.2 → anteojo ocupa ~84% del card
+  // Aplica a las 3 variantes del Rusty Yau (S10/POL, Revo Blue, Revo Green).
+  'rusty-yau/01-lateral.jpg': 1.5,
+  'rusty-yau/02-frontal.jpg': 1.2,
+  'rusty-yau/04-revo-blue-lateral.jpg': 1.5,
+  'rusty-yau/05-revo-blue-frontal.jpg': 1.2,
+  'rusty-yau/06-revo-green-lateral.jpg': 1.5,
+  'rusty-yau/07-revo-green-frontal.jpg': 1.2,
 };
 
 export function getImageScale(path: string | null | undefined): number {
