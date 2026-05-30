@@ -2,6 +2,14 @@
 
 ## Status
 
+🟡 **Iter 14.2 — Var 1 (carey) 0.85 → 0.75, pendiente dato var 4** (2026-05-30). Founder testeó iter 14.1 deployed: "es como que no afectó el cambio". Confirma que cambio 0.92 → 0.85 (7.6% reducción) fue demasiado sutil para percepción visual. Bajo más agresivo: 0.85 → 0.75 (12% adicional, total 18.5% más chica que original).
+
+Founder también reporta: "var 4 (brown) está rara, es como que no salió igual a la 2 y 3". Pendiente dato: ¿más grande o más chica? Para evitar otra iteración errada, voy a preguntar antes de ajustar var 4.
+
+Var 2 y var 3 confirmadas como PERFECTAS por founder — no tocar.
+
+Commit `38c8c10` (próximo).
+
 🟢 **Iter 14.1 — Ajuste fino var 1 (carey) 0.92 → 0.85** (2026-05-30). Founder testeó iter 14 y mandó screenshots de las 4 variantes. Análisis: var 2 (rosa), var 3 (matte black), var 4 (brown) se ven tamaño correcto entre sí. Var 1 (carey) seguía más grande que el resto (patillas casi tocando los bordes). Bajé scale de 0.92 a 0.85 (~8% más chico). Commit `39a6a9b`.
 
 **Iteración rápida confirmada como pattern útil**: 1 número cambiado en `image-scale-overrides.ts` → commit → push → 2 min para validar. Mucho más eficiente que las iteraciones de scale uniforme (iter 7-13) que requerían reverts y discusiones de diagnóstico.
