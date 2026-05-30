@@ -69,6 +69,12 @@ export type ProductDetailData = {
     description: string | null;
     is_argentine: boolean;
     is_active: boolean;
+    /** Imagen brand-wide del kit incluido (estuche+franela+stickers).
+     * Se renderiza al final de la galería de PDP de TODOS los productos
+     * de esta marca. Excepción: producto con
+     * `attributes.hide_brand_includes_image: true` la oculta. */
+    includes_image_path: string | null;
+    includes_image_alt: string | null;
   };
   category: { slug: string; is_active: boolean };
   variants: Array<{
@@ -314,7 +320,7 @@ export async function fetchProductPage(
         attributes,
         meta_description,
         is_active,
-        brand:brands!inner(slug, name, description, is_argentine, is_active),
+        brand:brands!inner(slug, name, description, is_argentine, is_active, includes_image_path, includes_image_alt),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, attributes, is_active, sort_order),
         images:product_images(storage_path, alt_text, width, height, sort_order, is_primary, variant_id)

@@ -40,6 +40,40 @@ function extractFrameShape(attrs: Record<string, unknown>): string | null {
   return typeof v === 'string' ? v : null;
 }
 
+/**
+ * Construye el array de imágenes para la galería incluyendo (opcional) la
+ * imagen brand-wide del kit incluido (estuche+franela+stickers) al final.
+ *
+ * Convención: brand.includes_image_path = path al asset compartido por TODA
+ * la marca (ej. 'brands-shared/vulk-estuche-franela.jpg'). Se renderiza en
+ * último lugar (sort_order alto). Se omite si:
+ *   - brand.includes_image_path es null (marca sin imagen brand-wide)
+ *   - product.attributes.hide_brand_includes_image === true (opt-out per-producto)
+ */
+function buildGalleryImages(
+  product: ProductDetailData,
+): ProductDetailData['images'] {
+  const base = product.images ?? [];
+  const brandPath = product.brand.includes_image_path;
+  if (!brandPath) return base;
+  if (product.attributes?.hide_brand_includes_image === true) return base;
+  const alt =
+    product.brand.includes_image_alt ??
+    `${product.brand.name} kit incluido: estuche, franela y stickers`;
+  return [
+    ...base,
+    {
+      storage_path: brandPath,
+      alt_text: alt,
+      width: null,
+      height: null,
+      sort_order: 9999,
+      is_primary: false,
+      variant_id: null,
+    },
+  ];
+}
+
 function findPrimaryImagePathForVariant(
   images: ProductDetailData['images'],
   variantId: string,
@@ -216,7 +250,10 @@ export async function ProductDetailPage({
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2 md:gap-x-12 md:items-start">
-        <ProductGallery productName={product.name} images={product.images ?? []} />
+        <ProductGallery
+          productName={product.name}
+          images={buildGalleryImages(product)}
+        />
 
         <div className="flex flex-col gap-6">
           <div>

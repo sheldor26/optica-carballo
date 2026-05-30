@@ -2,6 +2,24 @@
 
 ## Status
 
+🟢 **Opción A implementada: imagen kit brand-wide (brand.includes_image_path)** (2026-05-30). Founder eligió Opción A. Implementado:
+
+1. **Migración** `20260530200000_brands_includes_image.sql`: `ALTER TABLE brands ADD includes_image_path text, includes_image_alt text` (ambos nullable).
+2. **Type ProductDetailData.brand**: agregados los 2 campos nuevos.
+3. **SELECT en `fetchProductPage`**: query trae los 2 campos del brand join.
+4. **Helper `buildGalleryImages(product)`** en `components/catalog/product-page.tsx`: inyecta la imagen brand al final del array de images (sort_order 9999, variant_id null). Opt-out per-producto vía `attributes.hide_brand_includes_image=true`.
+5. **ProductGallery sin cambios** — recibe el array final. Mantiene separación: componente "muestra lo que recibe", lógica de injection en page.
+6. **Seed 17** UPDATE brand Vulk con `includes_image_path='brands-shared/vulk-estuche-franela.jpg'` + alt.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**:
+1. Subir la imagen del kit Vulk al bucket `products` con path EXACTO: `brands-shared/vulk-estuche-franela.jpg`
+2. Aplicar 2 SQLs en cloud (orden):
+   - Primero: `supabase/migrations/20260530200000_brands_includes_image.sql` (cambio schema)
+   - Después: `supabase/seeds/17_vulk_brand_includes_image.sql` (data)
+3. Tras deploy, verificar PDP de un producto Vulk (ej. `/anteojos-de-sol/vulk/vulk-day-light`): la imagen del kit debe aparecer al final de la galería automáticamente.
+
 🟡 **Decision point: imagen "incluye estuche+franela+stickers" compartida por brand** (2026-05-30). Founder pidió: cómo evitar subir la misma imagen del kit Vulk (estuche cuero + franela + stickers de marca) en CADA producto Vulk nuevo. Imagen es genérica de marca, no específica de producto.
 
 3 opciones propuestas con tradeoffs:
