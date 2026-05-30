@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
@@ -12,6 +13,14 @@ type Props = {
   siteName: string;
   whatsappLink: string | null;
 };
+
+/** Path canónico de la foto editorial del hero en bucket `brands-shared`.
+ * Founder sube acá (mismo bucket que kit Vulk + category-sol). Cambiar
+ * si founder usa otro nombre o querés rotarla por temporada. */
+const HERO_EDITORIAL_PATH = 'hero-editorial.jpg';
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
+const HERO_EDITORIAL_URL = `${SUPABASE_URL}/storage/v1/object/public/brands-shared/${HERO_EDITORIAL_PATH}`;
 
 /**
  * Hero Concepto 2 (decisión founder 2026-05-30): tipográfico minimal dark.
@@ -64,14 +73,15 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
         ÓC
       </motion.div>
 
-      <div className="container relative py-24 md:py-32 lg:py-44">
-        <motion.div style={{ y: textY }} className="relative max-w-4xl">
+      <div className="container relative grid grid-cols-1 items-center gap-12 py-20 md:grid-cols-[1.1fr_1fr] md:gap-10 md:py-28 lg:gap-16 lg:py-36">
+        {/* Columna izquierda: texto editorial */}
+        <motion.div style={{ y: textY }} className="relative order-2 md:order-1">
           <p className="hero-reveal hero-reveal-1 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em] text-white/70">
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
             <span>{siteName}</span>
           </p>
 
-          <h1 className="mt-8 text-balance font-serif text-5xl font-medium leading-[0.95] tracking-[-0.025em] md:text-7xl lg:text-8xl">
+          <h1 className="mt-8 text-balance font-serif text-5xl font-medium leading-[0.95] tracking-[-0.025em] md:text-6xl lg:text-7xl">
             <LetterReveal text="Anteojos originales " delay={0.2} />
             <LetterReveal
               text="con asesoramiento óptico real."
@@ -81,12 +91,12 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
             />
           </h1>
 
-          <p className="hero-reveal hero-reveal-3 mt-10 max-w-2xl text-balance text-base text-white/70 md:text-lg">
+          <p className="hero-reveal hero-reveal-3 mt-8 max-w-xl text-balance text-base text-white/70 md:text-lg">
             Atención personalizada por técnico óptico matriculado.
             30+ años en Argentina. Envíos a todo el país y cuotas sin interés.
           </p>
 
-          <div className="hero-reveal hero-reveal-4 mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="hero-reveal hero-reveal-4 mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <MagneticButton className="w-full sm:w-auto">
               <Button
                 asChild
@@ -122,6 +132,32 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
                 </a>
               </Button>
             )}
+          </div>
+        </motion.div>
+
+        {/* Columna derecha: foto editorial. Si la foto no existe en el bucket
+            (404), Next.js Image va a mostrar un placeholder oscuro — el
+            layout no se rompe. */}
+        <motion.div
+          style={{ y: textY }}
+          className="relative order-1 mx-auto w-full max-w-md md:order-2 md:max-w-none"
+        >
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-white/10 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.6)] md:aspect-[4/5]">
+            <Image
+              src={HERO_EDITORIAL_URL}
+              alt="Editorial Óptica Carballo"
+              fill
+              sizes="(max-width: 768px) 90vw, 45vw"
+              priority
+              className="object-cover"
+            />
+            {/* Gradient overlay sutil: oscurece levemente el borde inferior
+                para que se funda con el resto del hero dark sin recortes
+                bruscos. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+            />
           </div>
         </motion.div>
       </div>
