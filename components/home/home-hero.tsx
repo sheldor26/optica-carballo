@@ -163,7 +163,11 @@ export function HomeHero({ showcases, siteName, whatsappLink }: Props) {
                       style={{
                         transform: `scale(${getImageScale(active.primaryImagePath)})`,
                       }}
-                      className="object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      // mix-blend-multiply: el blanco puro del fondo de la foto
+                      // (JPG) "desaparece" sobre el gradient del hero. Workaround
+                      // hasta tener fotos en PNG transparente. Tradeoff: posible
+                      // tinte sutil sobre colores muy claros del producto.
+                      className="object-contain mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                     />
                   </Link>
                 </motion.div>
