@@ -93,7 +93,11 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
 
 **Sprint Flow de Compra — Plan 4 sub-sprints** (2026-05-30). Founder eligió "TODOS" tras audit del flow de compra. Audit reveló sistema funcional end-to-end pero feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED=false` (checkout retorna 404 hoy) + 3 gaps de features. Plan secuencial:
 1. **Sprint 1 (EN CURSO)**: Activar checkout en prod. Checklist 5 acciones founder: configurar app Mercado Pago, setear 3 env vars Vercel (`NEXT_PUBLIC_CHECKOUT_ENABLED`, `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`), verificar 4 env vars previas (BUSINESS_ADMIN_EMAIL, RESEND_API_KEY, RESEND_FROM_EMAIL, CART_COOKIE_SECRET), redeploy + test end-to-end con tarjeta MP de prueba.
-2. **Sprint 2 (paralelo)**: Quick wins UX en PDP (estimador envío + cuotas + stock bajo). ~2h sin acciones founder.
+2. **Sprint 2 ✅ CERRADO** (commit `3e44342`): Quick wins UX en PDP. 3 features:
+   - Stock bajo: amber bold "¡Última unidad!" / "Solo quedan X" para stockQty<=3.
+   - Cuotas: línea "3 cuotas sin interés de $X" reactiva a variante.
+   - Estimador envío: dropdown provincias + costo o GRATIS reactivo a variante.
+   Componente nuevo `shipping-estimator.tsx` + modifs en price-block + variant-list.
 3. **Sprint 3 (pendiente)**: Retiro en local (pickup). ~2-3h sin acciones founder.
 4. **Sprint 4 (pendiente)**: Sistema cupones/descuentos. ~3-4h sin acciones founder.
 
