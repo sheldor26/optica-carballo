@@ -2,6 +2,12 @@
 
 ## Status
 
+🟢 **Regla 13 agregada a CLAUDE.md + foto hero pendiente re-upload** (2026-05-30). Founder mostró screenshot del bucket `brands-shared`: solo `category-sol.jpg` + `vulk-estuche-franela.jpg`. La foto `hero-editorial.jpg` que dijo subir NO está → upload falló (cerró pestaña antes de completar o similar).
+
+**Regla 13 aplicada a CLAUDE.md** (founder eligió A): mental check obligatorio antes de ⚪. Causa raíz: Pattern B 7 recurrencias confirmaron que MISTAKES son lecciones pasivas. Mi sistema lee CLAUDE.md al inicio de cada sesión → regla 13 ahí previene Pattern B desde la próxima sesión.
+
+**Próximo paso (founder)**: re-subir la foto al bucket `brands-shared` con nombre exacto `hero-editorial.jpg`. Cuando esté, refresh `/` y aparece en el hero (código ya implementado, commit `5644cb0`).
+
 🟡 **2 decisiones pendientes founder**: (a) URL real foto hero, (b) ¿agregar regla 13 a CLAUDE.md? (2026-05-30, post-explicación regla)
 
 Founder preguntó "qué significa regla 13". Expliqué en simple (mental check antes de cierre, ⚪ vs ✅, ejemplo del turno fallido). Le pasé 3 opciones:

@@ -30,6 +30,7 @@ Objetivo: ser **la óptica online más confiable y técnicamente avanzada de Arg
 10. **Hreflang es-AR** siempre. Nunca `es` solo.
 11. **Cierre de docs: prohibido "⏭️ Pendiente" / "⏭️ Sin entry"**. Si no hay novedad documentable en LEARNINGS/MISTAKES, escribir explícito "Revisado — sin novedad: [razón breve]". Estado en curso/esperando validación ES estado documentable. Regla escalada desde MISTAKES.md tras 6 violaciones en sesión 2026-05-30.
 12. **Cierre de docs: distinguir ✅ vs ⚪**. ✅ = archivo modificado en commit de este turno (verificable en git diff). ⚪ = archivo revisado pero no modificado (decisión consciente, sin novedad). NO usar ✅ para archivos que no fueron tocados — es deshonesto y rompe la confianza del stop hook. Cuando dudás, `git diff --name-only HEAD~1` para confirmar.
+13. **Mental check obligatorio antes de declarar ⚪ en cualquier doc**: preguntarme "¿el estado del bloque cambió en este turno?". Cosas que cuentan como cambio: implementación nueva, pivot, decisión técnica, pregunta abierta esperando founder, respuesta del founder con material documentable, recomendación, mockup, opciones A/B/C ofrecidas. Si SÍ → actualizar el doc ANTES de redactar el cierre. Si NO → justificación explícita con referencia ("estado igual a commit X"). Si el stop hook reporta inconsistencia 2+ turnos seguidos → CORREGIR antes de continuar, no defender la inconsistencia. Regla escalada desde MISTAKES.md tras 7 recurrencias del Pattern B en sesión 2026-05-30.
 
 ## Reglas duras del negocio (ley)
 
