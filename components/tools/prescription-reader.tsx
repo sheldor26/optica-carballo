@@ -1,9 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertCircle,
+  ArrowRight,
   CheckCircle2,
   FileText,
   Loader2,
@@ -32,6 +34,7 @@ import {
   type EyeMeasurement,
   type PrescriptionAnalysis,
 } from '@/lib/prescription/types';
+import { savePrescriptionToCookie } from '@/lib/prescription-cookie/actions';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
 
 type State =
@@ -424,12 +427,96 @@ function ResultBlock({
         {FORM_DISCLAIMER}
       </p>
 
+      <SaveAndShopCta analysis={analysis} disabled={expired} />
+
       <Button variant="outline" size="lg" className="w-full" onClick={onReset}>
         <RefreshCw className="size-4" />
         Subir otra receta
       </Button>
     </div>
   );
+}
+
+/**
+ * CTA primario: guarda la receta en cookie firmada + redirige al catálogo
+ * de receta. Sólo disponible para recetas válidas no vencidas — receta
+ * vencida no puede comprar (la regente no fabrica con receta vieja).
+ *
+ * Si el guardado falla, mostramos el error pero NO bloqueamos al usuario
+ * (puede seguir manualmente al catálogo).
+ */
+function SaveAndShopCta({
+  analysis,
+  disabled,
+}: {
+  analysis: PrescriptionAnalysis;
+  disabled: boolean;
+}) {
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const onSave = async () => {
+    if (saving) return;
+    setSaving(true);
+    setError(null);
+
+    // Llegamos acá solo si evaluateInPerson devolvió [] → es comprable
+    // online → forzamos type: 'monofocal' aunque la IA haya devuelto
+    // 'unknown'. El schema de cookie sólo acepta 'monofocal'.
+    const payload = {
+      type: 'monofocal' as const,
+      od: stripConfidence(analysis.od),
+      oi: stripConfidence(analysis.oi),
+      dnp: analysis.dnp,
+      expirationDate: analysis.expirationDate,
+      savedAt: Date.now(),
+    };
+
+    const result = await savePrescriptionToCookie(payload);
+    if (!result.ok) {
+      setError(result.error);
+      setSaving(false);
+      return;
+    }
+    router.push('/anteojos-de-receta');
+  };
+
+  return (
+    <div className="space-y-2">
+      <Button
+        size="lg"
+        className="w-full"
+        onClick={onSave}
+        disabled={disabled || saving}
+      >
+        {saving ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Guardando…
+          </>
+        ) : (
+          <>
+            Guardar receta y buscar anteojos
+            <ArrowRight className="size-4" />
+          </>
+        )}
+      </Button>
+      {disabled && (
+        <p className="text-muted-foreground text-center text-xs">
+          Tu receta está vencida — no podemos armar anteojos con receta de más
+          de 1 año. Hacé un control con tu oftalmólogo.
+        </p>
+      )}
+      {error && (
+        <p className="text-destructive text-center text-xs">{error}</p>
+      )}
+    </div>
+  );
+}
+
+function stripConfidence(eye: EyeMeasurement) {
+  return { esf: eye.esf, cil: eye.cil, eje: eye.eje, add: eye.add };
 }
 
 function PrescriptionForm({ analysis }: { analysis: PrescriptionAnalysis }) {

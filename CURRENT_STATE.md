@@ -2,6 +2,21 @@
 
 ## Status
 
+🟢 **Sprint IA-2 (Lector receta → flow de compra) CÓDIGO LISTO — PUSHEAR + TESTEAR** (2026-05-30). Founder eligió scope B (cookie firmada + banner + checkout). Implementación:
+1. **`lib/prescription-cookie/types.ts`** (NUEVO): schema Zod con `eyeMeasurementCookieSchema` (esf/cil/eje/add — sin confidence) + `prescriptionCookieSchema` (type='monofocal', OD, OI, dnp, expirationDate, savedAt). Sólo se guarda monofocal sin patología (bifocales/contact_lens van a WhatsApp y nunca llegan acá).
+2. **`lib/prescription-cookie/cookie.ts`** (NUEVO): HMAC-SHA256 sign/verify usando `PRESCRIPTION_COOKIE_SECRET` (≥32 chars, separado del cart por defensa en profundidad). Cookie `oc_prescription` HttpOnly+Secure+SameSite=lax, TTL 30 días. NUNCA loguear contenido (LPDP 25.326 datos médicos sensibles).
+3. **`lib/prescription-cookie/actions.ts`** (NUEVO): server actions `savePrescriptionToCookie` (con Zod safeParse), `clearPrescriptionCookie`, `getPrescriptionFromCookie`. revalidatePath('/anteojos-de-receta') tras save/clear.
+4. **`.env.example`** + **`.env.local`**: agregada nueva env var `PRESCRIPTION_COOKIE_SECRET` random generada con node crypto. Founder debe agregar una NUEVA en Vercel Production antes de pushear.
+5. **`components/tools/prescription-reader.tsx`**: agregado `SaveAndShopCta` después del `PrescriptionForm`. Botón primario "Guardar receta y buscar anteojos" → llama action + router.push('/anteojos-de-receta'). Si receta vencida (`isExpired === true`) → botón disabled + texto explicativo. Helper `stripConfidence` para sacar campo confidence del payload.
+6. **`components/prescription/prescription-banner.tsx`** (NUEVO, CLIENT): banner que lee cookie via server action en `useEffect` (NO server SSR para no romper cache ISR de páginas hijas). Renderiza valores resumidos OD/OI ESF/CIL[×eje°] + DNP, con botón "Editar" (link al lector) y "Quitar" (call clear action). Si no hay cookie → return null (sin espacio).
+7. **`app/(storefront)/anteojos-de-receta/layout.tsx`** (NUEVO): monta `PrescriptionBanner` arriba de TODAS las páginas hijas (categoría + filtros + marcas + PDPs) sin tener que editar 19 archivos.
+
+Decisión técnica clave: banner **client component** porque la cookie es per-user. Si lo renderizaba server, el cache ISR mostraría la receta del primer visitante a todos los demás. Cliente + `useEffect` + server action evita el problema sin sacrificar SSR del resto del catálogo. Trade-off documentado: flash de hydration. Pre-existente: `/anteojos-de-receta` ya era ƒ (dynamic) por uso de searchParams.
+
+Typecheck verde. Build OK. Lint: solo warnings preexistentes (no nuevos). **Próximo paso**: (a) commit + push; (b) founder agregar `PRESCRIPTION_COOKIE_SECRET` en Vercel + redeploy; (c) test e2e: subir receta simple en `/lector-de-receta` → guardar → ver banner en `/anteojos-de-receta` → quitar/editar funcionan.
+
+🟢 **Sprint IA-1 (Recomendador → productos reales) APLICADO + PUSHEADO — TESTING EN PROD** (2026-05-30). Founder aplicó bootstrap (Sprint 4 cupones + normalize frame_shapes) en cloud y confirmó. Bootstrap derivado borrado. `CLOUD_APPLIED.md` actualizado con 3 entries nuevas (commit `86b3a1c`). Commits IA-1 pusheados a main → Vercel redeploya. Esperando test del founder en prod: `/recomendador-de-monturas` → subir selfie → ver grid de productos reales filtrados por frame_shape.
+
 🟢 **Sprint IA-1 (Recomendador → productos reales) CÓDIGO LISTO — ESPERANDO APLICAR BOOTSTRAP** (2026-05-30). Founder eligió arrancar IA-1 tras descubrimiento de las 2 features IA ya en prod. Diagnóstico crítico previo al código: **bug latente de mismatch nombres** — IA devolvía `aviador`/`redondo`/`cuadrado` (español, del enum `FRAME_SHAPES`) pero DB tenía `aviator`/`round`/`square` (inglés, de seeds viejos). El CTA `/anteojos-de-sol?forma=aviador` siempre devolvía 0 productos silenciosamente. Founder eligió **opción A** (normalizar DB a español, consistencia total con UI). Implementación:
 1. **Migration** `20260530100000_normalize_frame_shapes_spanish.sql` (60 líneas, idempotente): 3 UPDATEs jsonb_set + verificación post-migration que NOTICE si quedan valores fuera del enum (Rusty Yau con `wraparound` quedará reportado — gap documentado para iter futura que sume `envolvente` al enum).
 2. **`lib/catalog/brand-filters.ts`** línea 51: `value: 'aviator'` → `'aviador'` (consistencia con migration).
