@@ -2,6 +2,23 @@
 
 ## Status
 
+🟢 **Vulk Stray DEFINITIVO — seeds 20 + 21 listos sin pendientes técnicos** (2026-05-30). Founder confirmó los 2 datos ambiguos del iter previo:
+1. **lens_width = 50mm** (imagen era correcta, no texto). Corregido en seed 21: measurements + description.
+2. **SKU CRY = 126892** (el placeholder que asumí coincidió con el real). Limpiado warning del seed.
+
+Seeds finales:
+- `seeds/20_vulk_stray.sql`: 4 variantes (MBLK 126890, SBLK 126891, 663 126898, MDEMI-MBLK 126899)
+- `seeds/21_vulk_stray_complete.sql`: UPDATE producto con measurements (144/50/46/20/145) + 5ta variante CRY 126892 + 2 fotos CRY
+
+Total Vulk Stray: 5 variantes, 11 fotos (9 del seed 20 + 2 del seed 21), $93.000 precio uniforme.
+
+Commit `db6ba45` (corrección 52→50 + SKU confirmed).
+
+**Próximo paso (founder)**:
+1. Subir 11 fotos al bucket `products/vulk-stray-receta/`
+2. Aplicar `seeds/20_vulk_stray.sql` al cloud
+3. Aplicar `seeds/21_vulk_stray_complete.sql` al cloud (después de 20)
+
 🟡 **Vulk Stray completo — seed 21 con UPDATE + 5ta variante CRY (SKU placeholder)** (2026-05-30). Founder pasó info adicional post-seed 20:
 - 5ta variante "Gris" en ML es realmente CRY (Transparente)
 - Material: G-Flex frame + patillas
