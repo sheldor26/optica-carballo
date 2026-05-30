@@ -22,6 +22,47 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cuando founder no-técnico dice "no tiene sentido", parar de explicar y pedir verificación empírica
+
+**Categoría**: Communication / Founder-technical translation
+**Confianza**: 🟡 Media (validado 1 vez en iter 10 — falta confirmar resultado)
+
+### Qué funcionó
+
+En iter 10, founder reprocesó las fotos siguiendo mi instrucción (mal calibrada) y reportó "siguen diferentes, no tiene sentido". Mi primer instinto fue explicar la teoría de nuevo (canvas size vs padding interno). Cambié de estrategia y propuse:
+1. **Analogía visual concreta** (4 hojas A4 idénticas con anteojos de distinto tamaño dibujados adentro) → traduce concepto técnico a algo tangible.
+2. **Verificación empírica directa** (pedirle las 4 URLs de las fotos para medir yo el % real del anteojo y mostrarle tabla con números).
+
+Esto cambia la conversación de "Claude explica teoría / founder cree o no cree" → "Claude mide datos / founder ve evidencia objetiva".
+
+### Por qué funciona
+
+El founder es no-técnico pero **muy lógico**. Cuando una explicación técnica "no tiene sentido" para él, generalmente es porque la abstracción no le suena verosímil — no porque le falte capacidad de entender. Bajar a **analogía concreta** + **datos medibles** elimina la fricción.
+
+Además: si efectivamente las fotos NO son iguales como él cree, los números lo van a mostrar sin que yo tenga que insistir. Si SON iguales y la teoría está mal, los números también lo van a mostrar y yo aprendo.
+
+### Cómo aplicar
+
+Triggers para cambiar a este modo:
+- Founder dice "no tiene sentido", "no entiendo por qué", "es raro porque".
+- Más de 2 turnos explicando lo mismo con palabras distintas.
+- Founder ejecutó tu instrucción al pie de la letra y el resultado no es el que prometiste.
+
+Pasos:
+1. **Analogía**: traducir el concepto técnico a un objeto cotidiano (hojas, marcos, etc.). Mejor cuanto más visual.
+2. **Verificación empírica**: pedir el dato real (URL, screenshot con DevTools, número exacto). Vos hacés la medición — no es trabajo del founder.
+3. **Tabla con números reales** que confirma o refuta la hipótesis.
+
+### Costo si se ignora
+
+Sigues explicando teoría → founder pierde confianza en tu diagnóstico → conversaciones largas sin resolución → posible decisión incorrecta (founder podría reprocesar fotos de nuevo siguiendo la misma instrucción mala, o abandonar la feature).
+
+### Relación con learnings anteriores
+
+Aplicación específica del patrón "cuando un mismo error se repite, cambiar el modelo mental antes de iterar". El error que se repite acá es "founder reprocesa fotos siguiendo mi instrucción → resultado no es el esperado". Cambiar modelo = medir datos en lugar de teorizar.
+
+---
+
 ## 2026-05-30 — Uniformidad de fotos tiene 2 dimensiones distintas: framing relativo vs padding interno absoluto
 
 **Categoría**: Asset specs / Domain knowledge
