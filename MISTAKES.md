@@ -24,6 +24,63 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Casi shipeo bug de leak cross-user al diseñar banner que leía cookie en Server Component con ISR
+
+**Estado**: ✅ Cerrado — bug detectado en fase de diseño antes de commitear. Refactor a client component con useEffect + server action.
+**Categoría**: Next.js caching / Privacy
+
+### Qué pasó
+
+Sprint IA-2 (lector receta → banner cross-section). Mi primer instinto fue hacer `PrescriptionBanner` como Server Component que llama `cookies()` directo:
+
+```tsx
+// MAL — habría introducido bug de seguridad
+export async function PrescriptionBanner() {
+  const prescription = await readPrescriptionCookie();
+  if (!prescription) return null;
+  return <aside>OD: {prescription.od.esf}...</aside>;
+}
+```
+
+Iba a montarlo en `app/(storefront)/anteojos-de-receta/layout.tsx`. Pero la página `/anteojos-de-receta` tiene `revalidate = 300` (ISR cache 5 min) y los hijos (`[brand]/[product]`) son SSG con `generateStaticParams`.
+
+Si shipeo eso:
+1. **Visitante A** carga receta (OD -2.50) → server SSR genera HTML con banner = "OD -2.50".
+2. **HTML se cachea** por ISR (compartido entre todos los visitantes hasta revalidate).
+3. **Visitante B** entra a `/anteojos-de-receta` → recibe HTML cacheado de A → ve "Tu receta está cargada: OD -2.50" SIN HABER SUBIDO RECETA.
+
+Bug doble: (a) UX confuso (B ve receta que no es suya), (b) **LEAK de datos médicos** entre usuarios (violación LPDP 25.326).
+
+Lo detecté ANTES de commitear porque me hice la pregunta "esta page es ISR — qué pasa con cookies en SSR?". Refactoré a client component con `useEffect` + server action `getPrescriptionFromCookie()`. La cookie se lee en runtime per-cliente, el HTML cacheado queda neutro (banner monta vacío hasta hydration).
+
+### Causa raíz
+
+**Default mental "es server component, leer cookies acá es lo natural"**. En Next.js App Router todo es server por default → reflejo de leer datos server-side. Pero **server-side rendering en páginas con ISR ≠ runtime per-request**. El HTML del Server Component se cachea con cookies-vacías (build time) o cookies del primer visitante (runtime con revalidate).
+
+Sub-causa: mezclo conceptual entre "server component" (donde corre) y "dynamic vs static" (cuándo corre). Server components pueden ser cualquiera de los dos.
+
+### Regla preventiva
+
+ANTES de escribir `cookies()`, `headers()`, `auth()` en un Server Component:
+
+1. **¿La page que lo monta tiene `revalidate = N` o es SSG con `generateStaticParams`?** (Mirar el page.tsx que lo wrappea.)
+2. Si SÍ → NO leer cookies en server. Convertir a client component con server action.
+3. Si NO (page es `force-dynamic` / `revalidate = 0`) → OK.
+
+Smoke test mental: "si este HTML se cacheara y dos usuarios distintos lo vieran, ¿estaría bien?" Si NO → no leer per-user data en SSR.
+
+### Cuándo aplicar
+
+- Sectional layouts (`/section/layout.tsx`) que monten UI per-user.
+- Banners de carrito/receta/wishlist en categorías o PDPs.
+- User headers (avatar, nombre) sobre páginas cacheadas.
+
+### Bonus
+
+Conecta con LEARNING gemelo de hoy ("Para datos per-user en páginas con ISR cache..."). Mismo insight: mistake = el draft inicial wrong, learning = el patrón correcto. Documentar ambos para que un futuro yo (o futuro asistente) tenga ambos lados visibles.
+
+Es la 3ra vez que tengo near-miss en pattern Next.js cache + per-user data (las 2 anteriores fueron menores). Si ocurre 1 vez más → candidato a regla permanente en CLAUDE.md o en un agente.
+
 ## 2026-05-30 — Mismatch silencioso ES/EN entre IA enum y valores DB rompió CTA del recomendador por meses
 
 **Estado**: 🟡 Mitigado — migration normalize_frame_shapes_spanish + update brand-filters.ts. Bug latente que persistió desde la creación del recomendador hasta hoy.

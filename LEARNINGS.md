@@ -22,6 +22,70 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para datos per-user en páginas con ISR cache: client component + server action (no server SSR)
+
+**Categoría**: Next.js caching / Client-server boundaries
+**Confianza**: 🟢 Alta (bug evitado antes de commitear; patrón documentado)
+
+### Qué funcionó
+
+Diseñando el `PrescriptionBanner` (Sprint IA-2), el draft inicial era un server component que llamaba `cookies()` directo:
+```tsx
+// MAL
+export async function PrescriptionBanner() {
+  const cookie = await readPrescriptionCookie();
+  if (!cookie) return null;
+  return <aside>...{cookie.od.esf}...</aside>;
+}
+```
+
+Antes de escribirlo, me pregunté: "esta page tiene `revalidate = 300` (ISR). Si el server component lee la cookie en SSR, el HTML se cachea con la receta del primer visitante → todos los visitantes siguientes ven esa receta hasta que se invalide el cache. Bug de seguridad serio + LPDP."
+
+Solución correcta: convertir a client component con `useEffect` + server action.
+```tsx
+'use client';
+export function PrescriptionBanner() {
+  const [data, setData] = useState(null);
+  useEffect(() => { getPrescriptionFromCookie().then(setData); }, []);
+  // ...
+}
+```
+
+Trade-off: flash de hydration (banner aparece tras client render). En la práctica imperceptible para usuario que viene del lector (cookie warm). Pero cero risk de leak cross-user.
+
+### Por qué funcionó
+
+Next.js SSR + ISR cachea el HTML. Si el HTML depende de cookies (datos per-user), el cache es incorrecto. La forma de poner UI dependiente de cookie en una página con ISR es:
+- **Client component**: lee data en runtime, independiente del HTML cacheado.
+- **Server Component dynamic-only**: forzar `dynamic = 'force-dynamic'` (pierde ISR).
+- **Suspense + PPR**: stream solo la parte dinámica (requiere `experimental.ppr`).
+
+Para iter 1, client component es la opción más simple y safe.
+
+### Regla preventiva
+
+Antes de usar `cookies()`, `headers()`, `auth()` o cualquier source per-user en un Server Component:
+1. **¿La page que lo monta tiene `revalidate = N` o `force-static`?**
+2. **¿La page se monta en rutas que se pre-renderean con `generateStaticParams`?**
+3. Si SÍ a cualquiera → no leer en server, hacerlo client.
+4. Si la page ya es `dynamic = 'force-dynamic'` o `revalidate = 0` → OK leer en server.
+
+### Cuándo aplicar
+
+- Banners "tu carrito tiene X", "tu receta cargada", "tu wishlist".
+- Header de usuario logueado encima de páginas cacheadas.
+- Cualquier `useUserData` que se monta en sectional layouts.
+
+### Cuándo NO aplicar
+
+- En API routes / route handlers (siempre dynamic).
+- En pages dynamic explícitas (force-dynamic).
+- En components que se montan solo en rutas autenticadas (donde ya el middleware fuerza dynamic).
+
+### Bonus
+
+Conecta con el mistake gemelo de hoy ("casi shipeé un bug de leak ISR + cookies"). El learning es el patrón; el mistake es la near-miss. Documentar ambos hace que un futuro yo dude antes de escribir `cookies()` en un server component sectional.
+
 ## 2026-05-30 — Auditar mismatch de nombres ES/EN ANTES de crear cruces entre dominios
 
 **Categoría**: Schema consistency / Cross-domain wiring
