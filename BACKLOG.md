@@ -77,8 +77,6 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## 🟡 Pendiente — data real (acción del founder)
 
-- [ ] **Reemplazar productos `[PH]`** en `supabase/seeds/02_rusty_products.sql`
-  con nombres, descripciones, precios reales. Reaplicar al cloud.
 - [ ] **Cargar productos de las otras 4 marcas** (Vulk, Reef, Mormaii,
   Paula Cahen D'Anvers) — actualmente solo Rusty tiene productos cargados.
 - [ ] **Reemplazar `[PENDIENTE]` en páginas legales**: plazos de
@@ -122,6 +120,7 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## ✅ Hecho
 
+- 2026-05-30: Eliminados los 4 productos placeholder `[PH]` de Rusty (rusty-wayfarer-classic-sol, rusty-aviator-pilot-sol, rusty-redondo-vintage-rx, rusty-square-modern-rx). Cleanup SQL en `supabase/cleanup/20260530_delete_rusty_placeholders.sql`. Seed `02_rusty_products.sql` borrado del repo. Único producto Rusty real: `rusty-yau` (importado de ML).
 - 2026-05-29: Texto SEO extenso por marca (`brands.seo_intro` 150-300 palabras + `seo_outro` 80-150 palabras). Migración + seed listos para aplicar al cloud. Renderizado en `BrandCatalogPage` (intro arriba, outro al pie).
 - 2026-05-29 (commit pendiente sprint SEO+): `clean` script en package.json (`pnpm clean` = `rm -rf .next`).
 - 2026-05-29 (commit pendiente sprint SEO+): FAQ schema en páginas de marca (5 FAQs específicas por marca en `lib/content/brand-faqs.ts`, renderizadas con `FaqAccordion` + `FaqJsonLd`).
