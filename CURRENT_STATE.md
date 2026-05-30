@@ -2,6 +2,19 @@
 
 ## Status
 
+✅ **Vulk Stray CARGADO EN PRODUCCIÓN — primer producto categoría receta** (2026-05-30). Founder confirmó "todos aplicados". Verificado vía curl:
+- ✅ `/anteojos-de-receta/vulk` muestra Vulk Stray con 4 thumbs visibles
+- ✅ Las 11 fotos bucket `vulk-stray-receta/` HTTP 200 (las 11)
+- ✅ Seeds 20 y 21 aplicados al cloud
+
+Resumen ejecutivo Vulk Stray:
+- 5 variantes activas: MBLK 126890, SBLK 126891, 663 126898, MDEMI-MBLK 126899, CRY 126892
+- Categoría: anteojos-de-receta (HITO: primer producto de esta categoría en el catálogo)
+- Precio uniforme: $93.000
+- ML link: MLA1824193366
+- Stock total: 25 unidades (10+0+9+1+5)
+- Solo armazón (lentes graduadas se cargan aparte vía consulta WhatsApp post-venta)
+
 🟢 **Vulk Stray DEFINITIVO — seeds 20 + 21 listos sin pendientes técnicos** (2026-05-30). Founder confirmó los 2 datos ambiguos del iter previo:
 1. **lens_width = 50mm** (imagen era correcta, no texto). Corregido en seed 21: measurements + description.
 2. **SKU CRY = 126892** (el placeholder que asumí coincidió con el real). Limpiado warning del seed.
