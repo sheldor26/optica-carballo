@@ -473,10 +473,21 @@ function SaveAndShopCta({
     // Llegamos acá solo si evaluateInPerson devolvió [] → es comprable
     // online → forzamos type: 'monofocal' aunque la IA haya devuelto
     // 'unknown'. El schema de cookie sólo acepta 'monofocal'.
+    //
+    // Forzamos `add: null` explícito: invariante "monofocal en cookie nunca
+    // tiene add". Si por algún edge case la IA devolvió add !== null pero
+    // evaluateInPerson lo dejó pasar (no debería, pero defense-in-depth),
+    // descartamos el add acá para que la regente no se confunda al armar.
+    const stripAdd = (eye: EyeMeasurement) => ({
+      esf: eye.esf,
+      cil: eye.cil,
+      eje: eye.eje,
+      add: null,
+    });
     const payload = {
       type: 'monofocal' as const,
-      od: stripConfidence(analysis.od),
-      oi: stripConfidence(analysis.oi),
+      od: stripAdd(analysis.od),
+      oi: stripAdd(analysis.oi),
       dnp: analysis.dnp,
       expirationDate: analysis.expirationDate,
       savedAt: Date.now(),
@@ -522,10 +533,6 @@ function SaveAndShopCta({
       )}
     </div>
   );
-}
-
-function stripConfidence(eye: EyeMeasurement) {
-  return { esf: eye.esf, cil: eye.cil, eje: eye.eje, add: eye.add };
 }
 
 /**

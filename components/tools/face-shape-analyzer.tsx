@@ -552,16 +552,28 @@ function RecommendedProductsLoader({ shapes }: { shapes: string[] }) {
 
   useEffect(() => {
     let cancelled = false;
+    // Timeout 15s: si el fetch no responde, mostrar empty fallback en vez
+    // de spinner infinito. La query a Supabase debería tardar <1s en cond
+    // normales; 15s es buffer generoso para redes lentas / cold start.
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) setProducts([]);
+    }, 15_000);
+
     fetchRecommendedProducts(shapes)
       .then((result) => {
-        if (!cancelled) setProducts(result);
+        if (cancelled) return;
+        clearTimeout(timeoutId);
+        setProducts(result);
       })
       .catch(() => {
-        // Fallar silencioso → muestra empty fallback, no rompe el flow.
-        if (!cancelled) setProducts([]);
+        if (cancelled) return;
+        clearTimeout(timeoutId);
+        setProducts([]);
       });
+
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, [shapes]);
 

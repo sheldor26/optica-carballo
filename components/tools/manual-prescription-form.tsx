@@ -102,8 +102,8 @@ export function ManualPrescriptionForm() {
     setOi({ ...oi, ...patch });
   };
 
-  const canSubmit =
-    noPrisms && validReceta && dnp !== null && !pending;
+  const dnpValid = dnp !== null && dnp >= 40 && dnp <= 80;
+  const canSubmit = noPrisms && validReceta && dnpValid && !pending;
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -344,7 +344,7 @@ function DnpField({
   onChange,
 }: {
   dnp: number | null;
-  onChange: (next: number) => void;
+  onChange: (next: number | null) => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -366,7 +366,12 @@ function DnpField({
           value={dnp ?? ''}
           onChange={(e) => {
             const v = e.target.value;
-            onChange(v === '' ? 0 : Number(v));
+            if (v === '') {
+              onChange(null);
+              return;
+            }
+            const num = Number(v);
+            if (Number.isFinite(num)) onChange(num);
           }}
           placeholder="62"
           className="border-border focus:border-foreground/40 bg-background w-32 rounded-md border px-3 py-2 text-center text-base tabular-nums outline-none transition-colors"
