@@ -30,6 +30,7 @@ import {
 } from '@/lib/prescription/copy';
 import {
   evaluateInPerson,
+  hasOnlyAddReason,
   isExpired,
   type EyeMeasurement,
   type PrescriptionAnalysis,
@@ -373,7 +374,15 @@ function ResultBlock({
   const inPersonReasons = evaluateInPerson(analysis);
   const expired = isExpired(analysis.expirationDate);
 
-  // Casos presenciales → handoff a WhatsApp con contexto, NO mostrar form.
+  // Receta bifocal/multifocal SIN otras patologías: mostramos opciones de
+  // monofocal lejos/cerca + handoff opcional. Founder explícito: podemos
+  // armar 2 anteojos separados — no hay que bloquear el flow completo.
+  if (hasOnlyAddReason(inPersonReasons)) {
+    return <BifocalOptionsBlock analysis={analysis} expired={expired} onReset={onReset} />;
+  }
+
+  // Resto de casos presenciales (alta graduación, contact lens, etc.) →
+  // handoff WhatsApp completo, no podemos hacerlo online.
   if (inPersonReasons.length > 0) {
     return (
       <InPersonHandoff
@@ -517,6 +526,225 @@ function SaveAndShopCta({
 
 function stripConfidence(eye: EyeMeasurement) {
   return { esf: eye.esf, cil: eye.cil, eje: eye.eje, add: eye.add };
+}
+
+/**
+ * Block para recetas bifocales/multifocales (has_add) SIN otras patologías.
+ *
+ * Founder feedback: aunque el usuario tenga add, podemos armar 2 anteojos
+ * monofocales (uno de lejos, uno de cerca) o solo uno de los dos. Solo el
+ * multifocal "todo en uno" requiere mediciones presenciales.
+ *
+ * Mostramos la tabla con valores (educativo: el user escaneó su receta,
+ * dale el output) + 3 opciones claras.
+ *
+ * Fórmula monofocal de cerca (estándar óptica AR, aprobado por founder):
+ * - ESF cerca = ESF lejos + ADD (por ojo)
+ * - CIL cerca = CIL lejos (no cambia)
+ * - EJE cerca = EJE lejos (no cambia)
+ * - DNP: reutilizamos la de lejos. La regente ajusta -3mm por lado típico
+ *   al armar (procedimiento manual, fuera de scope del lector IA).
+ */
+function BifocalOptionsBlock({
+  analysis,
+  expired,
+  onReset,
+}: {
+  analysis: PrescriptionAnalysis;
+  expired: boolean;
+  onReset: () => void;
+}) {
+  const router = useRouter();
+  const [saving, setSaving] = useState<'distance' | 'near' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const saveAndShop = async (mode: 'distance' | 'near') => {
+    if (saving !== null) return;
+    setSaving(mode);
+    setError(null);
+
+    const payload = {
+      type: 'monofocal' as const,
+      od:
+        mode === 'distance'
+          ? { esf: analysis.od.esf, cil: analysis.od.cil, eje: analysis.od.eje, add: null }
+          : {
+              esf: (analysis.od.esf ?? 0) + (analysis.od.add ?? 0),
+              cil: analysis.od.cil,
+              eje: analysis.od.eje,
+              add: null,
+            },
+      oi:
+        mode === 'distance'
+          ? { esf: analysis.oi.esf, cil: analysis.oi.cil, eje: analysis.oi.eje, add: null }
+          : {
+              esf: (analysis.oi.esf ?? 0) + (analysis.oi.add ?? 0),
+              cil: analysis.oi.cil,
+              eje: analysis.oi.eje,
+              add: null,
+            },
+      dnp: analysis.dnp,
+      expirationDate: analysis.expirationDate,
+      savedAt: Date.now(),
+    };
+
+    const result = await savePrescriptionToCookie(payload);
+    if (!result.ok) {
+      setError(result.error);
+      setSaving(null);
+      return;
+    }
+    router.push('/anteojos-de-receta');
+  };
+
+  const multifocalMessage = `Hola! Hice el lector de receta de Óptica Carballo y me indicó que necesito un anteojo multifocal o bifocal. ¿Cuándo puedo pasar para tomar las mediciones?`;
+  const whatsappLink = getWhatsappLinkWithContext(multifocalMessage);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-brand text-xs font-medium uppercase tracking-[0.2em]">
+          Lejos y cerca
+        </p>
+        <h2 className="text-foreground mt-2 font-serif text-3xl font-medium tracking-tight md:text-4xl">
+          Tu receta es para ver de lejos y de cerca
+        </h2>
+        <p className="text-muted-foreground mt-3 text-sm md:text-base">
+          Te explicamos las opciones. Podemos armarte uno o los dos anteojos por
+          separado online, o coordinar un multifocal en persona.
+        </p>
+      </div>
+
+      {expired && (
+        <div className="border-amber-400/40 bg-amber-50 flex items-start gap-3 rounded-lg border p-4 dark:bg-amber-950/20">
+          <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <p className="text-foreground text-sm">
+            {WARNING_FLAG_MESSAGES.expired_date}
+          </p>
+        </div>
+      )}
+
+      <PrescriptionForm analysis={analysis} />
+
+      <div className="space-y-3">
+        <h3 className="text-foreground text-sm font-semibold uppercase tracking-wide">
+          ¿Qué podemos armarte?
+        </h3>
+
+        <OptionCard
+          title="Anteojo monofocal solo para LEJOS"
+          description="Usamos los valores de ESF, CIL y EJE. Para conducir, ver TV, caminar."
+          buttonLabel={
+            saving === 'distance' ? 'Guardando…' : 'Buscar anteojos de lejos'
+          }
+          onClick={() => saveAndShop('distance')}
+          disabled={saving !== null || expired}
+          primary
+        />
+
+        <OptionCard
+          title="Anteojo monofocal solo para CERCA"
+          description="Sumamos la ADD a la graduación. Para leer, computadora, costura."
+          buttonLabel={
+            saving === 'near' ? 'Guardando…' : 'Buscar anteojos de cerca'
+          }
+          onClick={() => saveAndShop('near')}
+          disabled={saving !== null || expired}
+          primary
+        />
+
+        <OptionCard
+          title="Multifocal o bifocal completo"
+          description="Un solo anteojo con ambas zonas. Requiere mediciones presenciales (altura pupilar, postura natural, adaptación)."
+          buttonLabel="Coordinar por WhatsApp"
+          href={whatsappLink ?? undefined}
+        />
+      </div>
+
+      {expired && (
+        <p className="text-muted-foreground text-center text-xs">
+          Tu receta está vencida — no podemos armar anteojos con receta de más
+          de 1 año. Hacé un control con tu oftalmólogo.
+        </p>
+      )}
+      {error && (
+        <p className="text-destructive text-center text-xs">{error}</p>
+      )}
+
+      <p className="text-muted-foreground border-border/40 border-t pt-4 text-xs leading-relaxed">
+        {FORM_DISCLAIMER}
+      </p>
+
+      <Button variant="outline" size="lg" className="w-full" onClick={onReset}>
+        <RefreshCw className="size-4" />
+        Subir otra receta
+      </Button>
+    </div>
+  );
+}
+
+/**
+ * Card de opción dentro del BifocalOptionsBlock. Tres modos:
+ * - `primary`: botón principal (color brand). Para acciones online.
+ * - `href` presente: link externo (WhatsApp). Sin onClick.
+ * - Default: botón secundario.
+ */
+function OptionCard({
+  title,
+  description,
+  buttonLabel,
+  onClick,
+  disabled,
+  primary,
+  href,
+}: {
+  title: string;
+  description: string;
+  buttonLabel: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  primary?: boolean;
+  href?: string;
+}) {
+  const buttonClass = primary
+    ? 'bg-foreground text-background hover:bg-foreground/90'
+    : 'border-border bg-background hover:bg-muted/40 border';
+
+  return (
+    <div className="border-border/60 bg-background flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <div className="flex-1">
+        <p className="text-foreground text-sm font-semibold">{title}</p>
+        <p className="text-muted-foreground mt-1 text-xs">{description}</p>
+      </div>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            buttonClass,
+          )}
+        >
+          {buttonLabel}
+          <ArrowRight className="size-4" />
+        </a>
+      ) : (
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          className={cn(
+            'inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
+            buttonClass,
+          )}
+        >
+          {buttonLabel}
+          <ArrowRight className="size-4" />
+        </button>
+      )}
+    </div>
+  );
 }
 
 function PrescriptionForm({ analysis }: { analysis: PrescriptionAnalysis }) {

@@ -145,6 +145,21 @@ export function evaluateInPerson(
   return reasons;
 }
 
+/**
+ * `has_add` por sí solo NO es bloqueante absoluto: podemos armar 2
+ * anteojos monofocales (uno de lejos, uno de cerca) o solo uno de los
+ * dos. Solo los otros reasons (high_esf, high_cil, high_sum,
+ * anisometropia, contact_lens) requieren atención presencial obligatoria.
+ *
+ * Si esta función devuelve `true`, mostramos al usuario las opciones de
+ * monofocal lejos / cerca + handoff multifocal opcional, en vez de bloquear
+ * el flow completo.
+ */
+export function hasOnlyAddReason(reasons: InPersonReason[]): boolean {
+  if (reasons.length === 0) return false;
+  return reasons.every((r) => r === 'has_add');
+}
+
 /** Evalúa si la receta está vencida según fecha de emisión. */
 export function isExpired(expirationDate: string | null): boolean {
   if (!expirationDate) return false;
