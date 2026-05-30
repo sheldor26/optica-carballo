@@ -72,6 +72,63 @@ Sub-causa: documenté la lógica con `Fuente: optical-expert` en el comentario p
 
 Detectado porque founder testeó manualmente con una receta real. Sin testing real, este bug podía durar más meses. Conecta con la regla preventiva general: **el founder es el smoke test final**. Para features donde el código encarna lógica de dominio (óptica, legal, comercial), shipear sin que el founder pase con caso de uso real es alto riesgo.
 
+## 2026-05-30 — Propuse tarjeta apoyada en la FRENTE para medir DNP — error técnico óptico básico (3-5% paralaje)
+
+**Estado**: ✅ Cerrado — detectado por `optical-expert` antes de codear. Approach corregido a tarjeta apoyada en pómulos.
+**Categoría**: Domain logic / Validación con expert insuficiente
+
+### Qué pasó
+
+Al diseñar el medidor de DNP (IA-5), mi setup inicial propuesto al founder fue:
+> "tarjeta de crédito apoyada en la **frente** como referencia (mide 85.6mm × 53.98mm, estándar ISO/IEC 7810)"
+
+Argumenté que "es lo que usan EyeQue, GlassesUSA, ZenniOptical". El founder aceptó el approach.
+
+Antes de codear consulté a `optical-expert` por validación. El agente me corrigió inmediatamente:
+
+> "La tarjeta apoyada en la frente es **incorrecta técnicamente**. Genera error de paralaje porque la frente está ~15-25mm por delante del plano pupilar. Eso introduce un error sistemático del 3-5% (en una DNP de 64mm, son 2-3mm de error — inaceptable)."
+
+Para una óptica:
+- Monofocal de baja graduación: ±2mm aceptable.
+- Multifocal/progresivo: ±0.5mm requerido.
+- Mi setup propuesto generaría ~2-3mm de error sistemático = **clientes con anteojos mal centrados, fatiga visual, no adaptación a progresivos**.
+
+Corrección: tarjeta apoyada en los **pómulos**, alineada con la base de la nariz (mismo plano vertical que pupilas). Eso elimina el error de paralaje.
+
+### Causa raíz
+
+**Asumí que "lo que usan apps populares" = "técnicamente correcto"**. Falsa premisa. Las apps que mencioné (EyeQue, GlassesUSA, ZenniOptical) pueden:
+- Usar setups distintos al que yo recordaba.
+- Tener errores similares aceptados porque su mercado tolera precisión menor.
+- Yo haber recordado mal qué setup usan.
+
+No verifiqué con un experto óptico ANTES de proponer al founder. Confié en mi modelo mental de "DNP por foto = tarjeta como referencia de escala", sin profundizar en **dónde poner la tarjeta** (que es el detalle crítico).
+
+Sub-causa: el founder aceptó el setup confiando en mi presentación. Founder no es técnico óptico ni desarrollador — depende de que yo le presente cosas validadas o explícitamente marcadas como "a confirmar con la regente".
+
+### Regla preventiva
+
+1. **Cuando propongas un setup técnico al founder que dependa de física/anatomía/regulación**, marcar explícitamente "esto requiere validación con [optical-expert / argentine-ecom / abogado]".
+2. **No usar "lo que hacen X y Y empresas" como prueba de corrección**. Las empresas hacen lo que vende, no lo que es técnicamente perfecto.
+3. **Para features con lógica de dominio, consultar al agente especialista ANTES de presentar opciones al founder**, no después.
+
+### Cuándo aplicar
+
+- Diseños de features anatómicas/médicas (medidas, recetas, fittings).
+- Implementaciones de regulación (LPDP, AFIP, defensa consumidor).
+- Decisiones que el founder no puede validar técnicamente por su rol.
+
+### Cuándo NO aplicar
+
+- Decisiones que el founder puede validar él mismo (UX, copy, dirección estética).
+- Features de stack puramente técnico (sin dominio profesional involucrado).
+
+### Bonus
+
+Este mistake conecta con el patrón mayor "validar con especialista antes de codear lógica de dominio" (ver LEARNINGS gemelo). Ambos confirman que cuando hay un dominio profesional involucrado (óptica, salud, legal), la consulta al agente NO es opcional — es defensa contra bugs sistemáticos invisibles al desarrollador no especialista.
+
+2do mistake en la sesión donde mi propuesta inicial estaba mal por falta de validación de dominio (el primero fue "tratar has_add como bloqueador absoluto" del lector de receta IA-2.5). Mismo patrón: confié en mi modelo mental de óptica cuando no soy técnico óptico. **Si esto se repite 1 vez más, regla permanente CLAUDE.md**: "Antes de codear lógica de dominio óptico/médico/legal, consultar al agente especialista — no es opcional".
+
 ## 2026-05-30 — Omití Jeeliz en mi presentación inicial de opciones VTO por categorización binaria 2D/3D
 
 **Estado**: 🟡 Mitigado — agente `ai-features-engineer` trajo Jeeliz al research, no llegó al código equivocado.

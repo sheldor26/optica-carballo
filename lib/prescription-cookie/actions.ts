@@ -52,3 +52,45 @@ export async function clearPrescriptionCookie(): Promise<void> {
 export async function getPrescriptionFromCookie(): Promise<PrescriptionCookie | null> {
   return await readPrescriptionCookie();
 }
+
+/**
+ * Actualiza el campo `dnp` de la receta cargada (si existe). Llamado
+ * desde el medidor de DNP cuando el usuario clickea "Guardar a mi receta".
+ *
+ * Si NO hay receta cargada → devuelve { ok: false } con instrucciones.
+ * El usuario debe usar primero `/lector-de-receta` para crear la cookie.
+ *
+ * NUNCA loguear `dnpMm` — biométrico sensible (LPDP).
+ */
+export async function updatePrescriptionDnpInCookie(
+  dnpMm: number,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!Number.isFinite(dnpMm) || dnpMm < 40 || dnpMm > 80) {
+    return { ok: false, error: 'DNP inválida.' };
+  }
+
+  const current = await readPrescriptionCookie();
+  if (!current) {
+    return {
+      ok: false,
+      error:
+        'Primero cargá tu receta en el lector. Después podés sumarle la DNP.',
+    };
+  }
+
+  const updated: PrescriptionCookie = {
+    ...current,
+    dnp: dnpMm,
+    savedAt: Date.now(),
+  };
+
+  // Re-validamos (defensa en profundidad por si el shape cambió).
+  const parsed = prescriptionCookieSchema.safeParse(updated);
+  if (!parsed.success) {
+    return { ok: false, error: 'No pudimos actualizar la receta.' };
+  }
+
+  await writePrescriptionCookie(parsed.data);
+  revalidatePath('/anteojos-de-receta');
+  return { ok: true };
+}

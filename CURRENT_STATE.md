@@ -2,6 +2,31 @@
 
 ## Status
 
+🟢 **Sprint IA-5 (Medidor de DNP por foto) CÓDIGO LISTO — PUSHEAR + TESTEAR** (2026-05-30). Tras pausar VTO, founder pidió arrancar medidor de DNP (Distancia Naso-Pupilar) por foto. **Validé approach con `optical-expert`** antes de codear — feedback clave que ajustó el plan:
+- ❌ Tarjeta apoyada en la **frente** (mi propuesta inicial) → error paralaje 3-5%
+- ✅ Tarjeta apoyada en **pómulos**, alineada con base nariz (mismo plano que pupilas)
+- ✅ DNP **monocular** OD + OI + total (20-25% de pacientes tienen asimetría >1mm)
+- ✅ Hard reject fuera 50-78mm, soft warning 54-74mm
+- ✅ Solo permitir monofocales — progresivos requieren altura pupilar adicional
+- ✅ 4 checkboxes obligatorios pre-upload (edad ≥16, sin estrabismo, sin prismas, entiende limitación progresivos)
+- ✅ Distancia cámara >60cm (para DNP de lejos, no de cerca)
+
+Implementación 4 archivos nuevos + 3 modificados:
+1. **`lib/pd-measure/types.ts`**: schemas Zod `pdVisionOutputSchema` (coords en pixels), `pdResultSchema` (discriminated union ok/error), `pdRequestFlagsSchema` (4 checkboxes). Constants `CARD_ISO_WIDTH_MM=85.6`, `DNP_RANGES.HARD_MIN=50/MAX=78/SOFT_MIN=54/MAX=74`, `MIN_AGE_YEARS=16`.
+2. **`lib/pd-measure/prompt.ts`**: system prompt detallado con setup esperado (tarjeta en pómulos, distancia >60cm, frontal, ojos abiertos, sin anteojos), qué detectar (pupil_left/right, nasal_bridge, card_width en pixels), 10 warning flags, anti-injection vs texto en tarjeta, privacidad (no describir número/CVV).
+3. **`lib/pd-measure/calculate.ts`**: cálculo PURO. Recibe vision output, valida flags bloqueantes, aplica regla de tres con CARD_ISO_WIDTH_MM, calcula dnp_total + dnp_od + dnp_oi (con nasal_bridge como referencia) + asymmetry. Hard rejects fuera de rango, soft warnings con confidence high/medium/low. Mensajes humanos por warning flag.
+4. **`app/api/measure-pd/route.ts`**: endpoint POST Sonnet 4.6 Vision. Rate limit 5/h/IP (estricto: medida cara + 1 medición típica por usuario). 8MB max + magic byte detection. Parse flags + valida con Zod (rechazar si falta checkbox). Anthropic call → parseJSON tolerante → validate → calculatePD → return.
+5. **`app/(storefront)/medidor-de-dnp/page.tsx`** + **`components/tools/pd-measure-tool.tsx`**: UI con 5 estados (idle/preview/analyzing/result/error). Idle muestra `SetupInstructions` (5 pasos visuales) + `FlagsForm` (4 checkboxes) + DropZone disabled hasta tickear las 4. Resize cliente a 1600px (vs 1024 face-shape — DNP necesita más resolución sub-mm). ResultBlock muestra DNP grande (51px font-serif) + monoculares OD/OI + confidence + soft_warnings + botón "Guardar a mi receta".
+6. **`lib/prescription-cookie/actions.ts`**: nueva action `updatePrescriptionDnpInCookie(dnpMm)` que merge la DNP en cookie de receta existente. Si NO hay receta cargada, devuelve error con instrucción "usá /lector-de-receta primero".
+7. **`components/home/home-tools.tsx`** + **`app/sitemap.ts`**: agregada la 3ra tool al home (icon Ruler) + sitemap (priority 0.7).
+8. **`AI_PROMPTS.md`**: registrado como PROMPT-008 con detalle del approach + validación optical-expert + métricas a trackear.
+
+Decisión técnica clave: **separation of concerns IA vs aritmética**. IA solo detecta features visuales (coords en pixels), backend calcula DNP en mm. Esto hace los cálculos testeables, predecibles, validables, y permite cross-check (validar coords vs cálculo). Si la IA falla en aritmética, no afecta el resultado.
+
+Typecheck verde. Build OK (`/medidor-de-dnp` 6.34 kB). Lint solo warnings pre-existentes. **Próximo paso**: commit + push → deploy → test con foto real propia (subir foto con tarjeta de crédito apoyada en pómulos en buena luz frontal) → validar precisión.
+
+🟡 **Research VTO (probador virtual) PAUSADO** (2026-05-30) — founder decidió postponer "hasta que funcione bien". Hallazgo crítico del research previo: Jeeliz NO es open-source MIT como dijo el agente (es comercial proprietary, repo marcado "legacy"). Build propio con MediaPipe + Three.js sería 10-14 sesiones — scope grande para feature de validación incierta con catálogo de 6 productos. Pausado a favor de medidor DNP (IA-5).
+
 🟡 **Research VTO (probador virtual) COMPLETO — ESPERANDO DECISIÓN FOUNDER** (2026-05-30). Founder preguntó si se puede hacer un probador virtual con las fotos actuales del catálogo. Le presenté 4 opciones (A overlay 2D, B SaaS tipo FittingBox $$$, C 3D real-time imposible sin modelos 3D, D IA generativa). Founder eligió investigar híbrido A+D (overlay 2D + refinamiento generativo). Delegué research al agente `ai-features-engineer` con prompt estructurado (viabilidad técnica, stack, costos, privacidad LPDP, calidad esperada, scope). Hallazgos clave del informe:
 
 1. **Híbrido A+D no es estándar en industria eyewear** — más común en VTO de ropa (Kling, Google Doppl). Para anteojos los serios usan 2D landmark puro (Jeeliz, Ditto) o 3D real-time (FittingBox, Warby Parker).

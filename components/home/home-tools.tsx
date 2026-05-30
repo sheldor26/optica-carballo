@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, FileText, ScanFace, Sparkles } from 'lucide-react';
+import { ArrowRight, FileText, Ruler, ScanFace, Sparkles } from 'lucide-react';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 type Tool = {
@@ -26,6 +26,14 @@ const TOOLS: Tool[] = [
       'Subí la foto o PDF de tu receta oftalmológica y nuestro asistente lee los valores automáticamente.',
     icon: FileText,
     cta: 'Leer mi receta',
+  },
+  {
+    href: '/medidor-de-dnp',
+    label: 'Medidor de DNP con IA',
+    description:
+      'Medí tu distancia interpupilar desde casa con una foto y una tarjeta de crédito como referencia.',
+    icon: Ruler,
+    cta: 'Medir mi DNP',
   },
 ];
 

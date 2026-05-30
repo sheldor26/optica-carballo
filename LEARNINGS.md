@@ -22,6 +22,76 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para features con lógica de dominio (óptico/médico/legal), validar approach con agente experto ANTES de codear
+
+**Categoría**: Domain validation / Agent usage
+**Confianza**: 🟢 Alta (validado en sprint IA-5 medidor DNP)
+
+### Qué funcionó
+
+Antes de codear el medidor DNP (IA-5), invoqué al agente `optical-expert` con 9 preguntas técnicas específicas:
+- Tarjeta apoyada en la frente vs frente a la cara
+- DNP monocular vs binocular
+- DNP de lejos vs cerca
+- Rangos plausibles + límite de edad
+- Precisión necesaria por tipo de lente
+- Warning flags relevantes
+- Casos donde NO sirve (prismas, progresivos, estrabismo)
+- Disclaimer legal
+- Mejoras al approach
+
+El agente me corrigió 3 errores críticos antes de codear:
+1. **Tarjeta en frente = mal técnicamente** (error paralaje 3-5%) → debe ir apoyada en pómulos al plano de pupilas.
+2. **Solo DNP total = insuficiente** → 20-25% de pacientes tienen asimetría >1mm; necesitamos también DNP monocular OD/OI con nasal_bridge como referencia.
+3. **Permitir todos los lentes = peligroso** → progresivos requieren altura pupilar adicional, prismas requieren descentrado manual; restringir a monofocales únicamente con esta DNP.
+
+Si hubiera codeado mi versión inicial:
+- 3-5% de error sistemático sin saberlo.
+- Anteojos descentrados para el 20% con asimetría.
+- Clientes con progresivos enojados porque la DNP "auto-medida" no sirve.
+
+Total: 1 turno de consulta evitó **3 categorías de bugs en producción** que afectarían directamente la satisfacción del cliente y la reputación de la regente matriculada.
+
+### Por qué funcionó
+
+El conocimiento técnico óptico no es "lookupeable" en docs públicas — es práctica profesional acumulada. Mi modelo mental de "DNP = distancia entre pupilas, fácil" omitía nuances que sólo un técnico óptico conoce. El agente especialista tiene system prompt enfocado en ese conocimiento + accesibilidad para hacer pregunta-respuesta estructurada.
+
+Para features con lógica de dominio (óptico, legal, médico, financiero), los detalles de "qué casos no contemplé" son donde se rompe el producto en producción. Validar antes evita estos rompimientos.
+
+### Regla preventiva
+
+Para CUALQUIER feature que encarne lógica de dominio profesional, consultar al agente especialista ANTES de codear:
+- `optical-expert`: medidas anatómicas, recetas, materiales ópticos.
+- `argentine-ecom`: AFIP, defensa del consumidor, MP, logística AR.
+- `seo-strategist`: URLs, structured data, contenido SEO.
+- `content-writer-medical`: copy YMYL para salud.
+
+Costo: 1 turno de mensaje, 1-2 minutos de espera del agente.
+Beneficio: catch de 1-5 errores de dominio antes de codear.
+
+Pattern recomendado de prompt:
+1. Describir el flow técnico propuesto.
+2. Listar preguntas específicas (no abiertas).
+3. Pedir formato estructurado (markdown).
+4. Pedir NO escribir código, solo validación.
+5. Pedir "recomendaciones accionables".
+
+### Cuándo aplicar
+
+- Features que afecten data del cliente con consecuencias reales (medidas anatómicas, fiscal, legal).
+- Decisiones que requieran conocimiento técnico no obvio.
+- Implementaciones de regulación específica (LPDP, AFIP, defensa consumidor).
+
+### Cuándo NO aplicar
+
+- UI puramente cosmética.
+- Refactor de código sin cambio de comportamiento.
+- Features que ya consultaste al agente para esta área hace <1 semana.
+
+### Bonus
+
+Esta es 2da iteración del meta-learning "delegar research/validación a agentes especialistas antes de codear". Combinada con la del research VTO (Jeeliz), están confirmando un patrón. Si en el próximo sprint vuelve a darse, candidato a regla permanente en CLAUDE.md sección "Reglas core".
+
 ## 2026-05-30 — Delegar research técnico de arquitectura a `ai-features-engineer` ANTES de proponer plan
 
 **Categoría**: Decision-making / Agent usage
