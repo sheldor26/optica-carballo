@@ -55,7 +55,7 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
             <span className="text-brand">{siteName}</span>
           </p>
-          <h1 className="mt-5 text-balance font-serif text-5xl font-medium leading-[1.02] tracking-[-0.02em] md:text-6xl lg:text-7xl">
+          <h1 className="mt-5 text-balance font-serif text-5xl font-medium leading-[1.1] tracking-[-0.02em] md:text-6xl lg:text-7xl">
             <LetterReveal text="Anteojos originales con " delay={0.2} />
             <LetterReveal
               text="asesoramiento óptico real"
