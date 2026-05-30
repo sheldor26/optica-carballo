@@ -29,6 +29,7 @@ Objetivo: ser **la óptica online más confiable y técnicamente avanzada de Arg
 9. **Español argentino consistente** en todo el sitio. Sin "tú", sin "ordenador", sin "móvil" — usar "vos", "computadora", "celular".
 10. **Hreflang es-AR** siempre. Nunca `es` solo.
 11. **Cierre de docs: prohibido "⏭️ Pendiente" / "⏭️ Sin entry"**. Si no hay novedad documentable en LEARNINGS/MISTAKES, escribir explícito "Revisado — sin novedad: [razón breve]". Estado en curso/esperando validación ES estado documentable. Regla escalada desde MISTAKES.md tras 6 violaciones en sesión 2026-05-30.
+12. **Cierre de docs: distinguir ✅ vs ⚪**. ✅ = archivo modificado en commit de este turno (verificable en git diff). ⚪ = archivo revisado pero no modificado (decisión consciente, sin novedad). NO usar ✅ para archivos que no fueron tocados — es deshonesto y rompe la confianza del stop hook. Cuando dudás, `git diff --name-only HEAD~1` para confirmar.
 
 ## Reglas duras del negocio (ley)
 

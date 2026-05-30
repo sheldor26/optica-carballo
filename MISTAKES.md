@@ -24,6 +24,44 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Marqué "✅ Revisado" en cierre formal cuando el archivo NO fue modificado (smell de deshonestidad)
+
+**Estado**: 🔴 Pattern repetido — necesita fix en convención
+**Categoría**: Process / Documentation honesty
+
+### Qué pasó
+
+En múltiples turnos de esta sesión, marqué `✅ Revisado` para LEARNINGS.md y MISTAKES.md aunque el archivo NO había sido modificado en el commit del turno. El check (✅) implica que el archivo fue actualizado. Si no se modificó, el cierre miente sutilmente sobre el estado.
+
+Stop hook detectó la inconsistencia: el commit no incluye el archivo en el diff, pero el cierre lo marca como "actualizado".
+
+### Causa raíz
+
+Confusión entre 2 actions distintas:
+- **"Revisé y decidí que no hay novedad"** → estado del cierre, NO requiere commit
+- **"Actualicé el archivo"** → requiere commit del archivo
+
+Usé el mismo emoji ✅ para los 2, generando ambigüedad.
+
+### Regla preventiva (convención de cierre)
+
+A partir de ahora, usar emojis distintos en el cierre formal:
+- **✅ Modificado** → archivo fue editado + commiteado en este turno
+- **⚪ Revisado sin novedad** → archivo NO fue modificado, decisión consciente con razón
+- **⏸️ Pendiente próximo turno** → defer explícito con justificación (USAR CON CUIDADO — la regla 11 de CLAUDE.md lo desaconseja)
+
+El stop hook puede chequear que ✅ corresponde a un archivo en el git diff.
+
+### Costo si se ignora
+
+Founder o stop hook detectan inconsistencias. Erosiona confianza en el cierre formal — si miente sobre estado simple, ¿qué más miente?
+
+### Cross-link
+
+Acumulación del pattern documentado en [[difer-cierre-docs-iter-14.2]] + [[volvi-a-usar-sin-entry-iter-14.5]] + escalation a CLAUDE.md regla 11. Esta es la siguiente capa: distinguir "modificado" vs "revisado sin tocar".
+
+---
+
 ## 2026-05-30 — 2 fixes fallidos del lightbox antes de identificar stacking context como causa raíz
 
 **Estado**: 🟢 Resuelto en iter 3 con createPortal
