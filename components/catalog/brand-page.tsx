@@ -45,7 +45,7 @@ export function BrandCatalogPage({
   });
 
   return (
-    <main className="container py-8 md:py-12">
+    <main className="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
       <BreadcrumbJsonLd
         items={[
           { name: 'Inicio', url: SITE_URL },

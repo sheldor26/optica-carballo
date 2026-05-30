@@ -130,10 +130,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className={cn(
-                  'scale-[1.15] object-contain transition-all duration-500 ease-out',
+                  'scale-[1.4] object-contain transition-all duration-500 ease-out',
                   secondaryUrl
                     ? 'group-hover/card:opacity-0'
-                    : 'group-hover/card:scale-[1.2]',
+                    : 'group-hover/card:scale-[1.5]',
                 )}
               />
               {secondaryUrl && (
@@ -143,7 +143,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="scale-[1.15] object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100"
+                  className="scale-[1.4] object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100"
                 />
               )}
             </>
@@ -215,7 +215,7 @@ function VariantThumbnails({
             aria-label={`Ver ${v.label}`}
             aria-pressed={isActive}
             className={cn(
-              'bg-background relative size-12 shrink-0 overflow-hidden rounded border transition-colors',
+              'bg-background relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
               isActive
                 ? 'border-foreground'
                 : 'border-border/60 hover:border-foreground/40',
@@ -227,8 +227,8 @@ function VariantThumbnails({
                 src={url}
                 alt={v.label}
                 fill
-                sizes="48px"
-                className="object-contain p-1"
+                sizes="(max-width: 768px) 64px, 80px"
+                className="scale-[1.3] object-contain p-1"
               />
             ) : (
               <span className="text-muted-foreground flex h-full items-center justify-center text-[10px]">

@@ -2,6 +2,20 @@
 
 ## Status
 
+🟢 **Catálogo iter 5 — Cards realmente más grandes (3 cambios combinados)** (2026-05-30). Founder confirmó que iters anteriores (aspect [3/2] + scale 1.15) NO lograron que las cards se vean más grandes. Voy más agresivo con 3 cambios combinados:
+
+1. **Container más ancho** en brand-page solamente: `container` (max-w-1280px en xl, max-w-1536px en 2xl) → `max-w-screen-2xl` (siempre 1536px hasta donde llegue el viewport). En viewports grandes (1920px+), el grid gana ~256px de ancho disponible. Padding manual `px-4 sm:px-6 lg:px-8` para responsive lateral. NO toco header/footer ni otras pages — solo el brand catalog page.
+2. **Zoom-in más agresivo**: imagen `scale-[1.15]` → `scale-[1.4]` (40% zoom-in). El anteojo ocupa mucho más del área visible de la card. Hover: `scale-[1.5]` para drama.
+3. **Thumbnails proporcionales**: `size-12` (48px) → `size-16` mobile + `md:size-20` desktop (64-80px). También `scale-[1.3]` en la imagen interna del thumb para que el anteojo se vea claramente. Match con el aumento de la card principal.
+
+Decisión técnica clave: **scale CSS-only** (no re-procesar fotos). Las fotos JPG del producto tienen ~50% padding blanco interno alrededor del anteojo. El scale transform hace zoom-in que se sale del overflow-hidden del container — bordes blancos invisibles, anteojo se ve grande. Trade-off: scale extremo (scale-[1.4]) puede empezar a recortar la foto si el anteojo está cerca del borde del frame. Para nuestras fotos (anteojo centrado con buen padding), funciona bien.
+
+Pendiente futuro si todavía se ve chico: (a) cambiar a 2 cols en desktop (md:grid-cols-3 → md:grid-cols-2), (b) re-procesar fotos con crop más ajustado al anteojo (acción founder), (c) reducir gap del grid.
+
+Typecheck verde. Build OK.
+
+**Próximo paso (founder)**: testear `/anteojos-de-sol/vulk` (4 variantes) y `/anteojos-de-sol/rusty` (1 variante). Las cards deberían verse notablemente más grandes que antes. Si todavía no, avísame y vamos a 2 cols.
+
 🟢 **Catálogo iter 4 — Hover same-variant + thumbnails de variantes** (2026-05-30). Founder testeó iter 3 (envolvente + aspect-[3/2] + scale-1.15) y confirmó "los SQL aplicados" (cleanup placeholders + wraparound → envolvente). 2 cambios nuevos pedidos:
 
 1. **Hover bug**: el hover sobre la card cambiaba a una imagen de OTRA variante (confuso). Fix: hover ahora swap entre **frontal y lateral de la MISMA variante** que está seleccionada.
