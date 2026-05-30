@@ -22,6 +22,36 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cuando founder dice "X es la mejor" de N opciones, anclar a X y ajustar las demás (iter 14.5)
+
+**Categoría**: Visual tuning / Reference anchoring
+**Confianza**: 🟢 Alta (validado en iter 14.5)
+
+### Qué funcionó
+
+Iter 14.5 el founder evaluó 4 variantes con feedback diferenciado: "1 más chica, 2 apenas grande, 3 muy grande, 4 es la mejor". Usé var 4 como **ancla de referencia** y calculé deltas para llevar las otras 3 a su tamaño visual percibido. Resultado: cambios direccionados, no random — var 1 sube, var 2 baja sutilmente, var 3 baja agresivo.
+
+### Por qué funciona
+
+Cuando hay N elementos a uniformar y el founder identifica UNO como "el bueno", ese se vuelve specification ground truth. Los ajustes a los otros tienen target claro (igualar a X visualmente), no abstracto ("hacerlos uniformes"). El delta de cada uno se deriva de cuán lejos están de la referencia.
+
+Sin ancla → ajustes paralelos arbitrarios donde no se sabe a qué punto converger.
+
+### Cómo aplicar
+
+Cuando hay N elementos a uniformar:
+1. Preguntar al founder: "¿cuál de las N es la que te gusta más?" (o esperar feedback diferenciado donde lo marque)
+2. Tomar esa como ancla — NO ajustar.
+3. Para cada una de las demás, ajustar en la dirección que la acerque visualmente al ancla.
+4. Magnitud del ajuste depende de cuán "lejos" estén ("apenas grande" = ajuste pequeño; "muy grande" = ajuste fuerte).
+5. Comunicar al founder los deltas esperados explícitamente: "var 3 va a bajar -21%".
+
+### Costo si se ignora
+
+Sin ancla: ajustes ciegos, founder y dev no convergen al mismo target. Cada iteración es 50/50 ("¿esto es lo que querías?"). Con ancla: dirección clara, convergencia rápida.
+
+---
+
 ## 2026-05-30 — Para cambios de scale CSS visibles al ojo humano, el delta debe ser ≥10-15% (iter 14.2)
 
 **Categoría**: Visual tuning / Perception thresholds
