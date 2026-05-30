@@ -24,6 +24,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Código interno del founder ≠ código que ML guarda — verificar SIEMPRE antes de mapear
+
+**Estado**: 🟡 Mitigado por aplicación correcta esta vez (no nuevo, pero meta-patrón vale registrar).
+**Categoría**: Integraciones / Asunción de equivalencia
+
+### Qué pasó (caso meta)
+
+Founder pidió sumar la variante "L.BROWN/DRLB14 POL" al catálogo. El código "L.BROWN/DRLB14 POL" es el código INTERNO que el founder usa (probablemente del distribuidor Vulk). Pero ML guarda "BROWN/DRLB14" (sin la "L.", sin "POL"). Si tomaba literal lo que founder dijo y lo ponía en `mercadolibre_variation_code`, el matching ML iba a fallar silenciosamente (mismo bug de ayer).
+
+Esta vez NO cayó porque ayer aprendí la lección + tenía el JSON crudo de ML para verificar exactamente qué guarda. Pero el riesgo está siempre: el founder usa un set de códigos, ML guarda otro set parecido pero NO idéntico.
+
+### Causa raíz
+
+Asunción "founder sabe los códigos exactos de ML" — falsa. El founder sabe los códigos del DISTRIBUIDOR (Vulk), que pueden ser:
+- El mismo que ML (caso suerte).
+- Variantes ligeras del de ML (caso real: L.BROWN vs BROWN, MBLK/DRT04 POL vs MBLK/DRT04).
+- Completamente distintos.
+
+El distribuidor y ML son dos sistemas independientes con códigos parecidos pero no idénticos.
+
+### Regla preventiva
+
+Cuando founder te diga "el código de variation es X":
+1. **Verificar contra JSON crudo de ML** (`/api/admin/ml-find-item/MLA...`). Usar EXACTAMENTE lo que ML guarda, no lo que founder dijo.
+2. **Si no hay JSON disponible**, pedirle al founder que abra el endpoint admin y pase el value_name del DESIGN attribute.
+3. **Documentar en el seed** ambos códigos: `reference_code` con lo del founder (para su referencia), `mercadolibre_variation_code` con lo de ML (para matching).
+4. Comentario explícito en el SQL: "ML guarda X, NO Y que es el código interno del founder".
+
+### Por qué vale registrar aunque "ya estaba cubierto"
+
+El MISTAKE del 2026-05-29 cubre el bug original. Este registra el meta-pattern de "founder usa códigos parecidos pero no idénticos" que es asumible al inicio del año pero olvidable después de meses. Es seguro vs futuro yo o futuro asistente que no leyó el contexto.
+
 ## 2026-05-29 — Sync ML mateó por seller_custom_field cuando ML lo guarda como null → bug silencioso
 
 **Estado**: ✅ Cerrado — helper `getVariationCode` con fallback a `attribute_combinations[DESIGN].value_name` en commit `a632504`.

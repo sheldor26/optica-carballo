@@ -59,6 +59,21 @@ Implementación base (commit 36a3d2d):
 3. Verificar en Vercel Dashboard → Cron Jobs que aparecen 2 crons (check-alerts hourly + ml-reconcile-stock hourly).
 4. Test inbound real-time: editar stock manualmente de MLA1432137395 en panel ML → en <30 seg verificar con `SELECT sku, stock_qty FROM product_variants WHERE sku = '126080'` + verificar que `/anteojos-de-sol/rusty/rusty-yau` muestra el stock nuevo (revalidatePath debería invalidar).
 
+**Sumadas 2 variantes Vulk Day Light** (2026-05-30 commit `dc1f18c`). Listing ML MLA2726903920 tiene 4 colores; DB tenía 2 (Rosa + Carey). Seed 12 INSERT de:
+- SKU 194182 — MBLK/DRT04 POL (Negro mate / Verde degradé), stock 5, 3 fotos (2 producto + 1 modelo).
+- SKU 194187 — L.BROWN/DRLB14 POL (Marrón), stock 0 (sin stock), 2 fotos producto.
+
+Decisión técnica clave: `mercadolibre_variation_code` matchea EXACTO lo que ML guarda en `attribute_combinations[DESIGN].value_name` (split por " - "[0]):
+- 194182 → `MBLK/DRT04` (NO `MBLK/DRT04 POL`)
+- 194187 → `BROWN/DRLB14` (NO `L.BROWN/DRLB14` que es el código interno del founder — ML lo guarda sin la "L.")
+
+Aplicación directa de la regla del bug de ayer: matching falla silenciosamente si el code no es exacto.
+
+Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendiente:
+1. Subir 5 fotos a bucket `products/vulk-day-light-sol/` con nombres `06-mblk-frontal.jpg`, `07-mblk-lateral.jpg`, `08-mblk-modelo.jpg`, `09-brown-frontal.jpg`, `10-brown-lateral.jpg`.
+2. Aplicar bootstrap en SQL Editor.
+3. Verificar con force-sync que las 4 variantes muestran `skipped: 4` (todas alineadas).
+
 **🟢 BUG ENCONTRADO Y FIXEADO** (2026-05-29 commit `a632504`). Caso B confirmado: ML tiene `seller_custom_field: null` en todas las variations del Vulk Day Light. El código real va dentro del `attribute_combinations[DESIGN].value_name` con formato "CODIGO - Descripción". Nuestro código asumía siempre seller_custom_field → matching fallaba → todas las variantes skipped → DB siempre stale.
 
 Caso real: founder bajó stock Carey de 3 a 2 en ML. Webhook procesado OK pero matching falló silenciosamente.

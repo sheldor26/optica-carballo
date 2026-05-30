@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Reusar JSON de debug anterior para extraer data de variantes futuras (1 vez es debug, N veces es source de truth temporal)
+
+**Categoría**: Eficiencia / Debug data reuse
+**Confianza**: 🟢 Alta (validado al sumar 2 variantes Vulk sin re-llamar ML API)
+
+### Qué funcionó
+
+Ayer durante el debug del sync stock fallido, capturé el JSON completo de `/items/MLA2726903920` para entender qué reportaba ML. Hoy cuando founder pidió sumar las 2 variantes que faltaban (MBLK + BROWN), no necesité hacer NUEVO round-trip a ML — el JSON de ayer ya tenía toda la data necesaria:
+
+- variation_id de ML
+- value_name con el código real ("MBLK/DRT04 - ...", "BROWN/DRLB14 - ...")
+- available_quantity actual
+
+Generé el seed directamente con esos datos. Cero latencia, cero confusión sobre "qué código usar exactamente". Si hubiera tirado el JSON anterior, hubiera tenido que volver a llamar ML + arriesgar pasar datos asumidos en lugar de medidos.
+
+### Por qué funcionó
+
+Datos crudos capturados durante debug son **source of truth temporal** (válido por días/semanas). Tirarlos tras "resolver el problema" desperdicia info que sigue siendo correcta.
+
+### Regla preventiva
+
+Cuando hagas debug que capture JSON crudo de servicio externo:
+1. **No descartar el JSON tras resolver el problema inmediato**. Anotar (o citar en chat) las claves más relevantes.
+2. **Antes de re-llamar el servicio externo para nueva tarea relacionada**, preguntar: "¿la respuesta de debug previa ya tiene lo que necesito?".
+3. La regla vence cuando: (a) la data puede haber cambiado, (b) el endpoint cambió shape, (c) es producción y necesitás real-time.
+
+### Cuándo aplicar
+
+- Setups iniciales de integración (cuando muchas tareas se hacen sobre el mismo recurso del servicio externo).
+- Debugging de un cluster de bugs relacionados (el JSON capturado para el bug 1 sirve para el 2 y 3).
+- NO aplicar para data volátil (precios live, stock con alta rotación, sessions).
+
 ## 2026-05-29 — Marketplaces guardan identificadores en N campos posibles, fallback es obligatorio
 
 **Categoría**: Integraciones / Marketplaces
