@@ -1,7 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { BrandStorySection } from '@/components/brand/brand-story-section';
 import { FaqAccordion } from '@/components/faqs/faq-accordion';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
@@ -136,26 +134,7 @@ export function BrandCatalogPage({
         <h1 className="text-balance font-serif text-5xl font-medium leading-[1.05] tracking-[-0.02em] md:text-6xl lg:text-7xl">
           {category.name} <span className="italic font-normal">{brand.name}</span>
         </h1>
-        {brand.description && (
-          <p className="text-muted-foreground text-balance text-base md:text-lg">
-            {brand.description}
-          </p>
-        )}
       </RevealOnScroll>
-
-      {(brand.seo_intro || brand.seo_outro) && (
-        <div className="mb-8">
-          <Link
-            href={`${hrefPrefix}/sobre-la-marca`}
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm underline-offset-4 hover:underline"
-          >
-            Conocé más sobre {brand.name}
-            <ArrowRight className="size-3.5" aria-hidden="true" />
-          </Link>
-        </div>
-      )}
-
-      <BrandStorySection brandSlug={brand.slug} brandName={brand.name} />
 
       {items.length === 0 ? (
         <p className="text-muted-foreground">

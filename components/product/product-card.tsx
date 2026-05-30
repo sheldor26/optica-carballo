@@ -57,7 +57,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         aria-label={product.name}
       >
         <div
-          className="bg-background relative aspect-[4/3] w-full overflow-hidden"
+          className="bg-muted/30 relative aspect-square w-full overflow-hidden rounded-md"
           aria-hidden="true"
         >
           {primaryUrl ? (
@@ -91,8 +91,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </div>
 
-        <div className="mt-5 flex flex-1 flex-col items-center gap-1 text-center">
-          <h3 className="text-foreground text-sm font-normal uppercase tracking-[0.15em] md:text-[15px]">
+        <div className="mt-4 flex flex-1 flex-col items-center gap-1 text-center">
+          <h3 className="text-foreground text-sm font-medium uppercase tracking-[0.15em] md:text-[15px]">
             {product.name}
           </h3>
           {product.minPriceCents !== null ? (
