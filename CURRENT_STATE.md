@@ -2,6 +2,15 @@
 
 ## Status
 
+🟢 **Catálogo iter 2 — H1 oculto + fondo blanco unificado + aspect 4/3** (2026-05-30, commit `513c1d7`). Founder testeó iter 1 del catálogo limpio y pidió 3 ajustes adicionales:
+1. **Eliminar H1 "Anteojos de sol Rusty"** del catálogo de marca. Foco visual 100% en grid. **Decisión técnica**: NO eliminar el `<h1>` (necesario para SEO + a11y), sino convertirlo a `sr-only` (visible solo a screen readers / crawlers). El logo de la marca arriba ya cumple función visual de "esto es página de Rusty".
+2. **Fondo de card unificado**: founder notó diferencia visible entre `bg-muted/30` de la card y blanco puro de las fotos JPG → fix `bg-muted/30` → `bg-background` (`--background: 0 0% 100%` en light mode = blanco puro). Bandas del object-contain quedan invisibles. Trade-off: la card pierde "card-ness" visual, pero el fondo unificado es lo que el founder pidió y matchea estilo retail premium.
+3. **Agrandar productcard manteniendo 3 cols**: cambio `aspect-square` → `aspect-[4/3]`. Las fotos del catálogo son 1500x1000 (3:2 = 1.5). Aspect-[4/3] (1.33) es más cercano a 1.5 que aspect-square (1.0) → casi cero banda visible → foto ocupa más área visual de la card.
+
+**Pendiente futuro**: si tras el deploy el founder siente que las cards siguen chicas en proporción al viewport, opciones disponibles (no implementadas): (a) reducir gap entre cards (`md:gap-x-10 md:gap-y-20` → menos), (b) cambiar a 2 cols en desktop (`md:grid-cols-3` → `md:grid-cols-2`), (c) eliminar `container` constraint y usar full-width.
+
+Typecheck verde. Build OK.
+
 🟢 **Catálogo de marca limpio + ProductCard estilo retail premium** (2026-05-30). Founder mostró catálogo `/anteojos-de-sol/rusty` con todo el bloque "Sobre la marca" (BrandStorySection con texto largo + grid Origen/Año/Segmento/Target + 3 callouts Legado/Identidad/Pensada) — pidió eliminar todo eso porque va a haber página dedicada de marca después. También pidió estilo de cards más retail premium: imágenes más grandes, menos texto, fondo sutil. Commit `33def71`:
 - **`components/catalog/brand-page.tsx`**: removido `BrandStorySection`, `brand.description` en header, link "Conocé más sobre", seo_intro/outro block. Imports limpiados. Mantenido: logo + H1 + breadcrumb + grid productos + FAQs + RelatedCategories.
 - **`components/product/product-card.tsx`**: `bg-background` → `bg-muted/30`, `aspect-[4/3]` → `aspect-square`, agregado `rounded-md`, `font-medium` en nombre. Object-contain con foto 3:2 en cuadrado deja bandas naturales con bg visible = padding visual sin CSS padding (que rompe con `Image fill`).
