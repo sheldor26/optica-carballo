@@ -2,6 +2,33 @@
 
 ## Status
 
+🟢 **Nueva variante Rusty Yau MBLUE/R.GREEN POL — seed 15 generado** (2026-05-30). Founder pidió agregar variante 126082 al modelo Rusty Yau:
+- Armazón Azul Mate (MBLUE)
+- Lentes Verde Espejada Polarizada (Revo Green POL)
+- Par yellow incluido (común a todas las variantes Yau)
+- Item ML: MLA2707007110
+
+**Datos auto-extraídos** vía endpoint admin `/api/admin/ml-import-preview/MLA2707007110`:
+- Price: 103902 ARS → 10390200 centavos
+- Stock available: 3
+- Confirmados: title, frame_color (azul oscuro/mate), lens_color (verde/ámbar), tratamiento espejada, polarizada, UV400, intercambiables
+
+**Bonus importante** detectado por founder y agregado en mismo seed: el modelo Rusty Yau incluye un **adaptador interno extraíble para lentes graduadas** — característica que estaba omitida en seed 10 original. UPDATE al producto agrega:
+- `attributes.prescription_adapter: true`
+- Include nuevo: `"adaptador-interno-lentes-graduadas"`
+- Nuevo callout "¿Usás receta?" explicando el flujo (óptico monta lentes en el adaptador)
+- Párrafo dedicado en description larga
+
+Conflicto resuelto: número 14 ya usado por `14_coupons_iniciales.sql` aplicado → renombré a `seeds/15_rusty_yau_mblue_revo_green_pol.sql`.
+
+**Próximo paso (founder)**:
+1. Subir 2 fotos al bucket Supabase Storage → `products/rusty-yau/` con nombres EXACTOS:
+   - `06-revo-green-lateral.jpg` (foto primary, vista lateral 3/4)
+   - `07-revo-green-frontal.jpg` (vista frontal, para hover crossfade)
+2. Aplicar `supabase/seeds/15_rusty_yau_mblue_revo_green_pol.sql` al cloud (vía SQL Editor Dashboard o decirme y lo aplico vía MCP).
+
+Commit pendiente: solo creación del seed (no aplicado aún).
+
 ✅ **SAGA Vulk Day Light CERRADA tras iter 14.6** (2026-05-30). Founder: "sigue habiendo diferencias pero ya fue, está bien así". Acepta estado actual como límite del approach scale CSS manual per-variante. Total: 14+ iteraciones en 1 sesión sobre tamaños de fotos en cards. Resumen ejecutivo de la saga abajo.
 
 **Resumen ejecutivo Vulk Day Light (iters 7-14.6)**:
