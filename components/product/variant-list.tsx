@@ -163,13 +163,22 @@ export function VariantList({
                     {formatPriceCents(v.priceCents)}
                   </p>
                   <p
-                    className={
-                      inStock
-                        ? 'text-muted-foreground text-xs'
-                        : 'text-destructive text-xs'
-                    }
+                    className={cn(
+                      'text-xs',
+                      !inStock
+                        ? 'text-destructive'
+                        : v.stockQty <= 3
+                          ? 'font-medium text-amber-600 dark:text-amber-500'
+                          : 'text-muted-foreground',
+                    )}
                   >
-                    {inStock ? `${v.stockQty} en stock` : 'Sin stock'}
+                    {!inStock
+                      ? 'Sin stock'
+                      : v.stockQty === 1
+                        ? '¡Última unidad!'
+                        : v.stockQty <= 3
+                          ? `Solo quedan ${v.stockQty}`
+                          : `${v.stockQty} en stock`}
                   </p>
                 </div>
                 {showVariantCta &&

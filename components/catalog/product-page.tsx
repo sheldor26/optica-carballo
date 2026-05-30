@@ -10,6 +10,7 @@ import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductHighlights } from '@/components/product/product-highlights';
 import { ProductIncludes } from '@/components/product/product-includes';
 import { ProductMeasurements } from '@/components/product/product-measurements';
+import { ProductPriceBlock } from '@/components/product/product-price-block';
 import { ProductTrustSignals } from '@/components/product/product-trust-signals';
 import { ProductFaqs } from '@/components/product/product-faqs';
 import { RelatedProducts } from '@/components/product/related-products';
@@ -274,39 +275,14 @@ export async function ProductDetailPage({
             <ProductHighlights attributes={product.attributes} />
           </div>
 
-          {priceLabel ? (
-            <div className="border-border/60 from-muted/30 to-background rounded-xl border bg-gradient-to-br p-5">
-              <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-                Precio
-              </p>
-              <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
-                {priceLabel}
-              </p>
-              <p className="text-muted-foreground mt-2 text-xs sm:text-sm">
-                Pagás en cuotas con tarjeta de crédito vía{' '}
-                <span className="text-foreground font-medium">Mercado Pago</span>
-                .
-              </p>
-              {isInStock && (
-                <div className="border-border/40 mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t pt-3 text-xs">
-                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-green-600" />
-                    En stock
-                  </p>
-                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
-                    <span className="size-1 rounded-full bg-foreground/30" />
-                    Envío a todo el país
-                  </p>
-                  <p className="text-muted-foreground inline-flex items-center gap-1.5">
-                    <span className="size-1 rounded-full bg-foreground/30" />
-                    Retiro gratis en local
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-base">Sin stock disponible</p>
-          )}
+          <ProductPriceBlock
+            variants={activeVariants.map((v) => ({
+              id: v.id,
+              priceCents: v.price_cents,
+              stockQty: v.stock_qty,
+            }))}
+            fallbackLabel={priceLabel}
+          />
 
           <ProductTrustSignals />
 
