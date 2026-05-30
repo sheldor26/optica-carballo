@@ -2,6 +2,24 @@
 
 ## Status
 
+🟢 **Hero Concepto 2 implementado: tipográfico minimal dark** (2026-05-30). Founder confirmó "dale vamos por concepto 2". Implementación:
+
+**`components/home/home-hero.tsx`** refactor completo:
+- Props simplificadas: solo `siteName` + `whatsappLink` (removida `showcases`).
+- Removidos: AnimatePresence carrusel, fetch de productos, indicators dots, AnimatePresence slide transitions, getImageScale, mix-blend-multiply.
+- Background: `bg-zinc-950` + gradient overlay `from-zinc-950 via-black to-zinc-900` + mesh glow sutil (opacity 0.025-0.04 sobre dark).
+- Watermark "ÓC" gigante (text-[28rem] md / text-[40rem] lg) decorativo en esquina inferior derecha, opacity 0.035, parallax con scroll, oculto en mobile (chocaría con H1).
+- H1: `font-serif text-5xl md:text-7xl lg:text-8xl` con `leading-[0.95] tracking-[-0.025em]`. Mantiene LetterReveal de la versión previa (1ra parte regular + 2da parte italic).
+- Texto blanco/white/80 sobre dark.
+- CTAs reestilizados: solid white/black (primary), outline white/30 (secondary), ghost white (WhatsApp).
+
+**`app/(storefront)/page.tsx`**:
+- Removido `fetchHomeShowcaseProducts(4)` y prop `showcases`. La función queda en queries.ts por si se necesita después.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**: push + hard refresh `/`. Hero ahora es tipográfico dark editorial. Si después conseguís fotos editoriales (Vulk Ember/DANV style), upgrade a Concepto 1 (foto al lado del texto) sin re-armar todo.
+
 🟡 **Hero pivot: recomiendo Concepto 2 (tipográfico minimal dark) — esperando "dale" founder** (2026-05-30, post-pivot). Founder preguntó "cuál me recomendás" entre los 3 conceptos. Recomendé **Concepto 2** con justificación:
 
 - Time to value: 30 min implementación vs días/semanas esperando fotos editoriales
