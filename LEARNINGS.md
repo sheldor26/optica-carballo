@@ -61,6 +61,47 @@ Mismo nucleo que [[founder-no-tecnico-pedi-verificacion-empirica]]: cuando hay a
 
 ---
 
+## 2026-05-30 — Para upgrade incremental UI (C2 tipográfico → C1 split con foto): implementar el código ANTES de tener el asset
+
+**Categoría**: Workflow / Founder collaboration / Decoupling
+**Confianza**: 🟢 Alta (validado iter hero C2→C1)
+
+### Qué funcionó
+
+Founder dijo "tengo fotos" + las subió + pusheó. Yo verifiqué que la foto no estaba accesible (HTTP 400 en path canónico). En vez de bloquearme esperando que founder resuelva el upload, implementé el código del upgrade C1 (split layout) APUNTANDO al path canónico esperado.
+
+Cuando founder confirme el path real, cambio 1 constante (`HERO_EDITORIAL_PATH`) y queda. No tengo que armar layout + esperar respuesta + después implementar.
+
+### Por qué funciona
+
+Hay 2 trabajos independientes:
+1. **Asset disponible en bucket** (founder)
+2. **Código que consume ese asset** (yo)
+
+Acoplarlos serialmente ("primero confirma la URL, después implemento") agrega round-trip de 1-2 mensajes. Desacoplarlos ("yo implemento con path canónico, vos confirmás cuál es") elimina el round-trip si el path coincide. Si difiere, 1 línea de cambio.
+
+Pre-condición: definir convención de path canónico ANTES (en este caso `brands-shared/hero-editorial.jpg`, mismo bucket que kit Vulk + category-sol).
+
+### Cómo aplicar
+
+Para upgrades UI que dependen de assets nuevos:
+1. Definir convención de path canónico (bucket + nombre).
+2. Avisar al founder la convención exacta.
+3. Implementar código con ese path canónico.
+4. Si founder usó otro path: ajustar 1 constante.
+
+NO bloquear el código por "esperar a que founder confirme upload". Avanzar en paralelo.
+
+### Costo si se ignora
+
+Round-trip extra de 1-2 mensajes founder ↔ yo. Si la sesión va a cerrar antes del round-trip, el feature queda incompleto.
+
+### Cross-link
+
+Aplicación del pattern [[separation-of-concerns]] (turno previo `e1e8b0c`): display label vs sync key son responsabilidades distintas. Acá: código vs asset son trabajos distintos. Misma idea — desacoplar lo desacoplable.
+
+---
+
 ## 2026-05-30 — `mix-blend-multiply` como workaround para fotos JPG con fondo blanco sobre fondos no-blancos
 
 **Categoría**: CSS / Visual / Workaround

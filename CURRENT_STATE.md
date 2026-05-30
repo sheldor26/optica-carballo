@@ -2,6 +2,20 @@
 
 ## Status
 
+🟡 **Hero C1 código implementado, foto HTTP 400 pendiente URL real founder** (2026-05-30, post-implementación). Founder dijo "ya puse hero-editorial.jpg pero no aparece" + "ya hice push". Investigué + implementé:
+
+**Investigación**: la foto NO está accesible en el path canónico (`brands-shared/hero-editorial.jpg` → HTTP 400). Probé variantes (.png, .webp, .jpeg, mayúsculas) → todas 400. Posibles causas: subida a otro bucket, subcarpeta, nombre distinto al canónico, o upload incompleto.
+
+**Código implementado (commit `5644cb0`)** — upgrade C2 → C1 split layout:
+- Container: `max-w-4xl` → grid 2 cols `[1.1fr_1fr]` (texto izq + foto der)
+- H1: text-8xl → text-7xl (deja espacio para columna foto)
+- Nueva columna derecha: `aspect-[3/4]` mobile / `[4/5]` desktop con Image fill apuntando a `HERO_EDITORIAL_URL`
+- Border `white/10` + shadow dramático `0_30px_80px_-15px_rgba(0,0,0,0.6)` + gradient overlay sutil al pie (funde con bg dark)
+- Mantiene: bg gradient dark + watermark "ÓC" + tipografía + CTAs dark
+- Constante exportada `HERO_EDITORIAL_PATH = 'hero-editorial.jpg'` para cambio rápido cuando founder confirme path real
+
+**Próximo paso (founder)**: pasar URL exacta de la foto (Supabase Dashboard → Storage → click derecho → Copy URL). Yo ajusto `HERO_EDITORIAL_PATH` en 1 línea si difiere.
+
 🟡 **Hero upgrade pendiente C2 → C1: founder tiene fotos editoriales, pedí 3 datos** (2026-05-30). Tras implementar Concepto 2 (tipográfico minimal dark), founder dijo "tengo fotos, cómo podríamos agregarlas". Path planificado en commit `4cd39c9` activado.
 
 **3 datos pendientes founder**:
