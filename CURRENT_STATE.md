@@ -2,6 +2,25 @@
 
 ## Status
 
+🟢 **Iter 14 — Scale per-variante implementado (solución pura código, fotos intactas)** (2026-05-30). Tras iter 13.1 revert, founder dio el insight final: "podés modificar bien los tamaños sin necesidad de cambiar las fotos... el tema es la configuración de cómo se muestran, es como que tienen escalas diferentes cada una". Confirmó intuición correcta: cada foto necesita SU PROPIO scale CSS — ningún scale uniforme funciona porque las fotos tienen anteojo de tamaño distinto en pixels.
+
+Mecanismo implementado:
+- **`lib/catalog/image-scale-overrides.ts`** (NUEVO): `Record<storage_path, scale>` hardcoded + helper `getImageScale(path)`. Comentario indica TODO migrar a `attributes.display_scale` en DB cuando haya 5+ productos.
+- **`components/product/product-card.tsx`**: `ProductCardVariant` y `ProductCardData` ganan `primaryImageScale` + `secondaryImageScale`. Aplica `style={{ transform: scale(X) }}` inline por imagen (NO clase Tailwind — el valor es dinámico per-imagen). Removido el `group-hover:scale-105` porque ya no es uniforme.
+- **`lib/catalog/to-product-card-data.ts`**: importa `getImageScale`, lo aplica a default images + variant thumbs.
+
+Valores iniciales Vulk Day Light (basados en feedback empírico founder):
+- `01-lateral.png` (carey): 0.92 — cortaba patilla sutilmente
+- `04-lateral-rosa.png`: 1.05 — tamaño correcto + boost leve
+- `07-mblk-lateral.png`: 1.20 — se veía más chica
+- `10-brown-lateral.png`: 1.05 — tamaño correcto
+
+Storage_path en código matchea exactamente el shape de la DB: `vulk-day-light-sol/XX.png` (sin prefijo `products/`, confirmado vía `getProductImageUrl()`).
+
+Typecheck verde. Commit `7dadb4b` local.
+
+**Próximo paso (founder)**: push + test en `/anteojos-de-sol/vulk`. Iteración rápida posible: si algún valor no es exacto, cambiar 1 número en `image-scale-overrides.ts` + commit + push (~2 min).
+
 🟡 **Iter 13.2 — V3 generado (anteojo al 92% del frame), founder decidiendo upload** (2026-05-30). Tras revert iter 13.1, founder dio feedback empírico observando 2 cosas: (1) en el comparison V2 que generé (Python) las 4 fotos se ven uniformes pero un poco chicas con espacio blanco lateral, (2) en producción actual (sin scale CSS), var 1 corta patilla sutilmente, var 2 y 4 tamaño correcto, var 3 más chica.
 
 **Interpretación**: el founder validó visualmente el approach V2 (fotos normalizadas) pero pide +7% de tamaño. Y reconoce que sin modificar fotos NO se puede tener simultáneamente "var 1 sin cortar + var 3 más grande" porque las fotos originales tienen tamaño de anteojo distinto en pixels.

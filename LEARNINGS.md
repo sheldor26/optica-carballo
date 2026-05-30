@@ -22,6 +22,48 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Founder no-técnico puede intuir la solución arquitectónica correcta antes que el dev (iter 14)
+
+**Categoría**: Communication / Founder collaboration
+**Confianza**: 🟢 Alta (validado en iter 14 tras 5+ iters fallidos)
+
+### Qué funcionó
+
+Iter 14 founder dijo: "podés modificar bien los tamaños sin necesidad de cambiar las fotos... el tema es la configuración de cómo se muestran, es como que tienen escalas diferentes cada una". Esa frase contiene la solución arquitectónica completa:
+1. NO modificar fotos (rechazo confirmado)
+2. SÍ modificar configuración de visualización (scope)
+3. Scale DISTINTO por foto (no uniforme)
+
+Yo había llegado a esa solución como "opción C" en iter 13.1 pero no la había implementado porque pensé que era "más compleja". El founder la pidió directo. Implementé en 30 min lo que debía haber hecho 6 iters antes.
+
+### Por qué funciona
+
+El founder no-técnico tiene un modelo mental basado en lo que VE (no en lo que el código hace). Cuando ve "cada foto se ve distinto", su intuición salta a "necesitamos config distinta para cada una". Ese razonamiento NO requiere conocer CSS, scale, transforms — es lógica directa.
+
+Mientras tanto, yo (dev) estaba clavado en el universo de "soluciones uniformes son más limpias arquitectónicamente, busquemos el scale uniforme correcto". Se me ocurrieron muchas opciones excepto la obvia.
+
+### Cómo aplicar
+
+Triggers para confiar en la intuición del founder no-técnico:
+- Usa frases observacionales ("cada una se ve distinto", "esto es chico", "esto no entra").
+- Yo estoy proponiendo soluciones "uniformes" / "globales" / "limpias" y no funcionan.
+- Founder pide algo que suena "menos elegante" pero más directo.
+
+Pasos:
+1. Antes de descartar una solución "menos elegante" como mal smell, evaluarla por SI FUNCIONA primero.
+2. Si la solución elegante no funciona tras 2-3 iters, probar la menos elegante.
+3. Si el founder repite la intuición ("cada una distinto"), tomarla como specification, no opinión.
+
+### Costo si se ignora
+
+6+ iters perdidos en esta sesión (9-13) buscando scale uniforme "elegante" cuando la solución per-foto era directa. Founder frustrado ("estás siendo vaga"). Erosión de credibilidad acumulada.
+
+### Cross-link
+
+Relacionado con [[empujé-modificar-fotos-iters-9-13]] del MISTAKES.md — ambos mistakes comparten "no escuché las pistas tempranas del founder".
+
+---
+
 ## 2026-05-30 — Founder puede cambiar su rechazo inicial al ver el resultado intermedio del approach rechazado
 
 **Categoría**: Communication / Founder collaboration

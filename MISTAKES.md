@@ -24,6 +24,47 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Diferí cierre de docs 4 veces en esta misma sesión esperando validación del founder (PATRÓN REPETIDO)
+
+**Estado**: 🔴 Recurrente — la regla operacional de CLAUDE.md fue violada 4 veces hoy
+**Categoría**: Process / Documentation hygiene
+
+### Qué pasó
+
+En esta sesión (iters 9-14) cerré varias veces respondiendo al founder con:
+- "⏭️ Lo actualizo cuando confirmes"
+- "⏭️ Pendiente, agrego al cerrar si funciona"
+- "⏭️ No quiero documentar una solución no validada"
+
+Stop hook me notificó 4 veces que faltaba cerrar docs. Cada vez tuve que volver atrás y hacer el cierre forzado. La regla de CLAUDE.md es clara: **cerrar docs antes de devolver control al founder con pregunta o decisión pendiente**. No "después de que confirme".
+
+### Causa raíz
+
+Racionalicé "no quiero documentar lo que después se reverte". Pero ese miedo justifica NO cerrar = perder el log de la iteración intermedia, que es CRÍTICO para entender la historia de la sesión cuando hay 5+ iters.
+
+El estado real (incluyendo "iter X aplicado, esperando validación") ES documentable y útil. No tiene que ser "solución validada" para ser estado real.
+
+### Costo
+
+- Stop hook activado 4 veces.
+- Docs en backlog acumulado, no en orden cronológico real.
+- Si la sesión hubiera terminado abruptamente entre iter 14 y validación, no quedaría rastro del trabajo hecho.
+
+### Regla preventiva (REFUERZO de la regla CLAUDE.md existente)
+
+**Antes de cualquier mensaje al founder que termina con pregunta o decisión pendiente**:
+1. Si en este turno cambié código, agregué archivos, o hice commits → CURRENT_STATE.md debe actualizarse YA con el estado actual (incluso si "esperando validación").
+2. Si descubrí pattern útil o anti-pattern → LEARNINGS.md o MISTAKES.md respectivos.
+3. Estado pendiente NO ES razón para no documentar — el estado pendiente ES lo que se documenta.
+
+**No usar más las frases "⏭️ Lo actualizo cuando confirmes" / "⏭️ Pendiente"**. Si pongo eso, estoy violando la regla.
+
+### Cross-link
+
+Refuerzo de la regla operacional en CLAUDE.md: "el mensaje al founder debe incluir la sección ✅ Archivos actualizados". Esta sesión violó esa regla múltiples veces — el costo es real, no teórico.
+
+---
+
 ## 2026-05-30 — Grid visual Python como "validador" CSS — no representa fielmente el rendering del browser (iter 13.1)
 
 **Estado**: 🔴 Recurrente del anti-pattern "validación superficial antes de declarar éxito"
