@@ -47,6 +47,13 @@ re-aplicar o saltarse algo.
 | `seeds/12_vulk_day_light_variants_mblk_brown.sql` + ad-hoc fixes | ✅ 2026-05-30 (confirmado por founder) | INSERT 2 variantes nuevas Vulk Day Light: SKU 194182 (MBLK Negro mate, 5 stock) + SKU 194187 (BROWN Marrón, 0 stock) + 5 imágenes (3 MBLK incluyendo modelo + 2 BROWN). mercadolibre_variation_code parseado del DESIGN attribute (no seller_custom_field que era null). Después múltiples UPDATEs ad-hoc para fixear iters: (a) swap primary lateral/frontal en MBLK/BROWN, (b) sort_order modelo 2→3 para que quede en posición 4 oculta, (c) normalizar sort_order Rosa 3→0 y 4→1 para que algoritmo simplificado de sorting funcione correctamente. Orden final visual: Carey/Rosa/BROWN = lateral/frontal/medidas, MBLK = lateral/frontal/medidas + flecha → modelo. |
 | `seeds/14_coupons_iniciales.sql` | ✅ 2026-05-30 (confirmado por founder) | 3 cupones iniciales del Sprint 4: `BIENVENIDA10` (10% percentage, cap descuento $10.000, per_user_limit 1) + `NEWSLETTER5K` ($5.000 fixed_amount, mínimo subtotal $50.000) + `ENVIOGRATIS` (type free_shipping). Aplicado vía bootstrap junto con migrations 20260530000000 + 20260530100000. Founder puede editar/agregar/desactivar desde Supabase Dashboard → Table Editor → coupons. |
 
+## Cleanups aplicados a cloud
+
+| Archivo | Aplicada al cloud | Notas |
+|---|---|---|
+| `cleanup/20260530_delete_rusty_placeholders.sql` | ✅ 2026-05-30 (confirmado por founder) | Eliminados los 4 productos `[PH]` placeholder de Rusty del seed 02 viejo: `rusty-wayfarer-classic-sol`, `rusty-aviator-pilot-sol`, `rusty-redondo-vintage-rx`, `rusty-square-modern-rx`. FK CASCADE se encargó de variants/images/alerts. order_items.product_id queda SET NULL si alguien compró un PH (no debería). Único producto Rusty real post-cleanup: `rusty-yau`. |
+| `cleanup/20260530_wraparound_to_envolvente.sql` | ✅ 2026-05-30 (confirmado por founder) | Completar normalización ES iniciada en migration `20260530100000`: UPDATE rusty-yau `frame_shape: wraparound` → `envolvente` (término argentino correcto). Enum FRAME_SHAPES expandido para incluir 'envolvente'. Labels actualizados en `product-attributes.tsx`, `frame-shape-filters.tsx`, `face-shape/copy.ts`. DO block verifica que todos los frame_shape estén dentro del enum tras el cleanup. |
+
 ---
 
 ## Cómo actualizar este registro

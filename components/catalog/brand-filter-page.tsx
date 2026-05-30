@@ -3,16 +3,14 @@ import Link from 'next/link';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
 import { Button } from '@/components/ui/button';
-import {
-  ProductCard,
-  type ProductCardData,
-} from '@/components/product/product-card';
+import { ProductCard } from '@/components/product/product-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { cn } from '@/lib/utils';
 import {
   getBrandAssetUrl,
   shouldInvertLogo,
 } from '@/lib/storage/brand-asset-url';
+import { toProductCardData } from '@/lib/catalog/to-product-card-data';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type {
   BrandPageData,
@@ -20,32 +18,6 @@ import type {
 } from '@/lib/catalog/queries';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-
-function toCardData(
-  p: ProductCardSource,
-  hrefPrefix: string,
-  categorySlug: string,
-  brandSlug: string,
-): ProductCardData {
-  const inStock = p.variants.filter((v) => v.is_active && v.stock_qty > 0);
-  const sortedImages = [...(p.images ?? [])].sort((a, b) => {
-    if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
-    return a.sort_order - b.sort_order;
-  });
-  return {
-    slug: p.slug,
-    name: p.name,
-    shortDescription: p.short_description,
-    minPriceCents:
-      inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
-    inStockCount: inStock.length,
-    primaryImagePath: sortedImages[0]?.storage_path ?? null,
-    secondaryImagePath: sortedImages[1]?.storage_path ?? null,
-    href: `${hrefPrefix}/${p.slug}`,
-    categorySlug,
-    brandSlug,
-  };
-}
 
 type Props = {
   category: CategoryConfig;
@@ -76,7 +48,7 @@ export function BrandFilterCatalogPage({
   const hrefPrefix = parentUrl;
 
   const items = products.map((p) =>
-    toCardData(p, hrefPrefix, category.slug, brand.slug),
+    toProductCardData(p, hrefPrefix, category.slug, brand.slug),
   );
 
   return (

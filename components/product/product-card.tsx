@@ -1,3 +1,6 @@
+'use client';
+
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -6,38 +9,96 @@ import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { QuickView } from '@/components/product/quick-view';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
+export type ProductCardVariant = {
+  id: string;
+  /** Label legible (color del armazón). Para tooltip + a11y. */
+  label: string;
+  /** Imagen primary de esta variante (la que muestra el thumbnail). */
+  primaryImagePath: string | null;
+  /** Imagen secondary (lateral). Para hover swap dentro de la misma variante. */
+  secondaryImagePath: string | null;
+  inStock: boolean;
+};
+
 export type ProductCardData = {
   slug: string;
   name: string;
   shortDescription: string | null;
   minPriceCents: number | null;
   inStockCount: number;
+  /** Imagen primary de la variante DEFAULT (la que se muestra al cargar). */
   primaryImagePath: string | null;
-  /** 2da imagen (sort_order después de primary). Si existe, se muestra al
-   * hacer hover sobre la card — patrón clásico de e-commerce de óptica/moda. */
+  /** Imagen secondary de la variante DEFAULT (para hover swap). */
   secondaryImagePath: string | null;
   href: string;
   /** Para construir entry de wishlist. */
   categorySlug: string;
   brandSlug: string;
+  /** Variantes para thumbnails clickeables. La primera entrada suele ser la
+   * misma que primaryImagePath / secondaryImagePath. Si solo hay 1 variante
+   * o el shape no lo provee (compat con consumers viejos), los thumbs NO
+   * se renderizan. */
+  variants?: ProductCardVariant[];
 };
 
+const MAX_VISIBLE_THUMBS = 5;
+
 /**
- * Card minimalista estilo premium/editorial (Acne Studios, Cartier, etc).
- * Sin Card wrapper visible (sin border/shadow/padding). Foto domina,
- * nombre uppercase + precio centrados debajo. "Sin stock" sutil.
+ * Card minimalista estilo retail premium. Foto del producto domina,
+ * nombre + precio centrados debajo, thumbnails de variantes opcionales.
  *
- * El WishlistButton va como sibling del Link (no DENTRO) para evitar
- * HTML inválido (<button> dentro de <a> es ilegal). El article wrapper
- * es relative para que el botón posicionado absolute funcione.
+ * Interactividad (client component):
+ * - Hover sobre la card → swap entre primary (frontal) y secondary (lateral)
+ *   de la MISMA variante seleccionada (NO cambia a otra variante).
+ * - Click en thumbnail → cambia la variante mostrada en la card.
+ *
+ * WishlistButton va como sibling del Link (no DENTRO) para evitar HTML
+ * inválido (<button> dentro de <a>). El article wrapper es relative para
+ * que el botón posicionado absolute funcione.
  */
 export function ProductCard({ product }: { product: ProductCardData }) {
   const outOfStock = product.inStockCount === 0;
-  const primaryUrl = product.primaryImagePath
-    ? getProductImageUrl(product.primaryImagePath)
+  const variants = product.variants ?? [];
+  const hasMultipleVariants = variants.length > 1;
+
+  // Estado: variante actualmente mostrada. Default: la primera del array
+  // (que es la que matchea con primary/secondaryImagePath del data).
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    variants[0]?.id ?? null,
+  );
+
+  // Imágenes a mostrar: si hay variante seleccionada, usar sus imágenes.
+  // Si no (caso edge: producto sin variantes), usar las top-level del data.
+  const currentImages = useMemo(() => {
+    if (selectedVariantId === null) {
+      return {
+        primary: product.primaryImagePath,
+        secondary: product.secondaryImagePath,
+      };
+    }
+    const variant = variants.find((v) => v.id === selectedVariantId);
+    if (!variant) {
+      return {
+        primary: product.primaryImagePath,
+        secondary: product.secondaryImagePath,
+      };
+    }
+    return {
+      primary: variant.primaryImagePath,
+      secondary: variant.secondaryImagePath,
+    };
+  }, [
+    selectedVariantId,
+    variants,
+    product.primaryImagePath,
+    product.secondaryImagePath,
+  ]);
+
+  const primaryUrl = currentImages.primary
+    ? getProductImageUrl(currentImages.primary)
     : null;
-  const secondaryUrl = product.secondaryImagePath
-    ? getProductImageUrl(product.secondaryImagePath)
+  const secondaryUrl = currentImages.secondary
+    ? getProductImageUrl(currentImages.secondary)
     : null;
 
   return (
@@ -63,6 +124,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           {primaryUrl ? (
             <>
               <Image
+                key={`${selectedVariantId ?? 'default'}-primary`}
                 src={primaryUrl}
                 alt=""
                 fill
@@ -76,6 +138,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               />
               {secondaryUrl && (
                 <Image
+                  key={`${selectedVariantId ?? 'default'}-secondary`}
                   src={secondaryUrl}
                   alt=""
                   fill
@@ -107,6 +170,79 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </div>
       </Link>
+
+      {hasMultipleVariants && (
+        <VariantThumbnails
+          variants={variants}
+          selectedVariantId={selectedVariantId}
+          onSelect={setSelectedVariantId}
+        />
+      )}
     </article>
+  );
+}
+
+/**
+ * Tira horizontal de thumbnails (uno por variante). Click cambia la imagen
+ * mostrada en la card. Sin stock → tinte gris. Si hay más de MAX_VISIBLE_THUMBS,
+ * mostramos "+N" al final (sin overflow horizontal).
+ */
+function VariantThumbnails({
+  variants,
+  selectedVariantId,
+  onSelect,
+}: {
+  variants: ProductCardVariant[];
+  selectedVariantId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  const visible = variants.slice(0, MAX_VISIBLE_THUMBS);
+  const hiddenCount = variants.length - visible.length;
+
+  return (
+    <div className="mt-3 flex items-center justify-center gap-2">
+      {visible.map((v) => {
+        const isActive = v.id === selectedVariantId;
+        const url = v.primaryImagePath
+          ? getProductImageUrl(v.primaryImagePath)
+          : null;
+        return (
+          <button
+            key={v.id}
+            type="button"
+            onClick={() => onSelect(v.id)}
+            onMouseEnter={() => onSelect(v.id)}
+            aria-label={`Ver ${v.label}`}
+            aria-pressed={isActive}
+            className={cn(
+              'bg-background relative size-12 shrink-0 overflow-hidden rounded border transition-colors',
+              isActive
+                ? 'border-foreground'
+                : 'border-border/60 hover:border-foreground/40',
+              !v.inStock && 'opacity-50',
+            )}
+          >
+            {url ? (
+              <Image
+                src={url}
+                alt={v.label}
+                fill
+                sizes="48px"
+                className="object-contain p-1"
+              />
+            ) : (
+              <span className="text-muted-foreground flex h-full items-center justify-center text-[10px]">
+                —
+              </span>
+            )}
+          </button>
+        );
+      })}
+      {hiddenCount > 0 && (
+        <span className="text-muted-foreground text-xs">
+          +{hiddenCount}
+        </span>
+      )}
+    </div>
   );
 }

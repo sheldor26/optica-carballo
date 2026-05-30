@@ -27,14 +27,18 @@ export type ProductCardSource = {
   short_description: string | null;
   is_featured: boolean;
   variants: Array<{
+    id: string;
     price_cents: number;
     stock_qty: number;
     is_active: boolean;
+    sort_order: number;
+    attributes: Record<string, unknown>;
   }>;
   images?: Array<{
     storage_path: string;
     is_primary: boolean;
     sort_order: number;
+    variant_id: string | null;
   }>;
 };
 
@@ -140,7 +144,7 @@ export async function fetchBrandPage(
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(price_cents, stock_qty, is_active), images:product_images(storage_path, is_primary, sort_order)',
+      'slug, name, short_description, is_featured, variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -203,7 +207,7 @@ export async function fetchBrandPageByGender(args: {
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(price_cents, stock_qty, is_active), images:product_images(storage_path, is_primary, sort_order)',
+      'slug, name, short_description, is_featured, variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -262,7 +266,7 @@ export async function fetchBrandPageByFilter(args: {
   let query = supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(price_cents, stock_qty, is_active), images:product_images(storage_path, is_primary, sort_order)',
+      'slug, name, short_description, is_featured, variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)

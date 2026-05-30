@@ -2,6 +2,24 @@
 
 ## Status
 
+🟢 **Catálogo iter 4 — Hover same-variant + thumbnails de variantes** (2026-05-30). Founder testeó iter 3 (envolvente + aspect-[3/2] + scale-1.15) y confirmó "los SQL aplicados" (cleanup placeholders + wraparound → envolvente). 2 cambios nuevos pedidos:
+
+1. **Hover bug**: el hover sobre la card cambiaba a una imagen de OTRA variante (confuso). Fix: hover ahora swap entre **frontal y lateral de la MISMA variante** que está seleccionada.
+
+2. **Mini-thumbnails de variantes**: bajo la card, círculos con imagen de cada variante. Click cambia la imagen mostrada (sin entrar al PDP). Patrón LensCrafters.
+
+Implementación:
+- **`lib/catalog/queries.ts`** `ProductCardSource`: expandido `variants` con `id`, `sort_order`, `attributes`; `images` con `variant_id`. 3 SELECT statements actualizados (3 queries que devuelven ProductCardSource: las del brand catalog page).
+- **`lib/catalog/to-product-card-data.ts`** (NUEVO): helper compartido `toProductCardData(source, hrefPrefix, categorySlug, brandSlug)` que: (a) identifica variante default (primera con stock > 0, fallback en cascada), (b) extrae primary + secondary imágenes de esa variante (no de otra), (c) construye array de variants para thumbnails con label legible del `color_frame` JSONB.
+- **`components/product/product-card.tsx`**: convertido a `'use client'`. Nuevo type `ProductCardVariant` (id, label, primaryImagePath, secondaryImagePath, inStock). `ProductCardData.variants?` opcional (back-compat con consumers que no pasen variants — recommended-products-grid, favoritos, gender-catalog-page, etc.). Estado interno `selectedVariantId` con useState. `useMemo` computa imágenes actuales según variante seleccionada. Render nuevo `VariantThumbnails` debajo de la card (botones tipo `size-12` con foto, max 5 visibles + "+N", click/hover cambia selección). Solo se renderiza si `variants.length > 1`.
+- **3 brand pages refactorizadas** (`brand-page.tsx`, `brand-gender-page.tsx`, `brand-filter-page.tsx`): eliminados `toCardData` locales duplicados (3 copias idénticas con la lógica vieja), reemplazados por import del helper compartido.
+
+Decisión técnica clave: `variants` opcional en `ProductCardData` para mantener back-compat con 5 consumers que no fetch variant data (recommended-products-grid del recomendador IA, favoritos, category-filtered, shape-catalog, gender-catalog). Esos siguen funcionando con hover viejo (entre imágenes de cualquier variante) y sin thumbnails. Si después quieren la feature también allá, fetch los campos extra en sus queries respectivas.
+
+Typecheck verde. Build OK.
+
+**Próximo paso (founder)**: commit + push → deploy → testear `/anteojos-de-sol/vulk` (que tiene 4 variantes Carey/Rosa/MBLK/BROWN del Vulk Day Light) — debería ver: (a) hover swap solo entre 2 imágenes de la MISMA variante; (b) tira de 4 thumbnails debajo del producto; (c) click thumbnail cambia la imagen principal. Rusty con 1 sola variante no muestra thumbs (correcto).
+
 🟢 **Catálogo iter 3 — wraparound→envolvente + aspect-[3/2] + scale-1.15** (2026-05-30). Founder pidió 2 cosas:
 1. **Reemplazar "wraparound" por "envolventes"** (término argentino correcto). Ahora completa la normalización ES iniciada en migration `20260530100000` (que había dejado wraparound como gap documentado). Cambios:
    - `lib/face-shape/types.ts`: agregado `'envolvente'` al enum `FRAME_SHAPES`.
