@@ -71,19 +71,19 @@ export function QuickView({ slug, href, className }: Props) {
         onClick={onClick}
         disabled={isPending}
         aria-label={`Vista rápida de ${slug}`}
+        title="Vista rápida"
         className={cn(
           'group-hover/card:opacity-100 group-hover/card:translate-y-0',
           'sm:opacity-0 sm:translate-y-2 sm:transition-all sm:duration-300',
-          'bg-background/90 text-foreground hover:bg-background absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur-sm disabled:opacity-60',
+          'bg-background/80 text-foreground hover:bg-background absolute left-3 top-3 z-10 inline-flex size-8 items-center justify-center rounded-full shadow-md backdrop-blur-sm disabled:opacity-60',
           className,
         )}
       >
         {isPending ? (
           <span className="border-foreground/40 border-t-foreground size-3 animate-spin rounded-full border-2" />
         ) : (
-          <Eye className="size-3.5" strokeWidth={2} />
+          <Eye className="size-4" strokeWidth={2} />
         )}
-        Vista rápida
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>

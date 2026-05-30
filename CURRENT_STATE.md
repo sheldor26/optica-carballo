@@ -2,6 +2,18 @@
 
 ## Status
 
+🟢 **Catálogo iter 6 — Hover scope correcto + QuickView sutil** (2026-05-30). Founder reportó 2 bugs de UX al testear iter 5:
+1. **Hover swap dispara desde thumbnails**: al posarse sobre un thumb de variante para elegirla, la imagen principal cambiaba a frontal (swap). Debería swap solo al posarse sobre LA IMAGEN PRINCIPAL del producto. Fix: 2 groups distintos. `group/card` en el `<article>` para Wishlist/QuickView buttons (que sí deben aparecer al hover de toda la card). `group/image` solo en el div de la imagen para el swap frontal/lateral. Thumbnails están dentro del article pero su hover no dispara swap (porque ese usa group/image).
+2. **Cartel "Vista rápida" molesta y tapa los thumbnails**: posicionado `bottom-3 left-3` absolute relative al article → caía sobre la fila de thumbnails. Fix: (a) reposicionado a `top-3 left-3` (esquina superior izq de la card, simétrico con WishlistButton heart top-right); (b) reducido a SOLO icono Eye (sin texto "Vista rápida") con `size-8` rounded-full. Más sutil, accesible via `title="Vista rápida"` y `aria-label`.
+
+Implementación:
+- **`components/product/product-card.tsx`**: `group/image` agregado al div de imagen. Images cambiaron trigger de `group-hover/card:` → `group-hover/image:` (3 reemplazos: opacity-0 primary, opacity-100 secondary, scale-1.5 hover-zoom).
+- **`components/product/quick-view.tsx`**: posición `bottom-3 left-3` → `top-3 left-3`. Forma `inline-flex items-center gap-1.5 ... px-3 py-1.5 text-xs` → `size-8 items-center justify-center rounded-full` (botón circular icon-only). Texto "Vista rápida" eliminado. Bg opacidad 90→80 (más sutil).
+
+Typecheck verde. Build OK.
+
+**Próximo paso (founder)**: testear `/anteojos-de-sol/vulk` — al posarse sobre thumbs ya no cambia la imagen principal. El botón vista rápida ahora es un círculo chico arriba a la izq con solo el icono Eye.
+
 🟢 **Catálogo iter 5 — Cards realmente más grandes (3 cambios combinados)** (2026-05-30). Founder confirmó que iters anteriores (aspect [3/2] + scale 1.15) NO lograron que las cards se vean más grandes. Voy más agresivo con 3 cambios combinados:
 
 1. **Container más ancho** en brand-page solamente: `container` (max-w-1280px en xl, max-w-1536px en 2xl) → `max-w-screen-2xl` (siempre 1536px hasta donde llegue el viewport). En viewports grandes (1920px+), el grid gana ~256px de ancho disponible. Padding manual `px-4 sm:px-6 lg:px-8` para responsive lateral. NO toco header/footer ni otras pages — solo el brand catalog page.
