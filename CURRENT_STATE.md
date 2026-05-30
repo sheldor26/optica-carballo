@@ -2,6 +2,12 @@
 
 ## Status
 
+🟡 **CursorFollower removido + decisión pendiente otros efectos cursor** (2026-05-30). Founder pidió "eliminar efecto del cursor". Removí `<CursorFollower />` del layout storefront + import (commit `a21c967`). Componente queda en `components/ui/cursor-follower.tsx` por si se reactiva.
+
+**Pregunta pendiente al founder**: ¿también eliminar estos efectos cursor-related?
+- **MagneticButton** (CTAs hero): botón se "imana" hacia el cursor
+- **TiltSpotlightCard** (Categorías home): card tilt 3D + spotlight siguiendo cursor
+
 🟢 **Hero C1 v2: removido marco visible — PNG flota libre sobre el bg dark** (2026-05-30). Founder reportó "reborde a la foto que no debería aparecer". Causa: el container tenía `border border-white/10 rounded-2xl shadow-[...]` + gradient overlay → con PNG 47% transparente, esos estilos crean un marco rectangular visible alrededor de las zonas vacías.
 
 Fix:
