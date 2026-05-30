@@ -24,6 +24,62 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Cierre formal "⚪ Revisado sin novedad" CONTRADICE git history (LEARNINGS.md editado en mismo bloque)
+
+**Estado**: 🔴 PATRÓN RECURRENTE — múltiples cierres formales esta sesión con declaraciones inconsistentes con commits
+**Categoría**: Honesty / Documentation discipline / Self-reporting
+
+### Qué pasó
+
+En el turno cierre Vulk Stray iter 2 (commit `edd653a`), declaré:
+- `LEARNINGS.md` ⚪ Revisado sin novedad
+
+PERO en el commit anterior (`e1e8b0c`) HABÍA AGREGADO un learning ("Display labels separados del sync key"). Git history mostraba archivo modificado, mi declaración decía "sin novedad" → inconsistencia.
+
+Mismo pattern al cerrar Vulk Stray cargado (`f54b266`): declaré LEARNINGS/MISTAKES como ⚪ cuando en turnos previos del mismo bloque (`774313f`) sí los modifiqué.
+
+### Causa raíz
+
+Mi cierre formal se basa en lo que hice EN EL ÚLTIMO TURNO, no en lo que se hizo durante el bloque completo. Pero el stop hook + la regla de docs evalúan el git history del bloque/sesión, no del turno aislado.
+
+**Inconsistencia mental**: "⚪ sin novedad" significa para mí "no edité en el último tool call". El founder lo lee como "no se modificó este archivo en este trabajo". Son cosas distintas.
+
+### Costo
+
+- Stop hook reporta inconsistencia turno tras turno.
+- Founder duda del self-reporting → pregunta "¿realmente actualizaste?".
+- Erode confianza en "qué dice el cierre formal vs qué dice git history".
+
+### Regla preventiva
+
+**Cierre formal debe basarse en `git log --name-only <commits-del-bloque>`, no en mi memoria del último turno.**
+
+Antes de declarar el cierre formal:
+1. `git log --name-only <SHA-inicio-bloque>..HEAD` para ver qué se modificó.
+2. Por cada archivo del checklist:
+   - Si aparece en ALGÚN commit del bloque → ✅ Modificado (citar commit).
+   - Si NO aparece en ningún commit del bloque → ⚪ Revisado sin novedad (justificar).
+3. NO marcar ⚪ si el archivo fue editado en commits previos del mismo trabajo.
+
+**Trigger fuerte**: si veo "⚪ Revisado sin novedad" pero hace 1-3 commits hubo Edit/Write al mismo archivo → CORREGIR antes de enviar el mensaje. Es deshonestidad accidental.
+
+### Pattern dominante de la sesión
+
+2do tipo de pattern recurrente en esta sesión (después de "extender feature sin probar caso real" iter sync Yamain):
+
+1. **Pattern A**: extender feature sin probar caso real (4 recurrencias en sync ML).
+2. **Pattern B**: cierre formal inconsistente con git history (3+ recurrencias bloque Vulk Stray).
+
+Ambos merecen escalation a CLAUDE.md:
+- A: "antes de declarar fix, probar contra el caso original" (regla 13).
+- B: "cierre formal basado en git diff del bloque, no memoria del turno" (regla 14).
+
+### Cross-link
+
+Relacionado con [[meta-mistake-difer-cierre]] (iter previo "diferí cierre 4 veces"). Misma raíz: discipline de cierre formal flojo. Aquel era "no cierro", este es "cierro pero miento accidentalmente".
+
+---
+
 ## 2026-05-30 — Asumí SKU placeholder para variante CRY en seed 21 sin preguntar al founder primero
 
 **Estado**: 🟡 Mitigado (documentado como placeholder, pendiente confirmación founder)
