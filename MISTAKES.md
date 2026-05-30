@@ -24,6 +24,40 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Description del Vulk Yamain enumeraba códigos de variantes (CRY/MBLK/SBLK) — duplicación con variant selector
+
+**Estado**: 🟢 Corregido en mismo turno (founder señaló el error explícitamente)
+**Categoría**: Content / Information architecture
+
+### Qué pasó
+
+Al generar el seed 16 (Vulk Yamain) escribí en description: "Tres opciones de color: armazón transparente con lentes gris degradé (CRY), negro mate con lentes gris oscuro (MBLK), y la versión polarizada con armazón negro brillo y lentes gris degradé polarizadas (SBLK)." Founder corrigió: "hablar generalidades del producto sin hablar de colores y recordar que solo 1 variante es polarizada".
+
+### Causa raíz
+
+Asumí que más detalle = mejor copy. No respeté el principio de **single source of truth**: los códigos de color se muestran en variant selector (chips, thumbs). Enumerarlos en description duplica info, crea riesgo de inconsistencia, y obliga a actualizar 2 lugares cuando se agreguen/eliminen variantes.
+
+### Costo
+
+- 1 turno extra de iteración con founder para corregir copy.
+- Si no se corregía: copy desactualizado cuando se agregaran las 2 variantes marrones (mencionadas como "no las subimos por problemas color fabricante") — habría que volver y editar la description.
+
+### Regla preventiva
+
+**Al redactar description de producto**:
+1. Hablar del producto en general (estilo, material, uso, beneficios comunes a todas las variantes).
+2. Si hay un diferenciador estructural entre variantes (ej. "una versión es polarizada", "viene con lentes intercambiables"), mencionarlo SIN nombrar SKU/código.
+3. Colores específicos → variant selector, NO description.
+4. Comparativa específica entre variantes → tabla en PDP, NO description.
+
+**Trigger fuerte**: si escribís un párrafo que enumera "X (código), Y (código), Z (código)" en description → parar. Eso pertenece al variant selector.
+
+### Cross-link
+
+Aplicación específica del learning [[description-vs-variant-selector-single-source]] (mismo turno).
+
+---
+
 ## 2026-05-30 — Usé "⏭️ Pendiente" 6TA VEZ tras prometer no hacerlo — sanity check de iter 14.5 trigger escalation a CLAUDE.md
 
 **Estado**: 🔴 Escalation activada

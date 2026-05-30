@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Description del producto = generalidades; variant selector = colores. Single source of truth
+
+**Categoría**: Content / Information architecture
+**Confianza**: 🟢 Alta (validado iter Vulk Yamain — founder corrigió directo)
+
+### Qué funcionó
+
+Al generar el seed 16 (Vulk Yamain) inicialmente puse en la `description` larga un párrafo enumerando los colores específicos de las 3 variantes (CRY, MBLK, SBLK). Founder corrigió: "hablar generalidades del producto sin hablar de colores y recordar que solo 1 variante es polarizada". Re-escribí description sin códigos. Los colores específicos se ven en el variant selector (chips + thumbnails de la card y PDP).
+
+### Por qué funciona
+
+Cada pieza de info debe tener **un solo lugar** donde se muestra:
+- **Colores específicos** → variant selector (chips, thumbs, dropdown). Cambia visualmente al seleccionar.
+- **Generalidades del producto** (estilo, material, uso, beneficios) → description larga.
+- **Diferenciador entre variantes** (ej. "una versión es polarizada") → MENCIONAR genérico en description, NO listar SKUs.
+
+Duplicar colores en description + variant selector causa:
+1. Cuando se agregue/elimine una variante, hay que actualizar 2 lugares (riesgo de quedar desactualizado).
+2. El copy queda repetitivo si el usuario ya está mirando los chips.
+3. Si la description menciona "CRY transparente" pero el variant selector la llama "Cristal", el usuario se confunde.
+
+### Cómo aplicar
+
+Al redactar copy de producto:
+1. Description larga: hablar del PRODUCTO (lo común entre variantes) — material, función, beneficios, recomendación de uso.
+2. NO enumerar variantes por código. Si hay un diferenciador estructural (polarizada vs no), mencionarlo SIN nombrar código.
+3. Variant selector: solo nombre legible del color (`Cristal`, `Negro mate`) + thumbnail.
+4. Si tenés que listar variantes, hacelo en una sección dedicada (tabla comparativa) y en la PDP, NO en description.
+
+### Costo si se ignora
+
+Cuando se agreguen las 2 variantes marrones del Yamain (cuando el fabricante resuelva el problema de color), la description tendría que actualizarse SI mencionaba colores. Si no los menciona, no hay nada que tocar — solo agregar las variantes a la DB.
+
+---
+
 ## 2026-05-30 — Usar `/api/admin/ml-import-preview/<itemId>` para auto-extraer datos al cargar variantes nuevas
 
 **Categoría**: Workflow / Operational efficiency
