@@ -2,6 +2,16 @@
 
 ## Status
 
+🟢 **Iter 14.6 — Var 2 y 3 PERFECTAS, subir var 1 y 4 al mismo nivel** (2026-05-30). Founder confirma 2 de las 4 listas: var 2 (rosa) y var 3 (matte black) a 0.95 ✓ PERFECTAS. Var 1 (0.78) y var 4 (0.85) "hay que agrandarlos un poco más". Aplico learning iter 14.5 (ancla en las perfectas): subo ambas con delta +9-10% para acercarlas al target 0.95.
+
+Cambios:
+- Var 1 (carey): 0.78 → **0.86** (+10%)
+- Var 2 (rosa): 0.95 ✓ no tocar
+- Var 3 (matte black): 0.95 ✓ no tocar
+- Var 4 (brown): 0.85 → **0.93** (+9%)
+
+Posiblemente terminamos. Si tras este deploy las 4 están uniformes, cierre del problema de tamaños del Vulk Day Light (saga de 14+ iters resuelta).
+
 🟡 **Iter 14.5 — Primer ajuste basado en feedback EMPÍRICO real (iters previos eran ficticios)** (2026-05-30). Tras fix bug paths .png → .jpg en iter 14.4, founder testeó y dio feedback REAL por primera vez en esta saga:
 - Var 1 (carey, 0.65): MÁS CHICA → fui muy agresivo
 - Var 2 (rosa, 1.05): apenas grande
