@@ -24,6 +24,50 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Asumí approach hero (carrusel productos del catálogo) sin clarificar estética target del founder
+
+**Estado**: 🟡 Mitigado — pivot reconocido, esperando decisión founder
+**Categoría**: Product / Discovery / Assumption gap
+
+### Qué pasó
+
+Founder pidió "modernizar imagen del hero" (turno previo). Yo propuse 3 opciones (A: minimalista limpio, B: ambiental, C: carrusel auto-play). Founder eligió C. Implementé carrusel con las fotos del catálogo. Cuando vio el resultado: "no me gusta como queda con el fondo blanco".
+
+Después de mostrar mix-blend-multiply, founder pasó 7 imágenes de referencia (Vulk Ember/DANV) revelando que el estilo que buscaba es **editorial dark fashion magazine**, NO una versión "más limpia" del catálogo.
+
+### Causa raíz
+
+Cuando founder dijo "moderno", yo asumí "minimal e-commerce premium" (Stripe, Linear). En realidad estaba pensando en **editorial fashion** (Vulk's own branding, Acne Studios, Calvin Klein). 2 mundos visuales distintos:
+
+- E-commerce minimal: fondo claro, foto producto centrada, info clara, cero ruido.
+- Editorial dark: fondo oscuro, foto producto como obra de arte, branding sutil, mood.
+
+Mis 3 opciones (A/B/C) estaban TODAS en el primer mundo. Ninguna en el segundo. Por eso el founder eligió C, vio el resultado, y dijo "no es esto".
+
+### Costo
+
+- 2 iteraciones desperdiciadas (carrusel + mix-blend) construyendo en la dirección equivocada.
+- Tiempo founder mirando mockups que no le iban a gustar.
+
+### Regla preventiva
+
+**Para decisiones de DIRECCIÓN ESTÉTICA (no solo "qué color"), pedir referencias visuales del founder ANTES de proponer opciones.**
+
+Pregunta clave: "¿tenés sites/marcas que te gusten estéticamente? pasame 2-3 referencias".
+
+Esto:
+1. Calibra el target visual real (e-commerce minimal vs editorial vs maximalista vs neo-brutalist vs ...).
+2. Evita 2-3 iteraciones desperdiciadas en la dirección equivocada.
+3. Las opciones que proponga después están en el mismo mundo visual que las referencias.
+
+**Trigger**: si founder dice "moderno", "lindo", "copado", "actual" sin más contexto → pedir referencias ANTES de proponer.
+
+### Cross-link
+
+Relacionado con [[founder-no-tecnico-pedi-verificacion-empirica]] (iter Vulk Day Light): cuando hay ambigüedad, no asumir — calibrar con evidencia (referencias visuales en este caso, mediciones empíricas en el otro).
+
+---
+
 ## 2026-05-30 — Cierre formal "⚪ Revisado sin novedad" CONTRADICE git history (LEARNINGS.md editado en mismo bloque)
 
 **Estado**: 🔴 PATRÓN RECURRENTE — múltiples cierres formales esta sesión con declaraciones inconsistentes con commits

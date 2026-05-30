@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para decisiones estéticas, PEDIR referencias visuales del founder antes de proponer opciones
+
+**Categoría**: Founder collaboration / Design discovery
+**Confianza**: 🟢 Alta (validado iter pivot hero editorial dark)
+
+### Qué funcionó
+
+Cuando founder pasó 7 imágenes de referencia (Vulk Ember/DANV series), el target visual quedó CRISTALINO: editorial dark fashion magazine. Inmediatamente pude proponer 3 conceptos ALINEADOS con esa estética (todos con fondo dark, todos con mood premium, todos con tipografía display).
+
+Comparado con turnos previos donde propuse 3 opciones (A/B/C) sin referencias → 2 iteraciones desperdiciadas (carrusel + mix-blend) porque mis opciones estaban en mundo visual distinto.
+
+### Por qué funciona
+
+Palabras como "moderno", "lindo", "copado", "premium" son ambiguas — cada cabeza visualiza algo distinto. Ejemplo "moderno":
+- Stripe/Linear: minimal claro
+- Acne Studios: editorial dark
+- Glossier: pastel femenino soft
+- IKEA: clean nórdico
+- Off-White: maximalist street
+
+Todos son "modernos" pero opuestos. Pedir referencias = ver con los ojos del founder.
+
+### Cómo aplicar
+
+Cuando founder dice "modernizar X" o pide opciones estéticas:
+1. ANTES de proponer: "¿tenés 2-3 sites/marcas que te gusten estéticamente? pasame referencias".
+2. Si dice "no tengo" o "no sé": ofrecer 3-4 ejemplos opuestos (minimal / editorial / playful / brutalist) y pedir "cuál te suena más" — eso ya calibra.
+3. Recién después proponer opciones DENTRO del mismo mundo visual.
+
+### Costo si se ignora
+
+Iteraciones desperdiciadas construyendo en dirección equivocada (carrusel iter previo = 30+ min de trabajo + commit + deploy + founder testeo + rechazo).
+
+### Cross-link
+
+Mismo nucleo que [[founder-no-tecnico-pedi-verificacion-empirica]]: cuando hay ambigüedad, calibrar con evidencia. Ahí eran mediciones (% pixels oscuros), acá son referencias visuales.
+
+---
+
 ## 2026-05-30 — `mix-blend-multiply` como workaround para fotos JPG con fondo blanco sobre fondos no-blancos
 
 **Categoría**: CSS / Visual / Workaround

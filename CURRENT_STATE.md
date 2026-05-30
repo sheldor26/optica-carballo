@@ -2,6 +2,26 @@
 
 ## Status
 
+🟡 **Hero PIVOT: founder rechaza fotos de catálogo, busca editorial dark estilo Vulk** (2026-05-30). Founder pasó 7 imágenes de referencia (Vulk Ember/DANV series) con estilo claro:
+- Fondos negros / gris oscuro / gradient dark
+- Iluminación chiaroscuro (alto contraste)
+- Anteojos como objetos de arte (no producto e-commerce)
+- Branding sutil abajo
+- Mood fashion magazine
+
+**Pivot de approach**: el carrusel actual + mix-blend-multiply (commit `afeefad`) NO resuelve esta dirección estética. Founder quiere SACAR las fotos del catálogo del hero y poner otra cosa.
+
+**3 conceptos propuestos al founder (esperando decisión)**:
+- **Concepto 1: Editorial dark single hero** — fondo dark gradient + 1 foto editorial dramática + texto blanco display. **Requiere imagen editorial externa**.
+- **Concepto 2: Tipografía dominante (sin imagen)** — fondo dark + H1 gigante 8xl-9xl + detalle minimal (logo marca de agua). **NO requiere imagen externa**. Implementable AHORA.
+- **Concepto 3: Split editorial 50/50** — lado izq texto + lado der lifestyle (modelo con anteojos estilo img 6). **Requiere imagen lifestyle externa**.
+
+**Issue: imágenes editoriales son material Vulk (copyright)**. Para C1/C3 founder debe conseguir vía: pedir Vulk co-marketing / sacar foto propia con stock + buena luz / stock photo (Unsplash/Pexels).
+
+**Recomendación**: empezar con Concepto 2 (tipográfico minimal) AHORA sin esperar fotos. Si después consigue editorial externa, upgrade a C1 o C3.
+
+**Próximo paso (founder)**: elegir 2 / 1+fotos / 3+fotos / otra cosa.
+
 🟢 **Hero carrusel + quick fix mix-blend-multiply (Opción B aplicada)** (2026-05-30). Founder eligió B tras ver que el carrusel con fondo blanco no funcionaba. Cambio mínimo CSS:
 
 - `components/home/home-hero.tsx`: Image del slide activo gana `mix-blend-multiply`. El blanco puro del JPG se vuelve transparente sobre el gradient del hero. Removido también `drop-shadow` (con blend mode no se ve igual).
