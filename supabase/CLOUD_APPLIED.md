@@ -54,6 +54,7 @@ re-aplicar o saltarse algo.
 | `seeds/19_vulk_yamain_frame_shape_cat_eye.sql` | ✅ 2026-05-30 (confirmado por founder) | UPDATE attributes.frame_shape de Vulk Yamain de `oval` → `cat_eye`. Solo en DB local. |
 | `seeds/20_vulk_stray.sql` | ✅ 2026-05-30 (confirmado founder, verificado curl HTML producción muestra vulk-stray + 8 fotos bucket HTTP 200) | NUEVO producto Vulk Stray (categoría anteojos-de-receta). 4 variantes iniciales: MBLK 126890, SBLK 126891, 663 126898, MDEMI-MBLK 126899. Precio $93.000 uniforme. ML lista como filtro luz azul pero vendemos solo armazón. |
 | `seeds/21_vulk_stray_complete.sql` | ✅ 2026-05-30 (confirmado founder, verificado fotos CRY 10/11 HTTP 200) | UPDATE producto con measurements 144/50/46/20/145 + attributes completos + INSERT 5ta variante CRY 126892. Total final: 5 variantes, 11 fotos. |
+| `seeds/22_vulk_stray_rename_variants_callouts.sql` | ⏳ pendiente | 2 cambios Vulk Stray: (a) Rename frame_color de 2 variantes — SBLK 126891 negro-satinado→negro-brillo, MDEMI-MBLK 126899 demi-negro-mate→carey-mate-y-negro-mate. SOLO display local — NO afecta sync ML (sync usa mercadolibre_variation_code literal, no frame_color). (b) UPDATE producto: agregar 3 callouts variados (info G-Flex origen deporte extremo / recommendation cuál color elegir / tip cuidado cristales antirreflejo). Frontend: variant-list.tsx ya tiene labels nuevos en FRAME_COLOR_LABELS. |
 
 ## Cleanups aplicados a cloud
 

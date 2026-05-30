@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Display labels (frame_color) separados del sync key (mercadolibre_variation_code): rename UI sin afectar integración externa
+
+**Categoría**: Architecture / Separation of concerns
+**Confianza**: 🟢 Alta (validado iter Vulk Stray rename variantes)
+
+### Qué funcionó
+
+Founder pidió renombrar 2 variantes Vulk Stray (display label) preguntando si afecta sync ML. Respuesta: NO, porque la arquitectura separa 2 conceptos en campos distintos:
+
+- **Display label**: `attributes.frame_color` (string como "negro-brillo"). UI lo lee + lo mapea a label legible.
+- **External integration key**: `mercadolibre_variation_code` (variation ID literal de ML, ej. "184005783781"). Sync matchea con esto via `getAllVariationCodes()`.
+
+Cambiar `frame_color` solo afecta UI. `mercadolibre_variation_code` queda intacto → sync ML sigue funcionando idéntico.
+
+### Por qué funciona
+
+Separation of concerns: lo que el cliente VE (display) vs lo que el sistema EXTERNO entiende (sync key) son responsabilidades distintas. Acoplarlos en un solo campo crea problemas:
+- Renombrar para UX rompe sync externo.
+- Cambiar nombre por marketing requiere migration.
+- Conventions diferentes entre sistemas chocan (ML usa IDs numéricos, UI usa strings legibles).
+
+### Cómo aplicar
+
+Para cualquier campo que cruce 2+ sistemas/audiences:
+1. Identificar qué consume cada audience (UI, sync external, search, comparator).
+2. Si las conventions difieren, USAR CAMPOS SEPARADOS aunque parezca redundante.
+3. Mapper en runtime traduce entre campos cuando se necesita unificación visual.
+
+### Costo si se ignora
+
+Acoplar display + sync key obliga a (a) display feo (mostrar variation_id al usuario) → mala UX, o (b) sync roto cada vez que se renombra para UI → bugs silenciosos.
+
+### Cross-link
+
+Aplicación práctica del pattern [[parser-cross-system-multiples-formatos]]: separar display variable del key sync estable es prerequisito para que el match sync funcione bien.
+
+---
+
 ## 2026-05-30 — Cargar producto en 2 fases (seed base + seed complete) cuando founder pasa info en chunks
 
 **Categoría**: Workflow / Founder collaboration

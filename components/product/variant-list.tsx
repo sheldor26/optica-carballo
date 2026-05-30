@@ -21,7 +21,14 @@ export type VariantListItem = {
 
 const FRAME_COLOR_LABELS: Record<string, string> = {
   negro: 'Negro',
+  'negro-mate': 'Negro mate',
+  'negro-brillo': 'Negro brillo',
+  'negro-satinado': 'Negro satinado',
   carey: 'Carey',
+  'carey-mate-y-negro-mate': 'Frente carey mate / patillas negro mate',
+  transparente: 'Transparente',
+  'azul-mate': 'Azul mate',
+  'gris-oscuro-transparente': 'Gris oscuro transparente',
   dorado: 'Dorado',
   plata: 'Plata',
   azul: 'Azul',

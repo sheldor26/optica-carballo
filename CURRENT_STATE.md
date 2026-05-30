@@ -2,6 +2,33 @@
 
 ## Status
 
+🟡 **Vulk Stray iter 2: rename variantes + callouts (seed 22)** (2026-05-30). Founder pidió 2 cambios + 1 mejora:
+
+**1. Renombrar variantes (SOLO mi web, NO afecta sync ML)**:
+- SBLK 126891: "Negro Satinado" → "Negro Brillo"
+- MDEMI-MBLK 126899: "Demi Negro Mate" → "Frente Carey Mate con Patillas Negro Mate"
+
+Decisión técnica: cambio `attributes.frame_color` per-variante. NO toco `mercadolibre_variation_code` (que es el variation_id literal de ML). El sync ML usa `mercadolibre_variation_code` + helper `getAllVariationCodes` — independiente del `frame_color`. Por tanto cambio de display NO rompe sync de stock/precio.
+
+**2. Agregar callouts variados al Vulk Stray** (no tenía ninguno):
+- Info: "El G-Flex nació en el deporte extremo" (curiosidad sobre el material)
+- Recommendation: "¿Cuál color elegir según tu estilo?" (guía por color del armazón)
+- Tip: "Para que tus lentes graduadas duren más" (cuidado del antirreflejo, ajuste gratis)
+
+Callouts distintos a los de Vulk Day Light/Yamain — variando tema según producto.
+
+**3. Frontend**: `components/product/variant-list.tsx` actualizado con nuevas keys en `FRAME_COLOR_LABELS`:
+- `negro-brillo`, `negro-mate`, `negro-satinado` (manteniendo el viejo)
+- `carey-mate-y-negro-mate` (label largo descriptivo)
+- `transparente`, `azul-mate`, `gris-oscuro-transparente`
+
+Seed 22 pendiente aplicar al cloud. Typecheck verde.
+
+**Próximo paso (founder)**: aplicar `supabase/seeds/22_vulk_stray_rename_variants_callouts.sql` al cloud. Después verificar PDP Vulk Stray:
+- Variant 126891 dice "Negro brillo"
+- Variant 126899 dice "Frente carey mate / patillas negro mate"
+- 3 callouts nuevos visibles (info / recommendation / tip)
+
 ✅ **Vulk Stray CARGADO EN PRODUCCIÓN — primer producto categoría receta** (2026-05-30). Founder confirmó "todos aplicados". Verificado vía curl:
 - ✅ `/anteojos-de-receta/vulk` muestra Vulk Stray con 4 thumbs visibles
 - ✅ Las 11 fotos bucket `vulk-stray-receta/` HTTP 200 (las 11)
