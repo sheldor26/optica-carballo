@@ -2,6 +2,20 @@
 
 ## Status
 
+🟡 **Decision point: imagen "incluye estuche+franela+stickers" compartida por brand** (2026-05-30). Founder pidió: cómo evitar subir la misma imagen del kit Vulk (estuche cuero + franela + stickers de marca) en CADA producto Vulk nuevo. Imagen es genérica de marca, no específica de producto.
+
+3 opciones propuestas con tradeoffs:
+
+| Opción | Detalle | Costo upfront | Costo recurrente |
+|---|---|---|---|
+| **A (recomendado)** | Nueva columna `brands.includes_image_path` (text nullable). UI render condicional al final de galería si presente. Excepción opcional vía `attributes.hide_brand_includes_image` per-producto | ~30 min: 1 migración DB + query mod + UI mod | **0** — automático al cargar productos |
+| **B** | Hardcoded en componente ProductGallery: `if brand.slug==='vulk' append imagen fija`. URL en código | ~5 min | Cambio de imagen requiere PR + deploy. Cada brand nueva requiere modificar código |
+| **C** | INSERT explícito en cada seed nuevo de Vulk con `storage_path` apuntando a path compartido. Sin código nuevo | 0 (solo subir 1 imagen al bucket) | Agregar INSERT en cada seed nuevo de Vulk (automatizable de mi lado) |
+
+**Decisión técnica recomendada**: A. Costo upfront chico, cero trabajo recurrente, configurable per-brand, escalable a Rusty y futuras marcas. Frontend-hardcoded (B) y per-seed (C) acumulan deuda técnica.
+
+**Próximo paso (founder)**: elegir A / B / C. Si A: implemento migración + query + UI + le pido subir 1 imagen al bucket en `brands-shared/vulk-estuche-franela.jpg`. Si B o C: implemento al toque sin migración.
+
 🟢 **Vulk Yamain — seed 16 generado completo (producto + 3 variantes + 7 imágenes)** (2026-05-30). Founder respondió las 3 preguntas. Datos consolidados de 2 listings ML.
 
 **Producto**: Vulk Yamain (sol, ovalado, mujer). G-Flex + Flexo, policarbonato UV400, 30.9g, talle Large, medidas 146/58/55/16/145mm. `prescription_adapter=false`. `has_polarized_variant=true` porque mix de polarizadas y clásicas.

@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para assets compartidos entre N entidades (productos de una marca, etc.), evaluar approach por costo recurrente, no solo upfront
+
+**Categoría**: Architecture / Decision-making
+**Confianza**: 🟡 Media (validado 1 vez en decision-point Vulk includes image)
+
+### Qué funcionó
+
+Founder preguntó cómo evitar duplicar la imagen del kit Vulk (estuche+franela+stickers) en cada producto. Le propuse 3 opciones (A: DB column brand-level / B: frontend hardcoded / C: INSERT per-seed) presentando claramente para cada una: **costo upfront** y **costo recurrente**. La tabla comparativa hizo que el tradeoff fuera obvio: B es el más rápido upfront pero el peor en recurrencia (cambio de imagen = deploy). A es el más caro upfront pero cero costo recurrente.
+
+### Por qué funciona
+
+Founders no-técnicos tienden a optar por la solución "más rápida ahora" si no se les muestra el costo recurrente. Una tabla con 2 columnas (upfront vs recurrente) hace explícito el tradeoff temporal: "5 min ahora + 30 min cada vez que agregás marca" vs "30 min ahora + 0 después".
+
+### Cómo aplicar
+
+Cuando hay decision-point arquitectónico con N opciones que difieren en cuánto trabajo automatizan:
+1. NO presentar solo el costo de implementación (upfront).
+2. Calcular costo recurrente: por cada producto nuevo / cambio futuro / migración futura, cuánto trabajo adicional.
+3. Multiplicar por N esperado (¿cuántos productos Vulk va a haber? ¿20-50?).
+4. Tabla 2 columnas: upfront / recurrente × N esperado.
+5. Recomendar la que tenga menor costo TOTAL (upfront + recurrente × N).
+
+### Costo si se ignora
+
+Founder elige B (más rápida ahora). A los 10 productos cargados, cada cambio de imagen del kit es un PR + deploy. A los 6 meses se acumula deuda técnica que cuesta más refactorizar que la opción A inicial.
+
+### Cross-link
+
+Aplicación de [[no-acoplar-codigo-a-data-especifica]] (mistake recurrente: hardcoding genera deuda).
+
+---
+
 ## 2026-05-30 — Description del producto = generalidades; variant selector = colores. Single source of truth
 
 **Categoría**: Content / Information architecture
