@@ -2,6 +2,23 @@
 
 ## Status
 
+🟢 **Rusty Yau scale overrides (laterales 1.5, frontales 1.2)** (2026-05-30). Founder: "Rusty se ve muy pequeño comparado con Vulk".
+
+Medición empírica de las 6 fotos Rusty Yau (848×537, aspect 1.58:1):
+- Laterales (3 fotos: 01, 04-revo-blue, 06-revo-green): anteojo 52% W × 50% H del frame
+- Frontales (3 fotos: 02, 05-revo-blue, 07-revo-green): anteojo 70% W × 43% H
+
+Vs Day Light (99% W × 57% H): Rusty ocupa ~la mitad del frame.
+
+Decisión técnica: **scales asimétricos lateral/frontal** dentro del mismo producto. Primer caso así (Vulk Yamain usaba 1 sola scale uniforme). Razón: la perspectiva 3/4 lateral hace que el anteojo se vea proporcionalmente menos que la vista frontal directa.
+
+- Lateral × 1.5 (50% más grande) → anteojo a ~78% del card
+- Frontal × 1.2 (20% más grande) → anteojo a ~84% del card
+
+6 entries agregadas a `lib/catalog/image-scale-overrides.ts`. Commit `c76d5a1`.
+
+**Próximo paso (founder)**: push + test. Si laterales/frontales quedan muy grandes o chicos, ajustar 1 número.
+
 🟢 **2 fixes: bug sync precio Yamain + mobile thumbs 3 visibles** (2026-05-30).
 
 **Fix 1 — Bug sync precio Yamain encontrado y resuelto**: founder pasó JSON del force-sync que mostró `pre.price_cents = post.price_cents = 7983239` (DB) y `updated:0`. ML actual = $79.800 (7980000 centavos) — diff de $32 pero sync no actualizaba.

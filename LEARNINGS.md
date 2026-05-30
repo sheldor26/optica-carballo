@@ -22,6 +22,49 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Dentro del mismo producto, las fotos lateral/frontal pueden necesitar scales DISTINTOS
+
+**Categoría**: Visual tuning / Photo composition
+**Confianza**: 🟢 Alta (validado iter Rusty Yau — refina learning previo Yamain)
+
+### Qué funcionó
+
+Iter Yamain: "6 fotos uniformes → 1 sola scale uniforme". Iter Rusty Yau: la realidad es más matizada — las 6 fotos están en mismo tamaño/aspect (848×537) PERO el anteojo ocupa distinto % del frame según TIPO de foto:
+- Laterales (3): anteojo a 52% W (vista 3/4 con patillas extendidas en perspectiva)
+- Frontales (3): anteojo a 70% W (vista directa, frame más ancho)
+
+Aplicar 1 scale uniforme → o las laterales quedan chicas, o las frontales quedan recortadas. **Solución**: 2 scales — `1.5` para laterales, `1.2` para frontales.
+
+### Por qué funciona
+
+La perspectiva del producto cambia su footprint visual. Un anteojo en vista 3/4:
+- Patillas extendidas hacia atrás (no aportan visualmente al "tamaño percibido" del frente del anteojo)
+- Frente comprimido por perspectiva diagonal
+
+Vs vista frontal:
+- Frente completo ocupa todo el ancho horizontal
+- Patillas no son visibles (escondidas detrás)
+
+Resultado: misma altura de anteojo, distinto width visible. Los scales tienen que compensar.
+
+### Cómo aplicar
+
+Cuando midas fotos de un producto nuevo:
+1. Agrupar por TIPO de foto (lateral / frontal / modelo / medidas).
+2. Calcular bbox por grupo, NO promediar todas.
+3. Si los grupos difieren > 10%: scales distintos por grupo.
+4. Si difieren < 10%: scale uniforme.
+
+### Refinamiento del learning previo
+
+El learning "medir uniformidad antes de aplicar scales per-foto" (iter Yamain) sigue válido. PERO la "uniformidad" debe medirse POR GRUPO de fotos similares (lateral / frontal / etc.), no por todo el set del producto.
+
+### Cross-link
+
+Refinamiento de [[medir-uniformidad-antes-de-scales-yamain]].
+
+---
+
 ## 2026-05-30 — Funciones que parsean IDs externos: agregar `variation.id` (o equivalente) como fallback final
 
 **Categoría**: Code / Defensive parsing
