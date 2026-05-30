@@ -3,7 +3,6 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { CompareBarWrapper } from '@/components/compare/compare-bar-wrapper';
 import { CookiesBanner } from '@/components/legal/cookies-banner';
 import { BackToTop } from '@/components/ui/back-to-top';
-import { CursorFollower } from '@/components/ui/cursor-follower';
 import { FloatingWhatsapp } from '@/components/ui/floating-whatsapp';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
 import { getBusinessInfo } from '@/lib/site/business';
@@ -17,7 +16,6 @@ export default function StorefrontLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollProgress />
-      <CursorFollower />
       <SiteHeader />
       <div className="flex-1">{children}</div>
       <SiteFooter />
