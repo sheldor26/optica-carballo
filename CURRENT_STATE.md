@@ -2,6 +2,20 @@
 
 ## Status
 
+🟡 **Hero home: fix leading + 3 opciones de modernización pendiente decisión founder** (2026-05-30).
+
+**Fix aplicado** (commit `a7f5251`):
+- H1 del hero: `leading-[1.02]` → `leading-[1.1]`. Causa: line-height muy apretado hacía que las colas de descenders (j de "anteoJos", ó de "ósesoramiento") visualmente chocaran con la siguiente línea. Diferencia mínima en spacing pero las colas respiran.
+
+**Pendiente decisión founder — 3 opciones imagen hero**:
+- **A: Minimalista limpio** (Stripe/Linear style): quitar chip "30+ años" + floating price card. Solo producto + sombra suave. Texto del producto debajo. ~20 min.
+- **B: Mockup ambiental** (Warby Parker style): producto sobre fondo de color sutil + iluminación editorial. Requiere fotos editoriales (founder no tiene). Descartable hasta tener fotos.
+- **C: Carrusel auto-play 3-4 productos**: rotación cada 4s entre destacados (Day Light, Yamain, Yau, Stray). Indicadores dots abajo. ~1 hora.
+
+**Mi recomendación**: A primero (rápido, look "premium"). Si quiere más dinámico después, C.
+
+**Próximo paso (founder)**: elegir A / B / C → yo implemento. Si no convence ninguno, ofrece "otra cosa que tenga en mente".
+
 ✅ **Vulk Stray iter 2 COMPLETO — rename variantes + callouts aplicados** (2026-05-30). Founder confirmó "todo aplicado". Verificado vía curl HTML producción:
 - ✅ Variante 126891: muestra "negro-brillo" (renombrada desde "Negro Satinado")
 - ✅ Variante 126899: muestra "carey-mate" (renombrada desde "Demi Negro Mate")
