@@ -2,6 +2,20 @@
 
 ## Status
 
+🟡 **Iter 14.5 — Primer ajuste basado en feedback EMPÍRICO real (iters previos eran ficticios)** (2026-05-30). Tras fix bug paths .png → .jpg en iter 14.4, founder testeó y dio feedback REAL por primera vez en esta saga:
+- Var 1 (carey, 0.65): MÁS CHICA → fui muy agresivo
+- Var 2 (rosa, 1.05): apenas grande
+- Var 3 (matte black, 1.20): MUY grande
+- Var 4 (brown, 0.85): **la mejor** → target visual
+
+Ajustes iter 14.5 basados en evidencia real:
+- Var 1: 0.65 → **0.78** (+20%)
+- Var 2: 1.05 → **0.95** (-10%)
+- Var 3: 1.20 → **0.95** (-21%)
+- Var 4: 0.85 ✓ mantener
+
+Observación interesante: var 4 a 0.85 = referencia. Que las var 2 y 3 también terminen en 0.95 (similar) sugiere que las fotos originales de var 2, 3, 4 tienen tamaños similares de anteojo en pixels. Var 1 es la única con foto intrínsecamente más grande (necesita scale menor a 1).
+
 🔴→🟢 **Iter 14.4 — BUG CRÍTICO encontrado: hardcoded `.png` cuando DB tiene `.jpg`. Override no matcheaba en NINGÚN iter previo** (2026-05-30). Founder reportó "1 y 4 siguen grandes" tras iter 14.3 (var 1 = 0.65). Sospeché problema técnico, hice `curl https://opticacarballo.com.ar/anteojos-de-sol/vulk | grep transform` → resultado: `transform:scale(1)` en TODAS las imágenes. Override nunca se aplicó.
 
 Causa raíz: hardcodeé en `lib/catalog/image-scale-overrides.ts` con extensión `.png` (porque las URLs que el founder me pasó en iter 11 eran `.png`). Pero los seeds + DB usan `.jpg`. Ninguna key matcheó → `getImageScale()` siempre retornaba 1 (default).

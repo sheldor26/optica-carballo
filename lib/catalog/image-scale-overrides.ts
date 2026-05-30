@@ -25,13 +25,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // - Var 4 (brown): 1.05 → 0.85 (iter 14.3: founder confirmó "más grande que 2 y 3, igual a 1")
   // Paths con extensión .jpg (confirmado vía curl al HTML de producción).
   // Founder envió URLs .png pero los seeds + DB usan .jpg.
-  'vulk-day-light-sol/01-lateral.jpg': 0.65,
-  'vulk-day-light-sol/02-frontal.jpg': 0.65,
-  'vulk-day-light-sol/04-lateral-rosa.jpg': 1.05,
-  'vulk-day-light-sol/05-frontal-rosa.jpg': 1.05,
-  'vulk-day-light-sol/06-mblk-frontal.jpg': 1.2,
-  'vulk-day-light-sol/07-mblk-lateral.jpg': 1.2,
-  'vulk-day-light-sol/09-brown-frontal.jpg': 0.85,
+  //
+  // Iter 14.5 — primer feedback empírico REAL (iters previos no se aplicaban).
+  // Founder ref: var 4 (brown) a 0.85 es la mejor → target visual.
+  'vulk-day-light-sol/01-lateral.jpg': 0.78, // iter 14.4 0.65 era muy chica → +20%
+  'vulk-day-light-sol/02-frontal.jpg': 0.78,
+  'vulk-day-light-sol/04-lateral-rosa.jpg': 0.95, // iter 14.4 1.05 apenas grande → -10%
+  'vulk-day-light-sol/05-frontal-rosa.jpg': 0.95,
+  'vulk-day-light-sol/06-mblk-frontal.jpg': 0.95, // iter 14.4 1.20 muy grande → -21%
+  'vulk-day-light-sol/07-mblk-lateral.jpg': 0.95,
+  'vulk-day-light-sol/09-brown-frontal.jpg': 0.85, // ✓ MEJOR según founder
   'vulk-day-light-sol/10-brown-lateral.jpg': 0.85,
 };
 
