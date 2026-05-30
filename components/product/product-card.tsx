@@ -130,10 +130,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className={cn(
-                  'scale-[1.22] object-contain transition-all duration-500 ease-out',
+                  'object-contain transition-all duration-500 ease-out',
                   secondaryUrl
                     ? 'group-hover/image:opacity-0'
-                    : 'group-hover/image:scale-[1.30]',
+                    : 'group-hover/image:scale-105',
                 )}
               />
               {secondaryUrl && (
@@ -143,7 +143,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="scale-[1.22] object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/image:opacity-100"
+                  className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/image:opacity-100"
                 />
               )}
             </>
