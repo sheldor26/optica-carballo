@@ -24,6 +24,42 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Hice UPDATE de brands.includes_image_path con path canónico SIN verificar primero que la imagen existía en el bucket
+
+**Estado**: 🟡 Pendiente confirmación path real del founder
+**Categoría**: Code / Verification gap / Assumption
+
+### Qué pasó
+
+Generé seed 17 con `UPDATE brands SET includes_image_path = 'brands-shared/vulk-estuche-franela.jpg'` usando un path canónico que YO inventé al pedirle al founder. Founder aplicó el SQL OK. Founder confirmó "todo subido" — yo asumí que la imagen estaba en ese path exacto. Verificación con curl al final del día reveló HTTP 400 → la imagen NO está en el path esperado del bucket. Posible: founder la subió con otro nombre o a otra carpeta.
+
+### Causa raíz
+
+Order of operations equivocado. Hice UPDATE primero (apuntando a un path imaginario), después esperando que el founder subiera la imagen exactamente a ese path. Lo correcto es lo inverso: founder sube la imagen primero, comparto el path real, después el UPDATE apunta al path verificado.
+
+Aún más: cuando el founder dijo "todo subido", debería haber verificado el bucket ANTES de marcar todo como ✅ aplicado.
+
+### Costo
+
+- Issue pendiente al cierre del día. Imagen no aparece en PDPs de Vulk hasta resolver el path.
+- Próximo turno se va en debug del path en vez de avanzar features nuevas.
+
+### Regla preventiva
+
+**Para cualquier UPDATE que apunte a un asset del bucket (storage_path), brand asset, file)**:
+
+1. **Inversión del flujo**: founder sube primero → te confirma path real → vos hacés UPDATE con path verificado. NO al revés.
+2. Si NO podés invertir (ej. founder confirma "ya subí pero no recuerdo path exacto"), verificar con `curl -I` la URL pública ANTES de marcar como aplicado.
+3. Si el path canónico es importante (convención del proyecto), darle al founder instrucciones exactas + screenshot de la carpeta esperada en Supabase Dashboard.
+
+**Trigger fuerte**: si voy a escribir un UPDATE con `storage_path = 'algun/path/...'`, primero `curl -I` la URL pública. Si HTTP != 200, parar.
+
+### Cross-link
+
+Mismo nucleo que [[hardcoded-paths-png-vs-jpg-iter-14.4]]: ambos son "asumí path sin verificar bucket". Pattern recurrente esta sesión.
+
+---
+
 ## 2026-05-30 — Cargué Vulk Yamain con `attributes.gender='female'` sin verificar cómo se renderiza en UI (subtitle "female" en inglés)
 
 **Estado**: 🟢 Corregido en mismo día (fix 2 post-deploy)

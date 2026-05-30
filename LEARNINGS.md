@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Verificación post-deploy con curl + HTTP status detecta gap entre "founder dice aplicado" y "está funcionando"
+
+**Categoría**: Verification / Trust but verify
+**Confianza**: 🟢 Alta (validado múltiples veces en sesión: paths .png/.jpg, scale CSS, brand image)
+
+### Qué funcionó
+
+Founder confirmó "todo subido y aplicado" al final del día. En vez de tomarlo como certeza y cerrar, corrí 3 verificaciones con curl:
+1. `curl https://opticacarballo.com.ar/anteojos-de-sol/vulk | grep vulk-yamain` → ✓ Vulk Yamain renderiza
+2. `curl https://opticacarballo.com.ar/anteojos-de-sol/rusty/rusty-yau | grep rusty-yau/` → ✓ fotos MBLUE presentes
+3. `curl -I https://tuddpfspnbnmafsqdvat.supabase.co/storage/.../brands-shared/vulk-estuche-franela.jpg` → ❌ HTTP 400
+
+Detecté que la imagen brand-wide del kit Vulk NO está accesible en el path esperado, aunque founder dijo que la había subido. SIN esa verificación, el bug habría sido detectado solo cuando un cliente abriera la PDP y se preguntara por qué no aparece la imagen del kit.
+
+### Por qué funciona
+
+"Aplicado" puede significar 3 cosas distintas:
+1. Founder hizo la acción (subir, aplicar SQL).
+2. La acción se completó técnicamente sin error.
+3. El resultado final es el esperado por el sistema downstream.
+
+"Aplicado" del founder = 1 + 2 (lo que él controla). Verificación post-deploy = 3 (lo que el sistema espera). El gap entre 2 y 3 es donde viven los bugs sutiles: la imagen se subió OK pero a otro path; el SQL corrió OK pero apunta a un path que no existe; el código deployó OK pero el path no matchea (caso iter 14.4 png vs jpg).
+
+### Cómo aplicar
+
+Después de "founder aplicó cambios", verificar al menos:
+1. **HTTP status de URLs críticas** (`curl -I` o `-o /dev/null -w "%{http_code}"`)
+2. **Render del HTML producción** (`curl | grep <expected-string>`) para confirmar que el cambio llegó al rendered output
+3. **Si el cambio es visual**: además del HTTP/HTML, hacer hard refresh en browser real o mirar screenshot
+
+Costo: 30 segundos. Beneficio: detección inmediata de gaps que de otro modo aparecerían en producción para usuarios.
+
+### Cross-link
+
+Mismo pattern que [[validation-gap-iter-14.4]] (paths png/jpg) + [[validation-gap-iter-13.1]] (grid Python vs browser real). Estos 3 mistakes acumulados condensan a 1 regla: **NUNCA confiar en "aplicado/funciona" sin verificar el output final que el sistema espera**.
+
+---
+
 ## 2026-05-30 — Mappers explícitos enum DB → label español para todo enum que toque UI
 
 **Categoría**: i18n / Localization / DB-to-UI
