@@ -2,18 +2,15 @@
 
 ## Status
 
-🟡 **Hero carrusel deployado pero founder rechaza fondo blanco — 3 opciones pendientes** (2026-05-30). Founder testeó el carrusel auto-play (opción C, commit `cf78836`) y reportó: "no me gusta como queda con el fondo blanco, quizás voy a tener que conseguir unas sin fondo".
+🟢 **Hero carrusel + quick fix mix-blend-multiply (Opción B aplicada)** (2026-05-30). Founder eligió B tras ver que el carrusel con fondo blanco no funcionaba. Cambio mínimo CSS:
 
-Issue real: las fotos del catálogo tienen fondo blanco (JPG). Con el gradient `from-muted/30 to-background` del hero detrás, los "cuadrados blancos" recortados se ven como pegados/intrusos sobre el fondo decorativo.
+- `components/home/home-hero.tsx`: Image del slide activo gana `mix-blend-multiply`. El blanco puro del JPG se vuelve transparente sobre el gradient del hero. Removido también `drop-shadow` (con blend mode no se ve igual).
 
-**3 opciones presentadas al founder**:
-- A: **PNG transparente** (definitivo). Founder consigue/edita las 4 fotos con remove.bg, Photoroom o Photopea. Beneficia ALL site (hero + catálogo + comparador + PDP gallery). ~2-10 min trabajo founder.
-- B: **CSS `mix-blend-mode: multiply`** (quick fix). El blanco se vuelve transparente sobre el gradient. Tradeoff: posible tinte sutil sobre colores del producto.
-- C: **Volver al hero anterior** (1 producto + chip + floating card). Composición más densa disimula el fondo blanco.
+Tradeoffs documentados en LEARNINGS.md (este turno): puede tintar levemente colores muy claros del producto. No funciona sobre fondo blanco puro. Solución definitiva sigue siendo PNG transparente (opción A).
 
-**Recomendación**: A. Solución correcta para siempre, beneficia múltiples páginas.
+Commit `afeefad`.
 
-**Próximo paso (founder)**: elegir A/B/C.
+**Próximo paso (founder)**: push + hard refresh `/` → ver si el carrusel se ve aceptable con mix-blend. Si sí, queda como está hasta que tengas PNGs. Si no, vamos a opción A o C.
 
 🟢 **Hero home iter 2: Opción C carrusel auto-play implementado** (2026-05-30). Founder eligió C (carrusel auto-play 4 productos). Implementación:
 

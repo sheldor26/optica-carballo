@@ -22,6 +22,54 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — `mix-blend-multiply` como workaround para fotos JPG con fondo blanco sobre fondos no-blancos
+
+**Categoría**: CSS / Visual / Workaround
+**Confianza**: 🟡 Media (validado iter hero carrusel — pendiente confirmar founder)
+
+### Qué funcionó
+
+Founder reportó que las fotos del catálogo (JPG con fondo blanco) se ven como "cuadrados pegados" cuando aparecen sobre un fondo decorativo (gradient + glow del hero). Solución definitiva: PNG transparente. Workaround quick: `mix-blend-mode: multiply` en CSS.
+
+```tsx
+<Image className="object-contain mix-blend-multiply" />
+```
+
+El blanco puro (255,255,255) multiplicado con cualquier color = el color original. Resultado: el blanco "desaparece" sobre el fondo. Funciona sin tocar las fotos.
+
+### Por qué funciona
+
+CSS blend mode `multiply`: para cada píxel, multiplica los valores RGB de la capa con los del fondo subyacente.
+- White (1.0, 1.0, 1.0) × cualquier color = ese color → blanco se vuelve transparente.
+- Negro (0,0,0) × cualquier color = negro → se preserva.
+- Colores intermedios se "tintan" levemente con el fondo.
+
+### Cómo aplicar
+
+Para fotos JPG con fondo blanco que necesitan integrarse sobre fondos decorativos:
+1. Confirmar que el contenido del producto NO tiene blancos puros significativos (sino se vuelven transparentes también).
+2. Confirmar que el fondo subyacente NO es blanco puro (sobre blanco, multiply no hace nada).
+3. Aplicar `mix-blend-multiply` a la `<Image>`.
+4. Considerar remover drop-shadow (multiplica con el fondo y se ve distinto).
+
+### Tradeoffs
+
+- ✅ 1 línea de CSS, no toca fotos
+- ✅ Funciona on-the-fly con fotos legacy
+- ⚠️ Colores muy claros del producto se tintan con el fondo (sutilmente)
+- ⚠️ No funciona sobre fondos blancos puros (el blanco no se va)
+- ⚠️ Drop-shadow se ve degradado
+
+### Costo si se ignora
+
+Tener que esperar a tener todas las fotos en PNG transparente para empezar a usar fondos decorativos. Workaround permite avanzar.
+
+### Cross-link
+
+Solución definitiva: PNG transparente (founder edita fotos). Cuando estén, remover `mix-blend-multiply` — restablece colores 100% fieles.
+
+---
+
 ## 2026-05-30 — Display labels (frame_color) separados del sync key (mercadolibre_variation_code): rename UI sin afectar integración externa
 
 **Categoría**: Architecture / Separation of concerns
