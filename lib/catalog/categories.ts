@@ -10,6 +10,10 @@ export type CategoryConfig = {
   shortLabel: string;
   /** Frase para meta descriptions */
   metaPhrase: string;
+  /** Path al hero image de la categoría en el bucket `brands-shared`.
+   * Render condicional en `<CategoriesSection>` del home — si null, fallback
+   * a placeholder "Foto pendiente". Aspect 16:9, ≥1200×675 recomendado. */
+  imagePath: string | null;
 };
 
 export const CATEGORIES = {
@@ -18,12 +22,14 @@ export const CATEGORIES = {
     name: 'Anteojos de sol',
     shortLabel: 'sol',
     metaPhrase: 'anteojos de sol',
+    imagePath: 'category-sol.jpg',
   } satisfies CategoryConfig,
   rx: {
     slug: 'anteojos-de-receta',
     name: 'Anteojos de receta',
     shortLabel: 'receta',
     metaPhrase: 'armazones de receta',
+    imagePath: null,
   } satisfies CategoryConfig,
 } as const;
 
