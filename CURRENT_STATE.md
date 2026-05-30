@@ -2,6 +2,25 @@
 
 ## Status
 
+🟡 **Hero upgrade pendiente C2 → C1: founder tiene fotos editoriales, pedí 3 datos** (2026-05-30). Tras implementar Concepto 2 (tipográfico minimal dark), founder dijo "tengo fotos, cómo podríamos agregarlas". Path planificado en commit `4cd39c9` activado.
+
+**3 datos pendientes founder**:
+1. Cantidad de fotos (1 → hero estático / 2-4 → carrusel editorial)
+2. Formato (PNG transparente / JPG con fondo / JPG con fondo blanco — el último puede no funcionar bien)
+3. Dimensiones aproximadas (vertical / horizontal / cuadrado)
+
+**Plan upload**: reusar bucket `brands-shared/` (mismo del kit Vulk + category-sol). Convención de nombre:
+- 1 sola: `brands-shared/hero-editorial.jpg` (o .png si transparente)
+- Múltiples: `hero-editorial-01.jpg`, `hero-editorial-02.jpg`, etc
+
+**Plan implementación tras recibir datos** (~15-20 min):
+- Layout split 60/40 o 50/50 (texto izq + foto der), respetando el dark theme actual
+- Foto con tratamiento dark: border sutil, sombra dramática
+- Si múltiples → carrusel auto-play 5s con fade transition
+- Mantener: gradient bg, watermark "ÓC", tipografía display, CTAs dark
+
+**Próximo paso (founder)**: pasar 3 datos (cantidad / formato / dimensiones) + subir foto(s) al bucket.
+
 🟢 **Hero Concepto 2 implementado: tipográfico minimal dark** (2026-05-30). Founder confirmó "dale vamos por concepto 2". Implementación:
 
 **`components/home/home-hero.tsx`** refactor completo:
