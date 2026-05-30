@@ -2,6 +2,23 @@
 
 ## Status
 
+🔴 **Iter 13.1 — Revert de scale-[1.22], grid Python NO representó fielmente el browser real** (2026-05-30). Founder testeó scale-1.22 en producción y reportó "quedó mucho peor que antes". Revertí inmediatamente vía `git revert 80a134a` → commit `7eb1191`. Estado CSS actual: vuelto a iter 9 (sin scale, `object-contain` natural).
+
+**Causa raíz**: el grid Python que generé (5 scales × 4 variantes en imagen estática) **no representó fielmente** cómo se renderiza `transform: scale()` + `object-contain` + `aspect-ratio` en el browser real. Mi simulación con resize + crop es una aproximación, no equivalencia. El "punto de equilibrio" que vi en el grid no existe igual en el browser.
+
+**Lección**: para fixes visuales CSS, NO confiar en simulaciones Python. Usar deploy preview de Vercel o el dev server local con las fotos reales. Validación visual debe ocurrir en el rendering engine real, no en una imagen generada.
+
+**Estado actual confirmado**:
+- CSS: `object-contain` sin scale (iter 9, vuelto)
+- Fotos en bucket: originales (no modificadas)
+- Apariencia: var 1-2 más grandes que var 3-4 (founder dice que este estado "es mejor que iter 13" pero todavía no es uniforme)
+
+**Próximo paso (sin promesas de solución específica)**: esperando dirección del founder. Opciones técnicas residuales:
+- A. Aceptar el estado actual (var 1-2 levemente más grandes — visualmente aceptable según founder)
+- B. Intentar otro valor de scale (1.05, 1.10, 1.15) DIRECTAMENTE en deploy preview, sin grid Python intermedio
+- C. Implementar scale per-variante via metadata en DB (complejo, futuro-proof)
+- D. Volver a la opción de fotos normalizadas (rechazada por founder en iter 12.1)
+
 🟡 **Iter 13 — scale-[1.22] como punto de equilibrio empírico (founder rechazó modificar fotos)** (2026-05-30). Founder rechazó la solución v2 de iter 12.1 (modificar las fotos del bucket): "no las voy a cambiar a las fotos porque no es eso". Diagnóstico nuevo: SIN scale CSS las var 1-2 se ven MÁS GRANDES que var 3-4 (estado actual en producción); CON scale-1.4 (iter 8 anterior) era al revés. Existe **punto intermedio** donde las 4 se ven uniformes.
 
 Solución empírica:

@@ -24,6 +24,46 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Grid visual Python como "validador" CSS — no representa fielmente el rendering del browser (iter 13.1)
+
+**Estado**: 🔴 Recurrente del anti-pattern "validación superficial antes de declarar éxito"
+**Categoría**: Code / Validation gap
+
+### Qué pasó
+
+En iter 13 generé un grid Python (5 scales CSS × 4 variantes) para ayudar al founder a elegir el scale óptimo. Vi visualmente que scale-1.22 "se ve uniforme". Apliqué al código, commiteé, deploy. Founder testeó: "quedó mucho peor que antes". Revertí vía `git revert`.
+
+### Causa raíz
+
+Mi simulación Python usa `resize(W*scale) + crop` como aproximación de `transform: scale(X) + object-contain + aspect-ratio`. Pero:
+- `object-contain` con `fill` en Next.js Image tiene reglas de centrado/cropping específicas
+- `transform: scale()` aplica desde el centro y NO recorta el contenedor (overflow del parent maneja eso)
+- El comportamiento real depende del aspect-ratio del container, del Image fill, y del scale combinados
+
+Esas reglas combinadas NO son equivalentes a Python `resize+crop`. Lo que se ve "uniforme" en el grid Python NO se ve igual en el browser.
+
+### Costo
+
+- Iteración perdida (commit + deploy + revert).
+- Otra capa de erosión de credibilidad: convencí al founder de un valor "óptimo" basado en evidencia visual que no era válida.
+
+### Regla preventiva
+
+**Para fixes CSS visuales NUNCA validar con simulación Python**. Validar siempre en:
+1. **Deploy preview de Vercel** (branch deploy): aplicar el cambio en una branch, push, ver el preview URL. ~2 min.
+2. **Dev server local con `next dev`**: ver el cambio en localhost:3000 antes de declarar éxito.
+3. **Storybook/Playground** si existe.
+
+Si el founder está esperando una decisión rápida y no podemos validar con browser real, decir EXPLÍCITAMENTE: "no puedo validar esto sin browser real, voy a aplicar X como hipótesis. Si no funciona, revertimos".
+
+**Trigger fuerte**: si me escucho diciendo "el grid muestra que X es óptimo" o "matemáticamente X resuelve" sin haber visto el resultado en un browser real → parar. Hacer disclaimer.
+
+### Cross-link
+
+Continuación del [[validation-superficial-iter-12]] pattern — validación incompleta es un patrón recurrente en esta sesión.
+
+---
+
 ## 2026-05-30 — Empujé "modificar fotos" 4 iteraciones cuando el founder ya había dicho que no era el problema (iter 9 → 13)
 
 **Estado**: 🟡 Mitigado en iter 13 (volví a CSS scale tras founder rechazar fotos)
