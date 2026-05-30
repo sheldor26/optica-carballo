@@ -2,6 +2,31 @@
 
 ## Status
 
+🟢 **Sync precio ML → mi sitio implementado (inbound stock + price)** (2026-05-30). Founder pidió: "implementá el sync de precio". Extendí `syncStockFromMLItem()` para que ahora también sincronice `price_cents` desde `item.price` (single) o `variation.price` (multi-variation, con fallback al item.price si la variation no tiene propio).
+
+Cambios:
+- **`lib/integrations/mercadolibre/sync-stock.ts`**:
+  - Type `VariantRow` gana `price_cents: number` (para comparar con incoming)
+  - Type `MLItem` gana `price?: number` (item-level price en pesos)
+  - Type `MLVariation` gana `price?: number` (variation-level price, con fallback al item)
+  - Helper `priceToCents(price)`: convierte pesos ML → centavos DB. Tolerante a undefined/null/NaN.
+  - `syncStockFromMLItem` ahora construye un `patch` con stock_qty + price_cents. Solo updateaa los campos que difieren. Si nada cambia → skip.
+
+Sin cambios necesarios en:
+- Webhook ML (`app/api/ml/webhook/route.ts`): ya llama a `syncStockFromMLItem`
+- Cron reconciliation (`app/api/cron/ml-reconcile-stock/route.ts`): idem
+- Force-sync admin (`app/api/admin/ml-force-sync/[mlItemId]/route.ts`): idem
+- Los 3 callers automáticamente ganan sync de precio sin tocar nada más.
+
+Flow completo end-to-end:
+1. Vos cambiás precio de un item en ML → ML manda webhook a `/api/ml/webhook` → `syncStockFromMLItem` detecta cambio → UPDATE `price_cents` en DB → revalidate path → PDP muestra precio nuevo (≤ 5 min ISR cache O instantáneo si revalidatePath funciona).
+2. O cron periódico chequea y reconcilia drift.
+3. O `/api/admin/ml-force-sync/<MLA>` manual.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**: push. Para testear: cambiar precio de algún item en panel ML → esperar webhook (segundos) → hard refresh PDP → ver precio actualizado.
+
 🟢 **2 fixes UX + logo brand en PDP** (2026-05-30). Founder testeó iter anterior y reportó 2 issues + 1 mejora estética:
 
 **Fix 1 — X cortada en CompareBar**: el botón `-right-1.5 -top-1.5` sobresalía del `<li>` pero el `<ul>` padre tenía `overflow-x-auto` que recorta tanto horizontal como vertical (limitación CSS conocida). Fix: agregar `px-1.5 py-2` al ul para padding interno que cubra los negative offsets de los botones.

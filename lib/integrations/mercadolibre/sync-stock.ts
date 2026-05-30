@@ -8,6 +8,7 @@ type VariantRow = {
   id: string;
   sku: string;
   stock_qty: number;
+  price_cents: number;
   mercadolibre_item_id: string | null;
   mercadolibre_variation_code: string | null;
 };
@@ -21,6 +22,9 @@ type MLVariation = {
   id: number;
   seller_custom_field: string | null;
   available_quantity: number;
+  /** ML devuelve price en pesos con decimales (ej. 79832.39).
+   * Conversión a centavos: Math.round(price * 100). */
+  price?: number;
   attribute_combinations?: MLAttributeCombination[];
 };
 
@@ -55,8 +59,19 @@ function getVariationCode(v: MLVariation): string | null {
 type MLItem = {
   id: string;
   available_quantity: number;
+  /** Precio del item en pesos con decimales. Para items multi-variation
+   * el precio puede estar a nivel item (común para todas) o a nivel
+   * variation. */
+  price?: number;
   variations?: MLVariation[];
 };
+
+/** Convierte precio ML (pesos con decimales) a centavos para DB. */
+function priceToCents(price: number | undefined | null): number | null {
+  if (price === undefined || price === null) return null;
+  if (typeof price !== 'number' || !isFinite(price)) return null;
+  return Math.round(price * 100);
+}
 
 /**
  * Sync stock de una variante DB hacia ML (outbound).
@@ -193,9 +208,16 @@ export async function syncVariantStockToML(variantId: string): Promise<{
 }
 
 /**
- * Sync inbound: dado un MLA, fetcha ML y actualiza stock_qty de las
- * variantes DB mapeadas. Usado por webhook (items topic) y cron de
+ * Sync inbound: dado un MLA, fetcha ML y actualiza stock_qty + price_cents
+ * de las variantes DB mapeadas. Usado por webhook (items topic) y cron de
  * reconciliación.
+ *
+ * Sincroniza 2 campos:
+ * - `stock_qty`: desde `available_quantity` (item o variation)
+ * - `price_cents`: desde `price` × 100 (item o variation). Solo si ML
+ *   devuelve price y difiere del DB. Para multi-variation, el precio
+ *   puede estar a nivel item (común a todas) — en ese caso usamos
+ *   `item.price` como fallback para todas las variations sin price propio.
  *
  * Devuelve resumen de qué se sincronizó para logging.
  */
@@ -217,10 +239,11 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
 
   const item = itemResult.data;
   const variations = item.variations ?? [];
+  const itemPriceCents = priceToCents(item.price);
 
   const { data: variants } = await supabase
     .from('product_variants')
-    .select('id, sku, stock_qty, mercadolibre_item_id, mercadolibre_variation_code')
+    .select('id, sku, stock_qty, price_cents, mercadolibre_item_id, mercadolibre_variation_code')
     .eq('mercadolibre_item_id', mlItemId)
     .returns<VariantRow[]>();
 
@@ -237,15 +260,24 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
     const single = variants.find((v) => v.mercadolibre_variation_code === null);
     if (!single) {
       skipped = variants.length;
-    } else if (single.stock_qty !== item.available_quantity) {
-      await supabase
-        .from('product_variants')
-        .update({ stock_qty: item.available_quantity })
-        .eq('id', single.id);
-      updated++;
-      updatedVariantIds.push(single.id);
     } else {
-      skipped++;
+      const patch: { stock_qty?: number; price_cents?: number } = {};
+      if (single.stock_qty !== item.available_quantity) {
+        patch.stock_qty = item.available_quantity;
+      }
+      if (itemPriceCents !== null && single.price_cents !== itemPriceCents) {
+        patch.price_cents = itemPriceCents;
+      }
+      if (Object.keys(patch).length > 0) {
+        await supabase
+          .from('product_variants')
+          .update(patch)
+          .eq('id', single.id);
+        updated++;
+        updatedVariantIds.push(single.id);
+      } else {
+        skipped++;
+      }
     }
   } else {
     for (const variant of variants) {
@@ -260,13 +292,22 @@ export async function syncStockFromMLItem(mlItemId: string): Promise<{
         skipped++;
         continue;
       }
-      if (variant.stock_qty === matched.available_quantity) {
+      // Precio: prefiere el de la variation, fallback al del item base.
+      const variationPriceCents = priceToCents(matched.price) ?? itemPriceCents;
+      const patch: { stock_qty?: number; price_cents?: number } = {};
+      if (variant.stock_qty !== matched.available_quantity) {
+        patch.stock_qty = matched.available_quantity;
+      }
+      if (variationPriceCents !== null && variant.price_cents !== variationPriceCents) {
+        patch.price_cents = variationPriceCents;
+      }
+      if (Object.keys(patch).length === 0) {
         skipped++;
         continue;
       }
       await supabase
         .from('product_variants')
-        .update({ stock_qty: matched.available_quantity })
+        .update(patch)
         .eq('id', variant.id);
       updated++;
       updatedVariantIds.push(variant.id);

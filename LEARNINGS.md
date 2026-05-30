@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Extender función de sync existente vs crear nueva: pesa más si los callers ya están establecidos
+
+**Categoría**: Architecture / Code reuse
+**Confianza**: 🟢 Alta (validado iter sync precio ML)
+
+### Qué funcionó
+
+Founder pidió sync de precio ML→sitio. Dos approaches:
+- **A**: Crear `syncPriceFromMLItem()` separado, llamar a ambos desde webhook + cron + force-sync.
+- **B**: Extender `syncStockFromMLItem()` para que también sincronice precio (mantener nombre por compat, ampliar comportamiento documentado en comment).
+
+Elegí B. Resultado: 1 archivo modificado (sync-stock.ts), 0 callers tocados. Webhook + cron + force-sync admin automáticamente ganan sync de precio sin saber que el feature cambió.
+
+### Por qué funciona
+
+Cuando una función YA tiene N callers integrados (webhook, cron, endpoint admin), el costo de "ampliar comportamiento" es 0 para los callers. El costo de "función separada paralela" es N × wiring + posibilidad de que algún caller olvide invocar la nueva (gap en feature coverage).
+
+La función fetcheaba el item ML una vez para stock — ese mismo fetch ya trae el price gratis. Extender es 0 fetches adicionales.
+
+Trade-off: el nombre de la función (`syncStockFromMLItem`) ahora es engañoso (también syncs price). Mitigación: comment explícito al inicio. Si en el futuro se vuelve confuso, rename con backward-compat alias.
+
+### Cómo aplicar
+
+Para extender un feature en código que YA tiene callers:
+1. Listar callers (`grep`).
+2. Si los callers son TODOS lugares donde el feature nuevo también aplica → **extender la función existente**.
+3. Si algunos callers NO deben tener el feature nuevo → **crear función separada** o agregar parámetro opt-in.
+4. SIEMPRE actualizar el comment de la función para reflejar el nuevo comportamiento.
+
+### Costo si se ignora
+
+Crear funciones paralelas innecesarias = wiring redundante + risk de feature drift (un caller usa una versión, otro usa otra).
+
+---
+
 ## 2026-05-30 — `overflow-x-auto` también recorta vertical (limitación CSS). Para badges/X que sobresalen: padding interno al container
 
 **Categoría**: CSS / Layout
