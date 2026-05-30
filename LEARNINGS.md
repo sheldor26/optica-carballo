@@ -22,6 +22,54 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Medir antes de teorizar: 5 minutos de Python + PIL refutaron 3 diagnósticos teóricos en cadena
+
+**Categoría**: Debugging / Empirical verification
+**Confianza**: 🟢 Alta (validado en iter 11 — cierre de cadena de 3 mistakes)
+
+### Qué funcionó
+
+Tras 3 iteraciones (iters 7, 9, 10) diagnosticando teóricamente "el problema es el padding interno de las fotos JPG" y proponiendo soluciones cada vez más elaboradas (scale CSS, reproceso fotos, workflow Photopea), el founder pasó las 4 URLs del bucket. En 5 minutos:
+
+1. `curl` las 4 fotos
+2. Python + PIL: `ImageChops.difference` + `numpy` con threshold variable (240, 200, 150, 100) → bounding box del contenido no-blanco
+3. Tabla con datos reales
+
+**Resultado**: las 4 fotos eran 99% width del anteojo. Diferencia max 1.1%. Mi diagnóstico de "padding distinto" era FALSO. El problema real (perspectiva del anteojo + translucencia del color) era invisible para la teoría — solo visible al renderizar las 4 a tamaño uniforme.
+
+### Por qué funciona
+
+Los modelos mentales sobre fotos/CSS son convincentes pero pueden estar completamente equivocados. La realidad del archivo binario es objetiva. Medir convierte la conversación de "creo que es X / creo que es Y" en "los datos dicen X" — y a veces dicen algo que ninguna teoría predecía (perspectiva + translucencia, en este caso).
+
+5 min de scripting en Python (PIL + numpy) reemplazan días de teorías. **Especialmente** cuando el founder no-técnico ya hizo trabajo manual siguiendo instrucciones teóricas y el problema persiste.
+
+### Cómo aplicar
+
+Triggers para medir antes de seguir teorizando:
+- 2+ iteraciones diagnosticando el mismo problema con teorías distintas.
+- Founder ejecutó tu workflow propuesto al pie de la letra y el problema persiste.
+- El problema involucra archivos binarios (fotos, audios, PDFs) cuyas características son inspeccionables programáticamente.
+- Estás por proponer otra teoría sin haber medido.
+
+Pasos:
+1. Pedir URLs / paths / acceso a los archivos reales.
+2. Descargar y abrir con la lib correcta (PIL para imágenes, ffprobe para video/audio, pdfinfo para PDFs, etc.).
+3. Medir con 2-3 métricas distintas (no solo una — diferentes thresholds revelan distintas anomalías).
+4. Generar artefactos visuales (comparación side-by-side, gráficos) que el founder pueda verificar con sus ojos.
+5. SOLO entonces proponer solución, basada en datos concretos.
+
+### Costo si se ignora
+
+- Cadena de mistakes: diagnostiqué mal 3 veces seguidas (iter 7, 9, 10) porque cada teoría refutada llevaba a otra teoría sin medir.
+- Trabajo founder desperdiciado: reprocesó las fotos al menos una vez siguiendo workflow que era irrelevante al problema real.
+- Pérdida de confianza: a cada "esta vez sí entiendo" sin medir, la credibilidad baja.
+
+### Relación con learnings anteriores
+
+Extensión natural del learning "Patrones ASIMÉTRICOS de bug = problema en datos, no en código" (2026-05-30, iter 7). Ese learning identificó **dónde** está el problema (en los datos). Este learning agrega: **medí los datos en vez de teorizar sobre ellos**.
+
+---
+
 ## 2026-05-30 — Cuando founder no-técnico dice "no tiene sentido", parar de explicar y pedir verificación empírica
 
 **Categoría**: Communication / Founder-technical translation

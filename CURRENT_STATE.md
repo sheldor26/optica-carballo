@@ -2,6 +2,21 @@
 
 ## Status
 
+🟢 **Iter 11 — DIAGNÓSTICO REAL via medición empírica de las 4 fotos del Vulk** (2026-05-30). Founder pasó las 4 URLs públicas del bucket. Descargué las 4, las medí con Python + PIL detectando bounding box del contenido no-blanco con thresholds variables (240, 200, 150, 100).
+
+**Hallazgo que refuta mis 3 diagnósticos anteriores**: las 4 fotos son CASI IDÉNTICAS en bounding box del anteojo. Width 1970-1991 px de 2000 (98.5%-99.6% del frame). Diferencia máxima entre la más chica y la más grande: **1.1% del width**. Imperceptible. **El "padding interno distinto" que diagnostiqué en iters 9-10 era FALSO** — el founder había uniformado las fotos correctamente.
+
+**Diagnóstico real (visible solo al generar comparación side-by-side de las 4 fotos a tamaño uniforme)**:
+1. **Perspectiva inconsistente**: la foto de la Var 1 (negra-carey) tiene el anteojo levemente inclinado (patilla derecha hacia abajo). Las Vars 3-4 (matte black, brown) son más horizontales. Distintas tomas con ángulos distintos.
+2. **Translucencia del color del frame**: la Var 2 (rosa transparente) tiene partes del frame que se confunden con el fondo blanco → "peso visual" menor aunque el bounding box sea idéntico. Es física óptica, no CSS.
+
+**Decisiones técnicas tomadas**:
+- Generé `comparison.png` con las 4 fotos a tamaño uniforme en grid 2×2, copiada a `~/Desktop/vulk-comparison.png` para que el founder verifique visualmente.
+- Tabla con datos medidos pasada al founder (4 thresholds × 4 fotos = 16 mediciones).
+- 4 caminos propuestos: D (CSS bandage temporal scale-1.15), A (re-fotografiar con mismo ángulo), B (fondo no-blanco gris #F5F5F5 standard premium), C (aceptar).
+
+**Próximo paso (founder)**: abrir `~/Desktop/vulk-comparison.png`, verificar visualmente, decidir entre A/B/C/D. Mi recomendación: D ahora + B (fondo gris #F5F5F5) como standard a futuro al cargar productos nuevos.
+
 🟡 **Iter 10 — descubrí bug en mi propio workflow Photopea. Re-instrucción al founder** (2026-05-30). Founder reprocesó las 4 fotos del Vulk siguiendo MI instrucción anterior (Canvas Size → 2000×1333). Reportó que **siguen viéndose diferentes** entre sí. Causa raíz: mi workflow tenía un gap conceptual — uniformar el **canvas size** NO uniformiza el **% del frame ocupado por el anteojo**. Una foto original con anteojo de 750px expandida a canvas 2000 deja el anteojo al 37.5%. Otra con anteojo de 1275px expandida al mismo canvas lo deja al 63.7%. Mismo tamaño final, padding distinto.
 
 Irónicamente, esto ES exactamente el learning que documenté en LEARNINGS.md hace 2 turnos ("2 dimensiones de uniformidad: framing relativo vs padding interno absoluto") y lo apliqué mal en la siguiente instrucción al founder. Le pedí uniformar la dimensión equivocada (canvas size, no padding interno).

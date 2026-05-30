@@ -24,6 +24,57 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Diagnostiqué 3 veces seguidas SIN MEDIR. La medición empírica refutó todo (iter 11, cierre cadena iters 7→11)
+
+**Estado**: 🔴 Confirmado — cadena de 3 diagnósticos teóricos incorrectos
+**Categoría**: Debugging / Anti-pattern grave
+
+### Qué pasó
+
+Cadena de iters 7, 9, 10: cada uno diagnostiqué el problema de fotos del Vulk SIN haber medido las fotos. Cada diagnóstico era teóricamente convincente:
+- **Iter 7**: "fotos no uniformes entre variantes" → bajé scale CSS.
+- **Iter 9**: "fotos del Vulk tienen anteojo al 85% del frame, padding insuficiente" → removí scale completamente.
+- **Iter 10**: "founder reprocesó pero canvas size uniforme NO uniforma padding interno" → propuse workflow Photopea complejo.
+
+En iter 11, founder pasó las 4 URLs públicas. En 5 min con Python + PIL medí las 4 fotos:
+- Width del anteojo: 99% del frame en las 4
+- Diferencia max entre la "más chica" y la "más grande": 1.1%
+- **Mi diagnóstico de "padding interno distinto" era objetivamente FALSO**
+
+El problema real, visible solo al generar comparación side-by-side a tamaño uniforme: **perspectiva del anteojo** (rotación distinta entre tomas) + **translucencia del color** (rosa transparente se mimetiza con fondo blanco). Ninguno de estos factores está en mi modelo mental original ni en mis 3 diagnósticos.
+
+### Causa raíz
+
+Cada diagnóstico nuevo refutaba el anterior y proponía teoría diferente. Pero TODOS eran teorías sin medición. Cada vez que founder reportaba "sigue mal", asumí que la teoría anterior estaba incompleta y propuse OTRA teoría sin pedir los datos reales.
+
+El anti-pattern más profundo: cuando estoy seguro de un diagnóstico técnico, no se me ocurre que **el problema podría ser uno que ninguna teoría predice** (perspectiva + translucencia en este caso). Solo midiendo y mostrando aparece.
+
+### Costo
+
+- 3 iteraciones perdidas (iters 7, 9, 10) con commits que tuvieron que ser revertidos o re-pensados.
+- Founder hizo trabajo manual (reprocesar fotos en Photopea siguiendo workflow incorrecto).
+- Pérdida de credibilidad acumulada — cada "esta vez sí" pesaba menos.
+- Tiempo total perdido en sesión: ~3-4 horas distribuidas en múltiples turnos.
+
+### Regla preventiva
+
+**REGLA NUEVA (precede a todo diagnóstico técnico sobre archivos binarios/datos)**:
+
+> Si el problema involucra archivos binarios (fotos, audios, PDFs, JSON), **medir antes de diagnosticar**. No proponer ninguna solución teórica sin haber:
+> 1. Descargado/abierto los archivos reales.
+> 2. Medido con la librería apropiada (PIL, ffprobe, pdfinfo, jq, etc.).
+> 3. Generado artefacto visual o tabla con datos concretos.
+>
+> Especialmente cuando ya hay 1+ diagnóstico previo que el founder ejecutó y no resolvió.
+
+**Trigger fuerte**: si me encuentro escribiendo un workflow para que el founder ejecute manualmente (Photopea, scripts, comandos), ANTES de mandar el workflow → medir el problema yo. Casi siempre voy a encontrar que mi diagnóstico está equivocado o incompleto.
+
+### Relación con learnings
+
+Cross-link: este mistake confirma el learning [[medir-antes-de-teorizar]] (2026-05-30). El learning está formalizado a partir de este mistake.
+
+---
+
 ## 2026-05-30 — Di workflow Photopea incompleto al founder — uniformé canvas size en lugar de padding interno (iter 10)
 
 **Estado**: 🟡 Mitigado (re-instrucción enviada)
