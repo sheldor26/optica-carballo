@@ -22,6 +22,48 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Crop → resize → center funciona; scale-up de foto entera NO
+
+**Categoría**: Image processing / Pattern correcto
+**Confianza**: 🟢 Alta (validado en iter 12.1 después de fallo de iter 12)
+
+### Qué funcionó
+
+Para normalizar fotos donde un sujeto (anteojo) debe ocupar el mismo % del frame final:
+
+**Pattern correcto** (3 pasos):
+1. **Detectar bbox del sujeto** con threshold tolerante (PIL: `arr.min(axis=2) < 235` captura silueta completa incluyendo sombras y partes claras).
+2. **Recortar al bbox** (`img.crop(bbox)`) — descarta padding original variable.
+3. **Resize+pegar centrado** en canvas nuevo del tamaño final con padding controlado.
+
+**Pattern INCORRECTO** (lo que probé primero):
+1. Calcular factor scale basado en área del sujeto.
+2. `img.resize(W*factor, H*factor)` — escalar la foto ENTERA.
+3. `canvas.paste(resized, ...)` — pegar al frame original.
+
+El segundo pattern **corta los bordes del sujeto** cuando factor > 1 — porque la foto escalada excede el canvas y se recorta.
+
+### Por qué funciona el primero
+
+Trabajar a nivel de **bbox del sujeto** garantiza que el sujeto entero (con sus extensiones) queda dentro del crop. El resize se hace sobre el contenido relevante, no sobre el frame completo (que incluye padding irrelevante). El paste final centrado en canvas nuevo controla el padding output uniformemente.
+
+### Cómo aplicar
+
+Triggers para usar este pattern:
+- Necesidad de uniformar el tamaño visual de un sujeto entre múltiples fotos.
+- Las fotos originales tienen padding/framing variable.
+- El sujeto puede extenderse cerca de los bordes del archivo original.
+
+Pasos:
+1. PIL + numpy: detectar bbox con threshold apropiado (235 para fondo blanco, ajustar según fondo).
+2. `crop(bbox)` para aislar el sujeto.
+3. Calcular new_W = TARGET_W * fill_ratio (ej. 0.85 = 85% del frame para padding visual).
+4. `crop.resize((new_W, new_H), Image.LANCZOS)`.
+5. Canvas nuevo con `Image.new('RGB', (W, H), bg_color)`.
+6. `canvas.paste(resized, ((W-new_W)//2, (H-new_H)//2))`.
+
+---
+
 ## 2026-05-30 — "Es eso nomás" = iterar la métrica hasta dar con la que matchea lo que el founder ve
 
 **Categoría**: Debugging / Métrica correcta

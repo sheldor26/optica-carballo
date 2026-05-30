@@ -2,6 +2,23 @@
 
 ## Status
 
+🟡 **Iter 12.1 — v1 falló (scale-up cortó patillas). v2 con crop+resize+center generada, esperando validación** (2026-05-30). Tras commitear iter 12 como "solución" sin validar visualmente, founder respondió "NO, SE VEN MAL". Inspeccioné las fotos v1: el approach de scale-up sobre la foto entera (1.25x, 1.5x) hizo zoom-in que **recortó las patillas** de los anteojos. Anteojos sin patillas = se ve mal.
+
+**Approach v2 corregido** (crop → resize → center, NO scale-up de foto entera):
+1. Detectar bbox del anteojo COMPLETO con threshold tolerante (235 = casi blanco) → captura toda la silueta incluyendo patillas.
+2. Recortar la foto al bbox exacto del anteojo (sin padding original).
+3. Resize del crop a width=1700 px (85% del canvas 2000) manteniendo aspect ratio.
+4. Pegar centrado en canvas blanco 2000×1333.
+
+Resultado v2 (visible en `~/Desktop/vulk-V2.png`): las 4 fotos quedan con anteojo del mismo width visual (1700 px), **completas** (sin recortes de patillas), **centradas** y con **padding uniforme** (150 px lateral en las 4).
+
+Fotos v2 reemplazaron a v1 en `~/Desktop/vulk-normalized/` con los nombres correctos del bucket.
+
+**Próximo paso (founder)**:
+1. Abrir `~/Desktop/vulk-V2.png` y validar visualmente.
+2. Si OK: subir las 4 fotos al bucket Supabase reemplazando las actuales.
+3. Si NO OK: reportar específicamente qué se ve mal para iterar de nuevo.
+
 🟢 **Iter 12 — Normalización automática de fotos via área de pixels oscuros (solución por código pura)** (2026-05-30). Founder me corrigió 2 veces en este turno: (1) "el fondo está perfecto, no es eso lo que queremos cambiar" cuando propuse fondo gris; (2) "todas las imágenes deberían verse como la img 2" (matte black) — confirmando que el problema es el **tamaño visual del anteojo**, NO el padding ni el fondo.
 
 **Cambio de métrica clave**: el bounding box width que medí en iter 11 (~99% en todas) era engañoso — capturaba las patillas finas extendidas hasta el borde. La métrica REAL es **área total de pixels oscuros** = "peso visual" del anteojo. Datos:
