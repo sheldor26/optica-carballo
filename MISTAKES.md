@@ -24,6 +24,96 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Mismatch silencioso ES/EN entre IA enum y valores DB rompió CTA del recomendador por meses
+
+**Estado**: 🟡 Mitigado — migration normalize_frame_shapes_spanish + update brand-filters.ts. Bug latente que persistió desde la creación del recomendador hasta hoy.
+**Categoría**: Schema consistency / Cross-domain mismatch silencioso
+
+### Qué pasó
+
+El recomendador de monturas (`/recomendador-de-monturas`) tenía un CTA "Ver anteojos aviador y redondo" que linkeaba a `/anteojos-de-sol?forma=aviador`. La página `/anteojos-de-sol/page.tsx` parseaba el query param `forma` y filtraba productos por `attributes->>frame_shape IN (...)`. PERO:
+- IA devolvía: `aviador`, `redondo`, `cuadrado` (español, enum `FRAME_SHAPES`).
+- DB tenía: `aviator`, `round`, `square` (inglés, de seeds viejos en `02_rusty_products.sql`).
+- Resultado: filter devolvía 0 productos. Vista mostraba "Sin productos" en lugar de error.
+
+Solo 3 de 6 shapes matcheaban (`wayfarer`, `rectangular`, `cat_eye` — que casualmente están en inglés ambos lados o no usados). El CTA "funcionaba" si el IA recomendaba justo esas 3, pero fallaba silencioso para las demás.
+
+Lo descubrí HOY al ir a implementar el grid de productos recomendados (Sprint IA-1). Si no hubiera auditado los valores antes de codear, hubiera duplicado el bug en el grid nuevo.
+
+### Causa raíz
+
+**Convención mixta**: el proyecto está en español argentino end-to-end, pero el primer seed de productos (`02_rusty_products.sql`) se creó con valores en inglés (`aviator`, `round`, `square`, `wayfarer`). Cuando se creó el enum del IA (`FRAME_SHAPES`), se hizo en español para consistencia con la UI usuario. **Nunca se auditó que ambos lados matchearan**.
+
+`brand-filters.ts` tenía un parche local: mapeaba `urlSlug: 'aviador'` → `filter.value: 'aviator'`. Pero ese parche solo aplica a URLs estáticas tipo `/anteojos-de-sol/rusty/aviador`, NO al query param `?forma=...` del recomendador.
+
+**Más profundo**: el bug era silencioso porque "filter sin resultados" se renderiza como pantalla vacía válida (no 404, no error). No hay ningún alert/log que detecte "este filter compone con shapes que no existen en DB".
+
+### Regla preventiva
+
+1. **Auditar contratos cross-domain antes de cablear cruces** (ver LEARNINGS gemelo "Auditar mismatch de nombres ES/EN").
+2. **Una convención por proyecto**. Este proyecto es español argentino → TODOS los slugs, enums, attributes deben ser español (snake_case). Aplica a `frame_shape`, `frame_material`, `lens_treatment`, `gender`, etc.
+3. **Cuando se crea un seed que va a ser consumido por un enum**, agregar comentario `-- Match con enum X en archivo Y` para que sea obvio el contrato.
+4. **Tests de filtros**: agregar un smoke test que dado un valor del enum, retorne >0 productos del seed inicial (catch this mismatch en CI).
+
+### Cuándo aplicar
+
+- Cualquier introducción de nuevo cross-domain matching.
+- Reviews de PR que crean enums o atributos jsonb.
+- Migraciones que cambian estructura de filtros.
+
+### Bonus
+
+Conecta con MISTAKE de hoy "Propuse roadmap IA sin verificar primero qué features IA ya existían". Mismo familia de root cause: **asumir consistencia sin auditar**. La diferencia es que ese fue "no leí el código antes de proponer", éste es "no comparé contratos antes de cablear". Ambos resueltos con la misma medicina: ~30 segundos de discovery antes de codear.
+
+## 2026-05-30 — Propuse roadmap IA sin verificar primero qué features IA ya existían en el repo
+
+**Estado**: 🟡 Mitigado — founder me cortó con "algo de esto ya está en el sitio.." antes de codificar nada. Cero tiempo perdido en código duplicado, pero perdí ~10min de discusión de plan sobre features que YA estaban funcionales.
+**Categoría**: Planning / Discovery insuficiente
+
+### Qué pasó
+
+Founder pidió "seguir con otras funciones" mientras MP queda pendiente. Le propuse 4 opciones de líneas de trabajo → eligió "Features con IA". Le presenté 3 sub-opciones IA con tradeoffs como si fueran features NUEVAS a implementar:
+1. Lector de receta IA
+2. Asistente conversacional RAG
+3. Recomendador de monturas
+
+Founder me corrigió: "algo de esto ya esta en el sitio..". Inspeccioné el repo y encontré que **2 de las 3 ya estaban en producción**:
+- `/lector-de-receta` con Claude Sonnet 4.6 vision, rate limit, Zod schema, magic-byte detection.
+- `/recomendador-de-monturas` con Claude Haiku 4.5, también funcional.
+- Linkeados desde home (`components/home/home-tools.tsx`), en sitemap.
+
+Tuve que reformular el plan: en vez de "implementar A/B/C desde cero", el plan correcto era "mejorar las 2 existentes + agregar la 3ra (RAG) + tooling interno".
+
+### Causa raíz
+
+Confié en mi modelo mental del proyecto (formado por CURRENT_STATE.md + summary post-compaction) sin hacer un descubrimiento real. CURRENT_STATE.md no menciona explícitamente las herramientas IA al tope (están sepultadas en entries viejas). El summary post-compaction tampoco las mencionó. **Asumí ausencia por ausencia de mención**, lo cual es falacia (las cosas viejas/estables NO aparecen en logs de cambios recientes).
+
+### Regla preventiva
+
+Antes de proponer cualquier feature "nueva", hacer 1 grep rápido para verificar si ya existe:
+
+```bash
+# Para features IA
+grep -rln "anthropic\|openai\|gpt\|vision\|@ai-sdk" lib/ app/ components/
+
+# Para features de un dominio (ej. wishlist)
+find . -type d \( -name "*wishlist*" -o -name "*favoritos*" \) | grep -v node_modules
+ls app/\(storefront\)/ | grep -i <dominio>
+```
+
+**Costo**: 5 segundos. **Beneficio**: evita 10-30min de plan inútil sobre features ya construidas.
+
+### Cuándo aplicar
+
+- **Siempre antes de listar opciones de "features nuevas"** al founder.
+- Cuando el founder hace pregunta abierta tipo "sigamos con otra cosa" / "qué falta hacer".
+- Cuando una sesión empieza post-compaction y el modelo mental está parcialmente perdido.
+- NO aplicar para cambios chicos que el founder describe explícitamente (ahí está claro el scope).
+
+### Bonus
+
+Esto se conecta con la regla core #1 de CLAUDE.md ("Leé CURRENT_STATE.md al inicio"). El problema es que CURRENT_STATE.md guarda cambios recientes, NO un inventario de features estables. Para inventario, el `BACKLOG.md` debería tener una sección "✅ Features en producción" como referencia. **Acción derivada**: considerar agregar esa sección al BACKLOG o un INVENTORY.md aparte (no creo automáticamente — depende del founder).
+
 ## 2026-05-30 — Sprint 4 cupones — usé `_removed` para indicar campo descartado pero pude evitar la variable
 
 **Estado**: 🟡 Mitigado — funcional, mejora menor de calidad de código.

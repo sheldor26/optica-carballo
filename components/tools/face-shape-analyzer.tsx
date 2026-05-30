@@ -1,11 +1,9 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
 import {
   AlertCircle,
-  ArrowRight,
   Camera,
   CheckCircle2,
   Loader2,
@@ -25,10 +23,15 @@ import {
   WARNING_FLAG_MESSAGES,
 } from '@/lib/face-shape/copy';
 import {
+  fetchRecommendedProducts,
+  type RecommendedProduct,
+} from '@/lib/face-shape/queries';
+import {
   CONFIDENCE_THRESHOLDS,
   type FaceShapeAnalysis,
   confidenceLevel,
 } from '@/lib/face-shape/types';
+import { RecommendedProductsGrid } from '@/components/tools/recommended-products-grid';
 
 type State =
   | { kind: 'idle' }
@@ -526,15 +529,60 @@ function ResultBlock({
       </div>
 
       {analysis.recommendedFrameShapes.length > 0 && (
-        <CatalogCtaForRecommendation
-          shapes={analysis.recommendedFrameShapes}
-        />
+        <RecommendedProductsLoader shapes={analysis.recommendedFrameShapes} />
       )}
 
       <div className="text-muted-foreground border-border/40 border-t pt-4 text-xs leading-relaxed">
         <p>{ANALYSIS_DISCLAIMER}</p>
       </div>
     </div>
+  );
+}
+
+/**
+ * Cliente que dispara el fetch de productos recomendados al montar.
+ * Mientras carga muestra un skeleton; cuando llega, renderiza el grid
+ * (que internamente maneja el caso de array vacío con su EmptyFallback).
+ *
+ * Se separa de ResultBlock para que ResultBlock no tenga side effects —
+ * y para que el fetch se dispare solo si hay shapes recomendadas válidas.
+ */
+function RecommendedProductsLoader({ shapes }: { shapes: string[] }) {
+  const [products, setProducts] = useState<RecommendedProduct[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchRecommendedProducts(shapes)
+      .then((result) => {
+        if (!cancelled) setProducts(result);
+      })
+      .catch(() => {
+        // Fallar silencioso → muestra empty fallback, no rompe el flow.
+        if (!cancelled) setProducts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [shapes]);
+
+  if (products === null) {
+    return (
+      <div className="border-border/60 bg-background rounded-xl border p-5 md:p-7">
+        <div className="flex items-center gap-2">
+          <Loader2 className="text-muted-foreground size-4 animate-spin" />
+          <p className="text-muted-foreground text-sm">
+            Buscando productos del catálogo…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <RecommendedProductsGrid
+      products={products}
+      recommendedShapes={shapes}
+    />
   );
 }
 
@@ -573,36 +621,3 @@ function FrameShapeList({
   );
 }
 
-/**
- * CTA al final del resultado: linkea al catálogo de sol filtrado por las
- * formas recomendadas. Cierra el funnel: cliente termina el test →
- * descubre productos concretos que matchean.
- */
-function CatalogCtaForRecommendation({ shapes }: { shapes: string[] }) {
-  const formaParam = shapes.join(',');
-  const href = `/anteojos-de-sol?forma=${encodeURIComponent(formaParam)}`;
-  const labels = shapes
-    .map((s) => FRAME_SHAPE_COPY[s as keyof typeof FRAME_SHAPE_COPY] ?? s)
-    .slice(0, 2)
-    .join(' y ');
-
-  return (
-    <Link
-      href={href}
-      className="group border-brand/30 bg-brand/5 hover:bg-brand/10 flex items-center justify-between gap-3 rounded-xl border p-5 transition-colors"
-    >
-      <div>
-        <p className="text-brand text-xs font-medium uppercase tracking-[0.18em]">
-          Próximo paso
-        </p>
-        <p className="text-foreground mt-1 font-serif text-base font-medium md:text-lg">
-          Ver anteojos {labels.toLowerCase()}
-        </p>
-        <p className="text-muted-foreground mt-0.5 text-xs">
-          Filtramos el catálogo por las formas recomendadas para vos.
-        </p>
-      </div>
-      <ArrowRight className="text-foreground size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
-    </Link>
-  );
-}

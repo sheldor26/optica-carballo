@@ -862,6 +862,78 @@ export async function fetchProductsByCategoryAndShapes(args: {
 }
 
 /**
+ * Productos de CUALQUIER categoría que matchean uno o más frame_shape.
+ * Pensada para el recomendador de monturas: recibe las shapes recomendadas
+ * por la IA y devuelve productos cruzando sol + receta. Ordenados por stock
+ * desc (con stock primero) para mostrar productos comprables. Limita a N.
+ */
+export async function fetchProductsByFrameShapes(args: {
+  frameShapes: string[];
+  limit?: number;
+}): Promise<FilteredCatalogCard[]> {
+  if (args.frameShapes.length === 0) return [];
+
+  const supabase = createStaticClient();
+
+  let query = supabase
+    .from('products')
+    .select(
+      `
+        slug,
+        name,
+        short_description,
+        brand:brands!inner(slug, name, is_active),
+        category:categories!inner(slug, is_active),
+        variants:product_variants(price_cents, stock_qty, is_active),
+        images:product_images(storage_path, is_primary, sort_order)
+      `,
+    )
+    .eq('is_active', true);
+
+  if (args.frameShapes.length === 1) {
+    query = query.eq('attributes->>frame_shape', args.frameShapes[0]!);
+  } else {
+    query = query.in('attributes->>frame_shape', args.frameShapes);
+  }
+
+  const { data } = await query.returns<FilteredCatalogRow[]>();
+  if (!data) return [];
+
+  const cards = data
+    .filter((row) => row.brand.is_active && row.category.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
+      const sortedImages = [...row.images].sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return a.sort_order - b.sort_order;
+      });
+      return {
+        slug: row.slug,
+        name: row.name,
+        brandSlug: row.brand.slug,
+        brandName: row.brand.name,
+        categorySlug: row.category.slug,
+        shortDescription: row.short_description,
+        minPriceCents:
+          inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
+        inStockCount: inStock.length,
+        primaryImagePath: sortedImages[0]?.storage_path ?? null,
+        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+      };
+    });
+
+  // Productos con stock primero (más útiles para conversión).
+  cards.sort((a, b) => {
+    if ((a.inStockCount > 0) !== (b.inStockCount > 0)) {
+      return a.inStockCount > 0 ? -1 : 1;
+    }
+    return 0;
+  });
+
+  return typeof args.limit === 'number' ? cards.slice(0, args.limit) : cards;
+}
+
+/**
  * Sub-categoría global por género SIN marca, ej:
  * `/anteojos-de-sol/hombre` (todos los anteojos de sol para hombre de
  * cualquier marca, incluyendo unisex). Captura queries genéricas tipo

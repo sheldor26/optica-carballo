@@ -22,6 +22,88 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Auditar mismatch de nombres ES/EN ANTES de crear cruces entre dominios
+
+**Categoría**: Schema consistency / Cross-domain wiring
+**Confianza**: 🟢 Alta (encontrado bug latente del CTA antes de duplicarlo)
+
+### Qué funcionó
+
+Antes de codear el grid del recomendador, hice 2 chequeos:
+1. Inspeccionar el output de la IA (`lib/face-shape/types.ts` enum `FRAME_SHAPES`).
+2. Inspeccionar los valores reales en seeds + `lib/catalog/brand-filters.ts`.
+
+Resultado: descubrí que el IA devuelve español (`aviador`, `redondo`) y la DB tenía inglés (`aviator`, `round`). El CTA actual `/anteojos-de-sol?forma=aviador` ya estaba roto silenciosamente (devolvía 0 productos sin error). Si hubiera codeado el grid directo, hubiera duplicado el bug: grid vacío permanente para 3 de 6 shapes.
+
+Fix con migration normalize_frame_shapes_spanish.sql + update brand-filters.ts en 4 líneas. Sprint avanzó sin deuda escondida.
+
+### Por qué funcionó
+
+Cuando una feature **conecta 2 dominios** (output de un sistema A + filtro de un sistema B), el riesgo es que cada lado evolucionó con convenciones distintas (idioma, casing, plurales). Si no se audita el contrato antes, los bugs son silenciosos: filter devuelve vacío, el usuario ve "sin productos" en vez de un error.
+
+### Regla preventiva
+
+Antes de crear un nuevo cruce entre 2 sistemas (IA output ↔ DB filter, API externa ↔ schema interno, form input ↔ enum DB):
+1. **Listar los valores que produce el dominio A** (enum, schema, ejemplos reales).
+2. **Listar los valores que acepta el dominio B** (constraints, filters, seeds reales).
+3. **Diff visible** — tabla con "matchea / no matchea". Si hay mismatches, decidir UNA fuente de verdad antes de codear el cruce.
+
+Aplicable cuando:
+- Features nuevas que dependen de cross-domain matching.
+- Migración de un sistema legado a uno nuevo.
+- Integraciones con APIs externas (MP, ML, AFIP).
+- Cuando hay convención mixta (algún archivo en inglés, otro en español).
+
+### Cuándo NO aplicar
+
+- Cuando el cruce es 1:1 obvio (FK con misma columna en ambos lados).
+- Cuando ya hay tests E2E que validan el cruce.
+
+### Bonus
+
+Conecta con la regla "grep before propose" — descubrir features existentes es paso 1, auditar su shape es paso 2. Sin paso 2, el código nuevo amplifica los bugs latentes en vez de exponerlos.
+
+## 2026-05-30 — `grep` rápido de integraciones existentes ANTES de listar features candidatas
+
+**Categoría**: Discovery / Planning
+**Confianza**: 🟢 Alta (founder cortó propuesta inútil con "ya está en el sitio")
+
+### Qué funcionó
+
+Founder me corrigió antes de empezar a codificar features IA que YA existían. En vez de ofenderme/defenderme, hice 2 greps de 5 segundos y descubrí que `/lector-de-receta` y `/recomendador-de-monturas` ya estaban en prod con stack completo (Claude Sonnet + Haiku, rate limit, Zod schemas, magic-byte detection). Reformulé el plan: 4 sprints de **mejoras a lo existente** + **1 feature nueva** (RAG) + **1 herramienta interna** (generación descripciones). Plan resultante mucho más útil y respetuoso del trabajo ya hecho.
+
+### Por qué funcionó
+
+El grep cuesta 5 segundos y devuelve verdad ground-truth del estado del repo, no la versión "lo que recuerdo del CURRENT_STATE" que está sesgada hacia cambios recientes. Es el equivalente a "leer el código antes de escribir el código".
+
+### Regla preventiva
+
+Cuando el founder pregunta "qué falta hacer" o "sigamos con otra cosa" y la respuesta posible es una feature nueva, ejecutar **descubrimiento rápido** ANTES de proponer:
+
+```bash
+# 1. Buscar integraciones por keyword del dominio
+grep -rln "<keyword>" lib/ app/ components/ --include="*.ts" --include="*.tsx" | grep -v node_modules | head -20
+
+# 2. Buscar rutas existentes
+ls app/\(storefront\)/ app/api/
+
+# 3. Buscar tablas/migraciones del dominio
+ls supabase/migrations/ | grep -i <keyword>
+```
+
+3 comandos, ~15 segundos, evita 10-30 min de plan inútil.
+
+### Cuándo aplicar
+
+- **Siempre** que la pregunta del founder sea abierta ("qué sigue", "qué hacemos", "tenemos X?").
+- Cuando una sesión empieza post-compaction (modelo mental incompleto).
+- Antes de cualquier `AskUserQuestion` listando "features candidatas".
+- NO aplicar si el founder describe scope explícito ("agregá X al Y").
+
+### Bonus
+
+Combina con el MISTAKE gemelo de hoy. Mistake: "asumí ausencia por ausencia de mención". Learning: "verificá presencia con grep antes de proponer". Mismo insight, framing positivo + negativo. Ambos confirman que **CURRENT_STATE.md es log de cambios, NO inventario de features**. El inventario hay que generarlo a demanda con grep.
+
 ## 2026-05-30 — Discriminated union (Zod) para schemas con paths divergentes según el tipo
 
 **Categoría**: Validation / Schema design

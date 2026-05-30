@@ -48,7 +48,7 @@ export const BRAND_FILTERS: BrandFilter[] = [
     urlSlug: 'aviador',
     label: 'Aviador',
     categories: ['sol', 'receta'],
-    filter: { type: 'frame_shape', value: 'aviator' },
+    filter: { type: 'frame_shape', value: 'aviador' },
     metaPhrase: 'forma aviador',
   },
   {
