@@ -22,6 +22,58 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — La opinión del experto + la realidad del mercado pueden divergir — reconciliá ambas en vez de elegir una
+
+**Categoría**: Decision-making / Theory vs practice
+**Confianza**: 🟡 Media (situación de IA-5.1, validar con uso real)
+
+### Qué funcionó
+
+Sprint IA-5 inicial: consulté al `optical-expert` y me dijo "tarjeta en pómulos (geometría sin paralaje)". Codé con eso. Founder testeó en prod y trajo referencia de **LensCrafters** mostrando "tarjeta en frente con 2 dedos". Conflicto: experto vs realidad de producción.
+
+Análisis:
+- **Experto** tenía razón en lo geométrico puro (sí, frente tiene paralaje 2-3%).
+- **LensCrafters** tiene razón en lo práctico (tarjeta en frente es MUCHO más fácil, paralaje compensable, escalable a millones de clientes).
+- **Ambos son válidos para casos distintos**: monofocal básico tolera ±2mm → frente OK. Receta media-alta requiere ±0.5mm → pómulos mejor.
+
+En vez de elegir uno y descartar el otro, ofrecí AMBOS modos en la UI:
+- `simple`: frente, fácil, advertencia "precisión ±1.5mm orientativa".
+- `precise`: pómulos, más exacto, default para casos donde importa.
+
+Resultado: usuario elige según su caso. No pierdo la "facilidad de LensCrafters" ni la "precisión del experto".
+
+### Por qué funcionó
+
+Los expertos resuelven el **ideal técnico** (qué da el mejor resultado geométrico). El mercado resuelve el **ideal práctico** (qué funciona a escala con clientes reales que no son técnicos). Ambos son válidos pero optimizan distinto:
+- Experto = precisión máxima asumiendo usuario coopera al 100%.
+- Mercado = balance precisión/facilidad asumiendo usuario humano normal.
+
+Cuando hay conflicto entre ambos, "elegir uno" es subóptimo. "Ofrecer ambos con copy claro de trade-offs" es óptimo: usuario decide según su caso.
+
+### Regla preventiva
+
+Cuando una recomendación del agente experto contradiga al "approach en producción de empresas grandes del sector":
+1. **NO descartar al agente** — geométricamente sigue teniendo razón.
+2. **NO descartar al mercado** — empíricamente funciona.
+3. **Buscar el modelo dual**: ofrecer ambos como modos, con copy explícito de trade-offs.
+4. Si UI no permite "ambos modos", elegir según frecuencia esperada de cada caso de uso.
+
+### Cuándo aplicar
+
+- Features que afectan UX vs precisión técnica (medidas, mediciones, validación).
+- Features donde la "regla pura" choca con la "facilidad para el usuario".
+- Decisiones donde un experto técnico difiere del approach de un competidor exitoso.
+
+### Cuándo NO aplicar
+
+- Cuando hay un consenso fuerte expert + mercado (mismo approach).
+- Cuando la "facilidad" es excusa para algo técnicamente inseguro (no aplica al medidor DNP — el modo simple es menos preciso pero NO peligroso).
+- Cuando ofrecer ambos modos confunde más que ayuda (UI sobrecargada).
+
+### Bonus
+
+Esta es la 3ra learning de la sesión sobre validación de approaches. Pattern emergente: **validación con experto + verificación con realidad de mercado + decision sintética**. No basta ninguno solo.
+
 ## 2026-05-30 — Para features con lógica de dominio (óptico/médico/legal), validar approach con agente experto ANTES de codear
 
 **Categoría**: Domain validation / Agent usage

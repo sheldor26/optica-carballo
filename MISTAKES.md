@@ -24,6 +24,50 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Acepté recomendación del optical-expert sin contraste con realidad de mercado — descubrí divergencia recién al testear founder
+
+**Estado**: 🟡 Mitigado — refactor a modo dual (simple + precise) tras feedback founder con referencia LensCrafters.
+**Categoría**: Validation gap / Single-source decision
+
+### Qué pasó
+
+Sprint IA-5 (medidor DNP). Mi propuesta inicial al founder fue "tarjeta en la frente". El `optical-expert` me corrigió a "tarjeta en pómulos" (sin paralaje). Acepté la corrección sin verificar:
+- ¿Es lo que hacen otras ópticas en producción?
+- ¿El paralaje real es 3-5% o menos?
+- ¿La complejidad de "apoyar en pómulos" es OK para usuarios reales?
+
+Codé el modo "pómulos" como único. Founder testeó, no le convenció el setup, trajo referencia de **LensCrafters** (probablemente la óptica más grande del mundo) usando "tarjeta en frente con 2 dedos". Hubo que refactorizar a 2 modos.
+
+Tiempo perdido: ~1 sesión codificando solo modo pómulos cuando debería haber soportado ambos desde el inicio.
+
+### Causa raíz
+
+**Confié en la recomendación de un solo experto sin verificar con el mercado real**. Razoné: "el optical-expert dice X → X es la verdad → codeo X". Pero el experto resuelve el ideal técnico, no necesariamente el ideal práctico/comercial.
+
+Sub-causa: el optical-expert no me dijo "el mercado mainstream usa frente". Me dio el approach geométrico ideal. Es responsabilidad MÍA contrastar con lo que está en producción comercial, no del agente.
+
+### Regla preventiva
+
+Para features con dominio profesional donde HAY competidores grandes en producción:
+1. **Después de consultar al experto, hacer 1 search de "¿qué hacen [empresas grandes del sector] para esta feature?"**.
+2. **Si el approach del experto difiere del approach del mercado, NO elegir uno automáticamente** — preguntarse: ¿por qué difieren? ¿el mercado optimiza distinto (escala / facilidad)?
+3. **Si la divergencia es real**, considerar **modo dual** (ofrecer ambos al usuario, con copy de trade-offs).
+4. **Llevar la divergencia al founder ANTES de codear**, no después.
+
+### Cuándo aplicar
+
+- Features con competidores grandes en producción (VTO, medidor DNP, recomendador, lector receta, RAG conversacional).
+- Decisiones de UX/precisión donde el "ideal geométrico/médico/legal" puede diferir del "ideal comercial".
+
+### Cuándo NO aplicar
+
+- Features sin competidores claros o muy nicho.
+- Decisiones puramente internas (sin usuario final).
+
+### Bonus
+
+Conecta con el LEARNING gemelo "La opinión del experto + la realidad del mercado pueden divergir". Mismo insight, framing positivo + negativo. Es la 3ra near-miss en una semana donde mi modelo de "consultar al experto = problema resuelto" estaba incompleto. La fórmula completa es: experto + mercado + founder = decisión completa.
+
 ## 2026-05-30 — Traté `has_add` como bloqueador absoluto sin validar la lógica óptica con founder/optical-expert
 
 **Estado**: 🟡 Mitigado — fix shippeado en commit `53577cb` (BifocalOptionsBlock). Pero el código original lo trataba como bloqueador desde el primer commit del lector hace meses.

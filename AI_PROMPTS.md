@@ -544,6 +544,7 @@ asymmetry_mm = abs(dnp_od - dnp_oi)
 | 2026-05-27 | PROMPT-001 a 006 | 1.0 | Creación inicial |
 | 2026-05-30 | PROMPT-007 | 1.0 | Generador completo de copy de producto (shortDescription + description + meta + 3 callouts). Subset PROMPT-004. Sonnet 4.6. Endpoint admin con rate limit 30/h/IP. |
 | 2026-05-30 | PROMPT-008 | 1.0 | Medidor de DNP por foto con tarjeta de crédito ISO/IEC 7810 como referencia. Sonnet 4.6 Vision detecta features (pupilas, sellión, ancho tarjeta) en pixels; backend calcula DNP en mm. Validación óptica-expert: tarjeta en pómulos, DNP monocular OD+OI, solo monofocales. Rate limit 5/h/IP. |
+| 2026-05-30 | PROMPT-008 | 1.1 | Soporte para 2 modos de medición (`simple`/`precise`) tras feedback founder + ejemplo LensCrafters. Modo simple: tarjeta en frente con 2 dedos (LensCrafters approach), 40-60cm. Modo preciso: tarjeta en pómulos (optical-expert approach), 60-80cm. System prompt + setup instructions difieren por modo. Calculate aplica confidence cap 'medium' en modo simple (paralaje no compensado, ±1.5mm precisión). UI con selector entre modos. |
 
 (Se actualiza cada vez que un prompt se modifica)
 

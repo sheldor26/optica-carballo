@@ -15,7 +15,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { updatePrescriptionDnpInCookie } from '@/lib/prescription-cookie/actions';
-import type { PDResult } from '@/lib/pd-measure/types';
+import {
+  PD_MODE_LABELS,
+  type PDMeasureMode,
+  type PDResult,
+} from '@/lib/pd-measure/types';
 
 type State =
   | { kind: 'idle' }
@@ -86,6 +90,7 @@ async function resizeImageIfNeeded(file: File): Promise<File> {
 
 export function PDMeasureTool() {
   const [state, setState] = useState<State>({ kind: 'idle' });
+  const [mode, setMode] = useState<PDMeasureMode>('simple');
   const [flags, setFlags] = useState({
     age_confirmed: false,
     no_strabismus: false,
@@ -137,6 +142,7 @@ export function PDMeasureTool() {
       const fd = new FormData();
       fd.append('image', resized);
       fd.append('flags', JSON.stringify(flags));
+      fd.append('mode', mode);
 
       const res = await fetch('/api/measure-pd', {
         method: 'POST',
@@ -181,7 +187,8 @@ export function PDMeasureTool() {
             transition={{ duration: 0.3 }}
             className="space-y-6"
           >
-            <SetupInstructions />
+            <ModeSelector mode={mode} onChange={setMode} />
+            <SetupInstructions mode={mode} />
             <FlagsForm flags={flags} onChange={setFlags} />
             <DropZone
               disabled={!allFlagsChecked}
@@ -282,31 +289,88 @@ export function PDMeasureTool() {
   );
 }
 
-function SetupInstructions() {
+function ModeSelector({
+  mode,
+  onChange,
+}: {
+  mode: PDMeasureMode;
+  onChange: (next: PDMeasureMode) => void;
+}) {
+  return (
+    <div className="border-border/60 bg-background rounded-xl border p-5">
+      <h2 className="text-foreground text-sm font-semibold uppercase tracking-wide">
+        Elegí cómo medir
+      </h2>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {(['simple', 'precise'] as const).map((m) => {
+          const labels = PD_MODE_LABELS[m];
+          const isActive = mode === m;
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => onChange(m)}
+              className={cn(
+                'rounded-lg border p-3 text-left transition-colors',
+                isActive
+                  ? 'border-brand bg-brand/5'
+                  : 'border-border bg-background hover:bg-muted/40',
+              )}
+              aria-pressed={isActive}
+            >
+              <p className="text-foreground text-sm font-semibold">
+                {labels.name}
+              </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {labels.tagline}
+              </p>
+              <p className="text-muted-foreground mt-1.5 text-xs italic">
+                {labels.precision}
+              </p>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function SetupInstructions({ mode }: { mode: PDMeasureMode }) {
+  const steps =
+    mode === 'simple'
+      ? [
+          'Buena luz natural frontal. Sin sombras duras sobre la cara.',
+          'Sacate los anteojos. Necesitamos ver tus pupilas reales.',
+          (<>
+            Apoyá una <strong>tarjeta de crédito o débito</strong> contra tu{' '}
+            <strong>frente</strong>, sujetándola con dos dedos por las esquinas
+            superiores.
+          </>),
+          'Sostené el celular a unos 40–60cm (a un brazo de distancia, no más).',
+          'Mirá directo al lente de la cámara, no a la pantalla.',
+        ]
+      : [
+          'Buena luz natural frontal. Sin sombras duras sobre la cara.',
+          'Sacate los anteojos. Necesitamos ver tus pupilas reales.',
+          (<>
+            Apoyá una <strong>tarjeta de crédito o débito</strong> contra tus{' '}
+            <strong>pómulos</strong> (debajo de los ojos, alineada con la base
+            de la nariz).{' '}
+            <em>Mismo plano vertical que tus pupilas.</em>
+          </>),
+          'Sostené el celular a unos 60–80cm (brazo extendido). Mejor si te ayuda otra persona.',
+          'Mirá directo al lente de la cámara, no a la pantalla.',
+        ];
+
   return (
     <div className="border-border/60 bg-muted/20 rounded-xl border p-5">
       <h2 className="text-foreground text-sm font-semibold uppercase tracking-wide">
         Antes de sacar la foto
       </h2>
       <ol className="text-foreground mt-3 list-decimal space-y-2 pl-5 text-sm">
-        <li>
-          Buena luz natural frontal. Sin sombras duras sobre la cara.
-        </li>
-        <li>
-          Sacate los anteojos. Necesitamos ver tus pupilas reales.
-        </li>
-        <li>
-          Apoyá una <strong>tarjeta de crédito o débito</strong> contra tus
-          pómulos (debajo de los ojos, alineada con la base de la nariz).{' '}
-          <em>No en la frente — eso desvía la medición.</em>
-        </li>
-        <li>
-          Sostené el celular a unos 60–80cm (brazo extendido). Mejor si te
-          ayuda otra persona.
-        </li>
-        <li>
-          Mirá directo al lente de la cámara, no a la pantalla.
-        </li>
+        {steps.map((step, idx) => (
+          <li key={idx}>{step}</li>
+        ))}
       </ol>
     </div>
   );

@@ -2,6 +2,7 @@ import {
   CARD_ISO_WIDTH_MM,
   DNP_RANGES,
   WARNING_FLAGS,
+  type PDMeasureMode,
   type PDResult,
   type PDVisionOutput,
   type WarningFlag,
@@ -12,9 +13,17 @@ import {
  * calcula la DNP en mm via regla de tres con el ancho ISO/IEC 7810 de
  * la tarjeta. Aplica validaciones de plausibilidad y warnings.
  *
+ * El `mode` afecta la confidence final y los soft warnings:
+ * - 'simple' (tarjeta en frente): añade warning sobre precisión orientativa
+ *   y baja la confidence floor a 'medium' como máximo (paralaje no compensado).
+ * - 'precise' (tarjeta en pómulos): confidence puede ser 'high'.
+ *
  * NO logguea contenido — biométrico sensible (LPDP 25.326).
  */
-export function calculatePD(vision: PDVisionOutput): PDResult {
+export function calculatePD(
+  vision: PDVisionOutput,
+  mode: PDMeasureMode = 'simple',
+): PDResult {
   // Errores estructurales — sin coords, no podemos calcular.
   if (
     !vision.is_valid_input ||
@@ -100,11 +109,19 @@ export function calculatePD(vision: PDVisionOutput): PDResult {
   const softWarnings: string[] = [];
   let confidence: 'high' | 'medium' | 'low' = 'high';
 
+  // Modo simple: paralaje no compensado, máximo confidence = 'medium'.
+  if (mode === 'simple') {
+    confidence = 'medium';
+    softWarnings.push(
+      'Modo simple: precisión orientativa (~±1.5mm). Para receta media o alta, usá el modo preciso o coordiná medición presencial.',
+    );
+  }
+
   if (dnp_total_mm < DNP_RANGES.SOFT_MIN || dnp_total_mm > DNP_RANGES.SOFT_MAX) {
     softWarnings.push(
       `Tu DNP ${dnp_total_mm.toFixed(1)}mm está fuera del rango típico (54-74mm). La regente verificará al armar.`,
     );
-    confidence = 'medium';
+    confidence = confidence === 'high' ? 'medium' : confidence;
   }
   if (asymmetry_mm > 2) {
     softWarnings.push(

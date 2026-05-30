@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import {
-  PD_MEASURE_SYSTEM_PROMPT,
   PD_MEASURE_USER_PROMPT,
+  buildPDMeasureSystemPrompt,
 } from '@/lib/pd-measure/prompt';
 import { calculatePD } from '@/lib/pd-measure/calculate';
 import {
+  pdMeasureModeSchema,
   pdRequestFlagsSchema,
   pdVisionOutputSchema,
 } from '@/lib/pd-measure/types';
@@ -100,15 +101,18 @@ export async function POST(request: Request) {
     );
   }
 
-  // Parse form data: imagen + flags.
+  // Parse form data: imagen + flags + mode.
   let file: File | null = null;
   let flagsJsonStr: string | null = null;
+  let modeStr: string | null = null;
   try {
     const formData = await request.formData();
     const candidate = formData.get('image');
     if (candidate instanceof File) file = candidate;
     const flagsCandidate = formData.get('flags');
     if (typeof flagsCandidate === 'string') flagsJsonStr = flagsCandidate;
+    const modeCandidate = formData.get('mode');
+    if (typeof modeCandidate === 'string') modeStr = modeCandidate;
   } catch {
     return NextResponse.json(
       { ok: false, error: 'Petición inválida.' },
@@ -156,6 +160,16 @@ export async function POST(request: Request) {
     );
   }
 
+  // Mode: default 'simple' si no viene (back-compat).
+  const modeResult = pdMeasureModeSchema.safeParse(modeStr ?? 'simple');
+  if (!modeResult.success) {
+    return NextResponse.json(
+      { ok: false, error: 'Modo de medición inválido.' },
+      { status: 400 },
+    );
+  }
+  const mode = modeResult.data;
+
   const buffer = Buffer.from(await file.arrayBuffer());
   const detectedMime = detectImageMime(buffer);
   if (!detectedMime) {
@@ -180,7 +194,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: MODEL_ID,
         max_tokens: 1000,
-        system: PD_MEASURE_SYSTEM_PROMPT,
+        system: buildPDMeasureSystemPrompt(mode),
         messages: [
           {
             role: 'user',
@@ -266,11 +280,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = calculatePD(validated.data);
+  const result = calculatePD(validated.data, mode);
   const durationMs = Date.now() - startedAt;
   // Solo metadata mínima. NUNCA loguear medidas reales (biométrico LPDP).
   console.log(
-    `[measure-pd] ${durationMs}ms ok=${result.ok} ${result.ok ? `confidence=${result.confidence}` : `warnings=${result.warnings.join(',')}`}`,
+    `[measure-pd] ${durationMs}ms mode=${mode} ok=${result.ok} ${result.ok ? `confidence=${result.confidence}` : `warnings=${result.warnings.join(',')}`}`,
   );
 
   return NextResponse.json(result, {

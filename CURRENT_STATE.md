@@ -2,6 +2,20 @@
 
 ## Status
 
+🟢 **Sprint IA-5.1 (Medidor DNP 2 modos) CÓDIGO LISTO — TESTEAR EN PROD** (2026-05-30). Founder testeó IA-5 en prod y trajo referencia visual de **LensCrafters** mostrando 3 cosas: (a) LensCrafters usa **tarjeta en la FRENTE** con 2 dedos (contradice al optical-expert que dijo "pómulos"), (b) wizard de 3 pasos pre-scan (iluminación / tarjeta / volumen), (c) integración del medidor dentro del form de receta. **Reconciliación**: optical-expert tenía razón geométricamente (pómulos = sin paralaje), pero LensCrafters tiene razón prácticamente (frente = simple, escalable, paralaje 2-3% compensable y aceptable para monofocales). Founder decidió: **ofrecer AMBOS modos**, "Mejora cámara web + wizard" para V2, integración botón "Mide tu DP" en form de receta priorizada (ubicación TBD próximo turno).
+
+Refactor implementado (commit pendiente):
+1. **`lib/pd-measure/types.ts`**: nuevos `PD_MEASURE_MODES = ['simple', 'precise']`, schema `pdMeasureModeSchema`, copy `PD_MODE_LABELS` con name/tagline/precision por modo.
+2. **`lib/pd-measure/prompt.ts`**: refactor a `buildPDMeasureSystemPrompt(mode)` que ensambla setup instructions específicas por modo + common rules. Simple: tarjeta en frente + 40-60cm. Precise: tarjeta en pómulos + 60-80cm. Setup wrong = flag `card_not_at_eye_level`.
+3. **`lib/pd-measure/calculate.ts`**: `calculatePD(vision, mode='simple')` con cap de confidence en modo simple ('medium' máximo, paralaje no compensado) + soft warning explícito "precisión orientativa ±1.5mm".
+4. **`app/api/measure-pd/route.ts`**: acepta `mode` del FormData, valida con `pdMeasureModeSchema` (default 'simple' si missing), pasa a prompt builder y calculate. Log incluye mode.
+5. **`components/tools/pd-measure-tool.tsx`**: nuevo `ModeSelector` (cards visuales con name/tagline/precision) + `SetupInstructions` refactorizado para mostrar instrucciones por modo. Default modo: 'simple'.
+6. **`AI_PROMPTS.md`**: PROMPT-008 versión 1.1 documentando los 2 modos.
+
+Decisión técnica clave: **NO aplico corrección algorítmica de paralaje** en modo simple. Razón: sería factor hardcoded sin calibración real. Más honesto: capear confidence a 'medium' + advertir al usuario que es orientativo. Si quiere precisión mayor, modo preciso.
+
+Typecheck verde. Build OK (`/medidor-de-dnp` 7.2 kB, +0.86 kB del selector). **Próximo paso (founder)**: (a) commit + push → deploy → test ambos modos con tarjeta real; (b) decidir DÓNDE integrar el botón "Mide tu DP" — opciones: (i) crear nuevo form manual de receta en `/checkout` para anteojos receta con field DNP + botón modal, (ii) agregar botón al lector de receta tras parsear receta sin DNP, (iii) banner en PDPs de receta "Subí tu DNP".
+
 🟢 **Sprint IA-5 (Medidor de DNP por foto) CÓDIGO LISTO — PUSHEAR + TESTEAR** (2026-05-30). Tras pausar VTO, founder pidió arrancar medidor de DNP (Distancia Naso-Pupilar) por foto. **Validé approach con `optical-expert`** antes de codear — feedback clave que ajustó el plan:
 - ❌ Tarjeta apoyada en la **frente** (mi propuesta inicial) → error paralaje 3-5%
 - ✅ Tarjeta apoyada en **pómulos**, alineada con base nariz (mismo plano que pupilas)

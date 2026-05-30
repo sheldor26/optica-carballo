@@ -17,6 +17,23 @@ import { z } from 'zod';
 export const CARD_ISO_WIDTH_MM = 85.6;
 
 /**
+ * Modos de medición:
+ * - 'simple': tarjeta en la frente, sujeta con 2 dedos, distancia 40-60cm.
+ *   Approach de LensCrafters (probado en producción a escala mundial). Más
+ *   fácil para el usuario. Precisión menor (paralaje ~2-3% sin compensar)
+ *   pero suficiente para monofocales orientativos. La regente ajusta al armar.
+ * - 'precise': tarjeta apoyada en pómulos, alineada con base de nariz,
+ *   distancia 60-80cm. Geometría óptima (mismo plano que pupilas). Mejor
+ *   precisión pero más difícil de hacer correctamente.
+ *
+ * Founder eligió ofrecer ambos. Default UI: 'simple'.
+ */
+export const PD_MEASURE_MODES = ['simple', 'precise'] as const;
+export type PDMeasureMode = (typeof PD_MEASURE_MODES)[number];
+
+export const pdMeasureModeSchema = z.enum(PD_MEASURE_MODES);
+
+/**
  * Rangos de plausibilidad de DNP (mm) validados por optical-expert.
  * - Hard reject: probable error de detección, no procesar.
  * - Soft warning: posible pero raro, mostrar advertencia.
@@ -139,3 +156,22 @@ export const pdRequestFlagsSchema = z.object({
 });
 
 export type PDRequestFlags = z.infer<typeof pdRequestFlagsSchema>;
+
+/**
+ * Copy para mostrar al usuario según el modo elegido.
+ */
+export const PD_MODE_LABELS: Record<
+  PDMeasureMode,
+  { name: string; tagline: string; precision: string }
+> = {
+  simple: {
+    name: 'Modo simple',
+    tagline: 'Tarjeta en la frente, fácil de hacer (LensCrafters approach)',
+    precision: 'Precisión ±1.5mm — orientativa, la regente ajusta al armar',
+  },
+  precise: {
+    name: 'Modo preciso',
+    tagline: 'Tarjeta apoyada en pómulos, más exacto técnicamente',
+    precision: 'Precisión ±0.5-1mm — mejor para receta media o alta',
+  },
+};
