@@ -32,6 +32,7 @@ export const FRAME_SHAPES = [
   'wayfarer',
   'clubmaster',
   'sin_marco',
+  'envolvente',
 ] as const;
 
 export type FrameShape = (typeof FRAME_SHAPES)[number];

@@ -57,7 +57,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         aria-label={product.name}
       >
         <div
-          className="bg-background relative aspect-[4/3] w-full overflow-hidden rounded-md"
+          className="bg-background relative aspect-[3/2] w-full overflow-hidden rounded-md"
           aria-hidden="true"
         >
           {primaryUrl ? (
@@ -68,10 +68,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className={cn(
-                  'object-contain transition-all duration-500 ease-out',
+                  'scale-[1.15] object-contain transition-all duration-500 ease-out',
                   secondaryUrl
                     ? 'group-hover/card:opacity-0'
-                    : 'group-hover/card:scale-[1.04]',
+                    : 'group-hover/card:scale-[1.2]',
                 )}
               />
               {secondaryUrl && (
@@ -80,7 +80,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100"
+                  className="scale-[1.15] object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100"
                 />
               )}
             </>

@@ -2,6 +2,26 @@
 
 ## Status
 
+🟢 **Catálogo iter 3 — wraparound→envolvente + aspect-[3/2] + scale-1.15** (2026-05-30). Founder pidió 2 cosas:
+1. **Reemplazar "wraparound" por "envolventes"** (término argentino correcto). Ahora completa la normalización ES iniciada en migration `20260530100000` (que había dejado wraparound como gap documentado). Cambios:
+   - `lib/face-shape/types.ts`: agregado `'envolvente'` al enum `FRAME_SHAPES`.
+   - `lib/face-shape/copy.ts`: agregado a `FRAME_SHAPE_COPY`.
+   - `components/catalog/frame-shape-filters.tsx`: agregado a `SHAPE_LABELS` con fallback para `wraparound` legacy.
+   - `components/product/product-attributes.tsx`: agregado labels (con bug fix: había duplicate `aviator` key que rompía typecheck).
+   - **Cleanup SQL**: `supabase/cleanup/20260530_wraparound_to_envolvente.sql` con `UPDATE jsonb_set` idempotente + DO block que verifica enum compliance. Copiado a `cloud-bootstrap.sql`.
+   - **Seed local**: `seeds/10_rusty_yau.sql` también actualizado para que `db reset` no traiga el valor viejo.
+
+2. **Card sigue chica — agrandar más**: el aspect-[4/3] dejaba bandas porque las fotos son 3:2. Fix:
+   - `aspect-[4/3]` → `aspect-[3/2]` — matchea exactamente las fotos 1500×1000 → cero banda CSS.
+   - Image `scale-[1.15]` — zoom-in 15% para reducir el padding blanco interno que las propias fotos JPG tienen (el anteojo está centrado con ~30% margen blanco alrededor). El padding excede overflow-hidden, anteojo se ve mucho más grande.
+   - Hover scale: `1.04` → `1.2` (más drama al hacer hover, foto crece visiblemente).
+
+Decisión técnica clave: NO cambiar grid layout (sigue 3 cols como founder pidió antes). NO re-procesar fotos (founder lo haría a futuro). En cambio, **CSS-only fix con scale transform** — agranda visualmente el anteojo sin tocar assets ni layout.
+
+Typecheck verde (después de fix duplicate key en FRAME_SHAPE_LABELS). Build OK.
+
+**Próximo paso (founder)**: (a) commit + push → deploy; (b) aplicar `supabase/cloud-bootstrap.sql` en SQL Editor (45 líneas, cleanup wraparound→envolvente); (c) testear `/anteojos-de-sol/rusty` — la card debería verse con foto del Rusty Yau más grande, sin bandas blancas alrededor de la card; (d) en `/anteojos-de-sol/rusty/rusty-yau` (PDP), el atributo "frame_shape" debería decir "Envolvente".
+
 🟢 **Catálogo iter 2 — H1 oculto + fondo blanco unificado + aspect 4/3** (2026-05-30, commit `513c1d7`). Founder testeó iter 1 del catálogo limpio y pidió 3 ajustes adicionales:
 1. **Eliminar H1 "Anteojos de sol Rusty"** del catálogo de marca. Foco visual 100% en grid. **Decisión técnica**: NO eliminar el `<h1>` (necesario para SEO + a11y), sino convertirlo a `sr-only` (visible solo a screen readers / crawlers). El logo de la marca arriba ya cumple función visual de "esto es página de Rusty".
 2. **Fondo de card unificado**: founder notó diferencia visible entre `bg-muted/30` de la card y blanco puro de las fotos JPG → fix `bg-muted/30` → `bg-background` (`--background: 0 0% 100%` en light mode = blanco puro). Bandas del object-contain quedan invisibles. Trade-off: la card pierde "card-ness" visual, pero el fondo unificado es lo que el founder pidió y matchea estilo retail premium.

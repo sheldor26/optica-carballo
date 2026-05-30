@@ -46,7 +46,7 @@ VALUES (
   E'Los Rusty Yau son anteojos deportivos pensados para uso al aire libre intenso — ciclismo, running, trail, kayak, pesca, deportes al sol. El diferencial: vienen con DOS pares de lentes intercambiables, así adaptás el anteojo a las condiciones del día sin cambiar de modelo.\n\nEl primer par —polarizado— es el que viene montado en el armazón. Las lentes polarizadas eliminan los reflejos del agua, asfalto y vidrio que generan fatiga visual durante el deporte. Sumado a la protección UV400 (filtro 100% UVA y UVB), tu vista queda protegida en condiciones de luz solar intensa.\n\nEl segundo par —amarillas— amplía el rango de uso. Las lentes amarillas aumentan el contraste y la percepción de profundidad en días nublados, niebla matinal o atardeceres. Son ideales para ciclismo en horas pico de tráfico o running antes del amanecer. No son polarizadas (la polarización es contraproducente con poca luz), pero mantienen el filtro UV.\n\nEl armazón es envolvente: cubre los ojos en toda su periferia, bloqueando el ingreso de luz lateral, polvo y viento durante la actividad. El material G-Flex (termoplástico flexible patentado por Rusty) aguanta torsiones, golpes y caídas mejor que un acetato tradicional. Las patillas no se rompen al doblarlas y la bisagra reforzada soporta uso intensivo.\n\nIncluye estuche original Rusty, franela de microfibra y el segundo par de lentes amarillas. Garantía oficial 1 año del fabricante contra defectos.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "wraparound",
+    "frame_shape": "envolvente",
     "lens_material": "policarbonato",
     "lens_treatment": ["polarized", "uv400"],
     "gender": "unisex",

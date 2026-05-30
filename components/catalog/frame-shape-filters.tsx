@@ -32,6 +32,8 @@ const SHAPE_LABELS: Record<string, string> = {
   wayfarer: 'Wayfarer',
   clubmaster: 'Clubmaster',
   sin_marco: 'Sin marco',
+  envolvente: 'Envolvente',
+  wraparound: 'Envolvente',
 };
 
 function labelFor(shape: string): string {

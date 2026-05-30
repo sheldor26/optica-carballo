@@ -96,6 +96,7 @@ export const FRAME_SHAPE_COPY: Record<FrameShape, string> = {
   wayfarer: 'Wayfarer',
   clubmaster: 'Clubmaster',
   sin_marco: 'Sin marco / rimless',
+  envolvente: 'Envolvente',
 };
 
 /**

@@ -12,12 +12,16 @@ const FRAME_MATERIAL_LABELS: Record<string, string> = {
 const FRAME_SHAPE_LABELS: Record<string, string> = {
   wayfarer: 'Wayfarer',
   aviator: 'Aviador',
+  aviador: 'Aviador',
   round: 'Redondo',
+  redondo: 'Redondo',
   square: 'Cuadrado',
+  cuadrado: 'Cuadrado',
   rectangular: 'Rectangular',
   cat_eye: 'Cat eye',
   oversized: 'Oversized',
-  wraparound: 'Envolvente deportivo',
+  wraparound: 'Envolvente',
+  envolvente: 'Envolvente',
 };
 
 const LENS_TREATMENT_LABELS: Record<string, string> = {
