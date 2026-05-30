@@ -2,6 +2,17 @@
 
 ## Status
 
+🟡 **Hero pivot: recomiendo Concepto 2 (tipográfico minimal dark) — esperando "dale" founder** (2026-05-30, post-pivot). Founder preguntó "cuál me recomendás" entre los 3 conceptos. Recomendé **Concepto 2** con justificación:
+
+- Time to value: 30 min implementación vs días/semanas esperando fotos editoriales
+- Estilo target: ✅ editorial dark cumplido sin necesidad de asset externo
+- Reversible: easy upgrade a Concepto 1 cuando consiga fotos editoriales
+- Costo: $0 assets
+
+Mockup conceptual presentado (gradient negro→gris, H1 display 8xl-9xl, copy actual respirado en layout dark, watermark "ÓC" como decoración, CTAs outline blanco).
+
+**Próximo paso (founder)**: confirmar "dale" para implementar Concepto 2 con copy actual. O pedir cambio de copy (legitimidad familiar / asesoramiento técnico / marcas premium / otro).
+
 🟡 **Hero PIVOT: founder rechaza fotos de catálogo, busca editorial dark estilo Vulk** (2026-05-30). Founder pasó 7 imágenes de referencia (Vulk Ember/DANV series) con estilo claro:
 - Fondos negros / gris oscuro / gradient dark
 - Iluminación chiaroscuro (alto contraste)
