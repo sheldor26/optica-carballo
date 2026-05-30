@@ -119,6 +119,9 @@ export function CompareTable({ products, rows }: Props) {
                       key={i}
                       className={cn(
                         'border-border/40 border-t px-3 py-3.5 text-sm leading-snug text-foreground sm:px-4 sm:py-4 sm:text-base',
+                        // whitespace-pre-line: respeta \n del string (útil
+                        // para fila "Incluye" que usa multi-línea).
+                        'whitespace-pre-line',
                         isEven && 'bg-muted/30',
                       )}
                     >
@@ -134,9 +137,23 @@ export function CompareTable({ products, rows }: Props) {
         </table>
       </div>
 
-      <p className="text-muted-foreground mt-6 text-center text-xs">
-        Tu comparador se guarda en tu navegador. No requiere cuenta.
-      </p>
+      {/* Nota explicativa de garantía (linkeada por asterisco "*" en la
+          fila "Garantía"). Cubre qué incluye / qué no — gestiona expectativas
+          y reduce reclamos por mal uso. */}
+      <div className="text-muted-foreground mx-auto mt-6 max-w-3xl space-y-2 text-xs leading-relaxed">
+        <p>
+          <strong className="text-foreground">* Garantía del fabricante:</strong>{' '}
+          cubre defectos de fabricación (armazón, bisagras, soldaduras,
+          tornillos, varillas) durante el período indicado. NO cubre daños
+          por uso indebido (caídas, golpes, pisado), rayas en cristales por
+          limpieza incorrecta, ni desgaste normal por uso. La gestión se
+          realiza directamente con Óptica Carballo — nosotros nos ocupamos del
+          trámite con el fabricante.
+        </p>
+        <p className="text-center">
+          Tu comparador se guarda en tu navegador. No requiere cuenta.
+        </p>
+      </div>
     </section>
   );
 }

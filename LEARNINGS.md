@@ -22,6 +22,52 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para listas de "incluye/contiene" en comparador: garantizar base universal con `Set` hardcoded antes de mergear con DB
+
+**Categoría**: Code / Data integrity / UX
+**Confianza**: 🟢 Alta (validado iter Incluye comparador)
+
+### Qué funcionó
+
+Founder pidió que el comparador muestre "lo que viene en la caja" por modelo. Universal: estuche + franela + garantía. Específicos por modelo: par lentes amarillas (Rusty Yau), adaptador receta (Rusty Yau).
+
+Implementación: usar `Set<string>` inicializado con la base universal (`['estuche', 'franela']`) y AGREGAR los items específicos del seed. Set garantiza:
+1. Estuche + franela SIEMPRE aparecen (aunque el seed los omita por error).
+2. Orden estable (base universal primero, después específicos).
+3. Sin duplicados (si seed también incluye "estuche", no se duplica).
+
+```ts
+const items = new Set<string>(['estuche', 'franela']);
+for (const item of fromSeed) {
+  if (typeof item === 'string') items.add(item);
+}
+```
+
+### Por qué funciona
+
+Algunas cosas son "obligación de marca" — siempre van con el producto. Otras son específicas del modelo. Si dependés 100% del seed para la lista completa, un seed mal cargado puede mostrar "Incluye: nada" — visualmente confuso + asusta al cliente.
+
+`Set` con base hardcoded es un "default sane" que protege contra errores de carga.
+
+### Cómo aplicar
+
+Para cualquier lista en UI que tenga (a) items garantizados por convención de negocio y (b) items específicos cargados por seed:
+1. Inicializar `Set` con los items garantizados (orden importa = primeros en el Set).
+2. For-loop sobre items del seed → `items.add()`.
+3. Convertir a array preservando orden: `[...items]`.
+
+NO usar `[...defaults, ...fromSeed].filter(unique)` porque pierde orden estable y es más complejo de leer.
+
+### Costo si se ignora
+
+Caso de error: seed cargado sin `attributes.includes` → UI muestra "Incluye: (vacío)" o "—" → cliente piensa que no viene con nada → reclamo / no compra. Diferencia entre clean code y caos.
+
+### Cross-link
+
+Aplicación de "defensive defaults" — pattern relacionado con [[priceToCents-tolerante-undefined]] (función defensive ante input null/missing).
+
+---
+
 ## 2026-05-30 — Cuando founder reporta "no funciona" tras un fix: verificar HTML servidor con curl ANTES de seguir debuggeando
 
 **Categoría**: Debugging / Validation

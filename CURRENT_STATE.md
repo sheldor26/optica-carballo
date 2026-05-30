@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **Comparador: filas "Incluye" + "Garantía" con base universal + nota footer** (2026-05-30). Founder pidió mostrar en comparador qué incluye cada modelo (Rusty Yau específicamente: par lentes amarillas + adaptador receta + estuche; resto: estuche + franela + garantía).
+
+Implementación en `app/(storefront)/comparar/page.tsx`:
+- **`INCLUDES_LABELS`**: mapper de keys de `attributes.includes` a labels legibles (estuche, franela, par lentes amarillas, adaptador receta).
+- **`getIncludesList(p)`**: construye string multi-línea. Base universal (estuche + franela) garantizada SIEMPRE via Set. Modelos pueden agregar items específicos en seed (`attributes.includes`). Caso Rusty Yau (seed 15 ya cargó): muestra los 4 items.
+- **`getWarranty(p)`**: formato "1 año*" o "N meses*". Default 12 meses si no cargado. Asterisco linkea a nota footer.
+- 2 rows nuevas al final de buildRows.
+
+Cambio en `components/compare/compare-table.tsx`:
+- `whitespace-pre-line` en cells (respeta `\n` del string de includes multi-línea).
+- Nota footer expandida con explicación de qué cubre garantía (gestiona expectativas, reduce reclamos por mal uso).
+
+Decisión técnica: Set con estuche+franela hardcodeados garantiza que NUNCA falten en el comparador, aunque el seed del producto los omita por error. Single source of truth de "qué viene siempre".
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**: push + test `/comparar` con Rusty Yau + Vulk. Verificar:
+- Fila "Incluye": Rusty muestra 4 items, Vulk 2 items
+- Fila "Garantía": "1 año*" en todas
+- Footer: explicación del asterisco
+
 🟢 **Sync precio confirmado funciona + mobile thumbs como cuadrito +N** (2026-05-30).
 
 **Sync precio Yamain CONFIRMADO funcionando**: founder corrió force-sync con MLA correcto post-deploy del fix variationMatches. JSON output:

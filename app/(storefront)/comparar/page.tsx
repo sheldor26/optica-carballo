@@ -63,6 +63,16 @@ const LENS_TREATMENT_LABELS: Record<string, string> = {
   photochromic: 'Fotocromático',
 };
 
+/** Mapper de keys de `attributes.includes` a labels legibles para mostrar
+ * en el comparador. Base universal (estuche + franela) garantizada
+ * siempre — los modelos pueden agregar items específicos via seed. */
+const INCLUDES_LABELS: Record<string, string> = {
+  estuche: 'Estuche original',
+  franela: 'Franela de microfibra',
+  'par-lentes-amarillas-adicionales': 'Par de lentes amarillas intercambiables',
+  'adaptador-interno-lentes-graduadas': 'Adaptador interno para lentes graduadas',
+};
+
 function asString(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
@@ -90,6 +100,33 @@ function measurementMm(
   const val = (m as Record<string, unknown>)[key];
   const n = asNumber(val);
   return n !== null ? `${n} mm` : null;
+}
+
+/** Construye string multi-línea con items incluidos. Base universal:
+ * "Estuche + Franela". Modelos pueden agregar items específicos via
+ * `attributes.includes` array (ej. Rusty Yau: par lentes amarillas +
+ * adaptador receta). Cada item en línea separada para visual claro. */
+function getIncludesList(p: CompareProductCard): string | null {
+  const arr = Array.isArray(p.attributes.includes)
+    ? p.attributes.includes
+    : [];
+  // Set garantiza orden estable + sin duplicados. Estuche + franela van
+  // primero siempre (base universal). Después items específicos del modelo.
+  const items = new Set<string>(['estuche', 'franela']);
+  for (const item of arr) {
+    if (typeof item === 'string') items.add(item);
+  }
+  const labels = [...items].map((k) => INCLUDES_LABELS[k] ?? k);
+  return labels.join('\n');
+}
+
+/** Garantía formateada: "1 año*" o "N meses*". Asterisco linka a nota
+ * footer del comparador. Default 12 meses si no está cargado. */
+function getWarranty(p: CompareProductCard): string {
+  const months = asNumber(p.attributes.warranty_months) ?? 12;
+  if (months === 12) return '1 año*';
+  if (months >= 12 && months % 12 === 0) return `${months / 12} años*`;
+  return `${months} meses*`;
 }
 
 function buildRows(products: CompareProductCard[]): CompareRow[] {
@@ -150,6 +187,14 @@ function buildRows(products: CompareProductCard[]): CompareRow[] {
         const w = asNumber(p.attributes.weight_grams);
         return w !== null ? `${w} g` : null;
       }),
+    },
+    {
+      label: 'Incluye',
+      values: products.map(getIncludesList),
+    },
+    {
+      label: 'Garantía',
+      values: products.map(getWarranty),
     },
   ].filter((row) => row.values.some((v) => v !== null && v !== ''));
 }
