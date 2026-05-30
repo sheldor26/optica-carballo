@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Mappers explícitos enum DB → label español para todo enum que toque UI
+
+**Categoría**: i18n / Localization / DB-to-UI
+**Confianza**: 🟢 Alta (validado iter post-Vulk Yamain — fix 2 del founder)
+
+### Qué funcionó
+
+Founder reportó "Anteojos de sol female" en el subtitle del PDP — el enum `attributes.gender` ('female'/'male'/'unisex') se renderizaba directo. Fix: helpers `genderToSpanish()` y `frameShapeToSpanish()` que mapean explícito enum → label legible. Resultado: "Anteojos de sol ovalados para mujer" (descriptivo + en español).
+
+### Por qué funciona
+
+Los enums en DB siguen convenciones en inglés (interoperabilidad con ML, código). Pero el sitio es español argentino (regla 9 de CLAUDE.md). Cuando un enum llega directo a UI sin mapeo, se filtra el inglés. Mappers centralizados:
+1. Single source of truth: 1 lugar donde convierto cada valor.
+2. Si cambia el label español, 1 lugar para tocar (no N templates).
+3. Cubre casos: enum nuevo sin mapping → devuelve null o fallback, no crashea.
+
+### Cómo aplicar
+
+Para CUALQUIER enum (gender, frame_shape, frame_material, lens_treatment, status, etc.) que se renderice en UI:
+
+1. Crear helper `<enum>ToSpanish(value: string | null): string | null` cerca del componente que lo consume (o en `lib/i18n/labels.ts` si se reutiliza).
+2. Switch o Record<string, string> con los valores válidos del enum.
+3. Default: return null o un fallback claro (NO devolver el enum en inglés).
+4. UI consume: `const label = enumToSpanish(value) ?? 'Sin dato'` — explícito el caso vacío.
+
+### Trigger fuerte
+
+Si copy de UI muestra una palabra en inglés (`female`, `polarized`, `aviator`, `oval`, `xs`, `out_of_stock`), ALMOST seguro es un enum directo sin mapper. Buscar el helper o crearlo.
+
+### Costo si se ignora
+
+UI con palabras en inglés intercaladas en español argentino → poco profesional, daña confianza. Caso específico: "Anteojos de sol female" para mujer suena raro y founder lo cazó al instante.
+
+### Cross-link
+
+Mismo principio que `extractColorLabel()` ya existente en `to-product-card-data.ts` (mapea `attributes.color_frame` → label legible). Falta extender a todos los enums.
+
+---
+
 ## 2026-05-30 — Para assets compartidos entre N entidades (productos de una marca, etc.), evaluar approach por costo recurrente, no solo upfront
 
 **Categoría**: Architecture / Decision-making

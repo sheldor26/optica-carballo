@@ -24,6 +24,39 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Cargué Vulk Yamain con `attributes.gender='female'` sin verificar cómo se renderiza en UI (subtitle "female" en inglés)
+
+**Estado**: 🟢 Corregido en mismo día (fix 2 post-deploy)
+**Categoría**: Code / Cross-cutting validation gap
+
+### Qué pasó
+
+Al generar el seed 16 (Vulk Yamain) puse `attributes.gender: "female"` siguiendo convención de enum DB (inglés). Lo que NO verifiqué: cómo ese valor se renderiza en UI. El componente `product-page.tsx` tenía un `categorySubtitle()` que concatenaba `prefix + gender` literal → "Anteojos de sol female". Founder lo cazó al instante post-deploy.
+
+### Causa raíz
+
+Asumí que el sistema ya tenía mappers enum → español para gender. NO grep-eé el codebase para verificar. Si hubiera buscado `attributes.gender` o `categorySubtitle` antes de cargar el producto, habría visto que el valor se filtra directo a UI sin traducción.
+
+### Costo
+
+- 1 turno post-deploy del founder reportando el bug.
+- Misma raíz aplicaría a cualquier enum nuevo cargado en attributes (`frame_shape`, `lens_treatment`, etc.) sin mapper.
+
+### Regla preventiva
+
+**Al cargar producto que usa attributes JSONB con enums, ANTES de generar el seed**:
+1. Para cada nuevo valor de enum en attributes, hacer grep en el codebase: `grep -rn "attributes\.<enum_name>" components/ app/ lib/`.
+2. Confirmar que existe mapper enum → español en el código que renderiza eso, O que el valor del enum YA es español.
+3. Si encuentro que el enum se renderiza directo: (a) crear mapper antes de cargar producto, o (b) usar valor español directo en el seed (ej. `gender: "mujer"` en lugar de `"female"`).
+
+**Trigger fuerte**: si voy a cargar attributes.X = "<inglés>" para un campo que se muestra al usuario, parar y verificar que el frontend lo traduce.
+
+### Cross-link
+
+Mismo nucleo que [[hardcoded-paths-png-vs-jpg-iter-14.4]]: ambos mistakes son "no verifiqué cómo se procesa downstream el valor que cargo upstream". Pattern: cuando cargo data, verificar el path completo data → render.
+
+---
+
 ## 2026-05-30 — Description del Vulk Yamain enumeraba códigos de variantes (CRY/MBLK/SBLK) — duplicación con variant selector
 
 **Estado**: 🟢 Corregido en mismo turno (founder señaló el error explícitamente)
