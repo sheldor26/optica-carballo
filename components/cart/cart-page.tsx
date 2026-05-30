@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CreditCard, ShieldCheck, ShoppingBag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CartItemRow } from '@/components/cart/cart-item-row';
+import { CouponInput } from '@/components/cart/coupon-input';
 import { ShippingCalculator } from '@/components/cart/shipping-calculator';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { formatPriceCents } from '@/lib/format/currency';
@@ -54,15 +55,44 @@ export function CartPage({
                   {formatPriceCents(cart.subtotalCents)}
                 </dd>
               </div>
+              {cart.coupon && cart.coupon.discountCents > 0 && (
+                <div className="flex justify-between">
+                  <dt className="text-brand inline-flex items-center gap-1 font-medium">
+                    Descuento ({cart.coupon.code})
+                  </dt>
+                  <dd className="text-brand font-medium tabular-nums">
+                    -{formatPriceCents(cart.coupon.discountCents)}
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Envío</dt>
                 <dd className="text-muted-foreground text-xs">
-                  Se calcula al elegir dirección
+                  {cart.coupon?.removeShipping
+                    ? 'Gratis (cupón)'
+                    : 'Se calcula al elegir dirección'}
                 </dd>
               </div>
+              {cart.coupon && cart.coupon.discountCents > 0 && (
+                <div className="border-border/40 flex justify-between border-t pt-2.5">
+                  <dt className="text-foreground font-semibold">Total</dt>
+                  <dd className="text-foreground font-semibold tabular-nums">
+                    {formatPriceCents(
+                      Math.max(0, cart.subtotalCents - cart.coupon.discountCents),
+                    )}
+                  </dd>
+                </div>
+              )}
             </dl>
 
-            <InstallmentsHint subtotalCents={cart.subtotalCents} />
+            <CouponInput appliedCoupon={cart.coupon} couponError={cart.couponError} />
+
+            <InstallmentsHint
+              subtotalCents={Math.max(
+                0,
+                cart.subtotalCents - (cart.coupon?.discountCents ?? 0),
+              )}
+            />
 
             {remainingForFree > 0 && (
               <div className="bg-brand/10 border-brand/30 mt-4 rounded-lg border p-3">

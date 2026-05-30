@@ -201,3 +201,38 @@ export async function clearCart(): Promise<CartActionResult> {
   revalidatePath('/', 'layout');
   return { ok: true };
 }
+
+/**
+ * Aplica un código de cupón al cart. Solo guarda el código en la cookie —
+ * la validación real se hace en resolveCart (con userId + subtotal).
+ *
+ * Limpiamos el código a uppercase + trim para consistencia con la validación.
+ */
+export async function applyCouponToCart(
+  code: string,
+): Promise<CartActionResult> {
+  const cleaned = code.trim().toUpperCase();
+  if (cleaned.length === 0) {
+    return { ok: false, error: 'Ingresá un código.' };
+  }
+  if (cleaned.length > 40) {
+    return { ok: false, error: 'El código es demasiado largo.' };
+  }
+  const cart = await readCartCookie();
+  await writeCartCookie({ ...cart, couponCode: cleaned });
+  revalidatePath('/carrito');
+  revalidatePath('/checkout');
+  return { ok: true };
+}
+
+/**
+ * Remueve el cupón aplicado al cart. No toca los items.
+ */
+export async function removeCouponFromCart(): Promise<CartActionResult> {
+  const cart = await readCartCookie();
+  const { couponCode: _removed, ...rest } = cart;
+  await writeCartCookie(rest);
+  revalidatePath('/carrito');
+  revalidatePath('/checkout');
+  return { ok: true };
+}

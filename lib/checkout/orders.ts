@@ -74,7 +74,12 @@ export async function createOrderFromCart(args: {
   void syncStockOutboundForVariants(reserveItems.map((it) => it.variant_id));
 
   // ===== 2. INSERT orders =====
-  const totalCents = cart.subtotalCents + shipping.cents;
+  const discountCents = cart.coupon?.discountCents ?? 0;
+  const effectiveShippingCents = cart.coupon?.removeShipping ? 0 : shipping.cents;
+  const totalCents = Math.max(
+    0,
+    cart.subtotalCents - discountCents + effectiveShippingCents,
+  );
 
   const { data: orderRow, error: orderError } = await supabase
     .from('orders')
@@ -95,10 +100,12 @@ export async function createOrderFromCart(args: {
       shipping_phone: address?.phone ?? null,
       shipping_address_id: address?.id ?? null,
       subtotal_cents: cart.subtotalCents,
-      shipping_cents: shipping.cents,
-      discount_cents: 0,
+      shipping_cents: effectiveShippingCents,
+      discount_cents: discountCents,
       total_cents: totalCents,
       shipping_method: isPickup ? 'pickup' : 'delivery',
+      coupon_id: cart.coupon?.id ?? null,
+      coupon_code: cart.coupon?.code ?? null,
       notes: isPickup
         ? 'Retiro en local · Coordinar entrega por WhatsApp'
         : `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
@@ -140,6 +147,19 @@ export async function createOrderFromCart(args: {
       ok: false,
       error: `No pudimos guardar los items. ${itemsError.message}`,
     };
+  }
+
+  // ===== 4. Registrar redemption del cupón =====
+  // Best-effort: si falla, la order ya está creada y el descuento aplicado.
+  // El cron diario podría reconciliar usage_count si fuera necesario.
+  if (cart.coupon) {
+    await supabase.from('coupon_redemptions').insert({
+      coupon_id: cart.coupon.id,
+      user_id: userId,
+      order_id: orderRow.id,
+      discount_cents: cart.coupon.discountCents,
+    });
+    await supabase.rpc('increment_coupon_usage', { p_coupon_id: cart.coupon.id });
   }
 
   return {

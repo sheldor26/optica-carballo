@@ -20,10 +20,10 @@ export default async function Page() {
   // Feature flag — si está OFF, /checkout no existe.
   if (!isCheckoutEnabled()) notFound();
 
-  await requireAuth('/checkout');
+  const user = await requireAuth('/checkout');
 
   const cart = await readCartCookie();
-  const resolved = await resolveCart(cart);
+  const resolved = await resolveCart(cart, { userId: user.id });
 
   // Cart vacío o con issues → volver al carrito.
   if (resolved.items.length === 0 || resolved.hasIssues) {

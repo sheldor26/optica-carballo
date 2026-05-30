@@ -13,7 +13,13 @@ export function CheckoutSummary({
   cart: ResolvedCart;
   shipping: ShippingQuote;
 }) {
-  const totalCents = cart.subtotalCents + shipping.cents;
+  const discountCents = cart.coupon?.discountCents ?? 0;
+  const effectiveShippingCents =
+    cart.coupon?.removeShipping ? 0 : shipping.cents;
+  const totalCents = Math.max(
+    0,
+    cart.subtotalCents - discountCents + effectiveShippingCents,
+  );
 
   return (
     <div className="border-border/60 bg-background rounded-xl border p-5 shadow-sm">
@@ -49,6 +55,16 @@ export function CheckoutSummary({
             {formatPriceCents(cart.subtotalCents)}
           </dd>
         </div>
+        {cart.coupon && discountCents > 0 && (
+          <div className="flex justify-between">
+            <dt className="text-brand font-medium">
+              Descuento ({cart.coupon.code})
+            </dt>
+            <dd className="text-brand font-medium tabular-nums">
+              -{formatPriceCents(discountCents)}
+            </dd>
+          </div>
+        )}
         <div className="flex justify-between">
           <dt className="text-muted-foreground">
             Envío

@@ -15,6 +15,8 @@ export const cartItemSchema = z.object({
 
 export const cartSchema = z.object({
   items: z.array(cartItemSchema).max(MAX_ITEMS_IN_CART),
+  /** Código de cupón aplicado al carrito. Valida en server antes de usar. */
+  couponCode: z.string().min(1).max(40).optional(),
 });
 
 export type CartItem = z.infer<typeof cartItemSchema>;
@@ -54,11 +56,25 @@ export type ResolvedCartItem = {
   issue: 'unavailable' | 'out_of_stock' | 'over_stock' | null;
 };
 
+export type AppliedCoupon = {
+  id: string;
+  code: string;
+  type: 'percentage' | 'fixed_amount' | 'free_shipping';
+  description: string | null;
+  discountCents: number;
+  /** true si el cupón es free_shipping (UI debe poner shipping=0). */
+  removeShipping: boolean;
+};
+
 export type ResolvedCart = {
   items: ResolvedCartItem[];
   subtotalCents: number;
   itemCount: number;
   hasIssues: boolean;
+  /** Cupón aplicado y validado. null si no hay cupón o si el código guardado es inválido. */
+  coupon: AppliedCoupon | null;
+  /** Mensaje de error si había código guardado pero falló validación (sirve para UI). */
+  couponError: string | null;
 };
 
 export const EMPTY_RESOLVED_CART: ResolvedCart = {
@@ -66,4 +82,6 @@ export const EMPTY_RESOLVED_CART: ResolvedCart = {
   subtotalCents: 0,
   itemCount: 0,
   hasIssues: false,
+  coupon: null,
+  couponError: null,
 };

@@ -1,8 +1,10 @@
 import 'server-only';
 import { createStaticClient } from '@/lib/supabase/static';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
+import { validateCoupon } from '@/lib/coupons/validate';
 import {
   EMPTY_RESOLVED_CART,
+  type AppliedCoupon,
   type Cart,
   type ResolvedCart,
   type ResolvedCartItem,
@@ -33,7 +35,10 @@ type VariantRow = {
  * la UI muestra el issue y deja al user decidir quitarlo. Esto evita que un
  * usuario pierda items por race conditions transitorias de stock.
  */
-export async function resolveCart(cart: Cart): Promise<ResolvedCart> {
+export async function resolveCart(
+  cart: Cart,
+  options?: { userId?: string | null },
+): Promise<ResolvedCart> {
   if (cart.items.length === 0) return EMPTY_RESOLVED_CART;
 
   const supabase = createStaticClient();
@@ -130,7 +135,37 @@ export async function resolveCart(cart: Cart): Promise<ResolvedCart> {
     });
   }
 
-  return { items: resolvedItems, subtotalCents, itemCount, hasIssues };
+  // Validar cupón si está en la cookie + userId disponible.
+  let coupon: AppliedCoupon | null = null;
+  let couponError: string | null = null;
+  if (cart.couponCode) {
+    const validation = await validateCoupon({
+      code: cart.couponCode,
+      userId: options?.userId ?? null,
+      subtotalCents,
+    });
+    if (validation.ok) {
+      coupon = {
+        id: validation.coupon.id,
+        code: validation.coupon.code,
+        type: validation.coupon.type,
+        description: validation.coupon.description,
+        discountCents: validation.discountCents,
+        removeShipping: validation.removeShipping,
+      };
+    } else {
+      couponError = validation.message;
+    }
+  }
+
+  return {
+    items: resolvedItems,
+    subtotalCents,
+    itemCount,
+    hasIssues,
+    coupon,
+    couponError,
+  };
 }
 
 /**
