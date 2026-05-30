@@ -22,6 +22,43 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Usar `/api/admin/ml-import-preview/<itemId>` para auto-extraer datos al cargar variantes nuevas
+
+**Categoría**: Workflow / Operational efficiency
+**Confianza**: 🟢 Alta (validado iter cargar Rusty Yau variante MBLUE)
+
+### Qué funcionó
+
+Founder pidió cargar nueva variante del Rusty Yau pasando solo el link de ML (`MLAU3697527724?pdp_filters=item_id:MLA2707007110`). En vez de pedirle precio, stock, atributos, llamé al endpoint admin `/api/admin/ml-import-preview/MLA2707007110` con curl simple y obtuve TODO en JSON:
+- price 103902 ARS → 10390200 centavos
+- available_quantity: 3 (stock)
+- Item ID, FRAME_COLOR, LENS_COLOR, LENS_TREATMENT, measurements, etc.
+
+Genere el seed con datos confirmados sin ronda de Q&A con founder.
+
+### Por qué funciona
+
+El endpoint ya existe en el código (`app/api/admin/ml-import-preview/[itemId]/route.ts`) y devuelve el JSON crudo del item ML del seller autenticado. Para variantes que ya están en ML, eso elimina 3-5 preguntas al founder.
+
+### Cómo aplicar
+
+Cuando el founder pase un link de ML para cargar producto/variante nueva:
+1. Extraer el `item_id` del link (formato `MLA\d+` en el query string o path).
+2. `curl -sS "https://opticacarballo.com.ar/api/admin/ml-import-preview/<itemId>"`.
+3. Parsear JSON: price (en pesos, no centavos — multiplicar por 100), available_quantity, attributes.
+4. Generar seed sin pedir esos datos al founder.
+5. Solo pedirle al founder lo que NO está en ML: fotos custom, callouts especiales, descripción larga adicional.
+
+### Costo si se ignora
+
+Por cada variante: 1-2 rondas extra de preguntas al founder (precio actual, stock, item ID exacto). Para catálogo de 30+ productos = 30+ interacciones evitables.
+
+### Cross-link
+
+Refuerza pattern [[ml-import-preview-endpoint]] documentado en seed 13 — usar el endpoint como standard al cargar productos/variantes desde ML.
+
+---
+
 ## 2026-05-30 — Cuando founder dice "X es la mejor" de N opciones, anclar a X y ajustar las demás (iter 14.5)
 
 **Categoría**: Visual tuning / Reference anchoring

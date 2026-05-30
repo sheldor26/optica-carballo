@@ -24,6 +24,39 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Generé seed con número 14 sin verificar CLOUD_APPLIED.md primero (choque con 14_coupons_iniciales)
+
+**Estado**: 🟢 Detectado y corregido inmediatamente (renombre a 15)
+**Categoría**: Code / Naming conflict / Verification gap
+
+### Qué pasó
+
+Cuando founder pidió la nueva variante del Rusty Yau, creé `supabase/seeds/14_rusty_yau_mblue_revo_green_pol.sql` asumiendo que el número 14 estaba libre (porque el último seed que recordaba era 13). Al ir a actualizar `CLOUD_APPLIED.md` para registrar el nuevo seed, vi la entry `seeds/14_coupons_iniciales.sql` ya aplicado al cloud. Tuve que renombrar a 15.
+
+### Causa raíz
+
+NO verifiqué el número de seed más alto antes de crear el archivo. Asumí basado en memoria. La memoria estaba desactualizada: en sesiones previas se aplicó el 14 (coupons) y no lo registré mentalmente.
+
+### Costo
+
+- 1 paso extra: detectar conflicto + `mv` + Edit del header del seed.
+- Si NO lo hubiera detectado antes de aplicar: el seed `14_rusty_yau` habría chocado con el 14_coupons o reemplazado el archivo en disco perdiendo el contenido del coupons.
+
+### Regla preventiva
+
+**Antes de crear un nuevo archivo numerado en una secuencia** (seeds, migrations, ADRs):
+1. `ls supabase/seeds/ | sort` (o equivalente) para ver TODOS los números usados.
+2. Tomar `max + 1` para el nuevo archivo.
+3. Si `CLOUD_APPLIED.md` registra algo pendiente que aún no se aplicó, también contarlo.
+
+**Trigger automático**: cualquier archivo con prefijo numérico secuencial → verificación obligatoria antes de crear.
+
+### Cross-link
+
+Relacionado con [[validation-gap-iter-14.4]] de paths-no-matchean — ambos comparten "asumí algo en vez de verificar la fuente de verdad antes de codear".
+
+---
+
 ## 2026-05-30 — Volví a usar "⏭️ Sin entry" en iter 14.5 — 5TA VEZ violando regla operacional documentada como mistake en iter 14.2
 
 **Estado**: 🔴 Recurrente — MISMO mistake documentado 4 turnos atrás, repetido
