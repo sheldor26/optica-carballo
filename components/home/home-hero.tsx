@@ -135,28 +135,22 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
           </div>
         </motion.div>
 
-        {/* Columna derecha: foto editorial. Si la foto no existe en el bucket
-            (404), Next.js Image va a mostrar un placeholder oscuro — el
-            layout no se rompe. */}
+        {/* Columna derecha: foto editorial. PNG con transparencia (47% del
+            área es alpha=0) — el modelo flota libre sobre el bg dark del
+            hero. NO usamos border/rounded/shadow/overlay porque crean un
+            "marco visible" alrededor de las zonas transparentes. */}
         <motion.div
           style={{ y: textY }}
           className="relative order-1 mx-auto w-full max-w-md md:order-2 md:max-w-none"
         >
-          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl border border-white/10 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.6)]">
+          <div className="relative aspect-[2/3] w-full">
             <Image
               src={HERO_EDITORIAL_URL}
               alt="Editorial Óptica Carballo"
               fill
               sizes="(max-width: 768px) 90vw, 45vw"
               priority
-              className="object-cover"
-            />
-            {/* Gradient overlay sutil: oscurece levemente el borde inferior
-                para que se funda con el resto del hero dark sin recortes
-                bruscos. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+              className="object-contain"
             />
           </div>
         </motion.div>

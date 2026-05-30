@@ -2,6 +2,14 @@
 
 ## Status
 
+🟢 **Hero C1 v2: removido marco visible — PNG flota libre sobre el bg dark** (2026-05-30). Founder reportó "reborde a la foto que no debería aparecer". Causa: el container tenía `border border-white/10 rounded-2xl shadow-[...]` + gradient overlay → con PNG 47% transparente, esos estilos crean un marco rectangular visible alrededor de las zonas vacías.
+
+Fix:
+- Removido `border border-white/10`, `rounded-2xl`, `shadow-[...]`, gradient overlay del container
+- `object-cover` → `object-contain` (respeta aspect ratio original sin recortar)
+- Container queda solo `relative aspect-[2/3] w-full` — wrapper transparente
+- Resultado: la PNG con transparencia FLOTA sobre el bg dark del hero sin marco
+
 🟢 **Hero C1 COMPLETO: foto PNG cargando + aspect ajustado** (2026-05-30). Founder aclaró ".png" (no .jpg). Cambio HERO_EDITORIAL_PATH + verifico curl HTTP 200 + ajusto aspect ratio.
 
 Verificación post-fix:
