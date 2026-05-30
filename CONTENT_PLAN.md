@@ -248,6 +248,66 @@ Actualizaciones contribuyen al SEO (Google ama contenido fresco en YMYL).
 
 ---
 
+# Plan editorial 2026 — 5 guías prioritarias (firmadas por la regente)
+
+Plan recibido del agente `content-writer-medical` (2026-05-30). 5 guías SEO firmadas por María Carlota Carballo en orden de prioridad para implementación.
+
+⚠️ **Bloqueantes antes de redactar**: (a) matrícula M.C. Carballo para byline; (b) keyword research formal vía `seo-strategist` para validar volúmenes estimados; (c) confirmar polarización real de Vulk Day Light + Rusty Yau para Guía C; (d) decidir si recomendador IA estará live antes de publicar Guía E.
+
+## Orden de implementación recomendado
+
+| # | Guía | Slug | Estado | Razón orden |
+|---|---|---|---|---|
+| **1** | Cómo leer tu receta de anteojos | `/guias/como-leer-receta-oftalmologica` | 📝 Backlog | Mayor volumen estimado (300-700/mes), validación técnica acotada, CTA WhatsApp inmediato. Quick win editorial. |
+| **2** | Anteojos polarizados: cuándo sirven y cuándo no | `/guias/anteojos-polarizados-cuando-sirven` | 📝 Backlog | Aprovecha catálogo actual (Vulk Day Light, Rusty Yau). Diferencial honesto vs competencia. |
+| **3** | Qué marco te queda según tu forma de cara | `/guias/forma-de-cara-y-marco-de-anteojos` | 📝 Backlog | **Mayor volumen del set (400-900/mes)** pero requiere assets visuales caros + recomendador IA live para CTA principal. |
+| **4** | Cómo elegir tu primer par de anteojos de receta | `/guias/como-elegir-primer-par-anteojos-receta` | 📝 Backlog | Pillar pre-venta receta. Requiere catálogo de receta cargado para internal links. |
+| **5** | Policarbonato, CR-39 o MR-8: qué cristal elegir | `/guias/policarbonato-cr39-mr8-que-cristal-elegir` | 📝 Backlog | Satélite técnica de #4. Validación pesada con `optical-expert`. Linkear desde #1 y #4. |
+
+## Detalle de cada guía
+
+### Guía 1 — Cómo leer receta oftalmológica
+- **Keyword primaria**: `como leer receta de anteojos` (~300-700/mes AR — validar)
+- **Longitud**: 2.000-2.800 palabras
+- **Outline H2**: OD/OI → ESF → CIL → EJE → ADD → DNP → Prismas → Vigencia → Errores comunes
+- **Internal links**: → Guía 4 (primer par), → Guía 5 (cristales), → `/medidor-de-dnp`, → `/lector-de-receta`, → WhatsApp
+- **CTA final**: "Mandanos foto de tu receta por WhatsApp y te asesoramos"
+- **Validación optical-expert**: nomenclatura AR (EJE vs AXIS), vigencia legal AR, imagen ejemplo receta ficticia
+
+### Guía 2 — Polarizados cuándo sí cuándo no
+- **Keyword primaria**: `anteojos polarizados sirven` (~150-400/mes AR — validar)
+- **Longitud**: 1.500-2.000 palabras
+- **Outline H2**: Qué es polarización → UV ≠ polarizado → Cuándo SÍ (manejar/pesca/nieve) → Cuándo NO (pantallas LCD, aviación) → Comparativa con espejado/fotocromático → Truco celular para verificar
+- **Internal links**: → categoría `/anteojos-de-sol`, → Vulk Day Light, → Rusty Yau (si polarizados), → marca Rusty
+- **CTA final**: "Ver anteojos de sol polarizados en stock" + WhatsApp
+- **Validación optical-expert**: lista actividades donde polarizado falla, mecanismo de polarización correcto, confirmar polarización real Vulk/Rusty
+
+### Guía 3 — Forma de cara y marco
+- **Keyword primaria**: `que marco de anteojos me queda` (~400-900/mes AR — alta intención compra)
+- **Longitud**: 1.800-2.400 palabras
+- **Outline H2**: Regla básica contrastar → Identificá tu forma (7 formas) → Qué va con cada forma → Color marco/tono piel → Tamaño marco → Lifestyle vs forma → Cómo usar el recomendador IA
+- **Internal links**: → **Recomendador IA** (priority), → catálogo, → Guía 1 (primer par), → marca Vulk (moda) + Rusty (deporte)
+- **CTA final**: "Probá nuestro recomendador con IA — subí selfie y te sugerimos 3 modelos en stock"
+- **Validación**: requiere 7-10 ilustraciones (formas de cara + marcos) — costo diseño mayor
+
+### Guía 4 — Primer par de anteojos receta
+- **Keyword primaria**: `como elegir anteojos de receta` (~200-500/mes AR — validar)
+- **Longitud**: 2.500-3.200 palabras (pillar)
+- **Outline H2**: Receta vigente → Armazón (material/medidas/peso) → Cristales (índice/tratamientos) → Errores primerizos → Período adaptación → Mantenimiento → FAQ
+- **Internal links**: → Guía 1 (leer receta), → Guía 5 (cristales), → `/anteojos-de-receta` (cuando hay productos), → `/medidor-de-dnp`
+- **CTA final**: Doble: "Sacá turno medición DNP" + "Ver armazones de receta"
+- **Validación**: tabla índices refracción vs graduación, durabilidad materiales, adaptación realista
+
+### Guía 5 — Policarbonato vs CR-39 vs MR-8
+- **Keyword primaria**: `diferencia policarbonato cr39` (~100-300/mes AR — validar)
+- **Longitud**: 1.800-2.400 palabras (satélite técnica de #4)
+- **Outline H2**: Índice de refracción → CR-39 (1.49) → Policarbonato (1.59) → MR-8/Trivex (1.60-1.67) → Tabla comparativa → Recomendación por perfil → Tratamientos
+- **Internal links**: → Guía 4, → Guía 1, → `/tratamientos-de-lentes` (futuro)
+- **CTA final**: "Pedí presupuesto de cristales por WhatsApp con tu receta"
+- **Validación crítica**: valores índices refracción + número de Abbe, resistencia ANSI Z87.1, término "MR-8" vs "Trivex" en AR
+
+---
+
 # Productos asociados a artículos (cross-reference)
 
 | Artículo | Productos para embebir |

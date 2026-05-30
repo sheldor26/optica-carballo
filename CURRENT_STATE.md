@@ -2,6 +2,35 @@
 
 ## Status
 
+🟢 **Sprint Multi-Camino: Audit + Filtros + Plan Editorial COMPLETO** (2026-05-30). Founder pidió "continuar todas las opciones" (Camino A filtros + Camino B contenido + Camino C audit). 3 caminos ejecutados en una sesión:
+
+**Camino C — Audit + 3 fixes críticos** (commit `67f4d16`):
+Delegué audit completo a `Explore` agent sobre las 6 features IA construidas. Detectó 12 hallazgos, top 3 fixeados:
+1. `manual-prescription-form.tsx:369` — DNP input vacío seteaba 0 (valida pero inválido). Fix: empty → null + validación rango 40-80 en `canSubmit`.
+2. `prescription-reader.tsx:478` — `stripConfidence()` preservaba `add` field rompiendo invariante "monofocal sin add". Fix: `stripAdd()` explícito con `add: null`. Función legacy removida (dead code).
+3. `face-shape-analyzer.tsx:555` — `fetchRecommendedProducts()` sin timeout → spinner infinito. Fix: setTimeout 15s, en timeout/error → empty grid + EmptyFallback.
+
+**Camino A — Filtros descubribilidad catálogo**:
+Hoy `/anteojos-de-sol` y `/anteojos-de-receta` muestran solo grid de marcas (CategoryIndexPage). Los chips `FrameShapeFilters` solo aparecían en vistas filtradas (`CategoryFilteredPage` con `?forma=X`). Resultado: el user llegaba a la categoría sin ver opciones de filtros = baja descubribilidad. Fix:
+- `components/catalog/category-index-page.tsx`: nueva prop opcional `availableShapes?: string[]`. Si hay 1+, monta `FrameShapeFilters` debajo del H1 con `selectedShapes={[]}` (chips invitando a filtrar).
+- `app/(storefront)/anteojos-de-sol/page.tsx` + `anteojos-de-receta/page.tsx`: fetch paralelo de `fetchAvailableFrameShapes(CATEGORY.slug)` también en el branch sin filtros + pasa a CategoryIndexPage.
+
+Click en chip → router navega a `/anteojos-de-sol?forma=X` → CategoryFilteredPage activa. Sin tocar páginas estáticas existentes (`/anteojos-de-sol/aviador` etc. siguen funcionando como antes).
+
+**Camino B — Plan editorial 5 guías** (delegado a `content-writer-medical` en paralelo):
+Plan completo recibido y guardado en `CONTENT_PLAN.md`. 5 guías firmadas por María Carlota Carballo con outline H2/H3 + keyword primaria + meta + internal links + CTA + validaciones optical-expert + longitud:
+1. **Cómo leer receta oftalmológica** (~300-700/mes AR, 2000-2800 palabras) — prioridad #1, validación técnica acotada, quick win.
+2. **Polarizados cuándo sí cuándo no** (~150-400/mes, 1500-2000 palabras) — prioridad #2, aprovecha catálogo actual.
+3. **Forma de cara y marco** (~400-900/mes, 1800-2400 palabras) — prioridad #3, mayor volumen pero requiere assets visuales + recomendador IA live para CTA.
+4. **Primer par de receta** (2500-3200 palabras, pillar) — prioridad #4, requiere catálogo receta cargado.
+5. **Cristales policarbonato/CR-39/MR-8** (1800-2400 palabras, satélite técnica) — prioridad #5, validación pesada optical-expert.
+
+⚠️ **Bloqueantes antes de redactar**: matrícula M.C. Carballo para byline, keyword research formal `seo-strategist`, confirmar polarización Vulk/Rusty, decidir si recomendador IA live antes de Guía 3.
+
+Typecheck verde. Build OK. Lint solo warnings pre-existentes.
+
+**Próximo paso (founder)**: (a) testear `/anteojos-de-sol` y `/anteojos-de-receta` — ahora ven chips de filtros al tope; (b) revisar `CONTENT_PLAN.md` para decidir si arrancamos Guía 1 (leer receta) en próxima sesión; (c) cargar matrícula de M.C. Carballo en env vars (`NEXT_PUBLIC_REGENTE_MATRICULA`) si todavía no está.
+
 🟢 **Sprint IA-5.2 (Form manual de receta + medidor DNP integrado) CÓDIGO LISTO — PUSHEAR + TESTEAR** (2026-05-30). Founder mostró referencia visual de competidor mostrando: (a) pantalla "Elegí tu necesidad" (mono/progresivo/solo montura) post-PDP, (b) pantalla "Ingresá tu receta" con 6 opciones (escanear/manual/guardada/etc.), (c) form manual con botón "Mide tu DP" al lado del campo DNP. Founder pidió **opción C: híbrido** (form manual ahora, flow checkout completo después cuando haya productos receta). También pidió **sanear menciones de competidor** en código público.
 
 Implementación esta sesión:

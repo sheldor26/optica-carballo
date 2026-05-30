@@ -52,15 +52,17 @@ export default async function Page({
     );
   }
 
-  const [brands, priceRange] = await Promise.all([
+  const [brands, priceRange, availableShapes] = await Promise.all([
     fetchCategoryIndex(CATEGORY),
     fetchCategoryPriceRange(CATEGORY.slug),
+    fetchAvailableFrameShapes(CATEGORY.slug),
   ]);
   return (
     <CategoryIndexPage
       category={CATEGORY}
       brands={brands}
       priceRange={priceRange}
+      availableShapes={availableShapes}
     />
   );
 }

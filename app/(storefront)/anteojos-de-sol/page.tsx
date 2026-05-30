@@ -53,16 +53,18 @@ export default async function Page({
     );
   }
 
-  // Sin filtros: vista clásica de marcas.
-  const [brands, priceRange] = await Promise.all([
+  // Sin filtros: vista clásica de marcas + chips de descubribilidad arriba.
+  const [brands, priceRange, availableShapes] = await Promise.all([
     fetchCategoryIndex(CATEGORY),
     fetchCategoryPriceRange(CATEGORY.slug),
+    fetchAvailableFrameShapes(CATEGORY.slug),
   ]);
   return (
     <CategoryIndexPage
       category={CATEGORY}
       brands={brands}
       priceRange={priceRange}
+      availableShapes={availableShapes}
     />
   );
 }

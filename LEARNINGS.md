@@ -22,6 +22,59 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Paralelización real: 1 agente background + 1 agente foreground + 1 task local
+
+**Categoría**: Workflow / Multi-agent orchestration
+**Confianza**: 🟢 Alta (validado en sesión multi-camino A+B+C)
+
+### Qué funcionó
+
+Founder pidió "ejecutar 3 caminos" (audit features + filtros catálogo + plan editorial). Total scope estimado: 6-9 sesiones si secuencial. Pero tenían distinta naturaleza:
+- **Camino C (audit)**: lectura + análisis. Delegable al agente `Explore`.
+- **Camino B (plan editorial)**: investigación + redacción. Delegable a `content-writer-medical` en background.
+- **Camino A (filtros)**: código local que solo yo puedo escribir.
+
+Patron de paralelización aplicado:
+1. **Sincrónico inicial**: invoqué `Explore` (foreground) → recibí audit en 1 turno → fixeé los 3 críticos.
+2. **Async background**: lancé `content-writer-medical` con `run_in_background: true` para el plan editorial.
+3. **Foreground en paralelo**: yo codeé Camino A (filtros catálogo) mientras el agente B trabajaba.
+4. **Convergencia**: cuando llegó `<task-notification>` del content-writer, integré su output en `CONTENT_PLAN.md`.
+
+Resultado: 3 caminos completados en 1 sesión vs ~6 sesiones secuenciales.
+
+### Por qué funcionó
+
+Los agentes especializados con tools propios (web_search, web_fetch) **no consumen mi context window** cuando corren en background. Mi context queda libre para el código local. Cuando terminan, llegan con el output ya estructurado y solo lo proceso/integro.
+
+La clave es identificar **qué tareas son delegables vs cuáles requieren mi context activo**:
+- Delegable: audit, research, redacción, validación con expert.
+- No delegable: ediciones precisas de código en archivos que necesito tener en context.
+
+### Regla preventiva
+
+Cuando recibas pedido multi-camino o "ejecutar todas las opciones":
+1. **Identificar cuáles caminos son delegables** a agentes especializados (audit, research, redacción).
+2. **Lanzar el más largo en background primero** (típicamente research/redacción) con `run_in_background: true`.
+3. **El más rápido (audit) en foreground primero**: 1 turno, da info que puede afectar al resto.
+4. **El de código local en el medio**: mientras el background corre.
+5. **Convergencia**: cuando llega la `<task-notification>`, integrar el output.
+
+### Cuándo aplicar
+
+- Pedidos multi-feature ("hacé todo esto").
+- Mejoras de quality assurance + research + código nuevo.
+- Cuando hay claramente trabajo paralelo (research / redacción / código).
+
+### Cuándo NO aplicar
+
+- Tareas pequeñas (overhead de delegación > beneficio).
+- Cuando todo el trabajo es del mismo dominio (no hay paralelización útil).
+- Cuando el output del agente background bloquea decisiones de código foreground.
+
+### Bonus
+
+Este pattern es la versión práctica del "Workflow" pero usando Agent tool directo. Para casos más complejos (5+ agentes, fan-out, judge panels), conviene Workflow. Para casos chicos (2-3 agentes), Agent con background flag es más simple y suficiente.
+
 ## 2026-05-30 — Para flows complejos con múltiples casos, derivar entre componentes en vez de duplicar lógica
 
 **Categoría**: Architecture / DRY

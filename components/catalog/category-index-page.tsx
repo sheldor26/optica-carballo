@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { BrandGridCard } from '@/components/catalog/brand-grid-card';
+import { FrameShapeFilters } from '@/components/catalog/frame-shape-filters';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type {
@@ -61,10 +62,14 @@ export function CategoryIndexPage({
   category,
   brands,
   priceRange,
+  availableShapes,
 }: {
   category: CategoryConfig;
   brands: BrandWithProductCount[];
   priceRange: CategoryPriceRange | null;
+  /** Shapes disponibles para filtrar. Si tiene 1+, mostramos chips arriba
+   * del grid de marcas como descubribilidad. Click → navega a vista filtrada. */
+  availableShapes?: string[];
 }) {
   const pageUrl = `${SITE_URL}/${category.slug}`;
   const jsonLd = buildCollectionJsonLd(category, brands, pageUrl, priceRange);
@@ -106,6 +111,15 @@ export function CategoryIndexPage({
           {INTRO_COPY[category.slug]}
         </p>
       </RevealOnScroll>
+
+      {availableShapes && availableShapes.length > 0 && (
+        <div className="-mx-4 mb-8 sm:-mx-6">
+          <FrameShapeFilters
+            availableShapes={availableShapes}
+            selectedShapes={[]}
+          />
+        </div>
+      )}
 
       {brands.length === 0 ? (
         <p className="text-muted-foreground">
