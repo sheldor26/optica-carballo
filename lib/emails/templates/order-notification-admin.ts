@@ -16,6 +16,7 @@ export type AdminEmailData = {
     quantity: number;
     unitPriceCents: number;
   }>;
+  shippingMethod?: 'delivery' | 'pickup';
   shippingAddress: {
     recipientName: string;
     street: string;
@@ -25,7 +26,8 @@ export type AdminEmailData = {
     province: string;
     postalCode: string;
     phone: string | null;
-  };
+  } | null;
+  pickupAddress?: string | null;
   paymentId: string | null;
 };
 
@@ -55,12 +57,29 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
     )
     .join('');
 
-  const apartmentLine = data.shippingAddress.apartment
+  const isPickup = data.shippingMethod === 'pickup';
+  const apartmentLine = data.shippingAddress?.apartment
     ? ` · ${escapeHtml(data.shippingAddress.apartment)}`
     : '';
-  const phoneLine = data.shippingAddress.phone
+  const phoneLine = data.shippingAddress?.phone
     ? `<br/>Tel envío: ${escapeHtml(data.shippingAddress.phone)}`
     : '';
+  const shippingBlockHtml = isPickup
+    ? `
+    <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">⚠️ RETIRO EN LOCAL</h2>
+    <p style="margin:0 0 20px;color:#52525b;font-size:13px;line-height:1.6;">
+      Cliente retira en: ${escapeHtml(data.pickupAddress ?? 'Óptica Carballo')}<br/>
+      Contactar por WhatsApp para coordinar fecha/hora.
+    </p>`
+    : data.shippingAddress
+      ? `
+    <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">Dirección de envío</h2>
+    <p style="margin:0 0 20px;color:#52525b;font-size:13px;line-height:1.6;">
+      ${escapeHtml(data.shippingAddress.recipientName)}<br/>
+      ${escapeHtml(data.shippingAddress.street)} ${escapeHtml(data.shippingAddress.number)}${apartmentLine}<br/>
+      ${escapeHtml(data.shippingAddress.city)}, ${escapeHtml(data.shippingAddress.province)} (${escapeHtml(data.shippingAddress.postalCode)})${phoneLine}
+    </p>`
+      : '';
 
   const body = `
     <h1 style="margin:0 0 8px;font-size:20px;color:#18181b;">💰 Nuevo pago recibido</h1>
@@ -88,14 +107,9 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
       ${data.customerPhone ? `<tr><td style="padding:3px 0;color:#52525b;">Tel</td><td style="padding:3px 0;color:#18181b;">${escapeHtml(data.customerPhone)}</td></tr>` : ''}
     </table>
 
-    <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">Dirección de envío</h2>
-    <p style="margin:0 0 20px;color:#52525b;font-size:13px;line-height:1.6;">
-      ${escapeHtml(data.shippingAddress.recipientName)}<br/>
-      ${escapeHtml(data.shippingAddress.street)} ${escapeHtml(data.shippingAddress.number)}${apartmentLine}<br/>
-      ${escapeHtml(data.shippingAddress.city)}, ${escapeHtml(data.shippingAddress.province)} (${escapeHtml(data.shippingAddress.postalCode)})${phoneLine}
-    </p>
+    ${shippingBlockHtml}
 
-    <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">Productos a despachar</h2>
+    <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">Productos ${isPickup ? 'a preparar' : 'a despachar'}</h2>
     <table role="presentation" width="100%" style="margin-bottom:20px;border-collapse:collapse;">
       <thead>
         <tr>
@@ -132,10 +146,20 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
     `  ${data.customerName} <${data.customerEmail}>`,
     data.customerPhone ? `  Tel: ${data.customerPhone}` : '',
     '',
-    'Dirección de envío:',
-    `  ${data.shippingAddress.recipientName}`,
-    `  ${data.shippingAddress.street} ${data.shippingAddress.number}${apartmentLine}`,
-    `  ${data.shippingAddress.city}, ${data.shippingAddress.province} (${data.shippingAddress.postalCode})`,
+    ...(isPickup
+      ? [
+          '⚠️ RETIRO EN LOCAL',
+          `  Cliente retira en: ${data.pickupAddress ?? 'Óptica Carballo'}`,
+          '  Contactar por WhatsApp para coordinar fecha/hora.',
+        ]
+      : data.shippingAddress
+        ? [
+            'Dirección de envío:',
+            `  ${data.shippingAddress.recipientName}`,
+            `  ${data.shippingAddress.street} ${data.shippingAddress.number}${apartmentLine}`,
+            `  ${data.shippingAddress.city}, ${data.shippingAddress.province} (${data.shippingAddress.postalCode})`,
+          ]
+        : []),
     '',
     'Productos:',
     ...data.items.map(

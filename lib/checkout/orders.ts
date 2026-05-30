@@ -32,11 +32,14 @@ export async function createOrderFromCart(args: {
   userId: string;
   userEmail: string;
   customerName: string;
+  customerPhone?: string | null;
   cart: ResolvedCart;
-  address: Address;
+  /** null cuando shipping.method === 'pickup' (retiro en local sin envío). */
+  address: Address | null;
   shipping: ShippingQuote;
 }): Promise<CreateOrderResult> {
-  const { userId, userEmail, customerName, cart, address, shipping } = args;
+  const { userId, userEmail, customerName, customerPhone, cart, address, shipping } = args;
+  const isPickup = shipping.method === 'pickup';
 
   if (cart.items.length === 0) {
     return { ok: false, error: 'El carrito está vacío.' };
@@ -80,23 +83,25 @@ export async function createOrderFromCart(args: {
       status: 'pending',
       customer_name: customerName,
       customer_email: userEmail,
-      customer_phone: address.phone,
-      shipping_recipient_name: address.recipient_name,
-      shipping_street: address.street,
-      shipping_number: address.number,
-      shipping_apartment: address.apartment,
-      shipping_city: address.city,
-      shipping_province: address.province,
-      shipping_postal_code: address.postal_code,
-      shipping_country: address.country,
-      shipping_phone: address.phone,
-      shipping_address_id: address.id,
+      customer_phone: address?.phone ?? customerPhone ?? null,
+      shipping_recipient_name: address?.recipient_name ?? null,
+      shipping_street: address?.street ?? null,
+      shipping_number: address?.number ?? null,
+      shipping_apartment: address?.apartment ?? null,
+      shipping_city: address?.city ?? null,
+      shipping_province: address?.province ?? null,
+      shipping_postal_code: address?.postal_code ?? null,
+      shipping_country: address?.country ?? null,
+      shipping_phone: address?.phone ?? null,
+      shipping_address_id: address?.id ?? null,
       subtotal_cents: cart.subtotalCents,
       shipping_cents: shipping.cents,
       discount_cents: 0,
       total_cents: totalCents,
-      shipping_method: shipping.zone,
-      notes: `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
+      shipping_method: isPickup ? 'pickup' : 'delivery',
+      notes: isPickup
+        ? 'Retiro en local · Coordinar entrega por WhatsApp'
+        : `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
     })
     .select('id, order_number')
     .single();

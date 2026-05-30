@@ -7,7 +7,7 @@ import { getCurrentProfile } from '@/lib/auth/server';
 import { readCartCookie, deleteCartCookie } from '@/lib/cart/cookie';
 import { resolveCart } from '@/lib/cart/queries';
 import { fetchAddressById } from '@/lib/addresses/queries';
-import { calculateShipping } from '@/lib/shipping';
+import { calculateShipping, pickupQuote } from '@/lib/shipping';
 import { isCheckoutEnabled } from '@/lib/features';
 import { createOrderFromCart, updateOrderMpPreference } from './orders';
 import { createCheckoutPreference } from '@/lib/mp/preferences';
@@ -18,23 +18,19 @@ export type CheckoutFormState = {
   error?: string;
 };
 
-// TODO (cuando se active el checkout): extender este schema para soportar
-// shipping_method = 'pickup' (el form en checkout-page.tsx ya envía un
-// hidden input con `shipping_method`). Cuando method=pickup, address_id no
-// es necesario y hay que adaptar el flujo:
-//  1. NO validar address_id si method=pickup.
-//  2. Usar pickupQuote() en lugar de calculateShipping().
-//  3. Pasar address=null a createOrderFromCart y hacer ese parámetro opcional.
-//  4. En orders.ts, dejar las columnas shipping_* como null cuando es pickup,
-//     y agregar una columna `shipping_method` para que el founder pueda
-//     filtrar pedidos a entregar vs retirar.
-//
-// Hoy esta action retorna early con "checkout no habilitado" porque el
-// feature flag está OFF — no llega a validar el schema. Cuando se active,
-// recordar este TODO.
-const inputSchema = z.object({
-  address_id: z.uuid({ error: 'Elegí una dirección de envío.' }),
-});
+// Schema discriminated por shipping_method.
+// - delivery: address_id obligatorio (UUID válido de address del user).
+// - pickup: address_id opcional (no se valida); usa pickupQuote() en su lugar.
+const inputSchema = z.discriminatedUnion('shipping_method', [
+  z.object({
+    shipping_method: z.literal('delivery'),
+    address_id: z.uuid({ error: 'Elegí una dirección de envío.' }),
+  }),
+  z.object({
+    shipping_method: z.literal('pickup'),
+    address_id: z.string().optional(),
+  }),
+]);
 
 export async function submitCheckout(
   _prev: CheckoutFormState,
@@ -44,8 +40,10 @@ export async function submitCheckout(
     return { ok: false, error: 'El checkout no está habilitado.' };
   }
 
+  const rawMethod = formData.get('shipping_method');
   const parsed = inputSchema.safeParse({
-    address_id: formData.get('address_id'),
+    shipping_method: rawMethod === 'pickup' ? 'pickup' : 'delivery',
+    address_id: formData.get('address_id') || undefined,
   });
   if (!parsed.success) {
     return {
@@ -65,10 +63,13 @@ export async function submitCheckout(
     return { ok: false, error: 'Tu cuenta no tiene email asociado.' };
   }
 
-  // Address — RLS limita a addresses del user actual; null si no es del user.
-  const address = await fetchAddressById(parsed.data.address_id);
-  if (!address) {
-    return { ok: false, error: 'La dirección elegida no existe.' };
+  // Address: requerido para delivery, opcional para pickup.
+  let address: Awaited<ReturnType<typeof fetchAddressById>> = null;
+  if (parsed.data.shipping_method === 'delivery') {
+    address = await fetchAddressById(parsed.data.address_id);
+    if (!address) {
+      return { ok: false, error: 'La dirección elegida no existe.' };
+    }
   }
 
   // Cart — leer + resolver contra DB.
@@ -84,21 +85,25 @@ export async function submitCheckout(
     };
   }
 
-  // Shipping
-  const shipping = calculateShipping({
-    subtotalCents: resolved.subtotalCents,
-    provinceName: address.province,
-  });
+  // Shipping: pickup siempre gratis, delivery según provincia.
+  const shipping =
+    parsed.data.shipping_method === 'pickup'
+      ? pickupQuote()
+      : calculateShipping({
+          subtotalCents: resolved.subtotalCents,
+          provinceName: address!.province,
+        });
 
   const customerName =
     profile?.display_name?.trim() ||
-    address.recipient_name ||
+    address?.recipient_name ||
     (user.email?.split('@')[0] ?? 'Cliente');
 
   const result = await createOrderFromCart({
     userId: user.id,
     userEmail: user.email,
     customerName,
+    customerPhone: profile?.phone ?? null,
     cart: resolved,
     address,
     shipping,

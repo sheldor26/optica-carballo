@@ -13,6 +13,8 @@ export type CustomerEmailData = {
     quantity: number;
     unitPriceCents: number;
   }>;
+  shippingMethod?: 'delivery' | 'pickup';
+  /** null cuando shippingMethod === 'pickup' (retiro en local). */
   shippingAddress: {
     recipientName: string;
     street: string;
@@ -21,7 +23,9 @@ export type CustomerEmailData = {
     city: string;
     province: string;
     postalCode: string;
-  };
+  } | null;
+  /** Solo para pickup. Dirección del local. */
+  pickupAddress?: string | null;
   paymentId: string | null;
 };
 
@@ -44,8 +48,28 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
     )
     .join('');
 
-  const apartmentLine = data.shippingAddress.apartment
+  const isPickup = data.shippingMethod === 'pickup';
+  const apartmentLine = data.shippingAddress?.apartment
     ? ` · ${escapeHtml(data.shippingAddress.apartment)}`
+    : '';
+  const deliveryBlock = data.shippingAddress
+    ? `
+    <h2 style="margin:0 0 8px;font-size:16px;color:#18181b;">Enviamos a</h2>
+    <p style="margin:0 0 20px;color:#52525b;font-size:14px;line-height:1.6;">
+      ${escapeHtml(data.shippingAddress.recipientName)}<br/>
+      ${escapeHtml(data.shippingAddress.street)} ${escapeHtml(data.shippingAddress.number)}${apartmentLine}<br/>
+      ${escapeHtml(data.shippingAddress.city)}, ${escapeHtml(data.shippingAddress.province)} (${escapeHtml(data.shippingAddress.postalCode)})
+    </p>`
+    : '';
+  const pickupBlock = isPickup
+    ? `
+    <h2 style="margin:0 0 8px;font-size:16px;color:#18181b;">Retirás en nuestro local</h2>
+    <p style="margin:0 0 8px;color:#52525b;font-size:14px;line-height:1.6;">
+      ${data.pickupAddress ? escapeHtml(data.pickupAddress) : 'Óptica Carballo'}
+    </p>
+    <p style="margin:0 0 20px;color:#71717a;font-size:13px;line-height:1.5;">
+      Te avisamos por WhatsApp cuando tu pedido esté listo para retirar.
+    </p>`
     : '';
 
   const body = `
@@ -96,12 +120,7 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
       </tr>
     </table>
 
-    <h2 style="margin:0 0 8px;font-size:16px;color:#18181b;">Enviamos a</h2>
-    <p style="margin:0 0 20px;color:#52525b;font-size:14px;line-height:1.6;">
-      ${escapeHtml(data.shippingAddress.recipientName)}<br/>
-      ${escapeHtml(data.shippingAddress.street)} ${escapeHtml(data.shippingAddress.number)}${apartmentLine}<br/>
-      ${escapeHtml(data.shippingAddress.city)}, ${escapeHtml(data.shippingAddress.province)} (${escapeHtml(data.shippingAddress.postalCode)})
-    </p>
+    ${isPickup ? pickupBlock : deliveryBlock}
 
     <p style="margin:24px 0 0;color:#52525b;font-size:13px;line-height:1.5;">
       Si tenés alguna duda, respondé este email y te respondemos a la brevedad.
@@ -126,10 +145,20 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
     `Envío: ${data.shippingCents === 0 ? 'Gratis' : fmtPrice(data.shippingCents)}`,
     `Total: ${fmtPrice(data.totalCents)}`,
     '',
-    'Enviamos a:',
-    `  ${data.shippingAddress.recipientName}`,
-    `  ${data.shippingAddress.street} ${data.shippingAddress.number}${apartmentLine}`,
-    `  ${data.shippingAddress.city}, ${data.shippingAddress.province} (${data.shippingAddress.postalCode})`,
+    ...(isPickup
+      ? [
+          'Retirás en nuestro local:',
+          `  ${data.pickupAddress ?? 'Óptica Carballo'}`,
+          '  Te avisamos por WhatsApp cuando esté listo.',
+        ]
+      : data.shippingAddress
+        ? [
+            'Enviamos a:',
+            `  ${data.shippingAddress.recipientName}`,
+            `  ${data.shippingAddress.street} ${data.shippingAddress.number}${apartmentLine}`,
+            `  ${data.shippingAddress.city}, ${data.shippingAddress.province} (${data.shippingAddress.postalCode})`,
+          ]
+        : []),
     '',
     'Cualquier duda, respondé este email.',
   ]

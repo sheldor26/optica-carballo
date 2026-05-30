@@ -137,9 +137,20 @@ export function OrderDetailView({ order }: { order: OrderDetail }) {
 
         <section className="border-border rounded-lg border p-5">
           <h2 className="text-foreground text-base font-semibold">
-            Dirección de envío
+            {order.shippingMethod === 'pickup'
+              ? 'Retiro en local'
+              : 'Dirección de envío'}
           </h2>
-          {order.shippingStreet ? (
+          {order.shippingMethod === 'pickup' ? (
+            <div className="text-muted-foreground mt-3 text-sm leading-relaxed">
+              <p className="text-foreground font-medium">
+                Retirás en nuestro local — Óptica Carballo
+              </p>
+              <p className="mt-1">
+                Te avisamos por WhatsApp cuando esté listo para retirar.
+              </p>
+            </div>
+          ) : order.shippingStreet ? (
             <address className="text-muted-foreground mt-3 text-sm leading-relaxed not-italic">
               {order.shippingRecipientName && (
                 <>

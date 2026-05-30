@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
   const { data: orderRow, error: orderErr } = await supabase
     .from('orders')
     .select(
-      'id, order_number, status, customer_name, customer_email, customer_phone, total_cents, subtotal_cents, shipping_cents, mp_payment_id, paid_at, shipping_recipient_name, shipping_street, shipping_number, shipping_apartment, shipping_city, shipping_province, shipping_postal_code, shipping_phone',
+      'id, order_number, status, customer_name, customer_email, customer_phone, total_cents, subtotal_cents, shipping_cents, mp_payment_id, paid_at, shipping_recipient_name, shipping_street, shipping_number, shipping_apartment, shipping_city, shipping_province, shipping_postal_code, shipping_phone, shipping_method',
     )
     .eq('order_number', orderNumber)
     .maybeSingle();
@@ -162,6 +162,16 @@ export async function POST(request: NextRequest) {
       unitPriceCents: it.unit_price_cents,
     }));
 
+    const isPickup = orderRow.shipping_method === 'pickup';
+    const businessAddress = (() => {
+      const parts = [
+        process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_STREET,
+        process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_LOCALITY,
+        process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_REGION,
+      ].filter(Boolean);
+      return parts.length > 0 ? parts.join(', ') : null;
+    })();
+
     const customerData: CustomerEmailData = {
       orderNumber: orderRow.order_number,
       customerName: orderRow.customer_name,
@@ -169,15 +179,19 @@ export async function POST(request: NextRequest) {
       subtotalCents: orderRow.subtotal_cents,
       shippingCents: orderRow.shipping_cents,
       items: itemsForEmail,
-      shippingAddress: {
-        recipientName: orderRow.shipping_recipient_name ?? orderRow.customer_name,
-        street: orderRow.shipping_street ?? '',
-        number: orderRow.shipping_number ?? '',
-        apartment: orderRow.shipping_apartment,
-        city: orderRow.shipping_city ?? '',
-        province: orderRow.shipping_province ?? '',
-        postalCode: orderRow.shipping_postal_code ?? '',
-      },
+      shippingMethod: isPickup ? 'pickup' : 'delivery',
+      shippingAddress: isPickup
+        ? null
+        : {
+            recipientName: orderRow.shipping_recipient_name ?? orderRow.customer_name,
+            street: orderRow.shipping_street ?? '',
+            number: orderRow.shipping_number ?? '',
+            apartment: orderRow.shipping_apartment,
+            city: orderRow.shipping_city ?? '',
+            province: orderRow.shipping_province ?? '',
+            postalCode: orderRow.shipping_postal_code ?? '',
+          },
+      pickupAddress: isPickup ? businessAddress : null,
       paymentId: String(payment.id),
     };
 
@@ -194,10 +208,12 @@ export async function POST(request: NextRequest) {
       orderId: orderRow.id,
       customerEmail: orderRow.customer_email,
       customerPhone: orderRow.customer_phone,
-      shippingAddress: {
-        ...customerData.shippingAddress,
-        phone: orderRow.shipping_phone,
-      },
+      shippingAddress: customerData.shippingAddress
+        ? {
+            ...customerData.shippingAddress,
+            phone: orderRow.shipping_phone,
+          }
+        : null,
     };
 
     const adminSend = await sendOrderNotificationToAdmin({ data: adminData });
