@@ -2,6 +2,31 @@
 
 ## Status
 
+🟡 **Vulk Stray completo — seed 21 con UPDATE + 5ta variante CRY (SKU placeholder)** (2026-05-30). Founder pasó info adicional post-seed 20:
+- 5ta variante "Gris" en ML es realmente CRY (Transparente)
+- Material: G-Flex frame + patillas
+- Bisagras: Metálicas Flex
+- Lente: Demo (sin graduación)
+- Medidas: 144mm frente × 46mm altura, 52-20-145 (lens-bridge-temple), peso 36.5g
+- Talle: Large
+- Forma: rectangular
+- Género: unisex
+- Adapta: monofocales, bifocales, progresivos
+
+Seed 21 generado con:
+1. UPDATE producto: completa attributes faltantes + description expandida (G-Flex, bisagras Flex, lente Demo, compatibilidad lentes graduadas)
+2. INSERT 5ta variante CRY con SKU **placeholder 126892** (founder no pasó el SKU real)
+3. INSERT 2 imágenes CRY (10-cry-lateral.jpg, 11-cry-frontal.jpg)
+
+Discrepancia detectada: founder texto dice `52-20-145` (lens_width 52mm), pero imagen de medidas dice 50mm. Uso founder text como fuente de verdad. Documentado en seed para revertir si necesario.
+
+Commit pendiente.
+
+**Próximo paso (founder)**:
+1. **Confirmar SKU real de la variante CRY** (uso placeholder 126892)
+2. Subir 11 fotos al bucket `products/vulk-stray-receta/` (9 del seed 20 + 2 nuevas del seed 21: `10-cry-lateral.jpg`, `11-cry-frontal.jpg`)
+3. Aplicar seeds 20 y 21 al cloud (en ese orden — seed 21 depende de seed 20)
+
 🟢 **NUEVO producto Vulk Stray (receta, 4 variantes) — primer armazón de receta del catálogo** (2026-05-30). Founder pidió cargar el Vulk Stray (MLA1824193366) como armazón de receta. Hito: PRIMER producto categoría `anteojos-de-receta` del catálogo.
 
 Particularidades vs productos sol previos:
