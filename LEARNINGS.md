@@ -22,6 +22,69 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Tercera carpeta `supabase/cleanup/` para data scripts one-shot (ni schema ni seeds)
+
+**Categoría**: Data lifecycle / Convenciones Supabase
+**Confianza**: 🟡 Media (creada hoy, validar con uso futuro)
+
+### Qué funcionó
+
+Founder pidió borrar 4 productos placeholder de Rusty. Al pensar dónde poner el SQL, identifiqué que no encaja bien en ninguna de las 2 carpetas existentes:
+
+- **`supabase/migrations/`**: schema (CREATE TABLE, ALTER, etc.). Inmutables. Se aplican una vez por entorno.
+- **`supabase/seeds/`**: data semilla que se aplica al hacer `db reset`. Idempotente (ON CONFLICT DO NOTHING). Representa estado deseado del catálogo inicial.
+
+Un DELETE de productos productivos NO es schema ni seed:
+- No es schema (no cambia estructura).
+- No es seed (no es estado deseado — es borrar data legacy).
+
+Solución: crear `supabase/cleanup/` con timestamp prefix. Scripts one-shot que:
+- Se aplican UNA vez en producción.
+- Después quedan archivados como histórico (no se ejecutan al `db reset`).
+- Tienen DO block con NOTICE para verificar el efecto post-aplicación.
+
+```
+supabase/
+├── migrations/        # schema (inmutable, ordenadas)
+├── seeds/             # data semilla (idempotente, re-ejecutable)
+└── cleanup/           # data one-shot (archivado tras aplicar) ← NUEVO
+```
+
+### Por qué funcionó
+
+Cada carpeta tiene un contrato semántico distinto:
+- Migration que borra data productiva = wrong (migrations describen schema, mezclar data las hace impredecibles si se re-ejecutan).
+- Seed que borra productos = wrong (seeds son aditivos por convención; un seed con DELETE confunde al lector).
+- Cleanup = una clase aparte que comunica intención: "esto se aplica una vez, ojo".
+
+Documentar la convención en CURRENT_STATE.md + en este learning para que sesiones futuras la respeten.
+
+### Regla preventiva
+
+Cuando necesites modificar data productiva (DELETE, UPDATE masivo, RENAME de slugs), preguntate:
+1. **¿Cambia el schema?** → migration.
+2. **¿Es estado deseado al hacer db reset?** → seed.
+3. **¿Es un cambio puntual one-shot en producción?** → cleanup.
+
+Si dudás entre seed y cleanup: ¿querés que se re-ejecute al hacer `db reset` localmente? Si NO → cleanup.
+
+Naming: `supabase/cleanup/YYYYMMDD_descripcion_breve.sql`. Incluir DO block con NOTICE para verificar resultado.
+
+### Cuándo aplicar
+
+- DELETE de data legacy / placeholders / test data.
+- UPDATE masivo de columnas existentes (ej. normalizar valores con `frame_shape ES→EN` lo hicimos como migration, pero podría haber sido cleanup también — caso ambiguo).
+- Rename de slugs productivos (si los slugs ya están en URLs indexadas, rename es delicado).
+
+### Cuándo NO aplicar
+
+- Si el cambio puede generalizarse en una función / RPC reusable → mejor migration.
+- Si el cambio se debe replicar en local automáticamente → seed.
+
+### Bonus
+
+La distinción "migrations vs seeds vs cleanups" es del mundo Rails / Django adaptada al stack Supabase. Supabase CLI no tiene `supabase cleanup` nativo — es una convención del repo. Si el equipo crece, esta convención debe documentarse en README del proyecto (futuro TODO).
+
 ## 2026-05-30 — Template pre-cargado switcheable en forms internos reduce fricción de tiempo cero
 
 **Categoría**: UX herramientas internas / Forms
