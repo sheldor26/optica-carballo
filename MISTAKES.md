@@ -24,6 +24,30 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Asumí is_primary por "nombre del archivo descriptivo" en vez de seguir patrón existente
+
+**Estado**: ✅ Cerrado — fix con UPDATE puro en commit `8333fed`.
+**Categoría**: Asunción de convención local / Consistencia entre variantes
+
+### Qué pasó
+
+En seed 12 puse `is_primary=true` en la foto frontal (06-mblk-frontal.jpg, 09-brown-frontal.jpg) porque mentalmente "frontal" me sonaba como "vista principal". Pero las variantes ya existentes (Carey, Rosa) tenían LATERAL como primary, no frontal. El founder revisó tras apply y reportó la inconsistencia.
+
+### Causa raíz
+
+Default mental "frontal es la vista principal" sin verificar qué patrón usaba el resto del catálogo. Si hubiera leído las primeras variantes (Vulk Day Light Carey y Rosa) habría visto que la foto primary es siempre la lateral 3/4 (sensación 3D mejor para producto). Patrón consistente que rompí por defecto mental.
+
+### Regla preventiva
+
+Cuando agregas data nueva al catálogo (variantes, productos, fotos):
+1. **Mirar registros existentes del MISMO tipo** antes de decidir defaults estéticos (qué es primary, qué sort_order, qué orden de campos).
+2. **Si tenés dudas sobre la convención**, preguntar al founder ANTES de aplicar, no después.
+3. **Documentar convenciones en CLAUDE.md o PRODUCT_SCHEMA.md** una vez que se confirman (ej: "Para anteojos, la primary es siempre lateral 3/4").
+
+### Costo
+
+Founder tuvo que reportar el bug + aplicar segundo bootstrap. Bajo costo en absoluto, pero evitable si hubiera mirado los seeds 03-07 (Vulk Day Light original) antes de generar el seed 12.
+
 ## 2026-05-30 — Código interno del founder ≠ código que ML guarda — verificar SIEMPRE antes de mapear
 
 **Estado**: 🟡 Mitigado por aplicación correcta esta vez (no nuevo, pero meta-patrón vale registrar).

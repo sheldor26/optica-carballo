@@ -74,6 +74,8 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
 2. Aplicar bootstrap en SQL Editor.
 3. Verificar con force-sync que las 4 variantes muestran `skipped: 4` (todas alineadas).
 
+**Fix iter 2 imágenes primary** (2026-05-30 commit `8333fed`). Founder verificó tras aplicar seed 12 y reportó que la foto que aparece primero en las nuevas variantes (MBLK/BROWN) es la frontal, debería ser la lateral (consistencia con Carey/Rosa). Solución: 4 UPDATEs puros en cloud-bootstrap.sql que swapean is_primary + sort_order entre lateral y frontal sin re-INSERT ni renombrar archivos del bucket. Decisión técnica: UPDATE > re-INSERT porque las filas ya existen; cambiar nombres en bucket sería 2 acciones del founder, esto es 1.
+
 **🟢 BUG ENCONTRADO Y FIXEADO** (2026-05-29 commit `a632504`). Caso B confirmado: ML tiene `seller_custom_field: null` en todas las variations del Vulk Day Light. El código real va dentro del `attribute_combinations[DESIGN].value_name` con formato "CODIGO - Descripción". Nuestro código asumía siempre seller_custom_field → matching fallaba → todas las variantes skipped → DB siempre stale.
 
 Caso real: founder bajó stock Carey de 3 a 2 en ML. Webhook procesado OK pero matching falló silenciosamente.

@@ -22,6 +22,40 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Fix post-apply: UPDATE puro > re-INSERT con ON CONFLICT cuando solo cambian flags/sort
+
+**Categoría**: SQL operations / Minimizar fricción del founder
+**Confianza**: 🟢 Alta (validado con fix de is_primary en Vulk Day Light)
+
+### Qué funcionó
+
+Founder reportó que las fotos primary de las 2 variantes nuevas (MBLK/BROWN) estaban mal seteadas (frontal en vez de lateral). 2 opciones para resolver:
+
+A) **Re-aplicar seed 12 entero con valores corregidos** (UPSERT via ON CONFLICT). 160+ líneas SQL para 4 cambios reales. Riesgo de side effects si algún otro campo cambió entre el primer apply y este (founder editó algo manualmente).
+
+B) **UPDATE puro de los 4 campos** (`is_primary`, `sort_order`) sin tocar nada más. 50 líneas SQL, idempotente, cero riesgo de pisar cambios manuales.
+
+Elegí B. Pasos para founder: 1 acción (apply bootstrap), 0 acciones extras (no renombrar archivos en bucket porque el nombre del archivo es solo descriptivo, no determina orden).
+
+### Por qué funcionó
+
+Re-INSERT con ON CONFLICT DO UPDATE es el patrón default para "data correction" pero overkill cuando el cambio es chico. UPDATE puro:
+- Más legible (el SQL dice exactamente qué cambia).
+- Menos surface area de bugs (no tocás campos no involucrados).
+- Más barato de aplicar (menos rows scanned, menos writes).
+
+### Regla preventiva
+
+Para fixes post-apply de data ya aplicada:
+1. **Si cambian 1-3 campos de N filas conocidas** → UPDATE directo.
+2. **Si cambian todos los campos o re-importás data externa** → UPSERT con ON CONFLICT.
+3. **Si la estructura del data cambió** (renombre de columna, nueva FK, etc) → migration + seed conjunto.
+
+### Cuándo aplicar
+
+- Cualquier fix de data tras feedback del founder ("este campo está mal").
+- Especialmente cuando founder ya validó otros campos del mismo registro — no querés tocar nada que no haya pedido.
+
 ## 2026-05-30 — Reusar JSON de debug anterior para extraer data de variantes futuras (1 vez es debug, N veces es source de truth temporal)
 
 **Categoría**: Eficiencia / Debug data reuse
