@@ -2,6 +2,23 @@
 
 ## Status
 
+🟢 **Día 2026-05-30 cierre: 3 de 4 bloques aplicados OK, 1 con issue de path de imagen brand-wide**. Founder confirmó "todo subido y aplicado". Verifiqué vía curl la producción:
+
+✅ **Aplicado OK**:
+- Seed 15: variante Rusty Yau MBLUE 126082 (fotos 06/07 en HTML producción ✓)
+- Seed 16: producto Vulk Yamain + 3 variantes (aparece en `/anteojos-de-sol/vulk`, 6 fotos JPG ✓)
+- Migration 20260530200000: brands.includes_image_path schema ✓
+- Commit `ef90d07`: 3 UX fixes (lightbox + subtitle español + badge polarizado per-variante)
+- Commit `268aa6c`: helper `buildGalleryImages` brand-wide
+
+⚠️ **Issue 1: imagen brand-wide kit Vulk NO está en bucket en path esperado**
+- Path en seed 17: `brands-shared/vulk-estuche-franela.jpg`
+- URL pública: HTTP 400 (no resuelve)
+- Causa probable: founder subió la imagen con otro nombre/path
+- Fix: founder confirma path real → UPDATE correctivo `brands.includes_image_path` SET path
+
+**Próximo paso (founder)**: confirmar path real donde subió la imagen del kit Vulk. Le hago el UPDATE correctivo.
+
 🟢 **3 UX fixes post-Vulk Yamain: lightbox, subtitle, badge polarizado** (2026-05-30). Founder testeó Vulk Yamain post-deploy y reportó 4 issues. Resuelvo 3 ahora (rápidos), 1 queda pendiente como feature.
 
 **Fix 1**: Lightbox transparente al agrandar imagen. Causa: `bg-foreground/95` dejaba 5% transparencia → se veían thumbnails y chevron del PDP detrás. Fix: `bg-black/98` + `backdrop-blur-xl` (más opaco y más blur).
