@@ -24,10 +24,12 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
-## 2026-05-30 — Apliqué hack CSS agresivo (`scale-[1.4]`) sin verificar uniformidad de fotos primero
+## 2026-05-30 — Apliqué hack CSS agresivo (`scale-[1.4]`) sin verificar uniformidad de fotos — DOBLE ITERACIÓN (iter 7 + iter 9)
 
-**Estado**: 🟡 Mitigado
-**Categoría**: Code / Anti-pattern
+**Estado**: 🟡 Mitigado iter 9 (scale removido)
+**Categoría**: Code / Anti-pattern — REPETIDO
+
+### Qué pasó (iter 7 contexto)
 
 ### Qué pasó
 
@@ -50,6 +52,21 @@ Ya documentado en `LEARNINGS.md` el patrón de detección ("Patrones ASIMÉTRICO
 - Antes de cualquier `scale-[X]` con X > 1.1 en `<Image>`, preguntarse: "¿qué pasa si la foto tiene anteojo cerca del borde?"
 - Si la respuesta es "se corta", elegir entre: (a) bajar el scale a un valor seguro, (b) documentar la pre-condición en PRODUCT_SCHEMA.md + agregar validación al cargar productos, (c) usar otro mecanismo (padding container, aspect ratio match).
 - Para fotos de variantes del MISMO modelo, el contrato de uniformidad es especialmente crítico — los thumbnails comparan visualmente.
+
+### Re-iteración del mismo mistake (iter 9, mismo día)
+
+Iter 8 restauró `scale-[1.4]` tras founder reprocesar fotos. Pero founder reprocesó **uniformidad entre variantes del Vulk** (las 4 fotos iguales entre sí), NO el **padding interno** de cada foto JPG. Las fotos del Vulk tienen el anteojo ocupando ~85% del frame; las fotos del Rusty ~50%. Scale-1.4 corta en Vulk independiente de la uniformidad relativa entre sus variantes.
+
+**Anti-pattern más profundo**: asumí que el "drama" visual que el founder elogió en iter 6 venía del scale-1.4. En realidad venía de la combinación (container max-w-screen-2xl + aspect-3/2 + scale). Para los Rusty (padding generoso), el scale aportaba; para los Vulk (sin padding), el scale **rompía**. Conclusión: el mismo CSS produce resultados radicalmente distintos según las características intrínsecas de cada foto, no solo según uniformidad entre variantes.
+
+### Regla preventiva REFORZADA
+
+**Nunca aplicar `scale > 1.05` sobre `<Image>` que muestra contenido cargado por founder sin antes:**
+1. Documentar en `PRODUCT_SCHEMA.md`: "El sujeto principal de la foto (anteojo) debe ocupar máximo 60-65% del frame, con padding blanco uniforme alrededor. Esta es pre-condición para el zoom CSS del catálogo."
+2. Tener una foto de referencia explícita en el doc (ej: foto del Rusty Yau).
+3. Validar al cargar productos: rechazar fotos donde el sujeto exceda 70% del bounding box (a futuro: detector automático via IA Vision, o checklist manual).
+
+Como solución intermedia: si no podemos garantizar pre-condición, no aplicar scale agresivo. El "drama visual" debe venir de OTRAS palancas (tamaño del grid, container width, aspect ratio match con la foto), no de zoom CSS sobre fotos arbitrarias.
 
 ---
 

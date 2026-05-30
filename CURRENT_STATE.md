@@ -2,6 +2,22 @@
 
 ## Status
 
+🟡 **Iter 9 — scale completamente removido. Necesita decisión founder sobre tamaño** (2026-05-30). Tras iter 8 (restaurar scale-1.4 con fotos uniformadas), founder confirmó que SIGUE viéndose cortado tanto en grandes como en thumbs. Análisis honesto: el reproceso del founder uniformó framing **entre las 4 variantes del Vulk** (todas iguales entre sí), PERO las fotos JPG del Vulk tienen el anteojo ocupando ~85% del frame de la foto (poco padding interno). Las fotos del Rusty (que tolera scale-1.4 OK) tienen el anteojo ocupando ~50% del frame (mucho padding).
+
+**Matemática del recorte**: scale-1.4 × anteojo-ocupa-85%-del-frame = 119% del frame visible → corta inevitablemente. Independiente del framing relativo entre variantes — depende del **padding interno** de cada foto JPG.
+
+Mi error: asumí que el "drama" visual que founder elogió en iter 6 venía del scale-1.4. En realidad venía de la combinación (container max-w-screen-2xl + aspect-3/2 + scale). El scale era el factor menos importante para los Rusty (con padding generoso) y el factor de recorte para los Vulk (sin padding).
+
+Fix iter 9:
+- **`components/product/product-card.tsx`**: scale removido completamente. `object-contain` natural — ninguna foto se recorta. Hover sin secondary: `scale-105` (zoom muy modesto de 5%). Thumbs: sin scale.
+
+Consecuencia: las cards se ven al tamaño "natural" del aspect-3/2 dentro del container — más chicas que iter 6/8 pero COMPLETAS para cualquier foto.
+
+**Próximo paso (founder) — 3 opciones para recuperar tamaño grande SIN recortes**:
+1. **Reprocesar las 4 fotos del Vulk** agregando padding blanco interno (anteojo al ~60% del frame, NO al 85%). Una vez con padding, podemos volver a scale-1.3 y va a verse grande Y completo.
+2. **Grid de 2 cols en lugar de 3**: cada card crece ~50% sin tocar fotos. Trade-off: menos productos por fila.
+3. **Aceptar tamaño actual**: cards "naturales" sin scale. Honestas con las fotos, sin recortes, pero más chicas.
+
 🟡 **Troubleshoot deploy — push hecho, founder no ve cambios** (2026-05-30, sesión abierta). Founder pusheó los 3 commits manualmente (`a68f35a` QuickView fix + `216beaa` iter 7 + `8f2d1ec` iter 8). Verificado con `git ls-remote origin main` → commit `8f2d1ec` confirmado en GitHub. Founder reporta "se hizo el deploy pero no cambio nada, probé en incógnito y nada". Push está OK, problema está en Vercel deploy o cache CDN.
 
 Plan de diagnóstico entregado al founder (4 pasos):
