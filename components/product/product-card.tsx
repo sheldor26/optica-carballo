@@ -222,10 +222,11 @@ function VariantThumbnails({
 }) {
   const visible = variants.slice(0, MAX_VISIBLE_THUMBS);
   const hiddenCount = variants.length - visible.length;
-  const hiddenCountMobile = Math.max(
-    0,
-    variants.length - MAX_VISIBLE_THUMBS_MOBILE,
-  );
+  // Mobile UX (founder feedback): si hay >3 variantes, mostrar SOLO 2 thumbs
+  // + 1 cuadrito "+N" como 3er ítem. Total siempre = 3 cuadritos.
+  // Si hay ≤3 variantes, mostrar todos los thumbs normales (sin cuadrito).
+  const showMobileOverflowBox = variants.length > 3;
+  const hiddenCountMobile = showMobileOverflowBox ? variants.length - 2 : 0;
 
   return (
     <div className="mt-3 flex items-center justify-center gap-2">
@@ -234,8 +235,10 @@ function VariantThumbnails({
         const url = v.primaryImagePath
           ? getProductImageUrl(v.primaryImagePath)
           : null;
-        // Mobile: solo los primeros 3 thumbs visibles. Resto hidden hasta sm+.
-        const hideOnMobile = idx >= MAX_VISIBLE_THUMBS_MOBILE;
+        // En mobile con overflow: thumbs 0-1 visibles, 2+ hidden (su lugar lo
+        // ocupa el cuadrito "+N"). En mobile sin overflow: todos visibles.
+        // En desktop (md+): siempre visible (hasta MAX_VISIBLE_THUMBS=5).
+        const hideOnMobile = showMobileOverflowBox && idx >= 2;
         return (
           <button
             key={v.id}
@@ -269,13 +272,18 @@ function VariantThumbnails({
           </button>
         );
       })}
-      {/* Mobile/tablet (<md=768px): indicador "+N" si hay más de 3 variantes. */}
-      {hiddenCountMobile > 0 && (
-        <span className="text-muted-foreground text-xs md:hidden">
+      {/* Cuadrito "+N" mobile: ocupa lugar del 3er thumb cuando hay >3 variantes.
+          Solo visible en mobile/tablet (<md). Linkea al PDP para ver todas las
+          variantes. */}
+      {showMobileOverflowBox && (
+        <div
+          aria-hidden="true"
+          className="bg-muted/40 border-border/60 text-muted-foreground flex size-16 shrink-0 items-center justify-center rounded border text-sm font-medium md:hidden"
+        >
           +{hiddenCountMobile}
-        </span>
+        </div>
       )}
-      {/* Desktop (md+): indicador "+N" si hay más de 5 variantes. */}
+      {/* Desktop (md+): indicador "+N" text inline si hay más de 5 variantes. */}
       {hiddenCount > 0 && (
         <span className="text-muted-foreground hidden text-xs md:inline">
           +{hiddenCount}
