@@ -2,6 +2,10 @@
 
 ## Status
 
+🟢 **Iter 14.1 — Ajuste fino var 1 (carey) 0.92 → 0.85** (2026-05-30). Founder testeó iter 14 y mandó screenshots de las 4 variantes. Análisis: var 2 (rosa), var 3 (matte black), var 4 (brown) se ven tamaño correcto entre sí. Var 1 (carey) seguía más grande que el resto (patillas casi tocando los bordes). Bajé scale de 0.92 a 0.85 (~8% más chico). Commit `39a6a9b`.
+
+**Iteración rápida confirmada como pattern útil**: 1 número cambiado en `image-scale-overrides.ts` → commit → push → 2 min para validar. Mucho más eficiente que las iteraciones de scale uniforme (iter 7-13) que requerían reverts y discusiones de diagnóstico.
+
 🟢 **Iter 14 — Scale per-variante implementado (solución pura código, fotos intactas)** (2026-05-30). Tras iter 13.1 revert, founder dio el insight final: "podés modificar bien los tamaños sin necesidad de cambiar las fotos... el tema es la configuración de cómo se muestran, es como que tienen escalas diferentes cada una". Confirmó intuición correcta: cada foto necesita SU PROPIO scale CSS — ningún scale uniforme funciona porque las fotos tienen anteojo de tamaño distinto en pixels.
 
 Mecanismo implementado:
