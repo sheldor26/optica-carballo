@@ -86,15 +86,59 @@ function findPrimaryImagePathForVariant(
   return sorted[0]?.storage_path ?? null;
 }
 
+/** Convierte el enum `attributes.gender` (en inglés) al término argentino
+ * legible para mostrar en UI. */
+function genderToSpanish(gender: string | null): string | null {
+  if (!gender) return null;
+  switch (gender) {
+    case 'female':
+      return 'para mujer';
+    case 'male':
+      return 'para hombre';
+    case 'unisex':
+      return 'unisex';
+    default:
+      return null;
+  }
+}
+
+/** Convierte el enum `attributes.frame_shape` al término legible para subtitle. */
+function frameShapeToSpanish(shape: string | null): string | null {
+  if (!shape) return null;
+  const map: Record<string, string> = {
+    oval: 'ovalados',
+    aviator: 'aviador',
+    aviador: 'aviador',
+    round: 'redondos',
+    redondo: 'redondos',
+    square: 'cuadrados',
+    cuadrado: 'cuadrados',
+    rectangular: 'rectangulares',
+    cat_eye: 'cat eye',
+    wayfarer: 'wayfarer',
+    envolvente: 'envolventes',
+    wraparound: 'envolventes',
+  };
+  return map[shape] ?? null;
+}
+
 function categorySubtitle(category: CategoryConfig, attrs: Record<string, unknown>): string {
   const gender = typeof attrs.gender === 'string' ? attrs.gender : null;
+  const frameShape = typeof attrs.frame_shape === 'string' ? attrs.frame_shape : null;
   const treatments = Array.isArray(attrs.lens_treatment)
     ? attrs.lens_treatment.filter((t): t is string => typeof t === 'string')
     : [];
   const isPolarized = treatments.includes('polarized');
+
   const prefix = category.slug === 'anteojos-de-sol' ? 'Anteojos de sol' : 'Anteojos de receta';
-  const parts = [prefix];
-  if (gender) parts.push(gender);
+  const shape = frameShapeToSpanish(frameShape);
+  const genderEs = genderToSpanish(gender);
+
+  // Composición: "Anteojos de sol ovalados para mujer" (más descriptivo que
+  // "Anteojos de sol female"). Si hay polarized a nivel producto, agregar al final.
+  const parts: string[] = [prefix];
+  if (shape) parts.push(shape);
+  if (genderEs) parts.push(genderEs);
   if (category.slug === 'anteojos-de-sol' && isPolarized) parts.push('polarizados');
   return parts.join(' ');
 }

@@ -63,6 +63,20 @@ function describeVariant(attrs: AttributesJson): string {
   return parts.length > 0 ? parts.join(' / ') : 'Variante';
 }
 
+/** Detecta si una variante tiene lentes polarizadas. Chequea (a) flag
+ * explícito `is_polarized=true` y (b) `lens_treatment` que incluya 'polarized'.
+ * Útil para casos donde algunas variantes del mismo producto son polarizadas
+ * y otras no (ej. Vulk Yamain SBLK POL). */
+function isPolarized(attrs: AttributesJson): boolean {
+  if (attrs.is_polarized === true) return true;
+  if (Array.isArray(attrs.lens_treatment)) {
+    return attrs.lens_treatment.some(
+      (t) => typeof t === 'string' && t === 'polarized',
+    );
+  }
+  return false;
+}
+
 export function VariantList({
   variants,
   productName,
@@ -150,7 +164,14 @@ export function VariantList({
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="text-foreground truncate font-medium">{label}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-foreground truncate font-medium">{label}</p>
+                    {isPolarized(v.attributes) && (
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-blue-700">
+                        Polarizado
+                      </span>
+                    )}
+                  </div>
                   <p className="text-muted-foreground text-xs">SKU: {v.sku}</p>
                 </div>
               </div>

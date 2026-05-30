@@ -58,7 +58,7 @@ export function ImageLightbox({
       aria-modal="true"
       aria-label={`Vista ampliada: ${active.alt_text}`}
       onClick={onClose}
-      className="bg-foreground/95 animate-in fade-in fixed inset-0 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-md duration-200 md:p-12"
+      className="animate-in fade-in fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/98 p-4 backdrop-blur-xl duration-200 md:p-12"
     >
       {/* Counter "X / Y" — solo si hay >1 imagen */}
       {images.length > 1 && (

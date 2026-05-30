@@ -2,6 +2,20 @@
 
 ## Status
 
+🟢 **3 UX fixes post-Vulk Yamain: lightbox, subtitle, badge polarizado** (2026-05-30). Founder testeó Vulk Yamain post-deploy y reportó 4 issues. Resuelvo 3 ahora (rápidos), 1 queda pendiente como feature.
+
+**Fix 1**: Lightbox transparente al agrandar imagen. Causa: `bg-foreground/95` dejaba 5% transparencia → se veían thumbnails y chevron del PDP detrás. Fix: `bg-black/98` + `backdrop-blur-xl` (más opaco y más blur).
+
+**Fix 2**: Subtitle del PDP decía "Anteojos de sol female" (inglés directo del enum `attributes.gender`). Fix: mapper `genderToSpanish()` (`female`→`para mujer`, `male`→`para hombre`, `unisex`→`unisex`). Además agregué `frameShapeToSpanish()` para incluir la forma en el subtitle. Resultado: "Anteojos de sol ovalados para mujer" en vez de "Anteojos de sol female".
+
+**Fix 3**: Badge "Polarizado" per-variante en VariantList. Caso: producto Vulk Yamain tiene 1 de 3 variantes polarizada (SKU 127104 SBLK). Antes el badge polarizado se renderizaba solo a nivel producto (todas o ninguna). Fix: helper `isPolarized(attrs)` que chequea (a) flag explícito `is_polarized=true` y (b) `lens_treatment` array. Badge azul (border + bg + text) inline junto al label de variante en VariantList.
+
+**Pendiente (feature, sesión futura)**: comparador inline search. Cuando se agrega 1er producto al comparador, debería poder buscar otros productos desde el CompareBar (input + autocomplete) en vez de tener que navegar al catálogo. Requiere componente search-autocomplete + lookup endpoint + integración con CompareBar. ~2 hs.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**: push + test PDPs post-deploy. Decidir cuándo atacamos issue 4 (comparador inline search).
+
 🟢 **Opción A implementada: imagen kit brand-wide (brand.includes_image_path)** (2026-05-30). Founder eligió Opción A. Implementado:
 
 1. **Migración** `20260530200000_brands_includes_image.sql`: `ALTER TABLE brands ADD includes_image_path text, includes_image_alt text` (ambos nullable).
