@@ -24,6 +24,52 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Hardcodeé paths con extensión `.png` cuando DB tenía `.jpg` — 4 iters de ajustes ficticios (iter 14.4)
+
+**Estado**: 🟢 Resuelto en iter 14.4
+**Categoría**: Code / Path matching / Verification gap
+
+### Qué pasó
+
+En iter 14 creé `lib/catalog/image-scale-overrides.ts` con paths como `'vulk-day-light-sol/01-lateral.png'` porque las URLs que el founder me pasó en iter 11 eran `.png`. PERO los seeds + DB usan `.jpg`. Mi `getImageScale(path)` nunca matcheaba — devolvía 1 default. **Los iters 14, 14.1, 14.2, 14.3 fueron ajustes ficticios** que el founder testeaba en vano. Cada cambio que hacía al scale era invisible porque el código JAMÁS aplicaba el override.
+
+Iter 14.3 founder dijo "1 y 4 siguen grandes" tras 3 ajustes consecutivos. Sospeché problema técnico. `curl https://opticacarballo.com.ar/anteojos-de-sol/vulk | grep transform` → `transform:scale(1)` en TODAS. Confirmado el bug. `grep vulk-day-light-sol HTML` → paths reales en `.jpg`. Fix obvio: cambiar extensiones.
+
+### Causa raíz
+
+Asumí que las URLs `.png` del founder eran los paths reales en DB. NO verifiqué la fuente de verdad (los seeds o un query directo). Cuando hardcodeé los paths, tomé el path de la URL pública del bucket en lugar de chequear el `storage_path` que la query realmente devuelve.
+
+Tuve **4 oportunidades** de detectar el bug:
+- Iter 14: tras implementar, no verifiqué que el style se aplicaba realmente
+- Iter 14.1: founder dijo "no se nota" — lo atribuí a delta sutil, no a no-aplicación
+- Iter 14.2: founder dijo "no afecta" — seguí asumiendo delta sutil
+- Iter 14.3: founder dijo "1 y 4 siguen grandes" — recién acá sospeché
+
+### Costo
+
+- 4 iteraciones perdidas (14, 14.1, 14.2, 14.3) cada una con commit + push + deploy + founder testeo + reporte.
+- Documentación ficticia: el learning iter 14.2 sobre "delta ≥10-15% para que sea perceptible" fue construido sobre evidencia falsa — el delta de 7.6% era invisible porque el código no aplicaba ningún delta, no porque el ojo no lo perciba. Ese learning debe revisarse.
+- Founder frustrado, tiempo perdido.
+
+### Regla preventiva
+
+**Después de implementar override basado en string-matching (paths, slugs, IDs, lookup keys)**: verificar que la key realmente matchee. Opciones:
+1. **Verificación inmediata local**: `next dev` + console.log del valor que devuelve el lookup. Si devuelve default, fix.
+2. **Verificación post-deploy**: `curl <url> | grep <expected output>`. Confirmar que el HTML rendered tenga la signature del cambio (ej. `transform:scale(0.65)` no `transform:scale(1)`).
+3. **Test rápido**: aplicar un valor EXTREMO (scale-0.1) en una sola key conocida. Si NO se nota el cambio, el lookup no matchea. Iterar conservadoramente DESPUÉS de confirmar que se aplica.
+
+**Trigger fuerte**: si el founder dice "no afecta el cambio" tras 2 ajustes consecutivos del mismo parámetro, NO atribuir a "delta sutil". Sospechar problema técnico → verificar que el cambio efectivamente llegue al rendered.
+
+### Cross-link
+
+Relacionado con [[validation-superficial-iter-12]] y [[validation-gap-iter-13.1]]: tres mistakes diferentes esta sesión, todos con el mismo nucleo: **NO verificar que el código produzca el output esperado antes de declarar terminado**. Esta sesión es un caso de estudio de mistake recurrente.
+
+### Refuerzo del learning iter 14.2 (revisión)
+
+El learning "delta scale CSS ≥10-15% para que sea perceptible" sigue siendo válido en teoría, pero fue **construido sobre evidencia falsa**. Cambios de 7.6% pueden ser perceptibles si efectivamente se aplican. Anotar este caveat en el learning.
+
+---
+
 ## 2026-05-30 — Diferí cierre de docs 4 veces en esta misma sesión esperando validación del founder (PATRÓN REPETIDO)
 
 **Estado**: 🔴 Recurrente — la regla operacional de CLAUDE.md fue violada 4 veces hoy

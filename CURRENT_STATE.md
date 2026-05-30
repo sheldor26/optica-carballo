@@ -2,6 +2,20 @@
 
 ## Status
 
+🔴→🟢 **Iter 14.4 — BUG CRÍTICO encontrado: hardcoded `.png` cuando DB tiene `.jpg`. Override no matcheaba en NINGÚN iter previo** (2026-05-30). Founder reportó "1 y 4 siguen grandes" tras iter 14.3 (var 1 = 0.65). Sospeché problema técnico, hice `curl https://opticacarballo.com.ar/anteojos-de-sol/vulk | grep transform` → resultado: `transform:scale(1)` en TODAS las imágenes. Override nunca se aplicó.
+
+Causa raíz: hardcodeé en `lib/catalog/image-scale-overrides.ts` con extensión `.png` (porque las URLs que el founder me pasó en iter 11 eran `.png`). Pero los seeds + DB usan `.jpg`. Ninguna key matcheó → `getImageScale()` siempre retornaba 1 (default).
+
+Esto explica TODA la frustración de iters 14, 14.1, 14.2, 14.3: el founder testeaba cambios que NUNCA llegaban al rendered. Mi análisis matemático de "var 1 a 0.92 → 0.85 → 0.75 → 0.65" fue puro ruido porque el código nunca aplicó ninguno de esos scales.
+
+Fix iter 14.4:
+- Cambié extensiones de `.png` → `.jpg` en los 4 paths.
+- Agregué también los paths de imágenes secondary (frontales para hover swap) para que el scale aplique en ambas fotos de cada variante.
+
+Valores actuales mantenidos (var 1 = 0.65, var 4 = 0.85) — recién ahora se van a aplicar de verdad. Si tras este fix los valores son incorrectos, ahora SÍ tiene sentido ajustarlos basado en cómo se ven.
+
+Commit `38d65cd` próximo.
+
 🟢 **Iter 14.3 — Var 1 a 0.65 + Var 4 a 0.85 (ambas estaban grandes)** (2026-05-30). Founder confirmó dato sobre var 4: "es mas grande, te diria que es igual a la 1". Eso revela 2 cosas: (a) var 4 estaba más grande que var 2 y 3 (necesita reducción), (b) var 1 a 0.75 todavía estaba grande (mismo nivel que var 4 a 1.05).
 
 Aplicando learning iter 14.2 (≥10-15% para que el delta sea perceptible):
