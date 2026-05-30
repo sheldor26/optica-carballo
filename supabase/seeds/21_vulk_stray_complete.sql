@@ -7,19 +7,17 @@
 --   - Material frente + patillas: G-Flex
 --   - Bisagras: Metálicas con sistema Flex
 --   - Lente: Demo (de exhibición, NO graduadas)
---   - Medidas: 144mm frente, 52-20-145, altura 46mm, peso 36.5g
+--   - Medidas: 144mm frente, 50-20-145, altura 46mm, peso 36.5g
 --   - Talle: Large
 --   - Forma: Cuadrado/Rectangular
 --   - Género: Unisex
 --   - Adapta: monofocales, bifocales, progresivos
 --
--- IMPORTANTE: discrepancia entre texto founder (52mm lens_width) y la
--- imagen de medidas (50mm). Uso el texto founder como fuente de verdad
--- (founder mide físicamente). Si la imagen oficial dice 50, ajustar.
+-- Nota: founder texto original decía 52mm lens_width pero la imagen de
+-- medidas dice 50mm. Founder confirmó: imagen es correcta → 50mm.
 --
--- ⚠️ SKU PENDIENTE: founder no pasó SKU para la variante CRY. Uso
--- placeholder `126892` (sigue patrón 12689X). Founder debe confirmar
--- el SKU real → si difiere, hacer UPDATE.
+-- SKU 126892 para la variante CRY (confirmado por founder post-seed
+-- generado — el placeholder que asumí coincidió con el real).
 -- ============================================
 
 BEGIN;
@@ -29,7 +27,7 @@ BEGIN;
 -- =====================================================================
 UPDATE public.products
 SET
-  description = E'El Vulk Stray es un armazón de receta unisex de líneas modernas, pensado para uso diario con lentes graduadas. Ideal para quienes buscan un armazón cómodo y versátil sin sacrificar estilo.\n\nEl armazón frente y patillas están fabricados en G-Flex (termoplástico flexible patentado por Vulk): aguanta torsiones, caídas y uso intensivo mejor que un acetato tradicional. Combinado con las bisagras metálicas Flex, las patillas absorben presión lateral sin romperse — útil si lo llevás en bolso, mochila o cartera todo el día.\n\nEl frente es cuadrado/rectangular con líneas suaves que favorecen rostros de tamaño mediano. Forma versátil unisex que funciona para uso casual, oficina o profesional.\n\nViene con lentes Demo (de exhibición, sin graduación). El armazón está preparado para colocar lentes graduadas según tu receta: admite monofocales, bifocales y progresivos. Te asesoramos sobre el tipo de lente más conveniente (con filtro luz azul, antirreflejo, fotocromático, etc.) según tu uso y prescripción — consultanos por WhatsApp tras la compra para coordinar el trabajo con tu óptico o el nuestro.\n\nDisponible en 5 colores: Negro Mate (MBLK), Negro Satinado (SBLK), Transparente (CRY), Gris Oscuro Transparente línea 663 Optics, y Demi combinado con Negro Mate (MDEMI-MBLK).\n\nMedidas: 144mm de frente x 46mm de altura, calibre del aro 52mm, puente 20mm, patillas 145mm. Peso 36.5g — liviano para uso prolongado.\n\nIncluye estuche original Vulk, franela de microfibra y garantía oficial 1 año del fabricante contra defectos del armazón.',
+  description = E'El Vulk Stray es un armazón de receta unisex de líneas modernas, pensado para uso diario con lentes graduadas. Ideal para quienes buscan un armazón cómodo y versátil sin sacrificar estilo.\n\nEl armazón frente y patillas están fabricados en G-Flex (termoplástico flexible patentado por Vulk): aguanta torsiones, caídas y uso intensivo mejor que un acetato tradicional. Combinado con las bisagras metálicas Flex, las patillas absorben presión lateral sin romperse — útil si lo llevás en bolso, mochila o cartera todo el día.\n\nEl frente es cuadrado/rectangular con líneas suaves que favorecen rostros de tamaño mediano. Forma versátil unisex que funciona para uso casual, oficina o profesional.\n\nViene con lentes Demo (de exhibición, sin graduación). El armazón está preparado para colocar lentes graduadas según tu receta: admite monofocales, bifocales y progresivos. Te asesoramos sobre el tipo de lente más conveniente (con filtro luz azul, antirreflejo, fotocromático, etc.) según tu uso y prescripción — consultanos por WhatsApp tras la compra para coordinar el trabajo con tu óptico o el nuestro.\n\nDisponible en 5 colores: Negro Mate (MBLK), Negro Satinado (SBLK), Transparente (CRY), Gris Oscuro Transparente línea 663 Optics, y Demi combinado con Negro Mate (MDEMI-MBLK).\n\nMedidas: 144mm de frente x 46mm de altura, calibre del aro 50mm, puente 20mm, patillas 145mm. Peso 36.5g — liviano para uso prolongado.\n\nIncluye estuche original Vulk, franela de microfibra y garantía oficial 1 año del fabricante contra defectos del armazón.',
   attributes = attributes
     || jsonb_build_object(
       'frame_material', 'g-flex',
@@ -42,7 +40,7 @@ SET
       'compatible_lens_types', jsonb_build_array('monofocal', 'bifocal', 'progresivo'),
       'measurements', jsonb_build_object(
         'frame_width_mm', 144,
-        'lens_width_mm', 52,
+        'lens_width_mm', 50,
         'lens_height_mm', 46,
         'bridge_mm', 20,
         'temple_length_mm', 145
@@ -55,7 +53,7 @@ WHERE slug = 'vulk-stray';
 -- 2. INSERT 5ta variante CRY (Transparente)
 -- ML variation 185252770949 (listada como "Gris" en ML, founder confirmó
 -- que es CRY transparente). Stock 5 en ML.
--- ⚠️ SKU PLACEHOLDER: 126892. Founder debe confirmar el SKU real.
+-- SKU 126892 (confirmado founder).
 -- =====================================================================
 INSERT INTO public.product_variants (
   product_id, sku, attributes,
