@@ -24,6 +24,45 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Componentes con state derivado del cookie deben polling/refrescar, no leer 1 vez al mount
+
+**Estado**: 🟢 Corregido en CompareButton (mismo turno que founder reportó)
+**Categoría**: Code / State sync
+
+### Qué pasó
+
+Founder reportó: al eliminar un producto del CompareBar, el ícono compare en el PDP (CompareButton) queda visualmente "activo" hasta navegar a otra página. Causa: `CompareButton` leía el cookie con `readCompareClientSide()` SOLO al mount (useEffect con deps `[entry.slug]`). NO escuchaba cambios externos del cookie.
+
+Cuando el state real (cookie) cambia desde otro componente (CompareBar's `removeFromCompareAction`), CompareButton tiene state stale.
+
+### Causa raíz
+
+Asumí "read once at mount" como suficiente. PERO cuando MÚLTIPLES componentes leen del MISMO storage (cookie, localStorage), TODOS necesitan mecanismo de re-sync.
+
+CompareBar ya tenía el patrón correcto: polling 1.5s + focus listener. CompareButton NO lo replicó por copy-paste descuidado.
+
+### Costo
+
+- Founder reportó bug visible.
+- Erosiona confianza ("¿el ícono está activo? entonces tengo productos para comparar..." → confusión).
+
+### Regla preventiva
+
+**Para CUALQUIER componente que lee state derivado de storage compartido (cookie, localStorage, IndexedDB)**:
+1. Polling cada N segundos (1.5s razonable para UX) + focus listener.
+2. O `storage` event listener si es localStorage (no aplica a cookies).
+3. O Context provider con event bus que dispara updates en N componentes a la vez.
+
+NUNCA leer 1 vez al mount sin mecanismo de re-sync, salvo que el dato sea immutable durante la vida del componente.
+
+**Trigger**: si veo `useEffect(..., [])` o `useEffect(..., [staticDep])` que lee de cookie/localStorage, agregar polling.
+
+### Cross-link
+
+Pattern correcto ya estaba en `CompareBar` y `WishlistBadge`. CompareButton se olvidó del pattern → bug.
+
+---
+
 ## 2026-05-30 — Marqué "✅ Revisado" en cierre formal cuando el archivo NO fue modificado (smell de deshonestidad)
 
 **Estado**: 🔴 Pattern repetido — necesita fix en convención

@@ -12,6 +12,7 @@ import {
 import { readCompareClientSide } from '@/lib/compare/client';
 import type { CompareEntry } from '@/lib/compare/cookie';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { CompareBarSearch } from '@/components/compare/compare-bar-search';
 
 type ThumbData = {
   slug: string;
@@ -136,17 +137,25 @@ export function CompareBar({ thumbsBySlug }: Props) {
           </ul>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            {canCompare ? (
+            {/* Buscador inline — solo cuando hay espacio para más productos.
+                Founder feedback iter previo: querer agregar productos al
+                comparador sin volver al catálogo. */}
+            {items.length < 4 && (
+              <CompareBarSearch
+                existingSlugs={items.map((i) => i.slug)}
+                onAdded={() => {
+                  // Optimistic: el polling de 1.5s va a refrescar `items`.
+                  // No tocamos state acá para evitar duplicar el cookie/state.
+                }}
+              />
+            )}
+            {canCompare && (
               <Link
                 href="/comparar"
                 className="bg-foreground text-background hover:bg-foreground/85 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:px-4 sm:py-2 sm:text-sm"
               >
                 Comparar →
               </Link>
-            ) : (
-              <p className="text-muted-foreground hidden text-xs sm:block">
-                Agregá otro
-              </p>
             )}
             <button
               type="button"

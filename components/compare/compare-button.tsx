@@ -28,8 +28,21 @@ export function CompareButton({ entry, variant = 'title', className }: Props) {
 
   useEffect(() => {
     setMounted(true);
-    const list = readCompareClientSide();
-    setIsInList(list.some((item) => item.slug === entry.slug));
+    const tick = () => {
+      const list = readCompareClientSide();
+      setIsInList(list.some((item) => item.slug === entry.slug));
+    };
+    tick();
+    // Polling + focus listener — mismo patrón que CompareBar.
+    // Sin esto, si el usuario remueve este producto desde la CompareBar
+    // (o desde otra tab), el ícono queda visualmente "activo" hasta que
+    // se navega. Fix: re-leer cookie cada 1.5s.
+    const interval = window.setInterval(tick, 1500);
+    window.addEventListener('focus', tick);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', tick);
+    };
   }, [entry.slug]);
 
   const onClick = (e: React.MouseEvent) => {

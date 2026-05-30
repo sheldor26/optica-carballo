@@ -347,7 +347,7 @@ export async function ProductDetailPage({
                   </Link>
                   <NewArrivalBadge attributes={product.attributes} />
                 </div>
-                <h1 className="text-balance font-serif text-4xl font-medium leading-[1.05] tracking-[-0.02em] md:text-5xl">
+                <h1 className="text-balance font-sans text-4xl font-semibold leading-[1.05] tracking-[-0.035em] md:text-5xl">
                   {product.name}
                 </h1>
               </div>

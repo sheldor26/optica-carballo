@@ -2,6 +2,31 @@
 
 ## Status
 
+🟢 **3 issues atacados: buscador inline CompareBar + fix bug ícono compare + tipografía PDP** (2026-05-30).
+
+**Fix 1 — Bug ícono compare queda activo tras remove**: `CompareButton` solo leía el cookie al mount (1 sola vez). Cuando user removía un producto desde la `CompareBar`, el ícono en PDP/cards no se actualizaba. Fix: polling 1.5s + focus listener (mismo patrón que CompareBar). Ahora el ícono sincroniza con cualquier cambio externo del cookie.
+
+**Fix 2 — Tipografía título PDP**: founder pidió "moderno, minimalista". Cambio `font-serif text-4xl font-medium tracking-[-0.02em]` → `font-sans text-4xl font-semibold tracking-[-0.035em]` md:5xl. Usa Inter (font-sans del proyecto) con weight semibold y tracking más apretado. Look display sin agregar nuevas fonts.
+
+**Feature 3 — Buscador inline en CompareBar**: implementado. Componente nuevo `CompareBarSearch` con:
+- Input con icono lupa dentro del CompareBar
+- Debounce 300ms → `searchAction(query)` (server action ya existente)
+- Dropdown con top 5 productos, excluye los ya en compare
+- Click "+" → `toggleCompareAction(entry)` → si full, alert; si OK, refresca via polling existente
+- Click outside cierra dropdown
+- Solo se renderiza si `items.length < 4` (espacio disponible)
+
+Decisión técnica: optimistic update vía polling existente (1.5s). NO toco state local del CompareBar al agregar — el polling refresca el array de `items` y la UI se actualiza naturalmente. Más simple que duplicar state management.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**: push + test:
+1. PDP → título con nueva tipografía (más moderno)
+2. Agregar producto al compare desde PDP → CompareBar aparece con buscador a la derecha
+3. Tipear en el buscador → dropdown muestra resultados con botón "+"
+4. Click "+" → producto se agrega
+5. Eliminar producto desde CompareBar → ícono del PDP/cards desactiva inmediatamente (era el bug)
+
 🟢 **Sync precio ML → mi sitio implementado (inbound stock + price)** (2026-05-30). Founder pidió: "implementá el sync de precio". Extendí `syncStockFromMLItem()` para que ahora también sincronice `price_cents` desde `item.price` (single) o `variation.price` (multi-variation, con fallback al item.price si la variation no tiene propio).
 
 Cambios:
