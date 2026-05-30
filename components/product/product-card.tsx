@@ -215,7 +215,7 @@ function VariantThumbnails({
             aria-label={`Ver ${v.label}`}
             aria-pressed={isActive}
             className={cn(
-              'bg-background relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
+              'bg-muted/40 relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
               isActive
                 ? 'border-foreground'
                 : 'border-border/60 hover:border-foreground/40',

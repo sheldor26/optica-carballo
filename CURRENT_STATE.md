@@ -2,6 +2,29 @@
 
 ## Status
 
+🟢 **Iter 12 — Normalización automática de fotos via área de pixels oscuros (solución por código pura)** (2026-05-30). Founder me corrigió 2 veces en este turno: (1) "el fondo está perfecto, no es eso lo que queremos cambiar" cuando propuse fondo gris; (2) "todas las imágenes deberían verse como la img 2" (matte black) — confirmando que el problema es el **tamaño visual del anteojo**, NO el padding ni el fondo.
+
+**Cambio de métrica clave**: el bounding box width que medí en iter 11 (~99% en todas) era engañoso — capturaba las patillas finas extendidas hasta el borde. La métrica REAL es **área total de pixels oscuros** = "peso visual" del anteojo. Datos:
+- Var 1 (carey): 408.149 px oscuros = 64% del baseline
+- Var 2 (rosa): 283.851 px = 45% del baseline
+- Var 3 (matte black): 634.317 px = 100% (referencia)
+- Var 4 (brown): 644.389 px = 102%
+
+**Solución implementada — script Python + PIL**:
+1. Mido área de pixels oscuros (threshold min(R,G,B)<100) en cada foto.
+2. Tomo matte black como referencia.
+3. Calculo factor scale = sqrt(ref_area / foto_area) → Var 1: 1.247x, Var 2: 1.495x, Var 3: 1.000x, Var 4: 0.992x.
+4. Aplico scale por foto, manteniendo formato 2000×1333 (recorta patillas que se salen, queda solo el cuerpo del anteojo proporcionalmente igual).
+5. 4 fotos normalizadas guardadas en `~/Desktop/vulk-normalized/` con mismos nombres que las del bucket.
+6. Comparison side-by-side en `~/Desktop/vulk-NORMALIZED.png` para validación visual del founder.
+
+**Próximo paso (founder)**:
+1. Abrir `~/Desktop/vulk-NORMALIZED.png`, verificar que las 4 variantes se ven con anteojo del mismo tamaño visual.
+2. Si OK: subir las 4 fotos de `~/Desktop/vulk-normalized/` al bucket Supabase Storage (carpeta `products/vulk-day-light-sol/`) reemplazando las actuales con mismo nombre. Sin tocar código ni DB.
+3. Hard refresh para ver el resultado.
+
+**Standard a futuro**: agregar el script de normalización al skill `/product` para que TODO producto nuevo pase por normalización automática antes de subir al bucket. Pendiente implementar.
+
 🟢 **Iter 11 — DIAGNÓSTICO REAL via medición empírica de las 4 fotos del Vulk** (2026-05-30). Founder pasó las 4 URLs públicas del bucket. Descargué las 4, las medí con Python + PIL detectando bounding box del contenido no-blanco con thresholds variables (240, 200, 150, 100).
 
 **Hallazgo que refuta mis 3 diagnósticos anteriores**: las 4 fotos son CASI IDÉNTICAS en bounding box del anteojo. Width 1970-1991 px de 2000 (98.5%-99.6% del frame). Diferencia máxima entre la más chica y la más grande: **1.1% del width**. Imperceptible. **El "padding interno distinto" que diagnostiqué en iters 9-10 era FALSO** — el founder había uniformado las fotos correctamente.

@@ -24,6 +24,53 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Defaulteé a "re-fotografiar" cuando había solución por código (iter 11→12)
+
+**Estado**: 🟡 Mitigado en iter 12 (solución por código encontrada)
+**Categoría**: Code / Anti-pattern grave
+
+### Qué pasó
+
+En iter 11, tras medir empíricamente las 4 fotos del Vulk, propuse 4 caminos: A (re-fotografiar con mismo ángulo), B (re-fotografiar con fondo gris), C (aceptar), D (CSS bandage). Mi "recomendación" fue B — re-fotografiar.
+
+El founder me llamó la atención: "como que refotografiar? eso se debe poder solucionar modificando cosas de codigo... me parece que estas siendo vaga, y no queres buscar la solucion". Tuvo razón.
+
+Exploré realmente las opciones de código: cambiar fondo del card (rechazado por founder), procesar fotos automáticamente con Python+PIL. Esta última FUNCIONÓ. En 5 minutos generé 4 fotos normalizadas con scale per-foto basado en área de pixels oscuros.
+
+### Causa raíz
+
+Cuando una solución técnica requiere algoritmo no-trivial (detección de bbox del cuerpo del anteojo, scale per-imagen, procesamiento batch), mi instinto incorrecto fue trasladar el trabajo al founder ("re-fotografiá vos") en vez de invertir 30 minutos extra en construir el algoritmo.
+
+Es un anti-pattern de **escapar a low-tech** cuando el problema requiere efort de tech real.
+
+### Costo
+
+- Founder tuvo que rechazar 2 recomendaciones malas seguidas ("re-fotografiar" y "cambiar fondo").
+- Pérdida de credibilidad acumulada — cada "no se puede sin X manual" suma.
+- Trabajo del founder desperdiciado: ya había reprocesado las fotos manualmente siguiendo MIS instrucciones previas.
+
+### Regla preventiva
+
+**NUEVA REGLA**: Antes de proponer "X manual del founder" como solución (re-fotografiar, re-procesar a mano, instalar algo, copiar-pegar manualmente datos), preguntarse:
+
+1. ¿Hay una API/librería que pueda hacer esto automáticamente? (PIL, sharp, ffmpeg, jq, pandas, etc.)
+2. ¿Cuánto effort de desarrollo es construir el algoritmo? (si <2 horas, hacerlo).
+3. ¿El "trabajo manual" se va a repetir? (si sí, automatizar es OBLIGATORIO).
+
+**Solo después** de verificar que no hay solución programática razonable, proponer trabajo manual al founder.
+
+**Trigger fuerte**: si me oigo escribir "vas a tener que" o "trabajo founder pendiente: hacer X manualmente" → parar y buscar primero solución por código.
+
+### Cross-link
+
+Mistakes relacionados que comparten el mismo anti-pattern de "defaulteo a low-tech":
+- [[workflow-photopea-incompleto]] (iter 10): le di workflow manual de Photopea sin haber medido las fotos primero.
+- [[hack-css-sin-verificar-fotos]] (iter 7): apliqué scale CSS sin verificar que las fotos lo soportaran.
+
+Patrón común: **proponer soluciones que requieren trabajo del founder antes de explorar a fondo soluciones programáticas**.
+
+---
+
 ## 2026-05-30 — Diagnostiqué 3 veces seguidas SIN MEDIR. La medición empírica refutó todo (iter 11, cierre cadena iters 7→11)
 
 **Estado**: 🔴 Confirmado — cadena de 3 diagnósticos teóricos incorrectos

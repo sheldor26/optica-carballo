@@ -22,6 +22,46 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — "Es eso nomás" = iterar la métrica hasta dar con la que matchea lo que el founder ve
+
+**Categoría**: Debugging / Métrica correcta
+**Confianza**: 🟢 Alta (validado en iter 12, cierre del problema fotos Vulk)
+
+### Qué funcionó
+
+En iter 11 medí bounding box width: dio 99% en las 4 fotos → "no hay diferencia". Pero el founder INSISTIÓ "la img 1 es más pequeña que la img 2, es eso nomás". Cambié de métrica a **área total de pixels oscuros** (peso visual real del anteojo): dio 64%, 45%, 100%, 102%. Las diferencias visibles que el founder reportaba eran ESTRUCTURALMENTE REALES — mi métrica anterior simplemente no las capturaba.
+
+Una vez identificada la métrica correcta, la solución se construyó sola: scale por foto = sqrt(ref/foto_area). 4 fotos normalizadas en 5 minutos de Python.
+
+### Por qué funciona
+
+Cuando el founder ve una diferencia y tu métrica no la captura, **la métrica está mal — no su percepción**. El bounding box width capturaba las patillas finas extendidas hasta el borde (un detalle no significativo); el peso visual (área de pixels oscuros totales) captura lo que el cerebro humano percibe como "tamaño del anteojo".
+
+El instinto incorrecto: defender la métrica que ya tenés. El correcto: iterar la métrica (probar varias dimensiones de medición: width, height, área, densidad, masa, contraste) hasta que los datos den el mismo patrón que el founder describe.
+
+### Cómo aplicar
+
+Triggers para iterar la métrica:
+- Founder insiste "es así" después de que tu medición dijo "no hay diferencia".
+- Tu medición dice "todo OK" pero el founder ve algo claramente.
+- Hay múltiples dimensiones medibles del fenómeno (no solo width, también height, área, densidad, contraste, etc.).
+
+Pasos:
+1. Listar 3-5 métricas distintas que se podrían medir del fenómeno.
+2. Aplicar cada métrica y ver cuál da el patrón que el founder describe.
+3. La métrica correcta es la que coincide con la percepción real del usuario.
+4. Solución de código se construye sobre la métrica correcta — no antes.
+
+### Costo si se ignora
+
+Insistís con la métrica original → founder pierde confianza → defaulteo a "no se puede sin re-fotografiar/re-procesar manualmente" (anti-pattern grave: pasar trabajo al founder cuando había solución por código).
+
+### Relación con learnings anteriores
+
+Refuerza [[medir-antes-de-teorizar]] (2026-05-30) — medir es solo el primer paso. Si la medición no coincide con la percepción del usuario, **iterar la métrica** es el segundo paso. Sin el segundo paso, la medición es tan ciega como la teoría.
+
+---
+
 ## 2026-05-30 — Medir antes de teorizar: 5 minutos de Python + PIL refutaron 3 diagnósticos teóricos en cadena
 
 **Categoría**: Debugging / Empirical verification
