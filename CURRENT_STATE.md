@@ -2,6 +2,23 @@
 
 ## Status
 
+🟢 **Imagen hero para categoría "Anteojos de sol" en home** (2026-05-30). Founder pidió aplicar foto al card de categoría que estaba con placeholder "Foto pendiente".
+
+Implementación (decision pragmática — sin nueva tabla DB):
+- `CategoryConfig` type: nueva prop `imagePath: string | null`
+- `CATEGORIES.sol.imagePath = 'category-sol.jpg'` (hardcoded path canónico)
+- `CATEGORIES.rx.imagePath = null` (pendiente que founder pase imagen receta)
+- `CategoriesSection`: helper `categoryImageUrl(path)` apunta al bucket `brands-shared` (reuso, no crear bucket nuevo para 2 assets). CategoryCard render condicional Image fill aspect 16:9 o placeholder fallback.
+
+Decisión técnica: REUSE bucket `brands-shared` en vez de bucket nuevo `categories-shared`. Para 2-3 assets de categorías no vale crear bucket separado.
+
+Commit `782aead`.
+
+**Próximo paso (founder)**:
+1. Subir imagen al bucket `brands-shared` con nombre EXACTO `category-sol.jpg` (aspect 16:9, ≥1200×675)
+2. Push + hard refresh `/` → imagen aparece en card de "Anteojos de sol"
+3. Cuando tenga imagen para receta, pasar → updateamos `CATEGORIES.rx.imagePath`
+
 🟢 **Comparador: filas "Incluye" + "Garantía" con base universal + nota footer** (2026-05-30). Founder pidió mostrar en comparador qué incluye cada modelo (Rusty Yau específicamente: par lentes amarillas + adaptador receta + estuche; resto: estuche + franela + garantía).
 
 Implementación en `app/(storefront)/comparar/page.tsx`:

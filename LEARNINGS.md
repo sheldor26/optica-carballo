@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Reusar bucket existente (brands-shared) para assets transversales en vez de crear bucket por dominio
+
+**Categoría**: Architecture / Storage organization
+**Confianza**: 🟢 Media-Alta (aplicado iter categoría imagen — para 2 assets no vale bucket nuevo)
+
+### Qué funcionó
+
+Founder pidió imagen para card de categoría "Anteojos de sol" en home. Default arquitectónico sería crear bucket `categories-shared` separado. En cambio, reusé el bucket `brands-shared` que ya existe (creado iter previo para kit Vulk) y subí `category-sol.jpg` ahí.
+
+### Por qué funciona
+
+Cuando tenés un asset NUEVO de un dominio NUEVO (categorías, brands, hero pages, etc.) con pocos archivos (1-3), el costo de crear bucket separado supera al beneficio organizacional:
+- 1 migration para crear bucket
+- 1 policy de read pública
+- 1 docs update
+- Más cosas que verificar al deployar
+
+Vs reusar bucket existente: 0 cosas adicionales. Solo subir el archivo.
+
+Cuando el dominio crece (5+ assets), refactorizar a bucket dedicado vale (separación de concerns, policies distintas, lifecycle distinto).
+
+### Cómo aplicar
+
+Para asset transversal/compartido (no de producto/variante):
+1. Si el dominio tiene 1-3 assets: bucket compartido existente (`brands-shared` o equivalente). Convención de naming claro: `category-sol.jpg`, `hero-homepage.jpg`, `team-photo.jpg`.
+2. Si el dominio crece a 5+ assets: refactorizar a bucket dedicado.
+3. Migrar es trivial: `UPDATE table SET path = REPLACE(path, 'old-bucket/', 'new-bucket/')`.
+
+### Trade-off
+
+Naming convention compartida puede colisionar (ej. `category-sol.jpg` vs `vulk-estuche-franela.jpg` en el mismo bucket — coexisten OK). Si va a haber 20+ assets de tipos distintos, la organización se vuelve confusa → refactor a buckets dedicados.
+
+### Cross-link
+
+Aplicación de [[costo-recurrente-vs-upfront]] — bucket dedicado tiene costo upfront alto + bajo recurrente, bucket compartido al revés. Para N=2-3 assets, compartido gana.
+
+---
+
 ## 2026-05-30 — Para listas de "incluye/contiene" en comparador: garantizar base universal con `Set` hardcoded antes de mergear con DB
 
 **Categoría**: Code / Data integrity / UX
