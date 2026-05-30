@@ -121,9 +121,9 @@ export function ProductGallery({ productName, images }: Props) {
         </div>
       </button>
       {sorted.length > 1 && (
-        <div className="flex items-stretch gap-2">
+        <div className="relative">
           <div
-            className="grid flex-1 gap-2"
+            className="grid gap-2"
             style={{
               gridTemplateColumns: `repeat(${Math.min(sorted.length, VISIBLE_THUMBS)}, minmax(0, 1fr))`,
             }}
@@ -165,18 +165,13 @@ export function ProductGallery({ productName, images }: Props) {
               }
               aria-label={`Ver siguiente imagen (${sorted.length - VISIBLE_THUMBS} ${sorted.length - VISIBLE_THUMBS === 1 ? 'oculta' : 'ocultas'})`}
               className={cn(
-                'bg-background flex aspect-square w-1/4 shrink-0 items-center justify-center rounded-md transition-colors',
+                'bg-foreground/90 hover:bg-foreground text-background absolute -right-1.5 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full shadow-md transition-colors',
                 'ring-offset-background focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-                activeIdx >= VISIBLE_THUMBS
-                  ? 'ring-foreground ring-2'
-                  : 'ring-border/40 hover:ring-foreground/40 ring-1',
+                activeIdx >= VISIBLE_THUMBS && 'ring-foreground ring-2 ring-offset-1',
               )}
-              title={`Ver más fotos (${sorted.length - VISIBLE_THUMBS} oculta${sorted.length - VISIBLE_THUMBS === 1 ? '' : 's'})`}
+              title={`Ver foto oculta (${sorted.length - VISIBLE_THUMBS} más)`}
             >
-              <ChevronRight
-                className="text-foreground/70 group-hover:text-foreground size-5"
-                aria-hidden="true"
-              />
+              <ChevronRight className="size-4" aria-hidden="true" />
               <span className="sr-only">Siguiente</span>
             </button>
           )}
