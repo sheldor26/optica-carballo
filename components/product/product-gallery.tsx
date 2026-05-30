@@ -2,11 +2,20 @@
 
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { ImageLightbox } from '@/components/product/image-lightbox';
 import type { ProductImage } from '@/lib/catalog/queries';
+
+/**
+ * Cantidad de thumbs visibles en el grid. Las imágenes adicionales (4+)
+ * quedan "ocultas" y se navegan con la flecha a la derecha del grid.
+ * Founder feedback 2026-05-30: prefiere thumbs de tamaño fijo (no
+ * achicarlos cuando hay 4+) — 3 cols fijo + overflow con flecha.
+ */
+const VISIBLE_THUMBS = 3;
 
 type Props = {
   productName: string;
@@ -112,40 +121,65 @@ export function ProductGallery({ productName, images }: Props) {
         </div>
       </button>
       {sorted.length > 1 && (
-        <div
-          className="grid gap-2"
-          style={{
-            gridTemplateColumns: `repeat(${Math.min(sorted.length, 6)}, minmax(0, 1fr))`,
-          }}
-        >
-          {sorted.map((img, idx) => {
-            const url = getProductImageUrl(img.storage_path);
-            const isActive = idx === activeIdx;
-            return (
-              <button
-                key={img.storage_path}
-                type="button"
-                onClick={() => setActiveIdx(idx)}
-                aria-label={`Ver imagen ${idx + 1} de ${sorted.length}: ${img.alt_text}`}
-                aria-current={isActive}
-                className={cn(
-                  'bg-background relative aspect-square overflow-hidden rounded-md p-1 transition-all duration-200',
-                  'ring-offset-background focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-                  isActive
-                    ? 'ring-foreground ring-2'
-                    : 'ring-border/40 hover:ring-foreground/40 ring-1',
-                )}
-              >
-                <Image
-                  src={url}
-                  alt=""
-                  fill
-                  sizes="120px"
-                  className="object-contain"
-                />
-              </button>
-            );
-          })}
+        <div className="flex items-stretch gap-2">
+          <div
+            className="grid flex-1 gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${Math.min(sorted.length, VISIBLE_THUMBS)}, minmax(0, 1fr))`,
+            }}
+          >
+            {sorted.slice(0, VISIBLE_THUMBS).map((img, idx) => {
+              const url = getProductImageUrl(img.storage_path);
+              const isActive = idx === activeIdx;
+              return (
+                <button
+                  key={img.storage_path}
+                  type="button"
+                  onClick={() => setActiveIdx(idx)}
+                  aria-label={`Ver imagen ${idx + 1} de ${sorted.length}: ${img.alt_text}`}
+                  aria-current={isActive}
+                  className={cn(
+                    'bg-background relative aspect-square overflow-hidden rounded-md p-1 transition-all duration-200',
+                    'ring-offset-background focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                    isActive
+                      ? 'ring-foreground ring-2'
+                      : 'ring-border/40 hover:ring-foreground/40 ring-1',
+                  )}
+                >
+                  <Image
+                    src={url}
+                    alt=""
+                    fill
+                    sizes="120px"
+                    className="object-contain"
+                  />
+                </button>
+              );
+            })}
+          </div>
+          {sorted.length > VISIBLE_THUMBS && (
+            <button
+              type="button"
+              onClick={() =>
+                setActiveIdx((activeIdx + 1) % sorted.length)
+              }
+              aria-label={`Ver siguiente imagen (${sorted.length - VISIBLE_THUMBS} ${sorted.length - VISIBLE_THUMBS === 1 ? 'oculta' : 'ocultas'})`}
+              className={cn(
+                'bg-background flex aspect-square w-1/4 shrink-0 items-center justify-center rounded-md transition-colors',
+                'ring-offset-background focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                activeIdx >= VISIBLE_THUMBS
+                  ? 'ring-foreground ring-2'
+                  : 'ring-border/40 hover:ring-foreground/40 ring-1',
+              )}
+              title={`Ver más fotos (${sorted.length - VISIBLE_THUMBS} oculta${sorted.length - VISIBLE_THUMBS === 1 ? '' : 's'})`}
+            >
+              <ChevronRight
+                className="text-foreground/70 group-hover:text-foreground size-5"
+                aria-hidden="true"
+              />
+              <span className="sr-only">Siguiente</span>
+            </button>
+          )}
         </div>
       )}
       <ImageLightbox
