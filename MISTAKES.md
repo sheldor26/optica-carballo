@@ -24,6 +24,50 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Cuando creé image-scale-overrides, solo apliqué a ProductCard/ProductGallery — comparador (3 componentes) quedó sin aplicar (PATRÓN RECURRENTE 2da vez en sesión)
+
+**Estado**: 🟢 Resuelto (fix aplicado tras founder reportar)
+**Categoría**: Code / Feature surface area / Consistency
+
+### Qué pasó
+
+Iter ~14 creé `lib/catalog/image-scale-overrides.ts` y lo apliqué a `ProductCard` + `ProductGallery`. Founder testeó y aprobó. Pero NO grep-eé otros lugares que renderizan imágenes de producto:
+- `compare-table.tsx`
+- `compare-bar.tsx`
+- `compare-bar-search.tsx`
+
+Founder en turno actual reportó: "imágenes no uniformes en comparador". Fix obvio: agregar `getImageScale` a los 3 componentes faltantes.
+
+### Causa raíz
+
+Cuando creé el feature, mi foco fue resolver el caso reportado (PDP / cards). NO mapeé el dominio completo ("¿dónde más se renderizan imágenes de producto?") antes de declarar el feature como terminado.
+
+### Costo
+
+- 1 turno extra (founder reporta, yo fixeo, esperando retest).
+- Si hay MÁS lugares no detectados (recently-viewed, wishlist page, recommended-products-grid, search dropdown), suma turnos adicionales.
+
+### Regla preventiva REFORZADA (2da vez en sesión)
+
+**Para CUALQUIER feature que afecte rendering de imágenes de producto**:
+1. `grep -rn "getProductImageUrl\|primaryImagePath" components/ app/` → lista completa de componentes que renderizan.
+2. Aplicar el feature a TODOS los lugares relevantes en el mismo PR.
+3. NO declarar el feature completo hasta verificar la lista completa.
+
+Esto se está volviendo el mistake DOMINANTE de la sesión. Cada turno que aparece un feature visual, hay 50%+ probabilidad de que esté incompleto en algún componente derivado.
+
+### Cross-link con MISTAKE RECURRENTE
+
+Esta es la 2da vez en sesión 2026-05-30:
+- 1ra: [[extendí-syncStockFromMLItem-sin-actualizar-endpoint-debug]] (sync price extended sin actualizar admin endpoint).
+- 2da: image-scale-overrides extendido sin aplicar a comparador (este mistake).
+
+Pattern dominante esta sesión = **"extender feature en lugar A sin propagar a lugares B, C, D que dependen del feature"**.
+
+Si esto se repite UNA vez más → escalation: agregar a CLAUDE.md como regla hard ("antes de cerrar feature, grep para mapear surface area").
+
+---
+
 ## 2026-05-30 — Extendí `syncStockFromMLItem` para sync de precio pero NO actualicé el endpoint debug correspondiente
 
 **Estado**: 🟢 Corregido en mismo turno (founder reportó bug, agregar price_cents al endpoint)

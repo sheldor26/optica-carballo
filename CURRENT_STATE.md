@@ -2,6 +2,28 @@
 
 ## Status
 
+🟢 **Comparador uniformado con image-scale-overrides + diagnóstico mobile catálogo Yamain** (2026-05-30).
+
+**Fix comparador**: founder reportó "imágenes no uniformes en comparador". Causa: `compare-table.tsx`, `compare-bar.tsx`, `compare-bar-search.tsx` renderizaban imágenes con object-contain pero SIN aplicar `getImageScale()` del image-scale-overrides. Solo el ProductCard/ProductGallery lo tenían. Fix: agregar import + style transform inline en los 3 componentes del comparador.
+
+**Diagnóstico mobile catálogo (issue pendiente)**: founder reportó "en celulares cuando hay 2 productos las imágenes quedan cortadas". Medí las fotos:
+- Vulk Yamain `01-cry-lateral.jpg`: **900×442** (aspect 2.04:1)
+- Vulk Day Light `01.jpg`: **2000×1333** (aspect 3:2)
+
+Las fotos Yamain tienen aspect ratio distinto + tamaño absoluto menor. En cards `aspect-[3/2]`, object-contain agrega barras arriba/abajo en Yamain (más ancha que la card) → renderizado inconsistente, más notorio en mobile (grid 2 cols) que desktop (3 cols).
+
+3 opciones presentadas al founder (esperando decisión):
+- A: Yo agrego scale overrides per-foto Yamain (~15 min mío, compromise)
+- B: Founder reprocesa 7 fotos Yamain a 1500×1000 con anteojo a 60-65% (~30 min founder, solución limpia)
+- C: Aceptar inconsistencia ahora
+
+Commit `9c855a9` aplicado.
+
+**Próximo paso (founder)**:
+1. Push + test comparador uniforme
+2. Decidir A/B/C para fotos Yamain
+3. Force-sync precio diagnostic (esperando JSON) — bug sync price ML→sitio sigue pendiente
+
 🟡 **3 cosas turno actual: cat_eye Yamain + debug sync precio + seed 18 OK** (2026-05-30).
 
 ✅ **Confirmado por curl**: imagen brand kit Vulk aparece en HTML producción (`brands-shared/vulk-estuche-franela.jpg`). Seed 18 funcionó.

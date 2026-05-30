@@ -22,6 +22,48 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cuando agregás feature visual a un dominio (ej. scale CSS de imágenes), grep TODOS los lugares que renderizan ese dominio
+
+**Categoría**: Code consistency / Feature surface area
+**Confianza**: 🟢 Alta (2+ casos esta sesión donde se olvidó alguna arista)
+
+### Qué funcionó
+
+Tras founder reportar "imágenes inconsistentes en comparador", encontré que `getImageScale` (image-scale-overrides) NO se estaba aplicando en `compare-table.tsx`, `compare-bar.tsx`, ni `compare-bar-search.tsx`. Solo lo tenía ProductCard + ProductGallery. Fix: `grep -rn "getProductImageUrl" components/` para encontrar TODOS los lugares que renderizan imágenes de producto. Agregar `getImageScale` a cada uno.
+
+### Por qué funciona
+
+Cuando una decisión arquitectónica afecta UN DOMINIO (ej. "todas las imágenes de producto deben tener scale custom per-foto"), hay N componentes que renderizan ese dominio:
+- Cards de catálogo
+- Galería PDP
+- Thumbnails (variantes, comparador, recently viewed, wishlist, search)
+- Quick view modal
+- Comparador (tabla + bar + search dropdown)
+- Recomendador IA (grid de productos)
+
+Si solo aplicás el feature al primer caso visible, los demás quedan desincronizados. Founder eventualmente los encuentra → fix incremental → 5 turnos perdidos.
+
+### Cómo aplicar
+
+Cuando agregás un feature que afecta cómo se RENDERIZA un dominio:
+1. `grep -rn "getProductImageUrl\|productImagePath\|product\.images" components/ app/` para mapear surface area.
+2. Hacer una pasada por TODOS los results aplicando el feature.
+3. Si hay 10+ lugares, considerar wrappear en componente `<ProductImage>` que centraliza la lógica.
+
+### Trigger fuerte
+
+Si agregás algo a ProductCard/ProductGallery, preguntate: ¿esto debería aplicar también a thumbs de comparador/wishlist/recientes/search/recomendador? Lista completa de lugares: `compare-{bar,table,bar-search}`, `wishlist-{badge,page}`, `recently-viewed`, `recommended-products-grid`, `variant-list`.
+
+### Costo si se ignora
+
+Acumulación de bugs visuales reportados uno por uno por el founder. Cada uno toma 5-10 min mío para fixear, pero la suma desgasta.
+
+### Cross-link
+
+Pattern recurrente con [[extender-funcion-sin-aristas-iter-debug-endpoint]] (sync price extended sin tocar admin debug endpoint). Mismo nucleo: "extender feature en un lugar sin propagar a las aristas que dependen del feature".
+
+---
+
 ## 2026-05-30 — Endpoint admin con pre/post state + diagnosis_hints destraba debug remoto cuando sync falla
 
 **Categoría**: Debugging / Admin tooling
