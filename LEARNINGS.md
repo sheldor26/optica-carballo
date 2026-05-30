@@ -22,6 +22,36 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para sprints grandes con múltiples sub-sprints, separar trabajo founder vs trabajo asistente y paralelizar
+
+**Categoría**: Planning / Eficiencia
+**Confianza**: 🟢 Alta (validado al plan flow compra)
+
+### Qué funcionó
+
+Founder eligió "TODOS" sobre 4 sub-sprints. Reacción natural: hacerlos secuenciales 1-2-3-4. Pero el Sprint 1 (activar checkout en prod) NO requiere código mío — requiere acciones de configuración del founder (env vars Vercel, app MP). Mientras founder hace eso, yo puedo avanzar Sprint 2 (quick wins UX) que es 100% código.
+
+Planificación paralela:
+- Founder: Sprint 1 setup (1-2h reales del founder)
+- Asistente: Sprint 2 código (2h trabajo paralelo)
+
+### Por qué funcionó
+
+Sprints "completos" suelen tener 3 tipos de tareas: código (asistente), configuración (founder), validación (ambos). Tratarlos como un bloque secuencial deja tiempo muerto en uno mientras el otro trabaja.
+
+### Regla preventiva
+
+Para sprints con N sub-sprints:
+1. **Clasificar cada uno**: ¿requiere acción founder? ¿requiere código? ¿requiere ambos secuenciales?
+2. **Paralelizar**: founder hace los suyos mientras yo avanzo con los míos.
+3. **Sync points explícitos**: definir cuándo necesito que founder confirme algo para seguir avanzando.
+
+### Cuándo aplicar
+
+- Sprints multi-feature donde algunos requieren config externa.
+- Activación de servicios externos (MP, Resend, Andreani) que requieren API keys del founder.
+- NO aplicar si los sub-sprints tienen dependencias hard entre ellos.
+
 ## 2026-05-30 — Sorting con criterio compuesto puede invertir intent del usuario — preferir un solo orden DB explícito
 
 **Categoría**: Algorithm design / Sorting
@@ -6201,6 +6231,33 @@ Al importar una variante de un producto YA existente:
 
 - Import de variante N+1 de un modelo ya cargado.
 - NO aplica a producto totalmente nuevo (ahí sí falta todo el contenido base y la API ahorra más).
+
+## 2026-05-30 — Pegar endpoints admin a PRODUCCIÓN cuando localhost apunta a otra DB
+
+**Categoría**: Integración ML / Debugging de entornos
+**Confianza**: 🟢 Alta (desbloqueó el fetch de MLA1432121317)
+
+### Qué funcionó
+
+Tras renovar el token OAuth de ML (founder re-autorizó en prod), mi dev server local seguía devolviendo `no_integration` al pegarle a `/api/admin/ml-me` y `/api/admin/ml-import-preview`. Causa: el `.env.local` apunta a una DB/encryption-key distinta de producción, así que el token que guardó el callback de prod NO está en la DB que lee mi localhost.
+
+Solución: como los endpoints `/api/admin/ml-*` son temporales y NO tienen auth ("Sin auth iter 1"), los pegué **directo a producción**: `curl https://opticacarballo.com.ar/api/admin/ml-import-preview/MLA1432121317`. Eso lee la DB de prod con su token recién renovado y devolvió el JSON crudo del item (precio 103902, available_quantity 0, pictures, etc.) sin tocar el entorno local.
+
+### Por qué funcionó
+
+El token vive en la DB de producción (Supabase cloud del sitio live), no en mi entorno local. El endpoint corre server-side en Vercel, donde las env vars SÍ matchean esa DB. Pegarle al endpoint de prod = ejecutar el fetch desde el contexto correcto.
+
+### Regla preventiva
+
+Cuando un endpoint admin sin-auth devuelve `no_integration` / `not_found` en localhost pero el founder acaba de autorizar/configurar algo en producción:
+1. **No asumir que el token está roto** — primero descartar mismatch de entorno (`.env.local` ≠ env de Vercel).
+2. **Pegarle al endpoint de PRODUCCIÓN** directamente. Si funciona ahí, el problema era de entorno, no de datos.
+3. Aplica SOLO a endpoints sin auth (los `/api/admin/ml-*` temporales). Cuando tengan auth (Sprint 3), repensar.
+
+### Cuándo aplicar
+
+- Debugging de integraciones cuya credencial/estado vive en la DB de prod.
+- NO usar para operaciones de ESCRITURA contra prod sin confirmar con founder — esto fue solo lectura.
 
 ## Notas finales
 

@@ -24,6 +24,55 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Plan inicial era hacer 4 sub-sprints secuenciales, sin notar que Sprint 1 era 100% acción founder
+
+**Estado**: ✅ Cerrado en el plan — propuesta de paralelización corregida antes de empezar.
+**Categoría**: Planning / Tiempo muerto
+
+### Qué pasó
+
+Tras "TODOS" del founder, mi primera reacción mental fue planificar 4 sprints en orden 1→2→3→4. Pero Sprint 1 ("activar checkout en producción") requiere configuración del founder (env vars Vercel, app MP), NO código mío. Si lo hubiera tratado como bloqueante, hubiera quedado esperando 1-2h mientras el founder hacía el setup.
+
+Recién al escribir el "checklist tuyo (A-E)" me di cuenta que TODA la acción era founder, no mía. Reordené para proponer trabajo paralelo (founder Sprint 1 + yo Sprint 2 al mismo tiempo).
+
+### Causa raíz
+
+Default "sprints en orden numérico" cuando los sub-sprints tienen distintos owners (founder vs asistente). Pensar en términos de tiempo de wall clock vs trabajo lineal.
+
+### Regla preventiva
+
+Cuando recibís "TODOS" o multi-sprint en un solo go:
+1. **Marcar el owner de cada sub-sprint** (founder, asistente, ambos) ANTES de definir orden.
+2. **Si hay sprints con distintos owners y sin dependencia hard**, paralelizar.
+3. **Identificar sync points**: cuándo founder necesita ver tu output, cuándo vos necesitás confirmación founder.
+
+### Bonus
+
+Esto se conecta con la LEARNING "Para sprints grandes con múltiples sub-sprints, separar trabajo founder vs trabajo asistente". El mistake es el caso adversarial; el learning es la regla preventiva.
+
+## 2026-05-30 — Precio en ficha de producto era estático: no reaccionaba a la variante seleccionada
+
+**Estado**: ✅ Cerrado — bloque de precio movido a componente cliente que consume el contexto de selección.
+**Categoría**: UI / Estado no cableado a todos sus consumidores
+
+### Qué pasó
+
+La ficha de producto tenía `VariantSelectionProvider` (contexto con la variante seleccionada) y `VariantList` lo actualizaba al clickear. Pero el bloque de PRECIO grande de arriba se renderizaba estático server-side (`priceLabel` = "Desde $X" con min/max de variantes). Al seleccionar otra variante, el precio NO cambiaba. Founder lo detectó al sumar la 2da variante Rusty Yau (Revo Blue $103.902 vs base $98.350) — seleccionaba la Revo Blue y arriba seguía $98.350 + "En stock" aunque esa variante está sin stock.
+
+### Causa raíz
+
+Cuando se construyó la selección de variantes, se cableó el contexto a `VariantList` (que muestra cada variante) pero NO al bloque de precio/stock principal. El bug quedó **latente** porque hasta ahora ningún producto tenía 2+ variantes con precios distintos: la Rusty 126080 era variante única, y las 4 Vulk Day Light comparten precio ($88.037). La primera vez que dos variantes del mismo producto difirieron en precio, el bug se hizo visible.
+
+### Regla preventiva
+
+Al introducir un estado interactivo (contexto de selección, toggle, filtro), **auditar TODOS los elementos de UI que deberían reaccionar a ese estado**, no solo el que lo dispara. Lista explícita: "¿qué muestra info derivada de esta selección?" → precio, stock, badges, galería, CTA. Cada uno debe consumir el contexto o justificar por qué no.
+
+Corolario de testing: probar features de variantes con **al menos 2 variantes que difieran en el campo relevante** (precio Y stock distintos), no con variantes homogéneas que esconden el bug.
+
+### Costo
+
+Bug en producción visible (precio engañoso — riesgo de mostrar precio menor al real de la variante elegida). Detectado por founder. Fix acotado (1 componente nuevo + swap), pero pudo evitarse auditando consumidores del contexto cuando se creó.
+
 ## 2026-05-30 — Mantuve "variant_id matching first" en sortImages aunque el founder ya estaba seteando sort_order explícito
 
 **Estado**: ✅ Cerrado — algoritmo simplificado en commit `bfd4ce3`.

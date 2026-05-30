@@ -2,14 +2,22 @@
 
 ## Status
 
-🟡 **Import variante Rusty Yau Revo Blue (MLA1432121317) — ESPERANDO DATOS DEL FOUNDER** (2026-05-30). Founder pasó link ML de nueva variante: "Rusty Yau MBLK Revo Blue Polarizado Yellow". Diagnóstico hecho:
+🟢 **Fix: precio reactivo a la variante seleccionada — LISTO, ESPERANDO OK PARA DEPLOY** (2026-05-30). Founder aplicó seed 13 (la variante 126081 ya aparece en la ficha) y notó que el precio grande de arriba ($98.350) no cambiaba al seleccionar la variante Azul Espejado ($103.902). Causa: el bloque de precio en [product-page.tsx](components/catalog/product-page.tsx) se renderizaba **estático** server-side (label "Desde $X" con min/max), sin consumir el `VariantSelectionProvider` que ya existía y que `VariantList` sí actualiza. El bug estuvo latente desde siempre — recién apareció ahora que hay 2 variantes con precios DISTINTOS (la 126080 era única, y las 4 Vulk comparten precio). Fix: nuevo componente cliente [product-price-block.tsx](components/product/product-price-block.tsx) que lee `useVariantSelection()` y muestra el precio + estado de stock de la variante seleccionada (En stock verde / Sin stock rojo). Bonus: ahora productos con todas las variantes sin stock igual muestran el precio (antes desaparecía). Typecheck verde. **Próximo paso exacto**: commit + push a main (dispara deploy Vercel) — esperando OK del founder para pushear. NO commiteado aún.
+
+🟢 **Import variante Rusty Yau Revo Blue (MLA1432121317) — SEED APLICADO POR FOUNDER** (2026-05-30). Seed `13_rusty_yau_revo_blue.sql` creado + concatenado al bootstrap. Founder confirmó (variante visible en ficha). Token ML renovado OK. Pendiente: agregar fila a CLOUD_APPLIED.md + borrar bootstrap (founder no dijo literal "cloud aplicado" pero la variante se ve → aplicado). Diagnóstico hecho: Seed `13_rusty_yau_revo_blue.sql` creado + concatenado al bootstrap. Token ML renovado OK. Diagnóstico hecho:
 - **NO es producto nuevo** — es variante del modelo `rusty-yau` (seed 10) que ya existe con la variante 126080 (MBLK/S10 POL). Descripción/atributos/callouts/medidas son compartidos a nivel producto → ya están. Solo se agrega la variante.
 - Decodificado del título: `MBLK` = armazón negro mate (MISMO armazón que 126080) / `Revo Blue Polarizado` = par principal azul espejado polarizado / `Yellow` = amarillas (común a todas).
 - **Listing ML SEPARADO**: MLA1432121317 (distinto del MLA1432137395 de la 126080). En schema va como `mercadolibre_item_id` propio con `mercadolibre_variation_code` NULL (NO es caso multi-variation como Vulk).
 - Decisión founder: `lens_color: "azul-espejado"` (consistente con `gris-oscuro` de la otra variante, describe el acabado real vs término comercial "revo").
 - **No se pudo traer precio/stock de ML automáticamente**: API pública 403 (ML exige auth ahora), scraping devuelve interstitial sin precio, endpoint interno OAuth → `no_integration`/token vencido. NO se re-autorizó OAuth (acción founder, tema aparte ya trackeado abajo). 1 imagen detectada vía OG meta: `D_964931-MLA76921385583_062024-O.jpg`.
 
-**Próximo paso exacto**: founder pasa SKU interno, precio, stock real, cantidad/contenido de fotos, y model_code exacto (inferido `MBLK/REVO BLUE POL YELLOW`). Con eso: crear seed `13_rusty_yau_revo_blue.sql` (mismo patrón que seed 10 — INSERT variant + INSERT images con ON CONFLICT, NULL variation_code), concatenar al bootstrap, e indicar nombres de fotos para bucket `rusty-yau/`. Recordatorio al founder: cropear fotos igual que la 126080 (regla MISTAKES 2026-05-30 composición). `weight_grams` sigue siendo gap del modelo Yau.
+**Datos confirmados (2026-05-30)**: SKU `126081`, model_code `MBLK/R. BLUE POL - YELLOW`, frame negro mate, `lens_color: azul-espejado`, lentes azul espejada polarizada + 1 par amarillas. Medidas idénticas a 126080 (imagen medidas se REUSA, variant_id NULL). 2 fotos nuevas: `rusty-yau/04-revo-blue-lateral.jpg` (primary, sort 0) + `05-revo-blue-frontal.jpg` (sort 1).
+
+**Token ML renovado OK (2026-05-30)**: founder re-autorizó (`?ml_oauth=success&user_id=81654493`). Verificado vía PROD `/api/admin/ml-me`: nickname ÓPTICACARBALLO, id 81654493, 5_green/silver. ⚠️ Localhost sigue `no_integration` — mi `.env.local` apunta a otra DB/key que prod, así que NO ve el token de prod. **Solución que funcionó**: pegar endpoints admin directo a PROD (`opticacarballo.com.ar/api/admin/ml-import-preview/MLA1432121317`) — el endpoint no tiene auth y lee la DB de prod con su token. Data extraída: `price 103902 ARS → price_cents 10390200 ($103.902,00)`, `available_quantity 0` (vendió 14/14).
+
+**Decisión stock**: cargado `stock_qty 0 / is_active true` (precedente Vulk BROWN seed 12 + regla #1 no vender sin stock). Founder debe confirmar unidades físicas reales; si >0, UPDATE.
+
+**Próximo paso exacto (founder)**: (1) subir 2 fotos al bucket `products/rusty-yau/` con esos nombres exactos, cropeadas como la 126080; (2) pegar `supabase/cloud-bootstrap.sql` (145 líneas = fix Vulk pendiente idempotente + seed 13) en SQL Editor; (3) decir "cloud aplicado" → agregar fila a CLOUD_APPLIED.md + borrar bootstrap; (4) confirmar stock real. Pendientes ML aún abiertos: configurar webhook en ML Dashboard (real-time sync), import MLA1432137395 (404 previo). `weight_grams` sigue siendo gap del modelo Yau.
 
 🟡 **Re-autorización ML OAuth + import MLA1432137395 — DIAGNÓSTICO EN CURSO (hipótesis cuenta equivocada)** (2026-05-29). Founder re-autorizó con `user_id=81654493`, endpoint admin devolvió 404 para MLA1432137395. Founder pasó URL del listing real: `mercadolibre.com.ar/.../up/MLAU384055931?...&wid=MLA1432137395` — el item es de **Tienda Oficial OPTICACARBALLO** (`official_store:260502`). Pero `user_id=81654493` puede NO ser la cuenta OPTICACARBALLO (founder posiblemente autorizó OAuth con cuenta personal/hermano por cookie de sesión ML sticky).
 
@@ -82,6 +90,14 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
 1. Subir 5 fotos a bucket `products/vulk-day-light-sol/` con nombres `06-mblk-frontal.jpg`, `07-mblk-lateral.jpg`, `08-mblk-modelo.jpg`, `09-brown-frontal.jpg`, `10-brown-lateral.jpg`.
 2. Aplicar bootstrap en SQL Editor.
 3. Verificar con force-sync que las 4 variantes muestran `skipped: 4` (todas alineadas).
+
+**Sprint Flow de Compra — Plan 4 sub-sprints** (2026-05-30). Founder eligió "TODOS" tras audit del flow de compra. Audit reveló sistema funcional end-to-end pero feature flag `NEXT_PUBLIC_CHECKOUT_ENABLED=false` (checkout retorna 404 hoy) + 3 gaps de features. Plan secuencial:
+1. **Sprint 1 (EN CURSO)**: Activar checkout en prod. Checklist 5 acciones founder: configurar app Mercado Pago, setear 3 env vars Vercel (`NEXT_PUBLIC_CHECKOUT_ENABLED`, `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`), verificar 4 env vars previas (BUSINESS_ADMIN_EMAIL, RESEND_API_KEY, RESEND_FROM_EMAIL, CART_COOKIE_SECRET), redeploy + test end-to-end con tarjeta MP de prueba.
+2. **Sprint 2 (paralelo)**: Quick wins UX en PDP (estimador envío + cuotas + stock bajo). ~2h sin acciones founder.
+3. **Sprint 3 (pendiente)**: Retiro en local (pickup). ~2-3h sin acciones founder.
+4. **Sprint 4 (pendiente)**: Sistema cupones/descuentos. ~3-4h sin acciones founder.
+
+Propuesta: founder hace setup MP en paralelo mientras yo avanzo Sprint 2.
 
 **Gallery sort simplificado iter 3** (2026-05-30 commit `bfd4ce3`). Founder confirmó aplicación del UPDATE sort_order=3 modelo pero el thumbnail seguía en posición 3. Diagnóstico: `sortImages` tenía 3 pasos (primary → variant_id matching → sort_order). El paso 2 priorizaba variant_id matching sobre sort_order, por eso modelo (variant=MBLK, sort=3) ganaba sobre medidas (variant=NULL, sort=2). Fix doble:
 1. Simplificar `sortImages` a solo `primary + sort_order`. La data manda.
