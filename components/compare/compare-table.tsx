@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import Link from 'next/link';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -150,6 +151,10 @@ function ProductHeader({ product }: { product: CompareProductCard }) {
             alt={product.name}
             width={240}
             height={240}
+            // Aplicamos scale per-foto del image-scale-overrides para que
+            // el comparador respete el tamaño visual uniforme entre productos
+            // (mismo principio que ProductCard + ProductGallery).
+            style={{ transform: `scale(${getImageScale(product.primaryImagePath)})` }}
             className="size-full object-contain p-3 sm:p-4"
             sizes="(min-width: 768px) 200px, 168px"
           />

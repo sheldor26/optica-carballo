@@ -6,6 +6,7 @@ import { Search, Plus } from 'lucide-react';
 import { searchAction, type SearchProductResult } from '@/lib/catalog/search';
 import { toggleCompareAction } from '@/lib/compare/actions';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 
 type Props = {
   /** Slugs ya presentes en el comparador — para excluirlos del dropdown. */
@@ -134,6 +135,7 @@ export function CompareBarSearch({ existingSlugs, onAdded }: Props) {
                           alt=""
                           width={40}
                           height={40}
+                          style={{ transform: `scale(${getImageScale(r.primaryImagePath)})` }}
                           className="size-full object-contain p-1"
                         />
                       ) : null}

@@ -12,6 +12,7 @@ import {
 import { readCompareClientSide } from '@/lib/compare/client';
 import type { CompareEntry } from '@/lib/compare/cookie';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { CompareBarSearch } from '@/components/compare/compare-bar-search';
 
 type ThumbData = {
@@ -116,6 +117,7 @@ export function CompareBar({ thumbsBySlug }: Props) {
                       alt={t.name}
                       width={56}
                       height={56}
+                      style={{ transform: `scale(${getImageScale(t.primaryImagePath)})` }}
                       className="size-full object-contain p-1.5"
                     />
                   ) : (
