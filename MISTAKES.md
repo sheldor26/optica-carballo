@@ -24,6 +24,46 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Extendí `syncStockFromMLItem` para sync de precio pero NO actualicé el endpoint debug correspondiente
+
+**Estado**: 🟢 Corregido en mismo turno (founder reportó bug, agregar price_cents al endpoint)
+**Categoría**: Code / Consistency / Feature surface area
+
+### Qué pasó
+
+En iter previo extendí `syncStockFromMLItem` para sincronizar `price_cents` además de stock_qty. Cambio limpio en la función. Pero el endpoint `/api/admin/ml-force-sync/[mlItemId]` (que usa esta función para diagnóstico) tenía un SELECT con `'id, sku, stock_qty, ml_item_id, ml_variation_code'` — sin `price_cents`.
+
+Resultado: cuando founder reportó "el precio no sincronizó", el endpoint admin mostraba pre/post sin price_cents. No podía diagnosticar si el bug era (a) sync no detectó cambio, (b) sync sí actualizó pero ISR cache vieja, o (c) ML mandó precio distinto al esperado. Agregué price_cents al SELECT como fix.
+
+### Causa raíz
+
+Cuando extendí el sync para incluir un nuevo campo (price_cents), pensé en:
+- ✅ La función sync misma
+- ✅ Los callers automáticamente ganan el feature
+- ❌ Los endpoints DEBUG que diagnostican el sync
+
+El endpoint debug tiene un SELECT explícito que NO se actualiza automáticamente con el cambio en el sync. Hay que actualizarlo manualmente.
+
+### Costo
+
+- 1 turno extra: founder reporta bug, no puedo diagnosticar sin price_cents, agrego el campo, espero retest.
+- Si el bug del sync es real, retest es +1 turno más.
+
+### Regla preventiva
+
+**Cuando extendés una función de sync/update para incluir un nuevo campo**:
+1. Listar los CALLERS de la función — verificar que cada uno funciona con el nuevo campo (usualmente automático).
+2. Listar los ENDPOINTS DEBUG/MONITORING que muestran estado afectado por esa función — verificar que el SELECT incluya el nuevo campo.
+3. Listar los TESTS — actualizar si comparan estado pre/post.
+
+**Trigger fuerte**: si agregás un campo al UPDATE de algo, hacé `grep -rn "select.*<vieja-lista-campos>"` para encontrar SELECTs que necesitan actualización.
+
+### Cross-link
+
+Mismo nucleo que [[learning-extender-funcion-vs-crear-nueva]]: extender es eficiente PERO requiere actualizar las aristas (debug endpoints, tests, monitoring) que no escalan automáticamente.
+
+---
+
 ## 2026-05-30 — Componentes con state derivado del cookie deben polling/refrescar, no leer 1 vez al mount
 
 **Estado**: 🟢 Corregido en CompareButton (mismo turno que founder reportó)

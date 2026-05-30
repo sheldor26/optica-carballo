@@ -22,6 +22,50 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Endpoint admin con pre/post state + diagnosis_hints destraba debug remoto cuando sync falla
+
+**Categoría**: Debugging / Admin tooling
+**Confianza**: 🟢 Alta (validado iter sync precio debug)
+
+### Qué funcionó
+
+Founder reportó: "cambié precio en ML, web no actualizó". Sin acceso directo a la DB, normalmente sería 5+ rondas de Q&A. El endpoint `/api/admin/ml-force-sync/[mlItemId]` ya tenía 3 cosas que ahorraron tiempo:
+1. **Estado pre-sync**: SELECT de DB antes del sync.
+2. **Trigger del sync**: ejecuta `syncStockFromMLItem` y captura el resultado.
+3. **Estado post-sync**: SELECT de DB después del sync.
+4. **`recent_webhooks`**: últimos 5 webhooks recibidos para ese MLA.
+5. **`diagnosis_hints`**: texto humano que interpreta los resultados ("Sí, llegaron N webhooks. Mirá status si están ignored o failed").
+
+Con 1 sola curl al endpoint, el founder me pasa el JSON y veo:
+- Si el webhook llegó (descarta problema de configuración ML)
+- Si el sync detectó cambio (descarta problema de matching)
+- Cuál era el estado pre y post (identifica si update funcionó)
+
+### Por qué funciona
+
+Para integraciones con servicios externos (ML, MP, Resend, etc.), el debugging tradicional requiere acceso a DB + logs + servicio externo. Si el founder no puede dar acceso o el dev no tiene ambiente local, el ciclo de debug es ~10x más lento.
+
+Un endpoint admin que **expone estado relevante en pre/post + interpreta el resultado** convierte el debug en "1 curl → 1 JSON → diagnosticar". El `diagnosis_hints` campo es clave: el founder NO necesita entender el JSON crudo, solo leer la interpretación.
+
+### Cómo aplicar
+
+Para cualquier integración externa con sync (stock, price, status, etc.):
+1. Crear endpoint admin `/api/admin/<feature>-debug/[id]` o `/api/admin/<feature>-force-sync/[id]`.
+2. Incluir SIEMPRE: estado pre / acción / estado post / logs recientes / diagnosis_hints humano.
+3. SELECT debe incluir TODOS los campos que la integración pueda actualizar (no solo stock — también price, status, attributes que el sync toque).
+4. Cuando agregás un nuevo campo al sync, agregalo al SELECT del endpoint debug también.
+
+### Costo si se ignora
+
+Sin endpoint debug: cada bug reportado requiere acceso DB founder → Q&A → hipótesis → más Q&A → fix. 5-10 turnos.
+Con endpoint debug: founder ejecuta 1 curl, me pasa JSON, 1-2 turnos.
+
+### Cross-link
+
+Pattern relacionado con [[verificacion-post-deploy-curl]] — ambos hacen DEBUGGING accesible vía herramienta simple (curl).
+
+---
+
 ## 2026-05-30 — Extender función de sync existente vs crear nueva: pesa más si los callers ya están establecidos
 
 **Categoría**: Architecture / Code reuse
