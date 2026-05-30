@@ -22,6 +22,55 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Delegar research técnico de arquitectura a `ai-features-engineer` ANTES de proponer plan
+
+**Categoría**: Decision-making / Agent usage
+**Confianza**: 🟢 Alta (research VTO de hoy descubrió Jeeliz que cambió la decisión completa)
+
+### Qué funcionó
+
+Founder preguntó "¿se puede hacer un probador virtual con las fotos del catálogo?". Mi primera reacción fue armar 4 opciones desde lo que ya conocía (overlay 2D, SaaS, 3D, IA generativa). Founder eligió híbrido A+D. Antes de codear, decidí delegar research profundo al agente `ai-features-engineer` con prompt estructurado: viabilidad, stack, costos, privacidad LPDP, calidad esperada.
+
+El informe trajo un descubrimiento que mi research inicial no tenía: **Jeeliz VTO Widget** (open-source MIT, overlay 2D + tracking real-time, gratis, 100% client-side). Captura 70% del valor con 20% del esfuerzo. Cambió completamente la recomendación arquitectónica — de "híbrido A+D solo" a "Jeeliz + A+D combinados" donde Jeeliz cubre exploración y A+D cubre resultado fotorrealista para compartir.
+
+Sin el research delegado, hubiera armado un plan A+D directo de 6-9 sesiones cuando había un atajo de 2 sesiones que da 70% del valor.
+
+### Por qué funcionó
+
+Agentes especialistas tienen 2 ventajas concretas sobre mi research:
+1. **Web search + fetch dedicado**: el agente puede buscar más a fondo sin gastar mi context window.
+2. **Conocimiento de dominio actualizado**: el agente `ai-features-engineer` tiene system prompt enfocado en patrones de IA / VTO / RAG / streaming, conoce providers actuales (fal.ai, Replicate, Modal) y casos de uso.
+
+La diferencia entre "research basado en lo que sé" vs "research delegado a especialista que busca activamente" es crítica para arquitectura de features grandes. El primero está sesgado por mis blind spots; el segundo busca lo que NO sé que existe.
+
+### Regla preventiva
+
+Para decisiones arquitectónicas grandes (features con >5 sesiones de scope, integraciones third-party, stack nuevo, decisiones de costo recurrente), delegar research a agente especialista ANTES de proponer plan. Costo: 1 turno de mensaje. Beneficio: descubrir alternativas que no tenía en mi modelo mental.
+
+Agentes a usar según dominio:
+- **`ai-features-engineer`**: VTO, RAG, vision, function calling, costos de IA.
+- **`argentine-ecom`**: pagos, AFIP, logística, fricción legal AR.
+- **`seo-strategist`**: arquitectura URLs, schema, contenido.
+- **`optical-expert`**: decisiones técnicas ópticas.
+
+### Cuándo aplicar
+
+- Features que requieren stack o provider third-party nuevo.
+- Decisiones con costo recurrente >$20/mes.
+- Features con scope >5 sesiones.
+- Cuando la pregunta del founder es abierta ("¿se puede hacer X?") y mi respuesta inicial es "sí, hay N opciones".
+
+### Cuándo NO aplicar
+
+- Iteraciones sobre código existente.
+- Features con stack ya conocido del proyecto.
+- Decisiones reversibles de bajo costo (CSS, copy, organización de archivos).
+- Cuando el founder dice "no investigues, decidí" — confía en mi criterio.
+
+### Bonus
+
+Esto cierra un patrón de blind-spots: cuando armé las 4 opciones iniciales, mi "opción C - 3D real-time" la descarté como "imposible sin modelos 3D scaneados de cada producto". Pero Jeeliz es C-lite: overlay 2D + tracking, sin necesidad de 3D real. Mi categorización binaria (2D estático vs 3D escaneado) ocultó el middle ground. El agente trajo ese punto medio porque buscó activamente "VTO open-source eyewear" en lugar de razonar desde categorías mentales.
+
 ## 2026-05-30 — Tercera carpeta `supabase/cleanup/` para data scripts one-shot (ni schema ni seeds)
 
 **Categoría**: Data lifecycle / Convenciones Supabase

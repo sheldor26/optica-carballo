@@ -2,6 +2,25 @@
 
 ## Status
 
+🟡 **Research VTO (probador virtual) COMPLETO — ESPERANDO DECISIÓN FOUNDER** (2026-05-30). Founder preguntó si se puede hacer un probador virtual con las fotos actuales del catálogo. Le presenté 4 opciones (A overlay 2D, B SaaS tipo FittingBox $$$, C 3D real-time imposible sin modelos 3D, D IA generativa). Founder eligió investigar híbrido A+D (overlay 2D + refinamiento generativo). Delegué research al agente `ai-features-engineer` con prompt estructurado (viabilidad técnica, stack, costos, privacidad LPDP, calidad esperada, scope). Hallazgos clave del informe:
+
+1. **Híbrido A+D no es estándar en industria eyewear** — más común en VTO de ropa (Kling, Google Doppl). Para anteojos los serios usan 2D landmark puro (Jeeliz, Ditto) o 3D real-time (FittingBox, Warby Parker).
+2. **Techo de calidad vs FittingBox**: 60-70%. Resultado estático (NO real-time), latencia 8-15 seg, posibles fallos grotescos en perfil/contraluz/rimless.
+3. **Stack recomendado para A+D**: MediaPipe Face Landmarker (cliente, gratis, 478 landmarks) + fal.ai FLUX Kontext ($0.04/try, zero retention configurable, latencia 3-6s).
+4. **Costo realista**: $20-100/mes según volumen. Caching por hash(face_embedding + product_id) reduce 30-50%.
+5. **Privacidad LPDP**: la cara es dato biométrico sensible (ley 25.326 + AAIP). Requiere consentimiento explícito + zero retention + NO usar OpenAI (retiene 30 días).
+6. **DESCUBRIMIENTO CRÍTICO**: el agente trajo **Jeeliz VTO Widget** (open-source MIT) como opción C-lite que NO incluí en mi presentación original. Es overlay 2D PERO con tracking real-time en navegador (rotás cabeza). 100% client-side. Gratis. 2 sesiones de implementación. Captura 70% del valor con 20% del esfuerzo. Era una omisión de mi research inicial.
+
+**Recomendación final del agente y mía**: combinar AMBOS (Jeeliz + A+D) en 4 fases. Jeeliz para exploración real-time (modo "probate en vivo") + A+D para "generar foto perfecta para compartir/decidir". Cada tech hace lo que mejor sabe. Costo combinado MÁS BAJO que A+D solo porque solo 20-30% de exploradores disparan el A+D. Patrón validado en apps de éxito (YouCam, Sephora Virtual Artist, IKEA Place).
+
+**Plan propuesto 4 fases (8-11 sesiones total)**:
+- **Fase 1** (3 sesiones): Jeeliz V1 con 1 producto piloto para validar técnica.
+- **Fase 2** (1 sesión): Scaling Jeeliz a todo el catálogo + UI completa.
+- **Fase 3** (3-4 sesiones): Pipeline A+D con fal.ai + caching Supabase Storage + consentimiento LPDP.
+- **Fase 4** (1-2 sesiones): UX integrada Modo 1 ↔ Modo 2 + share WhatsApp + métricas.
+
+**Próximo paso (founder)**: responder si avanzamos con Fase 1 (Jeeliz V1 con producto piloto) o si pospone hasta tener catálogo más grande. Antes de empezar también validar: (a) aceptación de re-procesar fotos a PNG transparente + medir puntos de anclaje (puente, terminales) por producto, (b) aceptación de latencia 8-15s en modo A+D, (c) implementar modal de consentimiento LPDP. Sin acción de código pendiente — sprint NO arrancado, esperando decisión.
+
 🟢 **Cleanup productos placeholder Rusty — BOOTSTRAP LISTO, ESPERANDO APLICAR** (2026-05-30). Founder pidió eliminar los 4 productos `[PH]` de Rusty del seed inicial (rusty-wayfarer-classic-sol, rusty-aviator-pilot-sol, rusty-redondo-vintage-rx, rusty-square-modern-rx). Generaban ruido en `/anteojos-de-sol/rusty` y `/anteojos-de-receta/rusty` sin ser productos vendibles reales. Único Rusty real: `rusty-yau` (importado de ML), NO se toca. Implementación (commit `26847a0`):
 1. **`supabase/cleanup/20260530_delete_rusty_placeholders.sql`** (NUEVO, 54 líneas): DELETE idempotente con WHERE slug IN (...). FK CASCADE se encarga de product_variants (6 SKUs) + product_images + product_alerts. `order_items.product_id` ya es `ON DELETE SET NULL` (no rompe histórico si alguien compró un PH, aunque no debería). DO block que NOTICE cuántos productos Rusty quedan tras el cleanup (esperado: 1, el Yau).
 2. **`supabase/cloud-bootstrap.sql`** = copia del cleanup, listo para pegar en SQL Editor.

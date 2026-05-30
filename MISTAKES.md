@@ -72,6 +72,57 @@ Sub-causa: documenté la lógica con `Fuente: optical-expert` en el comentario p
 
 Detectado porque founder testeó manualmente con una receta real. Sin testing real, este bug podía durar más meses. Conecta con la regla preventiva general: **el founder es el smoke test final**. Para features donde el código encarna lógica de dominio (óptica, legal, comercial), shipear sin que el founder pase con caso de uso real es alto riesgo.
 
+## 2026-05-30 — Omití Jeeliz en mi presentación inicial de opciones VTO por categorización binaria 2D/3D
+
+**Estado**: 🟡 Mitigado — agente `ai-features-engineer` trajo Jeeliz al research, no llegó al código equivocado.
+**Categoría**: Research / Blind spots arquitectónicos
+
+### Qué pasó
+
+Founder preguntó por VTO (probador virtual de anteojos). Le presenté 4 opciones:
+- A: overlay 2D simple (sin tracking real-time)
+- B: SaaS dedicado FittingBox
+- C: 3D real-time con modelos 3D escaneados de cada anteojo ($50-500/modelo)
+- D: IA generativa img2img
+
+Founder eligió investigar híbrido A+D. Delegué research al `ai-features-engineer`. El agente me devolvió un descubrimiento crítico: **Jeeliz VTO Widget** (open-source MIT). Es overlay 2D PERO con tracking real-time en navegador — el cliente rota la cabeza y el anteojo lo sigue. Gratis. Sin modelos 3D.
+
+Esta opción captura 70% del valor con 20% del esfuerzo. Si hubiera quedado en mis 4 opciones originales, founder hubiera elegido híbrido A+D (6-9 sesiones, $20-100/mes recurrente) cuando había un atajo de 2 sesiones gratis que cubre la mayor parte del caso de uso.
+
+### Causa raíz
+
+**Categorización binaria mental "2D estático vs 3D escaneado"** al armar las opciones. Mi modelo:
+- "Para tracking real-time necesitás 3D verdadero" ← FALSO
+- "Overlay 2D = anteojo plano flotando sin movimiento" ← FALSO en cuanto a tracking
+
+Jeeliz desafía esa dicotomía: overlay 2D + tracking real-time en navegador con WebGL + face landmarks. Es categoría híbrida que no aparece si pensás en buckets fijos.
+
+Sub-causa: armé las 4 opciones desde lo que YA SABÍA, sin googlear "open source VTO eyewear" antes. El research delegado al agente sí lo hizo, por eso encontró Jeeliz.
+
+### Regla preventiva
+
+Cuando armes opciones técnicas para presentar al founder:
+1. **Antes de listar las opciones, hacer 1 búsqueda de "open source [domain] [feature]"** para no perderte el atajo que ya existe.
+2. **Cuestionarte las dicotomías** (estático/dinámico, simple/complejo, gratis/pago). Buscar el middle ground activamente.
+3. **Si el research es importante**, delegarlo al agente especialista ANTES de presentar (ver LEARNING gemelo).
+
+Aplicable a:
+- Features con estado del arte cambiante (IA, vision, AR, real-time).
+- Categorías de productos third-party donde nacen y mueren options seguido.
+- Cuando "lo conozco bien" es probablemente falso por velocidad del dominio.
+
+### Cuándo aplicar
+
+- Decisiones de stack para features nuevas.
+- Comparaciones build-vs-buy.
+- Cualquier arquitectura donde la respuesta dependa de "qué herramientas existen hoy".
+
+### Bonus
+
+Conecta con el LEARNING gemelo "Delegar research a agente especialista". El mistake es "armé opciones sin investigar"; el learning es "investigar antes via agent". Ambos resueltos por el mismo cambio de hábito.
+
+Es el 2do near-miss reciente donde mi modelo mental del estado del arte estaba desactualizado/incompleto. Si esto se repite 1 vez más, regla permanente en CLAUDE.md.
+
 ## 2026-05-30 — Casi shipeo bug de leak cross-user al diseñar banner que leía cookie en Server Component con ISR
 
 **Estado**: ✅ Cerrado — bug detectado en fase de diseño antes de commitear. Refactor a client component con useEffect + server action.
