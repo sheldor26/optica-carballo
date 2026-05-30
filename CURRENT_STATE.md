@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **2 fixes: bug sync precio Yamain + mobile thumbs 3 visibles** (2026-05-30).
+
+**Fix 1 — Bug sync precio Yamain encontrado y resuelto**: founder pasó JSON del force-sync que mostró `pre.price_cents = post.price_cents = 7983239` (DB) y `updated:0`. ML actual = $79.800 (7980000 centavos) — diff de $32 pero sync no actualizaba.
+
+Causa raíz: el seed 16 puso `mercadolibre_variation_code = '180172684195'` (variation_id literal de ML), pero la función `getVariationCode()` solo buscaba `seller_custom_field` o parseaba `attribute_combinations[DESIGN/COLOR].value_name`. Yamain no tiene ninguno → función retornaba null → matched = undefined → continue skipped → 0 updates.
+
+Fix: agregar `variation.id` como **fallback final** en `getVariationCode()`. Type return cambia de `string | null` → `string` (siempre devuelve algo). Comment actualizado con la convención (seller code > DESIGN parse > variation.id).
+
+**Fix 2 — Mobile thumbs cortadas**: founder reportó "en celulares las imágenes de variantes quedan cortadas/encimadas". Causa: cards mobile son ~150-170px ancho, los thumbs `size-16` (64px) más gap = 5 thumbs no entran. Fix CSS-only:
+- Constante nueva `MAX_VISIBLE_THUMBS_MOBILE = 3`
+- Thumbs 4to+ con clase `hidden sm:block` (oculto en mobile, visible en desktop)
+- 2 indicadores "+N": uno solo mobile (oculta los hidden mobile), uno solo desktop (los hidden desktop). Cada uno con su clase de visibility responsive.
+
+Sin JS detection — pure CSS responsive. SSR-safe.
+
+Typecheck verde.
+
+**Próximo paso (founder)**: push + retest:
+1. Force-sync precio Yamain: ahora debería detectar diff y actualizar
+2. `/anteojos-de-sol/vulk` mobile: Day Light muestra 3 thumbs + "+1" (es 4 variantes)
+
 🟢 **Opción A aplicada: scale 1.15 uniforme para 6 fotos Yamain** (2026-05-30). Founder eligió opción A entre las 3 propuestas. Medí las 6 fotos Yamain: todas 900×442 con anteojo ~82% W × 75% H (consistentes entre sí). Una sola scale uniforme funciona — no requiere per-foto fine-tuning. Agregué 6 entries a `lib/catalog/image-scale-overrides.ts` con valor `1.15` (compensa el aspect 2.04:1 de Yamain vs 1.5:1 del card).
 
 Aplica automático a todos los componentes que usan `getImageScale`: ProductCard, ProductGallery, compare-{table,bar,bar-search}, QuickView.

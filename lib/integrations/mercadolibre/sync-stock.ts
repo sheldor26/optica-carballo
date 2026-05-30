@@ -31,18 +31,25 @@ type MLVariation = {
 /**
  * Extrae el código de variation desde la respuesta de ML.
  *
- * ML guarda el código en 2 lugares posibles según cómo el seller cargó el item:
+ * ML guarda el código en 3 lugares posibles según cómo el seller cargó el item:
  * 1. `seller_custom_field`: campo dedicado, lo seteás explícito al crear/editar variation.
  * 2. `attribute_combinations[DESIGN].value_name`: el "name" de la variation
  *    con formato "CODIGO - Descripción descriptiva". El código va al inicio
  *    antes del primer ` - ` separator.
+ * 3. **Fallback**: `variation.id` (número largo tipo 182035179595). Útil
+ *    cuando el seller NO seteó custom_field NI usa DESIGN/COLOR parseable
+ *    (caso Vulk Yamain — discriminator es solo color frame/lens, sin
+ *    convención de naming).
  *
- * Caso Vulk Day Light (Sprint 2b debug 2026-05-29): el seller NO setea
- * seller_custom_field, lo guarda dentro del nombre del diseño.
+ * Convención al cargar producto en seed: si el producto tiene
+ * seller_custom_field o DESIGN parseable, usar ese código. Si no,
+ * usar el variation.id directamente.
  *
- * Si ambos son null, devuelve null → no se puede matchear.
+ * Bug detectado 2026-05-30: seed 16 Yamain puso variation.id pero esta
+ * función SOLO consideraba opciones 1 y 2 → nunca matcheaba → sync price
+ * skipped. Fix: agregar fallback opción 3.
  */
-function getVariationCode(v: MLVariation): string | null {
+function getVariationCode(v: MLVariation): string {
   if (v.seller_custom_field && v.seller_custom_field.length > 0) {
     return v.seller_custom_field;
   }
@@ -53,7 +60,9 @@ function getVariationCode(v: MLVariation): string | null {
     const code = designCombo.value_name.split(' - ')[0]?.trim();
     if (code && code.length > 0) return code;
   }
-  return null;
+  // Fallback: el ID interno de la variation (número largo). El seed
+  // debe haber cargado el mismo valor en mercadolibre_variation_code.
+  return String(v.id);
 }
 
 type MLItem = {

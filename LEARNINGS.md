@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Funciones que parsean IDs externos: agregar `variation.id` (o equivalente) como fallback final
+
+**Categoría**: Code / Defensive parsing
+**Confianza**: 🟢 Alta (validado iter Yamain bug sync)
+
+### Qué funcionó
+
+`getVariationCode(v)` originalmente parseaba 2 formatos posibles del código de variation ML (seller_custom_field o DESIGN value_name). Si ambos eran null, retornaba null → matched = undefined → sync silenciosamente skip.
+
+Fix: agregar `String(v.id)` como **fallback final**. La función ahora siempre devuelve algo. El seed puede cargar el formato que tenga disponible (string seller, DESIGN parse, o el ID literal numérico) y la función lo va a matchear con lo que ML mande.
+
+### Por qué funciona
+
+Cuando una función parsea IDs externos que pueden venir en N formatos distintos (porque el sistema downstream tiene conventions distintas), el approach defensivo es:
+1. Intentar formato A (más específico).
+2. Intentar formato B.
+3. Caer al ID interno garantizado del sistema externo (el variation.id en este caso, que SIEMPRE existe).
+
+Esto permite cargar data desde múltiples fuentes (sellers con convention, sellers sin convention) sin romper el sync.
+
+### Cómo aplicar
+
+Cuando escribís parser de IDs cross-system:
+1. Listar los formatos posibles.
+2. Identificar el ID/key garantizado del sistema (el que SIEMPRE viene).
+3. Implementar fallback en cascada: formato preferido → alternativos → ID garantizado.
+4. Type signature: devolver `string` (no `string | null`) si el ID garantizado existe.
+5. Documentar la convención al cargar data: "podés usar A, B o C — la función va a matchear cualquiera".
+
+### Costo si se ignora
+
+Bug silencioso: la función devuelve null, el caller no lo loggeaa explícitamente, el sync no procesa ese item. Bug invisible hasta que un usuario reporta "el precio/stock no sincroniza".
+
+### Cross-link
+
+Aplicación del pattern "always provide fallback" — relacionado con [[priceToCents-tolerante-undefined]] (priceToCents devuelve null pero el caller lo verifica explícito).
+
+---
+
 ## 2026-05-30 — Para N fotos del mismo producto/modelo: medir uniformidad ANTES de calcular scales per-foto
 
 **Categoría**: Workflow / Measurement-first

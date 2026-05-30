@@ -24,6 +24,53 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Cargué seed 16 Yamain con variation_id literal en `mercadolibre_variation_code` pero `getVariationCode()` no soportaba ese formato
+
+**Estado**: 🟢 Resuelto (agregué fallback variation.id en getVariationCode)
+**Categoría**: Code / Convention mismatch / Cross-system data flow
+
+### Qué pasó
+
+Seed 16 (Vulk Yamain) cargué `mercadolibre_variation_code = '180172684195'` (variation_id de ML, número largo). Pero la función `getVariationCode(v)` del sync solo soportaba 2 formatos:
+1. `seller_custom_field` (string corto, el seller setea)
+2. `attribute_combinations[DESIGN/COLOR].value_name` parseado antes de ` - `
+
+Yamain no tiene ni 1 ni 2. La función devolvía null → matched = undefined → continue skipped → 0 updates. Sync silenciosamente no funcionaba para Yamain.
+
+Founder reportó "sync precio Yamain no funciona". Debug con JSON del force-sync mostró DB ≠ ML pero `updated: 0`. Inspeccioné `getVariationCode` y vi el gap.
+
+### Causa raíz
+
+Cuando creé el seed 16 con la nueva variante Yamain, NO verifiqué que el formato de `mercadolibre_variation_code` que cargué sea compatible con la función que lo lee. Tomé el primer ID que ML me devolvió (variation.id) sin chequear que el sync lo entendiera.
+
+Esto es OTRA versión del pattern "extender feature sin validar todas las aristas":
+- Iter prev: agregué price_cents al sync pero no al endpoint debug.
+- Iter prev: agregué image-scale-overrides al ProductCard pero no al comparador.
+- ESTE iter: cargué variation_code con formato no soportado por la función que lo lee.
+
+### Costo
+
+- Sync de Yamain (stock + price) NO funcionaba silenciosamente. Si el founder hubiera cambiado stock en ML, también habría fallado (no solo precio).
+- 1 turno extra de debug.
+
+### Regla preventiva
+
+**Para CUALQUIER campo nuevo cargado en DB que cruza sistemas (ML, MP, AFIP)**:
+1. Verificar el FORMATO que el sistema downstream espera.
+2. Si hay variantes (formato A o B), probar que el sistema acepte el que vas a cargar.
+3. Considerar: ¿la función parser tiene fallback razonable para mi formato? Si no, agregar fallback ANTES de cargar.
+
+### Pattern dominante de la sesión
+
+Esta es la 3RA recurrencia del pattern "extender feature en lugar A sin validar lugar B":
+1. [[sync-price-extended-sin-endpoint-debug]]
+2. [[image-scale-overrides-sin-comparador]]
+3. [[seed-16-variation-id-sin-getVariationCode]]
+
+Cumple sanity check de [[mistake-difer-cierre-docs]]: ya hay regla escalada en CLAUDE.md (regla 11). El pattern visible aristas requiere su propia regla. Considerar escalation similar.
+
+---
+
 ## 2026-05-30 — Cuando creé image-scale-overrides, solo apliqué a ProductCard/ProductGallery — comparador (3 componentes) quedó sin aplicar (PATRÓN RECURRENTE 2da vez en sesión)
 
 **Estado**: 🟢 Resuelto (fix aplicado tras founder reportar)

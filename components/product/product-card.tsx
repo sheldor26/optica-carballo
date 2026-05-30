@@ -198,10 +198,18 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   );
 }
 
+// Mobile: 3 thumbs visibles, resto cuenta como "+N". Desktop (sm+): hasta 5.
+// Razón: cards mobile son ~150-170px de ancho — 4+ thumbs size-16 (64px)
+// se encimaban o cortaban visualmente. CSS-only responsive sin JS detection.
+const MAX_VISIBLE_THUMBS_MOBILE = 3;
+
 /**
  * Tira horizontal de thumbnails (uno por variante). Click cambia la imagen
  * mostrada en la card. Sin stock → tinte gris. Si hay más de MAX_VISIBLE_THUMBS,
  * mostramos "+N" al final (sin overflow horizontal).
+ *
+ * Mobile: solo 3 thumbs visibles. Desktop (sm+): hasta 5. Indicador "+N"
+ * dinámico según breakpoint (CSS-only, hidden/sm:flex).
  */
 function VariantThumbnails({
   variants,
@@ -214,14 +222,20 @@ function VariantThumbnails({
 }) {
   const visible = variants.slice(0, MAX_VISIBLE_THUMBS);
   const hiddenCount = variants.length - visible.length;
+  const hiddenCountMobile = Math.max(
+    0,
+    variants.length - MAX_VISIBLE_THUMBS_MOBILE,
+  );
 
   return (
     <div className="mt-3 flex items-center justify-center gap-2">
-      {visible.map((v) => {
+      {visible.map((v, idx) => {
         const isActive = v.id === selectedVariantId;
         const url = v.primaryImagePath
           ? getProductImageUrl(v.primaryImagePath)
           : null;
+        // Mobile: solo los primeros 3 thumbs visibles. Resto hidden hasta sm+.
+        const hideOnMobile = idx >= MAX_VISIBLE_THUMBS_MOBILE;
         return (
           <button
             key={v.id}
@@ -236,6 +250,7 @@ function VariantThumbnails({
                 ? 'border-foreground'
                 : 'border-border/60 hover:border-foreground/40',
               !v.inStock && 'opacity-50',
+              hideOnMobile && 'hidden sm:block',
             )}
           >
             {url ? (
@@ -254,8 +269,15 @@ function VariantThumbnails({
           </button>
         );
       })}
+      {/* Mobile: indicador "+N" si hay más de 3. Solo visible <sm. */}
+      {hiddenCountMobile > 0 && (
+        <span className="text-muted-foreground text-xs sm:hidden">
+          +{hiddenCountMobile}
+        </span>
+      )}
+      {/* Desktop: indicador "+N" si hay más de 5. Solo visible sm+. */}
       {hiddenCount > 0 && (
-        <span className="text-muted-foreground text-xs">
+        <span className="text-muted-foreground hidden text-xs sm:inline">
           +{hiddenCount}
         </span>
       )}
