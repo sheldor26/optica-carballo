@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **Vulk Yamain — seed 16 generado completo (producto + 3 variantes + 7 imágenes)** (2026-05-30). Founder respondió las 3 preguntas. Datos consolidados de 2 listings ML.
+
+**Producto**: Vulk Yamain (sol, ovalado, mujer). G-Flex + Flexo, policarbonato UV400, 30.9g, talle Large, medidas 146/58/55/16/145mm. `prescription_adapter=false`. `has_polarized_variant=true` porque mix de polarizadas y clásicas.
+
+**3 variantes a cargar** (founder NO sube las 2 marrones por problemas color fabricante):
+- SKU 127100 CRY/CSV01 (transparente, gris degradé, NO POL): $79.832,39 — stock 6 — MLA1391497225 var 180172684195
+- SKU 127101 MBLK/G3237 (negro mate, gris oscuro, NO POL): $79.832,39 — stock 3 — MLA1391497225 var 182035179595
+- SKU 127104 SBLK/SG91 POL (negro brillo, gris degradé POLARIZADA): $86.228 — stock 1 — MLA2026217358 (listing SEPARADO, no variation)
+
+Decisión técnica: variante 127104 sobrescribe `lens_treatment` con `["polarized", "uv400"]` en sus attributes. Producto base tiene `["uv400"]` (común). Flag `has_polarized_variant` permite a UI mostrar badge especial.
+
+Decisión variation 3 "Ojo de Gato": founder confirmó que las 4 son oval físicamente. Metadata ML mal cargada → ignorada. Las 2 variantes marrones que NO subimos también ovaladas.
+
+**Próximo paso (founder)**:
+1. Subir 7 fotos al bucket `products/vulk-yamain-sol/` con nombres EXACTOS:
+   - 01-cry-lateral.jpg, 02-cry-frontal.jpg
+   - 03-mblk-lateral.jpg, 04-mblk-frontal.jpg
+   - 05-sblk-lateral.jpg, 06-sblk-frontal.jpg
+   - 07-medidas.jpg (común a todas)
+2. Aplicar `supabase/seeds/16_vulk_yamain.sql` al cloud (vía SQL Editor o decirme "aplicalo" para MCP).
+
 🟡 **Vulk Yamain — investigación en curso, esperando 3 datos del founder** (2026-05-30). Founder pidió cargar producto nuevo Vulk Yamain (sol). 4 variantes (3 con stock, 1 sin). Apliqué learning recién documentado: usé `/api/admin/ml-import-preview/MLA1391497225` para auto-extraer datos.
 
 **Datos extraídos automáticamente de ML**:
