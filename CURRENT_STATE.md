@@ -2,6 +2,21 @@
 
 ## Status
 
+🟡 **Iter 13.2 — V3 generado (anteojo al 92% del frame), founder decidiendo upload** (2026-05-30). Tras revert iter 13.1, founder dio feedback empírico observando 2 cosas: (1) en el comparison V2 que generé (Python) las 4 fotos se ven uniformes pero un poco chicas con espacio blanco lateral, (2) en producción actual (sin scale CSS), var 1 corta patilla sutilmente, var 2 y 4 tamaño correcto, var 3 más chica.
+
+**Interpretación**: el founder validó visualmente el approach V2 (fotos normalizadas) pero pide +7% de tamaño. Y reconoce que sin modificar fotos NO se puede tener simultáneamente "var 1 sin cortar + var 3 más grande" porque las fotos originales tienen tamaño de anteojo distinto en pixels.
+
+V3 generado:
+- Anteojo al 92% del width del frame (1840 px en canvas 2000) — vs 85% de V2
+- Padding lateral 80 px cada lado (4% por lado)
+- Las 4 fotos con anteojo del MISMO width exacto, completas sin recortes
+- Files: `~/Desktop/vulk-normalized/01-lateral.png`, `04-lateral-rosa.png`, `07-mblk-lateral.png`, `10-brown-lateral.png`
+- Comparison: `~/Desktop/vulk-V3.png`
+
+**Próximo paso (founder)**: decidir entre upload manual (A: Supabase Dashboard, 5 min clicks) vs script automatizado (B: yo escribo script Node con supabase-js, founder corre 1 comando).
+
+**Estado CSS**: sin cambios — `object-contain` sin scale (post-revert iter 13.1). Las fotos V3 con CSS actual producen resultado uniforme + completo.
+
 🔴 **Iter 13.1 — Revert de scale-[1.22], grid Python NO representó fielmente el browser real** (2026-05-30). Founder testeó scale-1.22 en producción y reportó "quedó mucho peor que antes". Revertí inmediatamente vía `git revert 80a134a` → commit `7eb1191`. Estado CSS actual: vuelto a iter 9 (sin scale, `object-contain` natural).
 
 **Causa raíz**: el grid Python que generé (5 scales × 4 variantes en imagen estática) **no representó fielmente** cómo se renderiza `transform: scale()` + `object-contain` + `aspect-ratio` en el browser real. Mi simulación con resize + crop es una aproximación, no equivalencia. El "punto de equilibrio" que vi en el grid no existe igual en el browser.

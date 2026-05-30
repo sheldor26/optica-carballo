@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Founder puede cambiar su rechazo inicial al ver el resultado intermedio del approach rechazado
+
+**Categoría**: Communication / Founder collaboration
+**Confianza**: 🟡 Media (1 vez observado en iter 13.2, falta validar pattern)
+
+### Qué pasó
+
+En iter 12.1 founder dijo claramente "no las voy a cambiar a las fotos porque no es eso", rechazando approach V2 (fotos normalizadas). En iter 13.1, tras varios iters de soluciones CSS fallidas, el founder mismo observó en mi comparison Python V2 que las 4 fotos "se ven parecidas, falta un poco más grandes". Eso fue una **validación implícita del approach previamente rechazado**.
+
+### Por qué funciona
+
+El founder rechazó el approach inicial porque (a) requería trabajo manual de reprocesar fotos en Photopea, o (b) intuitivamente creía que había solución de código pura. Cuando vio el resultado intermedio (comparison V2) sin tener que hacer nada manual, su evaluación cambió: el resultado le gustó.
+
+La diferencia: en iter 12.1 le pedí que él reprocesara fotos. En iter 12+ las reprocesé yo automáticamente. El rechazo inicial era al TRABAJO, no al approach. Cuando demostré que yo automatizaba el trabajo, el rechazo se levantó.
+
+### Cómo aplicar
+
+Cuando el founder rechaza un approach con "no es eso":
+1. Primer reflejo correcto: revisar el supuesto base ([[supuesto-base-revisar]] aplica acá).
+2. Si tras explorar otras opciones la solución sigue apuntando al approach rechazado, generar el RESULTADO de ese approach automáticamente (sin pedir trabajo al founder) y mostrárselo.
+3. Si el resultado le gusta visualmente, el rechazo se levanta solo.
+4. Si insiste en rechazar, ahora sí buscar OTRA vía.
+
+**Trigger**: si la solución técnicamente correcta requiere el approach rechazado, NO empujar verbalmente. Demostrar visualmente con un POC sin trabajo del founder.
+
+### Cross-link
+
+Complementa [[empujé-modificar-fotos-iters-9-13]] del MISTAKES.md — yo perdí 4 iters empujando verbalmente. Cuando demostré el POC visualmente (comparison V2 generada por mí, sin trabajo del founder), el founder mismo cerró el loop.
+
+---
+
 ## 2026-05-30 — Cuando 2 extremos son malos (parámetro X demasiado bajo + demasiado alto), generar grid visual del rango y dejar al founder elegir el punto
 
 **Categoría**: Empirical tuning / Founder collaboration
