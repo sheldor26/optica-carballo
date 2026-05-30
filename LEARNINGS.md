@@ -22,6 +22,46 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Delegar research técnico crítico a `ai-features-engineer` ANTES de implementar API integraciones complejas
+
+**Categoría**: AI Features / API integration / Pre-implementation research
+**Confianza**: 🟢 Alta (validado en upgrade lector receta Tier 1)
+
+### Qué funcionó
+
+Antes de implementar tool use + extended thinking + few-shot en el endpoint del lector de receta, delegué research específico al `ai-features-engineer`: "¿son compatibles tool use forzado + thinking? ¿shape exacto del request body? ¿cómo embeber few-shot en Vision?". El agente devolvió en ~40s un hallazgo crítico: **`tool_choice: { type: "tool", name: ... }` (forzado) NO es compatible con extended thinking activo**. Restricción no obvia, fácil de pifiar si vas directo al código.
+
+Si hubiera implementado sin research:
+- Habría usado `tool_choice` forzado (la opción "más limpia" intuitivamente).
+- El endpoint habría tirado 400 en producción al recibir la primera receta.
+- Founder habría reportado "el lector no funciona" → 1-2 iteraciones de debug.
+
+Con research previo: ajusté a `tool_choice: "auto"` + system prompt que fuerza el comportamiento via texto. Implementación funcionó al primer build.
+
+### Por qué funciona
+
+Las APIs de modelos LLM tienen restricciones de compatibilidad entre features (tool use, thinking, system prompt caching, vision, etc.) que NO son obvias leyendo la doc por separado de cada feature. La doc cubre cada feature aisladamente, pero las interacciones entre features están enterradas en notes o changelogs.
+
+El `ai-features-engineer` tiene `web_fetch` + conocimiento específico de patterns de Anthropic. Cuando le preguntás "¿compatibles X + Y + Z?" en lugar de "¿cómo uso X?", devuelve el hallazgo crítico que un read directo de doc te haría leer 4 páginas distintas para descubrir.
+
+### Cómo replicar
+
+ANTES de implementar cualquier integración con LLM API que combine 2+ features (ej: tool use + thinking, RAG + caching, streaming + tools), invocar `ai-features-engineer` con prompt específico:
+- Listá las features que querés combinar.
+- Pedile el shape exacto del request body que funciona.
+- Pedile parser TS de la response.
+- Pedile que marque con ⚠️ los items que no puede confirmar 100%.
+
+Tiempo invertido: ~1 min en escribir prompt + ~40s espera de respuesta. ROI: evitás 1-2 iter de debug en producción.
+
+### Aplicaciones futuras
+
+- Recomendador de monturas IA (tool use + vision + structured output).
+- Asistente conversacional RAG (streaming + tool use + caching).
+- Generador de descripciones de producto (caching + thinking + structured output).
+
+---
+
 ## 2026-05-30 — Para decisiones estéticas, PEDIR referencias visuales del founder antes de proponer opciones
 
 **Categoría**: Founder collaboration / Design discovery

@@ -4,6 +4,12 @@ import {
   PRESCRIPTION_USER_PROMPT,
 } from '@/lib/prescription/prompt';
 import { PrescriptionAnalysisSchema } from '@/lib/prescription/types';
+import {
+  EXTRACT_PRESCRIPTION_TOOL,
+  type AnthropicContentBlock,
+  type AnthropicMessageResponse,
+} from '@/lib/prescription/tool-schema';
+import { FEW_SHOT_MESSAGES } from '@/lib/prescription/few-shot';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -18,6 +24,24 @@ const ALLOWED_MIMES = new Set([
 ]);
 const MODEL_ID = 'claude-sonnet-4-6';
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+
+/**
+ * Tier 1 upgrade lector inteligente (2026-05-30):
+ * - A. Tool use (`extract_prescription`) — elimina parsing regex frágil.
+ * - B. Few-shot examples descriptivos (sin imágenes todavía) en `few-shot.ts`.
+ * - C. Extended thinking habilitado (`budget_tokens: 2000`) — el modelo razona
+ *   antes de extraer.
+ *
+ * Restricción crítica de la API: `tool_choice: { type: "tool", name: ... }`
+ * (forzado) NO es compatible con extended thinking. Usamos `tool_choice: "auto"`
+ * + system prompt fuerte que fuerza el uso de la tool. Fallback si modelo
+ * devuelve texto en vez de llamar la tool.
+ *
+ * `max_tokens` debe ser > thinking budget + output esperado del tool. 4096
+ * deja margen para receta compleja con tablas largas.
+ */
+const THINKING_BUDGET_TOKENS = 2000;
+const MAX_TOKENS = 4096;
 
 /**
  * Rate limiting in-memory simple (sin Upstash).
@@ -87,9 +111,33 @@ function detectImageMime(buffer: Buffer): string | null {
   return null;
 }
 
-type AnthropicMessageResponse = {
-  content: Array<{ type: string; text?: string }>;
-};
+/**
+ * Extrae el `input` del tool_use block. Ignora thinking/redacted_thinking
+ * blocks. Lanza error con detalle si el modelo respondió texto en vez de
+ * llamar la tool (caso edge con `tool_choice: "auto"`).
+ */
+function extractToolInput(response: AnthropicMessageResponse): unknown {
+  const toolUseBlock = response.content.find(
+    (b): b is Extract<AnthropicContentBlock, { type: 'tool_use' }> =>
+      b.type === 'tool_use' && b.name === EXTRACT_PRESCRIPTION_TOOL.name,
+  );
+
+  if (toolUseBlock) {
+    return toolUseBlock.input;
+  }
+
+  // Fallback: modelo respondió texto en vez de llamar tool. Log + throw
+  // para que el caller devuelva 502 al cliente. No exponemos contenido del
+  // texto (puede incluir datos médicos).
+  const textBlock = response.content.find(
+    (b): b is Extract<AnthropicContentBlock, { type: 'text' }> =>
+      b.type === 'text',
+  );
+  const textLen = textBlock?.text?.length ?? 0;
+  throw new Error(
+    `Model did not call extract_prescription tool. Text block length: ${textLen}. stop_reason: ${response.stop_reason}`,
+  );
+}
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -164,7 +212,7 @@ export async function POST(request: Request) {
 
   const base64 = buffer.toString('base64');
 
-  // Construir contenido según tipo: PDF usa type=document, imagen usa type=image.
+  // Construir contenido user: PDF usa type=document, imagen usa type=image.
   const userContent =
     detectedMime === 'application/pdf'
       ? [
@@ -190,6 +238,13 @@ export async function POST(request: Request) {
           { type: 'text', text: PRESCRIPTION_USER_PROMPT },
         ];
 
+  // Few-shot examples (4 mensajes user/assistant/user-tool_result × 4) seguido
+  // del mensaje real con la imagen del cliente. Total: 12 mensajes few-shot + 1.
+  const messages = [
+    ...FEW_SHOT_MESSAGES,
+    { role: 'user' as const, content: userContent },
+  ];
+
   let anthropicData: AnthropicMessageResponse;
   const startedAt = Date.now();
   try {
@@ -202,9 +257,18 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         model: MODEL_ID,
-        max_tokens: 1500,
+        max_tokens: MAX_TOKENS,
+        thinking: {
+          type: 'enabled',
+          budget_tokens: THINKING_BUDGET_TOKENS,
+        },
+        tools: [EXTRACT_PRESCRIPTION_TOOL],
+        // ⚠️ tool_choice: "auto" obligatorio con extended thinking habilitado.
+        // Forzado ({ type: "tool", name: ... }) NO es compatible con thinking.
+        // El system prompt fuerza el uso de la tool via texto.
+        tool_choice: { type: 'auto' },
         system: PRESCRIPTION_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userContent }],
+        messages,
       }),
     });
 
@@ -234,27 +298,15 @@ export async function POST(request: Request) {
     );
   }
 
-  // Extraer y limpiar el JSON del response.
-  const textBlock = anthropicData.content.find((b) => b.type === 'text');
-  const rawText = textBlock?.text?.trim() ?? '';
-  const jsonText = (() => {
-    const fence = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    if (fence) return fence[1]!.trim();
-    const start = rawText.indexOf('{');
-    const end = rawText.lastIndexOf('}');
-    if (start >= 0 && end > start) return rawText.slice(start, end + 1);
-    return rawText;
-  })();
-
-  let parsedJson: unknown;
+  // Extraer input del tool_use block. Si el modelo no llamó la tool, fallback
+  // → 502. No logueamos el contenido del input (datos médicos).
+  let toolInput: unknown;
   try {
-    parsedJson = JSON.parse(jsonText);
-  } catch {
-    console.error('[prescription] Failed to parse model output as JSON');
+    toolInput = extractToolInput(anthropicData);
+  } catch (err) {
+    console.error('[prescription] Tool extraction failed:', String(err));
     return NextResponse.json(
-      {
-        error: 'El análisis devolvió un formato inesperado. Probá de nuevo.',
-      },
+      { error: 'El análisis devolvió un formato inesperado. Probá de nuevo.' },
       {
         status: 502,
         headers: { 'Cache-Control': 'no-store, private' },
@@ -262,10 +314,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const validated = PrescriptionAnalysisSchema.safeParse(parsedJson);
+  // Validación final con Zod — defense-in-depth (rangos, signos, enums).
+  // El tool schema fuerza shape, Zod fuerza reglas semánticas finas
+  // (cilindro siempre ≤ 0, eje 1-180, etc).
+  const validated = PrescriptionAnalysisSchema.safeParse(toolInput);
   if (!validated.success) {
     console.error(
-      '[prescription] Schema validation failed:',
+      '[prescription] Zod validation failed:',
       validated.error.issues
         .map((i) => `${i.path.join('.')}: ${i.message}`)
         .join('; '),

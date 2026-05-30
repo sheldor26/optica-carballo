@@ -2,6 +2,69 @@
 
 ## Status
 
+🟢 **Lector de receta IA — Tier 1 (A+B+C) implementado: tool use + few-shot + extended thinking** (2026-05-30). Founder pidió "aplicá las mejoras" sin esperar las recetas reales. Implementé los 3 cambios de Tier 1 con build verificado.
+
+**Archivos creados**:
+- [lib/prescription/tool-schema.ts](lib/prescription/tool-schema.ts): JSONSchema de la tool `extract_prescription`. Keys en español (`esf`/`cil`/`eje`/`add`/`dnp`/`od`/`oi`) — matchea exactamente el Zod schema en `types.ts` para que el consumer (`prescription-reader.tsx`) no requiera cambios. Export también de tipos `AnthropicContentBlock` + `AnthropicMessageResponse`.
+- [lib/prescription/few-shot.ts](lib/prescription/few-shot.ts): 4 ejemplos user/assistant con `tool_use` blocks + `tool_result` dummy entre cada uno (la API exige tool_result después de cada tool_use en historial). Cubre: digital limpia, manuscrita con cilindro positivo a transponer, contactología, no-receta.
+
+**Archivos modificados**:
+- [lib/prescription/prompt.ts](lib/prescription/prompt.ts): adaptado a tool use. Texto "devolvé JSON" → "llamá la tool extract_prescription". Agregada referencia a los 4 ejemplos previos. Convención cilindro positivo: ahora el modelo lo TRANSPONE a negativo + flagea (antes lo devolvía positivo y el backend transponía).
+- [app/api/prescription/route.ts](app/api/prescription/route.ts): refactor completo. `thinking: { type: "enabled", budget_tokens: 2000 }`, `tools: [EXTRACT_PRESCRIPTION_TOOL]`, `tool_choice: { type: "auto" }`. Mensajes = `[...FEW_SHOT_MESSAGES, { role: 'user', content: [imagen + texto] }]`. Parser nuevo `extractToolInput()` busca el bloque `tool_use` por nombre, ignora `thinking`/`redacted_thinking`. Fallback explícito si modelo no llama la tool → 502 sin loggear contenido (datos médicos). `max_tokens: 1500 → 4096` para dejar margen al thinking budget.
+
+**Archivos NO tocados (consumer compatible)**:
+- [lib/prescription/types.ts](lib/prescription/types.ts): Zod schema queda igual. Sigue validando server-side post tool_use (defense-in-depth para rangos finos: cilindro ≤ 0, eje 1-180).
+- [components/tools/prescription-reader.tsx](components/tools/prescription-reader.tsx): consumer recibe el mismo shape `PrescriptionAnalysis`. Cero cambios de UI.
+
+**Decisiones técnicas críticas**:
+1. **`tool_choice: "auto"` (no forzado)** — restricción Anthropic API: `tool_choice: { type: "tool", name: "..." }` (forzado) NO es compatible con extended thinking activo. Workaround: system prompt explícito "SIEMPRE llamás extract_prescription" + fallback 502 si modelo devuelve texto en lugar de llamar la tool.
+2. **Keys del schema en español** (esf/cil/eje/add) en lugar de inglés (sphere/cylinder/axis/addition) — evita transformación intermedia + permite que el Zod schema y el consumer existente queden intactos.
+3. **Few-shot descriptivos sin imágenes** — accuracy gain estimado +5-10%. Upgrade futuro: agregar imágenes anonimizadas (+20-30%) cuando founder mande recetas reales con marker tapando datos personales (ley 25.326).
+4. **`max_tokens: 4096`** — debe ser > `budget_tokens` + output esperado. Receta compleja puede consumir hasta 2000 en thinking + 1500 en tool_use.
+
+**Riesgos pendientes (a verificar en deploy)**:
+- ⚠️ ID exacto del modelo: usamos `claude-sonnet-4-6` (mismo que tenía el endpoint pre-refactor). Si Anthropic exige versión datada (ej `claude-sonnet-4-6-20251022`), ajustar `MODEL_ID`.
+- ⚠️ Header `anthropic-beta: interleaved-thinking-2025-05-14` — research sugiere no necesario para single-shot, omitido. Si la API tira error → agregar.
+- ⚠️ Latencia esperada: pre-refactor ~5-9s con Sonnet 4.6. Con thinking 2000 tokens + few-shot agrega ~3-5s. Total esperado ~8-14s. UI ya tiene LoadingState con tips rotativos para suavizar la espera.
+
+**Próximo paso (founder)**:
+1. Push de los cambios (yo no pusheo a main).
+2. Probar con 1-2 recetas reales para validar accuracy + latencia.
+3. Cuando esté listo: anonimizar 4-6 recetas reales (tapar nombre/DNI/matrícula con marker negro) para upgrade B con imágenes embebidas en few-shot.
+
+**Build verificado**: `npx tsc --noEmit` OK + `npx next build` compila sin errores. `/lector-de-receta` y `/api/prescription` listos.
+
+🟡 **Propuesta de upgrade al lector de recetas IA — 3 tiers ofrecidos, decisión founder pendiente** (2026-05-30, superado por implementación arriba). Founder preguntó "cómo volver más inteligente al lector de recetas". Audité el estado actual:
+
+**Estado actual del lector** (commit base):
+- `app/api/prescription/route.ts`: endpoint con Sonnet 4.6 Vision, rate limit in-memory 10/hr/IP, validación Zod schema, anti-injection, no logging de datos médicos (ley 25.326).
+- `lib/prescription/prompt.ts`: prompt detallado con whitelist aliases OD/OI, convenciones AR (cilindro siempre negativo), DNP vs OD/OI bien distinguido.
+- `lib/prescription/types.ts`: schema Zod con confidence por campo + warning flags + `evaluateInPerson()` (umbrales presencial: high_esf, high_cil, anisometropia, has_add, contact_lens).
+- Output formato: JSON parseado vía regex desde texto del modelo (fallback con `{`/`}` indices).
+
+**3 tiers de mejoras propuestas al founder**:
+
+**Tier 1 — Quick wins (1–3 días, alto impacto)**:
+- A. Tool use / function calling (forzar schema, elimina parsing regex flaky)
+- B. Few-shot examples con 3–5 recetas argentinas reales en system prompt
+- C. Extended thinking habilitado (`thinking: { type: "enabled", budget_tokens: 2000 }`)
+
+**Tier 2 — Medium (3–5 días, robustez)**:
+- D. Verificación adversarial en segunda pasada (skeptic agent)
+- E. Pre-procesamiento server-side (auto-rotate, HEIC→JPG, sharpening, PDF multipage)
+- F. Fallback dinámico Opus para casos low-confidence
+
+**Tier 3 — Big (1–2 semanas, ventaja competitiva)**:
+- G. Feedback loop con correcciones del user (requiere consentimiento legal — dato médico)
+- H. OCR híbrido Google Vision + Claude
+- I. Streaming UX (campos a medida que se extraen)
+
+**Recomendación dada**: empezar por A+B+C juntos (Tier 1) — cambios contenidos al endpoint + prompt, sin tocar UI, máximo salto de accuracy sobre lo que ya hay.
+
+**Pregunta abierta al founder**: ¿qué combinación priorizamos? Si elige Tier 1, invoco `ai-features-engineer` para diseñar la implementación específica.
+
+**Decisiones técnicas tomadas en este turno**: ninguna implementada. Solo auditoría + propuesta. Aplico regla 4 de CLAUDE.md: "Si no está decidido en DECISIONS.md, proponé y pedí aprobación".
+
 🟢 **Fix tipografía hero: letras "movidas" (j, g) — opacity-only en LetterReveal** (2026-05-30). Founder reportó que la J se ve "movida" en el hero. Diagnóstico: `LetterReveal` envolvía cada letra en `<motion.span display: inline-block>` + animaba `y: 14 → 0`. El transform residual + inline-block causaban subpixel/baseline shift específicamente en letras con descender (j, g, p, y) — se veían "movidas" tras la animación.
 
 Fix:
