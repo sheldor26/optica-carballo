@@ -74,6 +74,10 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
 2. Aplicar bootstrap en SQL Editor.
 3. Verificar con force-sync que las 4 variantes muestran `skipped: 4` (todas alineadas).
 
+**🟡 Pendiente founder (2026-05-30)**: 2 issues en gallery Vulk Day Light:
+1. Imágenes de Carey/Rosa se ven MÁS GRANDES en thumbnails que MBLK/BROWN. Causa: composición de las fotos (Carey/Rosa cropeadas ~80% canvas, MBLK/BROWN ~50-60% con más aire). NO bug del componente. Opciones presentadas al founder: A) reducir padding (escala el problema), B) re-cropear fotos MBLK/BROWN (root cause fix), C) object-cover en lugar de object-contain (corta detalle). Founder decide path.
+2. Imagen modelo sigue en posición 3, debería estar en 4. Causa: `supabase/cloud-bootstrap.sql` con UPDATE sort_order pendiente apply desde hace 2 commits.
+
 **Gallery flecha overlay sutil iter 2** (2026-05-30 commit `a7d963b`). Founder reportó que la flecha al costado (iter 1) achicaba los thumbs porque ocupaba lugar del row. Refactor:
 - Container con `relative` (no flex row).
 - Grid de 3 cols con 100% del ancho → thumbs mantienen el tamaño completo que tienen cuando hay solo 3 fotos.

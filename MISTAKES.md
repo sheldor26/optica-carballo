@@ -24,6 +24,30 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — No validé consistencia visual de composición entre fotos subidas por founder
+
+**Estado**: 🟡 Mitigado por documentación al founder + opciones de fix presentadas.
+**Categoría**: Validación de UGC / Asunciones sobre uniformidad
+
+### Qué pasó
+
+Al sumar variantes MBLK/BROWN al Vulk Day Light, no validé que las fotos tuvieran composición similar a las originales (Carey/Rosa). Founder subió las fotos con cropping diferente (más aire alrededor del producto) y se ve inconsistente en los thumbnails. Cuando reportó "se ven más grandes las primeras 2", tuve que diagnosticar después.
+
+### Causa raíz
+
+No establecí (ni propuse al founder establecer) un standard de composición para fotos del catálogo. Cada upload se hace con criterio del momento.
+
+### Regla preventiva
+
+Para uploads de fotos al catálogo:
+1. **Especificar en PRODUCT_SCHEMA.md (o doc dedicado) el standard de composición**: "anteojo centrado, ocupando 75-85% del frame, fondo blanco con padding consistente".
+2. **Al pedir nuevas fotos al founder, especificar el standard**: ej "cropear como las Vulk Day Light Carey ya cargadas".
+3. **Verificar visualmente el resultado** tras apply del founder, antes de marcarlo como hecho. Si hay inconsistencia, decirlo + plantear opciones.
+
+### Costo
+
+Founder reportó la inconsistencia + cycle de diagnóstico + decisión pendiente (re-cropear vs aceptar tradeoff). Evitable si hubiera mencionado el standard al pedir las fotos para MBLK/BROWN.
+
 ## 2026-05-30 — Iter previo de gallery puso flecha in-flow → seguía achicando thumbs
 
 **Estado**: ✅ Cerrado — refactor a overlay absolute en commit `a7d963b`.

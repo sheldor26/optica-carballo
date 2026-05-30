@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Distinguir "bug del código" vs "data inconsistente" cuando founder reporta inconsistencia visual
+
+**Categoría**: Diagnóstico / Comunicación
+**Confianza**: 🟢 Alta (validado tras issue tamaño thumbnails Vulk)
+
+### Qué funcionó
+
+Founder reportó: "las imágenes de las primeras 2 variantes se ven más grandes que las últimas 2". Reacción natural: "es bug del componente". Pero el componente Gallery es el MISMO para todas las variantes — mismo grid, mismo padding, mismo object-contain.
+
+La diferencia tenía que estar en la DATA: las fotos del founder tienen distinta composición (Carey/Rosa cropeadas cerca del producto ~80% canvas, MBLK/BROWN con más aire blanco ~50-60% canvas). Con `object-contain`, las que tienen más aire en su foto original se ven proporcionalmente más chicas en el thumbnail.
+
+Comuniqué la causa real (composición de fotos) en lugar de inventar un fix técnico. Le di al founder 3 opciones con tradeoffs explícitos.
+
+### Por qué funcionó
+
+Tentación natural cuando founder reporta UI bug: cambiar el código. Pero el código procesa data — si la data es inconsistente, no hay UI cambio que cubra el problema sin sacrificios.
+
+Diagnóstico correcto: "is el componente identical para todos los casos? sí → la inconsistencia está en la data".
+
+### Regla preventiva
+
+Cuando founder reporta inconsistencia visual entre items que deberían ser equivalentes:
+1. **Verificar primero que el componente procesa los items IGUAL** (mismo path de código, misma config).
+2. **Si sí**: el problema es de data. Causa probable: items distintos en algún campo (dimensiones, composición, attributes).
+3. **Comunicar la causa al founder** con honestidad — "el código no puede arreglar esto sin sacrificios (cortar, escalar artificialmente)". Founder decide si arregla data o acepta tradeoff.
+
+### Cuándo aplicar
+
+- UI con N items que el founder espera "equivalentes" visualmente.
+- Especialmente UGC (user-uploaded content) donde la consistencia depende del que sube.
+- NO aplicar si el componente tiene paths condicionales que diferencian items — ahí puede ser bug.
+
 ## 2026-05-30 — Overlay con `position: absolute` mantiene constraint visual sin afectar el flow
 
 **Categoría**: UI / Layout / Flow vs overlay
