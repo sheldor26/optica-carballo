@@ -24,6 +24,43 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Di workflow Photopea incompleto al founder — uniformé canvas size en lugar de padding interno (iter 10)
+
+**Estado**: 🟡 Mitigado (re-instrucción enviada)
+**Categoría**: Communication / Failed-knowledge-transfer
+
+### Qué pasó
+
+Tras documentar en LEARNINGS.md que "uniformidad de fotos tiene 2 dimensiones (framing relativo vs padding interno absoluto)", en la **siguiente instrucción al founder** le pedí uniformar la dimensión equivocada. Le dije "Canvas Size → 2000×1333" como solución para uniformar el padding. Pero canvas size uniforme NO uniformiza el % del frame ocupado por el sujeto si las fotos originales tienen el anteojo de tamaños distintos en pixels.
+
+Founder ejecutó la instrucción correctamente (las 4 fotos quedaron a 2000×1333) pero el resultado visual siguió asimétrico porque cada foto preservó el % del anteojo que ya tenía.
+
+### Causa raíz
+
+Apliqué mi propio learning al revés. Identifiqué la distinción entre las 2 dimensiones pero al pasar el workflow no lo traduje en una INSTRUCCIÓN OPERATIVA que controle la dimensión correcta (padding interno = % del frame ocupado por el sujeto).
+
+El gap específico: dije "canvas más grande para diluir el anteojo a 65%" pero el canvas size absoluto no controla esa proporción — depende del tamaño del sujeto, que es variable entre fotos.
+
+### Regla preventiva
+
+Cuando paso un workflow operativo al founder que se basa en un learning documentado, **verificar paso por paso que cada acción del workflow controla la dimensión correcta del problema**. Test mental: ¿este paso aplicado a una foto con sujeto de 750px y otra de 1275px produce el mismo resultado relativo? Si no, el paso uniforma una dimensión irrelevante.
+
+Workflow correcto para uniformar padding interno:
+1. Crop tight al sujeto (elimina padding existente, sujeto queda en tamaño variable)
+2. Image Size → width fijo (ej: 975 px) manteniendo proporción → ahora todos los sujetos tienen el mismo width
+3. Canvas Size → frame final (ej: 1500×1000) con anchor centro → sujeto ocupa width_sujeto/width_frame del frame final, uniforme entre fotos
+
+### Cómo aplicar
+
+- Antes de pasar un workflow operativo al founder: simular mentalmente con 2 inputs extremos (sujeto chico vs grande, foto angosta vs ancha) y confirmar que el output cumple la pre-condición.
+- Si el learning está documentado en LEARNINGS.md, releerlo antes de pasar el workflow al founder.
+
+### Costo
+
+1 iteración perdida (~30 min del founder) reprocesando 4 fotos al canvas equivocado. Frustración del founder ("siguen diferente"). Erosión de confianza en mis instrucciones operativas.
+
+---
+
 ## 2026-05-30 — Apliqué hack CSS agresivo (`scale-[1.4]`) sin verificar uniformidad de fotos — DOBLE ITERACIÓN (iter 7 + iter 9)
 
 **Estado**: 🟡 Mitigado iter 9 (scale removido)

@@ -2,6 +2,25 @@
 
 ## Status
 
+🟡 **Iter 10 — descubrí bug en mi propio workflow Photopea. Re-instrucción al founder** (2026-05-30). Founder reprocesó las 4 fotos del Vulk siguiendo MI instrucción anterior (Canvas Size → 2000×1333). Reportó que **siguen viéndose diferentes** entre sí. Causa raíz: mi workflow tenía un gap conceptual — uniformar el **canvas size** NO uniformiza el **% del frame ocupado por el anteojo**. Una foto original con anteojo de 750px expandida a canvas 2000 deja el anteojo al 37.5%. Otra con anteojo de 1275px expandida al mismo canvas lo deja al 63.7%. Mismo tamaño final, padding distinto.
+
+Irónicamente, esto ES exactamente el learning que documenté en LEARNINGS.md hace 2 turnos ("2 dimensiones de uniformidad: framing relativo vs padding interno absoluto") y lo apliqué mal en la siguiente instrucción al founder. Le pedí uniformar la dimensión equivocada (canvas size, no padding interno).
+
+Workflow corregido pasado al founder:
+1. Crop tight al anteojo (eliminar padding existente, queda en tamaño variable)
+2. Image Size → width = 975 px (mantener proporción)
+3. Canvas Size → 1500×1000, anchor centro, background white
+4. Export JPG
+
+Resultado: anteojo ocupa 65% del width del frame final (975/1500=0.65), **independiente** del tamaño que tenía la foto original. Las 4 fotos quedan uniformes en padding interno.
+
+Ofrecí 3 caminos al founder:
+- **A**: rehacer fotos con workflow corregido (20 min)
+- **B**: founder pasa links del bucket → yo proceso con script (10 min total)
+- **C**: dejar iter 9 (asimétrico) y priorizar otras features
+
+**Próximo paso (founder)**: elegir A/B/C.
+
 🟡 **Iter 9 — scale completamente removido. Necesita decisión founder sobre tamaño** (2026-05-30). Tras iter 8 (restaurar scale-1.4 con fotos uniformadas), founder confirmó que SIGUE viéndose cortado tanto en grandes como en thumbs. Análisis honesto: el reproceso del founder uniformó framing **entre las 4 variantes del Vulk** (todas iguales entre sí), PERO las fotos JPG del Vulk tienen el anteojo ocupando ~85% del frame de la foto (poco padding interno). Las fotos del Rusty (que tolera scale-1.4 OK) tienen el anteojo ocupando ~50% del frame (mucho padding).
 
 **Matemática del recorte**: scale-1.4 × anteojo-ocupa-85%-del-frame = 119% del frame visible → corta inevitablemente. Independiente del framing relativo entre variantes — depende del **padding interno** de cada foto JPG.
