@@ -2,6 +2,30 @@
 
 ## Status
 
+🟡 **3 cosas turno actual: cat_eye Yamain + debug sync precio + seed 18 OK** (2026-05-30).
+
+✅ **Confirmado por curl**: imagen brand kit Vulk aparece en HTML producción (`brands-shared/vulk-estuche-franela.jpg`). Seed 18 funcionó.
+
+🟢 **Cat eye Yamain**: seed 19 generado con UPDATE `attributes.frame_shape: oval → cat_eye` para `vulk-yamain`. Aplica product-level a las 3 variantes. Solo en mi DB, NO sync a ML.
+
+🟡 **Bug sync precio NO funcionó**: founder cambió precio en ML (79832.39 → 79833 ARS), web sigue mostrando $79.832. Force-sync admin devolvió `updated: 0, skipped: 2` → la función NO detectó cambio. Diagnóstico parcial:
+- Origin/main tiene commit `1a6ae4d` (sync price) — debería estar deployado
+- ML actual: $79.833 (verificado vía curl ml-import-preview)
+- Webhook llegó (recent_webhooks status='processed')
+- PERO admin endpoint NO mostraba `price_cents` en pre/post para diagnosticar
+
+Fix de diagnóstico: agregué `price_cents` al SELECT del endpoint `/api/admin/ml-force-sync/[mlItemId]/route.ts`. Tras push, retest founder con force-sync va a mostrar precio real en DB para identificar si:
+- DB price_cents = ML precio → sync funciona, problema es percepción (HTML truncado / cache ISR)
+- DB price_cents ≠ ML precio → bug real en sync, debugear más
+
+Commits pendientes. Typecheck verde.
+
+**Próximo paso (founder)**:
+1. Push (cuando esté listo)
+2. Aplicar seed 19 cat_eye al cloud
+3. Hacer force-sync de nuevo: `curl https://opticacarballo.com.ar/api/admin/ml-force-sync/MLA1391497225` y pasame el JSON completo
+4. Con el JSON pre/post (que ahora incluirá price_cents) vamos a ver el estado real
+
 🟢 **3 issues atacados: buscador inline CompareBar + fix bug ícono compare + tipografía PDP** (2026-05-30).
 
 **Fix 1 — Bug ícono compare queda activo tras remove**: `CompareButton` solo leía el cookie al mount (1 sola vez). Cuando user removía un producto desde la `CompareBar`, el ícono en PDP/cards no se actualizaba. Fix: polling 1.5s + focus listener (mismo patrón que CompareBar). Ahora el ícono sincroniza con cualquier cambio externo del cookie.

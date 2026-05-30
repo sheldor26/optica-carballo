@@ -34,7 +34,7 @@ export async function GET(
   // Estado pre-sync
   const { data: pre } = await supabase
     .from('product_variants')
-    .select('id, sku, stock_qty, mercadolibre_item_id, mercadolibre_variation_code')
+    .select('id, sku, stock_qty, price_cents, mercadolibre_item_id, mercadolibre_variation_code')
     .eq('mercadolibre_item_id', mlItemId);
 
   // Últimos 5 webhooks recibidos para este MLA (si algún webhook llegó)
@@ -50,7 +50,7 @@ export async function GET(
   // Estado post-sync
   const { data: post } = await supabase
     .from('product_variants')
-    .select('id, sku, stock_qty, mercadolibre_item_id, mercadolibre_variation_code')
+    .select('id, sku, stock_qty, price_cents, mercadolibre_item_id, mercadolibre_variation_code')
     .eq('mercadolibre_item_id', mlItemId);
 
   return NextResponse.json({
