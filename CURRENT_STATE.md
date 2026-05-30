@@ -2,6 +2,25 @@
 
 ## Status
 
+🟡 **Vulk Yamain — investigación en curso, esperando 3 datos del founder** (2026-05-30). Founder pidió cargar producto nuevo Vulk Yamain (sol). 4 variantes (3 con stock, 1 sin). Apliqué learning recién documentado: usé `/api/admin/ml-import-preview/MLA1391497225` para auto-extraer datos.
+
+**Datos extraídos automáticamente de ML**:
+- Title: "Anteojos De Sol Vulk Yamain Mujer Ovalado Grandes Protección"
+- Brand: Vulk, gender: Mujer, frame: G-Flex, lens: Policarbonato, UV400, no polarizada
+- Precio uniforme: $79.832,39 → 7983239 centavos (todas las variantes)
+- 4 variations con variation_id, color_frame, color_lens, stock cada una
+- Variation 1: Negro/Gris oscuro, stock 3, oval
+- Variation 2: Transparente/Negro degradé, stock 6, oval
+- Variation 3: Marrón SIENNA/Marrón-Verdoso degradé, stock 1, **"Ojo de Gato"** (anomalía vs las otras 3 oval)
+- Variation 4: Marrón/Marrón degradé, stock 0, oval
+
+**3 preguntas mínimas pendientes al founder antes de generar seed 16**:
+1. SKUs reales de las 4 variantes (patrón Vulk: 19418X)
+2. Variation 3: ¿es realmente cat-eye físicamente, o oval con metadata mal en ML?
+3. Fotos: ¿founder ya tiene las 8 fotos (2 por variante) procesadas? O alternativa: bajar de ML + normalizar via script Python (approach v3 crop+resize+center 92%).
+
+**Próximo paso (founder)**: responder las 3 preguntas. Tras eso genero seed 16 completo y aplicamos.
+
 🟢 **Nueva variante Rusty Yau MBLUE/R.GREEN POL — seed 15 generado** (2026-05-30). Founder pidió agregar variante 126082 al modelo Rusty Yau:
 - Armazón Azul Mate (MBLUE)
 - Lentes Verde Espejada Polarizada (Revo Green POL)
