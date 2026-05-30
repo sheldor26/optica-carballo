@@ -22,6 +22,50 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cuando 2 extremos son malos (parámetro X demasiado bajo + demasiado alto), generar grid visual del rango y dejar al founder elegir el punto
+
+**Categoría**: Empirical tuning / Founder collaboration
+**Confianza**: 🟢 Alta (validado en iter 13 catálogo Vulk)
+
+### Qué funcionó
+
+Tras 6+ iteraciones de teorizar sobre scale-CSS óptimo (1.0 vs 1.15 vs 1.4) sin resolverlo, generé un **grid visual** que muestra simultáneamente CÓMO se ven las 4 variantes a 5-6 valores distintos de scale. El founder puede inspeccionar visualmente y elegir el punto donde se ven uniformes — sin necesidad de rondas de "deploy → testear → reportar → ajustar".
+
+Script Python con PIL:
+1. Cargar las N fotos relevantes.
+2. Para cada valor del parámetro (scale, padding, threshold, lo que sea), simular el rendering final.
+3. Generar imagen-grid grande (M columnas × N filas) con todas las simulaciones.
+4. Guardarla en Desktop del founder o hacerle screenshot.
+
+### Por qué funciona
+
+Cuando los 2 extremos del parámetro son malos (uno corta, el otro deja chico), existe matemáticamente un punto intermedio que minimiza el problema. Pero saber CUÁL es ese punto a priori requiere modelar el sistema, lo cual:
+- Es costoso para problemas visuales (involucra percepción, no solo matemática)
+- A menudo no funciona porque la métrica que el código mide ≠ lo que el ojo ve
+
+El grid visual elimina ese gap: el founder mira el resultado real a cada valor y elige. Es más rápido que iterar deploy.
+
+### Cómo aplicar
+
+Triggers para usar este pattern:
+- Parámetro continuo (scale, opacity, blur, padding, threshold) con efecto visual.
+- 2+ iteraciones fallidas intentando teorizar el valor correcto.
+- Founder no puede expresar el target en términos cuantitativos pero sí visualmente ("se ve mal", "muy grande", "muy chico").
+- El parámetro es global (afecta TODAS las instancias) → grid muestra todas a la vez.
+
+Pasos:
+1. Generar 5-7 valores espaciados uniformemente entre los extremos malos.
+2. Renderizar M × N grid con simulaciones (Python+PIL o canvas client-side).
+3. Guardar en ubicación accesible al founder (~/Desktop/, link, etc.).
+4. Pedir al founder elegir el valor que mejor se ve.
+5. Si hay duda entre 2 valores, generar zoom fino entre ellos.
+
+### Costo si se ignora
+
+Iterar a ciegas: deploy → founder testea → reporta "muy chico" → deploy → "muy grande" → loop infinito. Cada iteración ~10 min entre deploy y feedback. Con grid visual, 1 minuto de generación + 30s de elección del founder.
+
+---
+
 ## 2026-05-30 — Crop → resize → center funciona; scale-up de foto entera NO
 
 **Categoría**: Image processing / Pattern correcto

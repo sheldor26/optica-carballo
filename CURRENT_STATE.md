@@ -2,6 +2,23 @@
 
 ## Status
 
+🟡 **Iter 13 — scale-[1.22] como punto de equilibrio empírico (founder rechazó modificar fotos)** (2026-05-30). Founder rechazó la solución v2 de iter 12.1 (modificar las fotos del bucket): "no las voy a cambiar a las fotos porque no es eso". Diagnóstico nuevo: SIN scale CSS las var 1-2 se ven MÁS GRANDES que var 3-4 (estado actual en producción); CON scale-1.4 (iter 8 anterior) era al revés. Existe **punto intermedio** donde las 4 se ven uniformes.
+
+Solución empírica:
+1. Generé 2 grids visuales en `~/Desktop/`:
+   - `vulk-SCALE-EXPLORER.png`: 5 scales (1.0, 1.1, 1.2, 1.3, 1.4) × 4 variantes
+   - `vulk-SCALE-FINE.png`: 6 scales (1.15, 1.20, 1.22, 1.25, 1.28, 1.30) × 4 variantes
+2. Inspección visual: zona 1.20-1.25 muestra equilibrio.
+3. Apliqué `scale-[1.22]` en `product-card.tsx` (commit `80a134a`). Hover sin secondary ajustado proporcionalmente a `scale-[1.30]`.
+
+**Por qué scale uniforme funciona acá pero no antes**: el problema NO era padding interno (como diagnostiqué en iters 9-12). Era que las fotos tienen ANTEOJO PRINCIPAL de tamaño distinto (var 1-2 más grandes, var 3-4 más chicos), aunque el bbox completo sea similar. Scale uniforme entre 1.0 y 1.4 invierte la apreciación visual: el punto de equilibrio existe en ~1.22.
+
+**Próximo paso (founder)**:
+1. Push: `cd "/Users/juan/Proyectos web/optica-carballo" && git push origin main`
+2. Esperar deploy Vercel (~2 min).
+3. Hard refresh `/anteojos-de-sol/vulk` en incógnito.
+4. Validar: si las 4 se ven uniformes, listo. Si no, ajustar entre 1.20-1.25 (un toque arriba/abajo).
+
 🟡 **Iter 12.1 — v1 falló (scale-up cortó patillas). v2 con crop+resize+center generada, esperando validación** (2026-05-30). Tras commitear iter 12 como "solución" sin validar visualmente, founder respondió "NO, SE VEN MAL". Inspeccioné las fotos v1: el approach de scale-up sobre la foto entera (1.25x, 1.5x) hizo zoom-in que **recortó las patillas** de los anteojos. Anteojos sin patillas = se ve mal.
 
 **Approach v2 corregido** (crop → resize → center, NO scale-up de foto entera):

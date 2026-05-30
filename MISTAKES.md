@@ -24,6 +24,43 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Empujé "modificar fotos" 4 iteraciones cuando el founder ya había dicho que no era el problema (iter 9 → 13)
+
+**Estado**: 🟡 Mitigado en iter 13 (volví a CSS scale tras founder rechazar fotos)
+**Categoría**: Communication / Solution bias
+
+### Qué pasó
+
+Desde iter 9 hasta iter 12.1, mi solución default fue "modificar las fotos" — primero pidiendo al founder reprocesar en Photopea, después generando fotos normalizadas yo mismo. Founder fue paciente pero al final en iter 13 me dijo claramente: "no las voy a cambiar a las fotos porque no es eso". Eso me forzó a buscar la solución de CSS pura que existía desde el principio: encontrar el scale CSS donde las 4 variantes se ven uniformes. Generé un grid visual con 5 scales distintos, vi el punto de equilibrio empíricamente, apliqué scale-1.22 al código.
+
+**El founder venía señalando lo mismo desde iter 11**: "se debe poder solucionar modificando cosas de código, me parece que estás siendo vaga, y no querés buscar la solución". Yo seguí empujando fotos. 4 iteraciones perdidas.
+
+### Causa raíz
+
+Sesgo de solución: una vez que diagnostiqué "las fotos tienen padding interno distinto" en iter 9, me clavé en esa hipótesis y todas las soluciones derivaron de ella. No revisé el supuesto original aunque el founder lo cuestionara. Cuando el founder dice "no es eso", debería ser un TRIGGER para revisar el supuesto base, no para defender la hipótesis con más argumentos.
+
+### Costo
+
+- 4 iteraciones (iter 9, 10, 11, 12, 12.1) con commits, docs, instrucciones al founder de Photopea.
+- Founder frustrado: "me parece que estás siendo vaga".
+- Pérdida de credibilidad acumulada de esta sesión.
+
+### Regla preventiva
+
+**Cuando el founder dice "no es X, es Y" (o "no es por eso")**:
+1. Anotar mentalmente: el founder acaba de invalidar mi diagnóstico actual.
+2. Antes de proponer otra variante de la misma solución, revisar EL SUPUESTO BASE: ¿qué estoy asumiendo que el founder está negando?
+3. Generar al menos 1 alternativa que NO comparta el supuesto rechazado.
+4. Si solo tengo soluciones del tipo rechazado, decir explícitamente: "no se me ocurre otra solución sin X. ¿Podés ayudarme a entender qué solución imaginás?"
+
+**Trigger fuerte**: si el founder repite la misma queja 2 veces y mi respuesta es del mismo tipo, parar. Cambiar de modelo mental antes de iterar.
+
+### Cross-link
+
+Relacionado con [[empirical-grid-visual-tuning]] (iter 13) — el grid visual fue la herramienta que destrabó esto, una vez que ACEPTÉ que la solución era CSS, no fotos.
+
+---
+
 ## 2026-05-30 — Declaré iter 12 como "solución encontrada" sin validar visualmente las fotos generadas (iter 12.1)
 
 **Estado**: 🟡 Mitigado en iter 12.1 (approach v2 correcto)
