@@ -102,18 +102,19 @@ INSERT INTO public.product_images (
   width, height, sort_order, is_primary
 )
 VALUES
-  (
-    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
-    (SELECT id FROM public.product_variants WHERE sku = '194182'),
-    'vulk-day-light-sol/06-mblk-frontal.jpg',
-    'Vulk Day Light Negro mate vista frontal, lentes verde degradé polarizadas',
-    1500, 1500, 0, true
-  ),
+  -- LATERAL primero (primary), consistente con Carey/Rosa
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
     (SELECT id FROM public.product_variants WHERE sku = '194182'),
     'vulk-day-light-sol/07-mblk-lateral.jpg',
     'Vulk Day Light Negro mate vista lateral, armazón G-Flex',
+    1500, 1500, 0, true
+  ),
+  (
+    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
+    (SELECT id FROM public.product_variants WHERE sku = '194182'),
+    'vulk-day-light-sol/06-mblk-frontal.jpg',
+    'Vulk Day Light Negro mate vista frontal, lentes verde degradé polarizadas',
     1500, 1500, 1, false
   ),
   (
@@ -139,18 +140,19 @@ INSERT INTO public.product_images (
   width, height, sort_order, is_primary
 )
 VALUES
-  (
-    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
-    (SELECT id FROM public.product_variants WHERE sku = '194187'),
-    'vulk-day-light-sol/09-brown-frontal.jpg',
-    'Vulk Day Light Marrón vista frontal, lentes marrones polarizadas',
-    1500, 1500, 0, true
-  ),
+  -- LATERAL primero (primary), consistente con Carey/Rosa
   (
     (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
     (SELECT id FROM public.product_variants WHERE sku = '194187'),
     'vulk-day-light-sol/10-brown-lateral.jpg',
     'Vulk Day Light Marrón vista lateral, armazón G-Flex',
+    1500, 1500, 0, true
+  ),
+  (
+    (SELECT id FROM public.products WHERE slug = 'vulk-day-light'),
+    (SELECT id FROM public.product_variants WHERE sku = '194187'),
+    'vulk-day-light-sol/09-brown-frontal.jpg',
+    'Vulk Day Light Marrón vista frontal, lentes marrones polarizadas',
     1500, 1500, 1, false
   )
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
