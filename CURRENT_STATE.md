@@ -83,9 +83,15 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
 2. Aplicar bootstrap en SQL Editor.
 3. Verificar con force-sync que las 4 variantes muestran `skipped: 4` (todas alineadas).
 
-**🟡 Pendiente founder (2026-05-30)**: 2 issues en gallery Vulk Day Light:
-1. Imágenes de Carey/Rosa se ven MÁS GRANDES en thumbnails que MBLK/BROWN. Causa: composición de las fotos (Carey/Rosa cropeadas ~80% canvas, MBLK/BROWN ~50-60% con más aire). NO bug del componente. Opciones presentadas al founder: A) reducir padding (escala el problema), B) re-cropear fotos MBLK/BROWN (root cause fix), C) object-cover en lugar de object-contain (corta detalle). Founder decide path.
-2. Imagen modelo sigue en posición 3, debería estar en 4. Causa: `supabase/cloud-bootstrap.sql` con UPDATE sort_order pendiente apply desde hace 2 commits.
+**Gallery sort simplificado iter 3** (2026-05-30 commit `bfd4ce3`). Founder confirmó aplicación del UPDATE sort_order=3 modelo pero el thumbnail seguía en posición 3. Diagnóstico: `sortImages` tenía 3 pasos (primary → variant_id matching → sort_order). El paso 2 priorizaba variant_id matching sobre sort_order, por eso modelo (variant=MBLK, sort=3) ganaba sobre medidas (variant=NULL, sort=2). Fix doble:
+1. Simplificar `sortImages` a solo `primary + sort_order`. La data manda.
+2. Normalizar sort_order Rosa: `04-lateral-rosa.jpg sort 3→0`, `05-frontal-rosa.jpg sort 4→1`. Sin esto, medidas (sort=2) se colaría entre las 2 fotos Rosa con el nuevo algoritmo.
+
+Bootstrap `supabase/cloud-bootstrap.sql` (40 líneas, 2 UPDATEs) pendiente apply founder. Tras apply, orden esperado:
+- Carey/Rosa/BROWN: lateral → frontal → medidas
+- MBLK: lateral → frontal → medidas + flecha → modelo (oculta)
+
+**Issue 1 pendiente sin resolver (composición fotos MBLK/BROWN vs Carey/Rosa)**: opciones A/B/C presentadas en sub-sesión anterior, founder no eligió aún.
 
 **Gallery flecha overlay sutil iter 2** (2026-05-30 commit `a7d963b`). Founder reportó que la flecha al costado (iter 1) achicaba los thumbs porque ocupaba lugar del row. Refactor:
 - Container con `relative` (no flex row).

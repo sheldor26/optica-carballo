@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Sorting con criterio compuesto puede invertir intent del usuario — preferir un solo orden DB explícito
+
+**Categoría**: Algorithm design / Sorting
+**Confianza**: 🟢 Alta (validado tras bug sort_order MBLK)
+
+### Qué funcionó
+
+`sortImages` tenía 3 niveles (primary, variant_id matching, sort_order). El paso 2 fue agregado para evitar que imágenes shared (variant_id=NULL) con sort_order bajo se "colaran" entre las específicas de variante. Razón legítima en el momento.
+
+PERO: ese mismo paso 2 hizo que cuando founder explicitamente puso sort_order=3 a la modelo MBLK, el cambio no se reflejara visualmente porque el paso 2 ganaba antes de evaluar sort_order. El intent del founder ("modelo en posición 4") quedaba oculto por la lógica intermedia.
+
+Refactor: simplificar a SOLO `primary + sort_order`. La data manda. Si querés un orden específico, lo escribís en la columna sort_order de DB. Compensación necesaria: normalizar sort_order de fotos que tenían valores raros (Rosa con sort=3 y 4) para que sigan teniendo el orden correcto sin necesidad del paso 2.
+
+### Por qué funcionó
+
+Sorting con N criterios = N veces más difícil de predecir. El usuario que escribe data en DB no sabe que su sort_order va a ser reordenado por otro criterio invisible. Cuando el founder pone "3" espera ver la imagen en posición 3 (después de las que tienen 0, 1, 2). Cualquier otra lógica viola la regla de "menor sorpresa".
+
+### Regla preventiva
+
+Para sortings de UI:
+1. **Preferir UN solo orden explícito** (sort_order column en DB). Más predecible, más controlable por el usuario que escribe la data.
+2. **Si necesitás criterios secundarios** (primary, fecha), usarlos como tiebreaker SOLO cuando el primario no decide.
+3. **Cualquier "lógica de relleno" en el sort que no sea pure data** debe ser documentada en código + visible en la UI o documentación. Sino el usuario rompe el orden sin saber por qué.
+
 ## 2026-05-30 — Distinguir "bug del código" vs "data inconsistente" cuando founder reporta inconsistencia visual
 
 **Categoría**: Diagnóstico / Comunicación

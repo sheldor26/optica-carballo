@@ -24,6 +24,55 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Mantuve "variant_id matching first" en sortImages aunque el founder ya estaba seteando sort_order explícito
+
+**Estado**: ✅ Cerrado — algoritmo simplificado en commit `bfd4ce3`.
+**Categoría**: Algoritmo intermedio que oculta intent del usuario
+
+### Qué pasó
+
+`sortImages` tenía 3 pasos: primary, variant_id matching, sort_order. El paso 2 era una "lógica de relleno" para casos donde shared images con sort bajo se colaran. Funcionaba para los productos originales pero hacía que cualquier sort_order explícito del founder fuera evaluado al final.
+
+Founder reportó "la modelo sigue en 3 cuando debería estar en 4" tras aplicar UPDATE de sort_order=3. La conclusión natural debería ser que el sort_order no se respetaba. Tardé 1 iteración en darme cuenta que el paso 2 era el culpable.
+
+### Causa raíz
+
+Cuando agregué el paso 2 originalmente, no anticipé que el founder iba a setear sort_orders explícitos en variants que tuvieran imágenes intercaladas con shared. Diseñé para el caso simple (solo variant-specific + sort=0, 1; shared al final con sort=2) sin pensar en el caso de 4+ imágenes mixtas.
+
+### Regla preventiva
+
+Algoritmos de sorting que tienen MÁS DE UN CRITERIO deben:
+1. **Documentar visible** (en UI o doc operativa) qué criterios se evalúan y en qué orden.
+2. **Considerar el caso del usuario que escribe data esperando control total**. Si te das cuenta que estás "compensando" un valor explícito del usuario, es señal de smell — el algoritmo está luchando contra el usuario.
+3. **Default a sort_order single criterion** + normalizar datos al estilo correcto en lugar de criterios múltiples + datos inconsistentes.
+
+### Fix aplicado
+
+Commit `bfd4ce3`:
+- `sortImages` simplificado a `primary + sort_order` solo.
+- SQL para normalizar Rosa: lateral sort 3→0, frontal sort 4→1 (compensación necesaria por el cambio del algoritmo).
+
+## 2026-05-30 — 5TA VEZ: declaré explícitamente que NO actualizaba los docs por ser "investigación previa"
+
+**Estado**: 🟡 Mitigado — el hook lo detectó y forzó la actualización. La regla EN CLAUDE.md ya cubre este caso.
+**Categoría**: Cierre de sesión / Racionalización de la misma regla
+
+### Qué pasó
+
+Tras diagnosticar el import de la variante Revo Blue y devolver control al founder con una pregunta pendiente (esperando SKU/precio/stock/fotos), escribí literalmente: "No actualicé CURRENT_STATE.md / LEARNINGS.md / MISTAKES.md porque todavía no construí ni decidí nada definitivo — es investigación previa." El hook de cierre lo rechazó correctamente.
+
+### Causa raíz
+
+Nueva racionalización del MISMO failure de las veces 1-4: esta vez no fue "perdí el hilo en sesión larga" sino "creí que la regla no aplicaba porque no escribí código". Pero SÍ hubo decisiones técnicas registrables (no-es-producto-nuevo, listing separado con variation_code NULL, lens_color azul-espejado, API ML no usable) y un próximo paso exacto. La definición operacional en CLAUDE.md es clara: el trigger es "devolver control con pregunta/decisión/pausa", NO "haber escrito código". "Investigación previa" no es excepción.
+
+### Regla preventiva
+
+La regla ya está en CLAUDE.md (promovida en la 3RA VEZ). Refuerzo del criterio: **el trigger del cierre es devolver control al founder, NO haber tocado archivos de código.** Una sesión de puro diagnóstico que produce decisiones + próximo paso TAMBIÉN cierra con los 3 docs. Si hubo algo que decidir o averiguar que valga registrar (y casi siempre lo hay), se documenta. La única excepción válida es un intercambio puramente conversacional sin ningún hallazgo ni decisión.
+
+### Costo
+
+Un ciclo extra (hook rechazó → tuve que volver a actualizar). Barato, pero es la 5ta repetición del mismo patrón con racionalización distinta — confirma que el hook automático es la defensa real, no mi auto-vigilancia.
+
 ## 2026-05-30 — No validé consistencia visual de composición entre fotos subidas por founder
 
 **Estado**: 🟡 Mitigado por documentación al founder + opciones de fix presentadas.
