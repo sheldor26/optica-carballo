@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Tamaño fijo + overflow control > dinamizar tamaño según N items
+
+**Categoría**: UI / Founder feedback / Cantidades variables
+**Confianza**: 🟢 Alta (validado con feedback explícito + iter 4 del bug gallery)
+
+### Qué funcionó
+
+ProductGallery tenía `gridTemplateColumns: repeat(Math.min(sorted.length, 6), 1fr)` — el tamaño de los thumbs se ajustaba dinámicamente según cuántas imágenes había. Estética OK cuando son 2-3 thumbs (se ven balanceadas). Mala cuando son 4+ (todas se achican y la principal pierde protagonismo visual).
+
+Founder lo notó iter 4: "no me gusta que se achiquen las 4 imágenes de 4". Refactor: tamaño fijo (3 cols) + control de overflow con flecha al costado (botón mismo tamaño que un thumb). Esto:
+- Garantiza que los thumbs siempre se vean igual de grandes (predictabilidad visual).
+- No esconde data — la flecha hace visible que "hay más".
+- Funciona para 1, 2, 3, 4, ..., N imágenes sin re-tunear cada caso.
+
+### Por qué pasaron 4 iteraciones sin verlo
+
+Iter 1-3 ajusté padding del CONTENEDOR principal de gallery, asumí que el problema era ahí. Recién iter 4 founder señaló los THUMBS (no el contenedor). Refresh mental: el problema visual estaba abajo, no arriba.
+
+### Regla preventiva
+
+Para UI con cantidad variable de items (N entre 1 y K):
+1. **Default a tamaño fijo de cada item** + control de overflow (paginación, scroll, flecha, "+X más").
+2. **NO escalar tamaño según N** salvo casos donde N es siempre 1-3 y "ajustarse al ancho" se ve bien.
+3. **Cuando N puede ser cualquiera**, el item debe tener tamaño que se ve bien aislado, y el contenedor maneja overflow.
+
+### Cuándo aplicar
+
+- Galerías de fotos (productos con 1-10+ imágenes).
+- Listas de tags, badges, links rápidos.
+- Avatares de stakeholders.
+- Cualquier UI donde count(items) es feature.
+
 ## 2026-05-30 — Fix post-apply: UPDATE puro > re-INSERT con ON CONFLICT cuando solo cambian flags/sort
 
 **Categoría**: SQL operations / Minimizar fricción del founder

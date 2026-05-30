@@ -24,6 +24,37 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Grid de thumbs con tamaño dinámico — escala mal cuando N crece
+
+**Estado**: ✅ Cerrado — refactor a tamaño fijo + flecha overflow en commit `5a6b9ea`.
+**Categoría**: UI / Default que no escala
+
+### Qué pasó
+
+ProductGallery.tsx tenía:
+```ts
+gridTemplateColumns: `repeat(${Math.min(sorted.length, 6), 1fr)}`
+```
+
+Funcionaba bien con 1-3 thumbs (60-100px). Con 4 thumbs los achicaba a ~75% (visualmente todavía aceptable). Con 6 sería ~50%. La regla "achicar para que entren todos" es ergonómicamente mala cuando el usuario tiene que clickearlos en mobile.
+
+Founder explicitamente pidió "no me gusta que se achiquen las 4 imágenes de 4" tras subir 4 fotos a la variante MBLK.
+
+### Causa raíz
+
+Default "tamaño dinámico que se ajusta al contenedor" suena flexible pero hace que el sistema cambie de comportamiento según data. Cada caso de N necesita diseño pensado. Para 1-3 elementos, no preví que iban a sumarse variantes con 4+.
+
+### Regla preventiva
+
+Defaults UI deben ser **invariantes a la cantidad de data dentro de un rango razonable**:
+- Si N puede ser 1-3 → ok, ajustar a contenedor.
+- Si N puede ser 1-10+ → fijar tamaño por item + paginación/scroll/overflow.
+- Hacerse la pregunta: "¿qué pasa si N=10?". Si la respuesta es "todos se achican demasiado", el diseño no escala.
+
+### Bonus combinado con LEARNING anterior
+
+Combinar con el LEARNING del mismo día ("UPDATE puro > re-INSERT"): si el founder reporta "se ve mal con X items", muchas veces la solución es UI (no data). Pero también puede ser una combinación de ambos — en este caso era data (sort_order) + UI (constante VISIBLE_THUMBS). Mejor identificar AMBAS dimensiones antes de implementar.
+
 ## 2026-05-30 — Asumí is_primary por "nombre del archivo descriptivo" en vez de seguir patrón existente
 
 **Estado**: ✅ Cerrado — fix con UPDATE puro en commit `8333fed`.
