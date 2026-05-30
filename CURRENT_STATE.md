@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **Sync precio confirmado funciona + mobile thumbs como cuadrito +N** (2026-05-30).
+
+**Sync precio Yamain CONFIRMADO funcionando**: founder corrió force-sync con MLA correcto post-deploy del fix variationMatches. JSON output:
+- `updated: 2` ✓
+- `pre.price_cents = 7983239` ($79.832,39)
+- `post.price_cents = 7980000` ($79.800)
+- HTML producción verificado: ya dice `$ 79.800` en servidor
+
+Founder reportó "sigue sin tirar precio correcto" pero era browser cache (HTML servidor OK). Solución: hard refresh.
+
+**Mobile thumbs UX iter 3 (founder feedback)**: el fix anterior (3 thumbs + "+N text afuera") no era el UX que el founder quería. Iter actual: cuando hay >3 variantes en mobile, mostrar **2 thumbs + cuadrito "+N" como 3er ítem** (mismo size-16, borde, texto centrado). Visual consistente, siempre 3 cuadritos exactos.
+
+Caso Day Light mobile: Carey + Rosa + 🟦"+2". Más limpio que tener texto colgando.
+
+Commits: `3a776a8` (variationMatches + Rusty scales + thumbs md:) y `db8cfd5` (cuadrito +N).
+
+**Próximo paso (founder)**: push + hard refresh + test:
+1. `/anteojos-de-sol/vulk` mobile → Day Light con 2 thumbs + cuadrito "+2"
+2. `/anteojos-de-sol/rusty` → Rusty con scales 1.8/1.4
+3. `/anteojos-de-sol/vulk/vulk-yamain` → precio $79.800
+
 🔴→🟢 **Bug sync precio Yamain TRULY fixed: variationMatches() prueba todos los formatos en paralelo** (2026-05-30). Fix anterior (agregar variation.id como fallback en cascada) NO funcionó porque DESIGN devolvía valor que satisfacía la condición ANTES de llegar al fallback.
 
 Diagnóstico nuevo del JSON founder + curl ML actual:

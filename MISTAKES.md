@@ -24,6 +24,34 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Diseñé fix UX mobile thumbs como "3 thumbs + texto +N afuera" sin pensar visualmente — founder pidió cuadrito +N
+
+**Estado**: 🟢 Corregido en iter siguiente
+**Categoría**: UX / Design intent
+
+### Qué pasó
+
+Iter previo fix mobile thumbs: implementé "3 thumbs visibles + texto '+N' inline al final". Lógicamente correcto (indica que hay más). Founder testeó y respondió: "cambiaría la 3er variante por un cuadradito con '+'... siempre mostrar hasta 3 cuadritos".
+
+El founder quería UX VISUAL consistente: 3 cuadritos del mismo tamaño visual. Mi fix mezclaba 3 thumbs cuadrados + 1 texto pequeño = inconsistencia visual.
+
+### Causa raíz
+
+Pensé en términos LÓGICOS (¿cómo indicar overflow?) en vez de VISUALES (¿qué se ve mejor?). El texto "+N" inline es la solución obvia técnicamente, pero visualmente queda colgando.
+
+### Costo
+
+- 1 iteración extra (fix → founder feedback → re-fix).
+
+### Regla preventiva
+
+Para indicadores de overflow visual:
+- Si los items son cuadritos/cards uniformes, el indicador "+N" debería ser también un cuadrito/card uniforme.
+- Si los items son textos inline, "+N" inline está OK.
+- **Regla general**: el indicador hereda la forma visual de lo que reemplaza.
+
+---
+
 ## 2026-05-30 — Mi fix "agregar variation.id como fallback" del bug Yamain NO funcionó porque DESIGN parseable cortocircuitaba el fallback
 
 **Estado**: 🟢 Re-fixed con `variationMatches()` (prueba todos formatos en paralelo)

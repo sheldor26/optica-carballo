@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cuando founder reporta "no funciona" tras un fix: verificar HTML servidor con curl ANTES de seguir debuggeando
+
+**Categoría**: Debugging / Validation
+**Confianza**: 🟢 Alta (validado iter sync precio Yamain)
+
+### Qué funcionó
+
+Tras commit de fix sync precio + founder reportar "sigue sin tirar precio correcto", mi primer instinto era debuggear más el sync. En vez de eso, hice `curl HTML producción | grep precio`. Resultado: HTML servidor YA decía $79.800 (precio nuevo). El sync funcionó completo. El founder veía $79.832 por browser cache.
+
+Sin esa verificación de 30 segundos, habría perdido turno(s) buscando bugs inexistentes.
+
+### Por qué funciona
+
+"Founder reporta X" tiene 3 capas posibles:
+1. **Servidor**: state real (DB + HTML rendered)
+2. **CDN edge**: cache intermedio (Vercel, Cloudflare)
+3. **Browser**: cache local del navegador del founder
+
+El bug puede estar en cualquiera de las 3 — o en ninguna (sería cache desactualizado). `curl HTML producción` salta directo a chequear capa 1 sin browser cache. Si servidor está bien, el problema es cache (no bug).
+
+### Cómo aplicar
+
+Cuando founder reporta "no funciona" tras un fix recién deployado:
+1. **Antes de debuggear**: `curl <url> | grep <expected-value>`.
+2. Si servidor tiene el valor correcto → es cache. Pedir hard refresh / incógnito.
+3. Si servidor NO tiene el valor → es bug. Debugear.
+
+Costo: 30 segundos. Beneficio: descarta el 30-50% de "reportes de bug" que en realidad son cache.
+
+### Cross-link
+
+Aplicación del pattern [[verificacion-post-deploy-curl]] — mismo nucleo: trust servidor > browser. Útil después de CUALQUIER cambio deployado.
+
+---
+
 ## 2026-05-30 — Parser cross-system: devolver TODOS los formatos posibles, no 1 priorizado
 
 **Categoría**: Code / Defensive parsing / Refactor pattern
