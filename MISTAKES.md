@@ -24,6 +24,54 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Traté `has_add` como bloqueador absoluto sin validar la lógica óptica con founder/optical-expert
+
+**Estado**: 🟡 Mitigado — fix shippeado en commit `53577cb` (BifocalOptionsBlock). Pero el código original lo trataba como bloqueador desde el primer commit del lector hace meses.
+**Categoría**: Domain logic / Validation con expert
+
+### Qué pasó
+
+Cuando se diseñó la lógica `evaluateInPerson` (en `lib/prescription/types.ts`) hace meses, definí 6 razones que disparan "atención presencial": `high_esf`, `high_cil`, `high_sum`, `anisometropia`, `has_add`, `contact_lens`. Todas se tratan IGUAL — si cualquiera dispara, handoff WhatsApp completo, sin opciones online.
+
+Founder testeó hoy IA-2 con una receta bifocal real. Reacción:
+> "Si bien es correcto lo que dice, también está la opción que la persona se puede hacer 2 anteojos por separado (uno de lejos y otro de cerca) o hacer el anteojo que necesite primero. Esos sí los podriamos hacer sin problemas."
+
+`has_add` NO es bloqueador absoluto. Se puede armar:
+- Monofocal solo lejos (sin add) ← online OK
+- Monofocal solo cerca (esf + add) ← online OK
+- Multifocal completo (un anteojo con zonas múltiples) ← sí presencial
+
+El código bloqueó TODAS esas oportunidades comerciales por meses. Y bloqueó incluso mostrar la tabla de valores (output IA gratis al user).
+
+### Causa raíz
+
+Al diseñar `evaluateInPerson`, asumí que "necesita corrección de cerca = necesita medición presencial" porque la corrección de cerca SIEMPRE viene en multifocal. **No validé esa asunción con el founder ni con `optical-expert`**. La premisa era falsa: monofocal de cerca es un anteojo válido y vendible online.
+
+Sub-causa: documenté la lógica con `Fuente: optical-expert` en el comentario pero realmente no consulté al agente. Fue un wishful comment, no una validación real.
+
+### Regla preventiva
+
+1. **Antes de hardcodear lógica de dominio que afecta conversión** (qué casos vendemos vs no), validar con founder o agente experto del dominio (`optical-expert`, `argentine-ecom`, etc.).
+2. **No escribir `Fuente: X` en comentarios sin haber consultado a X realmente**. Es engañoso para futuros readers.
+3. **Diferenciar bloqueador absoluto vs parcial** (ver LEARNING gemelo).
+4. **Cuando un análisis IA produce N flags posibles, NO mappearlos a un único output**. Cada flag puede tener un fallback distinto.
+
+### Cuándo aplicar
+
+- Reglas de eligibilidad comercial (puedo vender X vs Y a quién).
+- Umbrales clínicos / de seguridad (alta graduación, riesgo médico, etc.).
+- Categorización que afecta routing (presencial vs online, simple vs complejo).
+- Validaciones de pago, envío, devolución.
+
+### Cuándo NO aplicar
+
+- Reglas obvias del stack técnico (no necesitás validar que un email tiene `@`).
+- Lógica puramente derivada de otras reglas ya validadas.
+
+### Bonus
+
+Detectado porque founder testeó manualmente con una receta real. Sin testing real, este bug podía durar más meses. Conecta con la regla preventiva general: **el founder es el smoke test final**. Para features donde el código encarna lógica de dominio (óptica, legal, comercial), shipear sin que el founder pase con caso de uso real es alto riesgo.
+
 ## 2026-05-30 — Casi shipeo bug de leak cross-user al diseñar banner que leía cookie en Server Component con ISR
 
 **Estado**: ✅ Cerrado — bug detectado en fase de diseño antes de commitear. Refactor a client component con useEffect + server action.

@@ -22,6 +22,58 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Cuando bloqueás un flow por "no podemos hacerlo", igual mostrá el OUTPUT al usuario — es valor educativo gratis
+
+**Categoría**: UX / Product design
+**Confianza**: 🟢 Alta (feedback explícito del founder en IA-2.5)
+
+### Qué funcionó
+
+Founder testeó IA-2 con receta bifocal (lejos+cerca). El flow original mostraba SOLO un mensaje "Tu receta es para multifocales/bifocales — escribinos por WhatsApp", sin tabla, sin valores parseados. Founder feedback:
+
+> "Ademas en el caso de que no podamos hacerselo, no estaria de mas explicarle la receta al paciente (ya que la escaneo) podriamos aprovechar."
+
+Insight: el usuario hizo el esfuerzo de escanear y esperar el análisis. Bloquearlo SIN mostrarle el output desperdicia ese trabajo. Aunque no podamos vender, podemos:
+1. Mostrarle qué dice su receta (educativo).
+2. Posicionarnos como experto que sí entiende su problema.
+3. Aumentar trust antes del handoff WhatsApp.
+
+Fix iter: tabla `PrescriptionForm` siempre visible + 3 opciones (incluyendo handoff) en vez de solo handoff.
+
+### Por qué funcionó
+
+Cuando una herramienta gratis produce valor (lectura de receta), el output del trabajo es independiente del próximo paso comercial. Bloquear la lectura para "empujar" hacia WhatsApp es percibido como hostil. Mostrarla siempre + sugerir caminos es percibido como honesto.
+
+Sub-insight: hay 3 tipos de "no podemos vender ahora":
+- **Bloqueador absoluto** (alta graduación, contact lens): handoff puro.
+- **Bloqueador parcial** (bifocal puede partirse en 2 monofocales): ofrecer alternativas online + handoff.
+- **No bloqueador** (monofocal simple): flow normal.
+
+El código original trataba **bloqueador parcial = bloqueador absoluto**. Cuesta UX y conversión.
+
+### Regla preventiva
+
+Cuando diseñes un flow tipo "analyze → result → CTA":
+1. **El resultado del análisis SIEMPRE se muestra**. Aunque la siguiente acción esté bloqueada.
+2. **Diferenciá "bloqueador absoluto" de "bloqueador parcial"**. Si hay un camino online aunque sea acotado, ofrecerlo.
+3. **El handoff a humano es UNA opción más, no LA única**.
+4. **Validación con el founder/expert antes de hardcodear cuál es bloqueador absoluto**. La lógica óptica/médica/legal puede tener nuances que no se ven desde el código.
+
+### Cuándo aplicar
+
+- Lector de receta, analizador de cara, calculadora de envío, recomendador de productos.
+- Cualquier feature donde el usuario invierta tiempo (subir foto, llenar form, esperar análisis).
+- Decisiones de "podemos atender online vs presencial".
+
+### Cuándo NO aplicar
+
+- Casos donde mostrar el output ES el bloqueador (datos sensibles que no se pueden mostrar por compliance).
+- Resultados ambiguos del análisis (warning_flags presentes) — mejor pedir reintento que mostrar data dudosa.
+
+### Bonus
+
+Conecta con el mistake gemelo de hoy ("traté has_add como bloqueador absoluto sin validar"). El mistake fue treating-it-as-binary. El learning es el patrón "siempre mostrar output, diferenciar tipos de bloqueador".
+
 ## 2026-05-30 — Para datos per-user en páginas con ISR cache: client component + server action (no server SSR)
 
 **Categoría**: Next.js caching / Client-server boundaries

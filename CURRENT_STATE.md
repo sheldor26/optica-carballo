@@ -2,6 +2,16 @@
 
 ## Status
 
+🟢 **Sprint IA-2.5 (Bifocal con opciones monofocal) PUSHEADO — TESTEAR EN PROD** (2026-05-30). Founder agregó `PRESCRIPTION_COOKIE_SECRET` en Vercel y probó IA-2 con una receta lejos+cerca (bifocal). Comportamiento anterior: handoff WhatsApp único, sin mostrar tabla. Feedback founder: (a) la persona puede hacerse 2 anteojos monofocales separados (lejos + cerca) → no hay que bloquear el flow; (b) podemos armar uno solo (el que necesite primero); (c) aunque no se pueda hacer todo, **mostrar la tabla con la lectura de la receta** porque el usuario la escaneó — output educativo gratis. Fix implementado en commit `53577cb`:
+1. **`lib/prescription/types.ts`**: nuevo helper `hasOnlyAddReason(reasons)` distingue "solo has_add" (caso comercial — bifocal puro) de "has_add + otras patologías" (caso médico real). Returns true sólo si todos los reasons son 'has_add'.
+2. **`prescription-reader.tsx`**: en `ResultBlock`, antes del `InPersonHandoff` general, chequear `hasOnlyAddReason(reasons)` → si true, montar nuevo `BifocalOptionsBlock`. Si false (reasons mixtos o sin has_add) → flow original.
+3. **`BifocalOptionsBlock`** (nuevo componente, ~150 líneas): header explicativo + `PrescriptionForm` con tabla siempre visible + 3 `OptionCard` (lejos / cerca / multifocal handoff) + disclaimer + reset. Fórmula monofocal cerca (aprobada founder): `esf_cerca = (esf_lejos ?? 0) + (add ?? 0)` por ojo, CIL/EJE/DNP intactos (regente ajusta -3mm DNP al armar manualmente). Manejo edge: si receta vencida → 2 cards monofocal disabled (no podemos armar con receta vieja) pero multifocal sigue activo (oftalmólogo renueva).
+4. **`OptionCard`** (helper component): 3 modos — primary button, secondary button, link externo (WhatsApp para multifocal). Pattern reusable si después agregamos más opciones.
+
+Casos NO afectados (mantienen handoff WhatsApp original): `high_esf`, `high_cil`, `high_sum`, `anisometropia`, `contact_lens`. Esos sí son médicos puros y no podemos atender online.
+
+Typecheck verde, build OK. **Próximo paso (founder)**: tras redeploy automático Vercel, retomar el mismo flow que falló — subir receta bifocal y validar (a) tabla visible, (b) 3 opciones presentes, (c) "buscar anteojos de cerca" guarda receta con esf sumado y redirige a `/anteojos-de-receta`, (d) banner muestra valores correctos. **Sin pasos pendientes míos** en este sprint.
+
 🟢 **Sprint IA-2 (Lector receta → flow de compra) CÓDIGO LISTO — PUSHEAR + TESTEAR** (2026-05-30). Founder eligió scope B (cookie firmada + banner + checkout). Implementación:
 1. **`lib/prescription-cookie/types.ts`** (NUEVO): schema Zod con `eyeMeasurementCookieSchema` (esf/cil/eje/add — sin confidence) + `prescriptionCookieSchema` (type='monofocal', OD, OI, dnp, expirationDate, savedAt). Sólo se guarda monofocal sin patología (bifocales/contact_lens van a WhatsApp y nunca llegan acá).
 2. **`lib/prescription-cookie/cookie.ts`** (NUEVO): HMAC-SHA256 sign/verify usando `PRESCRIPTION_COOKIE_SECRET` (≥32 chars, separado del cart por defensa en profundidad). Cookie `oc_prescription` HttpOnly+Secure+SameSite=lax, TTL 30 días. NUNCA loguear contenido (LPDP 25.326 datos médicos sensibles).
