@@ -2,6 +2,14 @@
 
 ## Status
 
+🟢 **Catálogo de marca limpio + ProductCard estilo retail premium** (2026-05-30). Founder mostró catálogo `/anteojos-de-sol/rusty` con todo el bloque "Sobre la marca" (BrandStorySection con texto largo + grid Origen/Año/Segmento/Target + 3 callouts Legado/Identidad/Pensada) — pidió eliminar todo eso porque va a haber página dedicada de marca después. También pidió estilo de cards más retail premium: imágenes más grandes, menos texto, fondo sutil. Commit `33def71`:
+- **`components/catalog/brand-page.tsx`**: removido `BrandStorySection`, `brand.description` en header, link "Conocé más sobre", seo_intro/outro block. Imports limpiados. Mantenido: logo + H1 + breadcrumb + grid productos + FAQs + RelatedCategories.
+- **`components/product/product-card.tsx`**: `bg-background` → `bg-muted/30`, `aspect-[4/3]` → `aspect-square`, agregado `rounded-md`, `font-medium` en nombre. Object-contain con foto 3:2 en cuadrado deja bandas naturales con bg visible = padding visual sin CSS padding (que rompe con `Image fill`).
+
+**Pendiente futuro**: crear página dedicada de marca (`/marcas/[slug]` o `/sobre/[brand]`) donde irá el contenido de marca que sacamos del catálogo. BrandStorySection se mantiene como componente reusable para esa página futura.
+
+Typecheck verde. Build OK.
+
 🟢 **Sprint Multi-Camino: Audit + Filtros + Plan Editorial COMPLETO** (2026-05-30). Founder pidió "continuar todas las opciones" (Camino A filtros + Camino B contenido + Camino C audit). 3 caminos ejecutados en una sesión:
 
 **Camino C — Audit + 3 fixes críticos** (commit `67f4d16`):
