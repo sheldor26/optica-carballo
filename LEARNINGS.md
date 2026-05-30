@@ -22,6 +22,66 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Template pre-cargado switcheable en forms internos reduce fricción de tiempo cero
+
+**Categoría**: UX herramientas internas / Forms
+**Confianza**: 🟡 Media (validado en diseño de IA-3, falta confirmar con uso real del founder)
+
+### Qué funcionó
+
+En el form `/admin/product-copy-gen` (IA-3), el textarea de `attributes` JSON empieza pre-cargado con un template específico de la categoría seleccionada:
+- Categoría `anteojos-de-sol` → template incluye `lens_treatment + lens_color`.
+- Categoría `anteojos-de-receta` → template omite esos campos (lentes a medida).
+
+Detección "edición vs default": si al cambiar la categoría el textarea sigue siendo idéntico a algún template default, se intercambia automáticamente. Si fue editado por el founder, NO se toca (no perdés trabajo).
+
+```ts
+const onCategoryChange = (next: CategorySlug) => {
+  setCategorySlug(next);
+  if (
+    attributesJson === ATTRIBUTES_TEMPLATE_SOL ||
+    attributesJson === ATTRIBUTES_TEMPLATE_RX
+  ) {
+    setAttributesJson(next === 'anteojos-de-sol' ? TEMPLATE_SOL : TEMPLATE_RX);
+  }
+};
+```
+
+Founder no tiene que escribir el JSON desde cero. Empieza con un esqueleto válido y modifica. Tiempo zero-to-output baja de ~5 minutos (escribir JSON desde cero + validar comas + recordar campos) a ~30 seg (editar values).
+
+### Por qué funcionó
+
+Forms vacíos generan "blank page paralysis" — el usuario tiene que recordar qué llenar. Forms pre-cargados con default sensible:
+1. Sirven de documentación implícita (estás viendo qué campos esperás).
+2. Reducen errores (sintaxis JSON ya viene válida).
+3. Aceleran el flow (editás los 4-5 values que cambian, no los 12 que se repiten).
+
+La detección "fue editado vs default" evita el bug clásico de "cambié la categoría y se borró todo lo que escribí".
+
+### Regla preventiva
+
+Para herramientas internas con inputs estructurados (JSON, YAML, config strings):
+1. **Pre-cargar el textarea con un template default**.
+2. **Si hay variantes del template** (ej. por categoría / por modo / por tipo), implementar swap automático SI el textarea sigue idéntico a un default.
+3. **NO swapear si el usuario editó**. Detectá con comparison strict de strings.
+4. **Comentar en el template** qué campos son obligatorios vs opcionales si la herramienta no tiene validación inline.
+
+### Cuándo aplicar
+
+- Herramientas admin internas (no front consumer).
+- Forms con inputs estructurados largos (JSON, env vars, queries).
+- Wizards multi-step donde un step depende de selección anterior.
+
+### Cuándo NO aplicar
+
+- Forms públicos para usuario final (donde el "default" sesga el output).
+- Forms con un solo modo (sin variantes — no hace falta swap).
+- Cuando los templates son tan distintos que el swap es confuso.
+
+### Bonus
+
+Conecta con regla general "los forms internos son su propia experiencia UX, no aplicas las mismas reglas que para front consumer". El usuario interno conoce el dominio, valora velocidad sobre simplicidad. Trade-offs distintos al public.
+
 ## 2026-05-30 — Cuando bloqueás un flow por "no podemos hacerlo", igual mostrá el OUTPUT al usuario — es valor educativo gratis
 
 **Categoría**: UX / Product design
