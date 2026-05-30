@@ -1,5 +1,6 @@
 import type { ProductCardData } from '@/components/product/product-card';
 import type { ProductCardSource } from '@/lib/catalog/queries';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 
 /**
  * Transforma un `ProductCardSource` (raw query result) en `ProductCardData`
@@ -71,14 +72,18 @@ export function toProductCardData(
 
   // Si no hay variantes (caso edge), fallback a primera imagen global.
   if (!defaultVariant) {
+    const primary = globalImages[0]?.storage_path ?? null;
+    const secondary = globalImages[1]?.storage_path ?? null;
     return {
       slug: source.slug,
       name: source.name,
       shortDescription: source.short_description,
       minPriceCents,
       inStockCount: inStockVariants.length,
-      primaryImagePath: globalImages[0]?.storage_path ?? null,
-      secondaryImagePath: globalImages[1]?.storage_path ?? null,
+      primaryImagePath: primary,
+      secondaryImagePath: secondary,
+      primaryImageScale: getImageScale(primary),
+      secondaryImageScale: getImageScale(secondary),
       href: `${hrefPrefix}/${source.slug}`,
       categorySlug,
       brandSlug,
@@ -100,6 +105,8 @@ export function toProductCardData(
       label: extractColorLabel(v.attributes),
       primaryImagePath: images.primary,
       secondaryImagePath: images.secondary,
+      primaryImageScale: getImageScale(images.primary),
+      secondaryImageScale: getImageScale(images.secondary),
       inStock: v.stock_qty > 0,
     };
   });
@@ -112,6 +119,8 @@ export function toProductCardData(
     inStockCount: inStockVariants.length,
     primaryImagePath: defaultImages.primary,
     secondaryImagePath: defaultImages.secondary,
+    primaryImageScale: getImageScale(defaultImages.primary),
+    secondaryImageScale: getImageScale(defaultImages.secondary),
     href: `${hrefPrefix}/${source.slug}`,
     categorySlug,
     brandSlug,

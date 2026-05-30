@@ -17,6 +17,10 @@ export type ProductCardVariant = {
   primaryImagePath: string | null;
   /** Imagen secondary (lateral). Para hover swap dentro de la misma variante. */
   secondaryImagePath: string | null;
+  /** Scale CSS para normalizar tamaño visual entre fotos no-uniformes.
+   * Default 1. Ver `lib/catalog/image-scale-overrides.ts`. */
+  primaryImageScale: number;
+  secondaryImageScale: number;
   inStock: boolean;
 };
 
@@ -30,6 +34,10 @@ export type ProductCardData = {
   primaryImagePath: string | null;
   /** Imagen secondary de la variante DEFAULT (para hover swap). */
   secondaryImagePath: string | null;
+  /** Scale CSS para imagen default primary/secondary. Default 1 si consumer
+   * no lo provee. */
+  primaryImageScale?: number;
+  secondaryImageScale?: number;
   href: string;
   /** Para construir entry de wishlist. */
   categorySlug: string;
@@ -74,6 +82,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       return {
         primary: product.primaryImagePath,
         secondary: product.secondaryImagePath,
+        primaryScale: product.primaryImageScale ?? 1,
+        secondaryScale: product.secondaryImageScale ?? 1,
       };
     }
     const variant = variants.find((v) => v.id === selectedVariantId);
@@ -81,17 +91,23 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       return {
         primary: product.primaryImagePath,
         secondary: product.secondaryImagePath,
+        primaryScale: product.primaryImageScale ?? 1,
+        secondaryScale: product.secondaryImageScale ?? 1,
       };
     }
     return {
       primary: variant.primaryImagePath,
       secondary: variant.secondaryImagePath,
+      primaryScale: variant.primaryImageScale,
+      secondaryScale: variant.secondaryImageScale,
     };
   }, [
     selectedVariantId,
     variants,
     product.primaryImagePath,
     product.secondaryImagePath,
+    product.primaryImageScale,
+    product.secondaryImageScale,
   ]);
 
   const primaryUrl = currentImages.primary
@@ -129,11 +145,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 alt=""
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                style={{ transform: `scale(${currentImages.primaryScale})` }}
                 className={cn(
-                  'object-contain transition-all duration-500 ease-out',
-                  secondaryUrl
-                    ? 'group-hover/image:opacity-0'
-                    : 'group-hover/image:scale-105',
+                  'object-contain transition-transform duration-500 ease-out',
+                  secondaryUrl && 'group-hover/image:opacity-0',
                 )}
               />
               {secondaryUrl && (
@@ -143,6 +158,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  style={{ transform: `scale(${currentImages.secondaryScale})` }}
                   className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/image:opacity-100"
                 />
               )}
