@@ -16,6 +16,16 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## 🟡 Pendiente — assets visuales (esperan al founder)
 
+- [ ] **Pipeline normalización de fotos al cargar productos**: aplicar mi
+  script v3 (Python+PIL: detectar bbox del anteojo, recortar, redimensionar
+  al 92% del frame, centrar en canvas 2000×1333) automáticamente al cargar
+  fotos de un producto nuevo. Elimina la necesidad de scale-overrides
+  manuales en `lib/catalog/image-scale-overrides.ts` (que requirió 14+
+  iteraciones de ajuste fino para 1 solo producto en saga 2026-05-30).
+  Opciones de implementación: (a) script CLI `npm run normalize-product-photos
+  <slug>` que el founder corre antes de subir al bucket, (b) edge function
+  Supabase que se dispara en upload, (c) API route Next.js que normaliza
+  on-the-fly + cache CDN. Recomendado: (a) por simplicidad y control.
 - [x] ~~**Uniformar framing de fotos Vulk Day Light (4 variantes)**~~ — Hecho
   por founder 2026-05-30. Iter 8 restauró `scale-[1.4]` original. Standard
   para próximos productos: framing uniforme entre variantes desde subida

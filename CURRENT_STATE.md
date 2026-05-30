@@ -2,6 +2,21 @@
 
 ## Status
 
+✅ **SAGA Vulk Day Light CERRADA tras iter 14.6** (2026-05-30). Founder: "sigue habiendo diferencias pero ya fue, está bien así". Acepta estado actual como límite del approach scale CSS manual per-variante. Total: 14+ iteraciones en 1 sesión sobre tamaños de fotos en cards. Resumen ejecutivo de la saga abajo.
+
+**Resumen ejecutivo Vulk Day Light (iters 7-14.6)**:
+- **Problema inicial**: 4 variantes con anteojos de tamaños visuales distintos en card (var 1/4 más grandes, var 2/3 más chicas — luego se invirtió cuando saqué scale uniforme).
+- **Hipótesis exploradas (descartadas)**: scale CSS uniforme (iters 7-13), reprocesar fotos manualmente en Photopea (iter 11-12 rechazado por founder).
+- **Solución arquitectónica**: scale per-variante via `lib/catalog/image-scale-overrides.ts` (iter 14) — `Record<storage_path, scale>` aplicado inline en `<Image style={{transform: scale(X)}}>`.
+- **Bug crítico (iter 14.4)**: hardcodeé paths con `.png` pero DB usaba `.jpg` → 3 iters previos (14, 14.1, 14.2, 14.3) eran ficticios (override nunca matcheaba). Detectado via `curl | grep transform`.
+- **Iteración final (iter 14.5-14.6)**: una vez que el código realmente aplicaba scales, 2 ajustes empíricos sobre feedback real del founder. Valores finales:
+  - Var 1 (carey, 01-lateral.jpg): 0.86
+  - Var 2 (rosa, 04-lateral-rosa.jpg): 0.95 ✓
+  - Var 3 (matte black, 07-mblk-lateral.jpg): 0.95 ✓
+  - Var 4 (brown, 10-brown-lateral.jpg): 0.93
+
+**Standard recomendado a futuro (preventivo)**: para próximos productos, en vez de scale-overrides manuales, aplicar pipeline de pre-procesamiento (mi script v3 crop+resize+center al 92% del frame) al cargar fotos al bucket. Elimina la necesidad de ajustes per-foto. Documentado en BACKLOG como mejora arquitectónica.
+
 🟢 **Iter 14.6 — Var 2 y 3 PERFECTAS, subir var 1 y 4 al mismo nivel** (2026-05-30). Founder confirma 2 de las 4 listas: var 2 (rosa) y var 3 (matte black) a 0.95 ✓ PERFECTAS. Var 1 (0.78) y var 4 (0.85) "hay que agrandarlos un poco más". Aplico learning iter 14.5 (ancla en las perfectas): subo ambas con delta +9-10% para acercarlas al target 0.95.
 
 Cambios:
