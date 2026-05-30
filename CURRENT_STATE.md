@@ -2,6 +2,18 @@
 
 ## Status
 
+🟢 **Fix QuickView: imagen sigue a la variante seleccionada** (2026-05-30). Founder testeó iter 6, confirmó que el sizing del catálogo quedó bien ("mejoró mucho el tema del tamaño, me gusta como quedó! Felicitaciones"), y reportó 1 bug puntual en el modal QuickView: al cambiar de variante con los chips, la **imagen del modal seguía mostrando la del producto default**, no la de la variante seleccionada.
+
+Causa raíz: el query `getProductQuickViewAction` no traía `variant_id` en images ni armaba `primaryImagePath` por variante. El componente `QuickViewBody` siempre usaba `data.primaryImagePath` (global del producto), sin importar la variante seleccionada.
+
+Fix (mismo patrón que `to-product-card-data.ts`):
+- **`lib/catalog/quick-view.ts`**: SELECT de images incluye ahora `variant_id`. Tipo `QuickViewVariant` agregado campo `primaryImagePath: string | null`. Mapper agrupa imágenes por `variant_id` (con fallback a globalPrimary si la variante no tiene imágenes propias).
+- **`components/product/quick-view.tsx`**: `imagePath` ahora deriva de `selected?.primaryImagePath ?? data.primaryImagePath` (variante con fallback al global). Image tiene `key={selectedVariantId}` para re-mount limpio al cambiar variante.
+
+Typecheck verde.
+
+**Próximo paso (founder)**: testear modal QuickView en `/anteojos-de-sol/vulk` (4 variantes) → click chip de variante → imagen del modal debe cambiar a la foto de esa variante.
+
 🟢 **Catálogo iter 6 — Hover scope correcto + QuickView sutil** (2026-05-30). Founder reportó 2 bugs de UX al testear iter 5:
 1. **Hover swap dispara desde thumbnails**: al posarse sobre un thumb de variante para elegirla, la imagen principal cambiaba a frontal (swap). Debería swap solo al posarse sobre LA IMAGEN PRINCIPAL del producto. Fix: 2 groups distintos. `group/card` en el `<article>` para Wishlist/QuickView buttons (que sí deben aparecer al hover de toda la card). `group/image` solo en el div de la imagen para el swap frontal/lateral. Thumbnails están dentro del article pero su hover no dispara swap (porque ese usa group/image).
 2. **Cartel "Vista rápida" molesta y tapa los thumbnails**: posicionado `bottom-3 left-3` absolute relative al article → caía sobre la fila de thumbnails. Fix: (a) reposicionado a `top-3 left-3` (esquina superior izq de la card, simétrico con WishlistButton heart top-right); (b) reducido a SOLO icono Eye (sin texto "Vista rápida") con `size-8` rounded-full. Más sutil, accesible via `title="Vista rápida"` y `aria-label`.

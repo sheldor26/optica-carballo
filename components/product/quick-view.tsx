@@ -117,13 +117,15 @@ function QuickViewBody({
   const selected = data.variants.find((v) => v.id === selectedVariantId);
   const price = selected?.priceCents;
   const inStock = selected ? selected.stockQty > 0 : false;
-  const imagePath = data.primaryImagePath;
+  // Imagen de la variante seleccionada, con fallback al global del producto.
+  const imagePath = selected?.primaryImagePath ?? data.primaryImagePath;
 
   return (
     <div className="grid gap-0 md:grid-cols-[1fr_1.2fr]">
       <div className="bg-muted/30 relative aspect-square w-full overflow-hidden">
         {imagePath ? (
           <Image
+            key={selectedVariantId ?? 'default'}
             src={getProductImageUrl(imagePath)}
             alt={data.name}
             fill

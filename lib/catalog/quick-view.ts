@@ -8,6 +8,9 @@ export type QuickViewVariant = {
   priceCents: number;
   stockQty: number;
   colorFrame: string | null;
+  /** Imagen primary específica de esta variante. Si la variante no tiene
+   * imágenes propias, cae al global del producto. */
+  primaryImagePath: string | null;
 };
 
 export type QuickViewData = {
@@ -17,6 +20,7 @@ export type QuickViewData = {
   brandSlug: string;
   categorySlug: string;
   shortDescription: string | null;
+  /** Imagen global del producto — fallback cuando la variante no tiene la suya. */
   primaryImagePath: string | null;
   secondaryImagePath: string | null;
   variants: QuickViewVariant[];
@@ -41,6 +45,7 @@ type QuickViewRow = {
     storage_path: string;
     is_primary: boolean;
     sort_order: number;
+    variant_id: string | null;
   }>;
 };
 
@@ -65,7 +70,7 @@ export async function getProductQuickViewAction(
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, attributes, is_active, sort_order),
-        images:product_images(storage_path, is_primary, sort_order)
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
     .eq('slug', slug)
@@ -82,19 +87,37 @@ export async function getProductQuickViewAction(
     return a.sort_order - b.sort_order;
   });
 
+  // Imágenes globales del producto (variant_id = null): fallback general.
+  const globalImages = sortedImages.filter((img) => img.variant_id === null);
+  const globalPrimary = globalImages[0]?.storage_path ?? null;
+  const globalSecondary = globalImages[1]?.storage_path ?? null;
+
+  // Imágenes agrupadas por variant_id: primary por variante.
+  const imagesByVariant = new Map<string, typeof sortedImages>();
+  for (const img of sortedImages) {
+    if (img.variant_id === null) continue;
+    const arr = imagesByVariant.get(img.variant_id) ?? [];
+    arr.push(img);
+    imagesByVariant.set(img.variant_id, arr);
+  }
+
   const variants: QuickViewVariant[] = data.variants
     .filter((v) => v.is_active)
     .sort((a, b) => a.sort_order - b.sort_order)
-    .map((v) => ({
-      id: v.id,
-      sku: v.sku,
-      priceCents: v.price_cents,
-      stockQty: v.stock_qty,
-      colorFrame:
-        typeof v.attributes?.color_frame === 'string'
-          ? v.attributes.color_frame
-          : null,
-    }));
+    .map((v) => {
+      const variantImages = imagesByVariant.get(v.id) ?? [];
+      return {
+        id: v.id,
+        sku: v.sku,
+        priceCents: v.price_cents,
+        stockQty: v.stock_qty,
+        colorFrame:
+          typeof v.attributes?.color_frame === 'string'
+            ? v.attributes.color_frame
+            : null,
+        primaryImagePath: variantImages[0]?.storage_path ?? globalPrimary,
+      };
+    });
 
   return {
     slug: data.slug,
@@ -103,8 +126,8 @@ export async function getProductQuickViewAction(
     brandSlug: data.brand.slug,
     categorySlug: data.category.slug,
     shortDescription: data.short_description,
-    primaryImagePath: sortedImages[0]?.storage_path ?? null,
-    secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+    primaryImagePath: globalPrimary,
+    secondaryImagePath: globalSecondary,
     variants,
   };
 }
