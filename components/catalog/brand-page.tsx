@@ -115,26 +115,28 @@ export function BrandCatalogPage({
         </ol>
       </nav>
 
-      <RevealOnScroll as="article" className="mb-10 max-w-3xl">
-        {brand.logo_url && (
-          <div className="mb-6 flex h-14 items-center md:h-16">
-            <Image
-              src={getBrandAssetUrl(brand.logo_url)}
-              alt={brand.name}
-              width={240}
-              height={80}
-              className={cn(
-                'h-12 w-auto object-contain md:h-14',
-                shouldInvertLogo(brand.logo_url, 'light-bg') && 'brightness-0',
-              )}
-              priority
-            />
-          </div>
-        )}
-        <h1 className="text-balance font-serif text-5xl font-medium leading-[1.05] tracking-[-0.02em] md:text-6xl lg:text-7xl">
-          {category.name} <span className="italic font-normal">{brand.name}</span>
-        </h1>
-      </RevealOnScroll>
+      {brand.logo_url && (
+        <RevealOnScroll as="div" className="mb-10 flex items-center md:mb-12">
+          <Image
+            src={getBrandAssetUrl(brand.logo_url)}
+            alt={brand.name}
+            width={240}
+            height={80}
+            className={cn(
+              'h-12 w-auto object-contain md:h-14',
+              shouldInvertLogo(brand.logo_url, 'light-bg') && 'brightness-0',
+            )}
+            priority
+          />
+        </RevealOnScroll>
+      )}
+
+      {/* H1 oculto pero accesible: necesario para SEO + a11y aunque visualmente
+          no lo mostremos (founder pidió quitar el título visible para que el
+          foco visual sea 100% el grid de productos). */}
+      <h1 className="sr-only">
+        {category.name} {brand.name}
+      </h1>
 
       {items.length === 0 ? (
         <p className="text-muted-foreground">

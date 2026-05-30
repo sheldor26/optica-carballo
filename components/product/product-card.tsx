@@ -57,7 +57,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         aria-label={product.name}
       >
         <div
-          className="bg-muted/30 relative aspect-square w-full overflow-hidden rounded-md"
+          className="bg-background relative aspect-[4/3] w-full overflow-hidden rounded-md"
           aria-hidden="true"
         >
           {primaryUrl ? (
