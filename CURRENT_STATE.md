@@ -2,6 +2,15 @@
 
 ## Status
 
+🟡 **Import variante Rusty Yau Revo Blue (MLA1432121317) — ESPERANDO DATOS DEL FOUNDER** (2026-05-30). Founder pasó link ML de nueva variante: "Rusty Yau MBLK Revo Blue Polarizado Yellow". Diagnóstico hecho:
+- **NO es producto nuevo** — es variante del modelo `rusty-yau` (seed 10) que ya existe con la variante 126080 (MBLK/S10 POL). Descripción/atributos/callouts/medidas son compartidos a nivel producto → ya están. Solo se agrega la variante.
+- Decodificado del título: `MBLK` = armazón negro mate (MISMO armazón que 126080) / `Revo Blue Polarizado` = par principal azul espejado polarizado / `Yellow` = amarillas (común a todas).
+- **Listing ML SEPARADO**: MLA1432121317 (distinto del MLA1432137395 de la 126080). En schema va como `mercadolibre_item_id` propio con `mercadolibre_variation_code` NULL (NO es caso multi-variation como Vulk).
+- Decisión founder: `lens_color: "azul-espejado"` (consistente con `gris-oscuro` de la otra variante, describe el acabado real vs término comercial "revo").
+- **No se pudo traer precio/stock de ML automáticamente**: API pública 403 (ML exige auth ahora), scraping devuelve interstitial sin precio, endpoint interno OAuth → `no_integration`/token vencido. NO se re-autorizó OAuth (acción founder, tema aparte ya trackeado abajo). 1 imagen detectada vía OG meta: `D_964931-MLA76921385583_062024-O.jpg`.
+
+**Próximo paso exacto**: founder pasa SKU interno, precio, stock real, cantidad/contenido de fotos, y model_code exacto (inferido `MBLK/REVO BLUE POL YELLOW`). Con eso: crear seed `13_rusty_yau_revo_blue.sql` (mismo patrón que seed 10 — INSERT variant + INSERT images con ON CONFLICT, NULL variation_code), concatenar al bootstrap, e indicar nombres de fotos para bucket `rusty-yau/`. Recordatorio al founder: cropear fotos igual que la 126080 (regla MISTAKES 2026-05-30 composición). `weight_grams` sigue siendo gap del modelo Yau.
+
 🟡 **Re-autorización ML OAuth + import MLA1432137395 — DIAGNÓSTICO EN CURSO (hipótesis cuenta equivocada)** (2026-05-29). Founder re-autorizó con `user_id=81654493`, endpoint admin devolvió 404 para MLA1432137395. Founder pasó URL del listing real: `mercadolibre.com.ar/.../up/MLAU384055931?...&wid=MLA1432137395` — el item es de **Tienda Oficial OPTICACARBALLO** (`official_store:260502`). Pero `user_id=81654493` puede NO ser la cuenta OPTICACARBALLO (founder posiblemente autorizó OAuth con cuenta personal/hermano por cookie de sesión ML sticky).
 
 **Bug fixed + verificado**: tras commit `57971a1` (single-account enforcement + defensive read) + re-auth del founder, `/api/admin/ml-me` confirma integración correcta:

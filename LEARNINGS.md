@@ -6153,7 +6153,32 @@ Cuando algo no-obvio del sistema agregó valor explícito (no las cosas básicas
 
 ---
 
-# Notas finales
+## 2026-05-30 — Decodificar identidad de producto desde el título de ML cuando la API no está disponible
+
+**Categoría**: Import de productos / Resiliencia
+**Confianza**: 🟢 Alta (resolvió el caso Revo Blue sin API)
+
+### Qué funcionó
+
+Founder pasó link ML de una variante nueva. La API de ML estaba caída para mí (403 público + token OAuth vencido + scraping interstitial). En vez de bloquearme esperando re-auth del founder, decodifiqué la identidad completa del producto desde el título del listing: "Rusty Yau MBLK Revo Blue Polarizado Yellow" → armazón negro mate (mismo que la variante existente), par principal azul espejado polarizado, par amarillas común. Usando el seed de la variante previa (10_rusty_yau) como mapa, identifiqué que el 90% de los datos (descripción, atributos, callouts, medidas) son compartidos a nivel producto y YA existían. Reduje lo que necesito del founder a 5 datos puntuales (SKU, precio, stock, fotos, model_code).
+
+### Por qué funcionó
+
+El título de un listing ML está estructurado con el código de modelo del fabricante (MBLK = negro mate, etc.) — es data parseable, no marketing. Y para variantes de un producto ya cargado, la mayoría del contenido es compartido. Combinando ambas cosas, la API de ML es un nice-to-have (autocompleta precio/stock) pero NO un bloqueante para avanzar.
+
+### Regla preventiva
+
+Al importar una variante de un producto YA existente:
+1. **Leer primero el seed de la variante previa** — identificar qué es compartido (producto) vs específico (variante).
+2. **Decodificar la identidad desde el título de ML** usando la nomenclatura ya documentada en el seed previo.
+3. **Si la API de ML no responde**, NO bloquear — pedir al founder solo el delta puntual (SKU, precio, stock, fotos). No esperar re-auth de OAuth para algo que no lo necesita.
+
+### Cuándo aplicar
+
+- Import de variante N+1 de un modelo ya cargado.
+- NO aplica a producto totalmente nuevo (ahí sí falta todo el contenido base y la API ahorra más).
+
+## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
 - También se actualiza manualmente cuando el founder o el sistema detectan algo digno de documentar.
