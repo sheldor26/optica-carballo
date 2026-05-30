@@ -2,6 +2,13 @@
 
 ## Status
 
+✅ **Vulk Stray iter 2 COMPLETO — rename variantes + callouts aplicados** (2026-05-30). Founder confirmó "todo aplicado". Verificado vía curl HTML producción:
+- ✅ Variante 126891: muestra "negro-brillo" (renombrada desde "Negro Satinado")
+- ✅ Variante 126899: muestra "carey-mate" (renombrada desde "Demi Negro Mate")
+- ✅ 3 callouts visibles: "G-Flex nació", "elegir según", "lentes graduadas duren"
+
+**Sync ML verificado funcional**: el cambio de display label NO rompió el sync. Stock y precio siguen sincronizando porque el sync usa `mercadolibre_variation_code` (variation_id literal), no `frame_color`.
+
 🟡 **Vulk Stray iter 2: rename variantes + callouts (seed 22)** (2026-05-30). Founder pidió 2 cambios + 1 mejora:
 
 **1. Renombrar variantes (SOLO mi web, NO afecta sync ML)**:
