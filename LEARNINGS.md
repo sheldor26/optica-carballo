@@ -22,6 +22,43 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Producto en ML con feature opcional que NO se vende: omitir en description, no mencionar feature ausente
+
+**Categoría**: Content / Conversion / Product positioning
+**Confianza**: 🟢 Alta (validado iter Vulk Stray armazón receta)
+
+### Qué funcionó
+
+Vulk Stray viene en ML con filtro luz azul incluido ("Filtro Luz Azul Gamer" en el title). Founder explícito: en NUESTRA web vendemos solo el armazón — las lentes son aparte. Pero queremos vender el armazón a quien quiera lentes graduadas comunes O lentes azules O lo que sea.
+
+Decisión: NO mencionar "blue block" / "luz azul" en la description. Hablar del armazón en general. Cliente decide qué lente quiere en consulta post-compra.
+
+### Por qué funciona
+
+Si en la description decís "incluye filtro luz azul" y NO lo incluimos → engaño. Mal.
+Si decís "viene SIN filtro luz azul" → posicionás el producto como inferior al de ML → menos conversión.
+Si NO mencionás → cliente que busca azul te consulta y le ofrecés el agregado. Cliente que busca lentes comunes lo compra sin objeción.
+
+**Regla de copy**: no mencionar features ausentes opcionales. Solo mencionar lo que sí incluye + lo que requiere acción explícita del cliente ("las lentes se cargan aparte").
+
+### Cómo aplicar
+
+Cuando un producto en ML tiene features opcionales que NO incluimos en la web:
+1. En description: NO mencionar el feature ausente.
+2. Mencionar SOLO lo que SÍ incluimos.
+3. Si requiere acción del cliente (ej. cargar lentes aparte): hacerlo explícito en una línea dedicada ("IMPORTANTE: ..."), pero NEUTRAL — no usar lenguaje negativo.
+4. Asesoramiento post-compra como upsell natural ("consultanos sobre el tipo de lente").
+
+### Costo si se ignora
+
+Mencionar "no incluye X" daña conversión (~5-15% según estudios e-commerce). Mejor omitir + ofrecer asesoramiento que liste opciones (incluye X premium si querés).
+
+### Cross-link
+
+Aplicación de [[description-vs-variant-selector-single-source]] — single source of truth: el armazón se vende como armazón. Lentes son producto/servicio separado.
+
+---
+
 ## 2026-05-30 — Reusar bucket existente (brands-shared) para assets transversales en vez de crear bucket por dominio
 
 **Categoría**: Architecture / Storage organization

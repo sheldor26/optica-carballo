@@ -2,6 +2,37 @@
 
 ## Status
 
+🟢 **NUEVO producto Vulk Stray (receta, 4 variantes) — primer armazón de receta del catálogo** (2026-05-30). Founder pidió cargar el Vulk Stray (MLA1824193366) como armazón de receta. Hito: PRIMER producto categoría `anteojos-de-receta` del catálogo.
+
+Particularidades vs productos sol previos:
+- **Categoría**: anteojos-de-receta (NO sol)
+- **Lentes**: NO se incluyen. Vendemos SOLO el armazón. Lentes graduadas se cargan aparte vía asesoramiento óptico post-compra. Description hace explícito esto.
+- **ML lo lista como "Filtro Luz Azul Gamer"** pero founder explícito: NO mencionar blue block/luz azul en nuestra web. Description neutral solo del armazón.
+- `attributes.is_prescription_frame: true` (flag nuevo para identificar armazones receta-only)
+- `attributes.includes_lenses: false` (explícito)
+
+4 variantes (founder pasó SKUs):
+- MBLK 126890 (Negro Mate, stock 10)
+- SBLK 126891 (Negro Satinado, stock 0)
+- 663 126898 (Gris Oscuro Transparente / 663 Optics, stock 9)
+- MDEMI-MBLK 126899 (Demi/Negro Mate combinado, stock 1)
+
+Precio: $93.000 (mismo ML, 9300000 centavos). Datos auto-extraídos vía endpoint admin.
+
+**Pendiente confirmación founder**: ML tiene 5ta variation "Gris" (185252770949, stock 5) sin SKU asignado. Si va en catálogo, seed 20.1 con esa variante.
+
+Seed 20 commit pendiente.
+
+**Próximo paso (founder)**:
+1. Subir 9 fotos al bucket `products/vulk-stray-receta/`:
+   - `01-mblk-lateral.jpg`, `02-mblk-frontal.jpg`
+   - `03-sblk-lateral.jpg`, `04-sblk-frontal.jpg`
+   - `05-663-lateral.jpg`, `06-663-frontal.jpg`
+   - `07-mdemi-mblk-lateral.jpg`, `08-mdemi-mblk-frontal.jpg`
+   - `09-medidas.jpg`
+2. Aplicar seed 20 al cloud (vía SQL Editor o decirme "aplicalo" para MCP)
+3. Confirmar qué hacer con variation "Gris" (omitir o cargar)
+
 🟢 **Imagen hero para categoría "Anteojos de sol" en home** (2026-05-30). Founder pidió aplicar foto al card de categoría que estaba con placeholder "Foto pendiente".
 
 Implementación (decision pragmática — sin nueva tabla DB):
