@@ -37,6 +37,21 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-day-light-sol/07-mblk-lateral.jpg': 0.95,
   'vulk-day-light-sol/09-brown-frontal.jpg': 0.93, // iter 14.5 0.85 chica → +9%
   'vulk-day-light-sol/10-brown-lateral.jpg': 0.93,
+
+  // Vulk Yamain — fotos en formato distinto al Day Light:
+  //   Yamain: 900x442 (aspect 2.04:1) — anteojo bbox ~82% W × 75% H del frame
+  //   Day Light: 2000x1333 (aspect 3:2) — anteojo bbox ~99% W × 57% H
+  // En cards aspect-[3/2], las fotos Yamain (más anchas) dejan barras
+  // verticales arriba/abajo via object-contain → anteojo se ve más chico
+  // visualmente que las del Day Light. Scale 1.15 uniforme compensa.
+  // Las 6 fotos son consistentes entre sí (todas 900x442, ratio similar)
+  // → una sola scale funciona para las 6 (3 variantes × 2 fotos c/u).
+  'vulk-yamain-sol/01-cry-lateral.jpg': 1.15,
+  'vulk-yamain-sol/02-cry-frontal.jpg': 1.15,
+  'vulk-yamain-sol/03-mblk-lateral.jpg': 1.15,
+  'vulk-yamain-sol/04-mblk-frontal.jpg': 1.15,
+  'vulk-yamain-sol/05-sblk-lateral.jpg': 1.15,
+  'vulk-yamain-sol/06-sblk-frontal.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
