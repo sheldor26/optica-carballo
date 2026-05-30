@@ -22,6 +22,37 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para cambios de scale CSS visibles al ojo humano, el delta debe ser ≥10-15% (iter 14.2)
+
+**Categoría**: Visual tuning / Perception thresholds
+**Confianza**: 🟢 Alta (validado empíricamente — 7.6% invisible, 18.5% visible)
+
+### Qué funcionó
+
+En iter 14.1 bajé scale de 0.92 a 0.85 (~7.6% reducción) buscando ajuste "conservador" para no pasarme. Founder testeó: "es como que no afectó el cambio". Confirmó que el delta era invisible al ojo. En iter 14.2 bajé de 0.85 a 0.75 (~12% adicional, 18.5% acumulado vs iter 14 inicial). Ese delta sí se percibe visualmente.
+
+### Por qué funciona
+
+El ojo humano tiene umbral mínimo de percepción para cambios de tamaño. Para imágenes de producto a 200-300 px de ancho en una card, un cambio de 7-8% en scale CSS es del orden de 15-20 px — apenas perceptible salvo comparación directa pixel-perfect. Cambios ≥15% son del orden de 30-40 px, claramente visibles.
+
+### Cómo aplicar
+
+Cuando ajustás scale CSS por feedback de "se ve más grande/chica":
+- **NO** intentar ajustes < 10% — el founder no va a notar diferencia y vas a perder 1 iteración
+- **Default 15-20%** para primer ajuste si la dirección está clara
+- **Iterar más finamente** (5-10%) SOLO cuando ya estás cerca del target y el founder dice "casi"
+- Comunicar el delta esperado: "voy a bajar 18% — esto va a notarse claramente"
+
+### Costo si se ignora
+
+Cada iteración "muy sutil" cuesta: commit + push + deploy Vercel (~2 min) + founder testea (~2 min) + feedback (~1 min) = ~5 min perdidos por no haber sido más agresivo de entrada.
+
+### Cross-link
+
+Aplicación específica del pattern [[founder-no-tecnico-intuye]] — el founder valida con su ojo, no con números. Pensar en términos de percepción visual, no de scale matemático.
+
+---
+
 ## 2026-05-30 — Founder no-técnico puede intuir la solución arquitectónica correcta antes que el dev (iter 14)
 
 **Categoría**: Communication / Founder collaboration
