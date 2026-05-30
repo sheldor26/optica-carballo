@@ -67,14 +67,18 @@ export function LetterReveal({
               return (
                 <motion.span
                   key={idx}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{
                     delay: delay + idx * 0.025,
                     duration: 0.45,
                     ease: [0.2, 0.6, 0.2, 1],
                   }}
-                  style={{ display: 'inline-block' }}
+                  // SIN display: inline-block ni transform. Solo opacity fade.
+                  // Fix bug 2026-05-30: inline-block + transform Y residual
+                  // causaban subpixel/baseline shift en letras con descender
+                  // (j, g, p, y) — se veían "movidas" tras la animación.
+                  // Opacity-only no afecta layout ni baseline.
                 >
                   {char}
                 </motion.span>

@@ -2,6 +2,16 @@
 
 ## Status
 
+🟢 **Fix tipografía hero: letras "movidas" (j, g) — opacity-only en LetterReveal** (2026-05-30). Founder reportó que la J se ve "movida" en el hero. Diagnóstico: `LetterReveal` envolvía cada letra en `<motion.span display: inline-block>` + animaba `y: 14 → 0`. El transform residual + inline-block causaban subpixel/baseline shift específicamente en letras con descender (j, g, p, y) — se veían "movidas" tras la animación.
+
+Fix:
+- `LetterReveal`: removido `display: inline-block` + removido `y` animation. Mantengo solo `opacity: 0 → 1` con stagger por letra. Opacity-only NO afecta layout ni baseline.
+- Resultado: el efecto fade letra-por-letra sigue siendo visible, sin causar shift visual.
+
+Founder mencionó también "tipografía general del sitio... en ciertas letras". Si tras este fix sigue viendo issues fuera del hero, voy a investigar la font Fraunces global (font-feature-settings, smoothing, etc.). LetterReveal solo aplica al hero — otras páginas usan texto static que puede tener su propio issue.
+
+**CursorFollower** confirmado founder: solo eliminado ese ("solo lo del mouse"). NO eliminamos MagneticButton ni TiltSpotlightCard.
+
 🟡 **CursorFollower removido + decisión pendiente otros efectos cursor** (2026-05-30). Founder pidió "eliminar efecto del cursor". Removí `<CursorFollower />` del layout storefront + import (commit `a21c967`). Componente queda en `components/ui/cursor-follower.tsx` por si se reactiva.
 
 **Pregunta pendiente al founder**: ¿también eliminar estos efectos cursor-related?
