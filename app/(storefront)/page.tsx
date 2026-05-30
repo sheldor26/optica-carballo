@@ -15,7 +15,7 @@ import { buildHomeMetadata } from '@/lib/catalog/metadata';
 import {
   fetchAllActiveBrands,
   fetchCategoryIndex,
-  fetchHomeShowcaseProduct,
+  fetchHomeShowcaseProducts,
 } from '@/lib/catalog/queries';
 import { getBusinessInfo, getWhatsappLinkWithContext } from '@/lib/site/business';
 
@@ -26,11 +26,11 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function HomePage() {
-  const [solBrands, rxBrands, allBrands, showcase] = await Promise.all([
+  const [solBrands, rxBrands, allBrands, showcases] = await Promise.all([
     fetchCategoryIndex(CATEGORIES.sol),
     fetchCategoryIndex(CATEGORIES.rx),
     fetchAllActiveBrands(),
-    fetchHomeShowcaseProduct(),
+    fetchHomeShowcaseProducts(4),
   ]);
 
   const { siteName } = getBusinessInfo();
@@ -41,7 +41,7 @@ export default async function HomePage() {
       <OrganizationJsonLd />
       <WebsiteJsonLd />
       <HomeHero
-        showcase={showcase}
+        showcases={showcases}
         siteName={siteName}
         whatsappLink={whatsappLink}
       />

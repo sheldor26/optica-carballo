@@ -2,35 +2,47 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LetterReveal } from '@/components/ui/letter-reveal';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import type { HomeShowcaseProduct } from '@/lib/catalog/queries';
 
 type Props = {
-  showcase: HomeShowcaseProduct | null;
+  showcases: HomeShowcaseProduct[];
   siteName: string;
   whatsappLink: string | null;
 };
 
-export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
+const AUTO_PLAY_MS = 4500;
+
+export function HomeHero({ showcases, siteName, whatsappLink }: Props) {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const photoY = useTransform(scrollY, [0, 500], [0, reduceMotion ? 0 : 60]);
   const textY = useTransform(scrollY, [0, 500], [0, reduceMotion ? 0 : -20]);
 
-  const showcaseHref = showcase
-    ? `/${showcase.categorySlug}/${showcase.brandSlug}/${showcase.slug}`
-    : null;
-  const showcaseImageUrl = showcase
-    ? getProductImageUrl(showcase.primaryImagePath)
-    : null;
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-play: avanza cada AUTO_PLAY_MS. Pausa on hover/focus para no
+  // interrumpir al usuario que está mirando un producto. Respeta
+  // prefers-reduced-motion (no auto-play si user lo prefiere).
+  useEffect(() => {
+    if (reduceMotion || isPaused || showcases.length <= 1) return;
+    const interval = window.setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % showcases.length);
+    }, AUTO_PLAY_MS);
+    return () => window.clearInterval(interval);
+  }, [reduceMotion, isPaused, showcases.length]);
+
+  const active = showcases[activeIdx];
 
   return (
     <section
@@ -94,24 +106,19 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
           </div>
         </motion.div>
 
-        {showcase && showcaseHref && showcaseImageUrl ? (
+        {showcases.length > 0 && active ? (
           <motion.div
             style={{ y: photoY }}
-            className="relative order-1 mx-auto flex w-full max-w-md items-center justify-center md:order-2 md:max-w-none"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocus={() => setIsPaused(true)}
+            onBlur={() => setIsPaused(false)}
+            className="relative order-1 mx-auto flex w-full max-w-md flex-col items-center justify-center md:order-2 md:max-w-none"
+            role="region"
+            aria-label="Productos destacados"
+            aria-roledescription="carrusel"
           >
-            {/* Chip flotante "30+ años" — único chip, arriba-izquierda
-                para no chocar con la floating price card abajo-derecha. */}
-            <div
-              aria-hidden="true"
-              className="border-border/60 bg-background/80 absolute left-1 top-2 z-20 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm backdrop-blur-sm sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs md:-left-2 md:top-6"
-              style={{ transform: 'rotate(-2.5deg)' }}
-            >
-              <Sparkles className="text-brand size-3 sm:size-3.5" />
-              30+ años en Argentina
-            </div>
-
-            {/* Glow background detrás del producto — pulsa lento para
-                acompañar el bob de la foto sin distraer. */}
+            {/* Glow background detrás del producto */}
             <motion.div
               aria-hidden="true"
               animate={
@@ -124,55 +131,104 @@ export function HomeHero({ showcase, siteName, whatsappLink }: Props) {
                   ? undefined
                   : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
               }
-              className="bg-brand/15 absolute inset-x-8 top-1/2 -z-10 h-[70%] -translate-y-1/2 rounded-full blur-3xl"
+              className="bg-brand/15 absolute inset-x-8 top-[35%] -z-10 h-[60%] -translate-y-1/2 rounded-full blur-3xl"
             />
 
-            <Link
-              href={showcaseHref}
-              aria-label={`Ver ${showcase.brandName} ${showcase.name}`}
-              className="group relative block w-full"
+            {/* Slide activo del carrusel */}
+            <div
+              className="relative aspect-square w-full"
+              aria-live={reduceMotion ? 'off' : 'polite'}
+              aria-atomic="true"
             >
-              <motion.div
-                animate={
-                  reduceMotion
-                    ? undefined
-                    : { y: [0, -14, 0], rotate: [0, 1.5, 0] }
-                }
-                transition={
-                  reduceMotion
-                    ? undefined
-                    : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
-                }
-                className="relative aspect-square w-full"
-              >
-                <Image
-                  src={showcaseImageUrl}
-                  alt={`${showcase.brandName} ${showcase.name}`}
-                  fill
-                  sizes="(max-width: 768px) 90vw, 45vw"
-                  priority
-                  className="object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                />
-              </motion.div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active.slug}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  className="absolute inset-0"
+                >
+                  <Link
+                    href={`/${active.categorySlug}/${active.brandSlug}/${active.slug}`}
+                    aria-label={`Ver ${active.brandName} ${active.name}`}
+                    className="group relative block size-full"
+                  >
+                    <Image
+                      src={getProductImageUrl(active.primaryImagePath)}
+                      alt={`${active.brandName} ${active.name}`}
+                      fill
+                      sizes="(max-width: 768px) 90vw, 45vw"
+                      priority
+                      style={{
+                        transform: `scale(${getImageScale(active.primaryImagePath)})`,
+                      }}
+                      className="object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)] transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    />
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-              {/* Floating price card */}
-              <div className="border-border/60 bg-background/95 absolute -bottom-2 right-2 z-10 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm md:bottom-4 md:right-0">
-                <p className="text-muted-foreground text-[10px] font-medium uppercase tracking-[0.18em]">
-                  Destacado
-                </p>
-                <p className="text-foreground mt-0.5 font-serif text-base font-medium">
-                  {showcase.brandName}{' '}
-                  <span className="italic font-normal">{showcase.name}</span>
-                </p>
-                <p className="text-brand mt-1 inline-flex items-baseline gap-1.5 text-sm font-semibold">
-                  desde {formatPriceCents(showcase.minPriceCents)}
-                  <ArrowRight className="size-3.5 translate-y-px transition-transform duration-300 group-hover:translate-x-0.5" />
-                </p>
+            {/* Info producto activo: título + precio centrados (sin floating card) */}
+            <div className="mt-4 flex flex-col items-center text-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active.slug}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                >
+                  <p className="text-muted-foreground text-[10px] font-medium uppercase tracking-[0.18em]">
+                    {active.brandName}
+                  </p>
+                  <Link
+                    href={`/${active.categorySlug}/${active.brandSlug}/${active.slug}`}
+                    className="hover:text-brand text-foreground mt-1 inline-flex items-baseline gap-2 font-serif text-lg font-medium transition-colors md:text-xl"
+                  >
+                    <span className="italic font-normal">{active.name}</span>
+                  </Link>
+                  <p className="text-brand mt-1 inline-flex items-baseline gap-1.5 text-sm font-semibold">
+                    desde {formatPriceCents(active.minPriceCents)}
+                    <ArrowRight className="size-3.5 translate-y-px" />
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Indicadores dots (1 por producto). Click cambia slide.
+                Aria-current marca el activo. Solo render si >1 producto. */}
+            {showcases.length > 1 && (
+              <div
+                className="mt-4 flex items-center justify-center gap-2"
+                role="tablist"
+                aria-label="Seleccionar producto destacado"
+              >
+                {showcases.map((p, idx) => {
+                  const isActive = idx === activeIdx;
+                  return (
+                    <button
+                      key={p.slug}
+                      type="button"
+                      onClick={() => setActiveIdx(idx)}
+                      role="tab"
+                      aria-selected={isActive}
+                      aria-label={`Ver ${p.brandName} ${p.name} (${idx + 1} de ${showcases.length})`}
+                      aria-current={isActive ? 'true' : undefined}
+                      className={
+                        isActive
+                          ? 'bg-foreground h-1.5 w-6 rounded-full transition-all'
+                          : 'bg-foreground/30 hover:bg-foreground/60 h-1.5 w-1.5 rounded-full transition-all'
+                      }
+                    />
+                  );
+                })}
               </div>
-            </Link>
+            )}
           </motion.div>
         ) : (
-          // Fallback si no hay showcase: hero text-only centrado
+          // Fallback si no hay productos showcase: hero text-only
           <div className="hidden md:block" />
         )}
       </div>

@@ -735,13 +735,16 @@ type HomeShowcaseRow = {
 };
 
 /**
- * Trae 1 producto para destacar en el hero de home. Prioriza
- * `is_featured = true`; si no hay, cae al producto más recientemente
- * actualizado con stock. Devuelve null si no hay productos con stock.
+ * Trae top N productos para destacar en el carrusel del hero de home.
+ * Prioriza `is_featured = true`; después por `updated_at` desc. Solo
+ * productos activos con stock real. Default limit = 4.
+ *
+ * Refactor 2026-05-30 desde `fetchHomeShowcaseProduct()` (singular) para
+ * soportar carrusel auto-play en lugar de producto único.
  */
-export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | null> {
-  // createStaticClient para que la home siga siendo ISR (revalidate 300).
-  // Info pública: productos activos con stock, no requiere auth.
+export async function fetchHomeShowcaseProducts(
+  limit = 4,
+): Promise<HomeShowcaseProduct[]> {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from('products')
@@ -759,12 +762,14 @@ export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | 
     .eq('is_active', true)
     .order('is_featured', { ascending: false })
     .order('updated_at', { ascending: false })
-    .limit(8)
+    .limit(16)
     .returns<HomeShowcaseRow[]>();
 
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) return [];
 
+  const showcases: HomeShowcaseProduct[] = [];
   for (const row of data) {
+    if (showcases.length >= limit) break;
     if (!row.brand.is_active) continue;
     const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
     if (inStock.length === 0) continue;
@@ -775,7 +780,7 @@ export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | 
     });
     const primary = sortedImages[0];
     if (!primary) continue;
-    return {
+    showcases.push({
       slug: row.slug,
       name: row.name,
       brandSlug: row.brand.slug,
@@ -783,9 +788,9 @@ export async function fetchHomeShowcaseProduct(): Promise<HomeShowcaseProduct | 
       categorySlug: row.category.slug,
       minPriceCents,
       primaryImagePath: primary.storage_path,
-    };
+    });
   }
-  return null;
+  return showcases;
 }
 
 export type FilteredCatalogCard = {

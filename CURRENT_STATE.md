@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **Hero home iter 2: Opción C carrusel auto-play implementado** (2026-05-30). Founder eligió C (carrusel auto-play 4 productos). Implementación:
+
+**Backend cambios** (`lib/catalog/queries.ts`):
+- Refactor `fetchHomeShowcaseProduct(): HomeShowcaseProduct | null` → `fetchHomeShowcaseProducts(limit=4): HomeShowcaseProduct[]`
+- Misma lógica pero acumula en array hasta llegar a N. Prioridad: is_featured → updated_at desc. Solo con stock real.
+- `app/(storefront)/page.tsx`: caller actualizado.
+
+**Frontend** (`components/home/home-hero.tsx`):
+- Props: `showcase: HomeShowcaseProduct | null` → `showcases: HomeShowcaseProduct[]`
+- `useState(activeIdx)` + `useEffect` con `setInterval` 4500ms para auto-play. Pausa on hover/focus para no interrumpir usuario.
+- `AnimatePresence mode="wait"` para fade+scale entre slides (500ms easeOut).
+- Removidos: chip "30+ años en Argentina" y floating price card (según spec opción C — más limpio).
+- Agregados: título + precio del activo CENTRADOS debajo de la imagen (no flotante), con animación on slide change.
+- Indicators dots abajo: pildora (w-6) en activo, dot (w-1.5) en inactivos. Click cambia slide. Role/aria-tab semánticos.
+- `getImageScale()` aplicado a la imagen del showcase activo (consistencia con catálogo).
+- `prefers-reduced-motion` respetado: sin auto-play, sin animaciones.
+
+Typecheck verde. Commit pendiente.
+
+**Próximo paso (founder)**: push + hard refresh home → ver carrusel rotando entre Vulk Day Light, Yamain, Stray, Rusty Yau cada 4.5s. Pausa al hover. Click dots cambia slide manual.
+
 🟡 **Hero home: fix leading + 3 opciones de modernización pendiente decisión founder** (2026-05-30).
 
 **Fix aplicado** (commit `a7f5251`):
