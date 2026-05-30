@@ -18,12 +18,12 @@
  * hardcoded acá es suficiente.
  */
 export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
-  // Vulk Day Light — feedback founder iter 13.3:
-  // - Var 1 (carey): cortaba patilla sutilmente → bajar a 0.92
-  // - Var 2 (rosa): tamaño correcto → 1.05 (boost moderado)
-  // - Var 3 (matte black): se veía más chica → 1.20 (boost mayor)
-  // - Var 4 (brown): tamaño correcto → 1.05
-  'vulk-day-light-sol/01-lateral.png': 0.92,
+  // Vulk Day Light — iter 14 valores iniciales + iter 14.1 ajuste fino:
+  // - Var 1 (carey): iter 14 0.92 → iter 14.1 0.85 (seguía más grande que el resto)
+  // - Var 2 (rosa): 1.05 ✓ (tamaño OK según founder)
+  // - Var 3 (matte black): 1.20 ✓ (ahora similar a var 2)
+  // - Var 4 (brown): 1.05 ✓
+  'vulk-day-light-sol/01-lateral.png': 0.85,
   'vulk-day-light-sol/04-lateral-rosa.png': 1.05,
   'vulk-day-light-sol/07-mblk-lateral.png': 1.2,
   'vulk-day-light-sol/10-brown-lateral.png': 1.05,
