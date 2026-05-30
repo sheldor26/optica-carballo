@@ -24,6 +24,35 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Apliqué hack CSS agresivo (`scale-[1.4]`) sin verificar uniformidad de fotos primero
+
+**Estado**: 🟡 Mitigado
+**Categoría**: Code / Anti-pattern
+
+### Qué pasó
+
+Para resolver "las cards se ven chicas" (iters 1-6), apliqué `scale-[1.4]` en `product-card.tsx` para zoom CSS-only de las fotos JPG. Funcionó bien para Rusty (1 variante) y la primera carga visual de Vulk. Cuando founder testeó Vulk con 4 variantes, reportó recortes asimétricos — algunas variantes cortadas en thumb, otras en grande. El hack uniforme amplificaba inconsistencia de las fotos JPG (algunas con anteojo grande/cerca del borde, otras con anteojo más chico/centrado).
+
+Costó iter 7 (compromise scale-1.15) → founder reprocesó fotos manualmente → iter 8 (restaurar scale-1.4). 3 commits para resolver lo que podría haberse evitado con una pre-condición clara.
+
+### Causa raíz
+
+Asumí que las fotos JPG tenían framing uniforme entre variantes sin verificarlo. El código aplicó zoom CSS agresivo confiando en un dato (uniformidad de framing) que NUNCA fue contractual. No hay validación, no hay schema, no hay nota en PRODUCT_SCHEMA.md que diga "fotos de variantes del mismo modelo deben tener framing uniforme".
+
+### Regla preventiva
+
+**Antes de aplicar transforms CSS agresivos (`scale > 1.1`, crops, negative margins) sobre assets que vienen de fuente externa (Storage, founder uploads, scrapers): documentar en `PRODUCT_SCHEMA.md` la pre-condición que el asset debe cumplir, O preferir CSS que tolere variabilidad (`object-contain` con padding container).**
+
+Ya documentado en `LEARNINGS.md` el patrón de detección ("Patrones ASIMÉTRICOS = problema en datos"). Falta agregar al `PRODUCT_SCHEMA.md` la sección "Framing uniforme de fotos por variante" como tarea para próxima sesión.
+
+### Cómo aplicar
+
+- Antes de cualquier `scale-[X]` con X > 1.1 en `<Image>`, preguntarse: "¿qué pasa si la foto tiene anteojo cerca del borde?"
+- Si la respuesta es "se corta", elegir entre: (a) bajar el scale a un valor seguro, (b) documentar la pre-condición en PRODUCT_SCHEMA.md + agregar validación al cargar productos, (c) usar otro mecanismo (padding container, aspect ratio match).
+- Para fotos de variantes del MISMO modelo, el contrato de uniformidad es especialmente crítico — los thumbnails comparan visualmente.
+
+---
+
 ## 2026-05-30 — Acepté recomendación del optical-expert sin contraste con realidad de mercado — descubrí divergencia recién al testear founder
 
 **Estado**: 🟡 Mitigado — refactor a modo dual (simple + precise) tras feedback founder con referencia LensCrafters.

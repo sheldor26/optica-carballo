@@ -2,6 +2,18 @@
 
 ## Status
 
+🟡 **Troubleshoot deploy — push hecho, founder no ve cambios** (2026-05-30, sesión abierta). Founder pusheó los 3 commits manualmente (`a68f35a` QuickView fix + `216beaa` iter 7 + `8f2d1ec` iter 8). Verificado con `git ls-remote origin main` → commit `8f2d1ec` confirmado en GitHub. Founder reporta "se hizo el deploy pero no cambio nada, probé en incógnito y nada". Push está OK, problema está en Vercel deploy o cache CDN.
+
+Plan de diagnóstico entregado al founder (4 pasos):
+1. Verificar Vercel Dashboard → último deploy → commit SHA debe ser `8f2d1ec`, status Ready (verde).
+2. Si deploy ✅ Ready → hard reload con DevTools abierto + Disable cache.
+3. Test visual: icono "Vista rápida" debe ser círculo chico con ojo (versión nueva) NO botón rectangular con texto.
+4. Plan B: screenshots del Vercel Dashboard + DevTools si nada funciona.
+
+Hipótesis ranqueadas: (a) build de Vercel falló silenciosamente, (b) cache edge del CDN reteniendo ISR (`revalidate = 300` en `app/(storefront)/anteojos-de-sol/[brand]/page.tsx`), (c) deploy aún en proceso de build.
+
+**Próximo paso (founder)**: reportar los 4 puntos del diagnóstico para identificar dónde quedó atrapado el deploy.
+
 🟢 **Iter 8 — fotos uniformadas + scale 1.4 restaurado** (2026-05-30). Founder reprocesó las 4 fotos del Vulk Day Light con framing uniforme (todas con anteojo centrado y mismo padding tipo la foto carey/negra que envió como referencia). Solucionado el problema raíz — ahora podemos volver al `scale-[1.4]` original que producía el drama visual que le había gustado en iter 6.
 
 Fix:
