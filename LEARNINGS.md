@@ -22,6 +22,44 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para N fotos del mismo producto/modelo: medir uniformidad ANTES de calcular scales per-foto
+
+**Categoría**: Workflow / Measurement-first
+**Confianza**: 🟢 Alta (validado iter Yamain — 6 fotos uniformes → 1 scale, no 6)
+
+### Qué funcionó
+
+Founder eligió "agregar overrides Yamain". En vez de asumir per-foto, primero medí las 6 fotos con script Python:
+- Todas 900×442 (aspect 2.04:1)
+- Anteojo bbox: ~82% W × 75% H — consistentes entre sí
+
+Conclusión: una sola scale (1.15) funciona para las 6. Sin medición previa, habría calculado 6 scales individuales y agregado 6 entries con valores muy similares = noise.
+
+### Por qué funciona
+
+Cuando un proveedor (fabricante / fuente) tiene una convención interna de fotos, sus N fotos tienden a ser uniformes entre sí. Distintas a las de OTRO proveedor, pero internamente consistentes.
+
+Si confirmás uniformidad con medición empírica (5 min de script Python), evitás:
+- 6 entries en `image-scale-overrides.ts` con valores cuasi-idénticos.
+- Iteraciones futuras tipo "ajustar foto X +0.02" cuando todas se ven igual.
+- Falsa percepción de que el problema requiere fine-tuning quirúrgico.
+
+### Cómo aplicar
+
+Antes de aplicar scale overrides per-foto a un producto nuevo:
+1. `curl` + bajar las N fotos del bucket.
+2. Script Python (mismo template de iter Yamain): print dimensiones + bbox anteojo de cada foto.
+3. Si W/H/aspect/bbox son uniformes (diferencias <5%): 1 scale para todas.
+4. Si son inconsistentes: scale per-foto.
+
+Trade-off: la medición empírica toma 5 min. Si saltás el paso, podrías agregar 6 entries idénticas innecesariamente (no es bug, pero es noise).
+
+### Cross-link
+
+Aplicación del pattern de "medición empírica antes que teoría" — mismo nucleo que [[founder-no-tecnico-no-tiene-sentido]] (iter 11 medición de fotos refutó diagnóstico padding).
+
+---
+
 ## 2026-05-30 — Cuando agregás feature visual a un dominio (ej. scale CSS de imágenes), grep TODOS los lugares que renderizan ese dominio
 
 **Categoría**: Code consistency / Feature surface area

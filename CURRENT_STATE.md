@@ -2,6 +2,14 @@
 
 ## Status
 
+🟢 **Opción A aplicada: scale 1.15 uniforme para 6 fotos Yamain** (2026-05-30). Founder eligió opción A entre las 3 propuestas. Medí las 6 fotos Yamain: todas 900×442 con anteojo ~82% W × 75% H (consistentes entre sí). Una sola scale uniforme funciona — no requiere per-foto fine-tuning. Agregué 6 entries a `lib/catalog/image-scale-overrides.ts` con valor `1.15` (compensa el aspect 2.04:1 de Yamain vs 1.5:1 del card).
+
+Aplica automático a todos los componentes que usan `getImageScale`: ProductCard, ProductGallery, compare-{table,bar,bar-search}, QuickView.
+
+Commit `4c873e4`.
+
+**Próximo paso (founder)**: push + test. Si `1.15` queda chico/grande, ajustar 1 número.
+
 🟢 **Comparador uniformado con image-scale-overrides + diagnóstico mobile catálogo Yamain** (2026-05-30).
 
 **Fix comparador**: founder reportó "imágenes no uniformes en comparador". Causa: `compare-table.tsx`, `compare-bar.tsx`, `compare-bar-search.tsx` renderizaban imágenes con object-contain pero SIN aplicar `getImageScale()` del image-scale-overrides. Solo el ProductCard/ProductGallery lo tenían. Fix: agregar import + style transform inline en los 3 componentes del comparador.
