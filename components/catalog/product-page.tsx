@@ -60,10 +60,22 @@ function buildGalleryImages(
   const alt =
     product.brand.includes_image_alt ??
     `${product.brand.name} kit incluido: estuche, franela y stickers`;
+
+  // Construir URL absoluta apuntando al bucket `brands-shared` (separado
+  // del bucket `products`). `getProductImageUrl()` detecta URLs absolutas
+  // y las devuelve tal cual, así que esto funciona transparentemente.
+  // Si brandPath ya es URL completa (http/https), se usa tal cual sin
+  // reconstruir.
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
+  const fullUrl = brandPath.startsWith('http')
+    ? brandPath
+    : `${supabaseUrl}/storage/v1/object/public/brands-shared/${brandPath}`;
+
   return [
     ...base,
     {
-      storage_path: brandPath,
+      storage_path: fullUrl,
       alt_text: alt,
       width: null,
       height: null,

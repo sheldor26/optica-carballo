@@ -24,6 +24,49 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — 2 fixes fallidos del lightbox antes de identificar stacking context como causa raíz
+
+**Estado**: 🟢 Resuelto en iter 3 con createPortal
+**Categoría**: Debugging / Hypothesis prioritization
+
+### Qué pasó
+
+Founder reportó "lightbox transparente, se ve cosas detrás" 2 veces seguidas:
+- **Fix 1**: cambié `bg-foreground/95` → `bg-black/98` + `backdrop-blur-xl`. Asumí "transparencia restante" como causa raíz.
+- **Fix 2 implícito**: NO probé un fix antes de pedir al founder retestear — confíé en el cambio de opacidad.
+- **Founder vuelve**: "sigue pasando". Recién acá investigué stacking context. Fix definitivo: `createPortal(overlay, document.body)`.
+
+### Causa raíz
+
+Salté a la hipótesis más obvia (opacidad) sin descartar alternativas (z-index/stacking context). La opacidad ES intuitiva pero NO era la causa.
+
+Si hubiera hecho diagnóstico más estructurado:
+1. ¿La opacidad es alta? Sí (98%, casi negro). → ❌ no es opacidad.
+2. ¿z-index del overlay vs elementos visibles? `z-50` vs thumbnails sin z-index. → debería cubrir.
+3. ¿Algún ancestor crea stacking context? Sospecha: Image fill, sticky.
+4. Solución: portal al body.
+
+### Costo
+
+- 2 turnos del founder reportando el mismo issue.
+- Erosión de credibilidad ("dijiste que estaba arreglado").
+- Si hubiera ido directo a portal en iter 1, 1 turno menos.
+
+### Regla preventiva
+
+**Para bugs visuales de "elemento X no cubre/oculta a Y"**: NO asumir opacidad como causa raíz. Lista corta de hipótesis ordenadas por probabilidad:
+1. **Stacking context**: ¿algún ancestor del X tiene `transform`, `filter`, `isolation`, `position` + `z-index`? → portal al body.
+2. **z-index**: ¿X tiene z-index suficientemente alto vs hermanos visibles?
+3. **Opacidad/blur**: solo si los 2 anteriores están descartados.
+
+Para overlays full-screen, el default debería ser portal + `z-[100]` + bg opaque desde el inicio. No esperar bug.
+
+### Cross-link
+
+Aplicación del pattern [[portal-para-stacking-context]] en LEARNINGS — el learning emergió de este mistake.
+
+---
+
 ## 2026-05-30 — Hice UPDATE de brands.includes_image_path con path canónico SIN verificar primero que la imagen existía en el bucket
 
 **Estado**: 🟡 Pendiente confirmación path real del founder

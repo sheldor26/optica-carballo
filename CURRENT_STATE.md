@@ -2,6 +2,37 @@
 
 ## Status
 
+🟢 **Fixes founder post-deploy: imagen brand bucket + lightbox portal + respuesta ML sync** (2026-05-30).
+
+**Fix 1 — Imagen brand-wide kit Vulk**: founder creó bucket SEPARADO `brands-shared` (no carpeta dentro de `products`). Mi código asumía carpeta dentro de `products` → URL final duplicaba `brands-shared/brands-shared/...` → 404.
+
+Cambios:
+- `lib/storage/product-image-url.ts`: detecta URLs absolutas (`http://` o `https://`) y las devuelve tal cual sin reconstruir.
+- `components/catalog/product-page.tsx` `buildGalleryImages`: construye URL completa apuntando explícitamente al bucket `brands-shared` cuando hay `brand.includes_image_path`.
+- Seed 18 (correctivo): `UPDATE brands SET includes_image_path='vulk-estuche-franela.jpg'` (solo filename, sin prefijo del bucket).
+
+**Fix 2 — Lightbox sigue traspasando**: el fix anterior (`bg-black/98 + backdrop-blur-xl`) no fue suficiente. Causa raíz: stacking context. Algún ancestor del PDP crea stacking context propio (probablemente Image fill o sticky) → `z-50` quedaba relativo a ese ancestor, no al body.
+
+Fix definitivo:
+- `createPortal(overlay, document.body)` para escapar el stacking context completamente.
+- `bg-black` puro (100% opaque, sin alpha).
+- `z-[100]` mantenido.
+- useEffect para esperar `document.body` (evita SSR mismatch).
+
+**Respuestas a preguntas founder sobre sync ML**:
+
+1. **¿Precio ML → mi sitio automático cuando cambia?** NO existe sync de precios actualmente. El webhook solo procesa stock. Implementable: extender `syncStockFromMLItem()` para también sincronizar `price_cents = Math.round(item.price * 100)`. Aproximadamente 30 min de trabajo + apply. Pendiente confirmación founder para implementar.
+
+2. **¿Stock mi sitio → ML cuando se vende?** YA EXISTE. `lib/checkout/orders.ts` línea 218 llama a `syncVariantStockToML(id)` para cada variante vendida tras checkout exitoso. Funciona como best-effort (errores quedan en `marketplace_sync_errors`). Verificable post-deploy con cualquier venta real.
+
+Typecheck verde. Commits pendientes.
+
+**Próximo paso (founder)**:
+1. Aplicar `supabase/seeds/18_fix_vulk_brand_image_path.sql` al cloud
+2. Push del código + hard refresh `/anteojos-de-sol/vulk/vulk-day-light` → imagen kit debe aparecer al final de galería
+3. Hard refresh y testear lightbox de nuevo (debería ser 100% opaco)
+4. Confirmar si querés que implemente sync de precio ML → mi sitio
+
 🟢 **Día 2026-05-30 cierre: 3 de 4 bloques aplicados OK, 1 con issue de path de imagen brand-wide**. Founder confirmó "todo subido y aplicado". Verifiqué vía curl la producción:
 
 ✅ **Aplicado OK**:

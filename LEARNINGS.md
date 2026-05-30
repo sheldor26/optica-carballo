@@ -22,6 +22,45 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para modals/overlays full-screen: createPortal hacia document.body para escapar stacking context
+
+**Categoría**: React / CSS / Modals
+**Confianza**: 🟢 Alta (validado tras 2 fixes fallidos del lightbox)
+
+### Qué funcionó
+
+Lightbox del PDP "transparente" al abrirse: se veían thumbnails y otros elementos del PDP detrás. Probé 2 fixes que NO funcionaron: (1) cambiar `bg-foreground/95` → `bg-black/98` + `backdrop-blur-xl`, (2) `bg-black/98` (más opaco). El issue persistía aunque visualmente la opacidad era 98%+.
+
+Fix definitivo: **`createPortal(overlay, document.body)`**. Renderizar el overlay como child directo del `<body>` escapa cualquier stacking context creado por ancestors del PDP (Image fill, sticky positioning, transforms, etc.). Combinado con `bg-black` puro (100% opaque) y `z-[100]`.
+
+### Por qué funciona
+
+`z-index` es relativo al stacking context más cercano que lo crea. Si un ancestor tiene `position: relative` + `z-index: anything`, o `transform: anything`, o `filter: anything`, o `isolation: isolate` → crea nuevo stacking context. Tu `z-50` queda relativo a ese ancestor, NO al body. Elementos hermanos de ese ancestor (con z-index propio) pueden quedar arriba aunque el lightbox tenga z-50.
+
+`createPortal(overlay, document.body)` mueve el DOM node del overlay a ser child directo del body. Su stacking context pasa a ser el root. `z-[100]` ahí sí garantiza estar arriba de TODO.
+
+### Cómo aplicar
+
+Para CUALQUIER overlay/modal full-screen (lightbox, dialog, toast, drawer):
+1. Renderizar via `createPortal(jsx, document.body)`.
+2. Wrappear con `useState + useEffect` para esperar `document.body` disponible (evita SSR mismatch).
+3. Background: opaque puro (`bg-black`, `bg-white`), NO alpha con valores como `/95` o `/98`.
+4. `z-[100]` o equivalente alto (overlay es siempre top).
+
+### Trigger fuerte
+
+Si un overlay con `z-50 fixed inset-0` "no cubre" elementos visualmente, NO bajarle más la opacidad. Sospechar stacking context → portal al body.
+
+### Costo si se ignora
+
+Iterar opacidad infinitamente sin resolver. Founder reporta el mismo bug múltiples veces.
+
+### Cross-link
+
+Pattern relacionado con [[shadcn-dialog]] que usa Portal internamente. Para overlays custom, replicar el mismo pattern.
+
+---
+
 ## 2026-05-30 — Verificación post-deploy con curl + HTTP status detecta gap entre "founder dice aplicado" y "está funcionando"
 
 **Categoría**: Verification / Trust but verify

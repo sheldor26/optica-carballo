@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import type { ProductImage } from '@/lib/catalog/queries';
@@ -21,6 +22,15 @@ export function ImageLightbox({
   onClose,
   onChangeIdx,
 }: Props) {
+  // Portal target: necesitamos createPortal hacia document.body para escapar
+  // cualquier stacking context del PDP (ancestors con transform/filter/etc
+  // que crean stacking context propio y rompen z-50 contra elementos
+  // posicionados fuera del PDP). useState + useEffect para evitar SSR mismatch.
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
+
   const goPrev = useCallback(() => {
     if (images.length <= 1) return;
     onChangeIdx((activeIdx - 1 + images.length) % images.length);
@@ -48,17 +58,18 @@ export function ImageLightbox({
   }, [open, onClose, goPrev, goNext]);
 
   if (!open) return null;
+  if (!portalTarget) return null;
   const active = images[activeIdx];
   if (!active) return null;
   const url = getProductImageUrl(active.storage_path);
 
-  return (
+  const overlay = (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`Vista ampliada: ${active.alt_text}`}
       onClick={onClose}
-      className="animate-in fade-in fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/98 p-4 backdrop-blur-xl duration-200 md:p-12"
+      className="animate-in fade-in fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black p-4 duration-200 md:p-12"
     >
       {/* Counter "X / Y" — solo si hay >1 imagen */}
       {images.length > 1 && (
@@ -145,4 +156,6 @@ export function ImageLightbox({
       )}
     </div>
   );
+
+  return createPortal(overlay, portalTarget);
 }
