@@ -74,6 +74,12 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
 2. Aplicar bootstrap en SQL Editor.
 3. Verificar con force-sync que las 4 variantes muestran `skipped: 4` (todas alineadas).
 
+**Gallery flecha overlay sutil iter 2** (2026-05-30 commit `a7d963b`). Founder reportó que la flecha al costado (iter 1) achicaba los thumbs porque ocupaba lugar del row. Refactor:
+- Container con `relative` (no flex row).
+- Grid de 3 cols con 100% del ancho → thumbs mantienen el tamaño completo que tienen cuando hay solo 3 fotos.
+- Flecha como overlay: `absolute -right-1.5 top-1/2`, `size-7` (28px) circular, fondo `bg-foreground/90` con `shadow-md`. Sobresale 1.5 del borde derecho del grid (no tapa el thumb 3).
+- Ring-2 con offset cuando activeIdx >= 3.
+
 **Gallery 3 thumbs fijos + flecha overflow** (2026-05-30 commit `5a6b9ea`). Founder reportó que con 4 thumbs se achican (no le gusta). Refactor:
 - Constante `VISIBLE_THUMBS = 3` en ProductGallery. Grid siempre fijo de 3 cols.
 - Si hay >3 imágenes: botón flecha ChevronRight a la derecha del grid (aspect-square, w-1/4). Click cycla activeIdx con wraparound.

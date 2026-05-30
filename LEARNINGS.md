@@ -22,6 +22,41 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Overlay con `position: absolute` mantiene constraint visual sin afectar el flow
+
+**Categoría**: UI / Layout / Flow vs overlay
+**Confianza**: 🟢 Alta (validado tras iter del gallery)
+
+### Qué funcionó
+
+Iter previo del gallery: botón flecha al costado del grid como hermano en flex row. Funcionalmente correcto pero achicaba los 3 thumbs porque compartían el ancho del row con el botón. Founder lo notó.
+
+Iter actual: botón con `position: absolute` superpuesto al borde derecho del grid. El grid mantiene 100% del ancho (3 cols iguales) y el botón "flota" encima. Resultado: thumbs tienen el MISMO tamaño que cuando hay solo 3 fotos. La flecha es información adicional, no compite por espacio.
+
+### Por qué funcionó
+
+Distinción crítica: **flow vs out-of-flow**.
+- Elementos in-flow (default) participan del cálculo de tamaño de hermanos. Si agregás uno, todos los demás se achican proporcionalmente.
+- Elementos out-of-flow (absolute, fixed) NO afectan el tamaño de hermanos. Coexisten visualmente pero CSS los ignora al hacer layout del flow.
+
+Para "agregar control overflow a un grid sin afectar tamaño de items", absolute es la solución correcta.
+
+### Regla preventiva
+
+Cuando necesites agregar un elemento UI a un container que ya tiene items dimensionados (galería, lista, toolbar):
+1. **Pregunta**: ¿el nuevo elemento debe afectar el tamaño de los hermanos?
+   - Sí → in-flow (flexbox row/col, grid col extra).
+   - No → out-of-flow (absolute, fixed, sticky con z-index).
+2. Botones de control (siguiente, cerrar, expand) casi siempre son out-of-flow.
+3. Items semánticamente equivalentes (thumb + thumb + thumb) son in-flow.
+
+### Cuándo aplicar
+
+- Toolbars que aparecen sobre contenido.
+- Controles de navegación (prev/next) en carousels, galerías, sliders.
+- Badges, indicadores de status sobre cards.
+- Cualquier UI con jerarquía "contenido principal + controles secundarios".
+
 ## 2026-05-30 — Tamaño fijo + overflow control > dinamizar tamaño según N items
 
 **Categoría**: UI / Founder feedback / Cantidades variables

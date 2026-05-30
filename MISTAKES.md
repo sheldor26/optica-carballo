@@ -24,6 +24,32 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Iter previo de gallery puso flecha in-flow → seguía achicando thumbs
+
+**Estado**: ✅ Cerrado — refactor a overlay absolute en commit `a7d963b`.
+**Categoría**: UI / Iteración insuficiente
+
+### Qué pasó
+
+Iter previo (commit `5a6b9ea`) "resolví" el problema de thumbs achicados pasando de grid dinámico (`Math.min(N, 6)`) a constante (3 cols). Pero agregué la flecha como hermano in-flow del grid en flex row con `flex-1 + w-1/4`. Resultado: grid ocupaba 75%, thumbs se achicaban a 25% cada uno (vs el caso target de 33% cuando hay solo 3 fotos).
+
+Founder lo notó iter actual: "ya que las imágenes se achican, y quiero que queden del mismo tamaño que las imágenes de las otras variantes". Refactor: flecha como overlay absolute → grid mantiene 100% ancho → thumbs son 33% (igual al caso de 3 fotos sin flecha).
+
+### Causa raíz
+
+Yo "resolví" el problema A (tamaño dinámico) pero introduje el problema B (flecha in-flow). Solución parcial. Founder tuvo que reportar la regresión.
+
+### Regla preventiva
+
+Cuando feedback dice "X cosa se ve mal por Y" y tu solución es agregar Z:
+1. **Verificar que Z no introduce el mismo problema en otra forma**. En este caso: si Y era "thumbs se achican porque 4 cols", solo cambiar a 3 cols + agregar elemento extra al row sigue achicando.
+2. **Identificar la propiedad invariante que el founder quiere**: "thumbs del mismo tamaño que cuando hay solo 3 fotos". Cualquier solución que viole esa invariante es incorrecta.
+3. **Pensar en términos de constraints, no de UI cambios**: "33% por thumb, sin importar si hay flecha o no" → la flecha debe ser overlay o fuera del row.
+
+### Costo del iter incompleto
+
+1 commit extra + 1 cycle de feedback founder + 30 min entre iter 1 y iter 2. Evitable si hubiera verificado la invariante target ANTES de implementar iter 1.
+
 ## 2026-05-30 — Grid de thumbs con tamaño dinámico — escala mal cuando N crece
 
 **Estado**: ✅ Cerrado — refactor a tamaño fijo + flecha overflow en commit `5a6b9ea`.
