@@ -2,6 +2,17 @@
 
 ## Status
 
+🟢 **Iter 8 — fotos uniformadas + scale 1.4 restaurado** (2026-05-30). Founder reprocesó las 4 fotos del Vulk Day Light con framing uniforme (todas con anteojo centrado y mismo padding tipo la foto carey/negra que envió como referencia). Solucionado el problema raíz — ahora podemos volver al `scale-[1.4]` original que producía el drama visual que le había gustado en iter 6.
+
+Fix:
+- **`components/product/product-card.tsx`**: revertido `scale-[1.15]` → `scale-[1.4]` (grandes). Hover sin secondary: `scale-[1.25]` → `scale-[1.5]`. Thumbs: re-agregado `scale-[1.3]` (eliminado en iter 7).
+
+Esta es la solución correcta validada por el experimento iter 7 → 8: el código uniforme funciona cuando los inputs (fotos) son uniformes. El LEARNING ya documentado en LEARNINGS.md ("Patrones ASIMÉTRICOS de bug = problema en datos, no en código") aplica como standard de carga de productos: framing uniforme entre variantes desde la subida inicial.
+
+Typecheck verde.
+
+**Próximo paso (founder)**: testear `/anteojos-de-sol/vulk` — las 4 variantes deberían verse grandes (drama recuperado) Y completas (sin recortes). Si todo OK, las 3 commits locales pendientes (`a68f35a` QuickView fix + `216beaa` iter 7 compromise + iter 8 nuevo) están listas para push manual desde terminal.
+
 🟡 **Iter 7 — scale reducido por fotos no-uniformes (compromise + acción founder pendiente)** (2026-05-30). Founder testeó iter 6 con el catálogo Vulk (4 variantes Day Light) y reportó inconsistencia: thumbs de variantes 1-2 cortadas pero grandes OK; grandes de variantes 3-4 cortadas pero thumbs OK. El patrón ASIMÉTRICO confirma que el problema NO es el CSS sino las **fotos**: cada variante tiene framing distinto (algunas con anteojo grande/centrado, otras con anteojo cerca del borde). El `scale-[1.4]` uniforme amplifica esa inconsistencia.
 
 Fix CSS (compromise mientras no se uniforman fotos):

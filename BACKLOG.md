@@ -16,14 +16,10 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## 🟡 Pendiente — assets visuales (esperan al founder)
 
-- [ ] **Uniformar framing de fotos Vulk Day Light (4 variantes)** — Photopea
-  o Photoshop. Cada variante debe tener el anteojo del mismo tamaño relativo
-  al frame de la foto y centrado. Hoy: framing inconsistente entre variantes,
-  por lo que `scale-[1.4]` recortaba unas y dejaba otras OK (asimétrico).
-  En iter 7 (2026-05-30) bajamos scale a 1.15 como compromise — al uniformar
-  fotos podemos volver a 1.3-1.4 sin recortes y recuperar el drama visual.
-  Aplica a TODOS los productos a futuro: framing uniforme entre variantes
-  del mismo modelo + entre modelos distintos del mismo brand.
+- [x] ~~**Uniformar framing de fotos Vulk Day Light (4 variantes)**~~ — Hecho
+  por founder 2026-05-30. Iter 8 restauró `scale-[1.4]` original. Standard
+  para próximos productos: framing uniforme entre variantes desde subida
+  inicial (mismo tamaño relativo del anteojo + centrado + mismo padding).
 - [ ] **OG image 1200×630** → `app/opengraph-image.png` (Next 15 auto-detecta
   + meta `og:image`). Mejora preview en WhatsApp, redes, links compartidos.
   Founder dijo "lo voy a hacer luego" (2026-05-28).

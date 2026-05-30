@@ -130,10 +130,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className={cn(
-                  'scale-[1.15] object-contain transition-all duration-500 ease-out',
+                  'scale-[1.4] object-contain transition-all duration-500 ease-out',
                   secondaryUrl
                     ? 'group-hover/image:opacity-0'
-                    : 'group-hover/image:scale-[1.25]',
+                    : 'group-hover/image:scale-[1.5]',
                 )}
               />
               {secondaryUrl && (
@@ -143,7 +143,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="scale-[1.15] object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/image:opacity-100"
+                  className="scale-[1.4] object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/image:opacity-100"
                 />
               )}
             </>
@@ -228,7 +228,7 @@ function VariantThumbnails({
                 alt={v.label}
                 fill
                 sizes="(max-width: 768px) 64px, 80px"
-                className="object-contain p-1"
+                className="scale-[1.3] object-contain p-1"
               />
             ) : (
               <span className="text-muted-foreground flex h-full items-center justify-center text-[10px]">
