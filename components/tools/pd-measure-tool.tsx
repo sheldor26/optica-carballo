@@ -88,7 +88,20 @@ async function resizeImageIfNeeded(file: File): Promise<File> {
   });
 }
 
-export function PDMeasureTool() {
+type Props = {
+  /**
+   * Callback opcional cuando se obtiene una DNP válida. Si está presente,
+   * el ResultBlock muestra un botón adicional "Usar esta DNP" que dispara
+   * el callback (sin guardar a cookie). Pensado para uso embebido en
+   * forms — modal del medidor desde otro componente.
+   *
+   * Si no está presente, comportamiento default: botón "Guardar a mi receta"
+   * que actualiza cookie de receta.
+   */
+  onResult?: (dnpMm: number) => void;
+};
+
+export function PDMeasureTool({ onResult }: Props = {}) {
   const [state, setState] = useState<State>({ kind: 'idle' });
   const [mode, setMode] = useState<PDMeasureMode>('simple');
   const [flags, setFlags] = useState({
@@ -261,6 +274,7 @@ export function PDMeasureTool() {
               result={state.result}
               previewUrl={state.previewUrl}
               onRetry={reset}
+              onResult={onResult}
             />
           </motion.div>
         )}
@@ -534,10 +548,13 @@ function ResultBlock({
   result,
   previewUrl,
   onRetry,
+  onResult,
 }: {
   result: PDResult;
   previewUrl: string;
   onRetry: () => void;
+  /** Si presente: callback embed mode (botón "Usar esta DNP"). */
+  onResult?: (dnpMm: number) => void;
 }) {
   if (!result.ok) {
     return (
@@ -616,7 +633,18 @@ function ResultBlock({
         </div>
       )}
 
-      <SaveToReceta dnpMm={result.dnp_total_mm} />
+      {onResult ? (
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={() => onResult(result.dnp_total_mm)}
+        >
+          Usar esta DNP
+          <ArrowRight className="size-4" />
+        </Button>
+      ) : (
+        <SaveToReceta dnpMm={result.dnp_total_mm} />
+      )}
 
       <Button variant="outline" size="lg" className="w-full" onClick={onRetry}>
         <RefreshCw className="size-4" />

@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Edit } from 'lucide-react';
 import { PrescriptionReader } from '@/components/tools/prescription-reader';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 
@@ -31,6 +33,14 @@ export default function Page() {
         <p className="text-muted-foreground mx-auto mt-5 max-w-xl text-balance text-base md:text-lg">
           {DESCRIPTION}
         </p>
+
+        <Link
+          href="/cargar-receta"
+          className="text-muted-foreground hover:text-foreground mt-6 inline-flex items-center gap-1.5 text-sm underline-offset-4 hover:underline"
+        >
+          <Edit className="size-4" />
+          ¿Preferís cargarla a mano?
+        </Link>
       </header>
 
       <section className="mt-12 md:mt-16">

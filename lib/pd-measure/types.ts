@@ -19,7 +19,7 @@ export const CARD_ISO_WIDTH_MM = 85.6;
 /**
  * Modos de medición:
  * - 'simple': tarjeta en la frente, sujeta con 2 dedos, distancia 40-60cm.
- *   Approach de LensCrafters (probado en producción a escala mundial). Más
+ *   Approach industry-standard (probado en producción a escala mundial). Más
  *   fácil para el usuario. Precisión menor (paralaje ~2-3% sin compensar)
  *   pero suficiente para monofocales orientativos. La regente ajusta al armar.
  * - 'precise': tarjeta apoyada en pómulos, alineada con base de nariz,
@@ -166,7 +166,7 @@ export const PD_MODE_LABELS: Record<
 > = {
   simple: {
     name: 'Modo simple',
-    tagline: 'Tarjeta en la frente, fácil de hacer (LensCrafters approach)',
+    tagline: 'Tarjeta en la frente, fácil de hacer',
     precision: 'Precisión ±1.5mm — orientativa, la regente ajusta al armar',
   },
   precise: {

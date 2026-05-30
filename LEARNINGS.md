@@ -22,6 +22,53 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para flows complejos con múltiples casos, derivar entre componentes en vez de duplicar lógica
+
+**Categoría**: Architecture / DRY
+**Confianza**: 🟢 Alta (validado en IA-5.2 form manual de receta)
+
+### Qué funcionó
+
+Al construir el form manual de receta (alternativa al lector IA), tenía 2 opciones:
+- **Opción A**: duplicar toda la lógica del lector (evaluateInPerson, bifocal options, in-person handoff, save to cookie, etc.) en el form manual.
+- **Opción B**: el form manual solo maneja el caso "monofocal sin patología". Casos complejos (bifocal, alta graduación) **derivan al lector IA** o WhatsApp.
+
+Elegí B. El form manual termina con 3 outcomes:
+1. Si tiene ADD → "Tu receta tiene componente bifocal. Usá el lector IA que tiene opciones lejos/cerca." → link a `/lector-de-receta`.
+2. Si tiene alta graduación → "Necesitás atención presencial." → WhatsApp.
+3. Si es simple → guardar cookie + redirect.
+
+Resultado: ~400 líneas de código nuevo en vez de ~700-800 si hubiera duplicado todo el flow del lector. Y 1 source of truth para los flows complejos.
+
+### Por qué funcionó
+
+Cuando 2 componentes manejan **el mismo dominio con caminos overlap**, duplicar lógica = bugs en N lugares cuando cambia el dominio. Mantener 1 source of truth y derivar entre ellos (con links/redirects) preserva consistencia.
+
+Trade-off honesto: el usuario que cargó manual su receta con ADD termina en el lector IA con un mensaje de explicación. NO completa el flow en el form manual. Pero esto es **mejor** que un form manual con 4 casos que pueden divergir del lector con el tiempo.
+
+### Regla preventiva
+
+Cuando construyas un componente alternativo a uno existente (form manual vs lector IA, opción rápida vs avanzada, etc.):
+1. **Identificá qué casos manejan AMBOS** y qué casos solo uno.
+2. **El componente más simple debe DERIVAR al complejo** cuando entra a un caso que no maneja.
+3. **NO duplicar la lógica del caso complejo** en el simple.
+4. **Documenta el flow de derivación** para que un futuro reader entienda por qué el componente simple "no termina" en algunos casos.
+
+### Cuándo aplicar
+
+- Forms alternativos (manual vs scan, simple vs avanzado, beta vs full).
+- Páginas paralelas con caminos overlap (carrito vs checkout, ver vs editar).
+- Cuando hay tentación de "copio el bloque de allá".
+
+### Cuándo NO aplicar
+
+- Cuando los componentes son completamente distintos (no hay overlap real).
+- Cuando duplicar es más simple Y los cambios son raros (lógica congelada).
+
+### Bonus
+
+Esta decisión generó otro patrón positivo: el form manual quedó SIMPLE de leer (1 archivo, 400 líneas, casos claros). Si hubiera duplicado, sería 1 archivo de 800+ líneas con bifurcaciones complejas. Trade-off correcto.
+
 ## 2026-05-30 — La opinión del experto + la realidad del mercado pueden divergir — reconciliá ambas en vez de elegir una
 
 **Categoría**: Decision-making / Theory vs practice

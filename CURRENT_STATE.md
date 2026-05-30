@@ -2,6 +2,31 @@
 
 ## Status
 
+🟢 **Sprint IA-5.2 (Form manual de receta + medidor DNP integrado) CÓDIGO LISTO — PUSHEAR + TESTEAR** (2026-05-30). Founder mostró referencia visual de competidor mostrando: (a) pantalla "Elegí tu necesidad" (mono/progresivo/solo montura) post-PDP, (b) pantalla "Ingresá tu receta" con 6 opciones (escanear/manual/guardada/etc.), (c) form manual con botón "Mide tu DP" al lado del campo DNP. Founder pidió **opción C: híbrido** (form manual ahora, flow checkout completo después cuando haya productos receta). También pidió **sanear menciones de competidor** en código público.
+
+Implementación esta sesión:
+1. **Sanear menciones competidor**: 4 archivos editados (mega-nav.ts comment, pd-measure prompt comment, pd-measure types comment + tagline visible en UI del ModeSelector). Cambios "estilo X" → "industry-standard" / "retail premium". Docs internos (CURRENT_STATE, LEARNINGS, MISTAKES, AI_PROMPTS) mantienen menciones — founder dijo OK para archivos internos.
+2. **`components/tools/pd-measure-tool.tsx`**: agregada prop opcional `onResult?: (dnpMm: number) => void`. Si está presente, ResultBlock muestra botón "Usar esta DNP" en vez de "Guardar a mi receta". Para uso embebido en forms.
+3. **`components/tools/pd-measure-modal.tsx`** (NUEVO): wrapper Dialog (shadcn radix) del PDMeasureTool. Pattern: pasa children como trigger + onMeasured callback. Cierra automáticamente cuando se obtiene resultado válido. Usado en el form manual.
+4. **`components/tools/manual-prescription-form.tsx`** (NUEVO, ~400 líneas): form de carga manual con:
+   - Toggle "Misma graduación para ambos ojos" (copia OD a OI auto)
+   - Tabla OD/OI con selects para ESF (-20 a +12 step 0.25), CIL (-6 a 0 step 0.25), EJE (1-180), ADD (0.75-3.50 step 0.25)
+   - Input DNP + botón "Mide tu DNP con IA" que abre PDMeasureModal
+   - Lógica routing: si tiene ADD → derivar al lector IA (que tiene flow bifocal). Si alta graduación/anisometropía → handoff WhatsApp con mensaje contextual. Caso simple → guarda a cookie + redirect a /anteojos-de-receta.
+   - Detección básica patología (high_esf, high_cil, high_sum, anisometropia) replicada localmente para no duplicar shape de `PrescriptionAnalysis`.
+   - 2 checkboxes obligatorios (sin prismas, receta válida).
+5. **`app/(storefront)/cargar-receta/page.tsx`** (NUEVO): página del form manual con metadata + link "¿Preferís escanear con IA?" al lector.
+6. **`/lector-de-receta/page.tsx`**: agregado link al header "¿Preferís cargarla a mano?" → `/cargar-receta` (alternativa visible).
+7. **`app/sitemap.ts`**: ruta `/cargar-receta` agregada con priority 0.6.
+
+Decisión técnica clave: el form manual solo guarda **monofocales sin patología**. Casos complejos (bifocal, contact lens, alta graduación) **se derivan** al lector IA o WhatsApp en vez de duplicar la lógica del lector. Mantiene 1 source of truth para flows complejos en `prescription-reader.tsx`. Trade-off: el form manual NO maneja bifocal — el usuario con receta bifocal queda derivado al lector IA. Aceptable porque la mayoría de bifocales requieren foto para confirmar lectura de valores cruzados.
+
+Typecheck verde. Build OK (`/cargar-receta` 4.47 kB, `/lector-de-receta` 8.74 kB con el link nuevo, `/medidor-de-dnp` chunk split tras agregar `onResult` prop). Lint: 2 errores `react/no-unescaped-entities` fixeados en pd-measure-modal.
+
+**Próximo paso (founder)**: commit + push → deploy → testear flow: (a) abrir `/lector-de-receta` y ver link "¿Preferís cargarla a mano?"; (b) ir a `/cargar-receta` y completar form; (c) click "Mide tu DNP con IA" → debería abrir modal del medidor; (d) medir, "Usar esta DNP" → vuelve al form con el valor; (e) guardar receta → redirect a `/anteojos-de-receta` con banner.
+
+**Pendiente sesión futura**: flow checkout LensCrafters-style (pantalla "Elegí necesidad" + pantalla "Ingresá receta" con 4 opciones + integración con cart). Espera a que founder cargue productos receta primero.
+
 🟢 **Sprint IA-5.1 (Medidor DNP 2 modos) CÓDIGO LISTO — TESTEAR EN PROD** (2026-05-30). Founder testeó IA-5 en prod y trajo referencia visual de **LensCrafters** mostrando 3 cosas: (a) LensCrafters usa **tarjeta en la FRENTE** con 2 dedos (contradice al optical-expert que dijo "pómulos"), (b) wizard de 3 pasos pre-scan (iluminación / tarjeta / volumen), (c) integración del medidor dentro del form de receta. **Reconciliación**: optical-expert tenía razón geométricamente (pómulos = sin paralaje), pero LensCrafters tiene razón prácticamente (frente = simple, escalable, paralaje 2-3% compensable y aceptable para monofocales). Founder decidió: **ofrecer AMBOS modos**, "Mejora cámara web + wizard" para V2, integración botón "Mide tu DP" en form de receta priorizada (ubicación TBD próximo turno).
 
 Refactor implementado (commit pendiente):

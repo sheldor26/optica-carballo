@@ -1,5 +1,5 @@
 /**
- * Configuración del mega-menu desktop (estilo LensCrafters adaptado).
+ * Configuración del mega-menu desktop (estilo retail premium adaptado).
  *
  * Cada item del top nav que tenga mega muestra un panel con N columnas:
  * - `content`: secciones con heading + lista de links (POR MARCA / POR FORMA / etc).

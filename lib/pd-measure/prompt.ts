@@ -3,7 +3,7 @@
  *
  * Soporta 2 modos:
  * - 'simple': tarjeta en la frente sujeta con 2 dedos, distancia 40-60cm.
- *   Approach de LensCrafters. Más fácil para el usuario.
+ *   Approach industry-standard. Más fácil para el usuario.
  * - 'precise': tarjeta apoyada en pómulos al plano de pupilas, distancia
  *   60-80cm. Approach optical-expert. Más preciso geométricamente.
  *
