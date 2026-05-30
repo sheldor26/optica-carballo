@@ -22,6 +22,42 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Discriminated union (Zod) para schemas con paths divergentes según el tipo
+
+**Categoría**: Validation / Schema design
+**Confianza**: 🟢 Alta (validado con pickup vs delivery en checkout)
+
+### Qué funcionó
+
+Checkout iter 1 tenía un schema simple `z.object({ address_id: uuid })` que falla si pickup no manda address. Tenía un TODO largo describiendo "cuando agregues pickup, tenés que cambiar esto, esto y aquello".
+
+Iter 2: refactor a `z.discriminatedUnion('shipping_method', [...])` con 2 branches:
+- delivery: requiere address_id (UUID válido).
+- pickup: address_id opcional.
+
+Resultado: TypeScript sabe automáticamente qué campos están disponibles en cada branch. El narrowing es type-safe. Menos errores de "olvidaste validar X".
+
+### Por qué funcionó
+
+Discriminated unions son la forma idiomática de modelar "el shape cambia según un flag". Alternativas son peores:
+- Schema "soft" con todos los campos opcionales + validation manual → fácil olvidar casos.
+- 2 endpoints distintos → duplicación de auth/auth/etc.
+- Schema dinámico con `.refine()` → menos legible, peor DX.
+
+### Regla preventiva
+
+Cuando un endpoint o action tiene N "modos" donde los campos cambian:
+1. **Identificar el discriminador** (flag obvio: `type`, `method`, `mode`, `kind`).
+2. **Usar `z.discriminatedUnion` (Zod 3+) o equivalente** (yup, valibot).
+3. TypeScript narrowing hace el resto: `if (parsed.data.shipping_method === 'pickup') { ... }` ya sabe que `address_id` puede no existir.
+
+### Cuándo aplicar
+
+- Forms con tipos divergentes (delivery/pickup, paid/refunded, normal/admin).
+- Polymorphic data en APIs (events de webhooks).
+- Schemas que iterativamente acumulan branches.
+- NO aplicar si los modos comparten 90%+ de los campos — el overhead de la unión supera el beneficio.
+
 ## 2026-05-30 — Para sprints grandes con múltiples sub-sprints, separar trabajo founder vs trabajo asistente y paralelizar
 
 **Categoría**: Planning / Eficiencia

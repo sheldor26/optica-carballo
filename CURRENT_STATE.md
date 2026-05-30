@@ -98,10 +98,20 @@ Bootstrap derivado 163 líneas en `supabase/cloud-bootstrap.sql`. Founder pendie
    - Cuotas: línea "3 cuotas sin interés de $X" reactiva a variante.
    - Estimador envío: dropdown provincias + costo o GRATIS reactivo a variante.
    Componente nuevo `shipping-estimator.tsx` + modifs en price-block + variant-list.
-3. **Sprint 3 (pendiente)**: Retiro en local (pickup). ~2-3h sin acciones founder.
-4. **Sprint 4 (pendiente)**: Sistema cupones/descuentos. ~3-4h sin acciones founder.
+3. **Sprint 3 ✅ CERRADO** (commit `5edb630`): Retiro en local (pickup) end-to-end.
+   - actions.ts: schema discriminated union delivery vs pickup.
+   - orders.ts: address nullable, shipping_* columns NULL si pickup.
+   - Emails customer + admin con bloque condicional "Enviamos a" vs "Retirás en" (con ⚠️ flag prominente para founder).
+   - Webhook MP construye businessAddress desde env vars NEXT_PUBLIC_BUSINESS_ADDRESS_*.
+   - /mi-cuenta/pedidos/[id]: section title cambia + bloque distinto.
+4. **Sprint 4 ✅ CERRADO** (commit `068b848`): Sistema cupones.
+   - Migration 20260530000000: tablas coupons + coupon_redemptions + columns orders + RPC increment_coupon_usage.
+   - lib/coupons (types + validate con calculateDiscount).
+   - cart cookie + cart-page + checkout-summary: muestran descuento, total recalcula.
+   - createOrderFromCart: snapshot coupon_id/code + discount_cents + INSERT redemption.
+   - Seed 14: 3 cupones iniciales (BIENVENIDA10 10% cap $10k, NEWSLETTER5K $5k off, ENVIOGRATIS).
 
-Propuesta: founder hace setup MP en paralelo mientras yo avanzo Sprint 2.
+Bootstrap `supabase/cloud-bootstrap.sql` (210 líneas) pendiente apply founder.
 
 **Gallery sort simplificado iter 3** (2026-05-30 commit `bfd4ce3`). Founder confirmó aplicación del UPDATE sort_order=3 modelo pero el thumbnail seguía en posición 3. Diagnóstico: `sortImages` tenía 3 pasos (primary → variant_id matching → sort_order). El paso 2 priorizaba variant_id matching sobre sort_order, por eso modelo (variant=MBLK, sort=3) ganaba sobre medidas (variant=NULL, sort=2). Fix doble:
 1. Simplificar `sortImages` a solo `primary + sort_order`. La data manda.

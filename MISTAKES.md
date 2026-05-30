@@ -24,6 +24,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Sprint 4 cupones — usé `_removed` para indicar campo descartado pero pude evitar la variable
+
+**Estado**: 🟡 Mitigado — funcional, mejora menor de calidad de código.
+**Categoría**: Code style / Destructuring patterns
+
+### Qué pasó
+
+En `removeCouponFromCart` hice:
+```ts
+const { couponCode: _removed, ...rest } = cart;
+```
+
+El `_removed` es la convención para "extraer pero ignorar", pero ESLint puede flagearlo como "variable declarada pero no usada". El patrón más limpio es usar `Object.assign({}, cart, { couponCode: undefined })` o explícitamente delete.
+
+Funciona pero genera underscore variables que pueden complicar reviews futuros.
+
+### Causa raíz
+
+Default mental "destructuring es la forma idiomática de remover una key" cuando en realidad para objetos simples Object.assign + override o explicit copy son más limpios.
+
+### Regla preventiva
+
+Para "remover una key de un objeto":
+1. **Si hay narrowing complejo** (objeto inmutable, types, etc) → destructuring con underscore prefix.
+2. **Si es objeto simple plain JS** → `const { x, ...rest } = obj` está OK pero asegurate de que el underscore no rompa lint.
+3. **Para writeCookie con campo a omitir** → crear un objeto nuevo sin esa key explícitamente.
+
+### Cuándo aplicar
+
+- Pure helpers que omiten campos antes de persistir.
+- Mantenedores futuros van a leer y entender de un vistazo.
+
 ## 2026-05-30 — Plan inicial era hacer 4 sub-sprints secuenciales, sin notar que Sprint 1 era 100% acción founder
 
 **Estado**: ✅ Cerrado en el plan — propuesta de paralelización corregida antes de empezar.
