@@ -2,6 +2,15 @@
 
 ## Status
 
+🟢 **Hero C1 COMPLETO: foto PNG cargando + aspect ajustado** (2026-05-30). Founder aclaró ".png" (no .jpg). Cambio HERO_EDITORIAL_PATH + verifico curl HTTP 200 + ajusto aspect ratio.
+
+Verificación post-fix:
+- `curl https://tuddpfspnbnmafsqdvat.supabase.co/storage/v1/object/public/brands-shared/hero-editorial.png` → **HTTP 200** ✓
+- Dimensiones: **1080×1620** (aspect 2:3 vertical, modo RGBA con transparencia)
+- Ajuste: container aspect `[3/4] md:[4/5]` → `[2/3]` (matchea dimensiones reales, evita crop por object-cover)
+
+**Hero C1 listo end-to-end**: layout split + foto editorial cargando + aspect ratio correcto. Push pendiente.
+
 🟢 **Regla 13 agregada a CLAUDE.md + foto hero pendiente re-upload** (2026-05-30). Founder mostró screenshot del bucket `brands-shared`: solo `category-sol.jpg` + `vulk-estuche-franela.jpg`. La foto `hero-editorial.jpg` que dijo subir NO está → upload falló (cerró pestaña antes de completar o similar).
 
 **Regla 13 aplicada a CLAUDE.md** (founder eligió A): mental check obligatorio antes de ⚪. Causa raíz: Pattern B 7 recurrencias confirmaron que MISTAKES son lecciones pasivas. Mi sistema lee CLAUDE.md al inicio de cada sesión → regla 13 ahí previene Pattern B desde la próxima sesión.

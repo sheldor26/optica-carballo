@@ -17,7 +17,7 @@ type Props = {
 /** Path canónico de la foto editorial del hero en bucket `brands-shared`.
  * Founder sube acá (mismo bucket que kit Vulk + category-sol). Cambiar
  * si founder usa otro nombre o querés rotarla por temporada. */
-const HERO_EDITORIAL_PATH = 'hero-editorial.jpg';
+const HERO_EDITORIAL_PATH = 'hero-editorial.png';
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
 const HERO_EDITORIAL_URL = `${SUPABASE_URL}/storage/v1/object/public/brands-shared/${HERO_EDITORIAL_PATH}`;
@@ -142,7 +142,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
           style={{ y: textY }}
           className="relative order-1 mx-auto w-full max-w-md md:order-2 md:max-w-none"
         >
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-white/10 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.6)] md:aspect-[4/5]">
+          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl border border-white/10 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.6)]">
             <Image
               src={HERO_EDITORIAL_URL}
               alt="Editorial Óptica Carballo"
