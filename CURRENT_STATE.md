@@ -2,6 +2,17 @@
 
 ## Status
 
+🟡 **Iter 7 — scale reducido por fotos no-uniformes (compromise + acción founder pendiente)** (2026-05-30). Founder testeó iter 6 con el catálogo Vulk (4 variantes Day Light) y reportó inconsistencia: thumbs de variantes 1-2 cortadas pero grandes OK; grandes de variantes 3-4 cortadas pero thumbs OK. El patrón ASIMÉTRICO confirma que el problema NO es el CSS sino las **fotos**: cada variante tiene framing distinto (algunas con anteojo grande/centrado, otras con anteojo cerca del borde). El `scale-[1.4]` uniforme amplifica esa inconsistencia.
+
+Fix CSS (compromise mientras no se uniforman fotos):
+- **`components/product/product-card.tsx`**: `scale-[1.4]` (grandes) → `scale-[1.15]`. Hover sin secondary: `scale-[1.5]` → `scale-[1.25]`. Thumbs: `scale-[1.3]` → eliminado (sin scale, foto natural). Trade-off: pierde algo de drama, gana consistencia (ninguna foto se corta).
+
+**Acción founder pendiente (única solución definitiva)**: re-procesar las 4 fotos del Vulk Day Light en Photopea/Photoshop con framing uniforme — todas con el anteojo del mismo tamaño relativo al frame de la foto y centrado. Cuando estén uniformes, podemos volver a subir el scale (1.3-1.4) para recuperar el drama sin recortar.
+
+Typecheck verde.
+
+**Próximo paso (founder)**: testear `/anteojos-de-sol/vulk` — las 4 variantes deberían verse completas tanto en thumb como en grande. Si te gusta cómo queda con scale-1.15, podés decidir si vale la pena uniformar fotos (recupera el drama) o quedarte con el tamaño actual.
+
 🟢 **Fix QuickView: imagen sigue a la variante seleccionada** (2026-05-30). Founder testeó iter 6, confirmó que el sizing del catálogo quedó bien ("mejoró mucho el tema del tamaño, me gusta como quedó! Felicitaciones"), y reportó 1 bug puntual en el modal QuickView: al cambiar de variante con los chips, la **imagen del modal seguía mostrando la del producto default**, no la de la variante seleccionada.
 
 Causa raíz: el query `getProductQuickViewAction` no traía `variant_id` en images ni armaba `primaryImagePath` por variante. El componente `QuickViewBody` siempre usaba `data.primaryImagePath` (global del producto), sin importar la variante seleccionada.

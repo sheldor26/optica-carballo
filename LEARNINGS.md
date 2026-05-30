@@ -22,6 +22,32 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Patrones ASIMÉTRICOS de bug = problema en datos, no en código
+
+**Categoría**: Debugging / Diagnóstico
+**Confianza**: 🟢 Alta (validado en iter 7 catálogo Vulk)
+
+### Qué funcionó
+
+Founder reportó bug donde **algunas variantes** se cortaban en thumb pero OK en grande, **otras variantes** al revés. El patrón ASIMÉTRICO fue la pista clave: si el bug fuera del código CSS uniforme (scale-1.4), TODAS las fotos estarían igual de afectadas. La asimetría confirmó que el problema raíz son las **fotos**: cada una tiene framing distinto (anteojo grande vs chico vs descentrado).
+
+### Por qué funciona
+
+Un código uniforme (scale CSS, validación, mapper) produce resultados uniformes. Si el resultado NO es uniforme, el código está respondiendo correctamente a **inputs no-uniformes**. La inconsistencia es la firma de un problema en los datos, no en la lógica.
+
+### Cómo aplicar
+
+Cuando un bug se manifiesta de forma asimétrica (algunas instancias sí, otras no, mismo código path):
+1. Antes de tocar el código, listar las diferencias en los DATOS de las instancias afectadas vs OK.
+2. Si las diferencias son sistémicas (framing de fotos, atributos faltantes, longitud de texto), el fix es en los datos o en uniformar el procesamiento de inputs, NO en el código uniforme.
+3. Fix CSS-only puede ser compromise temporal, pero la solución definitiva es uniformar inputs.
+
+### Costo si se ignora
+
+Iterar el código uniforme para "arreglar" un problema de datos no-uniformes lleva a hacks cada vez más complejos (condicionales por foto, scale por variante, branches). El sistema se vuelve frágil.
+
+---
+
 ## 2026-05-30 — Paralelización real: 1 agente background + 1 agente foreground + 1 task local
 
 **Categoría**: Workflow / Multi-agent orchestration
