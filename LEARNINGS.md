@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: ajuste scale Vrast iter 1 (1.0 → 1.4/1.15) replica patrón Yau iter 3
+
+**Categoría**: Product imagery
+**Confianza**: 🟢 N/A (no aplica — magnitud exacta replicada del Yau post-iter 3, sin pattern nuevo)
+
+Cambio empírico para emparejar Vrast con target visual común (Feeled/Dearly en 1.15). La novedad real del turno (sub-regla obligatoria post-carga de producto) está escalada a CLAUDE.md regla 15 — no en LEARNINGS porque ya es REGLA del sistema, no pattern.
+
 ## 2026-05-31 — Autorización standing del founder para apply via MCP reduce a CERO la fricción del loop de carga de productos
 
 **Categoría**: Workflow / MCP / Founder trust

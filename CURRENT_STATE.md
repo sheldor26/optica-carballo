@@ -2,6 +2,16 @@
 
 ## Status
 
+🟢 **Scale Rusty Vrast aplicado + sub-regla post-carga escalada a CLAUDE.md** (2026-05-31). Founder vio `/marcas/rusty` con los 4 modelos: "agrandar la imagen del vrast que quedo mas chica, recordas hacer esto siempre que se agrega un modelo nuevo".
+
+**Cambios** (commit pending):
+- `lib/catalog/image-scale-overrides.ts`: 6 entries nuevas para Rusty Vrast (3 variantes × 2 vistas) — `1.4` lateral (P-perfil) / `1.15` frontal (P-frente). Target visual: emparejar con Feeled (1.15/1.05) + Dearly (1.15). Aviador tiene patillas extendidas en lateral → bbox del lente más chico → necesita más scale que en frontal.
+- `CLAUDE.md`: sub-regla obligatoria agregada bajo regla 15. Cada vez que se carga un producto nuevo al catálogo, ANTES de cerrar turno debo proponer scale override comparando contra el resto del grid. 2 violaciones detectadas hoy (Yau iter 1 que terminó en iter 3, Vrast cargado sin override que necesitó este turno extra).
+
+**Resultado esperado post-deploy**: Vrast se ve ~25-40% más grande en TODOS los catálogos (gracias a single source of truth pipeline) — `/marcas/rusty`, `/anteojos-de-sol`, `/anteojos-de-sol/aviador`, `/anteojos-de-sol/hombre`, `/anteojos-de-sol/mujer`, etc.
+
+**Verificación**: si tras deploy el Vrast queda CHICO vs Feeled/Dearly → subir a 1.6/1.3. Si queda GRANDE → bajar a 1.25/1.0. Iter empírico.
+
 🟢 **Seed 26 Rusty Vrast APLICADO en Cloud vía MCP + autorización standing del founder establecida** (2026-05-31). Founder respondió "A - siempre hacelo vos" → autorización standing para apply via MCP en cargas de producto futuras. Aplicado y verificado en mismo turno.
 
 **Verificación MCP post-apply**:

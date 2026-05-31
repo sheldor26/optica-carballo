@@ -24,6 +24,35 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Cargué Rusty Vrast sin proponer scale override inicial — founder tuvo que reportar visualmente que quedaba más chico que el resto del grid (2da violación del mismo pattern en el día)
+
+**Estado**: 🟡 Mitigado — sub-regla obligatoria agregada a CLAUDE.md regla 15 ("post-carga de producto: proponer scale comparando contra grid existente ANTES de cerrar turno"). Si recurro 3era vez → escalación a regla 16 dedicada.
+**Categoría**: Workflow / Post-carga incompleta / Pattern recurrence
+**Patrón**: ship-product-without-visual-calibration-vs-existing-grid
+
+**Qué pasó**: En el turno previo cargué el seed 26 Rusty Vrast (apply via MCP). Verifiqué datos correctos en cloud (3 variantes, stock, imágenes, attributes) PERO no propuse override de scale en `image-scale-overrides.ts`. Sin override → scale 1.0 default → en `/marcas/rusty` quedó visiblemente más chico que Feeled (1.15) y Dearly (1.15). Founder reportó: "agrandar la imagen del vrast que quedo mas chica, recordas hacer esto siempre que se agrega un modelo nuevo".
+
+Es la **2da vez en el día** que este pattern aparece:
+1. Yau original: scale 1.5/1.2 → founder reportó chico → iter 1.8/1.4 → quedó grande post-Vulk/Day Light → iter 1.4/1.15
+2. Vrast original: scale 1.0 default → founder reportó chico → ajuste 1.4/1.15
+
+**Causa raíz**:
+1. **Mi pipeline de "carga de producto" termina en `apply + verify + CLOUD_APPLIED`**, no incluye "ajustar scale contra el grid". El playbook quedaba estructuralmente incompleto.
+2. **No comparo visualmente** porque no puedo renderizar imágenes. Pero PODRÍA proponer un default sensato basado en el promedio del grid (1.15 para la mayoría → propuesta de 1.15 inicial sería razonable). En lugar de eso, dejé scale 1.0 implícito = peor de los defaults.
+3. **Recurrencia explícita** del mismo pattern del Yau ya documentado: ajustar scale aisladamente sin comparar cross-catálogo.
+
+**Costos**:
+- Round-trip extra con founder reportando "quedó chico"
+- 1 commit extra solo para scale ajuste (ya hubiera ido en el commit de la carga)
+- Erosión "el producto se carga pero queda visualmente fuera de tono" — afecta percepción de profesionalismo
+
+**Regla preventiva** (ya escalada a CLAUDE.md regla 15 como sub-regla):
+1. **Pipeline de carga de producto ahora termina con**: apply → verify → **proponer scale override basado en grid existente** → CLOUD_APPLIED → commit.
+2. **Default sensato pre-deploy**: si no tengo info visual del producto nuevo, proponer scale 1.15 (mediana del catálogo Rusty/Vulk) en lugar de scale 1.0 implícito. El founder puede ajustar si queda fuera, pero parte de un baseline razonable.
+3. **Comparación explícita**: cuando agrego entries al override file, listar los scales del resto del catálogo en el comment para justificar la elección.
+
+**Verificación contra recurrencia**: próximo producto cargado debe incluir entry en `image-scale-overrides.ts` ANTES de cerrar turno. Si no incluyo → automáticamente abrir entry con scale 1.15 (default sensato) + comment justificando o pidiendo feedback empírico.
+
 ## 2026-05-31 — Revisado — sin novedad: seed 26 Rusty Vrast escrito sin tropiezos reproducibles
 
 **Estado**: N/A

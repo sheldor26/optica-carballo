@@ -95,6 +95,21 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-dearly/02-brown-frontal.jpg': 1.15,
   'rusty-dearly/03-sblk-lateral.jpg': 1.15,
   'rusty-dearly/03-sblk-frontal.jpg': 1.15,
+
+  // Rusty Vrast — founder reportó 2026-05-31 al ver /marcas/rusty con los
+  // 4 modelos Rusty: "agrandar la imagen del vrast que quedo mas chica".
+  // Target visual: emparejar con Feeled (1.15/1.05) + Dearly (1.15). El
+  // aviador grande del Vrast tiene patillas extendidas en P-perfil (lateral
+  // 3/4) → el bbox del lente queda visualmente más chico que en un wrap-
+  // around o un cuadrado. Necesita más scale en lateral que en frontal.
+  // Iter 1: 1.4 lateral / 1.15 frontal (similar Rusty Yau post-iter 3).
+  // Path con espacios y mayúsculas tal como founder los subió al bucket.
+  'rusty-vrast/VRAST C1 P-perfil.jpg': 1.4,
+  'rusty-vrast/VRAST C1 P-frente.jpg': 1.15,
+  'rusty-vrast/VRAST C3 P-perfil.jpg': 1.4,
+  'rusty-vrast/VRAST C3 P-frente.jpg': 1.15,
+  'rusty-vrast/VRAST C4 P-perfil.jpg': 1.4,
+  'rusty-vrast/VRAST C4 P-frente.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
