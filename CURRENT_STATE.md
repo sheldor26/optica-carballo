@@ -38,7 +38,28 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción 1 implementada — ValueProps refinada + HowWeWork nueva (bloques editoriales post-hero)** (2026-05-30). Founder eligió Opción 1 con "sigo tu recomendación".
+🟢 **Opción 2 implementada — PDP refinamientos editoriales quirúrgicos** (2026-05-30). Founder dijo "me gustó, sigamos" tras Opción 1.
+
+**Audit del PDP previo** (aplicando learning "auditar antes de crear"): 480 líneas + 19 componentes ya integrados. NO había gaps funcionales → no rehice, refiné estética.
+
+**4 cambios en [components/catalog/product-page.tsx](components/catalog/product-page.tsx)** (commit `8af48f8`):
+1. **H1**: `font-sans semibold` → `font-serif medium` con tracking editorial (consistencia con hero/ValueProps/HowWeWork).
+2. **Subtitle**: texto plano → eyebrow uppercase `tracking-[0.15em]`.
+3. **Grid layout**: `gap-8` → `gap-10 md:gap-x-16 lg:gap-x-20` + columna info `md:sticky md:top-24` (UX: queda visible al scrollear galería en desktop).
+4. **Sección "Por qué elegir"**: fondo `zinc-50` con gradient sutil + padding `py-16 md:py-24` + heading `5xl/6xl` + eyebrow con brand dot. De "tip al pie" a "bloque editorial prominente".
+
+**Decisión técnica**: refinamientos quirúrgicos (~1h) en lugar de rehacer PDP (~4-5h del plan original). El PDP ya tenía toda la funcionalidad, lo único inconsistente era la estética. Sin scope creep en componentes funcionalmente OK (VariantList, ProductPriceBlock, ProductTrustSignals, etc).
+
+**Decisión consciente NO tocada**: ProductHighlights, ProductMeasurements, ProductAttributes — pueden refinarse después si founder lo pide tras ver deploy.
+
+**Build verificado**: `npx tsc --noEmit` OK.
+
+**Próximo paso**: founder pushea + revisa PDP. Si OK, próximas opciones del backlog:
+- Opción 3 — Catalog grid premium (~2-3h)
+- Opción 4 — `/sobre-nosotros` editorial (~3-4h)
+- Refinar otros componentes PDP no tocados si founder los quiere
+
+🟢 **Opción 1 implementada — ValueProps refinada + HowWeWork nueva (bloques editoriales post-hero)** (2026-05-30, superado por Opción 2 arriba). Founder eligió Opción 1 con "sigo tu recomendación".
 
 **Diagnóstico previo**: la home ya tenía 6 componentes (`TrustMarquee`, `CategoriesSection`, `BrandsSection`, `RecentlyViewed`, `HomeTools`, `HomeFaqs`, `NewsletterSection`, `ValueProps`). Hallazgo: ValueProps estaba al final post-newsletter — los 4 trust signals (regente / 30+ años / envíos / WhatsApp) quedaban perdidos. Y faltaba "Cómo trabajamos" del plan original.
 
