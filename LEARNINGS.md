@@ -22,6 +22,55 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Cuando founder pasa "foto/imagen del producto", verificar si es foto REAL del producto o un diagrama schematic genérico
+
+**Categoría**: Product upload / Asset audit / Founder collaboration
+**Confianza**: 🟢 Alta (detectado en carga Rusty Feeled — founder pasó diagrama de medidas creyendo que servía como foto)
+
+### Qué funcionó
+
+Founder pasó imagen junto con specs del producto y dijo "esta es la imagen de medidas del producto, no tengo otra foto". La imagen mostraba una **silueta wayfarer genérica** con cotas (140mm / 50mm / 18mm / 45mm / 145mm) — claramente un **diagrama schematic de sizing**, NO el producto real.
+
+Pero el producto Rusty Feeled es **envolvente deportivo de tenis** — silueta totalmente distinta a un wayfarer. La imagen no servía como foto de galería del producto.
+
+Detecté la discrepancia + aclaré al founder antes de proceder a crear el seed con esa imagen como `01-frontal.jpg`. Resultado: evité agregar imagen incorrecta al bucket + activar producto con foto que no representa el producto.
+
+### Por qué funciona
+
+Founder no-técnico (CLAUDE.md "Quién soy yo") pasa assets visuales con criterio variable. Los proveedores de la marca (Rusty, Vulk, etc) suelen distribuir:
+- **Fotos reales del producto** (frontal sobre fondo blanco, contexto, lateral) → SÍ sirven para galería.
+- **Diagramas schematic de medidas** (silueta genérica con cotas marcadas) → NO sirven para galería, sirven para `attributes.measurements`.
+- **Mockups o renders 3D** → caso intermedio, depende.
+
+El founder ve "imagen del producto" y asume que sirve para galería. Mi rol: verificar visualmente Y EN CONTEXTO (la imagen matchea la forma del producto?) antes de proceder.
+
+Indicadores de "es diagrama, no foto real":
+- Silueta NO matchea la forma del producto declarada (frame_shape).
+- Cotas en mm marcadas con flechas.
+- Líneas vectorizadas planas sin textura.
+- Color de fondo uniforme y poco profesional.
+- Falta de detalles del producto real (color real, transparencias, ventilación, etc).
+
+### Cómo replicar
+
+Cuando founder pase imagen junto con un pedido de carga de producto:
+
+1. **Verificar visualmente**: ¿matchea la forma del producto declarada en el seed (`frame_shape`)?
+2. **Verificar contexto**: ¿tiene cotas / flechas / silueta genérica de marca? → es diagrama, no foto.
+3. **Si es diagrama**: extraer las medidas para `attributes.measurements` Y aclarar al founder que **NO se usará como foto de galería**.
+4. **Si es foto real**: confirmar nombre exacto del archivo (`01-frontal.jpg`, etc.) + bucket destino.
+
+### Trigger
+
+Cualquier pedido del founder con "esta es la imagen/foto del producto" — verificar antes de proceder.
+
+### Cross-link
+
+- Relacionado con [[trampas-del-experto-en-few-shot]]: el founder es el experto del dominio óptico (sabe medidas, sabe el modelo) pero las decisiones de **assets para web** son del developer. División clara.
+- Aplicación inmediata: próximas cargas de producto (Vulk + Reef + Mormaii + Paula Cahen pendientes en backlog).
+
+---
+
 ## 2026-05-30 — Mis estimaciones de "rehacer X" sobre-estiman 3-6x cuando el codebase tiene >1 mes de historia
 
 **Categoría**: Estimation / Self-calibration / Meta-pattern
