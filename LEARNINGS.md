@@ -22,6 +22,54 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Para few-shot de IA en dominio especializado, el "ground truth + trampas" del founder-experto vale más que la imagen sola
+
+**Categoría**: AI Features / Few-shot prompting / Domain expertise
+**Confianza**: 🟢 Alta (validado en recolección receta #1 lector oftalmológico)
+
+### Qué funcionó
+
+Al recolectar la primera receta para el few-shot del lector, founder (técnico óptico matriculado) me dio:
+1. La imagen recortada (sección Rx, sin datos personales)
+2. Los valores correctos (esf, cil, eje, add por ojo)
+3. **5 "trampas" específicas que un modelo Vision genérico se confunde**:
+   - "Astigmatismo puro" → ESF implícitamente 0.00, pero la receta NO lo escribe
+   - Sin etiquetas OD/OI → convención AR = primera fila siempre OD
+   - Eje 4° atípico → válido pero modelo podría redondear o asumir 0 (inválido)
+   - Notación "-225" = -2.25 → punto decimal omitido (manuscrito AR)
+   - DNP ausente → null + warningFlag `partial_data`
+
+Las trampas son **conocimiento tácito del óptico** que ningún training general capturó. Una receta sin esa anotación = imagen ambigua para el modelo. Una receta CON esa anotación = lección concreta replicable.
+
+### Por qué funciona
+
+Few-shot examples enseñan al modelo qué hacer **en casos atípicos**. El insight clave: lo atípico para un experto en óptica argentina ≠ lo atípico para Claude Vision (que vio millones de imágenes pero ninguna específica de la convención AR de astigmatismo puro). Solo el founder-experto puede identificar:
+- Convenciones implícitas no escritas (ESF 0.00 cuando no aparece)
+- Variaciones regionales (notación compacta sin decimal)
+- Cuándo un valor "raro" es válido (eje 4°) vs cuándo no (eje 0°)
+- Cómo flagear missing data según el contexto clínico
+
+Sin esa anotación, el modelo aprendería solo el formato visual de la receta, no las **decisiones de extracción** que un óptico real toma al verla.
+
+### Cómo replicar
+
+Cuando construyas few-shot para IA en dominio especializado (medicina, derecho, finanzas, ingeniería, óptica):
+
+1. **No pidas solo "ground truth"** (los valores correctos). Eso es el output.
+2. **Pedí "trampas"** explícitamente: "¿qué puede confundir a alguien que NO es experto al ver esta imagen/texto/dato?".
+3. **Embeber las trampas en el system prompt como reglas explícitas**, NO en el ejemplo. El ejemplo muestra QUÉ extraer; las reglas explican CÓMO decidir.
+4. **Validar con el experto** que el JSON ground truth final refleja sus decisiones reales — no asumir interpretaciones tuyas.
+
+### Aplicaciones futuras del proyecto
+
+- Recomendador de monturas IA (founder = experto en formas de cara + qué montura va con cada una).
+- Asistente conversacional RAG sobre catálogo (founder = experto en cuándo recomendar PDP vs handoff WhatsApp).
+- Generador de descripciones de producto (founder = experto en qué decir vs qué evitar legalmente).
+
+Pattern: cualquier feature IA con dominio óptico/médico → flow de recolección de ground truth INCLUYE "trampas" anotadas por founder.
+
+---
+
 ## 2026-05-30 — Delegar research técnico crítico a `ai-features-engineer` ANTES de implementar API integraciones complejas
 
 **Categoría**: AI Features / API integration / Pre-implementation research

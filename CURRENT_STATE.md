@@ -2,7 +2,34 @@
 
 ## Status
 
-🟡 **Anonimización automática vs skip — 2 opciones nuevas ofrecidas, decisión founder pendiente** (2026-05-30). Founder dijo "ya eliminé las fotos, pero no me quiero poner a hacer anónimas 1x1 las recetas". Pivot del approach:
+🟢 **Recolección de ground truth few-shot — pivot a "crop manual" + 1/13 recetas con datos completos** (2026-05-30). Founder pivoteó el approach de anonimización:
+
+**Decisión técnica nueva**: en vez del flow técnico que propuse (script IA + sharp + bucket privado), founder está **recortando manualmente** la sección Rx de cada receta y descartando el membrete (con datos profesional/paciente/firma). El crop logra el mismo resultado de anonimización con cero código de mi parte + cero llamada-a-Anthropic-con-datos-crudos.
+
+**Receta #1 recolectada (astigmatismo puro monofocal)**:
+- OD: esf 0.00, cil -2.25, eje 173°, add null, confidence medium
+- OI: esf 0.00, cil -2.00, eje 4°, add null, confidence medium
+- DNP: null (oculista no la puso), Tipo: monofocal
+- WarningFlags: ["partial_data"] por DNP ausente
+
+**5 trampas extraídas por founder** (oro para el modelo):
+1. "Astigmatismo puro" → ESF implícitamente 0.00 (plano), receta solo escribe CIL+EJE. Modelo genérico va a poner -2.25 como ESF (error clásico).
+2. Sin etiquetas OD/OI: convención AR = primera fila siempre OD.
+3. Eje 4° (cerca de 0°/180°) válido pero atípico — modelo podría redondear o asumir 0 (inválido).
+4. Notación "-225" = -2.25 (punto decimal omitido, estándar manuscrito AR).
+5. DNP ausente: `null` + flag `partial_data`.
+
+**Naming convention establecida**: `NN-descripcion-tipo.jpg` (ej `01-astigmatismo-puro-monofocal.jpg`). Útil para debug si una receta falla en producción.
+
+**Flow definido**:
+1. Founder me pasa cada crop por chat + me dice valores correctos + trampas
+2. Yo construyo JSON ground truth + valido contra el schema Zod existente
+3. Cuando estén las 13: founder sube los crops a un bucket privado nuevo `prescription-examples` (Public ❌)
+4. Yo descargo + embebo en `lib/prescription/few-shot.ts` como base64 + reemplazo los 4 ejemplos descriptivos actuales por imágenes reales + sus JSON ground truth
+
+**Próximo paso**: founder pasa receta #2.
+
+🟡 **Anonimización automática vs skip — 2 opciones nuevas ofrecidas (pivoteado por founder a crop manual arriba)** (2026-05-30). Founder dijo "ya eliminé las fotos, pero no me quiero poner a hacer anónimas 1x1 las recetas". Pivot del approach:
 
 **Incidente privacidad cambió 🔴 → 🟡 Mitigado** porque founder confirmó borrar las recetas del bucket público. Detalle escalado a MISTAKES.md como mitigación.
 
