@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: turno de ideación growth/viralidad (opciones U/V/W/X)
+
+**Estado**: ⚪ N/A
+**Categoría**: Discovery / Ideation
+
+**Justificación regla 11**: turno conversacional/exploratorio sin acciones técnicas. Ofrecí 4 opciones (U/V/W/X) de features marketing al founder, esperando decisión. No hubo error cometido en este turno. No hay anti-pattern detectado.
+
+Si después de implementar alguna opción surgen problemas, ahí sí se documentan como mistake.
+
+---
+
 ## 2026-05-31 — Hice fix parcial de `bg-muted/40` en iter 3 (solo container imagen) sin buscar todos los lugares afectados del componente → founder tuvo que reportar iter 4 con los thumbs
 
 **Estado**: 🟡 Mitigado — iter 4 cubrió el segundo spot (commit `96eea50`) + regla preventiva documentada.

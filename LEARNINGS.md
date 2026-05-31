@@ -22,6 +22,19 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: turno de ideación growth/viralidad (opciones U/V/W/X)
+
+**Categoría**: Discovery / Ideation
+**Confianza**: ⚪ N/A (no hay learning replicable, solo propuestas)
+
+**Justificación regla 11**: turno fue ideación pura de features de marketing/viralidad (probador virtual try-on, quiz, galería clientes, mini-serie video). Ofrecí 4 opciones con recomendación, esperando decisión founder.
+
+NO hay pattern replicable validado este turno — las opciones son hipótesis, no resultados confirmados. Cuando se implemente alguna y se mida impacto real, ahí sí entra learning sobre "viralidad e-commerce óptica AR".
+
+Cross-link: documentado en CURRENT_STATE commit `1290099` para próximo paso.
+
+---
+
 ## 2026-05-31 — Usar Claude Vision como "computer vision robusto sin librerías especializadas" para tareas de detección en pipelines TypeScript
 
 **Categoría**: AI tooling / Image processing / Stack unification
