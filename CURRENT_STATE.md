@@ -2,6 +2,26 @@
 
 ## Status
 
+🟢 **VariantList PDP: layout reorganizado a 2 líneas (era 3, problema estético)** (2026-05-31). Founder reportó: "problema estetico... solucionar en todos". Con model_codes largos (Yau: "MBLK/S10 POL YELLOW") + badge POLARIZADO en flex-wrap → el bloque ocupaba 3 líneas (label+code → wrap → badge → SKU) y se veía recargado.
+
+**Fix**:
+- `components/product/variant-list.tsx`: reorganización del bloque de info por variante.
+  - **Línea 1**: `{label}` (medium, foreground) + badge POLARIZADO si aplica — quedan pegados, sin wrap.
+  - **Línea 2**: `{model_code} · SKU: {sku}` en gris chiquito (`text-muted-foreground text-xs`) — metadata secundaria.
+  - Code va PRIMERO (más identificable para founder/cliente familiarizado con la marca), SKU al final.
+  - Truncate aplicado para evitar overflow en mobile.
+
+**Resultado visual antes vs después** (ejemplo Yau MBLK/S10):
+```
+ANTES (3 líneas):                          AHORA (2 líneas):
+Negro mate / Gris Oscuro · MBLK/S10 POL    Negro mate / Gris Oscuro [POLARIZADO]
+                                           YELLOW
+POLARIZADO                                 MBLK/S10 POL YELLOW · SKU: 126080
+SKU: 126080
+```
+
+**Verificación**: `npx tsc --noEmit` pasa limpio.
+
 🟢 **Indicador sutil de stock en thumbnails de variantes (grid cards)** (2026-05-31). Founder pidió: "aplicar algun simbolo en las galerias de variantes para que aparezca fuera de stock o que quedan pocas unidades... sutil y que la persona que vea eso entienda que no hay stock sin tener que entrar al producto".
 
 **Cambios** (commit pending):

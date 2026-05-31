@@ -194,17 +194,12 @@ export function VariantList({
                   </div>
                 )}
                 <div className="min-w-0">
+                  {/* Línea 1: nombre legible + badge polarizado (si aplica).
+                      Founder 2026-05-31: badge debe quedar pegado al nombre,
+                      no saltar a línea separada. */}
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <p className="text-foreground truncate font-medium">
                       {label}
-                      {(() => {
-                        const code = extractDisplayCode(v.attributes);
-                        return code ? (
-                          <span className="text-muted-foreground/80 ml-2 font-normal">
-                            · {code}
-                          </span>
-                        ) : null;
-                      })()}
                     </p>
                     {isPolarized(v.attributes) && (
                       <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-blue-700">
@@ -212,7 +207,21 @@ export function VariantList({
                       </span>
                     )}
                   </div>
-                  <p className="text-muted-foreground text-xs">SKU: {v.sku}</p>
+                  {/* Línea 2: metadata secundaria gris (model_code + SKU).
+                      Code primero (más identificable para founder/clientes
+                      familiarizados con la marca), SKU al final. */}
+                  <p className="text-muted-foreground mt-0.5 truncate text-xs">
+                    {(() => {
+                      const code = extractDisplayCode(v.attributes);
+                      return code ? (
+                        <>
+                          <span>{code}</span>
+                          <span aria-hidden="true"> · </span>
+                        </>
+                      ) : null;
+                    })()}
+                    <span>SKU: {v.sku}</span>
+                  </p>
                 </div>
               </div>
               <div

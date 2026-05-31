@@ -24,6 +24,28 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Cuando agregué `model_code` al label de VariantList no probé contra todos los productos del catálogo — Yau con codes largos quedó en 3 líneas feo (founder reportó "problema estetico")
+
+**Estado**: 🟡 Mitigado — layout reorganizado a 2 líneas. Pattern es recurrencia LIGHT del "shipped-but-untested-against-real-data" ya documentado hoy para el badge Polarizado bug.
+**Categoría**: UX testing / Real data coverage / Pre-merge skipped
+**Patrón**: feature-tested-with-easy-case-not-edge-case
+
+**Qué pasó**: Agregué `extractDisplayCode()` al VariantList para mostrar el model_code junto al label. Lo probé mentalmente con Vrast (`VRAST/C1` — code corto). Funcionó perfecto. Pero NO mediticé que Yau tenía codes largos (`MBLK/S10 POL YELLOW`, 21 chars + spaces) que combinados con el badge POLARIZADO en flex-wrap producirían 3 líneas. Founder lo vio en producción.
+
+**Causa raíz**:
+1. **Probé con el easy case, no con el extreme case**. Vrast tenía codes "C1/C2/C3/C4" — perfectos para un layout inline. Yau era el outlier que rompía el layout. Si hubiera abierto la PDP de Yau después del fix (no Vrast), hubiera visto el problema al instante.
+2. **No tengo checklist mental de "probar con el producto que tiene el dato más largo"** al implementar features de display. Aplica a labels, descriptions, model_codes, brand_names, etc.
+3. **El pattern es recurrencia LIGHT** del mistake "shipped-but-untested-against-real-data" sobre el badge Polarizado (1 caso) y este (1 caso). 2da vez hoy.
+
+**Costos**:
+- Founder vio el problema en producción (no en preview)
+- 1 commit + push extra solo para reorganizar layout
+
+**Regla preventiva**:
+1. **Al implementar feature de display con data variable** (text, codes, labels que cambian por producto): probar mentalmente con el caso EXTREMO (el más largo, el con caracteres especiales). Si no estoy seguro: query MCP rápida para ver max length.
+2. **Para texto que va en flex-wrap**: estimar el rendering con el caso más largo. Si el wrap se cae a 2+ líneas no deseadas, reorganizar el layout ANTES de mergear.
+3. **Counter-pattern de "shipped-but-untested-against-real-data"**: ya hay 2 ocurrencias hoy (Polarized + model_code). Si pasa una 3era → escalación a regla en CLAUDE.md sobre testing pre-merge.
+
 ## 2026-05-31 — Revisado — sin novedad: indicador stock thumbnails implementado sin error nuevo
 
 **Estado**: N/A

@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: fix layout VariantList sin pattern nuevo (UX iteration normal post-feature)
+
+**Categoría**: UX iteration
+**Confianza**: 🟢 N/A (no aplica — reorganización visual de un componente tras observación empírica con data real es loop normal)
+
+Cuando agregué `model_code` al label en turno previo, no anticipé que algunos codes (Yau "MBLK/S10 POL YELLOW") + badge POLARIZADO + SKU producirían 3 líneas en flex-wrap. Reorganización a 2 líneas (label+badge en línea 1, code+SKU en línea 2) limpia el problema. Sin pattern replicable nuevo más allá del ya documentado "Pre-merge de feature visible: abrir PDP con data real y verificar render" (mistake counterpart de hoy sobre badge Polarizado bug).
+
 ## 2026-05-31 — Revisado — sin novedad: indicador stock thumbnails aplicó pipeline central (regla 15) sin pattern nuevo
 
 **Categoría**: UX detail
