@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Bell, MapPin, Package } from 'lucide-react';
+import { Bell, Heart, MapPin, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { getCurrentProfile } from '@/lib/auth/server';
@@ -83,6 +83,17 @@ export default async function Page() {
                 <span className="font-medium">Mis alertas</span>
                 <span className="text-muted-foreground text-xs">
                   Avisos de bajada de precio y vuelta de stock
+                </span>
+              </span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-auto justify-start py-4">
+            <Link href="/mi-cuenta/matches">
+              <Heart className="size-5" />
+              <span className="flex flex-col items-start">
+                <span className="font-medium">Mis matches</span>
+                <span className="text-muted-foreground text-xs">
+                  Anteojos que te gustaron en el swipe
                 </span>
               </span>
             </Link>

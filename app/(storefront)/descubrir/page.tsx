@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SwipeDeck } from '@/components/swipe/swipe-deck';
 import { fetchSwipeProducts } from '@/lib/swipe/queries';
+import { listMyMatches } from '@/lib/swipe/actions';
+import { getCurrentUser } from '@/lib/auth/server';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -24,7 +26,14 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function DescubrirPage() {
-  const products = await fetchSwipeProducts();
+  const [products, user] = await Promise.all([
+    fetchSwipeProducts(),
+    getCurrentUser(),
+  ]);
+
+  // Si el usuario está logueado, cargamos sus matches previos desde DB.
+  // Si no está logueado, el SwipeDeck usa localStorage (igual que antes).
+  const initialMatches = user ? await listMyMatches() : [];
 
   if (products.length === 0) {
     return (
@@ -50,5 +59,11 @@ export default async function DescubrirPage() {
     );
   }
 
-  return <SwipeDeck initialProducts={products} />;
+  return (
+    <SwipeDeck
+      initialProducts={products}
+      isAuthenticated={user !== null}
+      initialMatches={initialMatches}
+    />
+  );
 }

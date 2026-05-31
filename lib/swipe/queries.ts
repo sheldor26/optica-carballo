@@ -100,3 +100,74 @@ export async function fetchSwipeProducts(): Promise<SwipeProduct[]> {
 
   return products;
 }
+
+/**
+ * Productos que matchean los slugs pasados, con shape `SwipeProduct`.
+ * Usado en `/mi-cuenta/matches` para renderizar el grid de matches del
+ * usuario logueado (los slugs vienen de `listMyMatches()` action).
+ *
+ * Mantiene el orden de `slugs` en el output (los más recientes primero
+ * según `swipe_matches.created_at DESC`).
+ */
+export async function fetchProductsBySlug(
+  slugs: string[],
+): Promise<SwipeProduct[]> {
+  if (slugs.length === 0) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('products')
+    .select(
+      `
+      slug,
+      name,
+      short_description,
+      category:categories!inner(slug),
+      brand:brands!inner(slug, name, is_active),
+      variants:product_variants(price_cents, stock_qty, is_active),
+      images:product_images(storage_path, is_primary, sort_order, variant_id)
+    `,
+    )
+    .in('slug', slugs)
+    .eq('is_active', true)
+    .eq('brand.is_active', true)
+    .returns<SwipeProductRow[]>();
+
+  if (error || !data) {
+    console.error('[swipe] fetchProductsBySlug failed:', error?.message);
+    return [];
+  }
+
+  const products = data.map((p): SwipeProduct => {
+    const inStockVariants = p.variants.filter(
+      (v) => v.is_active && v.stock_qty > 0,
+    );
+    const prices = inStockVariants.map((v) => v.price_cents);
+    const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+    const sortedImages = [...p.images].sort(
+      (a, b) => a.sort_order - b.sort_order,
+    );
+    const primary =
+      sortedImages.find((img) => img.is_primary) ?? sortedImages[0] ?? null;
+
+    return {
+      slug: p.slug,
+      brandSlug: p.brand.slug,
+      brandName: p.brand.name,
+      categorySlug: p.category.slug,
+      name: p.name,
+      shortDescription: p.short_description,
+      minPriceCents: minPrice,
+      primaryImagePath: primary?.storage_path ?? null,
+      primaryImageScale: primary ? getImageScale(primary.storage_path) : 1,
+      href: `/${p.category.slug}/${p.brand.slug}/${p.slug}`,
+    };
+  });
+
+  // Mantener orden según `slugs` original (que viene de DB ordenado por
+  // created_at DESC, más recientes primero).
+  const bySlug = new Map(products.map((p) => [p.slug, p]));
+  return slugs
+    .map((s) => bySlug.get(s))
+    .filter((p): p is SwipeProduct => p !== undefined);
+}
