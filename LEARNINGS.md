@@ -22,6 +22,61 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Jerarquía de fuentes para specs técnicos de productos: sitio oficial fabricante > ML listing > inferencia
+
+**Categoría**: Product data / Source of truth / Discrepancias entre fuentes
+**Confianza**: 🟢 Alta (validado en carga Rusty Feeled — discrepancia 50mm vs 63mm resuelta correctamente)
+
+### Qué funcionó
+
+Durante carga del producto Rusty Feeled, detecté **discrepancia técnica entre 2 fuentes oficiales**:
+- ML attribute `LENS_WIDTH`: 6.3 cm (63 mm)
+- Sitio oficial Rusty (validado por founder): 50 mm
+
+Tomé decisión técnica: **ML como source of truth para precio/stock/atributos comerciales, pero sitio oficial del fabricante como source of truth para specs técnicos físicos del producto** (medidas, peso, materiales).
+
+Justificación documentada en seed 23:
+> "ML no es 100% confiable para medidas (otros sellers podrían cargar mal). Founder confirmó 50mm según SITIO OFICIAL Rusty. Vamos con 50mm."
+
+### Por qué funciona
+
+Cada fuente tiene fortalezas y debilidades distintas:
+
+| Fuente | Fortaleza | Debilidad |
+|---|---|---|
+| **Sitio oficial fabricante** | Specs técnicos verificados por el fabricante (medidas, peso, materiales reales) | No tiene precio ni stock del seller |
+| **ML listing (incluso official store)** | Precio real, stock real, identificadores comerciales (item_id, family, store) | Specs cargados manualmente por el seller — pueden tener errores de transcripción (ej. 63mm en vez de 50mm) |
+| **Foto del producto** | Verificación visual de color/forma | No tiene medidas precisas |
+| **Inferencia desde título / categoría ML** | Útil para defaults | Última prioridad — adivinanza |
+
+Jerarquía operativa: **sitio oficial fabricante > ML listing > inferencia**.
+
+### Cómo replicar
+
+Cuando carguemos productos futuros con datos de múltiples fuentes:
+
+1. **Precio, stock, item_id**: ML listing del founder/seller es source of truth.
+2. **Specs físicos** (medidas mm, peso gramos, materiales): sitio oficial del fabricante (Rusty / Vulk / Mormaii / Paula Cahen). Pedir al founder confirmación si está disponible.
+3. **Color/temple/lens treatments**: cruzar ML attributes + sitio oficial + foto. Si discrepan, founder decide cuál refleja el producto físico real que tiene en mano.
+4. **Si hay duda**: documentar la discrepancia en el seed (comment con ambas fuentes) y elegir la conservadora.
+
+### Trigger
+
+Cualquier carga de producto donde ML attributes contradigan datos del sitio oficial o del founder (cualquier diferencia técnica detectable cruzando fuentes).
+
+### Aplicaciones futuras
+
+- Cargas pendientes: Vulk completo (Brillante, Stray, otras), Reef, Mormaii, Paula Cahen D'Anvers, Rusty (resto de modelos).
+- Validación de catálogos completos: si script de import descubre discrepancias entre ML y sitio oficial, flagear para revisión manual.
+- UPDATE de productos existentes: si encontramos un producto cargado con specs erróneos (vs sitio oficial), priorizar fix del attributes.measurements.
+
+### Cross-link
+
+- Complementa [[foto-producto-real-vs-diagrama-schematic]] (commit `bdf73c5`): ese es sobre **assets visuales**, este es sobre **datos numéricos/técnicos**. Ambos comparten el principio "cruzar fuentes antes de confiar ciegamente en una sola".
+- Aplicación de [[auditar-antes-de-crear]] (regla 14 CLAUDE.md): el audit del JSON ML reveló la discrepancia, sin audit hubiéramos cargado 63mm sin notar.
+
+---
+
 ## 2026-05-31 — Cuando founder pasa "foto/imagen del producto", verificar si es foto REAL del producto o un diagrama schematic genérico
 
 **Categoría**: Product upload / Asset audit / Founder collaboration
