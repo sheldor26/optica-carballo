@@ -81,6 +81,19 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   //   - 02-frontal.jpg: 1.05 (vista frontal, ya casi llena el frame)
   'rusty-feeled/01-lateral.jpg': 1.15,
   'rusty-feeled/02-frontal.jpg': 1.05,
+
+  // Rusty Dearly — founder reportó en grid de marca rusty (2026-05-31):
+  // "Agrandar un poco mas la imagen del dearly para que quede parecida al
+  // YAU y Feeled - es un poco mas... sera un 15% o algo asi". El Dearly se
+  // veía visiblemente más chico que sus hermanos Rusty. Aplico 1.15 uniforme
+  // a las 6 fotos de variante (3 variantes × 2 vistas). El esquema técnico
+  // medidas.jpg queda en 1.0 (no aparece en grid).
+  'rusty-dearly/01-0292-lateral.jpg': 1.15,
+  'rusty-dearly/01-0292-frontal.jpg': 1.15,
+  'rusty-dearly/02-brown-lateral.jpg': 1.15,
+  'rusty-dearly/02-brown-frontal.jpg': 1.15,
+  'rusty-dearly/03-sblk-lateral.jpg': 1.15,
+  'rusty-dearly/03-sblk-frontal.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {

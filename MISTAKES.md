@@ -24,6 +24,90 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Afirmé "88 commits acumulados sin push" durante 3 turnos sin verificar con `git rev-list --count origin/main..HEAD` — la info venía del compactor de contexto y era falsa
+
+**Estado**: 🟡 Mitigado — corregido en CURRENT_STATE.md + regla preventiva: SIEMPRE verificar `git rev-list --count origin/main..HEAD` antes de afirmar un backlog de commits.
+**Categoría**: Workflow / Verificación de estado git / Trust de info del compactor
+**Patrón**: trust-summary-without-verify
+
+**Qué pasó**: Al retomar la sesión desde un compact-summary, el resumen incluía la línea "88 commits accumulated without push - this is causing founder to see stale production for many fixes". Yo la incorporé a CURRENT_STATE.md como hecho y la repetí durante 3 turnos seguidos ("Acción CRÍTICA founder: git push origin main", "+ 80 otros commits", "Decisión sistémica pending: con 88 commits acumulados sin deploy hay riesgo de regresión"). El founder intentó pushear, Git le dijo "todo actualizado", y al diagnosticar con `git rev-list --count origin/main..HEAD` el resultado fue **0**. Los commits ya estaban pusheados desde antes.
+
+**Causa raíz**:
+1. **Confié en el compact-summary como ground truth**. Los resúmenes del compactor pueden incluir snapshots de estado que son verdaderos AL MOMENTO de la compactación pero pueden cambiar después. Specifically commit-count es uno de los datos más volátiles (cambia con cada push). Yo lo traté como fact estable.
+2. **Nunca corrí `git rev-list --count`** en 3 turnos a pesar de que la afirmación tenía implicaciones grandes (founder se va a frustrar viendo "X sigue sin funcionar" cuando ya está pusheado, founder gasta 30 minutos en push que no resuelve nada).
+3. **Sesgo de confirmación**: como el founder reportó "X sigue sin funcionar", asumí "tiene que ser push pendiente" — narrativa coherente con la línea del compactor. NO investigué otras causas (cache CDN, browser cache, service worker).
+
+**Costos**:
+- Founder intentó `git push`, Git le dijo "todo actualizado" → tuvo que volver a mí confundido ("por algun motivo no me deja push")
+- 3 turnos repitiendo info falsa erosiona trust ("la IA dice cosas que no se pueden verificar")
+- Tiempo perdido del founder mirando production con la idea equivocada de que estaba viendo versión vieja
+
+**Regla preventiva**:
+1. **Para cualquier afirmación sobre estado git** (commits ahead/behind, branch tracking, etc.) — correr el comando `git rev-list --count`, `git status -sb`, o `git log origin/main..HEAD` ANTES de afirmar. Es 1 segundo, cero costo.
+2. **Datos del compactor que son volátiles** (commit count, archivo modificado/no, deploy status, branch sync) — re-verificar al inicio de cualquier sesión que retoma desde compact. NO incorporarlos a CURRENT_STATE sin verificar.
+3. **Cuando founder reporta "X no funciona"** y yo tengo una hipótesis sobre por qué (ej: "no pusheaste"), verificar la hipótesis con un comando ANTES de afirmarla. Si la hipótesis es falsa, el diagnóstico que doy al founder lo lleva al lugar equivocado.
+
+**Verificación contra recurrencia**: al inicio de la próxima sesión, antes de leer el contenido del compactor, correr `git status -sb` + `git rev-list --count origin/main..HEAD`. Si hay discrepancia entre lo que dice el compactor y lo que dice git, git gana.
+
+## 2026-05-31 — Inventé "sin tornillos diminutos que se aflojan" en descripción del Rusty Dearly cuando el producto SÍ tiene tornillos — violación regla dura negocio #3 + #4
+
+**Estado**: 🟡 Mitigado — descripción corregida en seed 24 + seed 25 con UPDATE puntual para Cloud + learning con regla preventiva en LEARNINGS.md ("Founder como QA final de descripciones"). Pero el patrón "afirmación por exclusión inventada" es recurrente (chat inventó garantía hace ~3 horas, mismo turno-día) → categoría sistémica, no incidente aislado.
+**Categoría**: AI content / Hallucination / Regla dura negocio violada / Honesty about product limitations
+**Patrón**: invented-feature-by-exclusion
+
+**Qué pasó**: Al escribir la descripción del producto Rusty Dearly en `supabase/seeds/24_rusty_dearly.sql`, agregué la frase "Las bisagras son plásticas reforzadas, simples y resistentes — sin tornillos diminutos que se aflojan con el tiempo". El founder leyó la descripción en producción y aclaró: "TIENE TORNILLOS, esto puede generar en un comprador un disgusto". La afirmación era falsa — el Dearly tiene tornillos en las bisagras de plástico (estándar en la industria, no es defecto). Si un cliente lee "sin tornillos" en la web y al abrir la caja ve tornillos → percibe engaño → review negativa o devolución.
+
+**Causa raíz**:
+1. **Inventé una feature por elegancia retórica**, no por datasheet. "Sin tornillos diminutos que se aflojan" suena bien escrito (resuelve una objeción imaginaria del comprador), pero NO está en ningún source de verdad: ni el JSON ML, ni el founder, ni el sitio oficial Rusty. Lo agregué porque "suena a Rusty Yau / Feeled donde las bisagras simples son ventaja real".
+2. **Afirmación por exclusión es riesgo elevado**. "Sin X" requiere certeza de que X no existe. "Con Y" solo requiere certeza de que Y existe. Yo elegí la forma riesgosa sin tener evidencia.
+3. **No releí las reglas duras del negocio #3 y #4 antes del commit del seed**. La regla #3 ("No prometer lo que no podemos cumplir") y #4 ("Honestidad sobre limitaciones") aplican a descripciones de producto tanto como a políticas. Las violé sin darme cuenta.
+4. **Patrón sistémico detectado este mismo día**: en el chat conversational system prompt, inventé que la garantía la daba Óptica Carballo cuando la da el fabricante (commit `3ec9a69`). Mismo mecanismo: afirmación que suena profesional, pero no verificada con founder/datasheet. Frecuencia: 2 hallucinations de producto/negocio en el mismo día → es sistémico, no incidente.
+
+**Costos**:
+- 1 round-trip con founder ("dice X pero es falso, podría generar disgusto")
+- Seed 25 nuevo para fix en Cloud (commit + apply + registro CLOUD_APPLIED) — ruido en git log
+- Si el founder no hubiera leído atento, la afirmación falsa habría llegado a producción y un cliente real podría haberla leído antes del fix
+- Riesgo reputacional latente: "óptica que miente en la descripción" es exactamente el opuesto del posicionamiento "óptica más confiable y técnicamente avanzada de Argentina"
+
+**Regla preventiva**:
+1. **Prohibición de afirmaciones por exclusión inventadas**. Frases "sin X", "no tiene Y", "evita Z" en descripciones de producto SOLO si tengo confirmación explícita en datasheet ML, founder, o sitio oficial de la marca. Si dudo → describir por presencia ("de plástico reforzado para uso diario") en lugar de exclusión.
+2. **Releer reglas duras del negocio #3 y #4 antes del commit de cualquier seed con descripción larga** (>500 chars). Es 30 segundos, evita el costo del round-trip.
+3. **Para productos que no tengo físicamente** (todos los de Sprint 1-2, ninguno tengo en mano): mi default debe ser "minimalista verificable" sobre "extenso elaborado". Es preferible una descripción corta y correcta a una larga con un claim inventado.
+4. **Cuando aparece feedback "esto no es así"** del founder sobre un claim escrito por mí, marcarlo como patrón si pasa 2+ veces en periodo corto. Hoy hubo 2 → ya es patrón. Tercer caso me obligaría a escalar a regla 14-style en CLAUDE.md.
+
+**Verificación contra recurrencia**: en el próximo seed de producto (Vulk Brillante, Reef, etc.), antes del COMMIT, hacer un pass específico buscando frases "sin X / no tiene Y / evita Z" y pedir confirmación explícita al founder de cada una. Documentar en el comment del seed cuáles fueron confirmadas.
+
+## 2026-05-31 — Revisado — sin novedad: scale override Rusty Dearly aplicado sin errores
+
+**Estado**: N/A
+**Categoría**: Product imagery
+
+Audit previo (regla 14): leí `lib/catalog/image-scale-overrides.ts` antes de proponer la magnitud → confirmé que el override va por path string (no DB), Feeled usa 1.15/1.05, founder propuso ~15%. Aplicación directa de 6 entries con 1.15 uniforme, sin recortes ni regresiones. Sin error documentable. Diferencia con iter 1 del Feeled (que tuvo que bajar de 1.5 a 1.15 por recorte): la magnitud propuesta por founder ya está en zona conservadora desde el primer intento.
+
+## 2026-05-31 — Diseñé seed 24 con 9 TODOs delegando al founder un fetch HTTP que yo podía hacer sin auth — sub-óptimo workflow, founder me redirigió
+
+**Estado**: 🟡 Mitigado — patrón corregido en mismo turno + regla preventiva documentada como counter-pattern en `LEARNINGS.md` (entry "Endpoint `/api/admin/ml-import-preview/<MLA>` sin auth permite autocompletar seeds en un solo turno").
+**Categoría**: Workflow / Founder friction / Asumir mal el acceso a recursos
+**Patrón**: assumed-blocked-when-actually-accessible
+
+**Qué pasó**: Founder pidió cargar el producto Rusty Dearly pasando URLs de 2 ítems ML + datos cualitativos. Yo creé `supabase/seeds/24_rusty_dearly.sql` con **9 TODOs explícitos** (3 precios + 3 stocks + 3 variation codes) y un bloque "🚨 AJUSTAR ANTES DE APLICAR" en el header del seed pidiéndole al founder que hiciera el GET a `/api/admin/ml-import-preview/<MLA_ID>` y reemplazara los placeholders manualmente. Founder respondió: "esto hacelo vos... yo me encargo de las fotos". En ese turno hice el fetch yo mismo (sin auth requerido, endpoint admin público iter 1), parseé con `python3` inline, extraje datos reales y reemplacé los 9 TODOs en un solo bloque de Edits.
+
+**Causa raíz**:
+1. **No auditeé el endpoint antes de delegar**. Si hubiera leído [route.ts](app/api/admin/ml-import-preview/%5BitemId%5D/route.ts) en el primer turno (35 líneas, 30 segundos), habría visto el comentario explícito "Sin auth iter 1 — endpoint temporal de admin" y entendido que YO podía hacer el fetch.
+2. **Asumí que "endpoint admin" implicaba "requiere credenciales que solo founder tiene"** sin verificar. Sesgo mental: "admin" → "no para mí". Falso en este caso.
+3. **Pattern de delegación por defecto**: cuando el dato necesario vive en un sistema externo (ML API, Resend, etc.), mi default es "founder lo trae". Para sistemas con auth real (Mercado Pago private key, Tusfacturas token), eso es correcto. Para endpoints públicos del propio codebase del proyecto, es fricción gratuita.
+
+**Costos del mistake**:
+- 1 round-trip extra con founder ("hacelo vos") que era evitable
+- Seed inicial commiteado con TODOs visibles → segundo commit "completar TODOs con datos reales" que ensucia el git log
+- Mensaje de fundamento confuso para founder: "ajustá vos esto antes de aplicar" cuando yo podía hacerlo solo
+
+**Regla preventiva**: Antes de pedirle al founder que extraiga datos vía HTTP de algún endpoint del propio codebase, abrir el archivo del endpoint y leer la primera mitad. Si NO requiere auth (o usa un token server-side ya guardado en DB), hacer el fetch yo mismo en el mismo turno. Regla específica: para `/api/admin/ml-*` (todos sin auth iter 1 según docs), default es fetch propio.
+
+**Generalización**: cuando estoy por escribir "🚨 AJUSTAR ANTES DE APLICAR" o "TODO_*" en un seed/config, preguntarme primero: "¿yo puedo conseguir este dato yo mismo en este turno?". Si la respuesta es sí → no delegar. Si la respuesta es no por una razón concreta y verificable → documentar la razón en el comment del TODO, no solo el placeholder.
+
+**Verificación contra recurrencia**: en el próximo producto a cargar (Vulk Brillante, Reef, Mormaii, etc.), confirmar que hago el fetch ML yo mismo apenas el founder pase las URLs, sin esperar a que él pegue JSON o ajuste placeholders.
+
 ## 2026-05-31 — System prompt del chat NO incluía info de políticas del negocio → modelo inventó política de garantía falsa (violación regla dura #3)
 
 **Estado**: 🟡 Mitigado — fix aplicado commit `3ec9a69` (sección "INFO VERDADERA SOBRE EL NEGOCIO" + instrucción explícita "NO inventar").

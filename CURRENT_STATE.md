@@ -2,6 +2,51 @@
 
 ## Status
 
+🟢 **Seed 24 — Rusty Dearly cargado y completado con datos reales ML (3 variantes)** (2026-05-31). Founder pasó 2 ítems ML; yo fetcheé `/api/admin/ml-import-preview/*` y reemplacé los 9 placeholders por valores reales.
+
+**Cambios** (commit pending):
+- `supabase/seeds/24_rusty_dearly.sql`: producto base `rusty-dearly` + 3 variantes con precio + stock + variation codes EXTRAÍDOS DEL JSON ML + 7 entries de imágenes.
+
+**Datos reales del ML aplicados al seed**:
+
+| Variante | SKU | Precio | Stock | ML item | ML variation |
+|---|---|---|---|---|---|
+| 0292 rosa caramelo | 960202 | $75.010,75 | 8 | MLA1930366688 | `185630407081` |
+| BROWN marrón brillo | 960203 | $75.010,75 | 14 | MLA1930366688 | `185337710789` |
+| SBLK polarizada | 960200 | $85.904,01 | 6 | MLA2086807302 | NULL (single) |
+
+Total disponible en ML: 22 + 6 = 28 unidades. Precio polarizado +14,5% sobre no-pol ($10,894 diferencia).
+
+**Medidas** (de imagen técnica del founder): frame 142mm, lente 54x51mm, puente 19mm, varilla 145mm.
+
+**Decisiones atributos**:
+- `frame_shape: "cuadrado"` (existe en FRAME_SHAPES canónicos)
+- `gender: "female"`, `line: "urbana"`
+- `polarized: true` solo en SBLK
+- `lens_category: 3`
+
+**Pending founder antes de aplicar**:
+1. Subir 7 fotos al bucket `products/rusty-dearly/`:
+   - `01-0292-lateral.jpg` + `01-0292-frontal.jpg` (rosa caramelo)
+   - `02-brown-lateral.jpg` + `02-brown-frontal.jpg` (marrón brillo)
+   - `03-sblk-lateral.jpg` + `03-sblk-frontal.jpg` (negro brillo polarizado)
+   - `medidas.jpg` (esquema técnico común)
+2. Aplicar seed en Supabase Cloud (SQL Editor) → registrar en `supabase/CLOUD_APPLIED.md`.
+
+**Iter +1 — Scale override grid marca Rusty** (2026-05-31): founder vio el Dearly en `/marcas/rusty` y reportó que se ve más chico que el Yau/Feeled. Pidió "~15%". Aplicado en `lib/catalog/image-scale-overrides.ts`: 6 entries (3 variantes × 2 vistas) con scale 1.15 uniforme. `medidas.jpg` queda en 1.0 (no aparece en grid). Patrón idéntico al Feeled — entry separada en el override file para mantener trazabilidad por producto.
+
+**Iter +2 — Fix descripción (honestidad bisagras + formato bullets)** (2026-05-31): founder leyó la descripción en producción y detectó:
+1. La frase "sin tornillos diminutos que se aflojan con el tiempo" era FALSA — el Dearly SÍ tiene tornillos en las bisagras de plástico. Riesgo de disgusto del comprador al abrir la caja. Violación regla dura negocio #3 (no prometer lo que no se cumple).
+2. Los bullets de las 3 variantes tenían el título y la descripción en la misma línea separados por `:` — pidió romper línea + arrancar con mayúscula para mejor legibilidad.
+
+Cambios:
+- `supabase/seeds/24_rusty_dearly.sql`: descripción reescrita ("Las bisagras son de plástico reforzado, simples y resistentes para uso diario" + bullets en 2 líneas con mayúscula).
+- `supabase/seeds/25_rusty_dearly_description_fix.sql`: NUEVO — UPDATE puntual para aplicar fix en Cloud sin re-correr todo el seed 24 (idempotente, único campo afectado: `description`).
+
+**Próximo paso founder**: aplicar `25_rusty_dearly_description_fix.sql` en Supabase Cloud (SQL Editor) → registrar en `CLOUD_APPLIED.md`. Ya verás la descripción corregida en `/anteojos-de-sol/rusty/rusty-dearly` tras push (ISR refresh).
+
+🟡 **Token Mercado Libre renovado** (2026-05-31). Founder informó: `https://opticacarballo.com.ar/?ml_oauth=success&user_id=81654493`. Endpoints `/api/admin/ml-*` quedan habilitados para extraer JSONs de import-preview.
+
 🟢 **Recolección few-shot — 3/13 recetas + 12 trampas + GAP de schema descubierto** (2026-05-30, en progreso).
 
 **Receta #3 tentativa (`03-presbicia-monofocal-cerca.jpg`)** — esperando confirm founder:
@@ -38,28 +83,21 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Privacy fix chat + 88 commits acumulados sin push** (2026-05-31). Founder reportó tras retest: chat mencionaba nombre completo de la regente ("María Carlota Carballo") + X superior derecha del chat sigue sin funcionar.
+🟡 **Privacy fix chat aplicado y pusheado** (2026-05-31). Founder reportó tras retest: chat mencionaba nombre completo de la regente ("María Carlota Carballo") + X superior derecha del chat sigue sin funcionar.
 
-**Fix #1 — Privacy** (commit `b063842`): `lib/chat/system-prompt.ts`. 3 menciones de "María Carlota Carballo" → "nuestra óptica regente matriculada". Instrucción explícita "NUNCA des nombre propio ni apellido de la regente — preservamos su privacidad".
+**Fix #1 — Privacy** (commit `b063842`, ya en `origin/main`): `lib/chat/system-prompt.ts`. 3 menciones de "María Carlota Carballo" → "nuestra óptica regente matriculada". Instrucción explícita "NUNCA des nombre propio ni apellido de la regente — preservamos su privacidad".
 
-**Bug X sigue reportado por founder, pero diagnóstico**: el fix YA ESTÁ EN EL CÓDIGO desde commit `3ec9a69` (panel z-50 + FAB conditional solo cuando !isOpen). Verificado con grep:
+**Bug X — diagnóstico**: el fix está en el código desde commit `3ec9a69` (panel z-50 + FAB conditional solo cuando !isOpen) + ya está en `origin/main`. Verificado con grep:
 - Panel: z-50 ✓
 - FAB: z-40 + condicional `!isOpen` ✓
 - Botón X header: `onClick={() => setIsOpen(false)}` + `aria-label="Cerrar"` ✓
 
-→ **Founder no ha pusheado los 88 commits acumulados**. Lo que ve en producción es versión VIEJA donde el X no funcionaba. Una vez pushee → fix activo.
+Si founder sigue viendo el X sin funcionar en producción: NO es push pendiente (el commit ya está en remoto). Posibles causas restantes:
+1. Cache del browser → hard refresh (Cmd+Shift+R en Mac).
+2. Cache CDN de Vercel para esa ruta → invalidar manualmente desde el dashboard.
+3. Algún Service Worker viejo cached.
 
-**🚨 Acción CRÍTICA founder**: `git push origin main`. Eso aplica de una vez:
-- 2 bugs chat (X + garantía)
-- Mis Matches en cuenta
-- Tinder de monturas
-- Pipeline normalización fotos
-- 4 iters Rusty Feeled grid fixes
-- Aclaración niveles probador virtual
-- Privacy fix de este turno
-- + 80 otros commits
-
-**Decisión sistémica pending**: con 88 commits acumulados sin deploy, hay riesgo de regresión + dificultad de rollback granular si algo rompe. Sugerencia (próximo turno si querés): pushear todo + verificar producción + cuando founder vuelva, integrar habitos de push más frecuente.
+**Corrección importante a info previa**: en turnos previos afirmé "88 commits acumulados sin push" basándome en el resumen automático del compactor — `git rev-list --count origin/main..HEAD` confirmó **0 commits ahead**. La info era falsa. Documentado en MISTAKES.md como anti-pattern "asumir backlog sin verificar git rev-list" para no recaer.
 
 🟢 **Mis Matches en /mi-cuenta — persistencia DB con sync automático** (2026-05-31, superado por privacy fix arriba). Founder pidió "en mi cuenta debería aparecer un apartado Mis Matches".
 

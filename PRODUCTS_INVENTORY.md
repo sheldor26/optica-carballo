@@ -48,9 +48,10 @@ Por cada marca/categoría, trackeamos:
 
 | Marca | Productos cargados | Con stock | Con imágenes | Con SEO | Estado |
 |-------|-------------------|-----------|--------------|---------|--------|
-| Rusty | 2 | 2 | 1 | 2 | 🟡 |
+| Rusty | 3 | 3 | 1 | 3 | 🟡 |
 | Rusty: Yau (deportivo 2-en-1) | 1 | 1 | 1 | 1 | ✅ Live (seed 10/13/15) |
 | Rusty: Feeled MBLK TENNIS | 1 | 1 | pendiente founder | 1 | 🟡 Seed 23 listo, esperando fotos en bucket |
+| Rusty: Dearly (cuadrado femenino, 3 variantes) | 1 | 3 variantes | pendiente founder | 1 | 🟡 Seed 24 listo, esperando 9 TODOs (precio/stock/var_code) + 7 fotos en bucket |
 | Reef | 0 | 0 | 0 | 0 | 🔴 |
 | Vulk | 0 | 0 | 0 | 0 | 🔴 |
 | Infinit | 0 | 0 | 0 | 0 | 🔴 |

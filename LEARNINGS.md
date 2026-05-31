@@ -22,6 +22,63 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Founder como QA final de descripciones de producto: capta afirmaciones falsas que yo no puedo verificar sin tener el producto en mano
+
+**Categoría**: Content QA / Honesty / Regla dura negocio #3
+**Confianza**: 🟢 Alta (2do caso en mismo día con mismo founder catch: chat inventando garantía + esta descripción inventando "sin tornillos")
+
+**Qué funcionó**: El founder leyó la descripción del Rusty Dearly que yo escribí en el seed 24 y detectó al instante una afirmación falsa: "sin tornillos diminutos que se aflojan con el tiempo". Las bisagras del Dearly SÍ tienen tornillos. Riesgo concreto: comprador abre caja, ve tornillos, percibe engaño → review negativa, devolución.
+
+**Por qué funciona el patrón**: El founder es **Técnico Superior en Óptica**, conoce los productos físicamente, conoce a las regentes que arman, y conoce el feedback histórico de clientes. Yo (la IA) escribo en base a:
+- Texto descriptivo de ML (a menudo marketing)
+- Convenciones del rubro
+- Inferencias de marketing tone que pueden ser falsas
+
+Sin el founder como QA, una afirmación inventada por elegancia retórica ("sin tornillos diminutos" suena bien escrito) se filtra a producción.
+
+**Cómo capitalizar el patrón**:
+1. **Marcar afirmaciones por exclusión como riesgo elevado**. Frases que dicen "sin X", "no tiene Y", "evita Z" son trampa potencial si X/Y/Z de hecho existe en el producto. Las afirmaciones por presencia ("tiene Y para Z", "está hecho de W") son más seguras.
+2. **Evitar inventar features**. Si no tengo confirmación explícita de una característica (datasheet ML o founder), no agregarla a la descripción aunque "suene bien" o sea convención del rubro.
+3. **Reglas duras del negocio #3 y #4 son la verdadera ancla**: "No prometer lo que no podemos cumplir" + "Honestidad sobre limitaciones de productos". Cada vez que escriba una descripción, releer esas 2 reglas antes del commit.
+4. **Tono preferido del founder**: positivo pero verificable. "De plástico reforzado, resistente para uso diario" > "sin tornillos que se aflojan" (el primero es presencia + use case, el segundo es exclusión + claim que no puedo verificar).
+
+**Generalización a otros productos**: la próxima vez que cargue un producto que no tengo en mano físicamente, hacer una pasada final por la descripción buscando frases "sin X" / "no tiene Y" / "evita Z" y pedir confirmación explícita al founder antes de commitear el seed. Reduce iteraciones de fix-after-prod.
+
+## 2026-05-31 — Revisado — sin novedad: scale override Rusty Dearly (1.15 uniforme) replica patrón Feeled exactamente
+
+**Categoría**: Product imagery / Grid display
+**Confianza**: 🟢 N/A (no aplica — replica del patrón ya consolidado en `lib/catalog/image-scale-overrides.ts`)
+
+Founder reportó en `/marcas/rusty` que el Dearly se veía más chico que Yau/Feeled. Aplicación directa del patrón existente: 6 entries con scale 1.15 en `IMAGE_SCALE_OVERRIDES`, exactamente la magnitud sugerida por founder y consistente con el override del Feeled (1.15/1.05). Sin pattern replicable nuevo — el playbook ya está documentado en LEARNINGS de 2026-05-30 sobre "scale overrides per-image como solución pura de código a fotos con tamaños distintos". Estado: replicable, no documentable como entry nueva.
+
+## 2026-05-31 — Endpoint `/api/admin/ml-import-preview/<MLA>` sin auth permite autocompletar seeds de producto en un solo turno (cero round-trips con founder)
+
+**Categoría**: Workflow / Product loading / Friction reduction
+**Confianza**: 🟢 Alta (validado este turno con seed 24 Rusty Dearly — founder pasó solo URLs y datos cualitativos, yo extraje precios/stocks/variation_codes directamente)
+
+**Qué funcionó**: Cuando founder pasa URLs de ítems ML para cargar un producto, en lugar de pedirle que copie/pegue el JSON o que ajuste TODOs manualmente, puedo hacer `curl -sS "https://opticacarballo.com.ar/api/admin/ml-import-preview/<MLA_ID>"` directamente. El endpoint está en [app/api/admin/ml-import-preview/[itemId]/route.ts](app/api/admin/ml-import-preview/%5BitemId%5D/route.ts), es público (admin sin auth iter 1, documentado en el comment del file), devuelve el JSON crudo de ML con price, available_quantity, family_id, variations[].id y attribute_combinations.
+
+**Por qué funciona**:
+- El endpoint usa el OAuth token almacenado server-side en `marketplace_integrations` → yo no necesito ningún credential
+- Parseo con Python inline (`python3 -c "import json,sys; d=json.load(sys.stdin); ..."`) extrae todo lo que el seed necesita: precio centavos (`price * 100`), stock por variation, ml_variation_code
+- Reemplazo 9 TODOs en el seed en un solo bloque de Edits → seed quedó completo y aplicable sin intervención founder más que subir fotos
+
+**Cómo replicar en cargas futuras**:
+1. Apenas el founder pase URLs de ML para un producto nuevo, anticipar el fetch yo mismo en el primer turno (no diseñar seed con placeholders TODO esperando que founder los complete después).
+2. Mismo seed quedó listo con datos reales en menos tiempo que el round-trip "founder ajusta TODOs".
+3. Si el endpoint devuelve `token_expired`, pedir al founder re-autorizar en `/api/ml/oauth/initiate` antes de continuar.
+
+**Costos a vigilar**: el endpoint hace 1 llamada por GET. Para productos con N ítems ML (caso Dearly: 2 ítems → 2 GETs) el costo es trivial. Más relevante: si carga masiva (10+ productos), considerar batching o el endpoint `ml-force-sync` que ya existe.
+
+**Diferencia con el playbook anterior**: seed 23 (Feeled) tuvo founder pasando JSON copy/paste a mano. Seed 24 (Dearly) tuvo founder pasando solo URLs + descripción cualitativa → yo fetché. Resultado: 1 round-trip menos, datos reales en el seed desde el commit inicial.
+
+## 2026-05-31 — Revisado — sin novedad: carga producto Rusty Dearly (seed 24) replica patrón seed 23 / 10 (Rusty Feeled / Yau)
+
+**Categoría**: Product loading
+**Confianza**: 🟢 N/A (no aplica — el playbook estructural ya está sólido; lo nuevo de este día está en la entry de arriba sobre el endpoint admin)
+
+Seed 24 (Rusty Dearly) sigue exactamente el patrón consolidado por seed 23 (Rusty Feeled) y seed 10 (Rusty Yau): producto base con `attributes` JSONB completo, variantes con SKU + ML mapping, fotos con path canónico `<slug>/<filename>` y esquema técnico común con `variant_id=NULL`. Diferencia estructural cubierta: 3 variantes (vs single de Feeled) repartidas en 2 ítems ML distintos (uno multi-variation + uno separado para la versión polarizada) — patrón ya cubierto por seed 10 Yau con variantes futuras. Decisión `frame_shape: "cuadrado"` confirmada contra `FRAME_SHAPES` canónicos. Sin nuevo pattern estructural — el playbook de seed sigue intacto.
+
 ## 2026-05-31 — Distinción privacy en system prompts: nombres propios SÍ en artículos/JSON-LD (E-E-A-T), NO en chat conversacional reactive
 
 **Categoría**: Privacy / AI prompt design / Where to expose identity
