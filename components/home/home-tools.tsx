@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { ArrowRight, FileText, Ruler, ScanFace, Sparkles } from 'lucide-react';
+import {
+  ArrowRight,
+  FileText,
+  Heart,
+  Ruler,
+  ScanFace,
+  Sparkles,
+} from 'lucide-react';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 type Tool = {
@@ -11,6 +18,14 @@ type Tool = {
 };
 
 const TOOLS: Tool[] = [
+  {
+    href: '/descubrir',
+    label: 'Descubrir con swipe',
+    description:
+      'Encontrá tu anteojo ideal jugando: deslizá a la derecha los modelos que te gustan, a la izquierda los que no.',
+    icon: Heart,
+    cta: 'Empezar a deslizar',
+  },
   {
     href: '/recomendador-de-monturas',
     label: 'Recomendador de monturas',
@@ -62,7 +77,7 @@ export function HomeTools() {
             <span className="italic">herramientas inteligentes</span>
           </h2>
           <p className="text-muted-foreground mt-3 max-w-xl text-balance text-base">
-            Dos herramientas únicas en óptica online argentina. Sin registro, sin
+            Herramientas únicas en óptica online argentina. Sin registro, sin
             costo. Tus datos no se guardan.
           </p>
         </RevealOnScroll>

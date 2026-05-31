@@ -37,6 +37,7 @@ export const FOOTER_INFO_LINKS: NavLink[] = [
  * no saturarlo (al menos en iter 1).
  */
 export const TOOLS_LINKS: NavLink[] = [
+  { href: '/descubrir', label: 'Descubrir con swipe' },
   { href: '/recomendador-de-monturas', label: 'Recomendador de monturas' },
   { href: '/lector-de-receta', label: 'Lector de receta con IA' },
 ];
