@@ -24,6 +24,15 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: implementación Opción Y (Tinder de monturas) — al primer build, sin errores
+
+**Estado**: ⚪ N/A
+**Categoría**: Implementation
+
+**Justificación regla 11**: implementación de feature completa al primer typecheck + build. No hubo errores cometidos, scope creep, ni anti-patterns. Decisión "localStorage vs Supabase para matches" fue trade-off consciente con razones documentadas (privacidad + simplicidad), no mistake.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: turno de ideación cross-industry (opciones DD-OO)
 
 **Estado**: ⚪ N/A

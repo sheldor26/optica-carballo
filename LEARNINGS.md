@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: implementación Opción Y (Tinder de monturas) — straightforward, sin pattern replicable nuevo
+
+**Categoría**: Implementation / UX
+**Confianza**: ⚪ N/A
+
+**Justificación regla 11**: turno de implementación directa de UX swipe con libs ya configuradas (framer-motion). Decisiones técnicas (localStorage vs Supabase, single-file component por cohesión, persistencia versionada v1) están documentadas en commit message `8080fd4` y CURRENT_STATE. No hay pattern replicable nuevo distinto a learnings ya documentados.
+
+Si después surgen issues de UX (founder reporta drag torpe, threshold mal calibrado, etc.) y se aplican iteraciones, ahí pueden surgir learnings genuinos.
+
+---
+
 ## 2026-05-31 — Agrupar ideas/opciones por OBJETIVO (acquisition / engagement / retention / differentiation) en vez de listar planas — ayuda al founder a evaluar trade-offs
 
 **Categoría**: Founder communication / Proposal structuring
