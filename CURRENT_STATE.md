@@ -38,7 +38,38 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Carga Rusty Feeled — 2 datos críticos cerrados, esperando JSON ML para precio/stock** (2026-05-31, en progreso). Founder confirmó datos faltantes parcialmente.
+🟡 **Carga Rusty Feeled — JSON ML procesado, discrepancia de medidas detectada, 3 confirmaciones pendientes** (2026-05-31, en progreso). Founder pasó endpoint admin ML con JSON crudo del item MLA1897099326.
+
+**Datos NUEVOS extraídos del JSON ML**:
+- **Precio**: $75.010,75 ARS = **7.501.075 centavos** ✓
+- **Stock real (available_quantity)**: **12 unidades** ✓
+- **Sales history**: 51 vendidos sobre 63 iniciales (bestseller).
+- **Variations**: NINGUNA (single variant, sin mercadolibre_variation_code).
+- **Polarizado**: NO (`WITH_POLARIZED_LENS: false`).
+- **UV**: Sí (founder confirmó UV400).
+- **LENS_TREATMENT ML**: "Clásica" (genérico) → confirma que NO tiene tinte específico para tenis.
+- **Lens color**: "Lentes Azules" (founder confirmó).
+- **Frame color**: "Negro Mate".
+- **Temple color**: "Negro Mate con Detalles en Verde".
+- **Family ID**: 4265700332752771. Official store ID: 260502.
+- **Warranty**: 1 año de fábrica.
+
+**⚠️ Discrepancia técnica DETECTADA**:
+| Fuente | LENS_WIDTH |
+|---|---|
+| Imagen schematic founder | 50 mm (típico wayfarer) |
+| ML attribute `LENS_WIDTH` | **63 mm** (6.3 cm — típico envolvente deportivo) |
+
+**Decisión técnica**: voy con **ML como source of truth** (`lens_width_mm: 63`, `bridge_mm: 18`). La imagen schematic era silueta wayfarer genérica, no representaba el Feeled real (refuerza learning commit `bdf73c5`). Otras medidas de la imagen schematic (frame_width 140, lens_height 45, temple 145) las descarto porque silueta distinta.
+
+**3 confirmaciones pendientes founder**:
+1. ¿Terminales antideslizantes (goma/silicona) en patillas? (Para feature destacado.)
+2. Confirmar `lens_width: 63mm` correcto (si midió físicamente y es distinto, corrige).
+3. ¿Importo las 5 fotos del ML como placeholder al bucket `products/rusty-feeled/`? Mejor que `is_active=false` indefinido.
+
+**Plan post-confirmaciones**: armar `supabase/seeds/23_rusty_feeled_mblk_tennis.sql` con: producto + variante single + medidas ML + descripción larga (sin claims no-confirmados como tinte tenis o antideslizante si founder dice no) + callouts específicos uso tenis + FAQs + fotos (importadas de ML o pendientes founder).
+
+🟡 **Carga Rusty Feeled — 2 datos críticos cerrados, esperando JSON ML para precio/stock** (2026-05-31, superado por entry arriba con JSON procesado). Founder confirmó datos faltantes parcialmente.
 
 **Datos confirmados en este turno**:
 - ❌ **NO tiene adaptador para lentes graduadas** (lente envolvente fija, no se cambian las lentes — distinto al Rusty Yau).
