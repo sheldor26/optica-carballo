@@ -67,8 +67,10 @@
 ### Pendientes founder (próximo paso EXACTO)
 1. **Subir 11 fotos** al bucket `products/rusty-xold/` con los nombres elegidos por asistente (`XOLD <variant>-perfil.jpg`, `-frente.jpg` + `medidas.jpg`). Si los archivos tienen otros nombres → UPDATE puntual via MCP.
 2. **Verificar visualmente post-deploy**: imágenes mismo tamaño en TODOS los catálogos (incluyendo `/anteojos-de-sol?forma=aviador` que era el bug del container). Badge POLARIZADO en 16+ variantes. Indicadores stock (rojo + ámbar).
-3. **Vulk Stray polarizadas**: confirmar si alguna variante es polarizada (pendiente desde sesión anterior).
-4. **C2 Vrast**: cuando decidan comprarlo + cargarlo en ML, hacer seed adicional con UPDATE puntual.
+3. **C2 Vrast**: cuando decidan comprarla + cargarla en ML, hacer seed adicional con UPDATE puntual.
+
+### Pendientes RESUELTOS (no acción requerida)
+- ~~Vulk Stray polarizadas~~: **NO APLICA** — el Stray es anteojo de RECETA (category=`anteojos-de-receta`), no de sol. Los lentes los pone el cliente al recetar. Flag polarized no aplica para receta. Verificado MCP 2026-05-31: category_slug=`anteojos-de-receta`, lens_treatment=[].
 
 ---
 
