@@ -38,7 +38,28 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Receta #5 cerrada — 4/13 con ground truth + 16 trampas oro acumuladas** (2026-05-30).
+🟡 **Pivot solicitado founder — pausada recolección few-shot, 4 opciones de mejoras visuales ofrecidas** (2026-05-30). Founder dijo "vamos con otra cosa... mejoremos otros aspectos de la página". Pausa la recolección de ground truth en 4/13 confirmadas (#1, #2, #3 pendiente confirm, #5) + 1 esperando re-crop (#4) + 16 trampas oro acumuladas. **Estado preservado**: cuando founder vuelva a tener tiempo + recetas re-recortadas, retomo desde donde dejamos.
+
+**4 opciones nuevas ofrecidas para mejorar UX visible**:
+
+- **Opción 1 (recomendada) — Bloques editoriales post-hero** (~3-4h): 3 bloques nuevos en estética dark consistente con el hero:
+  1. "Por qué Óptica Carballo" — 4 trust signals (30+ años, regente matriculada, envíos AR, atención personalizada)
+  2. "Cómo trabajamos" — 4 pasos (elegí → asesoramos → armamos → te llega)
+  3. "Marcas que tenemos" — grid de logos solo con stock real
+- **Opción 2 — PDP más editorial** (~4-5h): layout 2 cols, galería con zoom, specs colapsables, productos relacionados, trust signals contextuales
+- **Opción 3 — Catálogo grid premium** (~2-3h): cards más grandes, hover sutil (tilt + glow), skeleton shimmer, filtros visuales (forma cara, color, polarizado)
+- **Opción 4 — `/sobre-nosotros` editorial** (~3-4h): timeline 30+ años, sección regente María Carlota, sección founder Juan, valores, foto local
+
+**Mi recomendación**: Opción 1 primero (balance entre hero impactante y grilla catálogo + ROI/hora alto + estética coherente).
+
+**3 preguntas abiertas al founder** (si elige Opción 1):
+1. ¿Los 4 trust signals están OK o cambiar alguno?
+2. ¿Número exacto de años (30+? 32? 35?)?
+3. ¿Logos de marcas o fotos editoriales por marca?
+
+**Próximo paso**: founder elige opción 1/2/3/4 + (si Opción 1) responde las 3 preguntas.
+
+🟢 **Receta #5 cerrada — 4/13 con ground truth + 16 trampas oro acumuladas** (2026-05-30, recolección pausada por pivot founder arriba).
 
 **Receta #5 (`05-hipermetropia-anisometropia-monofocal-lejos.jpg`)** — confirmada founder:
 - OD: esf +2.50, cil -0.50, eje 3°, add null, confidence high
