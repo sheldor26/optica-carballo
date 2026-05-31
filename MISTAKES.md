@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: seed 26 Rusty Vrast escrito sin tropiezos reproducibles
+
+**Estado**: N/A
+**Categoría**: Product loading
+
+Carga ejecutada limpia: audit MCP confirmó slug libre + bucket vacío, fetch ML JSON exitoso (3 variations + price + family_id correctos), datos reales aplicados al seed sin TODOs. Descripción honesta sin afirmaciones por exclusión (mistake del Dearly evitado activamente). Nomenclatura de fotos respetada de lo que founder mostró ("VRAST C1 P-perfil.jpg" con espacios — no normalicé a kebab-case para evitar fricción de renombrado). Sin error documentable.
+
 ## 2026-05-31 — Revisado — sin novedad: reubicación share button sin error nuevo (UX iteration normal)
 
 **Estado**: N/A

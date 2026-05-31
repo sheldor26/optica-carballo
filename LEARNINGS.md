@@ -22,6 +22,46 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Autorización standing del founder para apply via MCP reduce a CERO la fricción del loop de carga de productos
+
+**Categoría**: Workflow / MCP / Founder trust
+**Confianza**: 🟢 Alta (validado este turno con Rusty Vrast — apply ejecutado en mismo turno que write seed, sin round-trip de aprobación)
+
+**Qué funcionó**: Founder dijo "A - siempre hacelo vos" sobre apply via MCP. Eso transformó el flow de carga de producto de:
+- ANTES: write seed → mostrar SQL → esperar OK founder → apply → verificar → docs (3+ round-trips)
+- AHORA: audit + fetch ML + write seed + apply via MCP + verificar + docs (1 turno end-to-end)
+
+Aplicado al seed 26 Vrast: apply + verify + CLOUD_APPLIED.md update todo en mismo turno.
+
+**Por qué funciona**:
+- Carga de producto es operación REPETITIVA con plantilla estable (seed pattern consolidado). El riesgo de error es bajo si el playbook se respeta.
+- Founder ya valida los DATOS (info del producto, fotos, decisiones de scope) ANTES de que yo escriba el seed. La aprobación del SQL en sí es burocracia redundante.
+- Verificación MCP post-apply es defensa estructural: si algo salió mal, lo detecto antes de cerrar turno (no después en producción).
+
+**Distinción importante** (para no romper la seguridad):
+- ✅ Autorización standing aplica a: seeds DML (INSERT/UPDATE productos, variantes, imágenes), seeds idempotentes con ON CONFLICT, fetch JSONs ML/análogos sin auth.
+- ❌ Autorización standing NO aplica a: migrations DDL (CREATE/ALTER/DROP TABLE), cambios de RLS policies, UPDATEs sin WHERE potencial, dropping de datos. Para esos SIGO pidiendo OK por turno y mostrando SQL antes.
+
+**Cómo replicar el pattern**:
+1. Cuando el founder dice "siempre hacelo vos" sobre una operación específica, registrar como autorización standing en CURRENT_STATE + CLAUDE.md si es persistent.
+2. Definir el SCOPE de la autorización con precisión (cuáles operaciones SÍ entran, cuáles NO).
+3. Mantener defensa estructural via verificación post-acción — si algo rompe, el founder se entera por mí (proactive) no por producción rota (reactive).
+
+**Generalización**: este pattern aplica a cualquier loop humano-IA donde el humano confía la EJECUCIÓN pero quiere mantener control sobre la DECISIÓN. La aprobación granular por step erosiona la confianza si el step es repetitivo y bien definido. Pasar a aprobación de scope ≫ aprobación por step.
+
+## 2026-05-31 — Revisado — sin novedad: seed 26 Rusty Vrast aplica el playbook ya consolidado + learning de ML fetch ya documentado
+
+**Categoría**: Product loading
+**Confianza**: 🟢 N/A (no aplica — la carga del seed 26 (Vrast) ejecuta exactamente el flow validado en seed 24 (Dearly): MCP slug check + ML JSON fetch + escribir seed con datos reales + presentar para autorización founder. El learning del ML fetch ya está documentado en LEARNINGS de hoy)
+
+**Aplicación exitosa del playbook**:
+- Audit previo: slug check via MCP + bucket check (ambos vacíos confirmados) + fetch ML JSON con 1 curl
+- 3 variantes con datos reales extraídos en cero round-trips con founder
+- Decisión de C2 (no cargar como variante sin SKU) — alineada con regla dura negocio #1 (no vendemos lo que no tenemos)
+- Descripción honesta sin inventar afirmaciones por exclusión (regla preventiva del Dearly mistake)
+
+Sin novedad replicable más allá del playbook ya consolidado.
+
 ## 2026-05-31 — Revisado — sin novedad: reubicación share button es ajuste UX iterativo sin pattern replicable nuevo
 
 **Categoría**: UX iteration

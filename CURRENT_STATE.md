@@ -2,6 +2,44 @@
 
 ## Status
 
+🟢 **Seed 26 Rusty Vrast APLICADO en Cloud vía MCP + autorización standing del founder establecida** (2026-05-31). Founder respondió "A - siempre hacelo vos" → autorización standing para apply via MCP en cargas de producto futuras. Aplicado y verificado en mismo turno.
+
+**Verificación MCP post-apply**:
+- `variants_active=3, total_stock=1` (solo C4 con stock)
+- `images_count=7` (6 fotos por variante + medidas)
+- `frame_shape='aviador', prescription_adapter=true` (primer aviador con adapter en catálogo)
+- Bucket: 7 archivos JPG presentes (15-56 KB cada uno)
+
+**Autorización standing del founder**: para cargas de producto via seed (INSERT/UPDATE puros, sin DDL), apply via MCP directo sin pedir OK por turno. Para SQL más sensible (migrations DDL, cambios RLS, UPDATEs sin WHERE, DROP) → SIGO pidiendo confirmación por turno. Esta distinción queda documentada para sesiones futuras.
+
+🟡 **Seed 26 Rusty Vrast escrito local — esperando autorización founder (SUPERADO en este turno)** (2026-05-31). Founder pasó datos del modelo + URL ML + screenshot de los SKUs. Yo fetcheé el JSON ML via MCP, verifiqué slug libre, escribí el seed completo con 3 variantes reales.
+
+**Datos extraídos del JSON ML** (MLA2415985768):
+| Variante | SKU | ML variation | Stock | Precio |
+|---|---|---|---|---|
+| C1 Plateado/Verde | 968450 | 191413023401 | 0 | $85.914,96 |
+| C3 Plateado/Gris Oscuro | 968452 | 191413023405 | 0 | $85.914,96 |
+| C4 Dorado/Marrón | 968453 | 191413023403 | **1** | $85.914,96 |
+
+Initial 42, available 1, sold 41. C4 es la única con stock real → primary del modelo.
+
+**Características clave** (todas verificadas via JSON ML + texto founder):
+- Aviador unisex, armazón metal completo (frame + patillas + bisagras)
+- Lente policarbonato POLARIZADO UV400 categoría 3
+- 20g de peso
+- Medidas 145/61×51/16/140mm
+- **Apto para lentes graduados** (prescription_adapter: true) — primer aviador del catálogo con esta capacidad
+
+**Decisión técnica importante**: C2 NO se carga como variante porque ML solo tiene 3 (C1, C3, C4). Founder tiene 2 fotos de C2 preparadas en bucket — quedan sin asociar a variante hasta que C2 vuelva con SKU/precio/stock.
+
+**Nomenclatura de fotos**: founder mostró nombres tipo `VRAST C1 P-perfil.jpg` (con espacios y mayúsculas). Respetado tal cual (no normalicé a kebab-case) para minimizar fricción si ya tenía los archivos preparados con esos nombres. Asumido: "P-perfil" = lateral 3/4 (primary), "P-frente" = vista frontal (secondary). Si interpreté al revés, ajustar antes de aplicar.
+
+**Pendiente antes de apply**:
+1. Founder sube 7 fotos al bucket `products/rusty-vrast/`
+2. Founder autoriza: apply via MCP (yo lo hago) vs apply manual en SQL Editor (founder lo hace)
+
+**Próximo paso founder**: 1) subir fotos, 2) decir "aplicalo via MCP" o "ya lo apliqué yo".
+
 🟢 **Share button reubicado al row top de PDP (junto a compare + wishlist)** (2026-05-31). Founder reportó: "no me gusta donde esta ubicado el boton, porque no lo agregas al lado del boton de comparador, o al lado de crear alerta para que quede mas compacto". Elegida opción A (junto a compare + wishlist) por convención e-commerce (Amazon, MercadoLibre tienen share ahí).
 
 **Cambios** (commit pending):
