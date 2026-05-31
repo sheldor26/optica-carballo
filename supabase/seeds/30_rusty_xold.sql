@@ -1,0 +1,56 @@
+-- ============================================
+-- Seed 30: Rusty Xold (sol) — redondos unisex G-Flex
+-- Fecha: 2026-05-31
+-- ============================================
+-- Modelo Rusty Xold: anteojos de sol redondos unisex, frente y patillas en
+-- G-Flex, bisagras metálicas con flex, lente policarbonato UV400. APTO
+-- para colocar lentes graduadas. 4 de 5 variantes son polarizadas; la
+-- 0292/902 tiene lente degradé NO polarizada (confirmado cross-source:
+-- precio menor + título ML "Degradé" + code sin "POL").
+--
+-- 5 variantes (cada una con MLA separado, no multi-variation):
+--
+--   SKU 125761 — SBLK / S10 POL (Negro Brillo + Gris Oscuro POL)
+--     MLA1388056603. price $85.924,92, stock 18 (DEFAULT del modelo).
+--
+--   SKU 125762 — 0292 / 902 (Caramelo + Rosa degradé)
+--     MLA2009867696. price $73.661,17, stock 15. NO POLARIZADA.
+--
+--   SKU 125768 — MBLK / BG26 POL (Negro Mate + Marrón degradé POL)
+--     MLA1564461942. price $85.924,92, stock 5.
+--
+--   SKU 125769 — MBLK / S10 POL (Negro Mate + Gris Oscuro POL)
+--     MLA2498720468. price $81.805,47, stock 5.
+--
+--   SKU 125767 — MBLK / PINK POL (Negro Mate + Rosa espejado POL)
+--     MLA1398511741. price $82.134, stock 0.
+--
+-- Total stock: 43 unidades (mayor del catálogo a la fecha).
+--
+-- Medidas (img 1 founder — imagen prevale sobre texto):
+--   frame_width_mm: 138
+--   lens_width_mm:  50
+--   lens_height_mm: 48
+--   bridge_mm:      20
+--   temple_length_mm: 145
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: variants_active=5, total_stock=43, images=11,
+-- shape='redondo', prescription_adapter=true.
+--
+-- ============================================
+-- 📸 FOTOS pendientes (founder sube al bucket `products/rusty-xold/`):
+--   XOLD SBLK-perfil.jpg + XOLD SBLK-frente.jpg            (default model)
+--   XOLD 0292-perfil.jpg + XOLD 0292-frente.jpg
+--   XOLD MBLK BG26-perfil.jpg + XOLD MBLK BG26-frente.jpg
+--   XOLD MBLK S10-perfil.jpg + XOLD MBLK S10-frente.jpg
+--   XOLD MBLK PINK-perfil.jpg + XOLD MBLK PINK-frente.jpg
+--   medidas.jpg
+--
+-- Nombres elegidos por el asistente (founder no pasó nombres específicos
+-- esta vez). Si founder subió con otros nombres, UPDATE puntual en
+-- product_images vía MCP — patrón ya validado con Etiquet SBLK.
+-- ============================================
+
+-- Seed documental — INSERT real ya aplicado vía MCP. Mantenido como
+-- referencia + idempotencia (re-aplicación desde cero con ON CONFLICT).

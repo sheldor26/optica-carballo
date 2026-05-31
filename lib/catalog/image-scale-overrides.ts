@@ -136,6 +136,20 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-tulle/TULLE C3 pol._frente.jpg': 1.0,
   'rusty-tulle/TULLE C4 pol._perfil.jpg': 1.15,
   'rusty-tulle/TULLE C4 pol._frente.jpg': 1.0,
+
+  // Rusty Xold — sub-regla 15 obligatoria post-carga: scale 1.15/1.0
+  // default emparejando con Dearly/Etiquet (redondos/cuadrados femeninos).
+  // 10 entries (2 por variante × 5 variantes).
+  'rusty-xold/XOLD SBLK-perfil.jpg': 1.15,
+  'rusty-xold/XOLD SBLK-frente.jpg': 1.0,
+  'rusty-xold/XOLD 0292-perfil.jpg': 1.15,
+  'rusty-xold/XOLD 0292-frente.jpg': 1.0,
+  'rusty-xold/XOLD MBLK BG26-perfil.jpg': 1.15,
+  'rusty-xold/XOLD MBLK BG26-frente.jpg': 1.0,
+  'rusty-xold/XOLD MBLK S10-perfil.jpg': 1.15,
+  'rusty-xold/XOLD MBLK S10-frente.jpg': 1.0,
+  'rusty-xold/XOLD MBLK PINK-perfil.jpg': 1.15,
+  'rusty-xold/XOLD MBLK PINK-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

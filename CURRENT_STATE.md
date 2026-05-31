@@ -1,5 +1,28 @@
 # Óptica Carballo — Current State
 
+🟢 **Rusty Xold cargado: 5 variantes G-Flex redondas unisex (mayor stock del catálogo)** (2026-05-31).
+
+**Cambios** (commit pending):
+- Cloud: producto + 5 variantes + 11 imágenes aplicado vía MCP (autorización standing). Verificación: variants=5, **stock=43** (mayor del catálogo), images=11, shape=redondo, prescription_adapter=true.
+- `supabase/seeds/30_rusty_xold.sql`: documentación seed.
+- `lib/catalog/image-scale-overrides.ts`: 10 entries scale 1.15/1.0 default.
+- `CLOUD_APPLIED.md`: entry agregada.
+
+**Datos clave**:
+| SKU | Variante | Precio | Stock | Polarizada |
+|---|---|---|---|---|
+| 125761 | SBLK/S10 POL (default) | $85.924,92 | **18** | ✅ |
+| 125762 | 0292/902 caramelo+rosa | $73.661,17 | 15 | ❌ (degradé) |
+| 125768 | MBLK/BG26 POL | $85.924,92 | 5 | ✅ |
+| 125769 | MBLK/S10 POL | $81.805,47 | 5 | ✅ |
+| 125767 | MBLK/PINK POL | $82.134 | 0 | ✅ |
+
+**Cross-source verification**: 0292/902 confirmada NO polarizada (precio menor $73.661 vs $85.924 polarizadas + título ML "Degradé" + code sin "POL"). Pattern aplicado del Etiquet.
+
+**Medidas**: 138/50×48/20/145mm (imagen del founder prevale sobre texto descriptivo que decía 132/50×47/22/145).
+
+**Pendiente founder**: subir 11 fotos al bucket `products/rusty-xold/`. Nombres elegidos por el asistente (founder no pasó nombres). Si tiene archivos preparados con otros nombres, UPDATE puntual vía MCP — patrón validado con Etiquet SBLK.
+
 ## 📋 Cierre consolidado de sesión 2026-05-31
 
 **Arco completo** (17 commits desde el inicio de la sesión post-compactor):
