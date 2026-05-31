@@ -38,7 +38,28 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Carga Rusty Feeled — JSON ML procesado, discrepancia de medidas detectada, 3 confirmaciones pendientes** (2026-05-31, en progreso). Founder pasó endpoint admin ML con JSON crudo del item MLA1897099326.
+🟢 **Seed 23 Rusty Feeled MBLK TENNIS creado — listo para aplicar tras subir fotos** (2026-05-31). Founder confirmó las 3 cosas pendientes:
+- `lens_width_mm: 50` (sitio oficial Rusty manda, descarté el 63 de ML).
+- Sube 3 fotos al bucket (`01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`).
+- Sin terminales antideslizantes confirmado (no menciono claim no-verificable en descripción).
+
+**Cambios este turno**:
+- `supabase/seeds/23_rusty_feeled_mblk_tennis.sql` creado (~220 líneas): producto + variante single 960161 + 3 imágenes + attributes JSONB completo + descripción long-form 800+ palabras + 3 callouts (info top "envolvente para tenis" / recommendation middle "air ventilation" / warning bottom "sin adaptador receta — alternativa: Yau") + meta SEO.
+- `PRODUCTS_INVENTORY.md` actualizado: Rusty 0→2 productos cargados, con detalle de Yau (live) + Feeled (seed listo, pendiente fotos founder).
+
+**Decisión técnica preservada**: lens_width 50mm (sitio oficial Rusty), NO 63mm (ML). Aplico learning bdf73c5 + cruzado founder/ML/oficial → fuente más confiable gana.
+
+**Deploy steps (founder)**:
+1. Subir 3 fotos a bucket Supabase `products/rusty-feeled/`:
+   - `01-lateral.jpg` (vista 3/4, foto principal)
+   - `02-frontal.jpg` (vista frontal, hover crossfade)
+   - `03-medidas.jpg` (esquema schematic con cotas — la imagen que pasó)
+2. Aplicar el seed 23 en Supabase Cloud (Dashboard → SQL Editor → pegar contenido del archivo).
+3. Verificar `/anteojos-de-sol/rusty/rusty-feeled` en producción.
+
+**Próximo paso post-deploy**: ver si Feeled aparece bien en catálogo + comparador + PDP. Si OK → cargamos próximo producto. Si gaps detectados → ajuste UPDATE.
+
+🟡 **Carga Rusty Feeled — JSON ML procesado, discrepancia de medidas detectada, 3 confirmaciones pendientes** (2026-05-31, superado por entry arriba). Founder pasó endpoint admin ML con JSON crudo del item MLA1897099326.
 
 **Datos NUEVOS extraídos del JSON ML**:
 - **Precio**: $75.010,75 ARS = **7.501.075 centavos** ✓
