@@ -38,7 +38,30 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción 2 implementada — PDP refinamientos editoriales quirúrgicos** (2026-05-30). Founder dijo "me gustó, sigamos" tras Opción 1.
+🟢 **Opción 3 implementada — Catalog grid premium (ProductCard + FrameShapeFilters)** (2026-05-30). Founder dijo "3" tras Opción 2.
+
+**Audit del catalog previo** (aplicando learning): 13 componentes en `components/catalog/` + `product-card.tsx` (294 líneas). NO había gaps funcionales (variant swap, hover image, wishlist, quick view, filtros por forma, JSON-LD ya funcionan). Solo estética inconsistente con hero/home/PDP.
+
+**2 archivos refinados** (commit `c368013`):
+1. **`components/product/product-card.tsx`**:
+   - Nombre: `uppercase tracking-[0.15em]` → `font-serif text-lg/xl` (consistencia).
+   - Hover: scale-[1.04] suave 700ms + shadow-lg en contenedor 500ms.
+   - Background imagen: `bg-background` → `bg-zinc-50` (sutil contraste).
+   - mt-4 → mt-5, gap-1 → gap-2 (más respiración).
+2. **`components/catalog/frame-shape-filters.tsx`**:
+   - Eyebrow con brand dot.
+   - Chips: text-xs → text-sm + padding generoso (px-4 py-1.5).
+   - Active state con shadow-sm + transitions 300ms.
+
+**Decisión técnica**: refinamientos quirúrgicos (~1h) NO rehacer. NO toqué aspect ratio (riesgo alto de romper fotos preparadas para 3/2) ni variant swap logic.
+
+**Build verificado**: `npx tsc --noEmit` OK.
+
+**Próximo paso**: founder pushea + revisa catálogo (ej `/anteojos-de-sol/rusty`). Si OK:
+- **Opción 4 restante** — `/sobre-nosotros` editorial (timeline + bio regente + bio founder + valores)
+- O retomar recolección few-shot (4/13 + 1 esperando re-crop + 16 trampas oro acumuladas)
+
+🟢 **Opción 2 implementada — PDP refinamientos editoriales quirúrgicos** (2026-05-30, superado por Opción 3 arriba). Founder dijo "me gustó, sigamos" tras Opción 1.
 
 **Audit del PDP previo** (aplicando learning "auditar antes de crear"): 480 líneas + 19 componentes ya integrados. NO había gaps funcionales → no rehice, refiné estética.
 
