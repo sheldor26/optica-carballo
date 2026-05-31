@@ -311,13 +311,17 @@ export async function ProductDetailPage({
         </ol>
       </nav>
 
-      <div className="grid gap-8 md:grid-cols-2 md:gap-x-12 md:items-start">
+      <div className="grid gap-10 md:grid-cols-2 md:gap-x-16 md:items-start lg:gap-x-20">
         <ProductGallery
           productName={product.name}
           images={buildGalleryImages(product)}
         />
 
-        <div className="flex flex-col gap-6">
+        {/* Columna info: sticky en desktop para que quede visible al
+            scrollear la galería. `top-24` deja espacio para el header
+            sticky (h-16 + margen). En mobile no sticky para no romper
+            scroll natural. */}
+        <div className="flex flex-col gap-8 md:sticky md:top-24">
           <div>
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
@@ -347,7 +351,7 @@ export async function ProductDetailPage({
                   </Link>
                   <NewArrivalBadge attributes={product.attributes} />
                 </div>
-                <h1 className="text-balance font-sans text-4xl font-semibold leading-[1.05] tracking-[-0.035em] md:text-5xl">
+                <h1 className="text-balance font-serif text-4xl font-medium leading-[1.0] tracking-[-0.02em] md:text-5xl lg:text-6xl">
                   {product.name}
                 </h1>
               </div>
@@ -370,7 +374,7 @@ export async function ProductDetailPage({
                 />
               </div>
             </div>
-            <p className="text-muted-foreground mt-2 text-base font-medium md:text-lg">
+            <p className="text-muted-foreground mt-3 text-sm font-medium uppercase tracking-[0.15em] md:text-base">
               {subtitle}
             </p>
             <div className="mt-3">
@@ -434,17 +438,32 @@ export async function ProductDetailPage({
       </div>
 
       {product.description && (
-        <RevealOnScroll as="section" className="mt-20 max-w-3xl">
-          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
-            Sobre el producto
-          </p>
-          <h2 className="text-foreground mt-2 text-balance font-serif text-3xl font-medium tracking-[-0.015em] md:text-4xl">
-            Por qué elegir el <span className="italic font-normal">{product.name}</span>
-          </h2>
-          <DescriptionWithCallouts
-            description={product.description}
-            attributes={product.attributes}
+        <RevealOnScroll
+          as="section"
+          className="relative -mx-4 mt-24 overflow-hidden bg-zinc-50 px-4 py-16 md:-mx-8 md:mt-32 md:px-12 md:py-24 lg:-mx-16 lg:px-20"
+        >
+          {/* Gradient muy sutil para que el bloque "Por qué elegir" se
+              sienta editorial sin ser plano. Misma estrategia que ValueProps. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50 via-white to-zinc-50"
           />
+          <div className="mx-auto max-w-3xl">
+            <p className="text-foreground/60 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em]">
+              <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
+              Sobre el producto
+            </p>
+            <h2 className="text-foreground mt-6 text-balance font-serif text-4xl font-medium leading-[1.05] tracking-[-0.02em] md:text-5xl lg:text-6xl">
+              Por qué elegir el{' '}
+              <span className="italic font-normal text-foreground/70">
+                {product.name}
+              </span>
+            </h2>
+            <DescriptionWithCallouts
+              description={product.description}
+              attributes={product.attributes}
+            />
+          </div>
         </RevealOnScroll>
       )}
 
