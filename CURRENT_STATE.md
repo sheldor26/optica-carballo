@@ -38,7 +38,37 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción K implementada — Asistente conversacional RAG sobre catálogo** (2026-05-30). Founder eligió K tras batch J/N/I/M/L.
+🟡 **Carga nuevo producto Rusty Feeled MBLK TENNIS — esperando 4 datos críticos del founder** (2026-05-31). Founder pasó link ML + specs base:
+
+**Datos recibidos**:
+- Nombre: Rusty Feeled, SKU 960161
+- Variante: MBLK TENNIS (Negro Mate con Detalles Verde en patillas)
+- Frente + patillas: G-flex
+- Lentes: Policarbonato con Air ventilation, 100% UVA+UVB
+- Medidas: 50-18-145 / Peso: 25gr
+- URL ML: `https://articulo.mercadolibre.com.ar/MLA-1897099326-...`
+
+**Datos inferibles desde lo recibido**:
+- frame_shape: envolvente (wraparound, deportivo tenis)
+- gender: unisex
+- lens_treatment: ["uv400"]
+- mercadolibre_item_id: `MLA1897099326` (extraído de URL — falta confirm founder)
+
+**4 datos críticos pendientes founder** (aplicando regla blocker del skill `/product` + regla 4 de CLAUDE.md):
+1. **Precio** (en pesos AR) — bloquea is_active.
+2. **Stock real físico** — bloquea is_active.
+3. **¿Tiene adaptador interno para lentes graduadas?** (como el Yau) — afecta descripción + atributo.
+4. **Confirmación mercadolibre_item_id** + si es multi-variation o single.
+
+**Datos opcionales pendientes**:
+- Fotos (mínimo 3 en bucket `products/rusty-feeled/`): `01-lateral.jpg`, `02-frontal.jpg`, `03-contexto.jpg`.
+- `lens_height_mm`: opcional para deportivos.
+
+**Audit aplicado** (regla 14): leí skill `/product`, `PRODUCT_SCHEMA.md` (regla blocker: no activar con 🔴 vacíos), pattern del seed 15 (Rusty Yau MBLUE) como referencia.
+
+**Próximo paso**: founder confirma 4 datos críticos → armo seed completo + descripción larga + callouts + activo `is_active=true`. O si tarda, armo seed con `is_active=false` y placeholders.
+
+🟢 **Opción K implementada — Asistente conversacional RAG sobre catálogo** (2026-05-30, superado por carga producto arriba). Founder eligió K tras batch J/N/I/M/L.
 
 **Audit reveló**: K era genuinamente from-scratch (no pgvector, no /api/chat, no UI). Estimación inicial 1-2 días real era correcta — el meta-pattern de sobre-estimación NO aplicó esta vez (no había componente existente para refinar).
 
