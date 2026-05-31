@@ -38,7 +38,28 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción G implementada — 404 editorial** (2026-05-30). Founder eligió G.
+🟡 **6 opciones nuevas (I/J/K/L/M/N) ofrecidas — decisión founder pendiente** (2026-05-30). Founder rechazó las 3 opciones que tenía pending (H cargar productos / próximo artículo / few-shot lector) y pidió recomendaciones nuevas.
+
+**Audit ejecutado** (aplicando regla 14 recién escalada):
+- Header (86 líneas) + DesktopNav (274) + Footer (148) — existen, posiblemente refinables.
+- FAQ page (71 líneas) — estructura editorial mínima (h1 4xl/5xl, sin brand-dot consistency).
+- 3 páginas legales existen con `InfoPageShell` (text-based).
+- ❌ **NO existe `app/opengraph-image.tsx`** — gap real (backlog item explícito del founder).
+- ❌ No existe asistente RAG conversacional sobre catálogo.
+
+**6 opciones ofrecidas**:
+- **I** — Refinamiento FAQ + páginas legales editorial (~1h): cierra refinamiento visual TOTAL del site.
+- **J (recomendada)** — OG image 1200x630 dinámica con Next.js `ImageResponse` (~30 min): backlog item, ROI altísimo, todo link compartido se ve premium.
+- **K** — Asistente RAG sobre catálogo (1-2 días): diferenciador competitivo real.
+- **L** — Tier 2 lector receta (verificación adversarial agent) (~2h): calidad +20% en casos difíciles.
+- **M** — Header/Footer refinamiento editorial (~1.5h): consistencia en navegación visible en cada página.
+- **N** — Schema markup LocalBusiness (~30 min): SEO local para óptica física Virasoro.
+
+**Secuencia sugerida**: J (30 min) → N (30 min) → I (1h) → K (1-2 días cuando haya tiempo grande).
+
+**Próximo paso**: founder elige I/J/K/L/M/N o algo distinto.
+
+🟢 **Opción G implementada — 404 editorial** (2026-05-30, superado por opciones nuevas arriba). Founder eligió G.
 
 **Audit confirmó 7ma recurrencia del meta-pattern**: pensé que estaba "plana", en realidad ya existía `app/not-found.tsx` global + 4 not-founds específicos por ruta. Solo necesitaba refinamiento visual.
 
