@@ -47,10 +47,14 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 - ✅ Diagrama de medidas confirmado completo (140×45 / 50-18-145).
 
 **Datos AÚN pendientes**:
-- Precio (ARS)
-- Stock real
-- Confirmación ML item id + variations
-- Fotos reales del producto (3 mínimo)
+- Precio (ARS) — viene del JSON ML.
+- Stock real — viene del JSON ML.
+- Confirmación ML item id + variations — viene del JSON ML.
+- Fotos reales del producto (3 mínimo) — bucket `products/rusty-feeled/`.
+- **3 verificaciones técnicas nuevas (pedidas este turno)**: founder pasó copy de otra marca (Styrpe) como inspiración. Para no violar regla dura "No prometemos lo que no podemos cumplir", pedí confirmar:
+  1. ¿Tiene terminales antideslizantes (goma/silicona) en patillas?
+  2. Color real del lente (ML dice "azules" pero variante es "MBLK TENNIS Negro+Verde patillas") — ¿es verde, azul, espejado, polarizado?
+  3. ¿Tinte específico para aumentar contraste de pelota amarilla en cancha de tenis? (Si sí, suma a `lens_treatment` + argumento de venta destacado.)
 
 **Próximo paso técnico**: founder debe visitar URL del endpoint admin de ML:
 `https://opticacarballo.com.ar/api/admin/ml-import-preview/MLA1897099326` (browser logueado, sin auth iter 1) → me copia el JSON crudo del item ML → de ahí extraigo precio, stock, variations, atributos oficiales ML, seller_custom_field por variation si aplica.
