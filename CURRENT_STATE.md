@@ -38,7 +38,30 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Rusty Feeled grid iter 4 — bg blanco también en VariantThumbnails** (2026-05-31). Founder reportó tras iter 3: los thumbs de variantes (abajo del card) seguían con bg gris sutil, no matcheaban con el card que ya era blanco.
+🟡 **5 opciones técnicas nuevas (P/Q/R/S/T) ofrecidas — decisión founder pendiente** (2026-05-31). Founder dijo "perfecto, qué más podemos mejorar" tras iter 4 grid Rusty.
+
+**Audit aplicado** (regla 14): leí BACKLOG.md, listé pendientes técnicos vs operativos, identifiqué 5 opciones implementables por mí + 9 operativos pendientes founder.
+
+**5 opciones técnicas ofrecidas**:
+- **P (recomendada)** — Pipeline normalización fotos (~2-3h): elimina sagas futuras de scale-overrides. Alto ROI estructural para Vulk/Reef/Mormaii/Paula Cahen.
+- **Q** — Header refinado editorial (~1h): cierra set visual completo del site.
+- **R** — Featured products section homepage (~1h): bloque para `is_featured=true` productos.
+- **S** — Página `/marcas/rusty` editorial (~1h): pattern replicable para otras marcas.
+- **T** — Próximo artículo Lote 1 "Anteojos para computadora" (~2-3h): workflow multi-agent ya validado.
+
+**Mi recomendación**: P primero (alto ROI estructural) → Q (cierra set visual).
+
+**9 operativos pendientes founder** documentados (Resend, MP, Cart, Auth, MiCorreo, env vars, CUIT, devoluciones).
+
+**🚨 Meta-issue de tensión regla-stop_hook** observado en últimos turnos:
+- **Regla 11 CLAUDE.md** (que YO escalé): "Si no hay novedad documentable en LEARNINGS/MISTAKES → ⚪ con justificación explícita". Esto PROHÍBE entries forzados.
+- **Stop hook actual**: insiste en actualización siempre, rechaza ⚪ aunque tenga justificación.
+
+Estos 2 sistemas están en tensión. Propongo al founder en próximo turno: relajar el stop hook (aceptar ⚪ con justificación como cumplimiento) O flexibilizar regla 11 (cambiar "⚪ permitido" por "siempre agregar entry breve").
+
+**Próximo paso**: founder elige P/Q/R/S/T o decide cómo resolver tensión regla-hook.
+
+🟢 **Rusty Feeled grid iter 4 — bg blanco también en VariantThumbnails** (2026-05-31, superado por opciones nuevas arriba). Founder reportó tras iter 3: los thumbs de variantes (abajo del card) seguían con bg gris sutil, no matcheaban con el card que ya era blanco.
 
 **Fix iter 4** (commit `96eea50`): `bg-muted/40` → `bg-background` en 2 lugares de `VariantThumbnails` (botones variante + cuadrito "+N" overflow mobile). Aplica el mismo principio que iter 3 — asset (thumb) con fondo blanco → container con fondo blanco para evitar borde visible.
 
