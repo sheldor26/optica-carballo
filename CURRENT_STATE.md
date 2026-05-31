@@ -38,7 +38,18 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Sección artículos/guías — FASE 2 completa: primer artículo publicado** (2026-05-30). Founder dijo "dale" tras FASE 1 infra.
+🟡 **4 opciones nuevas ofrecidas (E/F/G/H) — decisión founder pendiente** (2026-05-30). Founder dijo "c" tras FASE 2 (artículo publicado) → quiere "algo distinto" (ni próximo artículo ni few-shot). Ofrecí 4 opciones:
+
+- **E (recomendada)** — `/sobre-nosotros` editorial (~3-4h): timeline 30+ años + sección regente María Carlota + sección founder Juan + valores + foto local. Cierra set inicial de refinamientos visuales + refuerza E-E-A-T justo cuando se publicó el primer artículo.
+- **F** — Recomendador de monturas IA (1-2 días): Vision API selfie → forma de cara → matchea con catálogo. Diferenciador competitivo (ninguna óptica AR lo tiene).
+- **G** — Página 404 custom editorial (~1h): quick win, on-brand, redirige productivamente con buscador + links a categorías.
+- **H** — Cargar productos reales otras marcas (~2-4h por marca): catálogo sin Vulk/Reef/Mormaii/Paula Cahen está vacío visualmente. Requiere data del founder (fotos + specs).
+
+**Mi recomendación**: E. Razones: (a) cierra set inicial de mejoras visuales, (b) E-E-A-T se refuerza junto con el artículo recién publicado (Google ve autor + bio del autor en mismo periodo), (c) ROI alto/hora, (d) no requiere data nueva del founder.
+
+**Próximo paso**: founder elige E/F/G/H o decide algo distinto.
+
+🟢 **Sección artículos/guías — FASE 2 completa: primer artículo publicado** (2026-05-30, superado por opciones nuevas arriba). Founder dijo "dale" tras FASE 1 infra.
 
 **Flujo de validación multi-agent ejecutado**:
 1. **`content-writer-medical`** (subagent) → drafted artículo de ~4.000 palabras con frontmatter + estructura completa (intro + 11 secciones + FAQs + conclusión).
