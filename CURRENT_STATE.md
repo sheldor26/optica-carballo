@@ -2,6 +2,24 @@
 
 ## Status
 
+🟢 **Vulk Day Light marcado como polarizado (4 variantes) — badge ahora visible en PDP** (2026-05-31). Founder confirmó "el day light es polarizado".
+
+**Cambios** (commit pending):
+- Cloud: UPDATE polarized=true a las 4 variantes activas via MCP (autorización standing). Verificación MCP: 4 RETURNING rows con `polarized='true'`.
+- `supabase/seeds/27_vulk_day_light_polarized_flag.sql`: seed nuevo idempotente para tracking del UPDATE (operador `||` sobrescribe la key sin tocar otras).
+- `CLOUD_APPLIED.md`: entry registrada con verificación.
+
+**Variantes que ahora muestran badge POLARIZADO** (12 totales, antes 1):
+- Rusty Vrast C1/C3/C4 (3)
+- Rusty Dearly C4 SBLK (1)
+- Rusty Yau 3 variantes (POL en model_code)
+- Vulk Yamain SBLK 127104 (1)
+- **Vulk Day Light Carey/Rosa/MBLK/BROWN (4 — agregado este turno)**
+
+**Coverage final**: 12/22 variantes activas con badge POLARIZADO. Las restantes 10 son no-polarizadas (Feeled tenis, 5 Stray, etc.) o sin info confirmada.
+
+**Próximo paso**: commit + push. Verificar en producción que el badge aparece en PDP del Day Light tras deploy.
+
 🟢 **VariantList PDP: model_code visible + badge Polarizado funcionando cross-catálogo** (2026-05-31). Founder reportó: "Agregar la variante al lado C... y poner los que son polarizados... en todos los productos que son polarizados agregar algo distintivo".
 
 **Audit reveló 2 bugs**:

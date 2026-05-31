@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: UPDATE polarized=true Vulk Day Light aplica autorización standing MCP + pattern ya documentado
+
+**Categoría**: Data patch
+**Confianza**: 🟢 N/A (no aplica — UPDATE puntual idempotente via `||` operator, autorización standing del founder, sin pattern nuevo)
+
+Cambio aprovecha el playbook ya consolidado: founder confirma dato → UPDATE via MCP con autorización standing → verificación SELECT → seed idempotente para tracking → CLOUD_APPLIED.md updated. Sin novedad replicable.
+
 ## 2026-05-31 — MCP query de coverage real ANTES de escribir lógica que depende de campos JSONB salva de silent failures
 
 **Categoría**: MCP / Pre-implementation audit / Code-data drift prevention
