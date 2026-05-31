@@ -72,6 +72,56 @@ Cualquier chat conversacional / AI assistant que represente al negocio frente al
 
 ---
 
+## 2026-05-31 — Al aplicar fix de "info verdadera del negocio" en system prompt, hardcodeé nombre completo de la regente sin considerar privacy → founder reportó iter 4 con segundo fix
+
+**Estado**: 🟡 Mitigado — commit `b063842` reemplaza nombre por formulación neutra "nuestra óptica regente matriculada" + regla explícita de NO dar nombre propio.
+**Categoría**: Privacy / System prompt / Fix-with-side-effect
+
+### Qué pasó
+
+En commit `3ec9a69` (turno previo) apliqué fix del bug "garantía inventada" agregando sección "INFO VERDADERA SOBRE EL NEGOCIO" al system prompt del chat. Para dar credibilidad a la respuesta sobre garantía, incluí **nombre completo de la regente** ("María Carlota Carballo"):
+
+```
+- La regente matriculada (María Carlota Carballo) revisa cada receta...
+- Mencioná la regente matriculada (María Carlota Carballo) o los 30+ años...
+```
+
+Founder vio el chat respondiendo con el nombre completo en producción y reportó: "no me gusta que de nombre y apellido de nuestra optica regente, me gusta mas nuestro optico regente (preservando identidad)".
+
+Tuve que hacer iter 2 (commit `b063842`) reemplazando las 3 menciones por "nuestra óptica regente matriculada" + agregar instrucción explícita "NUNCA des nombre propio ni apellido".
+
+### Causa raíz
+
+Cuando incorporé info verdadera del negocio al system prompt, **NO pensé en privacy downstream**. Asumí que mencionar el nombre profesional matriculado era trust signal positivo (similar a artículos firmados con autor). Pero en un CHAT conversacional, el cliente recibe la respuesta directa y puede ver el nombre repetido en múltiples consultas — eso es exposure de identidad mayor a la que el founder quiere para la regente.
+
+**Distinción que perdí**: en artículos publicados (`/guias/[slug]`) la firma es OK (E-E-A-T para SEO YMYL). En un chat conversacional reactive, la exposure es distinta — privacy default debería ser "no usar nombre propio salvo founder lo apruebe explícitamente".
+
+### Costo
+
+- 1 round extra de feedback founder + fix iter 2.
+- Tiempo: 5 min.
+- Si NO lo hubiera atrapado: chat habría seguido exponiendo nombre de la regente en cada respuesta → exposure mayor a la que founder/regente acordaron.
+
+### Regla preventiva
+
+**Cuando incluyas info personal en un system prompt (nombre propio, matrícula, email, teléfono, dirección)**:
+
+1. **Default: NO incluir nombres propios** salvo founder pida explícito.
+2. **Si necesitás credibilidad profesional** en chat: usar formulación neutra ("nuestra regente matriculada", "técnico óptico matriculado", "30+ años de experiencia").
+3. **Nombres propios SÍ van** en: artículos firmados, página `/sobre-nosotros`, JSON-LD schema (E-E-A-T para SEO). NO en chat reactive.
+4. **Cuando founder reporte "no me gusta que X en la respuesta"**, primer reflejo: ¿es info personal que estoy exponiendo sin necesidad?
+
+### Trigger
+
+Cualquier fix de system prompt que agregue "info verdadera del negocio" → audit explícito de privacy para nombres/matrículas/data personal.
+
+### Cross-link
+
+- Refuerza mistake [[system-prompt-sin-politicas-modelo-invento-garantia]] (commit `1473eaf`): aquel fue "qué decir", este es "qué NO decir". El fix completo del system prompt es ambos.
+- Aplicación de [[claude-md-founder-no-tecnico-privacy]]: la regente NO es founder del proyecto digital — es parte del negocio físico. Exposure de su identidad afecta vida real de María Carlota, no a Juan/digital. Privacy default = max conservation.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: persistencia matches en mi-cuenta — al primer build, sin errores
 
 **Estado**: ⚪ N/A

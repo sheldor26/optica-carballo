@@ -22,6 +22,58 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Distinción privacy en system prompts: nombres propios SÍ en artículos/JSON-LD (E-E-A-T), NO en chat conversacional reactive
+
+**Categoría**: Privacy / AI prompt design / Where to expose identity
+**Confianza**: 🟢 Alta (validado tras feedback founder sobre nombre regente en chat — counter-pattern del mistake del mismo turno)
+
+### Qué funcionó
+
+Founder pidió quitar nombre propio de la regente del chat. La solución fue diferenciar **contextos donde la identidad debe exponerse vs donde NO**:
+
+| Contexto | Exposure nombre propio | Razón |
+|---|---|---|
+| **Artículo /guias firmado** | ✅ SÍ | E-E-A-T (Google) — autor con matrícula refuerza autoridad médica YMYL |
+| **`/sobre-nosotros` bios** | ✅ SÍ | Building trust con cliente — la página entera es "quiénes somos" |
+| **JSON-LD schema (Person/Author)** | ✅ SÍ | Google reads structured data para autorship |
+| **`<ArticleFooter>` bio | ✅ SÍ | Conexión obvia con autor del artículo arriba |
+| **Chat conversacional reactive** | ❌ NO | Cliente puede preguntar 10 veces y el nombre se repite — exposure desproporcionada al beneficio |
+| **System prompt de chat** | ❌ NO | El modelo puede usar el nombre en cualquier contexto, no controlable |
+
+### Por qué funciona
+
+Cada superficie del sitio tiene un **trade-off distinto entre trust signal y privacy**:
+- Artículo: 1 firma visible, el lector espera ver autor — trust >> privacy concern.
+- Chat: la respuesta es 1:1, dinámica, repetible — privacy concern >> trust.
+
+Founder es no-técnico y delega decisiones de UX al developer. **Mi rol**: aplicar privacy default conservador. Si necesito credibilidad profesional en una respuesta, usar formulación neutra ("nuestra óptica regente matriculada") en vez de nombre propio.
+
+### Cómo replicar
+
+Para cualquier feature nuevo que use identidad de personas del negocio:
+
+1. **Default**: NO exponer nombre propio salvo confirme founder.
+2. **Si la feature es estática/permanente** (artículo, página, schema): nombres OK porque founder/regente puede revisar UNA VEZ antes de publicar.
+3. **Si la feature es dinámica/reactive** (chat, recomendador, generador de copy): formulación neutra. Si emerge necesidad real de nombre, agregar opt-in explícito (ej variable env `EXPOSE_REGENTE_NAME_IN_CHAT=true`).
+4. **Distinguir "founder digital" vs "personas del negocio físico"**: Juan (founder) eligió exponer su identidad. María Carlota (regente, parte del negocio físico) NO necesariamente. Privacy defaults distintos.
+
+### Trigger
+
+Cualquier feature dinámica/reactive (chat, AI assistant, generador conversacional, copy IA) que vaya a referenciar personas del negocio → audit privacy ANTES de incluir nombres.
+
+### Aplicaciones futuras
+
+- Si implementamos Opción U (probador virtual try-on): si el chat asociado menciona personas → formulación neutra.
+- Si implementamos Opción Z (tracker pedidos): emails que mencionan armado/control podrían decir "controlado por nuestra regente matriculada", no nombre.
+- Generador de descripciones de productos con IA (futuro): NO firmar como persona, solo como "Óptica Carballo".
+
+### Cross-link
+
+- Counter-pattern positivo del mistake [[hardcode-nombre-regente-en-system-prompt]] (mismo turno).
+- Refuerza CLAUDE.md "Quién soy yo": founder Juan delega decisiones de UX y privacy — defaults conservadores.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: persistencia matches en mi-cuenta (sync localStorage → DB al loguearse)
 
 **Categoría**: Implementation / Auth-aware feature

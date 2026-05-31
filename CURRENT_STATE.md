@@ -38,7 +38,30 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Mis Matches en /mi-cuenta — persistencia DB con sync automático** (2026-05-31). Founder pidió "en mi cuenta debería aparecer un apartado Mis Matches".
+🟡 **Privacy fix chat + 88 commits acumulados sin push** (2026-05-31). Founder reportó tras retest: chat mencionaba nombre completo de la regente ("María Carlota Carballo") + X superior derecha del chat sigue sin funcionar.
+
+**Fix #1 — Privacy** (commit `b063842`): `lib/chat/system-prompt.ts`. 3 menciones de "María Carlota Carballo" → "nuestra óptica regente matriculada". Instrucción explícita "NUNCA des nombre propio ni apellido de la regente — preservamos su privacidad".
+
+**Bug X sigue reportado por founder, pero diagnóstico**: el fix YA ESTÁ EN EL CÓDIGO desde commit `3ec9a69` (panel z-50 + FAB conditional solo cuando !isOpen). Verificado con grep:
+- Panel: z-50 ✓
+- FAB: z-40 + condicional `!isOpen` ✓
+- Botón X header: `onClick={() => setIsOpen(false)}` + `aria-label="Cerrar"` ✓
+
+→ **Founder no ha pusheado los 88 commits acumulados**. Lo que ve en producción es versión VIEJA donde el X no funcionaba. Una vez pushee → fix activo.
+
+**🚨 Acción CRÍTICA founder**: `git push origin main`. Eso aplica de una vez:
+- 2 bugs chat (X + garantía)
+- Mis Matches en cuenta
+- Tinder de monturas
+- Pipeline normalización fotos
+- 4 iters Rusty Feeled grid fixes
+- Aclaración niveles probador virtual
+- Privacy fix de este turno
+- + 80 otros commits
+
+**Decisión sistémica pending**: con 88 commits acumulados sin deploy, hay riesgo de regresión + dificultad de rollback granular si algo rompe. Sugerencia (próximo turno si querés): pushear todo + verificar producción + cuando founder vuelva, integrar habitos de push más frecuente.
+
+🟢 **Mis Matches en /mi-cuenta — persistencia DB con sync automático** (2026-05-31, superado por privacy fix arriba). Founder pidió "en mi cuenta debería aparecer un apartado Mis Matches".
 
 **Cambios** (commit `b03143f`):
 - Migración nueva `20260531000000_swipe_matches.sql`: tabla con RLS por user_id, 3 policies (SELECT/INSERT/DELETE), PRIMARY KEY (user_id, product_slug) idempotente.
