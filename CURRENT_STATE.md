@@ -62,7 +62,7 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Build verificado**: `npx tsc --noEmit` OK + `next build` OK. /recomendador-de-monturas 7.14kB.
 
-**Próximo paso**: founder pushea + prueba con su selfie. Si UX y accuracy OK, decide próxima opción:
+**Próximo paso**: founder pushea + prueba con su selfie. **ANTHROPIC_API_KEY ya está configurado en Vercel** (founder confirmó 2026-05-30), entonces el feature funciona end-to-end apenas se haga el push. Si UX y accuracy OK, decide próxima opción:
 - Resto del backlog (G página 404, H cargar productos otras marcas, próximo artículo)
 - Retomar few-shot lector (4/13 + 16 trampas oro)
 - Algo distinto
