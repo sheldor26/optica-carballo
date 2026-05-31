@@ -1,5 +1,42 @@
 # Óptica Carballo — Current State
 
+## 📋 Cierre FINAL extendido sesión 2026-05-31 (post-Booping + scale iter)
+
+**3 cambios adicionales después de la consolidación previa `6c3fd07`**:
+
+1. **`21d7d1e`** Fix paths Xold Receta: UPDATE 8 rows con nombres reales del founder (XOLD_BROWN-PERFIL.jpg, XOLD_MBLK_OPTICAL_perfil.jpg, etc. con naming inconsistente entre variantes — respetado).
+2. **`33263b6`** Vulk Booping cargado: 4 variantes polarizadas, stock 33, precio único $84.211, 18,9g (entre los más livianos del catálogo). MLA1440036743 multi-variation. Decisión: ML decía "Ovalado" pero founder dijo "redondo" — confiado en founder (Técnico Óptico).
+3. **`6d5c391`** Scale Booping iter 2: 1.15/1.0 → 1.3/1.15 (founder pidió "+10-15%", aplicado al máximo del rango 13%/15%).
+
+**Catálogo final extendido**: **12 productos activos** (8 sol + 2 receta + 2 unisex compartidos). 27 variantes activas. 16 con badge POLARIZADO.
+
+### Decisiones técnicas clave del día (consolidadas)
+| # | Decisión | Por qué |
+|---|---|---|
+| 1 | MCP autorización standing para DML idempotente | Reduce round-trips, mantiene control sobre DDL/RLS |
+| 2 | Pipeline central enforced por TypeScript | Previene drift entre catálogos paralelos |
+| 3 | Cross-source verification antes de hardcodear atributos | Evita mistake del Dearly bisagras |
+| 4 | Sub-regla 15: scale override post-carga obligatorio | Cards nuevos no salen desproporcionados |
+| 5 | Container CSS 1280→1536px (eliminar override Tailwind) | Catálogos no-brand quedaban 256px más chicos |
+| 6 | Founder es source de verdad técnica > ML tags | Booping: "redondo" vs "Ovalado" de ML |
+| 7 | Feedback memory persistente (~/.claude/.../memory/) | Reglas de comportamiento cruzan sesiones |
+| 8 | NO mencionar Bluecut en Xold Receta | Founder explícito: cristales se venden por separado |
+
+### Problemas encontrados y resueltos
+- Stray asumido como sol cuando es receta (mistake fantasma 2+ turnos)
+- Bug container CSS (Tailwind override silencioso 256px)
+- Badge POLARIZADO escrito pero nunca renderizaba (code-data drift)
+- Variant thumbnails faltaban en 4 catálogos no-brand
+- Layout VariantList recargado con codes largos (Yau)
+- Vrast scale 1.4 recortó (iter 2: 1.15/1.0)
+
+### Próximo paso EXACTO (sesión cerrada)
+Pendiente único founder: subir 9 fotos al bucket `products/vulk-booping/` con los nombres exactos (naming inconsistente respetado: espacio extra "POL- frente" en 3 + sin dash "POL frente" en BROWN). Cuando suba → grid muestra fotos correctamente con scale 1.3/1.15.
+
+Branch `main` sincronizado con origin. TypeScript ✅. MCP ✅. 35+ commits del día en producción.
+
+---
+
 🟢 **Vulk Booping cargado: 4 variantes redondas polarizadas, 18,9g, stock 33** (2026-05-31). Primer Vulk de sol nuevo desde Day Light/Yamain.
 
 **Cambios** (commit pending):

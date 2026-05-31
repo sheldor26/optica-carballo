@@ -22,6 +22,53 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — INVALIDADO 5 minutos después: aplicar medio-alto del rango del founder FALLÓ — quedó cortado. Corrección: empezar por mínimo del rango si no tengo info del aspect de la foto.
+
+**Categoría**: Iteration efficiency / Founder feedback interpretation
+**Confianza**: 🔴 INVALIDADO (Booping iter 2 con 1.3/1.15 recortó la foto — founder reportó "te pasaste, quedó cortada"). Iter 3 corrigió a 1.2/1.05 (+4.5%/+5% sobre iter 1, dentro del rango pero conservador).
+
+**Pattern CORRECTO** (basado en evidencia del mismo día):
+1. **Founder da rango "+X% a +Y%"** y NO tengo info del aspect/posición del producto en la foto → aplicar **mínimo conservador (X)** o ligeramente arriba.
+2. **Si queda poco** post-deploy → subir al medio o máximo del rango (1 iter más).
+3. **NUNCA aplicar máximo del rango sin evidencia visual previa** de que la foto soporta scale agresivo.
+
+**Por qué falló el pattern original**:
+- Asumí que el rango del founder reflejaba su intuición visual final → falso. El rango refleja MARGEN de iteración, no target exacto.
+- No verifiqué el aspect de la foto Booping antes del scale. El Booping tenía el anteojo cerca del borde en 1.15. +13% lo rebasó.
+- El cap 1.3 (sub-regla 15) NO garantiza que la foto soporte 1.3 — solo es upper bound para evitar absurdos. Por debajo del cap también puede recortar.
+
+**Counter-pattern documentado** (válido):
+- Para scale: empezar conservador (mínimo del rango), iterar hacia arriba si queda chico. Nunca empezar agresivo.
+- Cap visual ≠ target visual. El cap es para evitar absurdo, no para usar como default.
+
+**Counter-counter** (cuándo SÍ aplicar máximo del rango):
+- Tengo evidencia previa de que esa foto soporta scale agresivo (ej. Yau 1.8 lateral porque anteojo ocupa <55% del frame natural)
+- Founder explícito da el valor exacto ("subi a 1.3 directo") en lugar de rango
+- Reverted previamente que el conservador queda chico (founder reportó "chico" tras iter conservador)
+
+## 2026-05-31 — Cuando founder da un rango específico ("+10-15%"), aplicar al medio-alto del rango en 1 iter en lugar de sub-iterar conservador (INVALIDADO — ver entry arriba)
+
+**Categoría**: Iteration efficiency / Founder feedback interpretation
+**Confianza**: 🔴 INVALIDADO (mismo día, 5 min después)
+
+**Qué funcionó**: Founder dijo "agrandar 10-15%, no mucho pero un poco más". En lugar de aplicar el mínimo conservador (+10% = 1.265 lateral) que probablemente quedaría chico y necesitaría iter 3, apliqué directamente el medio-alto del rango (+13% lateral / +15% frontal). 1 commit, 1 iteración. Si queda muy grande o recorta → bajamos a 1.25/1.1. Si queda perfecto → cerrado.
+
+**Por qué funciona**:
+- **Founder ya dio el rango, no necesito reducirlo**. Subir +10% conservador asume que el founder no sabe lo que pidió. Su rango refleja su intuición visual — el medio del rango suele ser el target real.
+- **Iter empírica está balanceada por cap superior**: sub-regla 15 dice cap 1.3 sin evidencia visual de recorte. 1.3 está EN el cap → puedo aplicar sin violar regla.
+- **1 commit > 2 commits**: ahorra deploy + cache invalidation + atención founder.
+- **Counter-pattern al mistake del Vrast iter 1**: ahí salté a 1.4 (fuera del rango sugerido del founder). Acá quedo dentro del rango.
+
+**Cómo replicar**:
+1. **Founder da rango ("entre X% y Y%")** → aplicar Y o (X+Y)/2. NO aplicar X.
+2. **Founder dice "un poco más/menos"** sin rango → +/- 15% por defecto.
+3. **Founder dice "el doble" o "mucho"** → +50% mínimo, +100% si lo sugiere.
+4. **Cap superior siempre 1.3 para scale** (sub-regla 15) salvo evidencia visual de que la foto necesita más (Yau con anteojo MUY chico en foto = caso justificado).
+
+**Generalización**: aplica a cualquier ajuste numérico donde el founder da rango (precio, peso, tamaño, scale, opacity, padding). El rango es información — tomar el extremo seguro pero no el conservador (a menos que haya riesgo de recorte/overflow).
+
+**Anti-pattern evitado**: sub-iterar conservador 2-3 veces cuando founder ya dio rango específico. Eso erosiona productividad y consume cycles del founder en feedback "todavía falta un poquito".
+
 ## 2026-05-31 — Revisado — sin novedad: Vulk Booping + fix paths Xold Receta ejecutan playbook ya consolidado
 
 **Categoría**: Product loading
