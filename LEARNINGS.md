@@ -22,6 +22,62 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Cuando propongo feature de IA al founder, listar NIVELES técnicos (gratis browser-native / API existente / API paga) explícitos para evitar asunción "muy complicado / muy caro"
+
+**Categoría**: Founder communication / AI feature proposal / Avoid scope confusion
+**Confianza**: 🟢 Alta (validado tras feedback "necesito API de pago" sobre Opción U probador virtual)
+
+### Qué funcionó
+
+Propuse el probador virtual con IA (Opción U) sin desglosar los niveles técnicos. Founder asumió razonablemente que **TODA implementación de "try-on virtual con IA" requiere API paga** (Banuba / FittingBox / etc) y dijo "es algo complicada, necesito API de pago".
+
+En realidad había 3 niveles posibles:
+- **Nivel 1 gratis**: MediaPipe Face Mesh (browser JS, MIT license, $0).
+- **Nivel 2 con stack actual**: Claude Vision API + sharp (~$0.001/uso, ya configurada).
+- **Nivel 3 premium**: API paga ($200-2000/mes).
+
+Aclaré los 3 niveles en respuesta → founder ahora puede decidir con info completa.
+
+### Por qué funciona
+
+Founder no-técnico (CLAUDE.md "Quién soy yo") evalúa propuestas con heurística de **costo percibido**:
+- "AI + cualquier feature interactivo" → asume "complicado + caro".
+- "Try-on / probador virtual" → asume "necesita SDK pago tipo Banuba".
+
+Si no le doy desglose de niveles, descarta el feature por la asunción más cara. Pierde oportunidad de evaluar el camino gratis/barato.
+
+Solución: **en CADA propuesta de feature con IA**, presentar tabla de 2-3 niveles técnicos con (a) stack, (b) costo operativo, (c) tiempo de implementación, (d) trade-offs. Founder ve menú completo y decide informado.
+
+### Cómo replicar
+
+Para próximas propuestas de features que SUENAN caros pero pueden tener alternativas gratis:
+
+1. **Listar niveles técnicos** antes de la decisión:
+   - Browser-native / open-source (MediaPipe, TensorFlow.js, transformers.js).
+   - APIs que YA tenés en stack (Anthropic, OpenAI, Supabase).
+   - APIs especializadas pagas.
+2. **Tabla comparativa** con costo + tiempo + trade-offs.
+3. **Mi recomendación clara** apuntando al nivel óptimo según contexto del proyecto.
+4. **Aclaración explícita** si stack actual cubre la necesidad: "no requiere libs nuevas, usamos lo que ya tenemos".
+
+### Aplicaciones futuras
+
+- **OCR de facturas** (futuro): nivel 1 Tesseract.js gratis vs nivel 2 Claude Vision vs nivel 3 Textract paga.
+- **Búsqueda semántica avanzada**: ya hecha con pgvector + OpenAI embeddings (nivel 2 elegido).
+- **Voz a texto** (eventual asistente conversacional con voz): Web Speech API gratis vs Whisper API.
+- **Generación de imágenes producto**: Stable Diffusion local vs DALL-E API.
+
+### Trigger
+
+Cualquier propuesta de feature que el founder no-técnico podría asumir como "necesita SDK costoso" antes de evaluar alternativas.
+
+### Cross-link
+
+- Aplicación de [[claude-vision-como-cv-robusto-en-pipelines-ts]] (commit `67901a3`): el principio era "Vision API en vez de OpenCV/PIL". Este learning extiende a "nivel óptimo según stack actual".
+- Refuerza CLAUDE.md regla 6 (no introducir libs nuevas sin preguntar): cuando hay alternativa browser-native, preferirla sobre lib nueva.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: turno de ideación growth/viralidad (opciones U/V/W/X)
 
 **Categoría**: Discovery / Ideation

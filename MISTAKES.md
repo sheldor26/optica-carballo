@@ -24,6 +24,56 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Propuse Opción U (probador virtual IA) sin desglosar niveles técnicos → founder asumió "necesita API de pago" + casi descarta el feature
+
+**Estado**: 🟡 Mitigado — aclaración técnica entregada + learning escalado.
+**Categoría**: Founder communication / Feature proposal scope / Cost assumption
+
+### Qué pasó
+
+Propuse Opción U (probador virtual con IA / try-on) como feature con highest wow factor. Estimé 3-4 días reales pero NO desglosé niveles técnicos en la propuesta inicial.
+
+Founder respondió: "Esta buena la opción U pero es algo complicada, necesito API de pago...". Es decir, casi descarta el feature por asunción de costo + complejidad.
+
+Realidad: hay 3 niveles posibles, incluido Nivel 1 con MediaPipe (browser-native, MIT license, **$0 costo**) que es lo que usa Warby Parker / Lenskart. Si hubiera explicado los niveles desde el primer turno, founder evalúa el path gratis y no asume "muy caro".
+
+### Causa raíz
+
+Asumí que el founder sabía que existen alternativas gratis para try-on virtual. Pero founder no-técnico **evalúa cualquier feature "AI + interactivo" por heurística de costo percibido alto**. Sin desglose explícito de niveles técnicos:
+- "AI + Vision" → asume "API paga".
+- "Try-on virtual" → asume "SDK tipo Banuba caro".
+
+Mi error: no entender que la **carga de prueba** está del lado del developer (yo) para mostrar el path gratis, NO del founder para preguntar "¿hay alternativa más barata?".
+
+### Costo
+
+- 1 round extra de back-and-forth (founder feedback + aclaración).
+- Tiempo: 10 min.
+- Casi pierdo oportunidad de implementar U si founder hubiera descartado por "es caro" sin pedir aclaración.
+
+### Regla preventiva
+
+**En CADA propuesta de feature con IA / integración externa, listar 2-3 niveles técnicos explícitos**:
+
+| Nivel | Stack | Costo operativo | Tiempo |
+|---|---|---|---|
+| 1 | Browser-native / open-source (MediaPipe, transformers.js, etc.) | $0 | rangos |
+| 2 | APIs que YA tenemos en stack (Anthropic, OpenAI, Supabase) | $X/uso | rangos |
+| 3 | APIs especializadas pagas | $X/mes | rangos |
+
+Tabla → recomendación clara → founder decide informado.
+
+### Trigger
+
+Cualquier propuesta de feature con IA o que SUENE costoso al founder no-técnico (try-on, AR, voz a texto, OCR avanzado, generación de imágenes, video processing, etc.).
+
+### Cross-link
+
+- Documentado en LEARNINGS como [[niveles-tecnicos-explicitos-en-propuestas-IA]].
+- Refuerza CLAUDE.md regla 6: cuando hay alternativa gratis, mostrarla primero.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: turno de ideación growth/viralidad (opciones U/V/W/X)
 
 **Estado**: ⚪ N/A

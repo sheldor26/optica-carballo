@@ -38,7 +38,27 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **4 ideas "wow factor" / viralidad ofrecidas (U/V/W/X) — decisión founder pendiente** (2026-05-31). Founder preguntó "qué podemos hacer de copado en mi sitio? que genere la atención y atraiga personas?". Ideación de growth/marketing features:
+🟡 **Probador virtual (U) — aclaración 3 niveles técnicos tras feedback founder** (2026-05-31). Founder respondió a la propuesta U: "está buena pero es algo complicada, necesito API de pago".
+
+**Aclaración técnica entregada** (corrección de asunción del founder):
+
+| Nivel | Stack | Costo operativo | Tiempo implementación |
+|---|---|---|---|
+| 1 (recomendado) | MediaPipe Face Mesh (JS browser, MIT license) + canvas + PNGs anteojos | $0 | ~2-3 días reales |
+| 2 | Claude Vision API (ya configurada) + sharp + composición backend | ~$0.001/uso | ~2-3 días reales |
+| 3 | API especializada paga (Banuba / FittingBox / EYESLABS) | $200-2000/mes | ~1 día |
+
+**Decisión técnica clave**: MediaPipe (Nivel 1) es lo que usan Warby Parker / Lenskart / EssilorLuxottica para sus try-on web. **0 costo operativo**, corre todo en el browser del cliente. NO requiere API de pago como pensaba founder.
+
+**Prerequisito**: PNGs transparentes de los anteojos (foto sin fondo). Hoy las fotos del catálogo tienen fondo blanco. Se extraen one-time con Vision API + sharp (costo despreciable, ~$0.001 por producto).
+
+**Próximo paso**: founder elige:
+- **U Nivel 1** (probador virtual gratis ~2-3 días)
+- **V** (Quiz interactivo ~6-8h, implementable HOY)
+- **W** / **X** / otra
+- O combo
+
+🟡 **4 ideas "wow factor" / viralidad ofrecidas (U/V/W/X) — decisión founder pendiente** (2026-05-31, superado por aclaración técnica arriba). Founder preguntó "qué podemos hacer de copado en mi sitio? que genere la atención y atraiga personas?". Ideación de growth/marketing features:
 
 - **U (recomendada)** — Probador virtual de anteojos con IA (try-on): selfie → IA detecta landmarks faciales → compone anteojos del catálogo sobre la cara real. Botón "Compartir tu look" (Instagram/WhatsApp con marca de agua). Diferenciador competitivo enorme (ninguna óptica AR lo tiene bien hecho), viralidad natural, conversión 3-4x mejor. ~3-4 días reales.
 - **V** — Quiz interactivo "¿Cuál es tu anteojo ideal?" — 5-7 preguntas (uso, cara, estilo, presupuesto, receta) + resultado personalizado con 3 recomendaciones del catálogo. Shareable result page con OG image dinámica única ("Mi anteojo ideal es X" → comparte). ~6-8h. Quick win.
