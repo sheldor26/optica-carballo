@@ -38,7 +38,33 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Carga nuevo producto Rusty Feeled MBLK TENNIS — esperando 4 datos críticos del founder** (2026-05-31). Founder pasó link ML + specs base:
+🟡 **Carga Rusty Feeled — 2 datos críticos cerrados, esperando JSON ML para precio/stock** (2026-05-31, en progreso). Founder confirmó datos faltantes parcialmente.
+
+**Datos confirmados en este turno**:
+- ❌ **NO tiene adaptador para lentes graduadas** (lente envolvente fija, no se cambian las lentes — distinto al Rusty Yau).
+- ✅ **Bisagras plásticas** (info de construcción para descripción).
+- ✅ **Use case: tenis** (deportivo específico — para FAQs + callouts + descripción).
+- ✅ Diagrama de medidas confirmado completo (140×45 / 50-18-145).
+
+**Datos AÚN pendientes**:
+- Precio (ARS)
+- Stock real
+- Confirmación ML item id + variations
+- Fotos reales del producto (3 mínimo)
+
+**Próximo paso técnico**: founder debe visitar URL del endpoint admin de ML:
+`https://opticacarballo.com.ar/api/admin/ml-import-preview/MLA1897099326` (browser logueado, sin auth iter 1) → me copia el JSON crudo del item ML → de ahí extraigo precio, stock, variations, atributos oficiales ML, seller_custom_field por variation si aplica.
+
+**Documentación generada en este turno**:
+- LEARNINGS.md commit `bdf73c5`: pattern "distinguir foto real vs diagrama schematic". Aplicable a próximas cargas (Vulk, Reef, Mormaii, Paula Cahen).
+
+**Plan post-JSON ML**:
+1. Crear `supabase/seeds/23_rusty_feeled_mblk_tennis.sql` con todos los datos (medidas + material + tratamientos + descripción larga + callouts específicos de tenis + FAQs).
+2. Founder sube 3 fotos a `products/rusty-feeled/` (`01-lateral.jpg`, `02-frontal.jpg`, `03-contexto.jpg`).
+3. Aplicar seed en Supabase Cloud.
+4. Si todo OK → `is_active=true`. Si faltan fotos → `is_active=false` y activar después.
+
+🟡 **Carga nuevo producto Rusty Feeled MBLK TENNIS — esperando 4 datos críticos del founder** (2026-05-31, parcialmente cerrado). Founder pasó link ML + specs base:
 
 **Datos recibidos**:
 - Nombre: Rusty Feeled, SKU 960161
