@@ -319,16 +319,18 @@ function DropZone({
         onDrop(e);
       }}
       className={cn(
-        'border-border bg-muted/30 hover:bg-muted/50 hover:border-foreground/40 group flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 transition-all duration-300 sm:p-16',
+        'border-foreground/15 bg-zinc-50 hover:bg-zinc-100 hover:border-foreground/40 group flex w-full flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed p-12 transition-all duration-500 sm:p-20',
         hover && 'border-brand bg-brand/5 scale-[1.01]',
       )}
     >
-      <div className="bg-background border-border/60 flex size-14 items-center justify-center rounded-full border shadow-sm transition-transform group-hover:scale-110">
-        <Upload className="text-foreground/70 size-6" />
+      <div className="bg-background border-foreground/15 flex size-16 items-center justify-center rounded-full border shadow-sm transition-transform duration-500 group-hover:scale-110">
+        <Upload className="text-foreground/70 size-7" strokeWidth={1.5} />
       </div>
       <div className="text-center">
-        <p className="text-foreground font-medium">Subí una foto de tu rostro</p>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <p className="text-foreground font-serif text-xl font-medium tracking-tight md:text-2xl">
+          Subí una foto de tu rostro
+        </p>
+        <p className="text-muted-foreground mt-2 text-sm">
           Arrastrá o hacé click — JPG, PNG, WebP, máx 5MB
         </p>
       </div>
@@ -338,7 +340,7 @@ function DropZone({
 
 function Tips() {
   return (
-    <div className="mt-8 grid gap-3 sm:grid-cols-3">
+    <div className="mt-10 grid gap-4 sm:grid-cols-3">
       {[
         { title: 'Foto frontal', desc: 'Mirando de frente, no de perfil.' },
         { title: 'Buena luz', desc: 'Natural si es posible, sin sombras duras.' },
@@ -346,12 +348,13 @@ function Tips() {
       ].map((tip) => (
         <div
           key={tip.title}
-          className="border-border/60 bg-background rounded-lg border p-3"
+          className="border-foreground/10 group flex flex-col gap-2 border-t pt-4"
         >
-          <p className="text-foreground text-xs font-semibold uppercase tracking-wide">
+          <p className="text-foreground/60 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.18em]">
+            <span className="bg-brand size-1 rounded-full" aria-hidden="true" />
             {tip.title}
           </p>
-          <p className="text-muted-foreground mt-1 text-sm">{tip.desc}</p>
+          <p className="text-foreground text-sm font-medium">{tip.desc}</p>
         </div>
       ))}
     </div>
@@ -479,24 +482,25 @@ function ResultBlock({
   const level = confidenceLevel(analysis.confidence);
 
   return (
-    <div className="space-y-6">
-      <div className="border-border/60 bg-background relative overflow-hidden rounded-xl border p-6 sm:p-8">
+    <div className="space-y-8">
+      <div className="border-foreground/10 bg-zinc-50 relative overflow-hidden rounded-2xl border p-6 sm:p-10">
         {/* Glow ámbar de fondo */}
         <div
           aria-hidden="true"
-          className="bg-brand/10 pointer-events-none absolute -right-20 -top-20 size-64 rounded-full blur-3xl"
+          className="bg-brand/10 pointer-events-none absolute -right-24 -top-24 size-72 rounded-full blur-3xl"
         />
-        <div className="relative grid gap-6 sm:grid-cols-[auto_1fr]">
+        <div className="relative grid gap-6 sm:grid-cols-[auto_1fr] sm:gap-10">
           <PreviewImage url={previewUrl} />
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
-              <p className="text-brand text-xs font-medium uppercase tracking-[0.2em]">
+              <p className="text-foreground/60 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.22em]">
+                <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
                 Tu rostro es
               </p>
-              <h2 className="text-foreground mt-2 font-serif text-3xl font-medium tracking-tight md:text-4xl">
+              <h2 className="text-foreground mt-4 font-serif text-4xl font-medium leading-[1.0] tracking-[-0.02em] md:text-5xl">
                 {copy.label}
               </h2>
-              <p className="text-muted-foreground mt-3 text-sm md:text-base">
+              <p className="text-muted-foreground mt-5 text-base leading-relaxed md:text-lg">
                 {copy.description}
               </p>
             </div>
@@ -609,22 +613,29 @@ function FrameShapeList({
 }) {
   if (shapes.length === 0) return null;
   return (
-    <div className="border-border/60 bg-background rounded-lg border p-4">
-      <p className="text-foreground text-xs font-semibold uppercase tracking-wide">
+    <div className="border-foreground/10 bg-background rounded-xl border p-5 md:p-6">
+      <p className="text-foreground/60 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.18em]">
+        <span
+          className={cn(
+            'size-1 rounded-full',
+            tone === 'recommended' ? 'bg-brand' : 'bg-foreground/40',
+          )}
+          aria-hidden="true"
+        />
         {title}
       </p>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-4 space-y-2.5">
         {shapes.map((slug) => {
           const label =
             FRAME_SHAPE_COPY[slug as keyof typeof FRAME_SHAPE_COPY] ?? slug;
           return (
-            <li key={slug} className="flex items-center gap-2 text-sm">
+            <li key={slug} className="flex items-center gap-2 text-base">
               {tone === 'recommended' ? (
                 <CheckCircle2 className="text-brand size-4 shrink-0" />
               ) : (
                 <X className="text-muted-foreground size-4 shrink-0" />
               )}
-              <span className="text-foreground">{label}</span>
+              <span className="text-foreground font-medium">{label}</span>
             </li>
           );
         })}

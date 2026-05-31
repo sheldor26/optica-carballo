@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { FaceShapeAnalyzer } from '@/components/tools/face-shape-analyzer';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 const SLUG = 'recomendador-de-monturas';
 const TITLE = 'Recomendador de monturas según tu rostro';
@@ -19,23 +20,30 @@ export function generateMetadata(): Metadata {
 
 export default function Page() {
   return (
-    <main className="container py-10 md:py-16">
-      <header className="mx-auto max-w-2xl text-center">
-        <p className="text-brand inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]">
+    <main className="container py-12 md:py-20">
+      <RevealOnScroll
+        as="section"
+        className="mx-auto max-w-3xl text-center"
+      >
+        <p className="text-foreground/60 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em]">
           <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
           Herramienta gratuita
         </p>
-        <h1 className="text-foreground mt-4 text-balance font-serif text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl">
-          ¿Qué <span className="italic">forma de marco</span> te queda mejor?
+        <h1 className="text-foreground mt-6 text-balance font-serif text-5xl font-medium leading-[1.0] tracking-[-0.025em] md:text-6xl lg:text-7xl">
+          ¿Qué{' '}
+          <span className="font-normal italic text-foreground/70">
+            forma de marco
+          </span>{' '}
+          te queda mejor?
         </h1>
-        <p className="text-muted-foreground mx-auto mt-5 max-w-xl text-balance text-base md:text-lg">
+        <p className="text-muted-foreground mx-auto mt-7 max-w-xl text-balance text-base md:text-lg">
           Subí una selfie frontal y te sugerimos qué tipo de armazón resalta
-          mejor los rasgos de tu rostro. Es orientativo — la prueba final es
+          mejor los rasgos de tu rostro. Orientativo — la prueba final es
           ponértelo.
         </p>
-      </header>
+      </RevealOnScroll>
 
-      <section className="mt-12 md:mt-16">
+      <section className="mt-14 md:mt-20">
         <FaceShapeAnalyzer />
       </section>
 
@@ -65,21 +73,37 @@ function FaqBlock() {
   ];
 
   return (
-    <section className="mx-auto mt-20 max-w-2xl">
-      <h2 className="text-foreground font-serif text-2xl font-medium tracking-tight md:text-3xl">
+    <RevealOnScroll
+      as="section"
+      aria-labelledby="recomendador-faqs-heading"
+      className="border-foreground/10 mx-auto mt-24 max-w-3xl border-t pt-16 md:mt-32"
+    >
+      <p className="text-foreground/60 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em]">
+        <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
         Preguntas frecuentes
+      </p>
+      <h2
+        id="recomendador-faqs-heading"
+        className="text-foreground mt-6 font-serif text-3xl font-medium leading-tight tracking-[-0.015em] md:text-4xl"
+      >
+        Lo que más nos consultan.
       </h2>
-      <dl className="mt-6 space-y-5">
+
+      <dl className="mt-10 space-y-6 md:mt-12">
         {items.map((item) => (
           <div
             key={item.q}
-            className="border-border/60 bg-background rounded-lg border p-4"
+            className="border-foreground/10 border-t pt-6"
           >
-            <dt className="text-foreground text-sm font-semibold">{item.q}</dt>
-            <dd className="text-muted-foreground mt-2 text-sm">{item.a}</dd>
+            <dt className="text-foreground font-serif text-lg font-medium tracking-tight md:text-xl">
+              {item.q}
+            </dt>
+            <dd className="text-muted-foreground mt-3 text-sm leading-relaxed md:text-base">
+              {item.a}
+            </dd>
           </div>
         ))}
       </dl>
-    </section>
+    </RevealOnScroll>
   );
 }
