@@ -38,7 +38,31 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Recomendador de monturas (Opción F-C completa) — refinamiento visual + upgrade backend AI** (2026-05-30). Founder dijo "lo que vos me recomiendes" → ejecuté Opción C (A + B).
+🟢 **Opción G implementada — 404 editorial** (2026-05-30). Founder eligió G.
+
+**Audit confirmó 7ma recurrencia del meta-pattern**: pensé que estaba "plana", en realidad ya existía `app/not-found.tsx` global + 4 not-founds específicos por ruta. Solo necesitaba refinamiento visual.
+
+**Cambios en `app/not-found.tsx`** (commit `a61c090`):
+- Icono Compass con bg-zinc-50 (paleta consistente).
+- Eyebrow "Error 404" con brand-dot.
+- H1: serif 4xl/5xl "no existe" → serif 5xl-7xl "se nos perdió" (más cálido).
+- Shortcuts: 3 cards bordered → **4 cards border-t editorial**.
+- **Cross-link nuevo a `/guias`** (4to shortcut) — beneficio de tener artículos publicados.
+- WhatsApp CTA: card gradient → bg-zinc-50 + serif 3xl + button consistente.
+
+**Decisión técnica**: aplicar patrón "border-t editorial" usado en ValueProps, TeamSection (sobre-nosotros), HowWeWork. Consistencia ya establecida en el design system actual.
+
+**Tiempo real**: ~15 min (vs estimación 1h, vs audit corregido ~30 min). 7ma validación del meta-pattern de sobre-estimación.
+
+**Build verificado**: `npx tsc --noEmit` OK.
+
+**Próximo paso**: founder pushea + revisa. Resto de opciones:
+- **H** — Cargar productos reales otras marcas (requiere data tuya)
+- Próximo artículo Lote 1 (workflow multi-agent validado)
+- Retomar few-shot lector receta (4/13 + 16 trampas)
+- **Propuesta**: escalar regla 14 "audit obligatorio antes de estimar" a CLAUDE.md (7 recurrencias = pattern confirmado).
+
+🟢 **Recomendador de monturas (Opción F-C completa) — refinamiento visual + upgrade backend AI** (2026-05-30, superado por G arriba). Founder dijo "lo que vos me recomiendes" → ejecuté Opción C (A + B).
 
 **FASE A (Refinamiento visual editorial)**:
 - `app/(storefront)/recomendador-de-monturas/page.tsx`: hero serif 7xl + brand-dot eyebrow + FaqBlock con estructura border-t (consistencia con sobre-nosotros/guias).
