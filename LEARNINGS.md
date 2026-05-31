@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: persistencia matches en mi-cuenta (sync localStorage → DB al loguearse)
+
+**Categoría**: Implementation / Auth-aware feature
+**Confianza**: ⚪ N/A
+
+**Justificación regla 11**: turno de implementación con pattern conocido (auth-aware feature con persistencia híbrida + sync de localStorage a DB al loguearse). El pattern es estándar de e-commerce; no es learning nuevo replicable. La decisión técnica de "persistencia híbrida" está documentada en commit message `b03143f` + CURRENT_STATE.
+
+Cuando se mida engagement real (% usuarios que llegan a /mi-cuenta/matches, % matches que se convierten en compras), ahí podrá surgir learning sobre conversion attribution.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: implementación Opción Y (Tinder de monturas) — straightforward, sin pattern replicable nuevo
 
 **Categoría**: Implementation / UX

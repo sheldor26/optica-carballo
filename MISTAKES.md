@@ -72,6 +72,15 @@ Cualquier chat conversacional / AI assistant que represente al negocio frente al
 
 ---
 
+## 2026-05-31 — Revisado — sin novedad: persistencia matches en mi-cuenta — al primer build, sin errores
+
+**Estado**: ⚪ N/A
+**Categoría**: Implementation
+
+**Justificación regla 11**: implementación straightforward de feature auth-aware (server actions + migración + página /mi-cuenta/matches + sync localStorage→DB). TypeCheck OK + build OK al primer intento. Sin scope creep ni decisiones contradictorias.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: implementación Opción Y (Tinder de monturas) — al primer build, sin errores
 
 **Estado**: ⚪ N/A
