@@ -261,7 +261,7 @@ function VariantThumbnails({
             aria-label={`Ver ${v.label}`}
             aria-pressed={isActive}
             className={cn(
-              'bg-muted/40 relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
+              'bg-background relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
               isActive
                 ? 'border-foreground'
                 : 'border-border/60 hover:border-foreground/40',
@@ -291,7 +291,7 @@ function VariantThumbnails({
       {showMobileOverflowBox && (
         <div
           aria-hidden="true"
-          className="bg-muted/40 border-border/60 text-muted-foreground flex size-16 shrink-0 items-center justify-center rounded border text-sm font-medium md:hidden"
+          className="bg-background border-border/60 text-muted-foreground flex size-16 shrink-0 items-center justify-center rounded border text-sm font-medium md:hidden"
         >
           +{hiddenCountMobile}
         </div>
