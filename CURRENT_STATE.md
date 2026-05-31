@@ -2,7 +2,29 @@
 
 ## Status
 
-🟡 **4 opciones de próximos pasos ofrecidas, decisión founder pendiente** (2026-05-30). Founder dijo "continuemos... qué podemos hacer ahora". Audité BACKLOG.md + estado actual del proyecto. 4 caminos ofrecidos con recomendación:
+🟡 **Anonimización automática vs skip — 2 opciones nuevas ofrecidas, decisión founder pendiente** (2026-05-30). Founder dijo "ya eliminé las fotos, pero no me quiero poner a hacer anónimas 1x1 las recetas". Pivot del approach:
+
+**Incidente privacidad cambió 🔴 → 🟡 Mitigado** porque founder confirmó borrar las recetas del bucket público. Detalle escalado a MISTAKES.md como mitigación.
+
+**2 opciones ofrecidas para resolver el bloqueo de fricción "anonimizar manual"**:
+
+- **Opción 1 (recomendada) — Auto-anonimización con script IA + sharp** (~3h dev + 20 min founder):
+  - Founder crea bucket NUEVO `prescription-private` (Public ❌ DESACTIVADO)
+  - Founder re-sube las 13 recetas crudas al bucket privado (no público esta vez)
+  - Yo corro script local: descarga cada imagen con service_role, le pasa a Claude Vision para obtener bounding boxes de regiones sensibles (nombre paciente, DNI, profesional, matrícula, contacto, firma), tapa con sharp (rectángulo negro), guarda anonimizada
+  - Founder revisa visualmente las anonimizadas
+  - Subimos las anonimizadas al bucket separado `prescription-examples`, borramos las crudas
+  - Yo integro al `few-shot.ts` con base64 embebido
+  - **Ironía aceptable**: recetas crudas viajan a Anthropic UNA VEZ para anonimización legítima (principio de minimización ley 25.326), NO en cada request del lector forever
+- **Opción 2 — Skip few-shot con imágenes reales**: aceptamos que el +20-30% accuracy adicional no vale el esfuerzo. Tier 1 actual ya da +10-20%. Pasamos directo a las Opciones A/B/C/D del turno anterior (pipeline fotos / Tier 2 lector / homepage / recomendador monturas IA).
+
+**Mi recomendación**: Opción 1 — accuracy es crítico (lectura mala = pérdida de confianza), founder hace solo 20 min, yo el resto.
+
+**Pregunta abierta**: ¿Opción 1 o 2? Si Opción 1, arranco script en paralelo mientras founder crea bucket + sube.
+
+**Decisión técnica del turno**: enfoque "automatización + minimización de exposición" en vez de manual labor del founder. Aceptamos UNA llamada a Anthropic con datos crudos (procesamiento legítimo de anonimización) para evitar (a) horas de trabajo manual del founder, (b) errores humanos en la anonimización (founder cansado puede pasar por alto algún dato).
+
+🟡 **4 opciones de próximos pasos ofrecidas, decisión founder pendiente** (2026-05-30, parcialmente superado por anonimización abajo). Founder dijo "continuemos... qué podemos hacer ahora". Audité BACKLOG.md + estado actual del proyecto. 4 caminos ofrecidos con recomendación:
 
 - **Opción A — Pipeline normalización de fotos** (recomendado primero, ~2-3h): script Python+PIL que detecta bbox del anteojo + recorta + redimensiona al 92% del frame + centra en canvas 2000×1333. Resuelve el dolor de saga 2026-05-30 (14+ iteraciones manuales de scale-overrides para Vulk Day Light). Inversión one-time que se amortiza con las 4 marcas pendientes (Vulk completo, Reef, Mormaii, Paula Cahen).
 - **Opción B — Tier 2 del lector de receta (D+E+F)** (~3-4h): verificación adversarial (skeptic agent), pre-procesamiento server-side (auto-rotate, HEIC→JPG, sharpening, PDF multipage), fallback dinámico Opus para casos low-confidence. Avanza sin esperar las recetas anonimizadas (Tier 1 ya en producción).
