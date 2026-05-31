@@ -38,7 +38,33 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **9 ideas cross-industry (DD-OO) ofrecidas + top-3 ranking — founder eligió "guardar Y separado"** (2026-05-31). Founder pidió "que se haya aplicado en otro sector y podamos aplicarlo en óptica y hacerlo revolucionario".
+🟢 **Opción Y — Tinder de monturas IMPLEMENTADO + integración en home** (2026-05-31). Founder eligió "vamos con Y + Z". Y completo este turno; Z (Tracker pedidos) postponed por scope a próximo turno.
+
+**Cambios** (commit `8080fd4`):
+- `lib/swipe/types.ts`: SwipeProduct, SwipeDirection, StoredMatches (key versionado v1).
+- `lib/swipe/queries.ts`: `fetchSwipeProducts()` — productos activos con stock, shuffled, mezcla categorías sol+receta.
+- `app/(storefront)/descubrir/page.tsx`: server component con empty state fallback.
+- `components/swipe/swipe-deck.tsx`: SwipeDeck + SwipeCard + SwipeResults (~430 líneas, todo en uno por cohesión).
+- `lib/site/nav.ts`: TOOLS_LINKS agregado "Descubrir con swipe" al inicio.
+- `components/home/home-tools.tsx`: agregada como primer tool en grid IA.
+
+**UX**:
+- Drag horizontal con framer-motion (rotate + opacity feedback).
+- Overlays "Me gusta" / "Skip" durante drag.
+- Botones explícitos (❌ ↺ ❤️) para accesibilidad.
+- Counter de matches en header.
+- localStorage versionado (v1) para persistir entre sesiones.
+- Vista de resultados al terminar: grid con matches + CTA a PDP.
+
+**Stack**: solo framer-motion (ya configurado), NO requiere libs nuevas.
+
+**Decisión técnica**: localStorage en vez de Supabase para matches. Razones: privacidad (matches son data personal del visitante), simplicidad (no requiere tabla nueva ni auth), y no necesitamos persistencia cross-device en iter 1.
+
+**Build verificado**: `next build` OK. `/descubrir` 5.77kB.
+
+**Próximo paso founder**: push + probar /descubrir. Decir si quiere ajustes (animación, threshold, copy). Después Z.
+
+🟡 **9 ideas cross-industry (DD-OO) ofrecidas + top-3 ranking — founder eligió "guardar Y separado"** (2026-05-31, superado por implementación Y arriba). Founder pidió "que se haya aplicado en otro sector y podamos aplicarlo en óptica y hacerlo revolucionario".
 
 **9 opciones ofrecidas agrupadas por OBJETIVO**:
 - **Acquisition**: EE (Calculadora ahorro vs óptica física), II (Embajadores referrals).
