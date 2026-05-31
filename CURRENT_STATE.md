@@ -38,7 +38,37 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **4 opciones nuevas ofrecidas (E/F/G/H) — decisión founder pendiente** (2026-05-30). Founder dijo "c" tras FASE 2 (artículo publicado) → quiere "algo distinto" (ni próximo artículo ni few-shot). Ofrecí 4 opciones:
+🟢 **Opción E implementada — `/sobre-nosotros` refactor editorial completo** (2026-05-30). Founder eligió E.
+
+**Audit previo** (aplicando learning "refinamientos vs rehacer"): la página YA existía con 7 secciones (Hero, Stats, Story, Team, HowWeWork, Brands, ContactCta). NO la rehice — refiné quirúrgicamente.
+
+**Gaps detectados + resueltos**:
+1. TeamSection dependía de env vars con fallbacks genéricos → **usé `lib/content/article-authors` como single source of truth** (mismas bios que firman artículos = E-E-A-T coherente).
+2. Faltaba Timeline visual → **agregué section nueva con 5 hitos** (1994 → 2000s → 2010s → 2025 → 2026) en estética dark.
+3. BrandsSection tenía chips de texto → **reemplacé por grid de logos reales** del bucket (`fetchAllActiveBrands`, mismo patrón que `components/home/brands-section`).
+4. Sin cross-link al artículo recién publicado → **agregué EditorialSection** "Lo que escribimos" con link a `/guias` (refuerza E-E-A-T: autor del artículo = bio en sobre-nosotros).
+5. Estética inconsistente con resto del site (sin font-serif display, sin brand-dot eyebrows) → **refiné tipografía** en TODAS las secciones a la convención editorial (serif 5xl-7xl, eyebrows con brand dot, tracking editorial).
+
+**Cambios en commit `bf0d7dd`** (~350 líneas modificadas):
+- Hero: serif 7xl + brand-dot eyebrow
+- Stats: serif display + iconos mejor posicionados + bg zinc-50
+- Timeline (NEW): 5 hitos dark con mesh glow + brand color
+- Team: bios completas de article-authors (E-E-A-T crítico)
+- HowWeWork: layout border-t consistente con ValueProps
+- Brands: logos reales con invert según light/dark
+- Editorial (NEW): cross-link condicional a /guias si hay artículos
+- ContactCta: tipografía display + location si está
+
+**Decisión técnica clave**: eliminé dependencia de env vars `NEXT_PUBLIC_REGENTE_NAME` y `NEXT_PUBLIC_TECNICO_NAME`. Ahora source of truth está en código (`lib/content/article-authors.ts`), no en config faltante. Si después el founder quiere cambiar bios, edita 1 archivo y se actualizan: bios en sobre-nosotros + bios al pie de cada artículo + JSON-LD reviewedBy. DRY total.
+
+**Build verificado**: `npx tsc --noEmit` OK + `next build` OK. `/sobre-nosotros` 750B.
+
+**Próximo paso**: founder pushea + revisa visualmente. Si OK, decide próximo paso:
+- Otro artículo del Lote 1 (workflow multi-agent ya validado)
+- Retomar few-shot lector (4/13 + 16 trampas)
+- Otras opciones del backlog (F recomendador IA, G página 404, H cargar productos)
+
+🟡 **4 opciones nuevas ofrecidas (E/F/G/H) — decisión founder pendiente** (2026-05-30, superado por implementación E arriba). Founder dijo "c" tras FASE 2 (artículo publicado) → quiere "algo distinto" (ni próximo artículo ni few-shot). Ofrecí 4 opciones:
 
 - **E (recomendada)** — `/sobre-nosotros` editorial (~3-4h): timeline 30+ años + sección regente María Carlota + sección founder Juan + valores + foto local. Cierra set inicial de refinamientos visuales + refuerza E-E-A-T justo cuando se publicó el primer artículo.
 - **F** — Recomendador de monturas IA (1-2 días): Vision API selfie → forma de cara → matchea con catálogo. Diferenciador competitivo (ninguna óptica AR lo tiene).
