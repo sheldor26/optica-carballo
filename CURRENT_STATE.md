@@ -2,7 +2,27 @@
 
 ## Status
 
-🟢 **Recolección de ground truth few-shot — pivot a "crop manual" + 1/13 recetas con datos completos** (2026-05-30). Founder pivoteó el approach de anonimización:
+🟢 **Recolección few-shot — 2/13 recetas con ground truth + 8 trampas oro acumuladas** (2026-05-30, en progreso).
+
+**Receta #2 (`02-anisometropia-leve-monofocal.jpg`)**:
+- OD: esf -0.25, cil -0.25, eje 175°, add null, confidence high
+- OI: esf 0.00 (astigmatismo puro, ESF VACÍA en papel), cil -0.50, eje 161°, add null, confidence medium
+- DNP: null, Tipo: monofocal
+- Tratamientos: AR + BLC (Bluecut)
+- WarningFlags: ["partial_data"]
+
+**3 trampas nuevas extraídas (total acumulado: 8)**:
+- (6) **ESF VACÍA en papel = 0.00 plano** (no null, no duplicar de OD). El oculista deja literalmente el espacio en blanco cuando el ojo es plano. Modelo debe interpretar vacío como 0.00.
+- (7) **Coma vs punto decimal equivalentes en AR**: "-0,25" = "-0.25". Modelo debe normalizar a punto en output.
+- (8) **Tratamientos del lente abajo de los valores**: Antirreflex + BLC (Bluecut). Captura comercial relevante.
+
+**Decisión técnica este turno**: pospongo decisión Opción A (solo rawTextExcerpt) vs Opción B (extender schema con `lensTreatments`) hasta tener las 13 recetas. Mientras tanto, recolecto tratamientos por receta como si fuera B — si al final elegimos A, descartamos esa data; si elegimos B, la integramos. Cost de capturar = 0 (founder ya me dice los tratamientos al pasarme cada receta).
+
+**Listado de tratamientos+aliases pendiente** que pedí al founder (todavía no me lo pasó): Antirreflex (AR / antirreflejo) / Bluecut (BLC / Blueblock / anti-luz azul) / Fotocromáticos (Foto / transitions) / ¿alto índice? / ¿polarizado? / ¿material? — necesario para system prompt si vamos con Opción B.
+
+**Próximo paso**: founder pasa receta #3.
+
+🟢 **Recolección de ground truth few-shot — pivot a "crop manual" + 1/13 recetas con datos completos** (2026-05-30, superado por entry 2/13 arriba). Founder pivoteó el approach de anonimización:
 
 **Decisión técnica nueva**: en vez del flow técnico que propuse (script IA + sharp + bucket privado), founder está **recortando manualmente** la sección Rx de cada receta y descartando el membrete (con datos profesional/paciente/firma). El crop logra el mismo resultado de anonimización con cero código de mi parte + cero llamada-a-Anthropic-con-datos-crudos.
 
