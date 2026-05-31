@@ -22,6 +22,15 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: Vulk Booping + fix paths Xold Receta ejecutan playbook ya consolidado
+
+**Categoría**: Product loading
+**Confianza**: 🟢 N/A (no aplica — Booping es la 7ma carga del día siguiendo el playbook validado. Fix paths Xold Receta es el 2do UPDATE de paths reales del founder, mismo patrón que el SBLK del Etiquet)
+
+**Booping**: ejecutado en 1 turno end-to-end (audit + fetch + apply MCP + verify + scale + commit + push). Decisión "redondo vs ovalado" alineada con principio "founder es Técnico Óptico, ML tags pueden ser inexactas" — sub-caso del pattern Cross-source verification ya documentado.
+
+**Fix paths Xold Receta**: UPDATE 8 rows con paths reales del founder (naming inconsistente: underscores vs dashes, UPPER vs lower). Mismo workflow que el Etiquet SBLK del turno previo. Sin pattern nuevo.
+
 ## 2026-05-31 — Feedback memory persistente (filesystem `~/.claude/.../memory/`) para preferencias del founder que cruzan sesiones
 
 **Categoría**: Memory / Persistent feedback / Cross-session continuity

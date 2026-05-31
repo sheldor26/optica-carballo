@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: Booping y fix Xold Receta sin error nuevo (playbook ejecutado limpio)
+
+**Estado**: N/A
+**Categoría**: Product loading
+
+Booping cargado siguiendo el playbook validado 7 veces hoy. Fix paths Xold Receta es 2da iteración del workflow "founder pasa nombres reales → UPDATE puntual via MCP" (1ra fue SBLK del Etiquet). Sin tropiezos documentables. Decisión "redondo vs ovalado" resolvió correctamente a favor del founder (Técnico Óptico > tags ML).
+
 ## 2026-05-31 — Asumí incorrectamente que Vulk Stray era de sol cuando es de receta — pendiente fantasma "Stray polarizadas" en lista de TODOs durante 2+ turnos
 
 **Estado**: 🟡 Mitigado — verificación MCP confirmó category=`anteojos-de-receta`. Pendiente quitado de CURRENT_STATE. Pattern: verificar categoría del producto en MCP antes de proponer acciones que dependen de la categoría (polarized solo aplica a sol).
