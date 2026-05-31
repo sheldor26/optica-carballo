@@ -26,7 +26,7 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ## 2026-05-30 — Sugerí al founder no-técnico subir datos médicos a bucket PÚBLICO (`brands-shared/`) sin advertir privacidad
 
-**Estado**: 🔴 Abierto — riesgo legal ACTIVO mientras founder no borre del bucket público
+**Estado**: 🟡 Mitigado 2026-05-30 — founder confirmó borrado de las 13 recetas del bucket público. Ventana de exposición pública cerrada. Regla preventiva sigue activa para futuro.
 **Categoría**: Privacy / Legal / Founder-non-technical / Bucket configuration
 
 ### Qué pasó
