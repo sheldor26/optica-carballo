@@ -52,17 +52,19 @@ Total variantes: **22** (12 polarizadas + 10 no).
 - **Cross-source verification** de atributos antes de hardcodearlos (precio + título + code vs descripción general).
 
 ### Pendientes founder (próximo paso exacto)
-1. **Subir fotos al bucket** de los 3 productos cargados sin fotos visibles aún:
-   - `products/rusty-etiquet/` (9 archivos con nombres exactos en search)
-   - `products/rusty-tulle/` (9 archivos con nombres exactos)
-   - (Rusty Vrast y Dearly ya tienen fotos)
+1. ✅ **Fotos subidas** (2026-05-31 confirmado founder + verificado MCP):
+   - `products/rusty-etiquet/`: 9 archivos (avg 87 KB) ✅
+   - `products/rusty-tulle/`: 9 archivos (avg 41.7 KB) ✅
 2. **Verificar visualmente en producción** post-deploy:
    - Tamaños de Etiquet y Tulle vs resto del catálogo (si quedan chicos/grandes, ajustar scale)
    - Badge POLARIZADO visible en 12 variantes (Dearly C4, Vrast 3, Yau 3, Yamain SBLK, Day Light 4, Etiquet 3, Tulle 4)
    - Layout VariantList con codes largos (Yau especialmente)
    - Indicador de stock en thumbnails (rojo + ámbar visibles)
-3. **C2 Vrast**: si vuelve stock en ML, pasame datos para seed adicional.
+3. **C2 Vrast**: variante aún NO trabajada (no es por falta de stock — directamente no se cargó en ML, no se ha decidido aún si se va a comprar). Cuando founder confirme datos (SKU + ML variation + precio + fotos), hago seed adicional con UPDATE puntual.
 4. **Vulk Stray**: confirmar si alguna variante es polarizada (actualmente sin flag).
+
+### Bug reportado pendiente diagnóstico (2026-05-31 cierre)
+Founder reportó en `/anteojos-de-sol/aviador`: "las imágenes son más pequeñas" vs `/marcas/rusty`. Verificación MCP confirma que las primary images son LATERALES con scale 1.15 idéntico en ambas rutas. Causa probable: **cache CDN Vercel** (revalidate 300s) — los últimos commits con scale override aún no aplicaron a la ruta filtrada. Action: hard refresh post-5min. Si sigue: investigar diferencia de container/layout entre `ShapeCatalogPage` y `BrandPage`.
 
 ### Estado git
 - Branch: `main`
