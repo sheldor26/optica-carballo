@@ -10,9 +10,21 @@ const config: Config = {
   ],
   theme: {
     container: {
+      // Founder 2026-05-31: catálogos con `<main className="container">`
+      // se veían más chicos que /marcas/<slug> (que usa
+      // `max-w-screen-2xl px-4 sm:px-6 lg:px-8`). El override `screens
+      // 2xl: 1280px` limitaba el ancho 256px menos que BrandPage en
+      // viewport ≥1280px. Causa: grids tenían cards más chicos →
+      // anteojos relativos más chicos.
+      // Fix: eliminar override (Tailwind default 2xl = 1536px) +
+      // padding responsive matching BrandPage (lg:2rem). Ahora TODOS
+      // los catálogos usan el mismo ancho efectivo en desktop.
       center: true,
-      padding: '1rem',
-      screens: { '2xl': '1280px' },
+      padding: {
+        DEFAULT: '1rem',
+        sm: '1.5rem',
+        lg: '2rem',
+      },
     },
     extend: {
       fontFamily: {

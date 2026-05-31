@@ -24,6 +24,32 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Diagnostiqué bug "imágenes más chicas en filtros" como cache CDN cuando era CSS — diagnóstico apresurado sin verificar HTML real
+
+**Estado**: 🟡 Mitigado — fix aplicado a `tailwind.config.ts` (container max 1280→1536px + padding responsive matching BrandPage). Regla preventiva: para bugs visuales NO ASUMIR cache hasta verificar con curl/HTML que el render real difiere.
+**Categoría**: Diagnostic / Wrong-hypothesis-first / CSS vs cache
+**Patrón**: `assumed-cache-when-it-was-css`
+
+**Qué pasó**: Founder reportó "las imágenes son más pequeñas" en `/anteojos-de-sol?forma=aviador` vs `/marcas/rusty`. Mi primer diagnóstico fue **cache de Vercel** (revalidate 300s). Verificación MCP confirmó datos idénticos (scale 1.15 lateral igual en ambos). Cuando el founder volvió a reportar persistencia, finalmente fui a comparar el HTML real con curl — y encontré que `tailwind.config.ts` tenía un override del container (`screens 2xl: 1280px`) que limitaba 256px menos que `max-w-screen-2xl` (1536px) que usa BrandPage. **Era CSS desde el día 1 del proyecto, no cache reciente.**
+
+**Causa raíz**:
+1. **Diagnóstico apresurado**: salté a "cache Vercel" como hipótesis principal porque era reciente (revalidate 300s) y plausible. NO verifiqué con curl el HTML real de las 2 rutas antes de afirmarlo.
+2. **Confianza excesiva en datos correctos = problema resuelto**: verifiqué que los datos MCP eran idénticos (primary image + scale) y asumí que eso significaba "render igual". Pero el render depende también del CONTEXT CSS (container width, padding) que es independiente de los datos.
+3. **No comparé el HTML rendered directamente**: hubiera detectado la diferencia de ancho del main wrapper en 1 minuto si hubiera hecho `curl <url1> > /tmp/a.html; curl <url2> > /tmp/b.html; diff <(grep main a) <(grep main b)`.
+
+**Costos**:
+- Founder tuvo que reportar el mismo bug 2 veces antes de que llegara al diagnóstico real
+- Le sugerí "hard refresh + esperar 5min" como solución → tiempo perdido del founder
+- 1 commit + push intermedio (`c7f90b9 docs`) que tenía info errónea sobre la causa
+
+**Regla preventiva**:
+1. **Para bugs visuales reportados**: comparar HTML rendered (curl) entre rutas afectada y referencia ANTES de hipótesis de cache. Es 30s con `curl + grep`.
+2. **Cache es HIPÓTESIS DE ÚLTIMA INSTANCIA, no primera**. Si los datos están correctos pero el render se ve diferente, primero descartar CSS, layout, viewport, container width. Solo si todo eso matchea → cache.
+3. **Cuando founder reporta bug persistente con datos correctos**: indica que el problema NO es de data. Cambiar de hipótesis (cache/data) a estructural (CSS/layout/wrapper).
+4. **`tailwind.config.ts` es source of truth invisible**: cuando hay diferencias entre componentes que usan utilities Tailwind, revisar el config — sobrescritos de defaults pueden generar bugs silenciosos cross-página.
+
+**Verificación contra recurrencia**: próximo bug visual reportado, **primer comando**: `curl <url-afectada> | grep -oE 'class="[^"]*main[^"]*"'` para ver el wrapper real. Si el wrapper difiere de la referencia → CSS issue. Si es idéntico → entonces buscar data/cache.
+
 ## 2026-05-31 — Revisado — sin novedad: Tulle cargado sin error reproducible
 
 **Estado**: N/A

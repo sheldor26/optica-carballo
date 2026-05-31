@@ -63,8 +63,20 @@ Total variantes: **22** (12 polarizadas + 10 no).
 3. **C2 Vrast**: variante aún NO trabajada (no es por falta de stock — directamente no se cargó en ML, no se ha decidido aún si se va a comprar). Cuando founder confirme datos (SKU + ML variation + precio + fotos), hago seed adicional con UPDATE puntual.
 4. **Vulk Stray**: confirmar si alguna variante es polarizada (actualmente sin flag).
 
-### Bug reportado pendiente diagnóstico (2026-05-31 cierre)
-Founder reportó en `/anteojos-de-sol/aviador`: "las imágenes son más pequeñas" vs `/marcas/rusty`. Verificación MCP confirma que las primary images son LATERALES con scale 1.15 idéntico en ambas rutas. Causa probable: **cache CDN Vercel** (revalidate 300s) — los últimos commits con scale override aún no aplicaron a la ruta filtrada. Action: hard refresh post-5min. Si sigue: investigar diferencia de container/layout entre `ShapeCatalogPage` y `BrandPage`.
+### 🟢 Bug RESUELTO: imágenes más chicas en `/anteojos-de-sol?forma=aviador` vs `/marcas/rusty`
+**Causa raíz**: NO era cache ni data. Era CSS. `tailwind.config.ts` tenía un override del container Tailwind:
+```ts
+container: { screens: { '2xl': '1280px' } }  // límite 1280px
+```
+Pero `BrandPage` usaba `max-w-screen-2xl` (1536px default) — **256px más ancho** en viewport ≥1280px. Resultado: catálogos con `<main className="container">` (8 archivos) tenían cards más chicos → anteojos relativos más chicos.
+
+**Fix aplicado** (`tailwind.config.ts`):
+- Eliminado override `screens 2xl` → Tailwind default 1536px
+- Padding responsive: `DEFAULT 1rem, sm 1.5rem, lg 2rem` matching BrandPage
+
+**Impacto**: 8 catálogos (category-filtered, category-index, gender, shape, brand-filter, brand-gender, brand-about, favoritos) ahora tienen el mismo ancho y padding que BrandPage. Imágenes deberían verse del mismo tamaño cross-catálogo.
+
+**Verificación**: TypeScript pass ✅. Test visual post-deploy.
 
 ### Estado git
 - Branch: `main`
