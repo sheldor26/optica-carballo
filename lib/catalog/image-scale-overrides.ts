@@ -72,14 +72,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Feeled — founder reportó inconsistencia visual en grid 2026-05-31:
   // anteojo se ve chico vs Rusty Yau (que tiene overrides 1.8 / 1.4). Aplico
-  // scales similares para uniformidad entre productos Rusty deportivos.
-  //   - 01-lateral.jpg: 1.5 (vista 3/4, foto del seed). Algo menor que el
-  //     Yau lateral (1.8) porque el Feeled lateral muestra armazón + patilla
-  //     extendida que ocupa más frame.
-  //   - 02-frontal.jpg: 1.4 (igual que Yau frontal).
-  // Si tras deploy founder dice "todavía chico" → subir a 1.6/1.5.
-  'rusty-feeled/01-lateral.jpg': 1.5,
-  'rusty-feeled/02-frontal.jpg': 1.4,
+  // scales empíricos.
+  // Iter 1: 1.5/1.4 → founder reportó "mal cortado" (la foto del Feeled
+  // ocupa más del frame natural que el Yau, scale agresivo recorta cabeza
+  // del anteojo). Bajado a 1.15/1.05 — la foto del Feeled tiene anteojo
+  // grande de origen, no necesita tanto scale.
+  //   - 01-lateral.jpg: 1.15 (vista 3/4)
+  //   - 02-frontal.jpg: 1.05 (vista frontal, ya casi llena el frame)
+  'rusty-feeled/01-lateral.jpg': 1.15,
+  'rusty-feeled/02-frontal.jpg': 1.05,
 };
 
 export function getImageScale(path: string | null | undefined): number {

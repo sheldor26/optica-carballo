@@ -67,7 +67,12 @@ const MAX_VISIBLE_THUMBS = 5;
 export function ProductCard({ product }: { product: ProductCardData }) {
   const outOfStock = product.inStockCount === 0;
   const variants = product.variants ?? [];
-  const hasMultipleVariants = variants.length > 1;
+  // Mostrar thumbnails si hay al menos 1 variante con foto. Antes era >1
+  // (solo si había múltiples para elegir), pero founder 2026-05-31 pidió
+  // que aparezca al menos 1 thumb incluso con variante única — da
+  // consistencia visual al grid (todos los cards muestran thumb).
+  const hasVariantThumbnails =
+    variants.length >= 1 && variants.some((v) => v.primaryImagePath !== null);
 
   // Estado: variante actualmente mostrada. Default: la primera del array
   // (que es la que matchea con primary/secondaryImagePath del data).
@@ -189,7 +194,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         </div>
       </Link>
 
-      {hasMultipleVariants && (
+      {hasVariantThumbnails && (
         <VariantThumbnails
           variants={variants}
           selectedVariantId={selectedVariantId}
