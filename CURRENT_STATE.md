@@ -38,7 +38,20 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Rusty Feeled — fotos subidas al bucket, falta aplicar seed + verificar prod** (2026-05-31). Founder confirmó upload via screenshot del bucket.
+🟢 **Rusty Feeled — LIVE en producción + fix de scale visual aplicado** (2026-05-31). Founder pasó screenshot del grid `/anteojos-de-sol/rusty` mostrando el producto live junto al Yau → eso confirma que steps 2 y 3 (aplicar seed + verificar) se completaron implícitamente.
+
+**Issue detectado en verificación**: Rusty Feeled se veía visualmente más chico que el Rusty Yau en el grid (inconsistencia entre cards). Audit reveló: Yau tiene scale overrides 1.8/1.4 (saga 2026-05-30, iter 14), Feeled NO → scale 1.0 default.
+
+**Fix aplicado** (commit `a248a5b`):
+- `lib/catalog/image-scale-overrides.ts`: agregadas `rusty-feeled/01-lateral.jpg: 1.5` + `rusty-feeled/02-frontal.jpg: 1.4`.
+- Justificación: 1.5 lateral (algo menor que Yau 1.8 porque Feeled lateral muestra patilla extendida que ocupa más frame) + 1.4 frontal (igual que Yau).
+- TODO si todavía chico tras push: subir a 1.6/1.5 según feedback founder.
+
+**Estado final Rusty Feeled**: ✅ Producto cargado + variante única + 3 fotos + scale overrides. Pendiente push de commits acumulados + hard refresh `/anteojos-de-sol/rusty` para verificar uniformidad visual.
+
+**PRODUCTS_INVENTORY** (status post este turno): Rusty = 2 productos LIVE en producción (Yau + Feeled). Próxima marca a cargar: Vulk completo (Brillante, Stray, otras), Reef, Mormaii, Paula Cahen.
+
+🟢 **Rusty Feeled — fotos subidas al bucket, falta aplicar seed + verificar prod** (2026-05-31, superado por entry arriba). Founder confirmó upload via screenshot del bucket.
 
 **Step 1 de 3 ✅ completado**: `products/rusty-feeled/` tiene las 3 fotos con paths exactos que matchean el seed (`01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`).
 

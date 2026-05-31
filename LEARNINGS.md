@@ -22,6 +22,58 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Al cargar producto nuevo de marca/línea existente, COPIAR scale overrides del producto similar (no empezar desde scale 1.0)
+
+**Categoría**: Product upload / Image scale / Visual consistency / Brand uniformity
+**Confianza**: 🟢 Alta (validado en carga Rusty Feeled — inconsistencia detectada en grid, fix con copy de overrides Yau)
+
+### Qué funcionó
+
+Al cargar Rusty Feeled como producto nuevo, el seed default no tenía `image-scale-overrides` → fotos renderizadas a scale 1.0 (default). En el grid de `/anteojos-de-sol/rusty`, el Feeled se veía **visualmente más chico** que el Rusty Yau, que sí tenía overrides 1.8/1.4 desde saga 2026-05-30 (iter 14).
+
+Founder detectó inconsistencia vía screenshot. Audit reveló causa raíz: faltaba override.
+
+Fix aplicado: copié estructura del Yau (lateral más alto que frontal por perspectiva 3/4 con patilla extendida) y ajusté magnitud por foto específica del Feeled (1.5/1.4 vs 1.8/1.4 del Yau).
+
+### Por qué funciona
+
+Cuando una marca/fabricante distribuye fotos profesionales, todas las fotos de la misma línea de productos siguen una **convención visual consistente**:
+- Aspect ratio de las imágenes
+- Bbox del anteojo en pixels (% del frame ocupado)
+- Ángulo de perspectiva (3/4 lateral, frontal directo, etc.)
+- Padding interno
+
+→ Si producto A y producto B son de la misma marca/línea, las fotos tienen ESTRUCTURA SIMILAR. Si el producto A tiene scales `{lateral: 1.8, frontal: 1.4}` que se ven bien, el producto B típicamente necesita scales similares (no idénticos — pero del mismo orden).
+
+**Empezar desde scale 1.0 ignora 14 iters de aprendizaje empírico** (saga Vulk Day Light 2026-05-30 + Rusty Yau iter 14). Es más eficiente copiar la baseline conocida y ajustar.
+
+### Cómo replicar
+
+Cuando cargues un producto nuevo:
+
+1. **Verificar si la marca tiene productos cargados antes**: `grep -n "<brand-slug>/" lib/catalog/image-scale-overrides.ts`.
+2. **Si sí**: copiar las scales del producto más similar (misma línea/perspectiva) como baseline.
+3. **Si no**: empezar con scale 1.0 → ajustar empíricamente tras deploy.
+4. **Documentar la decisión** en comment del override: "copiado de `<producto-similar>` porque fotos del fabricante usan misma convención".
+5. **Anticipar el ajuste post-deploy**: founder probably va a pedir ajuste empírico (más grande/chico). Tener variantes pre-ajustadas en mente (ej. 1.5 → 1.6 → 1.8).
+
+### Trigger
+
+Cualquier carga de producto nuevo donde la marca ya tiene 1+ productos en el catálogo con scales activas.
+
+### Aplicaciones futuras
+
+- **Cargas pendientes de Rusty**: si vienen más modelos (Wayfarer Classic, Aviator Pilot — eliminados antes pero pueden volver), copiar scales de Yau/Feeled.
+- **Vulk**: ya tiene productos cargados (Day Light, Yamain, Stray) con scales activas. Próximos Vulk → copiar el más similar.
+- **Reef / Mormaii / Paula Cahen**: primera carga será baseline 1.0, después serán "copiar del similar".
+
+### Cross-link
+
+- Complementa [[trampas-del-experto-en-few-shot]] y [[jerarquia-fuentes-specs-tecnicos]] (commit `87a99e5`): los 3 patterns son sobre **aprovechar conocimiento previo del proyecto antes de hacer trabajo from-scratch**.
+- Aplicación práctica de [[refinamientos-quirurgicos-vs-rehacer]]: scales son refinamiento empírico que se ACUMULA en el codebase. No reiniciar desde cero por cada producto.
+
+---
+
 ## 2026-05-31 — Jerarquía de fuentes para specs técnicos de productos: sitio oficial fabricante > ML listing > inferencia
 
 **Categoría**: Product data / Source of truth / Discrepancias entre fuentes
