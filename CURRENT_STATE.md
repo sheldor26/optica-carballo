@@ -33,6 +33,26 @@ Precio único $82.745,69. Total stock 8.
 
 ---
 
+## 📋 Cierre FINAL extendido de sesión 2026-05-31 (post-Xold receta)
+
+**Extensión de la sesión** (5 commits adicionales después del primer cierre `7d49b93`):
+
+1. **`443e92b`** Aclaración Vulk Stray: NO polarizado (es receta, no sol). Verificado MCP. Pendiente quitado.
+2. **`4f450dc`** Cierre confirmaciones founder: 11 fotos Xold subidas + bug container verificado + Stray clarificado.
+3. **Memoria feedback persistente** creada: `memory/feedback-c2-vrast-no-mencionar.md` + MEMORY.md index. Regla: no recordar C2 Vrast hasta que founder la traiga.
+4. **`8bff94e`** Rusty Xold Receta cargado: 4 variantes BROWN/MBLK/0292/CRY OPTICAL en category=`anteojos-de-receta`, precio único $82.745,69, stock 8, 2 MLAs (1 multi-variation + 1 single), 9 imágenes. **PRIMER PRODUCTO RUSTY EN CATEGORÍA RECETA**.
+5. **UPDATE adicional Xold sol**: weight_grams=21.5 (estaba null), aplicado en misma transacción que el INSERT del receta — founder pidió "aplicar el peso en el anteojo rusty Xold de Sol en el caso de que no haya sido aplicado".
+
+**Decisión técnica explícita (founder)**: NO mencionar lentes Bluecut/filtro azul en descripción del Xold receta (los cristales se venden por separado según receta del cliente). Documentado en CLOUD_APPLIED para no inventar Bluecut en otros productos receta tampoco.
+
+**Catálogo final post-extensión**:
+- `/anteojos-de-sol/rusty`: 7 modelos (Yau / Feeled / Dearly / Vrast / Etiquet / Tulle / Xold)
+- `/anteojos-de-receta/rusty`: 1 modelo (**Xold Receta — primer Rusty receta del catálogo**)
+- `/anteojos-de-receta`: 2 modelos (Vulk Stray + Rusty Xold Receta)
+- Total catálogo activo: **11 productos × ~25 variantes activas**
+
+**Pendiente único founder**: subir 9 fotos al bucket `products/rusty-xold-receta/` con los nombres elegidos por asistente (XOLD `<color>`-perfil.jpg / -frente.jpg + medidas.jpg).
+
 ## 📋 Cierre FINAL de sesión 2026-05-31 (consolidado completo)
 
 **Arco de la sesión post-compactor** (~25 commits totales). Sintetizando lo más importante:

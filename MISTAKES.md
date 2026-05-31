@@ -24,6 +24,31 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Asumí incorrectamente que Vulk Stray era de sol cuando es de receta — pendiente fantasma "Stray polarizadas" en lista de TODOs durante 2+ turnos
+
+**Estado**: 🟡 Mitigado — verificación MCP confirmó category=`anteojos-de-receta`. Pendiente quitado de CURRENT_STATE. Pattern: verificar categoría del producto en MCP antes de proponer acciones que dependen de la categoría (polarized solo aplica a sol).
+**Categoría**: Assumption / Wrong product category / Pendiente fantasma
+**Patrón**: `assumed-product-attribute-without-mcp-check`
+
+**Qué pasó**: En el cierre consolidado de sesión 2026-05-31 (commit `7d49b93`), incluí "Vulk Stray polarizadas: confirmar si alguna variante es polarizada" como pendiente futuro. Esa propuesta asumía que el Stray era de **sol** (categoría donde aplica el flag polarized). Pero el Stray está en `anteojos-de-receta` desde su carga original (seed 20-22). Founder me corrigió: "es anteojo de receta... no tiene lentes polarizadas". Lo que es OBVIO si hubiera mirado la category_slug antes de proponer la acción.
+
+**Causa raíz**:
+1. **Memoria estereotipada del producto**: en mi cabeza el Stray quedó asociado a "armazón de marca Vulk" y asumí sol por analogía con Vulk Day Light / Yamain. NUNCA verifiqué la categoría real.
+2. **Pendiente acumulado sin verificación**: el ítem "Stray polarizadas" venía arrastrándose en CURRENT_STATE de un turno previo. Lo copié al cierre actualizado sin volver a validar contra cloud. Pendientes-arrastrados son riesgo de propagar errores.
+3. **Verificación MCP era cero costo**: una query `SELECT slug, category_slug FROM products WHERE slug='vulk-stray'` hubiera resuelto el bug en 2 segundos. No lo hice porque parecía "obvio".
+
+**Costos**:
+- Pendiente fantasma en lista durante 2+ turnos
+- Founder tuvo que corregir explícito ("NO, es receta")
+- Erosión sutil de confianza en mis listas de TODOs ("¿hay otros pendientes mal categorizados?")
+
+**Regla preventiva**:
+1. **Antes de agregar/mantener un pendiente** que depende de un atributo del producto (categoría, género, polarized, prescription_adapter, etc.), **verificar el atributo en MCP** con 1 SELECT. Cero costo, evita propagar asunciones.
+2. **Pendientes-arrastrados** entre turnos: validar contra cloud en el cierre. Si el pendiente sigue siendo válido → mantenerlo. Si la asunción que lo motiva era falsa → quitarlo + nota explicativa.
+3. **Cuando founder corrige una asunción mía**, documentar la corrección + verificar si hay OTROS pendientes basados en la misma asunción. Por ejemplo: si yo asumí Stray=sol, ¿asumí otros productos Vulk mal también?
+
+**Verificación contra recurrencia**: próximo cierre con pendientes que dependan de categoría/atributos, correr query MCP de control antes de redactar la lista.
+
 ## 2026-05-31 — Revisado — sin novedad: Xold cargado sin error nuevo (playbook consolidado ejecutado limpio)
 
 **Estado**: N/A

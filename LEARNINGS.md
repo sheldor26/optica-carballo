@@ -22,6 +22,28 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Feedback memory persistente (filesystem `~/.claude/.../memory/`) para preferencias del founder que cruzan sesiones
+
+**Categoría**: Memory / Persistent feedback / Cross-session continuity
+**Confianza**: 🟢 Alta (primera vez que uso el sistema de memoria filesystem en este proyecto — validado al guardar la regla "no mencionar C2 Vrast" que founder dijo explícito que es persistente)
+
+**Qué funcionó**: Founder dijo "no volver a mencionarlo, si alguna vez la empezamos a trabajar, te aviso" sobre C2 Vrast. Esa es una regla persistente que cruza sesiones — no debería ser una entry en MISTAKES o CURRENT_STATE (porque esos docs son mutables y se borra con el tiempo), sino que necesita estar en una superficie que SIEMPRE lea el agente al inicio de sesión.
+
+Guardé la regla en `~/.claude/projects/-Users-juan-Proyectos-web-optica-carballo/memory/feedback-c2-vrast-no-mencionar.md` con frontmatter `type: feedback` + el índice `MEMORY.md` que apunta a ese archivo. El sistema de memoria del agente carga MEMORY.md al inicio de cada sesión (es file-based, persistente, no efímero como CURRENT_STATE).
+
+**Por qué funciona**:
+- **MEMORY.md vs CURRENT_STATE.md**: MEMORY es para preferencias persistentes del founder ("siempre/nunca hacé X"). CURRENT_STATE es para estado de proyecto (qué se construyó, qué falta) que cambia constantemente.
+- **Cross-session**: si en 2 semanas el founder retoma el proyecto, MEMORY.md aún lo carga el agente. CURRENT_STATE podría haberse reorganizado.
+- **Frontmatter `type: feedback`** distingue de otros tipos de memoria (user / project / reference) según el sistema del CLAUDE.md.
+
+**Cómo replicar**: cuando founder dice "siempre hacé X" / "nunca menciones Y" / "preferí X sobre Z" — esas son **reglas de comportamiento persistente** y van a memoria filesystem, NO solo a docs del proyecto. Patrón aplicable:
+- "No mencionar X" → memory `feedback-no-mencionar-X.md`
+- "Siempre preguntar Z antes de Y" → memory `feedback-preguntar-z-antes-de-y.md`
+- "Mi rol es founder no-técnico" → memory `user-role.md`
+- "Prefiero commits chicos" → memory `feedback-commits-chicos.md`
+
+**Anti-pattern evitado**: poner reglas persistentes solo en CURRENT_STATE.md (que cambia frecuentemente) o solo en commit messages (que se pierden visualmente). Reglas persistentes = memoria filesystem.
+
 ## 2026-05-31 — Cierre de sesión: playbook end-to-end de carga de producto consolidado a 1 turno (audit → fetch → apply MCP → verify → scale → commit)
 
 **Categoría**: Workflow / Productivity / End-to-end pipeline
