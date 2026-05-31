@@ -4,6 +4,7 @@ import { CategoriesSection } from '@/components/home/categories-section';
 import { HomeFaqs } from '@/components/home/home-faqs';
 import { HomeHero } from '@/components/home/home-hero';
 import { HomeTools } from '@/components/home/home-tools';
+import { HowWeWork } from '@/components/home/how-we-work';
 import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
 import { NewsletterSection } from '@/components/newsletter/newsletter-section';
@@ -40,13 +41,14 @@ export default async function HomePage() {
       <WebsiteJsonLd />
       <HomeHero siteName={siteName} whatsappLink={whatsappLink} />
       <TrustMarquee />
+      <ValueProps />
+      <HowWeWork />
       <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
       <BrandsSection brands={allBrands} />
       <RecentlyViewed heading="Estuviste mirando" limit={6} minToRender={3} />
       <HomeTools />
       <HomeFaqs />
       <NewsletterSection />
-      <ValueProps />
     </>
   );
 }
