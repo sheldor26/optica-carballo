@@ -38,7 +38,27 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción E implementada — `/sobre-nosotros` refactor editorial completo** (2026-05-30). Founder eligió E.
+🟡 **Recomendador de monturas (Opción F) — audit revela "ya está completo", 3 sub-opciones ofrecidas** (2026-05-30). Founder eligió F. Audit (aplicando learning "auditar antes de crear"):
+
+**El recomendador YA está MUY desarrollado** (~600 líneas total):
+- `app/api/face-shape/route.ts` (222 líneas) — Claude Haiku 4.5 Vision, magic bytes, validation Zod.
+- `lib/face-shape/prompt.ts` (77 líneas) — 7 face shapes + 7 frame shapes + regla óptica de contraste + anti-injection + restricciones éticas.
+- `lib/face-shape/types.ts` (88 líneas) — schema completo.
+- `lib/face-shape/copy.ts` (154 líneas) — UI copy.
+- `components/tools/face-shape-analyzer.tsx` — UI completa con upload + age gate + resize cliente + states + recommendation grid.
+
+**NO requiere "rehacerlo"** como mi propuesta original sugería (era estimado 1-2 días). Realidad: ~3h máximo.
+
+**3 sub-opciones ofrecidas** (refinamientos quirúrgicos):
+- **A — Solo refinamiento visual editorial** (~1h): hero serif 6xl-7xl + DropZone editorial + ResultBlock tipografía display + FAQ consistente con resto del site.
+- **B — Upgrade backend AI** (~2h): aplicar mismo pattern que lector de receta Tier 1 — tool use + extended thinking + few-shot examples + Haiku → Sonnet para mejor accuracy.
+- **C (recomendada) — A + B** (~3h): visual editorial + backend AI upgrade = diferenciador competitivo completo con esfuerzo mínimo.
+
+**Razones para C**: (1) tiempo total real ~3h (no 1-2 días), (2) A alinea con consistencia visual reciente, (3) B repite pattern ya validado del lector receta (código de referencia disponible).
+
+**Próximo paso**: founder elige A/B/C → implemento.
+
+🟢 **Opción E implementada — `/sobre-nosotros` refactor editorial completo** (2026-05-30, superado por F arriba). Founder eligió E.
 
 **Audit previo** (aplicando learning "refinamientos vs rehacer"): la página YA existía con 7 secciones (Hero, Stats, Story, Team, HowWeWork, Brands, ContactCta). NO la rehice — refiné quirúrgicamente.
 
