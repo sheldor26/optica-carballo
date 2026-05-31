@@ -134,7 +134,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         aria-label={product.name}
       >
         <div
-          className="group/image bg-background relative aspect-[3/2] w-full overflow-hidden rounded-md"
+          className="group/image bg-zinc-50 relative aspect-[3/2] w-full overflow-hidden rounded-md transition-shadow duration-500 ease-out group-hover/card:shadow-lg group-hover/card:shadow-zinc-900/[0.08]"
           aria-hidden="true"
         >
           {primaryUrl ? (
@@ -147,7 +147,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 style={{ transform: `scale(${currentImages.primaryScale})` }}
                 className={cn(
-                  'object-contain transition-transform duration-500 ease-out',
+                  'object-contain transition-all duration-700 ease-out group-hover/image:scale-[1.04]',
                   secondaryUrl && 'group-hover/image:opacity-0',
                 )}
               />
@@ -159,7 +159,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   style={{ transform: `scale(${currentImages.secondaryScale})` }}
-                  className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover/image:opacity-100"
+                  className="object-contain opacity-0 transition-all duration-700 ease-out group-hover/image:scale-[1.04] group-hover/image:opacity-100"
                 />
               )}
             </>
@@ -170,8 +170,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </div>
 
-        <div className="mt-4 flex flex-1 flex-col items-center gap-1 text-center">
-          <h3 className="text-foreground text-sm font-medium uppercase tracking-[0.15em] md:text-[15px]">
+        <div className="mt-5 flex flex-1 flex-col items-center gap-2 text-center">
+          <h3 className="text-foreground font-serif text-lg font-medium leading-tight tracking-[-0.01em] transition-colors duration-300 group-hover/card:text-foreground/90 md:text-xl">
             {product.name}
           </h3>
           {product.minPriceCents !== null ? (
@@ -182,7 +182,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <p className="text-muted-foreground text-sm">Sin stock</p>
           )}
           {outOfStock && product.minPriceCents !== null && (
-            <p className="text-muted-foreground/70 mt-0.5 text-xs">Sin stock</p>
+            <p className="text-muted-foreground/70 mt-0.5 text-xs uppercase tracking-wider">
+              Sin stock
+            </p>
           )}
         </div>
       </Link>

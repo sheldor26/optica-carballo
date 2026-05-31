@@ -78,11 +78,12 @@ export function FrameShapeFilters({ availableShapes, selectedShapes }: Props) {
   const clear = () => updateUrl([]);
 
   return (
-    <div className="border-border/40 border-y bg-background py-4">
+    <div className="border-border/40 border-y bg-background py-5 md:py-6">
       <div className="container">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-muted-foreground mr-2 text-xs font-medium uppercase tracking-wider">
-            Filtrar por forma:
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
+          <p className="text-foreground/60 mr-2 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em]">
+            <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
+            Filtrar por forma
           </p>
           {availableShapes.map((shape) => {
             const active = selectedShapes.includes(shape);
@@ -93,10 +94,10 @@ export function FrameShapeFilters({ availableShapes, selectedShapes }: Props) {
                 onClick={() => toggle(shape)}
                 aria-pressed={active}
                 className={cn(
-                  'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                  'rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-300',
                   active
-                    ? 'border-foreground bg-foreground text-background'
-                    : 'border-border/60 bg-background text-foreground hover:bg-muted/40',
+                    ? 'border-foreground bg-foreground text-background shadow-sm'
+                    : 'border-border/60 bg-background text-foreground hover:border-foreground/40 hover:bg-zinc-50',
                 )}
               >
                 {labelFor(shape)}
@@ -107,9 +108,9 @@ export function FrameShapeFilters({ availableShapes, selectedShapes }: Props) {
             <button
               type="button"
               onClick={clear}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 rounded-full border border-transparent px-2 py-1 text-xs transition-colors hover:bg-muted/40"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted/40 inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1.5 text-sm transition-colors"
             >
-              <X className="size-3" />
+              <X className="size-3.5" />
               Limpiar
             </button>
           )}
