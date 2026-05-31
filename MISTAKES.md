@@ -24,6 +24,57 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Sobre-estimé 5 veces consecutivas el trabajo de "rehacer/mejorar X" sin auditar componente actual
+
+**Estado**: 🟡 Mitigado — pattern detectado tras 5 recurrencias + learning escalado documentado. Aplicación de regla preventiva pendiente validar en próximas estimaciones.
+**Categoría**: Estimation / Self-calibration / Anti-pattern recurrente
+
+### Qué pasó
+
+En la sesión 2026-05-30 ofrecí al founder estimaciones de tiempo para 5 sub-opciones consecutivas. CADA UNA fue sobre-estimada 3-6x respecto al trabajo real tras audit:
+
+- Opción 1 (homepage post-hero): 3-4h → real 1.5h
+- Opción 2 (PDP editorial): 4-5h → real 45min
+- Opción 3 (catalog grid): 2-3h → real 30min
+- Opción E (sobre-nosotros): 3-4h → real 1h
+- Opción F (recomendador IA): 1-2 días → audit reveló <3h
+
+Las 5 veces, el "rehacer/mejorar" se reveló como "refinar componente ya existente" tras leer el código actual.
+
+### Causa raíz
+
+**Mi instinto al recibir un pedido del founder es estimar como si fuera trabajo from-scratch**, sin considerar que el codebase tiene >1 mes de historia y que MUCHO está ya construido. El founder describe necesidad en lenguaje de producto ("hacer un recomendador de monturas IA"), no en lenguaje de codebase ("refinar visualmente la página existente que ya tiene Vision API + 7 face shapes detectadas").
+
+Síntoma: el founder recibe estimación inflada → posiblemente prioriza otras cosas pensando que es trabajo grande → oportunidades perdidas.
+
+### Costo
+
+- **Cognitivo del founder**: cuando le digo "1-2 días", piensa "es caro, mejor empiezo con algo más rápido". Si supiera que son 3h, podría haber priorizado distinto.
+- **Trust**: estimaciones sistemáticamente infladas erosionan la confianza en mis estimaciones futuras.
+- **Decisiones de scope**: 5 opciones de las que se eligieron solo algunas — la sobre-estimación pudo haber sesgado las elecciones.
+
+NO hubo costo de re-trabajo ni errores técnicos. El daño es **cognitivo + de trust**, no técnico.
+
+### Regla preventiva
+
+**ANTES de dar cualquier estimación de tiempo para un pedido de feature/mejora/rediseño**:
+
+1. **Audit explícito de 1-2 minutos**: `ls components/<area>/`, `wc -l <archivos>`, leer 1-2 archivos clave.
+2. **Diagnóstico al founder** antes de la estimación: "Ya existe X con Y. Falta Z. El trabajo es refinar A + crear B."
+3. **Re-estimación con factor de corrección**: si mi instinto dice "Nh from-scratch", probar "N/3 a N/5h" como rango realista cuando el componente existe.
+4. **Si recurre 6ta o 7ma vez** este pattern: escalar a regla 14 en CLAUDE.md (audit obligatorio).
+
+### Trigger
+
+Cualquier pedido del founder que use verbos "rehacer / mejorar / rediseñar / agregar feature X" sobre un área del producto.
+
+### Cross-link
+
+- Documentado en LEARNINGS como [[mis-estimaciones-sobre-estiman-3-6x-sin-audit]].
+- Aplicación de regla preventiva relacionada con [[auditar-componentes-existentes-antes-de-crear]] y [[refinamientos-quirurgicos-vs-rehacer]].
+
+---
+
 ## 2026-05-30 — Asumí que founder no-técnico sabía cómo recortar correctamente datos PII de recetas (sin esquema visual previo)
 
 **Estado**: 🟡 Mitigado mid-sesión — esquema visual de 3 zonas (TAPAR/DEJAR/TAPAR) entregado al founder tras recurrencia detectada en receta #4.

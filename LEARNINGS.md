@@ -22,6 +22,61 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Mis estimaciones de "rehacer X" sobre-estiman 3-6x cuando el codebase tiene >1 mes de historia
+
+**Categoría**: Estimation / Self-calibration / Meta-pattern
+**Confianza**: 🟢 Muy alta (5 recurrencias consecutivas validadas en sesión 2026-05-30)
+**Status**: 🔴 **Candidato a escalación a regla CLAUDE.md** — pattern validado 5 veces seguidas.
+
+### Qué funcionó (en realidad: qué se confirmó como pattern)
+
+5 sub-opciones consecutivas donde mi estimación original fue **muy mayor** que el trabajo real tras audit:
+
+| Opción | Mi estimación original | Real tras audit | Factor |
+|---|---|---|---|
+| 1 (homepage post-hero) | 3-4h | ~1.5h | 2.5x |
+| 2 (PDP editorial) | 4-5h | ~45min | 5-6x |
+| 3 (catalog grid premium) | 2-3h | ~30min | 4-6x |
+| E (sobre-nosotros) | 3-4h | ~1h | 3-4x |
+| F (recomendador IA) | 1-2 días | <3h (sin implementar aún) | 3-5x |
+
+**Pattern claro**: cuando founder pide "feature X" o "mejorar/rehacer Y", mi instinto es estimar **como si fuera from-scratch**. La realidad de un codebase con >1 mes de historia es que **buena parte ya está construida** — solo falta refinar o agregar pedazos puntuales.
+
+### Por qué pasa
+
+1. **Sin audit**, leo el pedido del founder como descripción de scope ("rehacer PDP") y estimo el scope literal (rehacer = from-scratch).
+2. **Con audit** (leer page.tsx + componentes existentes), descubro que el feature ya tiene 70-90% construido — el "rehacer" se vuelve "refinar".
+3. **El delta de tiempo** entre "from-scratch" y "refinar" es 3-6x.
+
+El audit toma 1-2 minutos. La diferencia de estimación es 1-5+ horas.
+
+### Cómo replicar (versión escalada)
+
+**ANTES de dar una estimación de tiempo para cualquier pedido de feature/mejora/rediseño en este codebase**:
+
+1. **Audit obligatorio** (1-2 min): `ls components/<area>/`, `wc -l app/<route>/page.tsx`, leer 1-2 archivos clave.
+2. **Diagnóstico explícito** al founder ANTES de dar la estimación:
+   - "Audité — ya existe `<componente>` con `<funcionalidad>`. Hay gaps de `<X, Y, Z>`."
+   - "El trabajo real es: refinar A + crear B (sin tocar C que ya funciona)."
+3. **Re-estimar con factor de corrección**: si mi instinto dice "Nh", probar "N/3 a N/5h" como rango más realista cuando el componente ya existe.
+
+### Aplicaciones inmediatas
+
+- Próximas opciones del backlog (G página 404, H cargar productos, próximo artículo del Lote 1): audit ANTES de estimar.
+- Cuando founder vuelva con "quiero feature Z": audit como primer paso siempre.
+
+### Escalación recomendada
+
+Si esto recurre 1-2 veces más (6-7ma vez): **agregar a CLAUDE.md** como regla 14:
+
+> 14. **Audit obligatorio antes de estimar**. Cualquier estimación de "Nh para rehacer/mejorar X" sin audit previo del componente actual viola la regla. Audit = `ls` + lectura de 1-2 archivos clave (~2 min). Sin audit, mis estimaciones sobre-estiman 3-6x.
+
+### Cross-link
+
+- Complementa [[auditar-componentes-existentes-antes-de-crear]] y [[refinamientos-quirurgicos-vs-rehacer]] — son las dos partes (detección + acción) cuyo meta-resultado es este pattern de estimación calibrada.
+
+---
+
 ## 2026-05-30 — Workflow "agent draft → agent validate → human apply" para contenido YMYL multi-agente
 
 **Categoría**: Multi-agent / Content production / YMYL / E-E-A-T
