@@ -1,5 +1,76 @@
 # Óptica Carballo — Current State
 
+## 📋 Cierre consolidado de sesión 2026-05-31
+
+**Arco completo** (17 commits desde el inicio de la sesión post-compactor):
+
+### Productos cargados (5 nuevos)
+1. **Rusty Dearly** (seed 24): cuadrado femenino G-Flex, 3 variantes, 17,3g — `e2839aa-`anteriores
+2. **Rusty Vrast** (seed 26): aviador metal polarizado unisex, 3 variantes, apto receta — `e2839aa`
+3. **Rusty Etiquet** (seed 28): redondo femenino G-Flex, 4 variantes (3 polarizadas + 1 degradé) — `fc81947`
+4. **Rusty Tulle** (seed 29): aviador metal polarizado unisex, 4 variantes, terminales acetato hechas a mano — `935f977`
+
+Total productos activos: **10** (6 Rusty + 3 Vulk + 1 Day Light marcado polarizado).
+Total variantes: **22** (12 polarizadas + 10 no).
+
+### Features y fixes implementados
+- **MCP Supabase activado** con autorización standing del founder para apply via MCP (carga de productos DML idempotente).
+- **Share buttons** PDP + artículos: 5 botones (WhatsApp + Facebook + Email + Copiar + Native share) en popover minimal sutil. Reubicado al row top junto a compare + wishlist (`triggerLabel={false}`). Tracking GA4 `share` event activo.
+- **og:image** populado en `buildProductMetadata` (foto primary del producto) y artículos (`heroImage` del frontmatter). Preview correcto al compartir vía WhatsApp/Facebook/Telegram.
+- **Variant thumbnails sistémicos** en todos los catálogos (gender / shape / category-filtered / favoritos) — antes solo se renderizaban en `/marcas/*`. Helper `buildCardVariants()` extraído para single source of truth.
+- **Indicador sutil de stock en thumbnails de variantes**: dot rojo (sin stock) + dot ámbar (≤3 unidades). ~22 variantes con estado visible.
+- **Badge POLARIZADO** funcionando cross-catálogo: 12 variantes con badge (antes solo 1 — bug por drift entre código y data). 4 fallbacks de detección (polarized / is_polarized / lens_treatment / "POL" en model_code).
+- **VariantList PDP**: layout reorganizado a 2 líneas (label+badge en línea 1, model_code+SKU en línea 2 gris).
+- **Vulk Day Light marcado polarizado** (4 variantes) — UPDATE puntual aplicado vía MCP.
+
+### Scale overrides aplicados (sub-regla 15)
+- Rusty Yau: 1.8/1.4 → 1.4/1.15 (era grande)
+- Rusty Dearly: 1.15 uniforme
+- Rusty Vrast: 1.0 → 1.4/1.15 (chico) → 1.15/1.0 (recortaba en iter 1)
+- Rusty Etiquet: 1.15/1.0 default
+- Rusty Tulle: 1.15/1.0 default
+
+### Reglas escaladas a CLAUDE.md
+- **Regla 15 + sub-regla obligatoria**: cualquier cambio de scale aplica AUTOMÁTICAMENTE en todas las categorías (pipeline TypeScript-enforced). Sub-regla: post-carga de producto OBLIGATORIO proponer scale override comparando contra grid existente.
+
+### Anti-patterns documentados (MISTAKES.md, todos del día)
+- **88 commits sin push** afirmados sin verificar `git rev-list --count` — info del compactor era falsa, regla: verificar git con comando antes de afirmar estado.
+- **CLOUD_APPLIED.md desincronizado**: 10 seeds + 1 migración aplicadas pero no registradas — regla: actualizar en mismo turno post-apply.
+- **Inventé "sin tornillos diminutos" en Dearly**: afirmación por exclusión sin verificar — regla: prohibido afirmaciones por exclusión sin source explícito.
+- **Fix sistémico de scale solo cubría scale, no variants** — regla: pre-fix shape diff obligatorio en UI compartida cross-pipeline.
+- **Blind spot share buttons**: 2+ meses sin proponerlos en e-commerce — regla: audit periódico baseline e-commerce.
+- **Badge Polarizado escrito pero nunca renderizó**: drift code-data — regla: query MCP coverage real antes de escribir lógica que depende de JSONB.
+- **Scale Vrast 1.4 recortó**: 3era recurrencia scale-iter — regla: default 1.15 + cap 1.3 sin evidencia visual.
+- **Model_code largo de Yau quebró layout VariantList**: feature-tested-with-easy-case-not-edge-case — regla: probar con el caso extremo antes de mergear.
+
+### Cross-source validation patterns (LEARNINGS.md, todos del día)
+- **Endpoint `/api/admin/ml-import-preview/`** sin auth → autocompletar seeds en 1 turno.
+- **MCP Supabase como source of truth** vs memoria del founder.
+- **Founder cubre blind spot e-commerce baseline** que IA no detecta proactivamente.
+- **Single point of normalization**: mover normalización a query layer evita drift visual cross-pipeline.
+- **Autorización standing** founder reduce fricción del loop de carga.
+- **Cross-source verification** de atributos antes de hardcodearlos (precio + título + code vs descripción general).
+
+### Pendientes founder (próximo paso exacto)
+1. **Subir fotos al bucket** de los 3 productos cargados sin fotos visibles aún:
+   - `products/rusty-etiquet/` (9 archivos con nombres exactos en search)
+   - `products/rusty-tulle/` (9 archivos con nombres exactos)
+   - (Rusty Vrast y Dearly ya tienen fotos)
+2. **Verificar visualmente en producción** post-deploy:
+   - Tamaños de Etiquet y Tulle vs resto del catálogo (si quedan chicos/grandes, ajustar scale)
+   - Badge POLARIZADO visible en 12 variantes (Dearly C4, Vrast 3, Yau 3, Yamain SBLK, Day Light 4, Etiquet 3, Tulle 4)
+   - Layout VariantList con codes largos (Yau especialmente)
+   - Indicador de stock en thumbnails (rojo + ámbar visibles)
+3. **C2 Vrast**: si vuelve stock en ML, pasame datos para seed adicional.
+4. **Vulk Stray**: confirmar si alguna variante es polarizada (actualmente sin flag).
+
+### Estado git
+- Branch: `main`
+- Origin sincronizado: ✅ (`status` limpio post-último push)
+- Último commit: `935f977 feat(rusty-tulle)`
+
+---
+
 ## Status
 
 🟢 **Rusty Tulle cargado: 4 variantes aviador metal polarizadas + scale override sub-regla 15** (2026-05-31).
