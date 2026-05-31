@@ -38,7 +38,22 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Pivot solicitado founder — pausada recolección few-shot, 4 opciones de mejoras visuales ofrecidas** (2026-05-30). Founder dijo "vamos con otra cosa... mejoremos otros aspectos de la página". Pausa la recolección de ground truth en 4/13 confirmadas (#1, #2, #3 pendiente confirm, #5) + 1 esperando re-crop (#4) + 16 trampas oro acumuladas. **Estado preservado**: cuando founder vuelva a tener tiempo + recetas re-recortadas, retomo desde donde dejamos.
+🟢 **Opción 1 implementada — ValueProps refinada + HowWeWork nueva (bloques editoriales post-hero)** (2026-05-30). Founder eligió Opción 1 con "sigo tu recomendación".
+
+**Diagnóstico previo**: la home ya tenía 6 componentes (`TrustMarquee`, `CategoriesSection`, `BrandsSection`, `RecentlyViewed`, `HomeTools`, `HomeFaqs`, `NewsletterSection`, `ValueProps`). Hallazgo: ValueProps estaba al final post-newsletter — los 4 trust signals (regente / 30+ años / envíos / WhatsApp) quedaban perdidos. Y faltaba "Cómo trabajamos" del plan original.
+
+**Implementación**:
+1. **`components/home/value-props.tsx`** refactorizado — refactor visual completo: serif display 6xl, layout 4-col con border-t por item, fondo light con gradient sutil. Copy mejorado (NEA, Virasoro, etc). Movido al 3er lugar post-TrustMarquee.
+2. **`components/home/how-we-work.tsx`** creado — 4 pasos numerados (Elegí → Asesoramos → Armamos → Te llega). Estética dark consistente con HomeHero (mesh glow + brand color en números + serif). CTA a `/preguntas-frecuentes`.
+3. **`app/(storefront)/page.tsx`** reordenado: `Hero(dark) → TrustMarquee(dark) → ValueProps(light) → HowWeWork(dark) → Categories(light) → Brands(dark) → ...`. Alternancia visual mantenida.
+
+**Decisión técnica**: refinar componentes existentes en vez de duplicar. Detecté que el `ValueProps` actual tenía los 4 trust signals correctos pero mal posicionados y visualmente plano. En vez de crear nuevo bloque "Por qué Óptica Carballo", refactoricé el existente con la estética editorial dark/light consistente con el hero.
+
+**Build verificado**: `npx tsc --noEmit` OK + commit `fe27666`.
+
+**Próximo paso**: founder pushea + revisa visualmente la home. Si OK, pasamos a Opción 2 (PDP editorial), 4 (sobre-nosotros), o 3 (catalog grid premium) según prioridad.
+
+🟡 **Pivot solicitado founder — pausada recolección few-shot, 4 opciones de mejoras visuales ofrecidas** (2026-05-30, superado por implementación arriba). Founder dijo "vamos con otra cosa... mejoremos otros aspectos de la página". Pausa la recolección de ground truth en 4/13 confirmadas (#1, #2, #3 pendiente confirm, #5) + 1 esperando re-crop (#4) + 16 trampas oro acumuladas. **Estado preservado**: cuando founder vuelva a tener tiempo + recetas re-recortadas, retomo desde donde dejamos.
 
 **4 opciones nuevas ofrecidas para mejorar UX visible**:
 
