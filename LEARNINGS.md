@@ -22,6 +22,33 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Cross-source verification de "polarizada vs no" antes de hardcodearlo en seed evita mistake del Dearly bisagras (regla dura negocio #3 + #4)
+
+**Categoría**: Honesty / Cross-source validation / Data quality
+**Confianza**: 🟢 Alta (validado este turno cargando Rusty Etiquet: founder dijo en descripción general "lente polarizada" pero la 4ta variante NO lo era — detectado cruzando 3 fuentes antes de marcarla polarizada en el seed)
+
+**Qué funcionó**: Al cargar Rusty Etiquet, founder dijo en la descripción técnica "LENTE: POLARIZADA Y DE POLICARBONATO" implicando que TODAS las variantes son polarizadas. Pero los datos reales mostraban:
+1. **Precio**: 3 variantes a $76.194, 1 a $66.457 (la MBLK-BROWN — anomalía sospechosa)
+2. **Título ML**: 3 dicen "Polarizado", 1 dice "Degradé"
+3. **Code del fabricante**: 3 tienen "POL" en el code, 1 NO ("G. BROWN" sin POL)
+
+Cuando 3 fuentes independientes apuntan a un mismo conclusión (la 4ta NO es polarizada), domino sobre la descripción general del founder. Aplicado: la marqué `polarized: false` en el seed.
+
+**Por qué funciona**:
+- **Triangulación reduce error**: una sola fuente puede equivocarse (founder olvida un detalle, descripción genérica). 3 fuentes que coinciden = alta confianza.
+- **Evita mistake del Dearly bisagras** del mismo día (hardcodeé "sin tornillos" sin verificar — generó disgusto). La regla previa "no afirmaciones por exclusión sin verificar" extiende a "no afirmaciones positivas universales sin verificar cada caso".
+- **Honestidad regla dura #3**: NO prometemos lo que no podemos cumplir. Si vendo "lente polarizada" y el cliente recibe degradé, decepción.
+
+**Cómo replicar el pattern**:
+1. **Cuando founder pasa info de un MODELO con N variantes**: para cualquier atributo binary (polarizada, espejada, antirreflex, fotosensible, etc.), verificar variant-por-variant en 2+ fuentes ANTES de propagarlo a todas.
+2. **Señales rojas de divergencia**:
+   - Precio distinto entre variantes "supuestamente iguales"
+   - Título ML que dice algo distinto a la descripción general
+   - Codes del fabricante con marcadores distintos (POL vs no-POL, REVO vs no-REVO)
+3. **Resolver con datos**, no con asunción optimista. "3 variantes son polarizadas + 1 es degradé" es más útil para el cliente que "todas son polarizadas (mentira)".
+
+**Generalización**: aplica a cualquier feature de catálogo donde se afirme un atributo del modelo entero pero las variantes pueden diferir. Counter-pattern: asumir homogeneidad cuando la data sugiere heterogeneidad.
+
 ## 2026-05-31 — Revisado — sin novedad: fix layout VariantList sin pattern nuevo (UX iteration normal post-feature)
 
 **Categoría**: UX iteration

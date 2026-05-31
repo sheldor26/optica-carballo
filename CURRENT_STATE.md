@@ -2,6 +2,27 @@
 
 ## Status
 
+🟢 **Rusty Etiquet cargado: 4 variantes (3 polarizadas + 1 degradé) — apply via MCP + scale override sub-regla 15** (2026-05-31).
+
+**Cambios** (commit pending):
+- `supabase/seeds/28_rusty_etiquet.sql`: producto + 4 variantes + 9 imágenes. Aplicado en Cloud vía MCP (autorización standing).
+- `lib/catalog/image-scale-overrides.ts`: 8 entries Rusty Etiquet con scale 1.15 lateral / 1.0 frontal (default sub-regla 15, alineado con Feeled/Dearly/Vrast iter 2).
+- `CLOUD_APPLIED.md`: entry con verificación.
+
+**Datos clave**:
+| SKU | Variante | Precio | Stock | Polarizada |
+|---|---|---|---|---|
+| 957070 | BROWN/B15 POL | $76.194 | 7 (default) | ✅ |
+| 957071 | SBLK/S10 POL | $76.194 | 2 (pocas) | ✅ |
+| 957072 | L.PINK/DRT-03 POL | $76.194 | 6 | ✅ |
+| 957073 | MBLK-BROWN/G.BROWN | **$66.457,11** | 5 | ❌ (degradé) |
+
+**Decisión técnica**: la 4ta variante NO se marca polarized=true a pesar de que founder en la descripción general dijo "lente polarizada". Verifiqué cruzando 3 fuentes: (a) precio menor ($66.457 vs $76.194), (b) título ML "Degradé" no "Polarizada", (c) code sin "POL". Aplicé honestidad regla dura negocio #3.
+
+**Verificación MCP post-apply**: `variants_active=4, total_stock=20, images=9, shape='redondo', polarized=3true+1false`.
+
+**Pendiente founder**: subir 9 fotos al bucket `products/rusty-etiquet/` con los nombres exactos que mostraste en search.
+
 🟢 **VariantList PDP: layout reorganizado a 2 líneas (era 3, problema estético)** (2026-05-31). Founder reportó: "problema estetico... solucionar en todos". Con model_codes largos (Yau: "MBLK/S10 POL YELLOW") + badge POLARIZADO en flex-wrap → el bloque ocupaba 3 líneas (label+code → wrap → badge → SKU) y se veía recargado.
 
 **Fix**:

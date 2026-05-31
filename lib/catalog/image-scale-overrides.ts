@@ -108,6 +108,19 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-vrast/VRAST C3 P-frente.jpg': 1.0,
   'rusty-vrast/VRAST C4 P-perfil.jpg': 1.15,
   'rusty-vrast/VRAST C4 P-frente.jpg': 1.0,
+
+  // Rusty Etiquet — sub-regla 15 obligatoria post-carga: scale 1.15
+  // default emparejando con Feeled/Dearly/Vrast iter 2. Si tras deploy
+  // queda chico vs grid → subir escalonado a 1.2. Si queda grande → 1.0.
+  // 8 entries (2 por variante × 4 variantes).
+  'rusty-etiquet/ETIQUET BROWN B15 POL p.jpg': 1.15,
+  'rusty-etiquet/ETIQUET BROWN B15 POL f.jpg': 1.0,
+  'rusty-etiquet/ETIQUET SBLK S10 POL.jpg': 1.15,
+  'rusty-etiquet/ETIQUET SBLK 10 POL.jpg': 1.0,
+  'rusty-etiquet/ETIQUET L.PINK DRT-03 POL. perfil.jpg': 1.15,
+  'rusty-etiquet/ETIQUET L.PINK DRT-03 POL f.jpg': 1.0,
+  'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-P.jpg': 1.15,
+  'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-F.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
