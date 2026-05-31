@@ -2,6 +2,22 @@
 
 ## Status
 
+🔴 **INCIDENTE PRIVACIDAD — recetas con datos personales en bucket PÚBLICO, acción correctiva inmediata founder** (2026-05-30). Detecté al bajar IMG_9437 para verificación visual:
+
+**Doble problema**:
+1. **Recetas NO anonimizadas**: visible nombre paciente "Aranceli Nieto", DNI/afiliado 63.07.07.43.964, nombre oftalmólogo "Dr. Rubén Darío Bentos", matrícula M.P. 7172, email, celular, domicilio consultorio.
+2. **Bucket PÚBLICO**: founder subió a `brands-shared/prescription-examples/` que tiene servicio público (`/storage/v1/object/public/...`). Bajé la imagen con curl sin auth en 2 segundos → cualquier persona con la URL puede ver las recetas.
+
+**Causa raíz mía**: en turno previo le sugerí a founder no-técnico subir a `brands-shared/` sin advertirle que era bucket público. Documentado en MISTAKES.md "Sugerí al founder no-técnico subir datos médicos a bucket PÚBLICO".
+
+**Acciones correctivas comunicadas al founder** (esperando ejecución):
+1. Borrar TODOS los IMG_94XX.jpeg del bucket público AHORA.
+2. Anonimizar cada receta en Preview (Tools → Annotate → Rectangle negro tapando paciente/oftalmólogo/matrícula/contacto).
+3. Crear bucket NUEVO `prescription-examples` con Public ❌ DESACTIVADO.
+4. Re-subir recetas anonimizadas al bucket privado.
+
+**Flow del upgrade B PAUSADO** hasta resolver. Tier 1 (tool use + few-shot descriptivos + extended thinking) sigue funcionando — no afectado.
+
 🟡 **Lector de receta — preparando upgrade B (imágenes reales en few-shot)** (2026-05-30, post-implementación Tier 1).
 
 Founder dijo "ya tengo recetas". Le pasé checklist de 3 cosas que necesito antes de integrar:

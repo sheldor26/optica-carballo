@@ -24,6 +24,74 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Sugerí al founder no-técnico subir datos médicos a bucket PÚBLICO (`brands-shared/`) sin advertir privacidad
+
+**Estado**: 🔴 Abierto — riesgo legal ACTIVO mientras founder no borre del bucket público
+**Categoría**: Privacy / Legal / Founder-non-technical / Bucket configuration
+
+### Qué pasó
+
+Founder dijo "ya tengo recetas" (para integrar al few-shot del lector de receta IA). Yo le pasé checklist de 3 ítems (anonimización, ubicación, ground truth). En "ubicación" le ofrecí 2 opciones:
+
+> **A**: subilas vos al bucket Supabase `brands-shared/prescription-examples/` ... Crear folder `prescription-examples` → Upload files
+
+Founder ejecutó la opción A. Subió 13 recetas (IMG_9437.jpeg → IMG_9449.jpeg) al bucket `brands-shared/` que es **PÚBLICO** (lo usamos para servir kit Vulk, category-sol, hero-editorial — assets de marketing servibles directo).
+
+Cuando bajé la primera imagen para verificar visualmente la anonimización (`curl` sin auth, en 2 segundos → confirmando que el bucket es público), descubrí que TAMPOCO estaban anonimizadas:
+- Nombre paciente: "Aranceli Nieto"
+- Nº afiliado/DNI: 63.07.07.43.964
+- Oftalmólogo: "Dr. Rubén Darío Bentos" + matrícula M.P. 7172 + email + celular + domicilio
+
+→ **Doble problema**: datos médicos NO anonimizados expuestos en bucket PÚBLICO. Cualquiera con la URL puede ver recetas de pacientes reales.
+
+### Causa raíz
+
+**Yo le sugerí al founder un bucket que YO SÉ que es público, sin advertirle explícitamente que era público, para subir datos que son sensibles por ley 25.326.**
+
+Específicamente:
+1. **Founder es no-técnico** (CLAUDE.md "Quién soy yo" lo dice claro). Confía en mis sugerencias técnicas. "Subilo al bucket X" para él significa "Claude dice que ese es el lugar correcto".
+2. **Yo conocía el dato relevante**: `brands-shared` es público (lo uso en el hero, con URL `/storage/v1/object/public/brands-shared/...`). El prefijo `/public/` en la URL es signal claro.
+3. **Yo NO conocía un dato crítico**: si las recetas estaban anonimizadas. Ese era un check del founder, pero yo no esperé confirmación explícita antes de sugerir bucket.
+4. **Reusé patrón de bucket sin re-evaluar contexto**: en sesiones anteriores establecimos `brands-shared` como convención para "assets cross-brand". Apliqué el patrón a "ejemplos de recetas" sin re-pensar si "datos sensibles de salud" merecen tratamiento distinto que "logos y fotos editoriales".
+
+Mi prompt original al founder DEBÍA haber dicho:
+> "Te recomiendo crear un bucket NUEVO llamado `prescription-examples`, marcarlo como **privado** (no público). Datos médicos = ley 25.326 = no pueden estar en bucket público. Yo accedo con service_role key del backend, no necesita ser público."
+
+En cambio dije:
+> "subilas vos al bucket Supabase `brands-shared/prescription-examples/`"
+
+Eso es una sugerencia técnica negligente para un founder no-técnico con datos sensibles.
+
+### Costo
+
+- **Legal**: ventana de exposición pública de datos médicos. Tiempo exacto depende de cuándo founder borra. Si trasciende → riesgo Defensa del Consumidor + AAIP (Agencia de Acceso a la Información Pública) + posible demanda paciente. Aunque no se materialice, el incidente queda en logs de Supabase (CDN cache de URLs accedidas).
+- **Trust del paciente cuyas recetas se subieron**: founder probablemente tiene relación con esos pacientes (clientes de Óptica Carballo). Si descubren que sus datos médicos quedaron expuestos públicamente, daño reputacional severo.
+- **Re-trabajo**: founder debe borrar bucket + anonimizar manualmente + recrear bucket privado + re-subir.
+
+### Regla preventiva
+
+**Antes de sugerir cualquier upload de datos sensibles (médicos, personales, financieros) por parte del founder no-técnico, hacer SIEMPRE 3 cosas:**
+
+1. **Marcar explícitamente la sensibilidad del dato**: "Esto cae bajo ley 25.326 / datos médicos / PII — requiere precauciones especiales".
+2. **Especificar el tipo de bucket EXACTO**: "bucket NUEVO, marcado PRIVADO, accedido solo con service_role del backend". Nunca reusar bucket público existente sin re-evaluar.
+3. **Esperar confirmación explícita de anonimización ANTES de bajar/usar las imágenes**. Si founder dice "ya las subí" sin confirmar anonimización, NO proceder a integrarlas — pedir confirmación primero.
+
+**Trigger del trigger**: cualquier feature que involucre datos del paciente / cliente final más allá de lo público (recetas, DNI, dirección, info médica, info financiera) → pause + revisar bucket destino + revisar anonimización ANTES de cualquier upload.
+
+### Cross-link
+
+- Relacionado con [[founder-no-tecnico-pedi-verificacion-empirica]]: cuando founder no-técnico ejecuta una sugerencia mía, el peso recae en MÍ haber sido específico sobre el riesgo.
+- Mi rol según CLAUDE.md: "Cuando hay un tradeoff técnico, lo explicás simple y preguntás antes de proceder". En este caso el tradeoff era público-vs-privado bucket — debería haberlo explicado, no asumir que founder elegía.
+
+### Acción correctiva inmediata (founder)
+
+1. **AHORA**: Supabase Dashboard → Storage → `brands-shared/prescription-examples/` → seleccionar TODOS los IMG_94XX → Delete.
+2. **Después**: anonimizar recetas en Preview (Tools → Annotate → Rectangle negro).
+3. **Después**: crear bucket NUEVO `prescription-examples` con Public ❌ DESACTIVADO.
+4. **Después**: re-subir recetas anonimizadas al bucket privado.
+
+---
+
 ## 2026-05-30 — Asumí approach hero (carrusel productos del catálogo) sin clarificar estética target del founder
 
 **Estado**: 🟡 Mitigado — pivot reconocido, esperando decisión founder
