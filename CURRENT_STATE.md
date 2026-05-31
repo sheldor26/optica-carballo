@@ -2,6 +2,15 @@
 
 ## Status
 
+🟢 **Scale Rusty Vrast iter 2: bajado a 1.15/1.0 (estaba 1.4/1.15 → cortaba)** (2026-05-31). Founder reportó "quedo cortada la foto del vrast, solucionar". Iter 1 (1.4 lateral) era demasiado agresivo — el aviador con patillas extendidas se salía del frame aspect 3/2.
+
+**Iteración**:
+- Iter 1 (descartado): 1.4 lateral / 1.15 frontal → recortaba el lente derecho
+- Iter 2 (actual): 1.15 lateral / 1.0 frontal → empareja con Feeled (1.15/1.05) sin recortar
+- Si queda chico al lado de Feeled/Dearly → subir a 1.2/1.05 escalonado
+
+**Lesson aprendida (ya en MISTAKES)**: el pattern "calibrar scale aisladamente sin medir el aspect ratio de la foto" es la 3era recurrencia del día. Sub-regla 15 ya documenta "comparar contra grid existente", pero faltaba "verificar que el scale no recorte el bbox del producto".
+
 🟢 **Vulk Day Light marcado como polarizado (4 variantes) — badge ahora visible en PDP** (2026-05-31). Founder confirmó "el day light es polarizado".
 
 **Cambios** (commit pending):

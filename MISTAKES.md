@@ -24,6 +24,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Scale Vrast iter 1 (1.4/1.15) recortó la foto en `/marcas/rusty` — calibré scale "para que se vea grande" sin considerar que las patillas extendidas exceden el frame aspect 3/2 (3era recurrencia scale-iter del día)
+
+**Estado**: 🟡 Mitigado — bajado a 1.15/1.0 en iter 2. Sub-regla 15 (post-carga: comparar contra grid) ya documenta proceso, pero faltaba "verificar que scale > 1.2 no recorta el bbox del producto", especialmente en aviadores/wraparounds con patillas extendidas lateralmente.
+**Categoría**: Product imagery / Scale calibration / Pattern recurrence 3rd time
+**Patrón**: `scale-too-aggressive-cuts-bbox`
+
+**Qué pasó**: Cuando founder dijo "agrandar el vrast" (turno previo), apliqué scale 1.4 lateral / 1.15 frontal por analogía con Yau (que tiene scale alto porque sus fotos lo necesitan). Pero NO consideré que:
+1. Las fotos del Vrast pueden tener aspect distinto al Yau
+2. El aviador en P-perfil tiene patillas extendidas que ya ocupan más del 90% del frame natural
+3. Scale 1.4 con patillas extendidas → recorte de los costados (lente derecho cortado, founder reportó)
+
+Iter 1: 1.4/1.15 → cortaba (este turno).
+Iter 2 (este turno): 1.15/1.0 → emparejar con Feeled sin recortar.
+
+**3era recurrencia hoy del pattern "ajustar scale en isolation"**:
+1. Yau original 1.5/1.2 → chico, iter a 1.8/1.4 → grande contra Vulk, iter a 1.4/1.15 (turno previo)
+2. Vrast original 1.0 → chico, iter a 1.4/1.15 (turno previo) → recortado, iter a 1.15/1.0 (este turno)
+3. Sub-regla 15 escalada en turno previo NO previno el recorte porque founder enfatizó "agrandar" y yo no pensé en el upper bound físico del scale antes de aplicar.
+
+**Causa raíz**:
+1. **No tengo modelo mental del "upper bound seguro" de scale por aspect ratio**. Si la foto tiene anteojo ya al 90% W, scale 1.2 lo lleva al 108% W = recorte. Necesito reglarme: scale > 1.2 solo si el bbox del producto está <80% del frame.
+2. **Analogía Yau→Vrast fue incorrecta**: Yau tiene anteojo ocupando 52% W (necesita 1.8). Vrast probablemente tiene anteojo ocupando >80% W (1.4 lo recorta).
+3. **No verifiqué con MCP el width/height de las fotos del Vrast antes de proponer scale**. Hubiera consultado `storage.objects.metadata` o haber inferido del seed (1500×1000 nominal). Con esa info podría haber estimado mejor.
+
+**Regla preventiva** (extender sub-regla 15):
+1. **Default sensato pre-iteración**: scale máximo 1.2 sin evidencia visual de que el producto está chico. NO empezar con 1.4 a menos que sea similar a Yau (anteojo MUY chico en foto).
+2. **Cuando founder dice "agrandar"** y propongo override: empezar con +15% (1.15) sobre el current. Si quedó chico iterar a +30% (1.3). NO saltar directo a +40% (1.4) sin evidencia.
+3. **Upper bound visual**: scale > 1.3 solo si TENGO confirmación del founder de que un valor previo (1.2 o 1.15) quedó chico. Sin confirmación → conservador.
+4. **Análogos correctos**: Yau es OUTLIER (1.4/1.15) porque sus fotos tienen anteojo MUY chico. Default es Feeled/Dearly/Yamain (1.15). Cualquier producto nuevo arranca en 1.15 hasta evidencia contraria.
+
+**Verificación contra recurrencia**: si este pattern aparece una 4ta vez (carga de producto con scale recortado o desproporcionado), escalación a regla 16 dedicada en CLAUDE.md: "Default 1.15 + cap 1.3 sin evidencia visual previa".
+
 ## 2026-05-31 — Badge "Polarizado" estaba escrito en código pero NUNCA se renderizó porque la función de detección buscaba campos que NO existían en los seeds reales — drift entre código y data
 
 **Estado**: 🟡 Mitigado — `isPolarized()` ahora chequea 4 fuentes (polarized + is_polarized + lens_treatment + "POL" en model_code). 7+ variantes que deberían tener badge ahora lo tienen.
