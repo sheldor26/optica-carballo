@@ -22,6 +22,64 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Workflow "agent draft → agent validate → human apply" para contenido YMYL multi-agente
+
+**Categoría**: Multi-agent / Content production / YMYL / E-E-A-T
+**Confianza**: 🟢 Alta (validado en publicación del primer artículo pillar /guias/como-leer-receta-anteojos)
+
+### Qué funcionó
+
+Para producir el primer artículo pillar (~4.000 palabras, YMYL salud visual) ejecuté un workflow de 3 pasos secuencial con 2 agentes especializados:
+
+1. **`content-writer-medical`** redactó el draft completo siguiendo specs detalladas (slug, keyword target, cluster, estructura H2/H3, tono argentino, 8 internal links, frontmatter YAML completo, ~3.500-4.500 palabras).
+2. **`optical-expert`** validó precisión técnica claim por claim (15 claims específicos a verificar). Devolvió:
+   - 3 correcciones obligatorias (errores reales: rango esfera, pasos decimales, convención TABO)
+   - 5 mejoras recomendadas (precisión adicional)
+   - 3 disclaimers nuevos sugeridos (pediátrico, diabéticos, post-LASIK)
+   - Validación explícita de claims correctos
+3. **Yo** apliqué TODAS las correcciones con `Edit` tool + actualicé CONTENT_PLAN.md + commit.
+
+Resultado: artículo publicado con calidad **superior a draft single-agent**, en ~30 minutos de tiempo elapsed.
+
+### Por qué funciona
+
+Single-agent (un solo content writer) produce contenido bien escrito pero **puede tener inexactitudes técnicas no detectadas** (ej. "rango esfera ±25 dpt" — técnicamente posible pero no clínicamente habitual). Para YMYL eso es **un riesgo real**: una afirmación imprecisa daña credibilidad + puede confundir al lector.
+
+El pattern multi-agent **separa responsabilidades**:
+- **content-writer-medical**: estructura SEO, tono, claridad, internal links, frontmatter.
+- **optical-expert**: precisión técnica claim por claim (Source of Truth técnica del proyecto).
+- **Humano (yo)**: aplica correcciones + decide qué adoptar vs no.
+
+Ventajas:
+1. Mejor accuracy técnica (optical-expert detecta lo que content-writer no podría).
+2. Más rápido que single-agent + multiple revision rounds.
+3. Trazabilidad clara: el reporte del optical-expert queda commiteado como evidencia de validación profesional.
+4. E-E-A-T reforzado: el artículo va firmado por autor matriculado + reviewer matriculado + el contenido fue validado independientemente por un agent técnico.
+
+### Cómo replicar
+
+Para cada uno de los próximos 14 artículos del `CONTENT_PLAN.md`:
+
+1. **Prompt content-writer-medical** con specs detalladas (frontmatter target + estructura H2 + internal links target + tono + word count).
+2. **Prompt optical-expert** con lista específica de claims técnicos a validar (10-15 items). Pedir reporte con: ✅/⚠️/🔴 + correcciones obligatorias con "antes → después" exacto.
+3. **Aplicar correcciones** con `Edit` tool. NUNCA aceptar el draft inicial sin pasar por el reviewer técnico.
+4. **Commit** con mención explícita del workflow (audita trazabilidad).
+5. **Update CONTENT_PLAN.md** marcando como ✅ Publicado.
+
+### Aplicaciones futuras
+
+- Próximos 14 artículos del Lote 1 + Lote 2 (CONTENT_PLAN.md).
+- Páginas de marca extensas (sobre-la-marca para Vulk, Rusty, etc.).
+- Sección `/sobre-nosotros` editorial cuando founder la priorice.
+- Cualquier copy YMYL de la óptica (BUSINESS_POLICIES, glosarios, etc.).
+
+### Cross-link
+
+- Complementa [[trampas-del-experto-en-few-shot]]: ambos patterns aprovechan **expertise especializado en pipeline multi-stage**. Uno valida few-shot con experto humano (founder), otro valida contenido con agente experto técnico.
+- Conecta con [[delegar-research-tecnico-a-ai-features-engineer]]: pattern general "delegar a especialista antes de avanzar".
+
+---
+
 ## 2026-05-30 — Refinamientos quirúrgicos vs rehacer: 3-5x mejor ROI cuando componente ya es funcional
 
 **Categoría**: Refactor strategy / Estimation / Anti-rewrite

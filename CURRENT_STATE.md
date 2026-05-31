@@ -38,7 +38,39 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Sección artículos/guías — FASE 1 completa (infra MDX + rutas + componentes)** (2026-05-30). Founder eligió "dale con tu recomendación" (Opción B + MDX + Juan como autor).
+🟢 **Sección artículos/guías — FASE 2 completa: primer artículo publicado** (2026-05-30). Founder dijo "dale" tras FASE 1 infra.
+
+**Flujo de validación multi-agent ejecutado**:
+1. **`content-writer-medical`** (subagent) → drafted artículo de ~4.000 palabras con frontmatter + estructura completa (intro + 11 secciones + FAQs + conclusión).
+2. **`optical-expert`** (subagent) → validó con ⚠️ "Publicar con correcciones menores":
+   - **3 correcciones obligatorias**: rango esfera (±25→±20 habitual), pasos 0.25 vs 0.12, eje TABO 1-180° (no "0 no existe").
+   - **5 mejoras recomendadas**: adición OD≠OI = bandera roja, DNP 60-66/48-52, cilindro positivo escuelas europeas, foto en frío/auto, prisma+cilindro alto en presencial.
+   - **3 disclaimers nuevos**: <8 años cicloplejía, diabéticos <3 meses, post-LASIK/PRK, obras sociales <6 meses.
+3. **Yo** apliqué TODAS las correcciones + commit.
+
+**Artículo publicado** (commit `df2629a`):
+- Path: `content/guias/como-leer-receta-anteojos.mdx`
+- URL: `/guias/como-leer-receta-anteojos`
+- ~4.000 palabras, 14 min lectura
+- Autor: Juan Carballo (Técnico Óptico). Reviewer: María Carlota Carballo (Regente Matriculada)
+- 8 internal links: lector-de-receta, medidor-de-dnp, anteojos-de-receta, preguntas-frecuentes
+- JSON-LD Article + reviewedBy renderizado
+- Disclaimer YMYL al pie
+
+**Decisión técnica**: workflow "agent draft → agent validate → human apply correcciones" funciona excelente para contenido YMYL. content-writer-medical produce contenido bien estructurado; optical-expert detecta inexactitudes técnicas reales (no superficiales). Pattern replicable para los próximos 14 artículos del CONTENT_PLAN.
+
+**Build verificado**: `npx next build` OK + ruta `/guias/como-leer-receta-anteojos` generada como SSG.
+
+**CONTENT_PLAN.md actualizado**: artículo #1 marcado como ✅ Publicado.
+
+**Estado del backlog editorial**: 1/15 publicado (Lote 1). 14 restantes en Backlog.
+
+**Próximo paso**: founder pushea + revisa el artículo en producción. Cuando confirme, podemos:
+- (a) Escribir el próximo artículo del Lote 1 (siguiendo el mismo workflow)
+- (b) Retomar few-shot lector de receta (4/13 + 16 trampas acumuladas)
+- (c) Otra cosa del backlog
+
+🟢 **Sección artículos/guías — FASE 1 completa (infra MDX + rutas + componentes)** (2026-05-30, superado por FASE 2 arriba). Founder eligió "dale con tu recomendación" (Opción B + MDX + Juan como autor).
 
 **Lo construido** (commit `a2a7e47`):
 - **Setup MDX en Next.js 15**: `next.config.mjs` con `createMDX` + 4 deps nuevas (`@next/mdx`, `@mdx-js/react`, `@mdx-js/loader`, `gray-matter`).
