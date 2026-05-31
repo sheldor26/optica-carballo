@@ -38,7 +38,32 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **5 opciones técnicas nuevas (P/Q/R/S/T) ofrecidas — decisión founder pendiente** (2026-05-31). Founder dijo "perfecto, qué más podemos mejorar" tras iter 4 grid Rusty.
+🟢 **Opción P implementada — pipeline normalización fotos con Claude Vision + sharp** (2026-05-31). Founder dijo "vamos con tu recomendación" → ejecuté P.
+
+**Cambios** (commit `3985b2a`):
+- `scripts/normalize-product-photos.ts` (NEW, ~280 líneas): pipeline TS con Claude Haiku 4.5 Vision (tool use `report_eyewear_bbox`) + sharp (crop/resize/composite). Output 2000×1333, anteojo centrado al 92%, fondo blanco puro.
+- `package.json`: agregado script `pnpm normalize-photos`.
+- Deps nuevas: `sharp` (image processing) + `tsx` (dev, correr TS standalone). Mainstream + bajo riesgo.
+- `BACKLOG.md`: item movido de Pendiente → Hecho.
+
+**Stack decisión**: NO usé Python+PIL (approach v3 original del founder) para:
+1. Mantener stack TS unificado del proyecto.
+2. Evitar instalación local extra (no requiere Python ni PIL en Mac founder).
+3. Usar Claude Vision como bbox detector — más robusto que algoritmos clásicos (no falla con backgrounds variados, sombras, etc).
+
+**Costo operativo**: ~$0.001 USD por foto procesada (Haiku 4.5 + tool use). Catálogo de 500 productos = ~$0.50 USD total.
+
+**Uso**:
+```bash
+pnpm normalize-photos --input ~/Desktop/raw-feeled.jpg
+pnpm normalize-photos --input ~/Desktop/raw-folder --output ~/Desktop/normalized
+```
+
+**Impacto a largo plazo**: próximas cargas de productos (Vulk Brillante / Reef / Mormaii / Paula Cahen + resto de Rusty) tendrán scales = 1.0 default. Cero sagas de iter manuales de scale-overrides.
+
+**Próximo paso founder**: probar el script con una foto raw del próximo producto que cargues. Si genera output correcto, queda como herramienta estándar.
+
+🟡 **5 opciones técnicas nuevas (P/Q/R/S/T) ofrecidas — decisión founder pendiente** (2026-05-31, superado por implementación P arriba). Founder dijo "perfecto, qué más podemos mejorar" tras iter 4 grid Rusty.
 
 **Audit aplicado** (regla 14): leí BACKLOG.md, listé pendientes técnicos vs operativos, identifiqué 5 opciones implementables por mí + 9 operativos pendientes founder.
 

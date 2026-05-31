@@ -22,6 +22,63 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Usar Claude Vision como "computer vision robusto sin librerías especializadas" para tareas de detección en pipelines TypeScript
+
+**Categoría**: AI tooling / Image processing / Stack unification
+**Confianza**: 🟢 Alta (validado en pipeline normalización fotos, Opción P)
+
+### Qué funcionó
+
+Para implementar pipeline de normalización de fotos de productos, el approach original (saga 2026-05-30) era **Python + PIL** con detección de bbox via algoritmos clásicos (color thresholds, edge detection). Eso requería:
+- Instalar Python + PIL en Mac founder.
+- Mantener 2 stacks (TS para web + Python para herramientas).
+- Algoritmos frágiles con backgrounds variados (sombras, brillos, fotos contextuales).
+
+Approach actual (Opción P): **Claude Haiku 4.5 Vision con tool use** para bbox detection + sharp (TS) para image processing. Ventajas:
+- 100% TS, mantiene stack del proyecto.
+- Vision API maneja edge cases que un algoritmo clásico no (background variado, sombras, reflejos).
+- Cost ~$0.001 USD/foto vs setup overhead de Python.
+- Tool use con schema fuerza output estructurado (x/y/width/height ints) → cero parsing.
+
+### Por qué funciona
+
+Antes (~2-3 años atrás), tareas como "detectar bbox de objeto en imagen" requerían librerías especializadas (OpenCV, TensorFlow object detection, custom CNNs) + datasets + training. Llevaba semanas implementar bien.
+
+Hoy con Vision LLMs:
+- Mismo problema, prompt + tool schema, ~50 líneas de código.
+- Robusto out-of-the-box (no necesita training específico).
+- Costo predecible ($0.001/req).
+- Trade-off: dependencia de API externa (vs algoritmo local determinístico).
+
+### Cómo replicar
+
+Cuando enfrentes tarea de "computer vision tradicional" (detección, clasificación, OCR, extracción de features) en un pipeline TypeScript:
+
+1. **Pregunta primero**: ¿Claude/GPT Vision puede hacer esto vía prompt + tool use?
+2. Si sí → preferir over librería especializada por:
+   - Stack unificado.
+   - Robustez out-of-the-box.
+   - Cost-efficient para volúmenes bajos-medios (<10K imgs/mes).
+3. Si no (alto volumen, latencia ultra-baja requerida, offline obligatorio) → librería especializada.
+
+### Aplicaciones futuras
+
+- **OCR de comprobantes** (futuro feature de facturación): Vision en vez de Tesseract.
+- **Categorización de productos por foto** (auto-tag forma armazón / color / género): Vision.
+- **Detección de calidad de foto** (foto borrosa? oscura? con anteojos puestos?): ya usado en `/api/face-shape` para warning flags.
+- **Análisis de selfies** (recomendador de monturas, ya implementado): mismo pattern.
+
+### Trigger
+
+Cualquier nueva tarea de procesamiento de imágenes en el proyecto. NO instalar OpenCV/TF/Python sin antes evaluar Vision API.
+
+### Cross-link
+
+- Complementa pattern de [[delegar-research-tecnico-a-ai-features-engineer]]: Vision API también es "delegar a especialista" — pero en runtime, no en design.
+- Aplicación de regla 6 CLAUDE.md (no introducir librerías sin preguntar): preferir Vision API ANTES de pedir aprobación para OpenCV/PIL/etc.
+
+---
+
 ## 2026-05-31 — Al fixar un anti-pattern visual en un componente, GREP todo el archivo para encontrar OTRAS ocurrencias del mismo anti-pattern antes de cerrar el fix
 
 **Categoría**: Code fix discipline / Pattern propagation / Avoid partial fixes
