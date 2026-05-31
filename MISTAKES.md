@@ -24,6 +24,54 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — System prompt del chat NO incluía info de políticas del negocio → modelo inventó política de garantía falsa (violación regla dura #3)
+
+**Estado**: 🟡 Mitigado — fix aplicado commit `3ec9a69` (sección "INFO VERDADERA SOBRE EL NEGOCIO" + instrucción explícita "NO inventar").
+**Categoría**: AI prompt / Business policy / Regla dura del negocio violada / Hallucination
+
+### Qué pasó
+
+Founder probó el chat conversacional (Opción K) con la pregunta "¿Cómo funciona la garantía?". El asistente respondió: "La garantía en Óptica Carballo cubre defectos de fabricación en monturas y cristales durante el período establecido (generalmente 1-2 años según el producto). Incluye reparaciones y reemplazos sin cargo..."
+
+**REALIDAD del negocio (founder confirmó)**: la garantía la da el FABRICANTE (Rusty, Vulk, Reef, Mormaii, etc.), NO Óptica Carballo. El cliente tramita la garantía CON el fabricante, no con la óptica.
+
+→ El modelo INVENTÓ una respuesta plausible pero FALSA. Es violación directa de regla dura del negocio #3 ("No prometemos lo que no podemos cumplir") + #7 ("Trust signals reales, no inventados").
+
+### Causa raíz
+
+El system prompt original de `lib/chat/system-prompt.ts` tenía:
+- ✅ Restricciones generales (no diagnóstico, no inventar productos).
+- ✅ Cross-links a herramientas (lector receta, medidor DNP, etc).
+- ❌ **NO tenía info verificada sobre políticas del negocio** (garantía, envíos, devoluciones, recetas, pagos).
+
+Cuando el cliente preguntó por garantía, el modelo NO tenía datos verdaderos para responder → generó respuesta basada en "qué suena razonable para una óptica" (heurística entrenada en data de e-commerce general). Esa respuesta heurística contradecía la realidad del negocio.
+
+### Costo
+
+- Founder atrapó el bug en 1 prueba (excelente).
+- Si NO lo hubiera atrapado: cliente real podría llegar al chat, leer "Óptica Carballo te da garantía 1-2 años", confiar, comprar, y después descubrir que la garantía es del fabricante → frustración + posible queja Defensa del Consumidor + daño reputacional.
+
+### Regla preventiva
+
+**Cuando construyas un system prompt para un asistente conversacional sobre un negocio**:
+
+1. **Listar TODAS las políticas del negocio** (garantía, envíos, devoluciones, pagos, etc.) ANTES de exponer el chat al cliente.
+2. **Para cada política**: incluir info verificada Y/O instrucción explícita "linkear a página específica + NO inventar".
+3. **Tener una sección "INFO VERDADERA"** con datos acotados + instrucción de fallback "si pregunta cae fuera, linkear a FAQ / WhatsApp, NUNCA inventar".
+4. **Probar el chat con preguntas de cada política** ANTES de deploy a producción (founder hizo esto post-deploy, mejor sería pre-deploy).
+
+### Trigger
+
+Cualquier chat conversacional / AI assistant que represente al negocio frente al cliente final.
+
+### Cross-link
+
+- Refuerza regla dura del negocio #3 + #7 de CLAUDE.md (no prometer ni inventar trust signals).
+- Aplicación de regla 14 (audit antes de actuar): al construir prompt, audit de todas las políticas del negocio.
+- Relacionado con [[trampas-del-experto-en-few-shot]]: en few-shot del lector de receta, founder me pasó las trampas técnicas. Acá hubiera sido equivalente "trampas de políticas del negocio" — info que solo el founder conoce y debe pasar al sistema.
+
+---
+
 ## 2026-05-31 — Revisado — sin novedad: implementación Opción Y (Tinder de monturas) — al primer build, sin errores
 
 **Estado**: ⚪ N/A

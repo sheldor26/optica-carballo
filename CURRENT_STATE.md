@@ -38,7 +38,17 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción Y — Tinder de monturas IMPLEMENTADO + integración en home** (2026-05-31). Founder eligió "vamos con Y + Z". Y completo este turno; Z (Tracker pedidos) postponed por scope a próximo turno.
+🟢 **2 bugs del chat fixados — X cerrar + garantía inventada** (2026-05-31). Founder reportó vía screenshot del chat: respuesta sobre garantía inventada + X de cerrar no respondía.
+
+**Fix 1 (X no funcionaba)**: panel `z-30` + FAB `z-40` → FAB encima del panel en mobile, interceptando clicks del X header. Solución: panel z-50 + FAB solo se renderea cuando `!isOpen` (un solo trigger apertura, un solo trigger cierre = X header).
+
+**Fix 2 (garantía inventada)**: el modelo dijo "La garantía en Óptica Carballo cubre defectos..." — FALSO. La garantía la da el FABRICANTE (Rusty, Vulk, etc.), NO Óptica Carballo. Violación regla dura negocio #3 (no prometer lo que no podemos cumplir). Solución: agregada regla 6 al system prompt + sección "INFO VERDADERA SOBRE EL NEGOCIO" con políticas reales (garantía / envíos / devoluciones / recetas / stock / pagos). Instrucción explícita: NUNCA inventar respuesta plausible — linkear a `/preguntas-frecuentes` o sugerir WhatsApp si pregunta cae fuera del set acotado.
+
+**Commit**: `3ec9a69`.
+
+**Próximo paso founder**: push + retest chat con "¿cómo funciona la garantía?" + verificar que X cierra ahora.
+
+🟢 **Opción Y — Tinder de monturas IMPLEMENTADO + integración en home** (2026-05-31, superado por fixes chat arriba). Founder eligió "vamos con Y + Z". Y completo este turno; Z (Tracker pedidos) postponed por scope a próximo turno.
 
 **Cambios** (commit `8080fd4`):
 - `lib/swipe/types.ts`: SwipeProduct, SwipeDirection, StoredMatches (key versionado v1).
