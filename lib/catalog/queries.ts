@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import type { CategoryConfig } from '@/lib/catalog/categories';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 
 // ============================================================================
 // Tipos (manual porque supabase-js infiere mal embeds FK 1:1 como arrays — ver
@@ -359,6 +360,8 @@ export type RelatedProductCard = {
   inStockCount: number;
   primaryImagePath: string | null;
   secondaryImagePath: string | null;
+  primaryImageScale: number;
+  secondaryImageScale: number;
 };
 
 type RelatedRow = {
@@ -379,6 +382,8 @@ function toRelatedCard(row: RelatedRow): RelatedProductCard {
     if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
     return a.sort_order - b.sort_order;
   });
+  const primaryImagePath = sortedImages[0]?.storage_path ?? null;
+  const secondaryImagePath = sortedImages[1]?.storage_path ?? null;
   return {
     slug: row.slug,
     name: row.name,
@@ -388,8 +393,10 @@ function toRelatedCard(row: RelatedRow): RelatedProductCard {
     shortDescription: row.short_description,
     minPriceCents,
     inStockCount: inStock.length,
-    primaryImagePath: sortedImages[0]?.storage_path ?? null,
-    secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+    primaryImagePath,
+    secondaryImagePath,
+    primaryImageScale: getImageScale(primaryImagePath),
+    secondaryImageScale: getImageScale(secondaryImagePath),
   };
 }
 
@@ -804,6 +811,13 @@ export type FilteredCatalogCard = {
   inStockCount: number;
   primaryImagePath: string | null;
   secondaryImagePath: string | null;
+  /** Scale CSS para normalizar tamaño visual de la foto en cards. Aplicado
+   * en `<ProductCard />` vía `style={{ transform: scale(...) }}`. Sin esto,
+   * el MISMO producto se ve más chico/grande en este catálogo que en
+   * `/marcas/<slug>` (que sí pasa por `toProductCardData`). Founder
+   * reportó 2026-05-31 que tamaños eran inconsistentes entre catálogos. */
+  primaryImageScale: number;
+  secondaryImageScale: number;
 };
 
 type FilteredCatalogRow = {
@@ -864,6 +878,8 @@ export async function fetchProductsByCategoryAndShapes(args: {
         if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
         return a.sort_order - b.sort_order;
       });
+      const primaryImagePath = sortedImages[0]?.storage_path ?? null;
+      const secondaryImagePath = sortedImages[1]?.storage_path ?? null;
       return {
         slug: row.slug,
         name: row.name,
@@ -874,8 +890,10 @@ export async function fetchProductsByCategoryAndShapes(args: {
         minPriceCents:
           inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
         inStockCount: inStock.length,
-        primaryImagePath: sortedImages[0]?.storage_path ?? null,
-        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+        primaryImagePath,
+        secondaryImagePath,
+        primaryImageScale: getImageScale(primaryImagePath),
+        secondaryImageScale: getImageScale(secondaryImagePath),
       };
     });
 }
@@ -926,6 +944,8 @@ export async function fetchProductsByFrameShapes(args: {
         if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
         return a.sort_order - b.sort_order;
       });
+      const primaryImagePath = sortedImages[0]?.storage_path ?? null;
+      const secondaryImagePath = sortedImages[1]?.storage_path ?? null;
       return {
         slug: row.slug,
         name: row.name,
@@ -936,8 +956,10 @@ export async function fetchProductsByFrameShapes(args: {
         minPriceCents:
           inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
         inStockCount: inStock.length,
-        primaryImagePath: sortedImages[0]?.storage_path ?? null,
-        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+        primaryImagePath,
+        secondaryImagePath,
+        primaryImageScale: getImageScale(primaryImagePath),
+        secondaryImageScale: getImageScale(secondaryImagePath),
       };
     });
 
@@ -994,6 +1016,8 @@ export async function fetchCategoryByGender(args: {
         if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
         return a.sort_order - b.sort_order;
       });
+      const primaryImagePath = sortedImages[0]?.storage_path ?? null;
+      const secondaryImagePath = sortedImages[1]?.storage_path ?? null;
       return {
         slug: row.slug,
         name: row.name,
@@ -1004,8 +1028,10 @@ export async function fetchCategoryByGender(args: {
         minPriceCents:
           inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
         inStockCount: inStock.length,
-        primaryImagePath: sortedImages[0]?.storage_path ?? null,
-        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+        primaryImagePath,
+        secondaryImagePath,
+        primaryImageScale: getImageScale(primaryImagePath),
+        secondaryImageScale: getImageScale(secondaryImagePath),
       };
     });
 }
@@ -1061,6 +1087,8 @@ export async function fetchCategoryByFilter(args: {
         if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
         return a.sort_order - b.sort_order;
       });
+      const primaryImagePath = sortedImages[0]?.storage_path ?? null;
+      const secondaryImagePath = sortedImages[1]?.storage_path ?? null;
       return {
         slug: row.slug,
         name: row.name,
@@ -1071,8 +1099,10 @@ export async function fetchCategoryByFilter(args: {
         minPriceCents:
           inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null,
         inStockCount: inStock.length,
-        primaryImagePath: sortedImages[0]?.storage_path ?? null,
-        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+        primaryImagePath,
+        secondaryImagePath,
+        primaryImageScale: getImageScale(primaryImagePath),
+        secondaryImageScale: getImageScale(secondaryImagePath),
       };
     });
 }
@@ -1126,6 +1156,8 @@ export type WishlistProductCard = {
   inStockCount: number;
   primaryImagePath: string | null;
   secondaryImagePath: string | null;
+  primaryImageScale: number;
+  secondaryImageScale: number;
 };
 
 /**
@@ -1169,6 +1201,8 @@ export async function fetchProductsBySlugs(
         if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
         return a.sort_order - b.sort_order;
       });
+      const primaryImagePath = sortedImages[0]?.storage_path ?? null;
+      const secondaryImagePath = sortedImages[1]?.storage_path ?? null;
       return {
         slug: row.slug,
         name: row.name,
@@ -1181,8 +1215,10 @@ export async function fetchProductsBySlugs(
             ? Math.min(...inStock.map((v) => v.price_cents))
             : null,
         inStockCount: inStock.length,
-        primaryImagePath: sortedImages[0]?.storage_path ?? null,
-        secondaryImagePath: sortedImages[1]?.storage_path ?? null,
+        primaryImagePath,
+        secondaryImagePath,
+        primaryImageScale: getImageScale(primaryImagePath),
+        secondaryImageScale: getImageScale(secondaryImagePath),
       };
     });
 }

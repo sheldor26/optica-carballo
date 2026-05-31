@@ -69,6 +69,7 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
                 alt=""
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                style={{ transform: `scale(${product.primaryImageScale})` }}
                 className={cn(
                   'object-contain transition-all duration-500 ease-out',
                   secondaryUrl
@@ -82,6 +83,7 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
                   alt=""
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  style={{ transform: `scale(${product.secondaryImageScale})` }}
                   className="object-contain opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
                 />
               )}

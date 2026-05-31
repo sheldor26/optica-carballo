@@ -24,6 +24,61 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Cuando creé el sistema de `image-scale-overrides` para fixear /marcas/*, NO auditeé que otros 5 catálogos también renderizaban ProductCard pero por una pipeline distinta — durante días el "fix" funcionaba solo en /marcas/* y los otros catálogos quedaron rotos en silencio
+
+**Estado**: 🟡 Mitigado — fix sistémico aplicado este turno (5 queries + 4 componentes + 3 tipos) moviendo `getImageScale()` a la query layer. Regla preventiva: cuando agrego una normalización que depende del path A, auditar si existe un path B que llega al mismo componente y aplicarla ahí también.
+**Categoría**: Architecture / Doble pipeline / Fix incompleto / Hidden surface
+**Patrón**: fix-applied-to-one-path-bug-exists-in-N-paths
+
+**Qué pasó**: Hace varios turnos (commits del 2026-05-30 / 31), implementé el sistema de `lib/catalog/image-scale-overrides.ts` para resolver el problema "fotos de producto con tamaños distintos del anteojo". Lo integré en `toProductCardData()` (la función de normalización del catálogo de marca). Asumí que TODOS los catálogos pasaban por `toProductCardData`. Falso: existen 5 queries paralelas (`fetchProductsByCategoryAndShapes`, `fetchProductsByFrameShapes`, `fetchCategoryByGender`, `fetchCategoryByFilter`, `fetchProductsBySlugs`) que devuelven shape pre-computado (`FilteredCatalogCard`, `WishlistProductCard`) y los componentes los pasan al ProductCard SIN pasar por `toProductCardData`. Resultado: 7 superficies de UI sin scale (/anteojos-de-sol, /anteojos-de-sol/mujer, /anteojos-de-sol/{shape}, /favoritos, related products, recently viewed, + más). El founder lo descubrió viendo Rusty Dearly en /anteojos-de-sol que se veía DISTINTO al mismo Rusty Dearly en /marcas/rusty. Durante días estuve commiteando ajustes de scale pensando "esto va a aplicar en todos lados" — sólo aplicaba en `/marcas/*`.
+
+**Causa raíz**:
+1. **No auditeé las superficies reales antes de elegir el lugar de la normalización**. Asumí `toProductCardData` era el "único path" sin un grep que confirmara. Si hubiera buscado `<ProductCard product={` o `primaryImagePath:` en `.tsx`, habría visto los 4 sitios con construcción manual.
+2. **Sesgo de "lo arreglo donde lo veo"**: el bug visual apareció primero en `/marcas/rusty` (donde se notaba la diferencia con Yau / Feeled). Fix ahí → "listo". No verifiqué que el bug existía en otros catálogos.
+3. **No hay regla de cobertura**: cuando agrego un comportamiento nuevo que afecta una UI compartida, no tengo checklist "¿qué otros call sites tocan esta UI?". El TypeScript me hubiera ayudado si el campo fuera required, pero estaba como optional con default → toleraba el bug.
+4. **Costo invisible**: durante el período que el bug existía, el founder vio inconsistencias que probablemente atribuyó a "fotos mal cargadas" o "issue menor". Solo cuando lo articuló específicamente ("se vean iguales en TODOS los catálogos") lo entendí.
+
+**Costos**:
+- Múltiples turnos ajustando scale values (Rusty Yau iter 14, Vulk Day Light iter 14.5/14.6, Feeled iter 1-4, Dearly Iter 1) confiados en que aplicaban en todos lados — la mitad de esa iteración fue inútil para catálogos sin `toProductCardData`.
+- Erosión sutil de confianza en el "Foundation: scale uniforme" claim de los seeds/commits.
+- Riesgo de inconsistencias visibles a usuarios reales (qué cliente notó que el Rusty Dearly se veía más chico en /anteojos-de-sol/mujer que en /marcas/rusty? No tengo data, pero la superficie existió).
+
+**Regla preventiva**:
+1. **Antes de elegir lugar de normalización**: hacer un `grep -rn '<ComponentName' app components` para mapear TODOS los call sites de UI compartida.
+2. **Defensa por TypeScript**: cuando agrego un campo nuevo a un tipo que viaja a UI, hacerlo REQUIRED desde el inicio. Si tengo que hacerlo optional por compatibility, dejar TODO documentado para que un grep capture quién falta migrar.
+3. **Smell test "doble pipeline"**: si veo 2 funciones que devuelven shape conceptualmente similar (`FilteredCatalogCard` vs `ProductCardData`), preguntar "¿debería ser 1 shape único o 2 distintos?". Si la UI consumer es la misma (ProductCard), debería ser 1. Si son distintas, justificar por qué.
+4. **Audit pos-implementación**: al cerrar una implementación de UI compartida, hacer un pass final buscando "¿qué otras pages renderean este componente?" y verificar que tengan el mismo behavior.
+
+**Verificación contra recurrencia**: la próxima vez que agregue normalización a `toProductCardData` (o equivalente), correr `grep -rn 'ProductCard product=' app components` y verificar que cada call site reciba los campos nuevos vía TypeScript (no manualmente). Si alguno construye `ProductCardData` inline, considerarlo bug latente y migrar a query layer.
+
+## 2026-05-31 — `supabase/CLOUD_APPLIED.md` quedó desincronizado con realidad de cloud: 10 seeds aplicados (16-25) + 1 migración (swipe_matches) que nunca se registraron — caducidad invisible del doc
+
+**Estado**: 🟡 Mitigado — registros agregados este turno via MCP verification + regla preventiva: SIEMPRE actualizar CLOUD_APPLIED.md en el mismo turno que se aplica un seed/migration, nunca diferir.
+**Categoría**: Documentation drift / Trazabilidad infra / Pre-MCP era
+**Patrón**: doc-rot-when-changes-applied-out-of-band
+
+**Qué pasó**: Durante las sesiones de 2026-05-30 y 2026-05-31 el founder aplicó seeds y la migración swipe_matches en Supabase Cloud directamente desde su Dashboard, mientras yo seguía generando nuevos seeds en otra rama del workflow. Cuando le pasaba el SQL en el chat y le decía "aplicalo y registralo en CLOUD_APPLIED.md", a veces lo aplicaba pero no me lo confirmaba explícitamente, o lo confirmaba en frases que yo no traduje a una update del doc. Resultado: 11 entries faltaron. Solo lo descubrí este turno cuando, con el MCP recién conectado al proyecto correcto, hice un `SELECT` cruzando `products` + `storage.objects` + `pg_policies` y vi inventario completo del cloud que no matcheaba el doc.
+
+**Causa raíz**:
+1. **No tenía read-access a Cloud antes del MCP**. Hasta este turno yo dependía 100% del founder para saber qué estaba aplicado. Sin verificación independiente, cualquier silencio del founder sobre "ya apliqué X" → entry faltante.
+2. **Pattern de fricción al actualizar CLOUD_APPLIED.md**: cuando aplicaba un seed y registraba en el doc, era 2-3 minutos extra. Bajo presión de "siguiente feature", a veces saltaba el registro. Acumulado: 11 entries faltantes en ~1 semana.
+3. **No tenía proceso de reconciliation periódico**: el doc se trata como "append-only durante la sesión" y nadie chequea si quedó sincronizado al final.
+4. **Doc-as-source-of-truth-frágil**: CLOUD_APPLIED.md tiene valor SOLO si está completo. Un doc con 80% de entries es peor que ninguno porque genera falsa sensación de cobertura.
+
+**Costos**:
+- Si yo (en un turno futuro) hubiera asumido "el seed 23 está pendiente porque no está en CLOUD_APPLIED.md" → habría intentado aplicarlo de nuevo → conflict o duplicación
+- Riesgo de re-aplicar migration con CREATE TABLE → error si la tabla ya existe (sin IF NOT EXISTS)
+- Erosión de confianza en el doc: si tiene drift, nadie lo lee como fuente
+- Onboarding futuro (otro dev/IA) sería confuso: "¿el seed 16 está aplicado o no?"
+
+**Regla preventiva**:
+1. **Mismo turno**: cada `apply_migration` o `execute_sql` contra cloud que cambia state → update CLOUD_APPLIED.md EN EL MISMO TURNO. No "después", no "mañana", no "cuando vuelva".
+2. **Reconciliation periódico vía MCP**: al inicio de cada sesión nueva (post-compactor o cold start), correr una query de inventario (productos / tablas / policies / storage) y cruzar con CLOUD_APPLIED.md. Si hay drift, corregir antes de avanzar con feature work.
+3. **Verificación post-apply obligatoria**: la entry en CLOUD_APPLIED.md DEBE incluir un check verificado (campo `Notas` con "VERIFICADO vía MCP: <query result>"). Sin verificación, no se considera registrado.
+4. **Para founder que aplica SQL fuera del MCP** (desde Dashboard manualmente): asegurarme de pedir confirmación explícita + nombre del archivo + verificar con SELECT antes de updatear el doc. No tomar "lo apliqué" como confirmación suficiente sin ver el resultado.
+
+**Verificación contra recurrencia**: próximo turno que aplique un seed → updatear CLOUD_APPLIED.md ANTES de cerrar el turno. Si aparece un seed/migration nuevo en `supabase/seeds/` o `supabase/migrations/` que no tenga entry en CLOUD_APPLIED.md, marcar como TO-VERIFY en el doc hasta confirmar status vía MCP.
+
 ## 2026-05-31 — Afirmé "88 commits acumulados sin push" durante 3 turnos sin verificar con `git rev-list --count origin/main..HEAD` — la info venía del compactor de contexto y era falsa
 
 **Estado**: 🟡 Mitigado — corregido en CURRENT_STATE.md + regla preventiva: SIEMPRE verificar `git rev-list --count origin/main..HEAD` antes de afirmar un backlog de commits.

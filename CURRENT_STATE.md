@@ -2,6 +2,50 @@
 
 ## Status
 
+🟢 **Fix sistémico: scale uniforme en TODOS los catálogos** (2026-05-31). Founder reportó: "se vean iguales en TODOS los catálogos, no que /anteojos-de-sol/mujer y /marcas/rusty muestren el mismo producto distinto". Audit reveló bug de raíz: el sistema tenía DOS pipelines paralelas — `toProductCardData` (con scale) usado en `/marcas/*` y otras 5 queries (sin scale) usadas en `/anteojos-de-sol`, `/anteojos-de-sol/mujer`, `/anteojos-de-sol/aviador`, `/favoritos`, `RelatedProducts`, `RecentlyViewed`.
+
+**Cambios** (commit pending):
+- `lib/catalog/queries.ts`: agregado `primaryImageScale: number` + `secondaryImageScale: number` a 3 tipos públicos (`FilteredCatalogCard`, `WishlistProductCard`, `RelatedProductCard`) + 5 map functions populadas con `getImageScale()`.
+- `components/catalog/gender-catalog-page.tsx`: pasa scale al ProductCard.
+- `components/catalog/shape-catalog-page.tsx`: ídem.
+- `components/catalog/category-filtered-page.tsx`: ídem.
+- `app/(storefront)/favoritos/page.tsx`: ídem.
+- `components/product/related-products.tsx`: aplica `style={{ transform: scale(...) }}` a primary + secondary images.
+- `components/recently-viewed/recently-viewed.tsx`: nueva prop `primaryImageScale` en `RecentCard` + aplicación CSS.
+
+**Verificación**: `npx tsc --noEmit` pasa limpio (sin errores).
+
+**Resultado esperado en producción tras push**:
+- Rusty Dearly se ve igual en `/anteojos-de-sol`, `/anteojos-de-sol/mujer`, `/anteojos-de-sol/cuadrado`, `/marcas/rusty`, `/favoritos`, RelatedProducts (PDP de otro Rusty), RecentlyViewed.
+- Lo mismo aplica para los otros 5 productos activos (Vulk Day Light, Vulk Yamain, Vulk Stray, Rusty Yau, Rusty Feeled).
+- Los scales individuales por foto se mantienen (Yau 1.8/1.4, Dearly 1.15, Day Light 0.86-0.95, etc.) — solo se uniformiza dónde se aplican.
+
+**Próximo paso founder**: push → verificar en producción que todos los catálogos muestran tamaños consistentes. Si algún producto se ve fuera de tamaño contra otros del mismo grid, ajustar su scale individual en `image-scale-overrides.ts`.
+
+🟢 **MCP Supabase activo + CLOUD_APPLIED.md sincronizado con realidad de Cloud** (2026-05-31). Founder agregó cuenta personal al proyecto Supabase de Óptica Carballo (`tuddpfspnbnmafsqdvat`). MCP ahora ve el proyecto correcto y puedo hacer `execute_sql` / `apply_migration` con su autorización por turno.
+
+**Verificaciones MCP de este turno** (todas pasaron):
+- ✅ Seed 24 + 25 aplicados en Cloud (Rusty Dearly con bisagras honestas + bullets formato correcto)
+- ✅ 7 fotos del Rusty Dearly en bucket (`products/rusty-dearly/*.jpg`, sizes 86-112 KB)
+- ✅ Tabla `swipe_matches` aplicada (RLS ON, 3 policies, 5 rows de testing founder)
+- ✅ Inventario productos: 6 productos activos (3 Rusty + 3 Vulk), todos con variantes + imágenes
+
+**CLOUD_APPLIED.md actualizado** con 11 entries faltantes:
+- Migración `20260531000000_swipe_matches.sql`
+- Seeds 16-25 (10 seeds que faltaban registrar): vulk_yamain, vulk_brand_includes_image (+fix), vulk_yamain_cat_eye, vulk_stray (×3), rusty_feeled, rusty_dearly, rusty_dearly_description_fix
+
+**Workflow MCP establecido** para próximas iters:
+1. Founder dice "aplicalo en cloud"
+2. Asistente muestra SQL completo en el mensaje
+3. Con OK, llama `apply_migration` (DDL) o `execute_sql` (DML)
+4. Verifica con SELECT puntual
+5. Actualiza CLOUD_APPLIED.md con fecha + verificación
+
+**Reglas duras del MCP**:
+- ❌ Nunca `DROP TABLE/COLUMN`, `TRUNCATE`, `UPDATE` sin `WHERE`, cambios RLS sin auditar
+- ❌ Nunca aplicar SQL contra Cloud sin mostrar el SQL antes y esperar OK explícito
+- ✅ SELECTs de lectura sin PII pueden ejecutarse sin OK previo (verificación/debug)
+
 🟢 **Seed 24 — Rusty Dearly cargado y completado con datos reales ML (3 variantes)** (2026-05-31). Founder pasó 2 ítems ML; yo fetcheé `/api/admin/ml-import-preview/*` y reemplacé los 9 placeholders por valores reales.
 
 **Cambios** (commit pending):

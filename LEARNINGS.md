@@ -22,6 +22,66 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Single point of normalization: cuando un dato se transforma en múltiples lugares paralelos, mover la normalización a la query layer evita drift visual
+
+**Categoría**: Architecture / Data normalization / Pipelines paralelas
+**Confianza**: 🟢 Alta (validado este turno con fix de `primaryImageScale` que afectaba 7 superficies de UI)
+
+**Qué funcionó**: El bug "el mismo producto se ve más chico en `/anteojos-de-sol/mujer` que en `/marcas/rusty`" venía de **dos pipelines paralelas** que transformaban el mismo dato:
+- Path A (`/marcas/*`): query → `toProductCardData()` → ProductCard. `toProductCardData` aplicaba `getImageScale()`.
+- Path B (`/anteojos-de-sol/*`, `/favoritos`, related, recently-viewed): query → ProductCard directamente. Sin pasar por la normalización del Path A → sin scale aplicado.
+
+El síntoma fue visual (tamaños inconsistentes) pero la causa era arquitectónica: la normalización vivía en el "transform layer" (`toProductCardData`) pero solo un subset de catálogos pasaba por ese layer.
+
+**Solución correcta**: Mover el normalizador a la query layer. Cada query que devuelve un shape para card (`FilteredCatalogCard`, `WishlistProductCard`, `RelatedProductCard`) ahora popula `primaryImageScale` + `secondaryImageScale` directamente en su `.map()`. Los componentes solo pasan el valor al ProductCard. Ya NO depende de qué pipeline use cada catálogo.
+
+**Por qué funciona**:
+- **Single source of truth**: `getImageScale()` se llama desde 1 lugar (queries.ts), no desde 2 (queries + toProductCardData).
+- **Imposible olvidarlo**: el field es required en el tipo → TypeScript falla si una query nueva no lo provee.
+- **Zero overhead**: `getImageScale()` es un Record lookup (O(1)), agregarlo a 5 queries no cambia performance.
+- **Independiente de path**: cualquier consumer del query result tiene scale. Si mañana agrego `/coleccion/<curated>`, automáticamente tiene scale uniforme.
+
+**Cómo replicar el pattern**:
+1. **Identificar normalización presente en transform layer**: cualquier función `toXData` que enriquece raw data (formatos de fecha, slugs, scales, defaults).
+2. **Si hay 2+ pipelines hacia el mismo componente UI**: candidate alto para mover al query layer.
+3. **Forzar via tipo required**: agregar el field al tipo público → TypeScript actúa como linter contra olvidos.
+4. **Documentar en el tipo**: comment en el field explicando dónde se aplica y por qué (evitar que alguien lo borre "por orden").
+
+**Generalización**: este pattern aplica a TODO derived/computed data que vive cerca del raw query result. Casos típicos:
+- Scales / sizes (este caso)
+- Slugs derivados (href, breadcrumb path)
+- Display formats (precio formateado, fecha relativa)
+- Aggregates ya calculados (inStockCount, minPriceCents)
+
+Si el dato derivado se necesita en N lugares de UI, calcularlo 1 vez en query layer es siempre mejor que N veces en cada call site. Si necesita re-cálculo client-side (interactive UI), usar memoization, no recalcular.
+
+**Anti-pattern evitado**: "fix puntual" donde se pasa el scale desde fuera a cada call site. Estaba tentado a hacerlo (4 componentes × 2 fields) pero hubiera dejado el path B sin protección de TypeScript — el próximo catálogo nuevo (ej. `/coleccion-verano`) habría re-introducido el bug por construir ProductCardData manualmente.
+
+## 2026-05-31 — MCP Supabase como source of truth para sincronizar `CLOUD_APPLIED.md` con realidad del cluster (vs depender de memoria del founder)
+
+**Categoría**: DevOps / MCP / Trazabilidad infra
+**Confianza**: 🟢 Alta (validado este turno: detecté 10 seeds faltantes en CLOUD_APPLIED.md cruzando `products` table + `storage.objects` + `pg_policies` vía MCP)
+
+**Qué funcionó**: Cuando el MCP de Supabase quedó autenticado con acceso al proyecto correcto, una sola pasada de `execute_sql` reveló el estado real de cloud (productos, imágenes en bucket, tablas + RLS) y me permitió detectar que CLOUD_APPLIED.md tenía 10 entries faltantes (seeds 16-25 + migración swipe_matches) que no se habían registrado durante semanas. El founder había aplicado los SQL pero nunca había dicho "ya está aplicado, anótalo" — el registro había quedado desincronizado.
+
+**Por qué funciona**:
+- Cloud es la fuente de verdad real (no la memoria del founder ni mi summary)
+- Cruzar tablas + storage + policies en queries puntuales me da inventario completo en segundos
+- Detecta tanto faltantes (seeds aplicados pero no registrados) como sobras (migraciones pendientes que ya están aplicadas)
+- Idempotente: re-correrlo no rompe nada, solo confirma
+
+**Cómo replicar**:
+1. **Al inicio de cualquier sesión nueva o tras compactor**: correr `SELECT slug, is_active, updated_at FROM products ORDER BY updated_at DESC LIMIT 10` + cruzar contra CLOUD_APPLIED.md → detectar drift
+2. **Antes de afirmar "X está aplicado en cloud"**: verificar con SELECT puntual, no asumir
+3. **Después de cualquier `apply_migration` / `execute_sql`**: SIEMPRE update CLOUD_APPLIED.md en el mismo turno (no diferir)
+
+**Lección sobre workflow MCP en general**:
+- Tools de read-only contra prod (SELECT) tienen costo cero y altísimo valor de verificación
+- Default = verificar ANTES de afirmar estado infra, no después
+- Para writes (UPDATE/INSERT/DELETE): siempre mostrar SQL + esperar OK del founder por turno
+
+**Anti-pattern evitado**: confiar en "founder dijo que aplicó X la semana pasada" como source of truth. Si el dato no está en cloud, no está aplicado. Si está en cloud pero no en CLOUD_APPLIED.md, el doc está desactualizado, no el cloud.
+
 ## 2026-05-31 — Founder como QA final de descripciones de producto: capta afirmaciones falsas que yo no puedo verificar sin tener el producto en mano
 
 **Categoría**: Content QA / Honesty / Regla dura negocio #3

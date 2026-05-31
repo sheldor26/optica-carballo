@@ -82,6 +82,7 @@ export async function RecentlyViewed({
                 brandSlug={p.brandSlug}
                 categorySlug={p.categorySlug}
                 primaryImagePath={p.primaryImagePath}
+                primaryImageScale={p.primaryImageScale}
                 minPriceCents={p.minPriceCents}
               />
             </RevealOnScroll>
@@ -99,6 +100,7 @@ function RecentCard({
   brandSlug,
   categorySlug,
   primaryImagePath,
+  primaryImageScale,
   minPriceCents,
 }: {
   slug: string;
@@ -107,6 +109,7 @@ function RecentCard({
   brandSlug: string;
   categorySlug: string;
   primaryImagePath: string | null;
+  primaryImageScale: number;
   minPriceCents: number | null;
 }) {
   const href = `/${categorySlug}/${brandSlug}/${slug}`;
@@ -126,6 +129,7 @@ function RecentCard({
               alt=""
               fill
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+              style={{ transform: `scale(${primaryImageScale})` }}
               className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             />
           ) : (

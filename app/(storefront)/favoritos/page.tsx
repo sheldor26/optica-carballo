@@ -75,6 +75,8 @@ export default async function Page() {
                 inStockCount: p.inStockCount,
                 primaryImagePath: p.primaryImagePath,
                 secondaryImagePath: p.secondaryImagePath,
+                primaryImageScale: p.primaryImageScale,
+                secondaryImageScale: p.secondaryImageScale,
                 href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                 categorySlug: p.categorySlug,
                 brandSlug: p.brandSlug,
