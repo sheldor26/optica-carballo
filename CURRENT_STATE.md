@@ -38,7 +38,51 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **5 opciones (J/N/I/M/L) implementadas en batch — founder "vamos con todos"** (2026-05-30). K (RAG conversacional, 1-2 días) postpuesto para sesión dedicada.
+🟢 **Opción K implementada — Asistente conversacional RAG sobre catálogo** (2026-05-30). Founder eligió K tras batch J/N/I/M/L.
+
+**Audit reveló**: K era genuinamente from-scratch (no pgvector, no /api/chat, no UI). Estimación inicial 1-2 días real era correcta — el meta-pattern de sobre-estimación NO aplicó esta vez (no había componente existente para refinar).
+
+**Stack implementado**: pgvector + OpenAI embeddings (text-embedding-3-small) + Claude Haiku 4.5 con streaming SSE.
+
+**Cambios en commit `ca71e06`** (9 archivos nuevos):
+
+**FASE 1 — Backend RAG**:
+- `supabase/migrations/20260530300000_chat_embeddings.sql`: extension pgvector + tabla `product_embeddings` (vector 1536, ivfflat index) + función SQL `match_products(query_embedding, threshold, count)` con security definer + RLS sin policies (solo service_role).
+- `lib/chat/types.ts`: Zod schemas (ChatMessage, ChatRequest, ChatMatchedProduct).
+- `lib/chat/embed.ts`: fetch directo a OpenAI Embeddings API (sin SDK nuevo, mismo patrón que Anthropic).
+- `lib/chat/system-prompt.ts`: prompt detallado con scope estrecho + restricciones (no diagnóstico, no inventar) + tono argentino + cross-links.
+- `lib/chat/match-products.ts`: RPC wrapper + formatMatchesAsContext.
+- `scripts/embed-products.ts`: script tsx idempotente para generar embeddings de todos los productos activos (~$0.015 USD por catálogo de 500 productos).
+
+**FASE 1.3 — Endpoint**:
+- `app/api/chat/route.ts`: POST con streaming SSE. Rate limit 20 msgs/hora/IP. Embedea user msg → matchProducts top-5 → construye prompt con RAG context → Anthropic streaming → re-streamea SSE simplificado al cliente.
+
+**FASE 2 — UI**:
+- `components/chat/floating-chat.tsx`: floating button (esquina inferior derecha, encima del WhatsApp FAB) + panel slide-in dark editorial. SuggestedPrompts iniciales (4 ejemplos). Streaming UI con cursor parpadeante. SimpleMarkdown render in-house ([text](url) + bold + listas). Auto-scroll.
+- `app/(storefront)/layout.tsx`: integración del componente.
+
+**Decisiones técnicas**:
+- **Modelo**: Haiku 4.5 (10x más barato que Sonnet, suficiente para consultas de catálogo).
+- **No deps nuevas**: fetch directo a OpenAI + Anthropic, SimpleMarkdown in-house.
+- **RAG graceful degradation**: si pgvector falla, el chat sigue funcionando (responde info general).
+- **Acceso público sin login**: propuesta de valor accesible a todo visitante.
+
+**Config requerida en Vercel** (founder):
+1. `ANTHROPIC_API_KEY` — ✅ ya está.
+2. **`OPENAI_API_KEY` — NUEVO**, founder debe agregarlo.
+3. `SUPABASE_SERVICE_ROLE_KEY` — verificar que esté (lo usan otros endpoints).
+
+**Deploy steps**:
+1. Aplicar migración `20260530300000_chat_embeddings.sql` en Supabase Cloud.
+2. Agregar `OPENAI_API_KEY` a Vercel env vars.
+3. Correr `pnpm tsx scripts/embed-products.ts` (local con env vars prod o en CI). Genera embeddings.
+4. Pushear código → deploy automático Vercel.
+
+**Build verificado**: `npx tsc --noEmit` OK + `next build` OK (`/api/chat` compila).
+
+**Próximo paso**: founder hace los 4 deploy steps + prueba el chat con queries reales. Si funciona OK, K queda live.
+
+🟢 **5 opciones (J/N/I/M/L) implementadas en batch — founder "vamos con todos"** (2026-05-30, superado por K arriba). K (RAG conversacional, 1-2 días) postpuesto para sesión dedicada.
 
 **Cambios en commit `67a8f2e`** (8 archivos):
 
