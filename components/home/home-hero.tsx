@@ -43,7 +43,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
   return (
     <section
       ref={ref}
-      className="relative isolate overflow-hidden bg-zinc-950 text-white"
+      className="relative isolate overflow-hidden bg-zinc-950 text-white md:min-h-[720px] lg:min-h-[820px]"
     >
       {/* Gradient base sutil — diagonal para dar profundidad sin distraer. */}
       <div
@@ -73,9 +73,14 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
         ÓC
       </motion.div>
 
-      <div className="container relative grid grid-cols-1 items-center gap-12 py-20 md:grid-cols-[1.1fr_1fr] md:gap-10 md:py-28 lg:gap-16 lg:py-36">
-        {/* Columna izquierda: texto editorial */}
-        <motion.div style={{ y: textY }} className="relative order-2 md:order-1">
+      <div className="container relative grid grid-cols-1 items-center gap-12 py-20 md:grid-cols-[1.1fr_1fr] md:items-end md:gap-10 md:py-0 lg:gap-16">
+        {/* Columna izquierda: texto editorial. En md+ el grid container pierde
+            padding vertical para que la foto pegue al fondo del section — el
+            texto recupera su padding propio acá. */}
+        <motion.div
+          style={{ y: textY }}
+          className="relative order-2 md:order-1 md:py-28 lg:py-36"
+        >
           <p className="hero-reveal hero-reveal-1 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em] text-white/70">
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
             <span>{siteName}</span>
@@ -138,21 +143,36 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
         {/* Columna derecha: foto editorial. PNG con transparencia (47% del
             área es alpha=0) — el modelo flota libre sobre el bg dark del
             hero. NO usamos border/rounded/shadow/overlay porque crean un
-            "marco visible" alrededor de las zonas transparentes. */}
+            "marco visible" alrededor de las zonas transparentes.
+            En md+: la foto se ancla al fondo del section con `object-bottom`
+            + `self-stretch` para que llegue hasta el bottom edge del hero. */}
         <motion.div
           style={{ y: textY }}
-          className="relative order-1 mx-auto w-full max-w-md md:order-2 md:max-w-none"
+          className="relative order-1 mx-auto w-full max-w-md md:order-2 md:max-w-none md:self-stretch"
         >
-          <div className="relative aspect-[2/3] w-full">
-            <Image
-              src={HERO_EDITORIAL_URL}
-              alt="Editorial Óptica Carballo"
-              fill
-              sizes="(max-width: 768px) 90vw, 45vw"
-              priority
-              className="object-contain"
-            />
-          </div>
+          {/* Wrapper interno con float animation infinito — la foto "respira"
+              sutil (10px arriba/abajo en 6s). Respeta prefers-reduced-motion:
+              si activo, el animate queda en undefined y no anima. */}
+          <motion.div
+            animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
+            transition={
+              reduceMotion
+                ? undefined
+                : { duration: 6, repeat: Infinity, ease: 'easeInOut' }
+            }
+            className="relative h-full w-full"
+          >
+            <div className="relative aspect-[2/3] w-full md:aspect-auto md:h-full md:min-h-[720px] lg:min-h-[820px]">
+              <Image
+                src={HERO_EDITORIAL_URL}
+                alt="Editorial Óptica Carballo"
+                fill
+                sizes="(max-width: 768px) 90vw, 45vw"
+                priority
+                className="object-contain object-bottom"
+              />
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>
