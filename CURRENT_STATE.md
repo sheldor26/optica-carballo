@@ -38,7 +38,17 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Seed 23 Rusty Feeled MBLK TENNIS creado — listo para aplicar tras subir fotos** (2026-05-31). Founder confirmó las 3 cosas pendientes:
+🟢 **Rusty Feeled — fotos subidas al bucket, falta aplicar seed + verificar prod** (2026-05-31). Founder confirmó upload via screenshot del bucket.
+
+**Step 1 de 3 ✅ completado**: `products/rusty-feeled/` tiene las 3 fotos con paths exactos que matchean el seed (`01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`).
+
+**Observación lateral**: bucket `products` tiene warning Supabase "Clients can list all files" (broad SELECT policy en storage.objects permite LIST). Para bucket público que sirve fotos del catálogo NO es bloqueante. Si después se quiere endurecer: ajustar SELECT policy para permitir solo SELECT específico, no LIST. ANOTADO COMO TODO no-urgente.
+
+**Pasos pendientes founder**:
+- Step 2: aplicar `supabase/seeds/23_rusty_feeled_mblk_tennis.sql` en Supabase Cloud SQL Editor.
+- Step 3: verificar `/anteojos-de-sol/rusty/rusty-feeled` + listado `/anteojos-de-sol/rusty` + comparador.
+
+🟢 **Seed 23 Rusty Feeled MBLK TENNIS creado — listo para aplicar tras subir fotos** (2026-05-31, superado por entry arriba: fotos ya subidas). Founder confirmó las 3 cosas pendientes:
 - `lens_width_mm: 50` (sitio oficial Rusty manda, descarté el 63 de ML).
 - Sube 3 fotos al bucket (`01-lateral.jpg`, `02-frontal.jpg`, `03-medidas.jpg`).
 - Sin terminales antideslizantes confirmado (no menciono claim no-verificable en descripción).
