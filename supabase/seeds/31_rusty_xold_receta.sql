@@ -1,0 +1,36 @@
+-- ============================================
+-- Seed 31: Rusty Xold Receta — armazón redondo unisex G-Flex
+-- Fecha: 2026-05-31
+-- ============================================
+-- Modelo Rusty Xold versión RECETA (armazón para colocar lentes graduados).
+-- Mismo modelo que `rusty-xold` (sol) pero categoría receta + sin lentes
+-- pre-instaladas. Frente y patillas G-Flex, bisagras metálicas con flex,
+-- 21,5g.
+--
+-- IMPORTANTE: las publicaciones ML mencionan "lentes Bluecut con filtro
+-- de luz azul" pero NO incluir esto en la descripción (founder explícito
+-- 2026-05-31): "lo que diga de las lentes bluecut obviarlo". Los lentes
+-- se venden por separado en el laboratorio según receta del cliente.
+--
+-- 4 variantes:
+--   SKU 125748 — BROWN OPTICAL (marrón brillo, stock 5, DEFAULT) MLA2152487922 var 188760687163
+--   SKU 125760 — MBLK (negro mate, stock 2) MLA1959049792 single
+--   SKU 125746 — 0292 OPTICAL (caramelo, stock 1) MLA2152487922 var 188760687161
+--   SKU 125747 — CRY OPTICAL (transparente, stock 0) MLA2152487922 var 188760687159
+--
+-- Precio único $82.745,69. Total stock 8 unidades.
+--
+-- Medidas (texto founder, con bridge=22 distinto al sol que usa 20 de
+-- la imagen): 138/50x48/22/145mm. Peso 21,5g.
+--
+-- ADICIONAL: UPDATE peso del Xold SOL (slug `rusty-xold`) — founder pidió
+-- "aplicar el peso en el anteojo rusty Xold de Sol en el caso de que no
+-- haya sido aplicado". Verificado MCP: sol tenía weight_grams=null,
+-- aplicado 21.5g via UPDATE idempotente en el mismo apply.
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: 4 variants_active, total_stock=8, 9 images,
+-- shape='redondo', weight_grams=21.5. Sol también con weight_grams=21.5.
+-- ============================================
+
+-- Seed documental — INSERT real + UPDATE peso sol ya aplicados vía MCP.

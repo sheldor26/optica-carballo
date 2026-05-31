@@ -1,5 +1,38 @@
 # Óptica Carballo — Current State
 
+🟢 **Rusty Xold Receta cargado: 4 variantes G-Flex + UPDATE peso 21.5g Xold sol** (2026-05-31). Primer producto del catálogo en categoría `anteojos-de-receta` (versión Xold del armazón sin lentes pre-instaladas).
+
+**Cambios** (commit pending):
+- Cloud Apply via MCP (autorización standing):
+  - INSERT producto `rusty-xold-receta` + 4 variantes + 9 imágenes
+  - UPDATE peso `rusty-xold` (sol) 21.5g — estaba null, founder pidió aplicarlo
+- `supabase/seeds/31_rusty_xold_receta.sql`: doc seed.
+- `lib/catalog/image-scale-overrides.ts`: 8 entries scale 1.15/1.0 default.
+- `CLOUD_APPLIED.md`: entries actualizadas para seed 30 (peso) + seed 31 nuevo.
+
+**Datos clave**:
+| SKU | Variante | Stock | MLA |
+|---|---|---|---|
+| 125748 | BROWN OPTICAL (default) | 5 | MLA2152487922 var 188760687163 |
+| 125760 | MBLK | 2 | MLA1959049792 (single) |
+| 125746 | 0292 OPTICAL | 1 | MLA2152487922 var 188760687161 |
+| 125747 | CRY OPTICAL | 0 | MLA2152487922 var 188760687159 |
+
+Precio único $82.745,69. Total stock 8.
+
+**Decisión founder explícita aplicada**: NO mencionar lentes Bluecut/filtro azul en descripción del producto (los cristales se venden por separado según receta del cliente en laboratorio). Esto está documentado en CLOUD_APPLIED.md para sesiones futuras.
+
+**Medidas**: 138/50×48/22/145mm (texto founder — bridge 22 distinto al sol que tiene 20 de la imagen). Peso 21.5g. Mismo armazón base que el Xold sol pero con bridge ligeramente más ancho según info founder.
+
+**Pendiente founder**: subir 9 fotos al bucket `products/rusty-xold-receta/`. Nombres elegidos por asistente:
+- `XOLD BROWN-perfil.jpg` + `-frente.jpg`
+- `XOLD MBLK-perfil.jpg` + `-frente.jpg`
+- `XOLD 0292-perfil.jpg` + `-frente.jpg`
+- `XOLD CRY-perfil.jpg` + `-frente.jpg`
+- `medidas.jpg`
+
+---
+
 ## 📋 Cierre FINAL de sesión 2026-05-31 (consolidado completo)
 
 **Arco de la sesión post-compactor** (~25 commits totales). Sintetizando lo más importante:

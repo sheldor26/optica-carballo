@@ -150,6 +150,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-xold/XOLD MBLK S10-frente.jpg': 1.0,
   'rusty-xold/XOLD MBLK PINK-perfil.jpg': 1.15,
   'rusty-xold/XOLD MBLK PINK-frente.jpg': 1.0,
+
+  // Rusty Xold Receta — sub-regla 15 obligatoria post-carga: scale 1.15/1.0
+  // default. 8 entries (2 por variante × 4 variantes).
+  'rusty-xold-receta/XOLD BROWN-perfil.jpg': 1.15,
+  'rusty-xold-receta/XOLD BROWN-frente.jpg': 1.0,
+  'rusty-xold-receta/XOLD MBLK-perfil.jpg': 1.15,
+  'rusty-xold-receta/XOLD MBLK-frente.jpg': 1.0,
+  'rusty-xold-receta/XOLD 0292-perfil.jpg': 1.15,
+  'rusty-xold-receta/XOLD 0292-frente.jpg': 1.0,
+  'rusty-xold-receta/XOLD CRY-perfil.jpg': 1.15,
+  'rusty-xold-receta/XOLD CRY-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
