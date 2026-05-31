@@ -22,6 +22,35 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: share buttons implementados sin pattern nuevo
+
+**Categoría**: Feature implementation
+**Confianza**: 🟢 N/A (no aplica — la implementación siguió el scope alineado con founder en el turno previo, sin pattern replicable nuevo)
+
+Implementación de `<ShareButtons />` ejecutó el scope acordado (5 botones: WhatsApp + Facebook + Email + Copiar + Native; sin emojis; PDP + artículos; tracking GA4) usando primitivas estándar: client component + `navigator.clipboard` + `navigator.share` + `wa.me` + Facebook share dialog + `mailto:`. Decisión técnica de NO instalar Sonner (regla 6) reemplazada con toast inline 10-líneas — alineado con "preferí simple sobre clever". og:image agregado a `buildProductMetadata` vía 2nd query es pattern estándar de Next.js Metadata API. Sin novedad replicable más allá de lo ya documentado en LEARNINGS sobre Single point of normalization + blind spots de e-commerce baseline.
+
+## 2026-05-31 — Founder cubre el blind spot de "e-commerce standards" que yo (feature engineer) no veo — share buttons como ejemplo concreto
+
+**Categoría**: Roles complementarios / Product instinct / Blind spots
+**Confianza**: 🟢 Alta (gap detectado por founder fue obvio en retrospectiva — share buttons en e-commerce es 101)
+
+**Qué funcionó**: Founder dijo "me parece raro que no hayas dicho nada" sobre share buttons. Tenía razón. Cero share components en el sitio después de semanas de trabajo. El gap es totalmente standard de e-commerce y yo nunca lo propuse en N sesiones.
+
+**Por qué pasa**:
+- Yo (Claude main) trabajo orientado a las features que el founder pide o que el código sugiere. NO tengo radar activo para "qué falta vs un e-commerce estándar".
+- Mi pipeline mental es: leer roadmap → implementar → optimizar. NO incluye "comparar contra checklist mental de e-commerce baseline".
+- El founder, con su experiencia comercial (técnico óptico + dueño hijo de óptica 30+ años), tiene radar permanente activo en "qué necesita un cliente comercialmente" que yo no replico.
+
+**Cómo capitalizar el pattern**:
+1. **Reconocer el rol complementario**. Founder es product instinct + commercial radar. Yo soy execution + technical depth. Las decisiones sobre "qué features faltan para el e-commerce típico" son zona del founder, no mía.
+2. **No intentar suplantar el radar del founder con un checklist**. Aunque puedo armar uno (share, reviews, FAQ, política de devolución, comparador, calculadora de cuotas, búsqueda, etc.), el value real es que él los detecta NATURALMENTE cuando recorre el sitio como cliente.
+3. **Cuando founder señala un gap obvio, validar rápido y aceptarlo**. NO defender ("es que no me pediste"). El default es que TIENE razón si dice "esto es standard".
+4. **Documentar gaps detectados** en BACKLOG.md para acumular el "qué pidió founder vs ya implementado".
+
+**Generalización**: este patrón aplica a cualquier proyecto donde la IA hace execution y el humano hace product. La IA optimiza local (calidad del código, completitud técnica). El humano optimiza global (estrategia de producto, market fit, commerce baseline). El loop funciona BIEN si la IA respeta esta división y no pretende dominar product también.
+
+**Anti-pattern evitado**: yo podría haber dicho "es que estábamos enfocados en X". Excusa pobre — si en 2 meses no propuse share buttons en un e-commerce, eso es BLIND SPOT, no priorización. Reconocer ≫ excusar.
+
 ## 2026-05-31 — Revisado — sin novedad: ajuste scale Rusty Yau iter 3 (1.4/1.15) + regla 15 escalada
 
 **Categoría**: Product imagery

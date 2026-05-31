@@ -51,6 +51,18 @@ export async function generateMetadata({
       publishedTime: frontmatter.publishedAt,
       modifiedTime: frontmatter.updatedAt,
       authors: [frontmatter.author],
+      ...(frontmatter.heroImage
+        ? {
+            images: [
+              {
+                url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/article-images/${frontmatter.heroImage}`,
+                width: 1200,
+                height: 630,
+                alt: frontmatter.heroImageAlt ?? frontmatter.title,
+              },
+            ],
+          }
+        : {}),
     },
   };
 }
@@ -125,7 +137,11 @@ export default async function GuiaPage({
       </div>
 
       <RevealOnScroll>
-        <ArticleFooter frontmatter={frontmatter} whatsappLink={whatsappLink} />
+        <ArticleFooter
+          frontmatter={frontmatter}
+          whatsappLink={whatsappLink}
+          pageUrl={`${SITE_URL}/guias/${slug}`}
+        />
       </RevealOnScroll>
 
       <RelatedArticles articles={related} />

@@ -242,15 +242,31 @@ export async function buildProductMetadata(
   const supabase = await createClient();
   const { data: product } = await supabase
     .from('products')
-    .select('name, short_description, meta_description')
+    .select('id, name, short_description, meta_description')
     .eq('slug', productSlug)
     .eq('is_active', true)
     .maybeSingle()
-    .returns<ProductMetaRow>();
+    .returns<ProductMetaRow & { id: string }>();
 
   if (!product) {
     return { title: 'Producto no encontrado' };
   }
+
+  // Foto primary del producto → og:image. Necesario para que WhatsApp/
+  // Facebook/Telegram muestren preview con foto al compartir el link.
+  // Sin esto el preview cae al og:image genérico del sitio.
+  const { data: primaryImage } = await supabase
+    .from('product_images')
+    .select('storage_path, alt_text')
+    .eq('product_id', product.id)
+    .order('is_primary', { ascending: false })
+    .order('sort_order', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  const ogImageUrl = primaryImage?.storage_path
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/products/${primaryImage.storage_path}`
+    : null;
 
   const isPh = isPlaceholder(product.name);
   const title = `${product.name} | ${category.name} - Óptica Carballo`;
@@ -268,7 +284,24 @@ export async function buildProductMetadata(
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'website',
+      ...(ogImageUrl
+        ? {
+            images: [
+              {
+                url: ogImageUrl,
+                width: 1200,
+                height: 630,
+                alt: primaryImage?.alt_text ?? product.name,
+              },
+            ],
+          }
+        : {}),
+    },
   };
 }
 

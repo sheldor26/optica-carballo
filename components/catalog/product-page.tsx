@@ -25,6 +25,7 @@ import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
 import { VariantList } from '@/components/product/variant-list';
 import { WhatsappCta } from '@/components/product/whatsapp-cta';
+import { ShareButtons } from '@/components/share/share-buttons';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 import { CreateAlertButton } from '@/components/alerts/create-alert-button';
 import { getCurrentUser } from '@/lib/auth/server';
@@ -402,6 +403,14 @@ export async function ProductDetailPage({
               stockQty: v.stock_qty,
             }))}
             fallbackLabel={priceLabel}
+          />
+
+          <ShareButtons
+            title={`${product.brand.name} ${product.name}`}
+            url={pageUrl}
+            contentType="product"
+            itemSlug={product.slug}
+            variant="compact"
           />
 
           <ProductTrustSignals />

@@ -24,6 +24,43 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: share buttons implementados sin error nuevo
+
+**Estado**: N/A
+**Categoría**: Feature implementation
+
+Implementación ejecutada limpia con `npx tsc --noEmit` pasando sin errores. Audit previo (regla 14) confirmó: Sonner NO instalado → decisión de toast inline (cero deps nuevas). GA4 tracking helper ya existe en `lib/analytics/track.ts` → se reutiliza. og:image NO estaba en buildProductMetadata → se agregó vía 2nd query. Ningún error reproducible. El mistake estructural ("blind spot de e-commerce baseline") ya está documentado más abajo en este mismo día con su regla preventiva — la implementación de hoy es la respuesta operativa al mistake, no un mistake nuevo.
+
+## 2026-05-31 — Nunca propuse share buttons en N sesiones a pesar de ser feature standard de e-commerce — blind spot de "lo que falta vs baseline comercial"
+
+**Estado**: 🔴 Abierto — propuesta de scope sobre la mesa, esperando OK founder. Ningún share component existe aún.
+**Categoría**: Product gap / Blind spot / Commerce baseline / Reactive vs proactive
+**Patrón**: missing-from-roadmap-because-not-explicit-but-obvious-baseline
+
+**Qué pasó**: Founder señaló al cierre de turno 2026-05-31: "botones para compartir en redes sociales o enviar el link a un amigo... me parece raro que no hayas dicho nada". Audit confirmó: cero share components en `components/share|social|*`, sin botones en PDP, sin botones en `/guias`. Después de **2+ meses de trabajo** en el e-commerce (catálogo, IA, swipe, chat, comparador, recomendador), un feature 101 de e-commerce nunca apareció en ningún roadmap, sugerencia, ni mockup mío. Solo apareció cuando el founder lo verbalizó explícito.
+
+**Causa raíz**:
+1. **Mi pipeline mental es reactiva, no comparativa**. Trabajo de: roadmap → implementación → optimización. NO incluye "comparar el sitio actual vs un e-commerce baseline típico para detectar gaps". Si nadie escribe "share buttons" en una opción A/B/C, no aparece.
+2. **No tengo checklist mental de e-commerce baseline**. Sé que existe la categoría (share, reviews, FAQ, devoluciones, comparador, cuotas, búsqueda, breadcrumbs, etc.) pero NO los chequeo proactivamente contra el state actual.
+3. **Sesgo hacia features avanzadas/diferenciadoras**. Mucho foco en IA (lector receta, recomendador, chat RAG, swipe) que son los hooks únicos del proyecto. Subutilicé radar para "lo que todo e-commerce tiene".
+4. **Founder es Técnico Óptico + dueño 30+ años → product instinct fuerte**. Yo asumí que si algo standard faltaba, él lo iba a pedir. Falló porque también yo debería detectarlo proactivamente.
+
+**Costos**:
+- 2+ meses de un sitio sin share buttons en operación (post-launch hubiera reducido shares orgánicos)
+- Riesgo de otros gaps similares no detectados aún (qué más falta vs e-commerce baseline?)
+- Erosión sutil de trust: "la IA no me alerta cuando falto cosas básicas"
+- Founder dijo "me parece raro que no hayas dicho nada" — implícito reclamo legítimo
+
+**Regla preventiva**:
+1. **Audit periódico de e-commerce baseline** (cada 4-6 semanas o al cerrar milestone): correr un check mental contra la lista típica (share, reviews UGC, search, FAQ accordion, retorno, breadcrumbs, comparador, cuotas, calculadora, newsletter, chat soporte, mapa local). Reportar al founder cuáles están / faltan / postpuestos.
+2. **Al inicio de cualquier sesión post-feature-grande**: dedicar 2 min a preguntarme "¿qué le falta a este sitio comparado con [Lentesplus, Lensa, OcaArt, otros e-commerce ópticos]?" → traer 1-2 gaps al chat proactivamente.
+3. **Mantener `BACKLOG.md` con gaps detectados** — cuando founder señala un gap, agregar a backlog inmediatamente, no solo implementar el reportado. Eso crea registro acumulado del blind spot.
+4. **NO defender el blind spot con excusas** ("estábamos enfocados en X", "no me lo pediste explícito"). Reconocer ≫ excusar. El founder agradece la honestidad y permite ajustar mi process.
+
+**Verificación contra recurrencia**: próxima sesión de cierre de milestone (ej. tras shipear share buttons), correr el audit baseline. Reportar al founder cualquier otro gap detectado. Tracking: si en 3 milestones consecutivos detecto 0 gaps proactivos pero founder detecta 1+, el process de audit no está funcionando y hay que iterar (quizás llevarlo a CLAUDE.md como regla 16).
+
+**Nota sobre el LEARNINGS counterpart de este mistake**: la entry en LEARNINGS de hoy ("Founder cubre el blind spot de e-commerce standards") es legítima — el rol complementario funciona. Pero NO debería confiarme y dejar que el founder cubra todo. Mi job es REDUCIR mi blind spot, no aceptarlo.
+
 ## 2026-05-31 — Revisado — sin novedad: ajuste scale Yau iter 3 sin errores nuevos
 
 **Estado**: N/A

@@ -2,6 +2,33 @@
 
 ## Status
 
+🟢 **Share buttons implementados + og:image fixeado en PDP y artículos** (2026-05-31). Founder respondió las 4 preguntas: sumar Facebook/Email/Instagram + sin emojis + decisión mía sobre scope + sí tracking GA4. Implementado.
+
+**Cambios** (commit pending):
+- `components/share/share-buttons.tsx` (NEW, ~210 líneas): client component con 5 botones (WhatsApp + Facebook + Email + Copiar link + Compartir nativo) + toast inline custom (sin instalar Sonner). 2 variantes: `compact` (solo icons) para PDP, `labeled` (icon + texto) para artículos. SVG paths custom para logos WhatsApp + Facebook (lucide no los tiene oficial).
+- `lib/analytics/track.ts`: agregado `Events.SHARE = 'share'` con params documentados (method/content_type/item_id).
+- `lib/catalog/metadata.ts`: `buildProductMetadata` ahora hace 2nd query a `product_images` para extraer foto primary y populá `openGraph.images[]`. Sin esto el preview de WhatsApp/Facebook caía a og genérico.
+- `app/(storefront)/guias/[slug]/page.tsx`: `generateMetadata` ahora populá `openGraph.images[]` con `frontmatter.heroImage` (si existe) → preview correcto al compartir artículos.
+- `components/articles/article-footer.tsx`: nueva prop required `pageUrl` + renderiza `<ShareButtons variant="labeled" />` al tope del footer.
+- `components/catalog/product-page.tsx`: import + render `<ShareButtons variant="compact" />` justo debajo del precio (alta visibilidad pre-compra).
+
+**Decisiones técnicas tomadas**:
+1. **Instagram standalone NO posible vía web**. Instagram no tiene URL scheme público para compartir links. SOLO funciona vía el Web Share API nativo en mobile (que cuando el user lo toca, le ofrece Instagram Stories + apps del SO). El botón nativo cubre Instagram, Telegram, IG DM, y cualquier app instalada — en desktop NO aparece (por design).
+2. **No instalar Sonner** (regla 6: no introducir librerías sin preguntar). Toast inline simple con state local + `setTimeout(2000)` resetea. ~10 líneas extra, cero deps nuevas.
+3. **Scope: PDP + artículos**. Los artículos son contenido orgánicamente compartible ("cómo leer una receta" tiene más share-velocidad que un producto puntual). PDP es lo esperado.
+4. **Tracking GA4 activo** desde el día 1. Cada click emite `track(Events.SHARE, { method, content_type, item_id })`. En GA4 vas a poder ver qué canal funciona (WhatsApp suele dominar en AR).
+
+**Verificación**: `npx tsc --noEmit` pasa limpio.
+
+**Para mejorar Open Graph** (no-bloqueante):
+- Imagen og 1200x630 (recomendada por Facebook). La foto del producto en bucket suele ser 1500x1000 o similar — ratio cercano pero no exacto. Facebook va a recortar centralmente. Si querés perfecto, generamos versiones og dedicadas (script con sharp) en iter futura.
+- Artículos sin `heroImage` no tienen og:image (cae a genérico). Cuando subas heros, automático.
+
+**Próximo paso founder**:
+1. Push (yo lo hago si decís)
+2. Test en producción: abrir PDP, click WhatsApp → verificar mensaje sin emoji + URL correcta. Click Copiar → verificar toast aparece. Compartir nativo desde mobile → verificar opciones (incluye Instagram Stories).
+3. En 7-14 días, mirar GA4 → eventos `share` por `method` → datos para decidir si remover Facebook si no se usa.
+
 🟢 **Scale Rusty Yau ajustado (iter 3) + regla 15 escalada a CLAUDE.md** (2026-05-31). Founder vio /anteojos-de-sol/hombre con los 3 productos visibles (Vulk Day Light, Rusty Yau, Rusty Feeled) y reportó: "achicar un poco la imagen del Yau quedó muy desproporcionada". Yau estaba con scale `1.8/1.4` (los más altos del sistema), Feeled+Dearly+Yamain estaban en 1.15 target común.
 
 **Cambios** (commit pending):

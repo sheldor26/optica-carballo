@@ -43,6 +43,11 @@ export const Events = {
   PRESCRIPTION_UPLOAD: 'prescription_upload',
   /** Cliente subió foto al recomendador de monturas. */
   FACE_SHAPE_ANALYSIS: 'face_shape_analysis',
+  /** Cliente compartió un producto/artículo. Params: { method, content_type, item_id }
+   *  method: 'whatsapp' | 'facebook' | 'email' | 'copy_link' | 'native'
+   *  content_type: 'product' | 'article'
+   *  item_id: slug del producto/artículo */
+  SHARE: 'share',
 } as const;
 
 export type EventName = (typeof Events)[keyof typeof Events];

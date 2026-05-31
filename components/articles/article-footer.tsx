@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { ArrowRight, MessageCircle, ShieldCheck } from 'lucide-react';
 import { getAuthor } from '@/lib/content/article-authors';
+import { ShareButtons } from '@/components/share/share-buttons';
 import type { ArticleFrontmatter } from '@/lib/content/article-types';
 
 /**
- * Footer del artículo individual: bio del autor + revisor (si hay) +
- * CTA WhatsApp para consultas + nota de actualización.
+ * Footer del artículo individual: share buttons + bio del autor + revisor
+ * (si hay) + CTA WhatsApp para consultas + nota de actualización.
  *
  * Importante para E-E-A-T: la bio + matrícula explícita al pie de cada
  * artículo es clave para que Google reconozca autoridad del autor en
@@ -14,9 +15,12 @@ import type { ArticleFrontmatter } from '@/lib/content/article-types';
 export function ArticleFooter({
   frontmatter,
   whatsappLink,
+  pageUrl,
 }: {
   frontmatter: ArticleFrontmatter;
   whatsappLink: string | null;
+  /** URL absoluta del artículo para los share buttons. */
+  pageUrl: string;
 }) {
   const author = getAuthor(frontmatter.author);
   const reviewer = frontmatter.reviewer ? getAuthor(frontmatter.reviewer) : null;
@@ -24,6 +28,16 @@ export function ArticleFooter({
 
   return (
     <footer className="border-foreground/10 mt-16 border-t pt-12 md:mt-24 md:pt-16">
+      <div className="mb-10 flex flex-wrap items-center gap-3">
+        <ShareButtons
+          title={frontmatter.title}
+          url={pageUrl}
+          contentType="article"
+          itemSlug={frontmatter.slug}
+          variant="labeled"
+        />
+      </div>
+
       {wasUpdated && (
         <p className="text-muted-foreground mb-8 text-xs">
           Última actualización:{' '}
