@@ -2,6 +2,21 @@
 
 ## Status
 
+🟡 **4 opciones de próximos pasos ofrecidas, decisión founder pendiente** (2026-05-30). Founder dijo "continuemos... qué podemos hacer ahora". Audité BACKLOG.md + estado actual del proyecto. 4 caminos ofrecidos con recomendación:
+
+- **Opción A — Pipeline normalización de fotos** (recomendado primero, ~2-3h): script Python+PIL que detecta bbox del anteojo + recorta + redimensiona al 92% del frame + centra en canvas 2000×1333. Resuelve el dolor de saga 2026-05-30 (14+ iteraciones manuales de scale-overrides para Vulk Day Light). Inversión one-time que se amortiza con las 4 marcas pendientes (Vulk completo, Reef, Mormaii, Paula Cahen).
+- **Opción B — Tier 2 del lector de receta (D+E+F)** (~3-4h): verificación adversarial (skeptic agent), pre-procesamiento server-side (auto-rotate, HEIC→JPG, sharpening, PDF multipage), fallback dinámico Opus para casos low-confidence. Avanza sin esperar las recetas anonimizadas (Tier 1 ya en producción).
+- **Opción C — Mejoras visuales homepage post-hero** (~1-2h por bloque): sección trust signals editorial dark, carrusel de marcas con stock real, sección productos destacados (cuando haya `is_featured = true` reales).
+- **Opción D — Recomendador de monturas IA** (1-2 días): upgrade del `/recomendador-de-monturas` actual con Vision API (selfie → forma de cara) + pgvector embeddings de catálogo + recomendaciones personalizadas. Diferenciador competitivo real.
+
+**Recomendación dada**: A primero (elimina trabajo manual futuro al cargar las otras 4 marcas), B después (sigue mejorando lector mientras esperás anonimizar recetas), C y D más adelante.
+
+**Pregunta abierta al founder**: ¿cuál priorizamos? ¿Algo del backlog que quiera priorizar fuera de esta lista?
+
+**Decisión técnica este turno**: ninguna implementada. Audité + propuse + esperando dirección. Aplicando regla 4 CLAUDE.md ("si no está decidido, proponé y pedí aprobación").
+
+🔴 **Incidente privacidad sigue abierto**: status verificable solo cuando founder confirme que borró las recetas del bucket público `brands-shared/prescription-examples/`. Si no se borraron, riesgo legal activo. Pregunté al founder en este turno pero no confirmó aún.
+
 🟢 **Hero v3: foto editorial llega al fondo del section + float animation sutil** (2026-05-30). Founder pidió "podrías hacer que esta imagen llegue hasta el final del hero? Y darle un efecto como que se mueva o algo?".
 
 Cambios en [components/home/home-hero.tsx](components/home/home-hero.tsx):
