@@ -159,45 +159,25 @@ export function FloatingChat() {
 
   return (
     <>
-      {/* Floating button — esquina inferior derecha, encima del FAB de
-          WhatsApp si está visible. */}
-      <motion.button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={cn(
-          'fixed bottom-6 right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-300 md:bottom-8 md:right-24',
-          isOpen
-            ? 'bg-zinc-900 text-white'
-            : 'bg-foreground text-background hover:bg-foreground/90',
-        )}
-        aria-label={isOpen ? 'Cerrar asistente' : 'Abrir asistente'}
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <X className="size-6" strokeWidth={1.5} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="open"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Sparkles className="size-6" strokeWidth={1.5} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+      {/* Floating button — esquina inferior derecha. Solo se muestra cuando
+          el panel está CERRADO. Cuando isOpen=true, el usuario cierra con
+          el X del header del panel (sin botón duplicado + sin overlap
+          z-index que rompía el click del X header en mobile). */}
+      {!isOpen && (
+        <motion.button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          className="bg-foreground text-background hover:bg-foreground/90 fixed bottom-6 right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-colors md:bottom-8 md:right-24"
+          aria-label="Abrir asistente"
+        >
+          <Sparkles className="size-6" strokeWidth={1.5} />
+        </motion.button>
+      )}
 
       {/* Panel deslizante — sidebar editorial dark, fixed right. */}
       <AnimatePresence>
@@ -207,7 +187,7 @@ export function FloatingChat() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 30, stiffness: 280 }}
-            className="fixed bottom-0 right-0 top-0 z-30 flex w-full flex-col bg-zinc-950 text-white shadow-2xl md:w-[440px]"
+            className="fixed bottom-0 right-0 top-0 z-50 flex w-full flex-col bg-zinc-950 text-white shadow-2xl md:w-[440px]"
           >
             {/* Header */}
             <div className="border-white/10 flex items-center justify-between border-b px-6 py-5">
