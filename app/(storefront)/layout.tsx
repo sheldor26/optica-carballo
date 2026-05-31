@@ -3,6 +3,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { CompareBarWrapper } from '@/components/compare/compare-bar-wrapper';
 import { CookiesBanner } from '@/components/legal/cookies-banner';
 import { BackToTop } from '@/components/ui/back-to-top';
+import { FloatingChat } from '@/components/chat/floating-chat';
 import { FloatingWhatsapp } from '@/components/ui/floating-whatsapp';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
 import { getBusinessInfo } from '@/lib/site/business';
@@ -21,6 +22,7 @@ export default function StorefrontLayout({
       <SiteFooter />
       <CompareBarWrapper />
       <BackToTop />
+      <FloatingChat />
       {business.whatsappLink && (
         <FloatingWhatsapp
           whatsappLink={business.whatsappLink}
