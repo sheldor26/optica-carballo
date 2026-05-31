@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
+import { buildCardVariants } from '@/lib/catalog/to-product-card-data';
+import type { ProductCardVariant } from '@/components/product/product-card';
 
 // ============================================================================
 // Tipos (manual porque supabase-js infiere mal embeds FK 1:1 como arrays — ver
@@ -818,6 +820,11 @@ export type FilteredCatalogCard = {
    * reportó 2026-05-31 que tamaños eran inconsistentes entre catálogos. */
   primaryImageScale: number;
   secondaryImageScale: number;
+  /** Variantes para los thumbnails clickeables del card. Sin esto, en este
+   * catálogo el producto NO muestra mini-thumbs de variantes (mientras
+   * que /marcas/<slug> sí los muestra). Founder reportó 2026-05-31 que
+   * faltaban thumbnails en gender/shape/favoritos. */
+  variants: ProductCardVariant[];
 };
 
 type FilteredCatalogRow = {
@@ -826,8 +833,20 @@ type FilteredCatalogRow = {
   short_description: string | null;
   brand: { slug: string; name: string; is_active: boolean };
   category: { slug: string; is_active: boolean };
-  variants: Array<{ price_cents: number; stock_qty: number; is_active: boolean }>;
-  images: Array<{ storage_path: string; is_primary: boolean; sort_order: number }>;
+  variants: Array<{
+    id: string;
+    price_cents: number;
+    stock_qty: number;
+    is_active: boolean;
+    sort_order: number;
+    attributes: Record<string, unknown>;
+  }>;
+  images: Array<{
+    storage_path: string;
+    is_primary: boolean;
+    sort_order: number;
+    variant_id: string | null;
+  }>;
 };
 
 /**
@@ -854,8 +873,8 @@ export async function fetchProductsByCategoryAndShapes(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(price_cents, stock_qty, is_active),
-        images:product_images(storage_path, is_primary, sort_order)
+        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
     .eq('is_active', true)
@@ -894,6 +913,7 @@ export async function fetchProductsByCategoryAndShapes(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        variants: buildCardVariants(row.variants, row.images),
       };
     });
 }
@@ -921,8 +941,8 @@ export async function fetchProductsByFrameShapes(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(price_cents, stock_qty, is_active),
-        images:product_images(storage_path, is_primary, sort_order)
+        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
     .eq('is_active', true);
@@ -960,6 +980,7 @@ export async function fetchProductsByFrameShapes(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        variants: buildCardVariants(row.variants, row.images),
       };
     });
 
@@ -997,8 +1018,8 @@ export async function fetchCategoryByGender(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(price_cents, stock_qty, is_active),
-        images:product_images(storage_path, is_primary, sort_order)
+        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
     .eq('is_active', true)
@@ -1032,6 +1053,7 @@ export async function fetchCategoryByGender(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        variants: buildCardVariants(row.variants, row.images),
       };
     });
 }
@@ -1061,8 +1083,8 @@ export async function fetchCategoryByFilter(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(price_cents, stock_qty, is_active),
-        images:product_images(storage_path, is_primary, sort_order)
+        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
     .eq('is_active', true)
@@ -1103,6 +1125,7 @@ export async function fetchCategoryByFilter(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        variants: buildCardVariants(row.variants, row.images),
       };
     });
 }
@@ -1141,8 +1164,20 @@ type WishlistProductRow = {
   short_description: string | null;
   brand: { slug: string; name: string; is_active: boolean };
   category: { slug: string; is_active: boolean };
-  variants: Array<{ price_cents: number; stock_qty: number; is_active: boolean }>;
-  images: Array<{ storage_path: string; is_primary: boolean; sort_order: number }>;
+  variants: Array<{
+    id: string;
+    price_cents: number;
+    stock_qty: number;
+    is_active: boolean;
+    sort_order: number;
+    attributes: Record<string, unknown>;
+  }>;
+  images: Array<{
+    storage_path: string;
+    is_primary: boolean;
+    sort_order: number;
+    variant_id: string | null;
+  }>;
 };
 
 export type WishlistProductCard = {
@@ -1158,6 +1193,7 @@ export type WishlistProductCard = {
   secondaryImagePath: string | null;
   primaryImageScale: number;
   secondaryImageScale: number;
+  variants: ProductCardVariant[];
 };
 
 /**
@@ -1181,8 +1217,8 @@ export async function fetchProductsBySlugs(
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(price_cents, stock_qty, is_active),
-        images:product_images(storage_path, is_primary, sort_order)
+        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
     .in('slug', slugs)
@@ -1219,6 +1255,7 @@ export async function fetchProductsBySlugs(
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        variants: buildCardVariants(row.variants, row.images),
       };
     });
 }

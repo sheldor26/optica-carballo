@@ -2,6 +2,28 @@
 
 ## Status
 
+🟢 **Variant thumbnails sistémicos + Share buttons minimal (disimulados) — TypeScript validated, listos para commit** (2026-05-31).
+
+**Cambio 1: Variant thumbnails en TODOS los catálogos**
+- Founder reportó: gender/shape/favoritos sin thumbnails de variantes (que /marcas sí mostraba).
+- Causa: mismo pattern del fix de scale del turno previo — `FilteredCatalogCard` no tenía `variants` populated.
+- Fix:
+  - Helper público `buildCardVariants(variants, images)` extraído en `lib/catalog/to-product-card-data.ts` para reutilizar la lógica de `toProductCardData` desde queries directas.
+  - 2 row types (`FilteredCatalogRow`, `WishlistProductRow`) extendidos con `id, sort_order, attributes` en variants + `variant_id` en images.
+  - 2 card types (`FilteredCatalogCard`, `WishlistProductCard`) ahora incluyen `variants: ProductCardVariant[]` required (TypeScript-enforced).
+  - 5 queries con SELECT extendido + populan variants via helper.
+  - 4 componentes pasan `variants` al ProductCard: gender, shape, category-filtered, favoritos.
+
+**Cambio 2: Share buttons disimulados (variant minimal)**
+- Founder reportó: "no me gusta como quedan, que queden mas disimulados, que no ocupen tanto lugar".
+- Fix: nuevo variant `minimal` en `<ShareButtons />` con 1 trigger button "Compartir" + popover que despliega los 5 al click. Click-outside y Escape cierran. UX clásico estilo Notion/Linear.
+- `minimal` ahora es DEFAULT del componente. PDP + artículos cambiados (basta con omitir variant prop, default kicks in).
+- Variantes legacy `compact` y `labeled` mantenidas en el código por si futuro las necesitamos en alguna superficie con visibilidad alta.
+
+**Verificación**: `npx tsc --noEmit` pasa limpio.
+
+**Próximo paso**: commit + push ambos cambios → founder verifica producción tras deploy.
+
 🟢 **Share buttons implementados + og:image fixeado en PDP y artículos** (2026-05-31). Founder respondió las 4 preguntas: sumar Facebook/Email/Instagram + sin emojis + decisión mía sobre scope + sí tracking GA4. Implementado.
 
 **Cambios** (commit pending):

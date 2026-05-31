@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Mail, Link2, Share2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { track, Events } from '@/lib/analytics/track';
@@ -19,26 +19,27 @@ type Props = {
   contentType: ContentType;
   /** Slug del item para `item_id` en evento GA4. */
   itemSlug: string;
-  /** Layout: 'compact' (solo icons) usado en PDP. 'labeled' (icon + texto)
-   *  usado en footer de artículos. */
-  variant?: 'compact' | 'labeled';
+  /** Layout:
+   *  - 'minimal' (default): 1 botón discreto "Compartir" + popover con los 5.
+   *    Founder feedback 2026-05-31: "que queden mas disimulados, que no
+   *    ocupen tanto lugar". Usado en PDP + artículos por defecto.
+   *  - 'compact': 5 icons en row sin popover. Legacy/futuro si necesitamos
+   *    visibilidad máxima en alguna superficie.
+   *  - 'labeled': 5 icons + texto en row. Legacy/desktop landscape.
+   */
+  variant?: 'minimal' | 'compact' | 'labeled';
 };
 
 /**
  * Botones para compartir un producto o artículo. Set priorizado para AR:
  * WhatsApp + Facebook + Email + Copiar link + Compartir nativo (mobile).
  *
- * Diseño:
- * - WhatsApp: link `wa.me/?text=...` sin número fijo → user elige a quién mandarlo.
- * - Facebook: Facebook Share Dialog clásico (no requiere SDK).
- * - Email: `mailto:` con subject + body prellenados.
- * - Copiar link: `navigator.clipboard` + toast inline "Copiado".
- * - Compartir nativo: `navigator.share()` (mobile only — abre share sheet del
- *   SO que incluye Instagram Stories, Telegram, otros apps). Se oculta si
- *   no soporta (la mayoría de desktop).
+ * Por defecto renderiza un trigger único "Compartir" + popover con los 5.
+ * Diseño minimal — founder reportó 2026-05-31 que los 5 botones inline
+ * ocupaban demasiado lugar y se veían intrusivos.
  *
- * Sin emoji en mensaje WhatsApp — founder reportó 2026-05-31 que WhatsApp los
- * rompe. Texto plano consistente.
+ * Sin emojis en mensaje WhatsApp — founder reportó que rompen el preview
+ * en algunos clientes.
  *
  * Cada click dispara evento GA4 `share` con `method` para medir qué canal
  * funciona en producción.
@@ -48,10 +49,12 @@ export function ShareButtons({
   url,
   contentType,
   itemSlug,
-  variant = 'compact',
+  variant = 'minimal',
 }: Props) {
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [nativeShareSupported, setNativeShareSupported] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Detección de soporte navigator.share en client. SSR-safe: por default
   // false → no renderiza botón nativo hasta que se confirme soporte client-side.
@@ -60,6 +63,31 @@ export function ShareButtons({
       typeof navigator !== 'undefined' && typeof navigator.share === 'function',
     );
   }, []);
+
+  // Click-outside cierra el popover (solo variant minimal).
+  useEffect(() => {
+    if (variant !== 'minimal' || !open) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [variant, open]);
+
+  // Escape cierra el popover.
+  useEffect(() => {
+    if (variant !== 'minimal' || !open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [variant, open]);
 
   const trackShare = (method: ShareMethod) => {
     track(Events.SHARE, {
@@ -98,11 +126,86 @@ export function ShareButtons({
     try {
       await navigator.share({ title, url });
       trackShare('native');
+      setOpen(false);
     } catch {
       // User canceló o error — silencioso.
     }
   };
 
+  // Variant minimal: trigger único + popover. Default.
+  if (variant === 'minimal') {
+    return (
+      <div ref={wrapperRef} className="relative inline-block">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-haspopup="true"
+          aria-label="Compartir"
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
+        >
+          <Share2 className="size-3.5" aria-hidden="true" />
+          <span>Compartir</span>
+        </button>
+
+        {open && (
+          <div
+            role="menu"
+            className="border-border/60 bg-background absolute left-0 top-full z-30 mt-2 flex items-center gap-1 rounded-lg border p-1.5 shadow-lg"
+          >
+            <PopoverItem
+              href={whatsappHref}
+              onClick={() => {
+                trackShare('whatsapp');
+                setOpen(false);
+              }}
+              label="WhatsApp"
+              icon={<WhatsAppIcon className="size-4" />}
+            />
+            <PopoverItem
+              href={facebookHref}
+              onClick={() => {
+                trackShare('facebook');
+                setOpen(false);
+              }}
+              label="Facebook"
+              icon={<FacebookIcon className="size-4" />}
+            />
+            <PopoverItem
+              href={emailHref}
+              onClick={() => {
+                trackShare('email');
+                setOpen(false);
+              }}
+              label="Email"
+              icon={<Mail className="size-4" aria-hidden="true" />}
+              external={false}
+            />
+            <PopoverButton
+              onClick={handleCopy}
+              label={copied ? 'Copiado' : 'Copiar link'}
+              icon={
+                copied ? (
+                  <Check className="size-4" aria-hidden="true" />
+                ) : (
+                  <Link2 className="size-4" aria-hidden="true" />
+                )
+              }
+            />
+            {nativeShareSupported && (
+              <PopoverButton
+                onClick={handleNativeShare}
+                label="Más"
+                icon={<Share2 className="size-4" aria-hidden="true" />}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Variantes legacy compact + labeled (sin popover, los 5 inline).
   const buttonClass = cn(
     'inline-flex items-center justify-center gap-2 rounded-md border border-border/60 bg-background text-foreground transition-colors hover:bg-muted hover:border-foreground/30',
     variant === 'compact'
@@ -192,6 +295,65 @@ export function ShareButtons({
         </span>
       )}
     </div>
+  );
+}
+
+/**
+ * Item de popover anclado a `<a>` (links externos: WhatsApp, Facebook, Email).
+ */
+function PopoverItem({
+  href,
+  onClick,
+  label,
+  icon,
+  external = true,
+}: {
+  href: string;
+  onClick: () => void;
+  label: string;
+  icon: React.ReactNode;
+  external?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      {...(external
+        ? { target: '_blank', rel: 'noopener noreferrer' }
+        : {})}
+      role="menuitem"
+      aria-label={label}
+      title={label}
+      className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex size-9 items-center justify-center rounded-md transition-colors"
+    >
+      {icon}
+    </a>
+  );
+}
+
+/**
+ * Item de popover anclado a `<button>` (acciones: copiar link, share nativo).
+ */
+function PopoverButton({
+  onClick,
+  label,
+  icon,
+}: {
+  onClick: () => void;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      role="menuitem"
+      aria-label={label}
+      title={label}
+      className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex size-9 items-center justify-center rounded-md transition-colors"
+    >
+      {icon}
+    </button>
   );
 }
 

@@ -28,13 +28,12 @@ export function ArticleFooter({
 
   return (
     <footer className="border-foreground/10 mt-16 border-t pt-12 md:mt-24 md:pt-16">
-      <div className="mb-10 flex flex-wrap items-center gap-3">
+      <div className="mb-10">
         <ShareButtons
           title={frontmatter.title}
           url={pageUrl}
           contentType="article"
           itemSlug={frontmatter.slug}
-          variant="labeled"
         />
       </div>
 

@@ -1,6 +1,63 @@
-import type { ProductCardData } from '@/components/product/product-card';
+import type { ProductCardData, ProductCardVariant } from '@/components/product/product-card';
 import type { ProductCardSource } from '@/lib/catalog/queries';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
+
+/**
+ * Helper público: construye `ProductCardVariant[]` para los thumbnails del
+ * card a partir de variants + images con `variant_id`. Reutilizado por
+ * `toProductCardData` (catálogo de marca) y por las 5 queries de catálogo
+ * filtrado (gender, shape, category-filtered, favoritos, related) para
+ * garantizar consistencia visual cross-catálogo — single source of truth
+ * de cómo se arman los thumbnails (regla 15).
+ *
+ * Lógica:
+ * - Todas las variantes ACTIVAS aparecen (no solo con stock), ordenadas
+ *   por sort_order. Las sin stock se muestran con tinte gris en UI.
+ * - Para cada variante: extrae primary + secondary image FILTRANDO por
+ *   `variant_id`. Si la variante no tiene imágenes propias, fallback a
+ *   imágenes globales (variant_id=null).
+ * - Scale se aplica a cada path vía `getImageScale()` del override central.
+ */
+export function buildCardVariants(
+  variants: Array<{
+    id: string;
+    stock_qty: number;
+    is_active: boolean;
+    sort_order: number;
+    attributes: Record<string, unknown>;
+  }>,
+  images: Array<{
+    storage_path: string;
+    is_primary: boolean;
+    sort_order: number;
+    variant_id: string | null;
+  }>,
+): ProductCardVariant[] {
+  const activeVariants = variants.filter((v) => v.is_active);
+  const sortedActive = [...activeVariants].sort(
+    (a, b) => a.sort_order - b.sort_order,
+  );
+
+  const globalImages = images
+    .filter((img) => img.variant_id === null)
+    .sort(sortImage);
+
+  return sortedActive.map((v) => {
+    const own = images.filter((img) => img.variant_id === v.id).sort(sortImage);
+    const pool = own.length > 0 ? own : globalImages;
+    const primary = pool[0]?.storage_path ?? null;
+    const secondary = pool[1]?.storage_path ?? null;
+    return {
+      id: v.id,
+      label: extractColorLabel(v.attributes),
+      primaryImagePath: primary,
+      secondaryImagePath: secondary,
+      primaryImageScale: getImageScale(primary),
+      secondaryImageScale: getImageScale(secondary),
+      inStock: v.stock_qty > 0,
+    };
+  });
+}
 
 /**
  * Transforma un `ProductCardSource` (raw query result) en `ProductCardData`

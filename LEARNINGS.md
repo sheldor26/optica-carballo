@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: variant thumbnails fix sistémico aplica el mismo pattern "Single point of normalization" ya documentado
+
+**Categoría**: Pattern application
+**Confianza**: 🟢 N/A (no aplica — extracción de helper `buildCardVariants` + populate en 5 queries + pasar en 4 componentes es la 2da iteración del mismo refactor que hicimos hoy con `primaryImageScale`)
+
+Implementación re-usa el pattern documentado en LEARNINGS de hoy "Single point of normalization: cuando un dato se transforma en múltiples lugares paralelos, mover la normalización a la query layer". Helper `buildCardVariants` ahora es export público de `to-product-card-data.ts` reutilizable por queries; tipos `FilteredCatalogCard` y `WishlistProductCard` con `variants` required que TypeScript enforza. Sin pattern replicable nuevo — es 2da aplicación del mismo refactor.
+
 ## 2026-05-31 — Revisado — sin novedad: share buttons implementados sin pattern nuevo
 
 **Categoría**: Feature implementation

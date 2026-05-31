@@ -24,6 +24,39 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Cuando hice el fix de scale a `FilteredCatalogCard` (commit 0f75355), NO incluí `variants` en el mismo shape — recurrencia del pattern "fix-applied-to-one-thing-but-not-the-other-similar-thing" en el MISMO día
+
+**Estado**: 🟡 Mitigado — fix de variants thumbnails aplicado este turno, TypeScript-validated (pre-commit). Pero la recurrencia 2x en el mismo día del mismo pattern es señal de que la regla 15 + LEARNINGS sobre "Single point of normalization" NO fueron suficientes — necesito una check explícita pre-implementación.
+**Categoría**: Pattern recurrence / Fix incompleto / Same-day repetition
+**Patrón**: `fix-applied-to-one-property-when-N-properties-need-treatment`
+
+**Qué pasó**: En commit `0f75355` (turnos previos del mismo día 2026-05-31), implementé el fix sistémico de `image-scale-overrides`: agregué `primaryImageScale` + `secondaryImageScale` a `FilteredCatalogCard` / `WishlistProductCard` / `RelatedProductCard` + populé en 5 queries + propagué en 4 componentes. PERO no agregué `variants` al mismo shape, ni populé thumbnails en las queries. Founder lo detectó horas después en `/anteojos-de-sol/mujer`: "no aparecen las thumb images de variantes". Fix de variants ejecutado este turno extendiendo exactamente el mismo refactor — 5 queries con SELECT extendido + helper `buildCardVariants` extraído + 4 componentes que pasan `variants`.
+
+**Causa raíz**:
+1. **Foco en el síntoma reportado, no en la totalidad de la divergencia entre shapes**. El founder reportó "scale". Yo arreglé el scale. Pero la divergencia real entre `FilteredCatalogCard` (sin variants) y `ProductCardData` resultado de `toProductCardData` (con variants) era MÁS amplia que solo scale. Para ver eso, hubiera necesitado comparar los 2 shapes completos lado a lado al momento del fix anterior.
+2. **No comparé shapes ANTES del fix**. Habría sido un `diff <(echo "campos de FilteredCatalogCard") <(echo "campos del ProductCardData que toProductCardData devuelve")` mental — y habría visto `variants` faltando.
+3. **Pattern recurrencia en el MISMO día**: este es el 4to o 5to mistake hoy con el mismo pattern raíz (fix-applied-to-one-path, fix-applied-to-one-property). La regla 15 + LEARNINGS lo describen, pero NO lo enforce pre-implementación. Necesito una verificación operativa.
+
+**Costos**:
+- Founder vio /anteojos-de-sol/mujer con scale correcto PERO sin thumbnails → otra iteración de feedback
+- Otro round de commits + push + deploy
+- 2da pérdida de cache + atención del founder
+- Erosión sutil "el fix anterior estaba completo, pero no del todo"
+
+**Regla preventiva**:
+1. **Pre-fix sistémico**: cuando una superficie de UI (ej. ProductCard) recibe datos de 2+ pipelines distintas, hacer un diff EXPLÍCITO de los shapes antes de aplicar el fix:
+   ```
+   ¿Qué campos tiene ProductCardData (target)? → primaryImagePath, secondaryImagePath, primaryImageScale, secondaryImageScale, variants, ...
+   ¿Qué campos tiene FilteredCatalogCard (source actual)? → primaryImagePath, secondaryImagePath, ... (NADA MÁS)
+   → Gap: scale (4 campos) + variants (1 array)
+   → Fix debe cubrir AMBOS, no solo el reportado
+   ```
+2. **Aplicar fix completo de una vez** vs incremental. Si el founder reporta "tamaños diferentes", el fix debe normalizar el shape COMPLETO, no solo los 2 campos del síntoma.
+3. **Verificación post-fix**: comparar los 2 shapes nuevamente para confirmar que matchean en TODOS los campos relevantes para el UI compartido.
+4. **Escalación a regla 16 si recae**: si en próximo turno pasa el mismo pattern una 5ta vez, agregar a CLAUDE.md regla 16 "Pre-fix shape diff obligatorio en UI compartida cross-pipeline".
+
+**Verificación contra recurrencia**: en el próximo fix de UI compartida, ANTES de modificar tipos/queries, comparar el shape source vs el shape target field-by-field y documentar el diff en el comment del fix.
+
 ## 2026-05-31 — Revisado — sin novedad: share buttons implementados sin error nuevo
 
 **Estado**: N/A

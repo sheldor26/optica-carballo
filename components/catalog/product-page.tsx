@@ -410,7 +410,6 @@ export async function ProductDetailPage({
             url={pageUrl}
             contentType="product"
             itemSlug={product.slug}
-            variant="compact"
           />
 
           <ProductTrustSignals />

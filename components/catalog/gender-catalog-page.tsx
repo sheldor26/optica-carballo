@@ -130,6 +130,7 @@ export function GenderCatalogPage({
                   secondaryImagePath: p.secondaryImagePath,
                   primaryImageScale: p.primaryImageScale,
                   secondaryImageScale: p.secondaryImageScale,
+                  variants: p.variants,
                   href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                   categorySlug: p.categorySlug,
                   brandSlug: p.brandSlug,
