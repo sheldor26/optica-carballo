@@ -38,7 +38,26 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **2 bugs del chat fixados — X cerrar + garantía inventada** (2026-05-31). Founder reportó vía screenshot del chat: respuesta sobre garantía inventada + X de cerrar no respondía.
+🟢 **Mis Matches en /mi-cuenta — persistencia DB con sync automático** (2026-05-31). Founder pidió "en mi cuenta debería aparecer un apartado Mis Matches".
+
+**Cambios** (commit `b03143f`):
+- Migración nueva `20260531000000_swipe_matches.sql`: tabla con RLS por user_id, 3 policies (SELECT/INSERT/DELETE), PRIMARY KEY (user_id, product_slug) idempotente.
+- `lib/swipe/actions.ts`: 4 server actions (addMatch, removeMatch, listMyMatches, syncMatchesFromLocalStorage).
+- `lib/swipe/queries.ts`: fetchProductsBySlug() para grid de matches.
+- `components/swipe/swipe-deck.tsx`: props isAuthenticated + initialMatches. Si autenticado: DB. Si anónimo: localStorage. **Sync automático** al loguearse (lee localStorage anterior, bulk UPSERT a DB, limpia localStorage).
+- `/mi-cuenta/matches/page.tsx`: grid editorial con heart badge + empty state.
+- `/mi-cuenta/page.tsx`: card nueva "Mis matches" en grid actividad.
+
+**Decisión técnica**: persistencia híbrida (DB + localStorage). Usuarios anónimos usan localStorage (privacidad + no requiere account creation). Al loguearse: sync automático de localStorage → DB. Mejor UX que perder matches al crear cuenta.
+
+**Deploy steps founder**:
+1. Aplicar migración `20260531000000_swipe_matches.sql` en Supabase Cloud (Dashboard → SQL Editor).
+2. Push código.
+3. Test: loguearse → `/descubrir` → swipe N modelos → `/mi-cuenta/matches`.
+
+**Build verificado**: `/mi-cuenta/matches` 213B, `/descubrir` 6.24kB.
+
+🟢 **2 bugs del chat fixados — X cerrar + garantía inventada** (2026-05-31, superado por Mis Matches arriba). Founder reportó vía screenshot del chat: respuesta sobre garantía inventada + X de cerrar no respondía.
 
 **Fix 1 (X no funcionaba)**: panel `z-30` + FAB `z-40` → FAB encima del panel en mobile, interceptando clicks del X header. Solución: panel z-50 + FAB solo se renderea cuando `!isOpen` (un solo trigger apertura, un solo trigger cierre = X header).
 
