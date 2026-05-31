@@ -1,5 +1,29 @@
 # Óptica Carballo — Current State
 
+🟢 **Vulk Booping cargado: 4 variantes redondas polarizadas, 18,9g, stock 33** (2026-05-31). Primer Vulk de sol nuevo desde Day Light/Yamain.
+
+**Cambios** (commit pending):
+- Cloud Apply via MCP: producto + 4 variantes + 9 imágenes.
+- `supabase/seeds/32_vulk_booping.sql` doc seed.
+- `lib/catalog/image-scale-overrides.ts`: 8 entries 1.15/1.0 default.
+- `CLOUD_APPLIED.md` actualizado.
+
+**Datos clave**:
+| SKU | Variante | Stock | ML var |
+|---|---|---|---|
+| 958006 | L.PINK/S10 POL (default) | 14 | 183974699487 |
+| 958004 | MBLK/DRT-03 POL | 11 | 183974699483 |
+| 958005 | MBLK/G15 POL | 8 | 183974699485 |
+| 958007 | BROWN/B15 POL | 0 | 183974699489 |
+
+Precio único $84.211. Total stock 33. Peso 18,9g (entre los más livianos). Medidas 143/52×52/21/140mm.
+
+**Decisión técnica**: ML decía "Ovalado" en diseño pero founder dijo "redondo" — confiado en founder (es óptico, ML tags pueden ser inexactos).
+
+**Pendiente founder**: subir 9 fotos al bucket `products/vulk-booping/` con los nombres exactos (naming inconsistente del founder respetado: espacio extra después del dash en 3 frontales, sin dash en BROWN).
+
+---
+
 🟢 **Rusty Xold Receta cargado: 4 variantes G-Flex + UPDATE peso 21.5g Xold sol** (2026-05-31). Primer producto del catálogo en categoría `anteojos-de-receta` (versión Xold del armazón sin lentes pre-instaladas).
 
 **Cambios** (commit pending):

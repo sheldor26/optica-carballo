@@ -1,0 +1,33 @@
+-- ============================================
+-- Seed 32: Vulk Booping (sol) — redondos unisex G-Flex polarizados
+-- Fecha: 2026-05-31
+-- Origen: MLA1440036743 (multi-variation con 4 variantes)
+-- ============================================
+-- Modelo Vulk Booping: redondos unisex, frente + patillas G-Flex, bisagras
+-- plásticas, lente policarbonato polarizado UV400 cat 3. 18,9g — entre los
+-- más livianos del catálogo. Las 4 variantes son polarizadas.
+--
+-- 4 variantes (1 MLA con multi-variation):
+--   SKU 958006 — L.PINK / S10 POL (Rosa pálido + negro S10) — stock 14, DEFAULT
+--   SKU 958004 — MBLK / DRT-03 POL (Negro mate + DRT-03) — stock 11
+--   SKU 958005 — MBLK / G15 POL (Negro mate + G15 gris verdoso) — stock 8
+--   SKU 958007 — BROWN / B15 POL (Marrón transparente + marrón) — stock 0
+--
+-- Precio único $84.211. Total stock 33.
+--
+-- Medidas (img 1 founder): 143/52x52/21/140mm. Peso 18.9g.
+-- (ML decía "Ovalado" en Diseño, founder dice "redondo" — founder gana.)
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: 4 variants, total_stock=33, 9 images, w=18.9.
+-- ============================================
+-- 📸 FOTOS (nombres del bucket — naming inconsistente respetado tal cual):
+--   BOOPING L.PINKS10 POL-perfil.jpg + BOOPING L.PINKS10 POL- frente.jpg
+--   BOOPING MBLKDRT-03 POL-perfil.jpg + BOOPING MBLKDRT-03 POL- frente.jpg
+--   BOOPING MBLKG15 POL-perfil.jpg + BOOPING MBLKG15 POL- frente.jpg
+--   BOOPING BROWNB15 POL-perfil.jpg + BOOPING BROWNB15 POL frente.jpg
+--   (notar espacio extra después del dash en 3 frontales + BROWN sin dash)
+--   medidas.jpg
+-- ============================================
+
+-- Seed documental — INSERT real ya aplicado vía MCP.
