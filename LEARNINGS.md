@@ -22,6 +22,49 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Agrupar ideas/opciones por OBJETIVO (acquisition / engagement / retention / differentiation) en vez de listar planas — ayuda al founder a evaluar trade-offs
+
+**Categoría**: Founder communication / Proposal structuring
+**Confianza**: 🟡 Media (validado tácitamente — founder respondió pidiendo más ideas, no descartando ninguna)
+
+### Qué funcionó
+
+Cuando founder pidió "ideas de otros sectores aplicables a óptica", ofrecí 9 opciones (DD-OO) **agrupadas por objetivo**:
+- 💸 ACQUISITION (atraer clientes nuevos)
+- 🔥 ENGAGEMENT (retener atención / volver)
+- 💝 RETENTION + REVENUE (clientes existentes)
+- ❤️ BRAND DIFFERENTIATION (posicionamiento)
+
+vs alternativa anterior (turnos U/V/W/X) donde las listé planas sin categoría.
+
+### Por qué funciona
+
+El founder evalúa propuestas según **prioridad estratégica del momento**:
+- Si necesita TRÁFICO → mira sección Acquisition.
+- Si tiene tráfico pero baja conversión → mira Retention.
+- Si quiere posicionamiento → mira Differentiation.
+
+Agrupar por objetivo le permite **descartar grupos enteros** (ej "no me importa retention todavía") y enfocarse en los que aplican. Más eficiente que evaluar 9 opciones individualmente.
+
+### Cómo replicar
+
+Cuando ofrezcas 4+ opciones al founder:
+1. Identificar 3-5 OBJETIVOS posibles (acquisition / engagement / retention / brand / SEO / etc).
+2. Agrupar opciones por objetivo.
+3. Incluir 1-2 opciones por grupo (no más para no abrumar).
+4. Top-3 ranking transversal al final.
+5. Esperar decisión del founder.
+
+### Trigger
+
+Cuando vayas a ofrecer 4+ opciones de features al founder.
+
+### Cross-link
+
+Complementa [[niveles-tecnicos-explicitos-en-propuestas-IA]] (commit `8850284`): ambos son sobre **mejorar comunicación de opciones al founder no-técnico**. Uno por costo, otro por objetivo.
+
+---
+
 ## 2026-05-31 — Cuando propongo feature de IA al founder, listar NIVELES técnicos (gratis browser-native / API existente / API paga) explícitos para evitar asunción "muy complicado / muy caro"
 
 **Categoría**: Founder communication / AI feature proposal / Avoid scope confusion

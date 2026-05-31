@@ -38,7 +38,25 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Probador virtual (U) — aclaración 3 niveles técnicos tras feedback founder** (2026-05-31). Founder respondió a la propuesta U: "está buena pero es algo complicada, necesito API de pago".
+🟡 **9 ideas cross-industry (DD-OO) ofrecidas + top-3 ranking — founder eligió "guardar Y separado"** (2026-05-31). Founder pidió "que se haya aplicado en otro sector y podamos aplicarlo en óptica y hacerlo revolucionario".
+
+**9 opciones ofrecidas agrupadas por OBJETIVO**:
+- **Acquisition**: EE (Calculadora ahorro vs óptica física), II (Embajadores referrals).
+- **Engagement**: GG (Test gamificado agudeza/daltonismo), FF (Tip del día).
+- **Retention + Revenue**: JJ (Alertas precio + stock), NN (Concierge WhatsApp + IA).
+- **Brand differentiation**: LL (1% por la vista cause-driven), MM (Tour 360° local).
+- Otras presentadas previo turno: DD (Renta de prueba), GG, KK (AR filters Snapchat/Instagram), OO (UGC con creadores).
+
+**Top-3 recomendación**:
+1. 🥇 **GG** (Test gamificado) — 1-2 días — viral potential alto + retorno frecuente.
+2. 🥈 **EE** (Calculadora ahorro) — 2-3h — quick win + ataca pain point.
+3. 🥉 **LL** (1% por la vista) — 3-4h — diferenciador emocional.
+
+**Decisión founder previa**: "Tinder de monturas" (Opción Y) le gustó pero queda **separada para implementar después** (no es prioridad inmediata).
+
+**Próximo paso**: founder elige GG / EE / LL / combo / otra idea.
+
+🟡 **Probador virtual (U) — aclaración 3 niveles técnicos tras feedback founder** (2026-05-31, superado por opciones DD-OO arriba). Founder respondió a la propuesta U: "está buena pero es algo complicada, necesito API de pago".
 
 **Aclaración técnica entregada** (corrección de asunción del founder):
 

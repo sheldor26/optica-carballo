@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: turno de ideación cross-industry (opciones DD-OO)
+
+**Estado**: ⚪ N/A
+**Categoría**: Discovery / Ideation
+
+**Justificación regla 11**: turno de brainstorming de ideas cross-industry aplicables a óptica. Sin acciones técnicas ni errores. Founder eligió "guardar Y separado" + pidió más → ofrecí 9 opciones nuevas (DD-OO) agrupadas por objetivo. Esperando decisión.
+
+Cuando se implemente alguna opción, ahí pueden surgir mistakes documentables.
+
+---
+
 ## 2026-05-31 — Propuse Opción U (probador virtual IA) sin desglosar niveles técnicos → founder asumió "necesita API de pago" + casi descarta el feature
 
 **Estado**: 🟡 Mitigado — aclaración técnica entregada + learning escalado.
