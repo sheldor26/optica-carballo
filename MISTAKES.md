@@ -24,9 +24,9 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
-## 2026-05-30 — Sobre-estimé 5 veces consecutivas el trabajo de "rehacer/mejorar X" sin auditar componente actual
+## 2026-05-30 — Sobre-estimé 7 veces consecutivas el trabajo de "rehacer/mejorar X" sin auditar componente actual
 
-**Estado**: 🟡 Mitigado — pattern detectado tras 5 recurrencias + learning escalado documentado. Aplicación de regla preventiva pendiente validar en próximas estimaciones.
+**Estado**: ✅ Cerrado — escalado a regla 14 de CLAUDE.md (2026-05-30 tras 7ma recurrencia con Opción G 404). El sistema lee CLAUDE.md al inicio de cada sesión → audit obligatorio antes de estimar se aplica automáticamente desde la próxima sesión.
 **Categoría**: Estimation / Self-calibration / Anti-pattern recurrente
 
 ### Qué pasó
