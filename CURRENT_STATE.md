@@ -38,6 +38,30 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
+🟢 **Receta #5 cerrada — 4/13 con ground truth + 16 trampas oro acumuladas** (2026-05-30).
+
+**Receta #5 (`05-hipermetropia-anisometropia-monofocal-lejos.jpg`)** — confirmada founder:
+- OD: esf +2.50, cil -0.50, eje 3°, add null, confidence high
+- OI: esf +1.50, cil -0.75, eje 111°, add null, confidence high
+- DNP: null, Tipo: monofocal, Purpose: lejos
+- Tratamientos: AR + Bluecut (BLC), sin Foto
+- WarningFlags: ["partial_data"]
+
+**Trampa (14) refinada — regla técnica crítica**: el oculista escribe "+250" y "+1.50" en la MISMA receta. AMBOS son IDÉNTICOS (+2.50 y +1.50 respectivamente). Modelo debe normalizar todo a notación con punto en output. **Regla defensiva nueva para system prompt**: "todo valor > ±25.00 dpt es físicamente imposible — re-interpretar como notación compacta (dividir por 100)". Sin esta regla, modelo entrenado en inglés podría leer "+250" como 250.0 dioptrías (catastrófico).
+
+**Progreso acumulado**:
+| # | Tipo | Purpose | Trampas |
+|---|---|---|---|
+| 1 | Astigmatismo puro bilateral | lejos | 1-5 |
+| 2 | Anisometropía leve + astig puro OI | lejos | 6-8 |
+| 3 | Presbicia (pendiente confirm ESF vs ADD) | cerca | 9-12 |
+| 4 | (esperando re-crop por PII grave) | — | 13 |
+| 5 | Hipermetropía con anisometropía leve | lejos | 14-16 |
+
+**Total: 16 trampas oro únicas / 4 recetas confirmadas.** Estimación: 13/13 darán ~30-40 trampas distintas para el system prompt.
+
+**Próximo paso**: founder pasa receta #6.
+
 🟡 **Receta #4 — re-crop requerido por PII residual GRAVE (sello + firma + cel + matrícula visibles)** (2026-05-30). Founder mandó receta con crop incompleto: ZONA 3 (abajo) muestra TODO el sello del Dr. Rubén Darío Bentos, su firma, celular, fecha. Es exactamente lo que el crop debía tapar. NO integro al few-shot hasta re-crop.
 
 Lo que sí pude descifrar de zona Rx útil:
