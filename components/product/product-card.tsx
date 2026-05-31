@@ -138,8 +138,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         className="flex h-full flex-col"
         aria-label={product.name}
       >
+        {/* bg-background (white) — antes era bg-zinc-50 para "sutil contraste"
+            (commit c368013), pero las fotos de productos suelen venir con
+            fondo blanco. Cuando la foto no llena 100% el container (scales
+            <1.8 dejan barras visibles), se notaba borde gris alrededor.
+            Founder reportó issue 2026-05-31. Rollback a white — el "premium
+            feel" del hover (shadow + scale 1.04) compensa la perdida sutil. */}
         <div
-          className="group/image bg-zinc-50 relative aspect-[3/2] w-full overflow-hidden rounded-md transition-shadow duration-500 ease-out group-hover/card:shadow-lg group-hover/card:shadow-zinc-900/[0.08]"
+          className="group/image bg-background relative aspect-[3/2] w-full overflow-hidden rounded-md transition-shadow duration-500 ease-out group-hover/card:shadow-lg group-hover/card:shadow-zinc-900/[0.08]"
           aria-hidden="true"
         >
           {primaryUrl ? (
