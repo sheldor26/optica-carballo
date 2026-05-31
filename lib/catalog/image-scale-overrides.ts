@@ -121,6 +121,21 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-etiquet/ETIQUET L.PINK DRT-03 POL f.jpg': 1.0,
   'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-P.jpg': 1.15,
   'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-F.jpg': 1.0,
+
+  // Rusty Tulle — sub-regla 15 obligatoria post-carga: scale 1.15
+  // default emparejando con Vrast iter 2 (mismo aviador metal). Si tras
+  // deploy queda chico vs grid → subir escalonado a 1.2/1.1. Si recorta
+  // → bajar a 1.05/1.0. 8 entries (2 por variante × 4 variantes).
+  // Naming inconsistente del founder (P_frente vs pol._frente vs
+  // pol.-perfil vs pol._perfil) respetado.
+  'rusty-tulle/TULLE C1 pol.-perfil.jpg': 1.15,
+  'rusty-tulle/TULLE C1 P_frente.jpg': 1.0,
+  'rusty-tulle/TULLE C2 pol._perfil.jpg': 1.15,
+  'rusty-tulle/TULLE C2 P_frente.jpg': 1.0,
+  'rusty-tulle/TULLE C3 pol._perfil.jpg': 1.15,
+  'rusty-tulle/TULLE C3 pol._frente.jpg': 1.0,
+  'rusty-tulle/TULLE C4 pol._perfil.jpg': 1.15,
+  'rusty-tulle/TULLE C4 pol._frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

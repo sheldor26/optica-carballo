@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: Tulle cargado sin error reproducible
+
+**Estado**: N/A
+**Categoría**: Product loading
+
+Carga ejecutada limpia con el playbook ya consolidado (audit + fetch + apply + verify + scale + docs). Sin tropiezos documentables.
+
 ## 2026-05-31 — Cuando agregué `model_code` al label de VariantList no probé contra todos los productos del catálogo — Yau con codes largos quedó en 3 líneas feo (founder reportó "problema estetico")
 
 **Estado**: 🟡 Mitigado — layout reorganizado a 2 líneas. Pattern es recurrencia LIGHT del "shipped-but-untested-against-real-data" ya documentado hoy para el badge Polarizado bug.

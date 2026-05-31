@@ -1,0 +1,48 @@
+-- ============================================
+-- Seed 29: Rusty Tulle (sol) — aviadores metal polarizados unisex
+-- Fecha: 2026-05-31
+-- Origen: MLA1513045607 (Tienda Oficial OPTICACARBALLO 260502)
+-- ============================================
+-- Modelo Rusty Tulle: aviadores unisex con armazón completo en metal +
+-- terminales de patilla hechas a mano en acetato (detalle premium). Lente
+-- policarbonato POLARIZADO UV400 categoría 3, 39,4g de peso, APTO para
+-- colocar lentes graduados.
+--
+-- 4 variantes (1 ítem ML con multi-variation):
+--   SKU 968440 — C1 Plateado/Gris Oscuro — ML var 184503998554 (stock 1)
+--   SKU 968441 — C2 Dorado/Marrón — ML var 184503998556 (stock 0)
+--   SKU 968442 — C3 Dorado/Verde G15 — ML var 184503998558 (stock 2)
+--   SKU 968443 — C4 Negro Mate/Semiespejada Gris — ML var 184503998560 (stock 2)
+--
+-- Precio único $85.914,96 (igual al Vrast — aviadores Rusty mismo tier).
+-- Total stock 5 unidades.
+--
+-- Medidas (img 3 founder):
+--   frame_width_mm: 144, lens_width_mm: 60, lens_height_mm: 51,
+--   bridge_mm: 12, temple_length_mm: 140
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: variants_active=4, total_stock=5, images=9,
+-- shape='aviador', prescription_adapter=true.
+--
+-- ============================================
+-- 📸 FOTOS pendientes (founder sube al bucket `products/rusty-tulle/`):
+--   TULLE C1 pol.-perfil.jpg     (C1 lateral, primary del MODELO)
+--   TULLE C1 P_frente.jpg        (C1 frontal)
+--   TULLE C2 pol._perfil.jpg     (C2 lateral)
+--   TULLE C2 P_frente.jpg        (C2 frontal)
+--   TULLE C3 pol._perfil.jpg     (C3 lateral)
+--   TULLE C3 pol._frente.jpg     (C3 frontal)
+--   TULLE C4 pol._perfil.jpg     (C4 lateral)
+--   TULLE C4 pol._frente.jpg     (C4 frontal)
+--   medidas.jpg                  (esquema técnico común)
+--
+-- Naming inconsistente entre variantes (founder lo subió así): C1 usa
+-- "P_frente" + "pol.-perfil", C2 usa "P_frente" + "pol._perfil", C3/C4
+-- usan "pol._frente" + "pol._perfil". Respetados exactamente.
+-- ============================================
+
+-- Este seed es DOCUMENTAL — el INSERT real ya se aplicó vía MCP en el
+-- turno de carga. Mantenido idempotente para re-aplicación desde cero
+-- (con ON CONFLICT en producto/variantes/imágenes).
+-- Para el SQL completo aplicado, ver CLOUD_APPLIED.md entry seed 29.

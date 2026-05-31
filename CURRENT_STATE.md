@@ -2,6 +2,28 @@
 
 ## Status
 
+🟢 **Rusty Tulle cargado: 4 variantes aviador metal polarizadas + scale override sub-regla 15** (2026-05-31).
+
+**Cambios** (commit pending):
+- Cloud: producto + 4 variantes + 9 imágenes aplicado vía MCP (autorización standing). Verificación: variants=4, stock=5, images=9, shape=aviador, prescription_adapter=true.
+- `supabase/seeds/29_rusty_tulle.sql`: documentación del seed.
+- `lib/catalog/image-scale-overrides.ts`: 8 entries con scale 1.15/1.0 (sub-regla 15 default).
+- `CLOUD_APPLIED.md`: entry agregada.
+
+**Datos clave**:
+| SKU | Variante | ML var | Stock | Precio |
+|---|---|---|---|---|
+| 968440 | C1 Plateado/Gris Oscuro | 184503998554 | 1 (default) | $85.914,96 |
+| 968441 | C2 Dorado/Marrón | 184503998556 | 0 (sin stock) | $85.914,96 |
+| 968442 | C3 Dorado/Verde G15 | 184503998558 | 2 | $85.914,96 |
+| 968443 | C4 Negro Mate/Semiespejada Gris | 184503998560 | 2 | $85.914,96 |
+
+Las 4 polarizadas → badge POLARIZADO visible en todas.
+
+**Diferenciador premium del modelo**: terminales de patilla hechas a mano en ACETATO (no metal directo). Documentado en `attributes.temple_tip_material: "acetato"` para que el agente conversational/IA pueda referenciar.
+
+**Pendiente founder**: subir 9 fotos al bucket `products/rusty-tulle/` con los nombres exactos mostrados en search (naming inconsistente entre variantes, respetado).
+
 🟢 **Fix paths fotos SBLK Etiquet (founder corrigió: tienen "L" y "F" al final)** (2026-05-31). Founder pasó nombres reales `ETIQUET SBLK S10 POL L.jpg` (lateral) + `ETIQUET SBLK 10 POL F.jpg` (frente). UPDATE puntual via MCP a 2 rows de `product_images` + sincronizado seed local + scale override.
 
 🟢 **Rusty Etiquet cargado: 4 variantes (3 polarizadas + 1 degradé) — apply via MCP + scale override sub-regla 15** (2026-05-31).

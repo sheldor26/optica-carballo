@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: Tulle cargado siguiendo playbook consolidado + sub-regla 15
+
+**Categoría**: Product loading
+**Confianza**: 🟢 N/A (no aplica — segunda carga del día siguiendo el playbook completo: audit + fetch ML + apply MCP + verify + scale override + CLOUD_APPLIED + commit, sin novedad replicable)
+
+Tulle cargado en mismo turno end-to-end: ML fetch confirmó 4 variations + precio + stocks reales, slug libre, apply MCP exitoso, scale override 1.15/1.0 default (sub-regla 15), CLOUD_APPLIED.md actualizado. Total 5 minutos de turno. Workflow consolidado.
+
 ## 2026-05-31 — Cross-source verification de "polarizada vs no" antes de hardcodearlo en seed evita mistake del Dearly bisagras (regla dura negocio #3 + #4)
 
 **Categoría**: Honesty / Cross-source validation / Data quality
