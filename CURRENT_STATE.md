@@ -38,7 +38,25 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Sección artículos/guías — audit completo + 3 opciones ofrecidas + decisiones técnicas pendientes founder** (2026-05-30). Founder pidió "continuemos con sección de artículos / guías" tras felicitar Opción 1+2+3.
+🟢 **Sección artículos/guías — FASE 1 completa (infra MDX + rutas + componentes)** (2026-05-30). Founder eligió "dale con tu recomendación" (Opción B + MDX + Juan como autor).
+
+**Lo construido** (commit `a2a7e47`):
+- **Setup MDX en Next.js 15**: `next.config.mjs` con `createMDX` + 4 deps nuevas (`@next/mdx`, `@mdx-js/react`, `@mdx-js/loader`, `gray-matter`).
+- **Types + utilities** (`lib/content/`): article-types, article-authors (Juan + María Carlota), article-clusters (8 según CONTENT_PLAN.md), articles.ts (listArticles, getArticle, getRelatedArticles, getAllArticleSlugs).
+- **Rutas** (`app/(storefront)/guias/`):
+  - `/guias` — listado editorial con metadata + JSON-LD + agrupación por cluster si 2+, fallback "ComingSoon" cuando no hay artículos.
+  - `/guias/[slug]` — detail con generateStaticParams + MDX dynamic import + prose styling.
+- **Componentes** (`components/articles/`): ArticleCard, ArticleHeader (display 6xl + meta autor/revisor/fecha/min), ArticleFooter (bio E-E-A-T crítico + CTA WhatsApp), RelatedArticles.
+- **SEO**: `components/seo/article-jsonld.tsx` con schema.org/Article + `reviewedBy` (refuerza autoridad médica para YMYL).
+- **Content**: `content/guias/_template.mdx` (placeholder ignorado, solo para verificar build).
+
+**Decisión técnica**: file-based content con gray-matter para frontmatter YAML. Validación slug-vs-filename para evitar drift. Drafts con prefix `_` excluidos automáticamente. Dynamic import del MDX compilado por @next/mdx (Server Components, no client).
+
+**Build verificado**: `npx tsc --noEmit` OK + `npx next build` OK. Rutas `/guias` (743B) y `/guias/[slug]` (743B SSG) generadas correctamente.
+
+**Próximo paso (FASE 2)**: cuando founder confirme, invoco `content-writer-medical` para draftar el **artículo #1**: "Cómo leer la receta de anteojos" (~4.000 palabras, autor Juan, reviewer María Carlota, cross-link con `/lector-de-receta`). Después `optical-expert` valida precisión técnica y publicamos.
+
+🟡 **Sección artículos/guías — audit completo + 3 opciones ofrecidas (superado por FASE 1 arriba)** (2026-05-30). Founder pidió "continuemos con sección de artículos / guías" tras felicitar Opción 1+2+3.
 
 **Audit del estado actual**:
 - ❌ **NO existe ruta `/guias` ni `/articulos`** en `app/(storefront)/` — gap funcional real (no inconsistencia visual como las 3 opciones previas).
