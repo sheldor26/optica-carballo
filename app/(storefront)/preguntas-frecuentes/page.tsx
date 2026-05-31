@@ -21,23 +21,27 @@ export function generateMetadata(): Metadata {
 
 export default function Page() {
   return (
-    <main className="container py-10 md:py-16">
+    <main className="container py-16 md:py-24">
       <FaqJsonLd items={FAQS} />
 
       <header className="mx-auto max-w-3xl text-center">
-        <p className="text-brand inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em]">
+        <p className="text-foreground/60 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em]">
           <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
           Te ayudamos
         </p>
-        <h1 className="text-foreground mt-4 text-balance font-serif text-4xl font-medium leading-[1.1] tracking-tight md:text-5xl">
-          Preguntas <span className="italic">frecuentes</span>
+        <h1 className="text-foreground mt-6 text-balance font-serif text-5xl font-medium leading-[1.0] tracking-[-0.025em] md:text-6xl lg:text-7xl">
+          Preguntas{' '}
+          <span className="font-normal italic text-foreground/70">
+            frecuentes
+          </span>
+          .
         </h1>
-        <p className="text-muted-foreground mx-auto mt-5 max-w-xl text-balance text-base md:text-lg">
+        <p className="text-muted-foreground mx-auto mt-7 max-w-xl text-balance text-base md:text-lg">
           {DESCRIPTION}
         </p>
       </header>
 
-      <div className="mt-12 md:mt-14">
+      <div className="mt-14 md:mt-20">
         <FaqSearch allItems={FAQS} />
       </div>
 
@@ -48,20 +52,24 @@ export default function Page() {
 
 function ContactCta() {
   return (
-    <section className="mx-auto mt-20 max-w-3xl">
-      <div className="border-border/60 from-muted/30 to-background relative overflow-hidden rounded-2xl border bg-gradient-to-br p-8 text-center md:p-12">
+    <section className="mx-auto mt-24 max-w-3xl md:mt-32">
+      <div className="bg-zinc-50 relative overflow-hidden rounded-2xl p-8 text-center md:p-12">
         <div
           aria-hidden="true"
           className="bg-brand/15 pointer-events-none absolute -right-20 -top-20 size-48 rounded-full blur-3xl"
         />
         <div className="relative">
-          <h2 className="text-foreground font-serif text-2xl font-medium tracking-tight md:text-3xl">
+          <p className="text-foreground/60 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.22em]">
+            <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
+            ¿Otra duda?
+          </p>
+          <h2 className="text-foreground mt-5 font-serif text-3xl font-medium tracking-tight md:text-4xl">
             ¿No encontraste lo que buscabas?
           </h2>
-          <p className="text-muted-foreground mx-auto mt-3 max-w-md text-balance text-sm md:text-base">
+          <p className="text-muted-foreground mx-auto mt-5 max-w-md text-balance text-base">
             Escribinos por WhatsApp y te respondemos lo antes posible.
           </p>
-          <p className="text-muted-foreground/80 mt-4 text-xs">
+          <p className="text-muted-foreground/80 mt-3 text-xs">
             También podés visitarnos en Virasoro, Corrientes.
           </p>
         </div>

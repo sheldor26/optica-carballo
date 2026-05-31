@@ -33,7 +33,10 @@ export function OrganizationJsonLd() {
     '@id': `${SITE_URL}#organization`,
     name: business.siteName,
     url: SITE_URL,
-    image: `${SITE_URL}/og-image.png`,
+    // Image apunta al OG dinámico (Next 15 sirve este path desde
+    // app/opengraph-image.tsx automáticamente). Generaba 404 antes porque
+    // apuntaba a /og-image.png estático que nunca existió.
+    image: `${SITE_URL}/opengraph-image`,
     address: {
       '@type': 'PostalAddress',
       ...addressParts,

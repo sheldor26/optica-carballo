@@ -3,7 +3,15 @@ import {
   PRESCRIPTION_SYSTEM_PROMPT,
   PRESCRIPTION_USER_PROMPT,
 } from '@/lib/prescription/prompt';
+import {
+  VERIFY_SYSTEM_PROMPT,
+  VERIFY_USER_PROMPT,
+} from '@/lib/prescription/verify-prompt';
 import { PrescriptionAnalysisSchema } from '@/lib/prescription/types';
+import {
+  VerifyVerdictSchema,
+  VERIFY_ISSUE_COPY,
+} from '@/lib/prescription/verify-types';
 import {
   EXTRACT_PRESCRIPTION_TOOL,
   type AnthropicContentBlock,
@@ -334,16 +342,206 @@ export async function POST(request: Request) {
     );
   }
 
+  // Tier 2: Verificación adversarial con segundo agent skeptic.
+  // Recibe la imagen ORIGINAL + el JSON extraído por el primer agent y
+  // duda de la extracción según heurísticas clínicas. Si el verdict es
+  // unreliable, ajustamos confidence o aplicamos corrección sugerida.
+  //
+  // Es OPCIONAL: si falla la verificación, devolvemos la extracción
+  // original (no romper el flow del usuario por algo experimental).
+  const verifiedData = await runAdversarialVerification(
+    apiKey,
+    detectedMime,
+    base64,
+    validated.data,
+  );
+
   const durationMs = Date.now() - startedAt;
   // Solo metadata mínima. NUNCA loguear el contenido del JSON (datos médicos).
   console.log(
-    `[prescription] OK ${durationMs}ms isRx=${validated.data.isPrescription} type=${validated.data.prescriptionType}`,
+    `[prescription] OK ${durationMs}ms isRx=${verifiedData.isPrescription} type=${verifiedData.prescriptionType}`,
   );
 
-  return NextResponse.json(validated.data, {
+  return NextResponse.json(verifiedData, {
     headers: {
       'Cache-Control': 'no-store, private',
       'X-RateLimit-Remaining': String(rl.remaining),
     },
   });
+}
+
+/**
+ * Tier 2 — Verificación adversarial. Llama a un segundo agent (Sonnet
+ * sin thinking, sin tool use, más liviano) con la imagen + JSON del
+ * primer agent y le pide que dude.
+ *
+ * Aplica `confidenceAdjustment`:
+ * - "lower" → baja `od.confidence` y `oi.confidence` un nivel.
+ * - "raise" → sube `od.confidence` y `oi.confidence` un nivel.
+ * - "keep" → no cambia nada.
+ *
+ * Si el modelo devuelve issues no vacío, los appendea como warning flags
+ * adicionales (mapeados via VERIFY_ISSUE_COPY).
+ *
+ * Si el verificador falla por cualquier razón (timeout, API error, JSON
+ * inválido), devuelve la data original sin tocar — verificación es opcional.
+ */
+async function runAdversarialVerification(
+  apiKey: string,
+  mediaType: string,
+  imageBase64: string,
+  extractedData: ReturnType<typeof PrescriptionAnalysisSchema.parse>,
+): Promise<ReturnType<typeof PrescriptionAnalysisSchema.parse>> {
+  try {
+    const userContent =
+      mediaType === 'application/pdf'
+        ? [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: imageBase64,
+              },
+            },
+            {
+              type: 'text',
+              text: `${VERIFY_USER_PROMPT}\n\nJSON extraído por el primer agente:\n${JSON.stringify(
+                extractedData,
+                null,
+                2,
+              )}`,
+            },
+          ]
+        : [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType,
+                data: imageBase64,
+              },
+            },
+            {
+              type: 'text',
+              text: `${VERIFY_USER_PROMPT}\n\nJSON extraído por el primer agente:\n${JSON.stringify(
+                extractedData,
+                null,
+                2,
+              )}`,
+            },
+          ];
+
+    const response = await fetch(ANTHROPIC_API, {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: MODEL_ID,
+        max_tokens: 1000,
+        system: VERIFY_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userContent }],
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `[prescription-verify] API error: ${response.status} ${response.statusText} — skipping verification`,
+      );
+      return extractedData;
+    }
+
+    const data = (await response.json()) as AnthropicMessageResponse;
+    const textBlock = data.content.find((b) => b.type === 'text');
+    const rawText = textBlock?.text?.trim() ?? '';
+
+    // El verificador no usa tool use (mismo modelo que el primer agent no
+    // funciona bien con tools encadenadas + thinking). Parseamos JSON
+    // directo, con fallback a fence ```json``` por las dudas.
+    const jsonText = (() => {
+      const fence = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (fence) return fence[1]!.trim();
+      const start = rawText.indexOf('{');
+      const end = rawText.lastIndexOf('}');
+      if (start >= 0 && end > start) return rawText.slice(start, end + 1);
+      return rawText;
+    })();
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch {
+      console.warn(
+        '[prescription-verify] Failed to parse verifier output — skipping',
+      );
+      return extractedData;
+    }
+
+    const verdict = VerifyVerdictSchema.safeParse(parsed);
+    if (!verdict.success) {
+      console.warn(
+        '[prescription-verify] Verifier output failed schema — skipping',
+      );
+      return extractedData;
+    }
+
+    // Log de verdict (sin contenido sensible).
+    const issuesShort = verdict.data.issues.slice(0, 3).join(',');
+    console.log(
+      `[prescription-verify] reliable=${verdict.data.isReliable} confAdj=${verdict.data.confidenceAdjustment} issues=${issuesShort}`,
+    );
+
+    // Aplicar adjustments al data extraído.
+    return applyVerdict(extractedData, verdict.data);
+  } catch (err) {
+    console.warn('[prescription-verify] Exception, skipping:', String(err));
+    return extractedData;
+  }
+}
+
+/** Aplica las correcciones del verificador al output del primer agent. */
+function applyVerdict(
+  data: ReturnType<typeof PrescriptionAnalysisSchema.parse>,
+  verdict: ReturnType<typeof VerifyVerdictSchema.parse>,
+): ReturnType<typeof PrescriptionAnalysisSchema.parse> {
+  const adjustConfidence = (
+    current: 'high' | 'medium' | 'low',
+  ): 'high' | 'medium' | 'low' => {
+    if (verdict.confidenceAdjustment === 'keep') return current;
+    if (verdict.confidenceAdjustment === 'lower') {
+      if (current === 'high') return 'medium';
+      if (current === 'medium') return 'low';
+      return 'low';
+    }
+    // raise
+    if (current === 'low') return 'medium';
+    if (current === 'medium') return 'high';
+    return 'high';
+  };
+
+  // Mapear issues a warning flags humanos legibles. Si el issue es uno
+  // conocido, lo agregamos como warning flag (si no es repetido).
+  const extraFlags: string[] = [];
+  for (const issue of verdict.issues) {
+    if (VERIFY_ISSUE_COPY[issue]) {
+      // Solo agregamos como flag genérico "suspicious_content" — el detalle
+      // específico queda en logs server-side, no exponemos al cliente.
+      if (!extraFlags.includes('suspicious_content')) {
+        extraFlags.push('suspicious_content');
+      }
+    }
+  }
+
+  return {
+    ...data,
+    od: { ...data.od, confidence: adjustConfidence(data.od.confidence) },
+    oi: { ...data.oi, confidence: adjustConfidence(data.oi.confidence) },
+    warningFlags: [
+      ...data.warningFlags,
+      ...extraFlags.filter((f) => !data.warningFlags.includes(f as never)),
+    ] as typeof data.warningFlags,
+  };
 }
