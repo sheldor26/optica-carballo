@@ -53,22 +53,23 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-yamain-sol/05-sblk-lateral.jpg': 1.15,
   'vulk-yamain-sol/06-sblk-frontal.jpg': 1.15,
 
-  // Rusty Yau — fotos 848x537 (aspect 1.58:1, cerca de 3:2). Pero el
-  // anteojo ocupa MUY POCO del frame (laterales 52% W, frontales 70% W)
-  // vs Day Light que ocupa 99% W. Founder reportó "Rusty se ve muy
-  // pequeño comparado con Vulk". Scales necesarios:
-  //   - Laterales (perspectiva 3/4 con patillas extendidas): scale 1.5
-  //     (50% más grande) → anteojo ocupa ~78% del card
-  //   - Frontales (vista directa, anteojo más ancho proporcionalmente):
-  //     scale 1.2 → anteojo ocupa ~84% del card
+  // Rusty Yau — fotos 848x537 (aspect 1.58:1, cerca de 3:2). El anteojo
+  // ocupa poco del frame natural (laterales 52% W, frontales 70% W).
+  // Historia de iters:
+  //   Iter 1: 1.5/1.2 → founder dijo "chico vs Vulk".
+  //   Iter 2: 1.8/1.4 → founder dijo en cross-catálogo (2026-05-31)
+  //     "muy desproporcionada vs Vulk Day Light y Rusty Feeled" — Yau
+  //     gigante en comparación.
+  //   Iter 3 (actual): 1.4/1.15 → emparejar con Rusty Feeled (1.15/1.05)
+  //     y Rusty Dearly (1.15 uniforme) — target visual común para grids
+  //     mezclados (/anteojos-de-sol/hombre, /anteojos-de-sol/mujer, etc).
   // Aplica a las 3 variantes del Rusty Yau (S10/POL, Revo Blue, Revo Green).
-  // Founder feedback: 1.5/1.2 quedó chico vs Vulk. Subir a 1.8/1.4.
-  'rusty-yau/01-lateral.jpg': 1.8,
-  'rusty-yau/02-frontal.jpg': 1.4,
-  'rusty-yau/04-revo-blue-lateral.jpg': 1.8,
-  'rusty-yau/05-revo-blue-frontal.jpg': 1.4,
-  'rusty-yau/06-revo-green-lateral.jpg': 1.8,
-  'rusty-yau/07-revo-green-frontal.jpg': 1.4,
+  'rusty-yau/01-lateral.jpg': 1.4,
+  'rusty-yau/02-frontal.jpg': 1.15,
+  'rusty-yau/04-revo-blue-lateral.jpg': 1.4,
+  'rusty-yau/05-revo-blue-frontal.jpg': 1.15,
+  'rusty-yau/06-revo-green-lateral.jpg': 1.4,
+  'rusty-yau/07-revo-green-frontal.jpg': 1.15,
 
   // Rusty Feeled — founder reportó inconsistencia visual en grid 2026-05-31:
   // anteojo se ve chico vs Rusty Yau (que tiene overrides 1.8 / 1.4). Aplico

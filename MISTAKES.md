@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: ajuste scale Yau iter 3 sin errores nuevos
+
+**Estado**: N/A
+**Categoría**: Product imagery / Empirical iteration
+
+Ajuste empírico (1.8/1.4 → 1.4/1.15) corrige un valor que en su iter 2 quedó alto porque se calibró aislado en `/marcas/rusty`. Pero esa causa raíz ("calibrar aislado dentro de una marca sin verificar cross-catálogo") ya está cubierta exhaustivamente por el mistake "fix-applied-to-one-path-bug-exists-in-N-paths" más abajo en este mismo día. Sin novedad sistémica. Iteración visual normal del proceso de calibración.
+
 ## 2026-05-31 — Cuando creé el sistema de `image-scale-overrides` para fixear /marcas/*, NO auditeé que otros 5 catálogos también renderizaban ProductCard pero por una pipeline distinta — durante días el "fix" funcionaba solo en /marcas/* y los otros catálogos quedaron rotos en silencio
 
 **Estado**: 🟡 Mitigado — fix sistémico aplicado este turno (5 queries + 4 componentes + 3 tipos) moviendo `getImageScale()` a la query layer. Regla preventiva: cuando agrego una normalización que depende del path A, auditar si existe un path B que llega al mismo componente y aplicarla ahí también.

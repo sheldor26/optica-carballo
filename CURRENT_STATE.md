@@ -2,6 +2,25 @@
 
 ## Status
 
+🟢 **Scale Rusty Yau ajustado (iter 3) + regla 15 escalada a CLAUDE.md** (2026-05-31). Founder vio /anteojos-de-sol/hombre con los 3 productos visibles (Vulk Day Light, Rusty Yau, Rusty Feeled) y reportó: "achicar un poco la imagen del Yau quedó muy desproporcionada". Yau estaba con scale `1.8/1.4` (los más altos del sistema), Feeled+Dearly+Yamain estaban en 1.15 target común.
+
+**Cambios** (commit pending):
+- `lib/catalog/image-scale-overrides.ts`: 6 entries de Rusty Yau bajadas de `1.8/1.4` a `1.4/1.15` (laterales/frontales). Comment actualizado con historia de iters (1.5/1.2 → 1.8/1.4 → 1.4/1.15). Aplicación: gracias al fix sistémico de turno previo, el cambio se propaga automáticamente a TODOS los catálogos (gender, shape, marca, favoritos, related, recently-viewed).
+- `CLAUDE.md`: regla 15 nueva. Founder dijo "Recordar siempre todos los cambios de imagen aplicar en TODAS LAS CATEGORIAS (esto es obligatorio)". Regla formaliza que `image-scale-overrides.ts` es single source of truth + pipeline enforced via TypeScript + prohibido construir `ProductCardData` manualmente sin pasar por la pipeline central.
+
+**Tabla de scales actuales** (target visual: anteojo ocupa 80-90% del card):
+
+| Producto | Scale | Estado |
+|---|---|---|
+| Vulk Day Light | 0.86 - 0.95 (foto tiene anteojo 99% W → bajar) | Estable |
+| Vulk Yamain | 1.15 | Estable |
+| Vulk Stray | 1.0 (sin override) | A verificar |
+| Rusty Yau | 1.4 / 1.15 | Ajustado este turno |
+| Rusty Feeled | 1.15 / 1.05 | Estable |
+| Rusty Dearly | 1.15 | Estable |
+
+**Próximo paso founder**: tras deploy, verificar visualmente que los 6 productos se ven con tamaños comparables en `/anteojos-de-sol`, `/anteojos-de-sol/hombre`, `/anteojos-de-sol/mujer`. Si algún producto sigue fuera de proporción contra los otros del mismo grid, ajustar su scale específico en `image-scale-overrides.ts`.
+
 🟢 **Fix sistémico: scale uniforme en TODOS los catálogos** (2026-05-31). Founder reportó: "se vean iguales en TODOS los catálogos, no que /anteojos-de-sol/mujer y /marcas/rusty muestren el mismo producto distinto". Audit reveló bug de raíz: el sistema tenía DOS pipelines paralelas — `toProductCardData` (con scale) usado en `/marcas/*` y otras 5 queries (sin scale) usadas en `/anteojos-de-sol`, `/anteojos-de-sol/mujer`, `/anteojos-de-sol/aviador`, `/favoritos`, `RelatedProducts`, `RecentlyViewed`.
 
 **Cambios** (commit pending):

@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: ajuste scale Rusty Yau iter 3 (1.4/1.15) + regla 15 escalada
+
+**Categoría**: Product imagery
+**Confianza**: 🟢 N/A (no aplica — el pattern principal ya está documentado en LEARNINGS de este día sobre "Single point of normalization" + la regla 15 en CLAUDE.md formaliza explícitamente lo que ya estaba enforced por TypeScript)
+
+Ajuste de scale Yau es continuación de iteración empírica visual (founder ve grid → reporta → ajusto un valor). El pattern de iteración está cubierto por LEARNINGS previo. La novedad real del turno (regla 15 obligatoria del founder) refuerza pero no contradice el pattern documentado — el sistema YA estaba enforced, lo único nuevo es que ahora está escrito explícitamente en CLAUDE.md para protección contra mí mismo en futuras sesiones donde olvide la arquitectura.
+
 ## 2026-05-31 — Single point of normalization: cuando un dato se transforma en múltiples lugares paralelos, mover la normalización a la query layer evita drift visual
 
 **Categoría**: Architecture / Data normalization / Pipelines paralelas
