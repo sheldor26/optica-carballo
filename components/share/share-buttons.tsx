@@ -28,6 +28,11 @@ type Props = {
    *  - 'labeled': 5 icons + texto en row. Legacy/desktop landscape.
    */
   variant?: 'minimal' | 'compact' | 'labeled';
+  /** Solo aplica a `variant: 'minimal'`. Si `false`, el trigger es solo el
+   *  icon Share2 (sin texto "Compartir") — para usar al lado de otros icons
+   *  como wishlist / compare (founder feedback 2026-05-31: ubicarlo en el
+   *  row top de la PDP, no debajo del precio). Default `true`. */
+  triggerLabel?: boolean;
 };
 
 /**
@@ -50,6 +55,7 @@ export function ShareButtons({
   contentType,
   itemSlug,
   variant = 'minimal',
+  triggerLabel = true,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -134,6 +140,18 @@ export function ShareButtons({
 
   // Variant minimal: trigger único + popover. Default.
   if (variant === 'minimal') {
+    // Trigger: con texto (default) o icon-only (cuando va al lado de
+    // wishlist/compare en el row top de la PDP).
+    const triggerClass = triggerLabel
+      ? 'text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-medium transition-colors'
+      : 'text-muted-foreground hover:text-foreground inline-flex size-9 items-center justify-center rounded-full transition-colors';
+
+    // Popover position: si trigger es icon-only (típicamente top-right de
+    // PDP), anclar a la derecha para no desbordar el viewport.
+    const popoverPositionClass = triggerLabel
+      ? 'left-0 top-full mt-2'
+      : 'right-0 top-full mt-2';
+
     return (
       <div ref={wrapperRef} className="relative inline-block">
         <button
@@ -142,16 +160,22 @@ export function ShareButtons({
           aria-expanded={open}
           aria-haspopup="true"
           aria-label="Compartir"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
+          className={triggerClass}
         >
-          <Share2 className="size-3.5" aria-hidden="true" />
-          <span>Compartir</span>
+          <Share2
+            className={triggerLabel ? 'size-3.5' : 'size-4'}
+            aria-hidden="true"
+          />
+          {triggerLabel && <span>Compartir</span>}
         </button>
 
         {open && (
           <div
             role="menu"
-            className="border-border/60 bg-background absolute left-0 top-full z-30 mt-2 flex items-center gap-1 rounded-lg border p-1.5 shadow-lg"
+            className={cn(
+              'border-border/60 bg-background absolute z-30 flex items-center gap-1 rounded-lg border p-1.5 shadow-lg',
+              popoverPositionClass,
+            )}
           >
             <PopoverItem
               href={whatsappHref}

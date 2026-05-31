@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: reubicación share button sin error nuevo (UX iteration normal)
+
+**Estado**: N/A
+**Categoría**: UX iteration
+
+Cambio de posicionamiento del trigger en PDP es iteración UX founder-driven, no error. La decisión original (debajo del precio) era razonable por separación de zonas; founder prefirió alineación con convención e-commerce (top-right junto a compare/wishlist). Sin causa raíz ni regla preventiva — UX iteration es loop natural.
+
 ## 2026-05-31 — Cuando hice el fix de scale a `FilteredCatalogCard` (commit 0f75355), NO incluí `variants` en el mismo shape — recurrencia del pattern "fix-applied-to-one-thing-but-not-the-other-similar-thing" en el MISMO día
 
 **Estado**: 🟡 Mitigado — fix de variants thumbnails aplicado este turno, TypeScript-validated (pre-commit). Pero la recurrencia 2x en el mismo día del mismo pattern es señal de que la regla 15 + LEARNINGS sobre "Single point of normalization" NO fueron suficientes — necesito una check explícita pre-implementación.

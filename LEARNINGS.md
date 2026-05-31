@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: reubicación share button es ajuste UX iterativo sin pattern replicable nuevo
+
+**Categoría**: UX iteration
+**Confianza**: 🟢 N/A (no aplica — cambio de posicionamiento UX founder-driven, sin learning replicable más allá del pattern "founder es product instinct" ya documentado)
+
+Reubicación de `<ShareButtons />` de "debajo del precio" a "row top junto a wishlist + compare" es ajuste UX visual basado en feedback empírico del founder. Implementación añade prop `triggerLabel` para flexibilidad cross-superficie. Sin pattern nuevo replicable.
+
 ## 2026-05-31 — Revisado — sin novedad: variant thumbnails fix sistémico aplica el mismo pattern "Single point of normalization" ya documentado
 
 **Categoría**: Pattern application

@@ -373,6 +373,13 @@ export async function ProductDetailPage({
                   }}
                   variant="title"
                 />
+                <ShareButtons
+                  title={`${product.brand.name} ${product.name}`}
+                  url={pageUrl}
+                  contentType="product"
+                  itemSlug={product.slug}
+                  triggerLabel={false}
+                />
               </div>
             </div>
             <p className="text-muted-foreground mt-3 text-sm font-medium uppercase tracking-[0.15em] md:text-base">
@@ -403,13 +410,6 @@ export async function ProductDetailPage({
               stockQty: v.stock_qty,
             }))}
             fallbackLabel={priceLabel}
-          />
-
-          <ShareButtons
-            title={`${product.brand.name} ${product.name}`}
-            url={pageUrl}
-            contentType="product"
-            itemSlug={product.slug}
           />
 
           <ProductTrustSignals />

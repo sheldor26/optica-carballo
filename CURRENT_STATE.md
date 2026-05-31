@@ -2,6 +2,26 @@
 
 ## Status
 
+🟢 **Share button reubicado al row top de PDP (junto a compare + wishlist)** (2026-05-31). Founder reportó: "no me gusta donde esta ubicado el boton, porque no lo agregas al lado del boton de comparador, o al lado de crear alerta para que quede mas compacto". Elegida opción A (junto a compare + wishlist) por convención e-commerce (Amazon, MercadoLibre tienen share ahí).
+
+**Cambios** (commit pending):
+- `components/share/share-buttons.tsx`: prop nuevo `triggerLabel?: boolean` (default `true`). Cuando `false`, el trigger se renderiza como icon-only (sin texto "Compartir"), con `size-9` + `rounded-full` para matchear visualmente con WishlistButton/CompareButton del row top. Popover también ajusta posición a `right-0` cuando trigger es icon-only (evita desborde de viewport en mobile).
+- `components/catalog/product-page.tsx`: `<ShareButtons />` removido de debajo del precio, agregado dentro del `<div>` con CompareButton + WishlistButton (líneas 359-376) con `triggerLabel={false}`.
+- En artículos: queda con texto "Compartir" + icon (default `triggerLabel=true`), porque ahí no compite con otros icons del header.
+
+**Resultado visual en PDP**:
+```
+ANTES:                                       AHORA:
+Nombre del producto       [⚖] [♡]            Nombre del producto    [⚖] [♡] [↗]
+Crear alerta...                              Crear alerta...
+$ 88.037                                     $ 88.037
+↗ Compartir                                  (sin Compartir acá — quedó arriba)
+```
+
+**Verificación**: `npx tsc --noEmit` pasa limpio.
+
+**Próximo paso**: push → verificar visualmente en producción + decidir si el spot del row top funciona o iteramos a la opción B (al lado de "Crear alerta").
+
 🟢 **Variant thumbnails sistémicos + Share buttons minimal (disimulados) — TypeScript validated, listos para commit** (2026-05-31).
 
 **Cambio 1: Variant thumbnails en TODOS los catálogos**
