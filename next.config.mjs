@@ -1,6 +1,12 @@
+import createMDX from '@next/mdx';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Permitir páginas .mdx además de .tsx — necesario para que Next reconozca
+  // los archivos en content/guias/*.mdx. Cuando tengamos plugins de remark/
+  // rehype (GFM, autolinks, syntax highlight), se suman en `withMDX` abajo.
+  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
@@ -10,4 +16,8 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+});
+
+export default withMDX(nextConfig);
