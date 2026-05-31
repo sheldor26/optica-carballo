@@ -38,7 +38,31 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción 3 implementada — Catalog grid premium (ProductCard + FrameShapeFilters)** (2026-05-30). Founder dijo "3" tras Opción 2.
+🟡 **Sección artículos/guías — audit completo + 3 opciones ofrecidas + decisiones técnicas pendientes founder** (2026-05-30). Founder pidió "continuemos con sección de artículos / guías" tras felicitar Opción 1+2+3.
+
+**Audit del estado actual**:
+- ❌ **NO existe ruta `/guias` ni `/articulos`** en `app/(storefront)/` — gap funcional real (no inconsistencia visual como las 3 opciones previas).
+- ✅ **Plan editorial existe**: `CONTENT_PLAN.md` tiene 15 artículos Lote 1 + 8+ Lote 2 ya planificados con keyword target, cluster SEO, longitud, productos a embebir.
+- ❌ **CERO artículos publicados** — todos en estado 📝 Backlog.
+- 🔧 Existen herramientas: agente `content-writer-medical`, skill `/article`, `SEO_STRATEGY.md` (628 líneas).
+
+**3 opciones ofrecidas al founder**:
+- **A — Infra completa sin contenido** (~2-3h): rutas + componentes + JSON-LD. Esqueleto listo, sin artículos.
+- **B (recomendada) — Infra + PRIMER artículo end-to-end** (~5-6h): infra + escribir artículo #1 del plan ("Cómo leer la receta de anteojos", 4.000 palabras) con `content-writer-medical` validado por `optical-expert`. Cross-link bidireccional con `/lector-de-receta`. Publicado live.
+- **C — Solo infra esqueleto + "Próximamente"** (~1-2h): mínima visibilidad SEO sin contenido aún.
+
+**Recomendación**: B — 1 artículo pillar > 5 mediocres > infra vacía. Cross-link estratégico con la herramienta IA (cliente: lee artículo → confía → usa lector → compra). Marca template para los próximos 14.
+
+**3 decisiones técnicas pendientes founder**:
+1. **Opción A/B/C**: ¿cuál?
+2. **Formato contenido**: MDX (recomendado: markdown + React, editable a futuro) / TSX hardcoded / Supabase DB
+3. **Autor primer artículo**: Juan (recomendado: técnico óptico matriculado, maneja la digital) / María Carlota (regente) / ambos
+
+**Por qué importa este gap**: óptica = YMYL (Your Money Your Life) en Google. Sin contenido editorial de autoridad, el SEO tiene techo bajo. E-E-A-T (Experience/Expertise/Authoritativeness/Trustworthiness) se construye con artículos largos firmados por profesional matriculado.
+
+**Próximo paso**: founder responde A/B/C + formato + autor → implemento.
+
+🟢 **Opción 3 implementada — Catalog grid premium (ProductCard + FrameShapeFilters)** (2026-05-30, superado por sección artículos arriba). Founder dijo "3" tras Opción 2.
 
 **Audit del catalog previo** (aplicando learning): 13 componentes en `components/catalog/` + `product-card.tsx` (294 líneas). NO había gaps funcionales (variant swap, hover image, wishlist, quick view, filtros por forma, JSON-LD ya funcionan). Solo estética inconsistente con hero/home/PDP.
 
