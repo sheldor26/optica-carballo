@@ -38,7 +38,36 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **Recomendador de monturas (Opción F) — audit revela "ya está completo", 3 sub-opciones ofrecidas** (2026-05-30). Founder eligió F. Audit (aplicando learning "auditar antes de crear"):
+🟢 **Recomendador de monturas (Opción F-C completa) — refinamiento visual + upgrade backend AI** (2026-05-30). Founder dijo "lo que vos me recomiendes" → ejecuté Opción C (A + B).
+
+**FASE A (Refinamiento visual editorial)**:
+- `app/(storefront)/recomendador-de-monturas/page.tsx`: hero serif 7xl + brand-dot eyebrow + FaqBlock con estructura border-t (consistencia con sobre-nosotros/guias).
+- `components/tools/face-shape-analyzer.tsx`: DropZone con bg-zinc-50 + serif xl + iconos strokeWidth 1.5. Tips refactor border-t. ResultBlock bg-zinc-50 + serif 5xl. FrameShapeList con brand-dot eyebrow.
+
+**FASE B (Upgrade backend AI — mismo pattern que lector receta Tier 1)**:
+- NEW `lib/face-shape/tool-schema.ts`: JSONSchema de `recommend_frames`. Field names mantienen Zod schema (no breaking).
+- NEW `lib/face-shape/few-shot.ts`: 4 ejemplos descriptivos (oval claro / redondo medio / con anteojos / sin cara).
+- `lib/face-shape/prompt.ts`: adaptado a tool use. Mapping face→frame ampliado a 3 recomendados por shape.
+- `app/api/face-shape/route.ts` refactor completo:
+  - Modelo: Haiku 4.5 → Sonnet 4.6 (mejor accuracy clasificación facial).
+  - Extended thinking habilitado (budget 1500 tokens).
+  - tools: [RECOMMEND_FRAMES_TOOL] + tool_choice: "auto" (workaround incompat forzado + thinking).
+  - Parser `extractToolInput()` busca tool_use por name, ignora thinking blocks.
+  - Fallback 502 si modelo devuelve texto en vez de llamar tool.
+  - max_tokens 400 → 3000 (margen para thinking + tool output).
+
+**Decisión técnica**: same workflow validado en lector receta — Sonnet + thinking + tool use + few-shot. Latencia esperada: 3-5s (Haiku) → 6-9s (Sonnet+thinking), trade-off aceptable por mejor accuracy (decisiones de compra dependen del resultado).
+
+**Tiempo real**: ~2h (vs estimación corregida ~3h y vs estimación inicial errónea de 1-2 días — 6ta validación del meta-pattern de sobre-estimación).
+
+**Build verificado**: `npx tsc --noEmit` OK + `next build` OK. /recomendador-de-monturas 7.14kB.
+
+**Próximo paso**: founder pushea + prueba con su selfie. Si UX y accuracy OK, decide próxima opción:
+- Resto del backlog (G página 404, H cargar productos otras marcas, próximo artículo)
+- Retomar few-shot lector (4/13 + 16 trampas oro)
+- Algo distinto
+
+🟡 **Recomendador de monturas (Opción F) — audit revela "ya está completo", 3 sub-opciones ofrecidas** (2026-05-30, superado por implementación C arriba). Founder eligió F. Audit (aplicando learning "auditar antes de crear"):
 
 **El recomendador YA está MUY desarrollado** (~600 líneas total):
 - `app/api/face-shape/route.ts` (222 líneas) — Claude Haiku 4.5 Vision, magic bytes, validation Zod.
