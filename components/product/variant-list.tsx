@@ -70,18 +70,41 @@ function describeVariant(attrs: AttributesJson): string {
   return parts.length > 0 ? parts.join(' / ') : 'Variante';
 }
 
-/** Detecta si una variante tiene lentes polarizadas. Chequea (a) flag
- * explícito `is_polarized=true` y (b) `lens_treatment` que incluya 'polarized'.
- * Útil para casos donde algunas variantes del mismo producto son polarizadas
- * y otras no (ej. Vulk Yamain SBLK POL). */
+/** Detecta si una variante tiene lentes polarizadas. 4 fuentes posibles:
+ * 1. Flag `polarized=true` (seeds Rusty Vrast, Rusty Dearly C4, etc.).
+ * 2. Flag `is_polarized=true` (seeds Vulk Yamain SBLK POL).
+ * 3. Array `lens_treatment` que incluya 'polarized' (a nivel variant).
+ * 4. `model_code` contiene "POL" (Rusty Yau — no tiene flag pero "POL"
+ *    aparece en el modelo: "MBLK/S10 POL YELLOW", etc.).
+ * Acepta valores como boolean true o string "true" (JSONB puede entregar
+ * cualquiera de los 2 según cómo se serializa). */
 function isPolarized(attrs: AttributesJson): boolean {
-  if (attrs.is_polarized === true) return true;
+  const polarized = attrs.polarized;
+  if (polarized === true || polarized === 'true') return true;
+  const isPol = attrs.is_polarized;
+  if (isPol === true || isPol === 'true') return true;
   if (Array.isArray(attrs.lens_treatment)) {
-    return attrs.lens_treatment.some(
-      (t) => typeof t === 'string' && t === 'polarized',
-    );
+    if (
+      attrs.lens_treatment.some(
+        (t) => typeof t === 'string' && t === 'polarized',
+      )
+    ) {
+      return true;
+    }
   }
+  const modelCode = attrs.model_code;
+  if (typeof modelCode === 'string' && /\bPOL\b/i.test(modelCode)) return true;
   return false;
+}
+
+/** Extrae el código de modelo del fabricante (`model_code`) para mostrarlo
+ * junto al label de la variante. Founder 2026-05-31: "agregar la variante
+ * al lado C..." — quiere ver C1/C2/C3 del Vrast, GB10/SG91 del Dearly, etc.
+ * Devuelve string para renderizar o null si no hay code. */
+function extractDisplayCode(attrs: AttributesJson): string | null {
+  const code = attrs.model_code;
+  if (typeof code !== 'string' || code.trim().length === 0) return null;
+  return code.trim();
 }
 
 export function VariantList({
@@ -171,8 +194,18 @@ export function VariantList({
                   </div>
                 )}
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-foreground truncate font-medium">{label}</p>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <p className="text-foreground truncate font-medium">
+                      {label}
+                      {(() => {
+                        const code = extractDisplayCode(v.attributes);
+                        return code ? (
+                          <span className="text-muted-foreground/80 ml-2 font-normal">
+                            · {code}
+                          </span>
+                        ) : null;
+                      })()}
+                    </p>
                     {isPolarized(v.attributes) && (
                       <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-blue-700">
                         Polarizado

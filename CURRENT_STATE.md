@@ -2,6 +2,41 @@
 
 ## Status
 
+🟢 **VariantList PDP: model_code visible + badge Polarizado funcionando cross-catálogo** (2026-05-31). Founder reportó: "Agregar la variante al lado C... y poner los que son polarizados... en todos los productos que son polarizados agregar algo distintivo".
+
+**Audit reveló 2 bugs**:
+1. **Badge polarizado escrito pero roto**: la función `isPolarized` chequeaba `is_polarized` o `lens_treatment` (a nivel variant). Pero los seeds reales usan `polarized` (Vrast, Dearly C4) + algunos usan `is_polarized` (Yamain). Y Yau no tiene NINGÚN flag — solo "POL" en el `model_code` ("MBLK/S10 POL YELLOW"). Resultado: el badge no se renderizaba en NINGUNA variante.
+2. **`model_code` nunca se mostraba** en el label — solo aparecía SKU debajo del color, sin el código C1/C2/C3/C4 que el founder usa para identificar variantes.
+
+**Fix** (commit pending):
+- `components/product/variant-list.tsx`:
+  - `isPolarized()` ahora chequea 4 fuentes en orden:
+    1. `polarized === true` o `"true"` (Vrast, Dearly C4)
+    2. `is_polarized === true` o `"true"` (Yamain 127104)
+    3. `lens_treatment` incluye `'polarized'`
+    4. `model_code` contiene `POL` (Yau 3 variantes — fallback robusto)
+  - Nuevo helper `extractDisplayCode()` que devuelve el `model_code` para renderizar.
+  - Render: `{label} · {model_code}` con el code en `text-muted-foreground/80 font-normal` para que no compita con el nombre.
+
+**Coverage post-fix** (variantes con badge Polarizado visible):
+- Rusty Dearly C4 SBLK/SG91 POL ✅ (`polarized: true`)
+- Rusty Vrast C1/C3/C4 ✅ (`polarized: true`, las 3)
+- Rusty Yau 3 variantes ✅ (POL en model_code)
+- Vulk Yamain SBLK 127104 ✅ (`is_polarized: true`)
+- Vulk Day Light: ❌ (sin flag — founder confirma después si quiere agregar)
+- Rusty Feeled MBLK TENNIS: ❌ correcto (no es polarizada)
+- Vulk Stray: ❌ (sin info — founder confirma)
+
+**Resultado visual ejemplo Vrast PDP**:
+```
+ANTES:                                  AHORA:
+○ Plateado / Verde                      ○ Plateado / Verde · VRAST/C1  [POLARIZADO]
+  SKU: 968450                              SKU: 968450
+  $ 85.915  Sin stock                      $ 85.915  Sin stock
+```
+
+**Verificación**: `npx tsc --noEmit` pasa limpio.
+
 🟢 **Scale Rusty Vrast aplicado + sub-regla post-carga escalada a CLAUDE.md** (2026-05-31). Founder vio `/marcas/rusty` con los 4 modelos: "agrandar la imagen del vrast que quedo mas chica, recordas hacer esto siempre que se agrega un modelo nuevo".
 
 **Cambios** (commit pending):

@@ -22,6 +22,27 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — MCP query de coverage real ANTES de escribir lógica que depende de campos JSONB salva de silent failures
+
+**Categoría**: MCP / Pre-implementation audit / Code-data drift prevention
+**Confianza**: 🟢 Alta (validado este turno: si hubiera corrido `SELECT slug, sku, attributes->>'polarized', attributes->>'is_polarized', model_code FROM product_variants` ANTES de escribir `isPolarized()` original, hubiera detectado el drift inmediato y hubiera escrito la función robusta desde el día 1)
+
+**Qué funcionó**: Antes de modificar `isPolarized()` este turno, corrí una query MCP listando TODAS las variantes activas con sus campos `polarized`, `is_polarized`, `model_code`. Resultado en 1 segundo: visualicé 4 patterns distintos de cómo se marcaban variantes polarizadas en el catálogo (`polarized` true, `is_polarized` true, "POL" en code, ninguno). Escribí la función con 4 fallbacks que matchearon todos los casos. **Catch del silent failure ANTES de escribir código**.
+
+**Por qué funciona**:
+- JSONB attributes en Postgres NO tienen schema enforced. Cualquier seed puede usar cualquier convención. Sin auditar la data real, mi lógica de detección puede ser plausible pero incorrecta.
+- MCP permite cross-table queries de coverage en segundos. Cero costo, alto valor.
+- "Plausible" ≠ "correcto". `is_polarized === true` suena plausible pero si los seeds usan `polarized`, falla en silencio.
+
+**Cómo replicar el pattern**:
+1. **Antes de escribir una función que depende de JSONB**: correr query MCP listando los campos relevantes + sus tipos + nullability cross-tabla. Costo: 1 SQL + 1 segundo.
+2. **Si veo inconsistencias en la data** (mismo concepto representado con N nombres distintos): DECIDIR primero la convención normalizada. Opciones: normalizar seeds via UPDATE (limpieza) o escribir función robusta con N fallbacks (defensa).
+3. **Documentar fallbacks en orden** con comment del por qué cada uno existe (cuál seed lo introdujo). Eso evita que un futuro yo lo "limpie" pensando que son redundantes.
+
+**Generalización**: aplica a cualquier dato semi-estructurado (JSONB, NoSQL, frontmatter MDX, etc.) donde el schema no está enforced. La regla "verificar la data real antes de escribir lógica" reduce silent failures dramáticamente. En ambientes con schema fuerte (Postgres column tipada, TypeScript required field), esto es menos crítico.
+
+**Anti-pattern evitado**: escribir lógica basándome en "cómo el code se ve" o "cómo el seed debería estar" en lugar de "cómo la data realmente está". Ambos pueden divergir silenciosamente.
+
 ## 2026-05-31 — Revisado — sin novedad: ajuste scale Vrast iter 1 (1.0 → 1.4/1.15) replica patrón Yau iter 3
 
 **Categoría**: Product imagery

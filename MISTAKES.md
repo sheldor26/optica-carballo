@@ -24,6 +24,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Badge "Polarizado" estaba escrito en código pero NUNCA se renderizó porque la función de detección buscaba campos que NO existían en los seeds reales — drift entre código y data
+
+**Estado**: 🟡 Mitigado — `isPolarized()` ahora chequea 4 fuentes (polarized + is_polarized + lens_treatment + "POL" en model_code). 7+ variantes que deberían tener badge ahora lo tienen.
+**Categoría**: Code-data drift / Feature shipped sin validar en producción real / Silent failure
+**Patrón**: shipped-but-untested-against-real-data
+
+**Qué pasó**: En algún commit previo (antes del 2026-05-31, no rastreado) se agregó la función `isPolarized()` al `VariantList` con un badge azul "POLARIZADO" para variantes con lentes polarizadas. La función chequeaba 2 fuentes: `attrs.is_polarized === true` y `attrs.lens_treatment` array. Pero los seeds reales usaban OTROS campos:
+- Rusty Vrast (3 var): `polarized: true` (singular, sin "is_")
+- Rusty Dearly C4: `polarized: true`
+- Vulk Yamain SBLK: `is_polarized: true` (✅ único que matcheaba)
+- Rusty Yau (3 var): NI `polarized` NI `is_polarized` — solo "POL" en `model_code` ("MBLK/S10 POL YELLOW")
+
+Resultado: el badge se renderizaba SOLO en 1 variante del catálogo (Yamain 127104). Las otras 7+ variantes polarizadas (Vrast 3, Dearly C4, Yau 3) NUNCA mostraron el badge. Founder lo reportó: "poner los que son polarizados... en todos los productos que son polarizados agregar algo distintivo".
+
+**Causa raíz**:
+1. **Feature shipped sin validar contra data real en producción**. Si hubiera abierto la PDP de Vrast/Dearly/Yau después del fix de `isPolarized`, hubiera visto AL INSTANTE que el badge no aparecía. No lo hice.
+2. **Naming inconsistente en seeds**: `polarized` vs `is_polarized` vs nada (con POL en code). Cada seed usó su propio convention. Sin un schema enforced (TypeScript en JSONB no tipa), el drift acumuló silenciosamente.
+3. **No hay test que cubra "qué fracción del catálogo activa este badge"**. Si tuviera un test que listara variantes polarizadas + verificara render del badge, el cero-coverage hubiera saltado.
+
+**Costos**:
+- Feature "badge polarizado" estuvo invisible en producción por X días/semanas (no rastreado pero seguro >1 semana)
+- Founder no pudo confiar en que el badge marca polarizadas — manualmente tuvo que revisar producto por producto
+- Erosión sutil: features que "ya están" pero no funcionan
+
+**Regla preventiva**:
+1. **Pre-merge de feature visible**: abrir la PDP/grid afectado en localhost con un producto que active el feature y verificar que se renderiza. Costo: 30s. Beneficio: catch del silent failure.
+2. **Naming consistente en JSONB attributes**: cuando hay 2 campos semánticamente iguales (`polarized` vs `is_polarized`), proponer normalización en el próximo seed que toque la zona. Documentar la convención elegida en PRODUCT_SCHEMA.md.
+3. **Funciones de detección con fallback múltiple**: cuando el field puede vivir en N lugares (a nivel variant, a nivel product, en model_code), chequear todos con order explícito y comment del por qué cada uno.
+4. **Validación cruzada con MCP** al implementar features que dependan de data JSONB: `SELECT slug, sku, attributes->>'polarized', attributes->>'is_polarized' FROM ...` para ver el shape real antes de escribir la function.
+
+**Verificación contra recurrencia**: próxima feature que dependa de JSONB attributes — correr query MCP de coverage ANTES de escribir la lógica de detección. Si el resultado muestra inconsistencias, normalizar primero (UPDATE seeds) y después implementar.
+
 ## 2026-05-31 — Cargué Rusty Vrast sin proponer scale override inicial — founder tuvo que reportar visualmente que quedaba más chico que el resto del grid (2da violación del mismo pattern en el día)
 
 **Estado**: 🟡 Mitigado — sub-regla obligatoria agregada a CLAUDE.md regla 15 ("post-carga de producto: proponer scale comparando contra grid existente ANTES de cerrar turno"). Si recurro 3era vez → escalación a regla 16 dedicada.
