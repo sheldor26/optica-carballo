@@ -38,7 +38,19 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Rusty Feeled grid iter 3 — bg blanco en ProductCard (rollback parcial de catalog premium)** (2026-05-31). Founder reportó tras iter 2: "se nota fondo de otro color en el Feeled, debe ser blanco".
+🟢 **Rusty Feeled grid iter 4 — bg blanco también en VariantThumbnails** (2026-05-31). Founder reportó tras iter 3: los thumbs de variantes (abajo del card) seguían con bg gris sutil, no matcheaban con el card que ya era blanco.
+
+**Fix iter 4** (commit `96eea50`): `bg-muted/40` → `bg-background` en 2 lugares de `VariantThumbnails` (botones variante + cuadrito "+N" overflow mobile). Aplica el mismo principio que iter 3 — asset (thumb) con fondo blanco → container con fondo blanco para evitar borde visible.
+
+**Status acumulado del flujo grid Rusty Feeled** (iter 1→4):
+- iter 1: scales 1.5/1.4 (overshoot — foto cortada).
+- iter 2: scales 1.15/1.05 + thumbs habilitados con 1 variante.
+- iter 3: container imagen `bg-zinc-50 → bg-background` (white).
+- iter 4: thumbs variantes `bg-muted/40 → bg-background` (white).
+
+**Próximo paso**: founder push + verificar iter 4 → thumbs sin borde gris. Sub-issue Yau "muy grande" sigue diferido.
+
+🟢 **Rusty Feeled grid iter 3 — bg blanco en ProductCard (rollback parcial de catalog premium)** (2026-05-31, superado por iter 4 arriba). Founder reportó tras iter 2: "se nota fondo de otro color en el Feeled, debe ser blanco".
 
 **Causa raíz**: `bg-zinc-50` del container imagen (commit `c368013` catalog grid premium) creaba borde gris visible cuando la foto del producto (fondo blanco) no llenaba 100% el container. Yau no lo mostraba porque scale 1.8 extiende foto hasta los bordes; Feeled con scale 1.15 dejaba 6-8% de aire arriba/abajo donde se veía el gris.
 
