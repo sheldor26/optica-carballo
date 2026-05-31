@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Revisado — sin novedad: indicador stock thumbnails aplicó pipeline central (regla 15) sin pattern nuevo
+
+**Categoría**: UX detail
+**Confianza**: 🟢 N/A (no aplica — extender `ProductCardVariant` con `stockState` + render dot en VariantThumbnails es uso normal del pipeline central. La adopción cross-catálogo es automática gracias a la regla 15 ya enforced.)
+
+Cambio aprovecha el pipeline central: agregué un campo required al tipo → TypeScript fuerza a `buildCardVariants` y `toProductCardData` a populá → 7 superficies de UI (gender, shape, category-filtered, favoritos, marcas, related, recently-viewed) ven el nuevo indicador automático. Sin pattern replicable nuevo más allá de lo documentado en LEARNINGS sobre "Single point of normalization".
+
 ## 2026-05-31 — Revisado — sin novedad: UPDATE polarized=true Vulk Day Light aplica autorización standing MCP + pattern ya documentado
 
 **Categoría**: Data patch

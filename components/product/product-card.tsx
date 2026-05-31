@@ -22,6 +22,12 @@ export type ProductCardVariant = {
   primaryImageScale: number;
   secondaryImageScale: number;
   inStock: boolean;
+  /** Estado de stock para indicador visual en el thumbnail del grid card.
+   * - `out_of_stock`: stock_qty=0 → dot rojo + opacity-50 (founder 2026-05-31).
+   * - `low_stock`: stock_qty 1-3 → dot ámbar (advertencia "se está agotando").
+   * - `in_stock`: stock_qty 4+ → sin indicador.
+   * Threshold ≤3 alineado con VariantList "Solo quedan N". */
+  stockState: 'in_stock' | 'low_stock' | 'out_of_stock';
 };
 
 export type ProductCardData = {
@@ -252,14 +258,27 @@ function VariantThumbnails({
         // ocupa el cuadrito "+N"). En mobile sin overflow: todos visibles.
         // En desktop (md+): siempre visible (hasta MAX_VISIBLE_THUMBS=5).
         const hideOnMobile = showMobileOverflowBox && idx >= 2;
+        // Indicador sutil de stock en thumbnail (founder 2026-05-31):
+        // dot chiquito top-right según stockState. Rojo = sin stock,
+        // ámbar = pocas unidades (≤3), nada = stock normal.
+        const stockBadge =
+          v.stockState === 'out_of_stock'
+            ? { color: 'bg-red-500', label: 'Sin stock' }
+            : v.stockState === 'low_stock'
+              ? { color: 'bg-amber-500', label: 'Pocas unidades' }
+              : null;
+        const ariaLabel = stockBadge
+          ? `Ver ${v.label} (${stockBadge.label})`
+          : `Ver ${v.label}`;
         return (
           <button
             key={v.id}
             type="button"
             onClick={() => onSelect(v.id)}
             onMouseEnter={() => onSelect(v.id)}
-            aria-label={`Ver ${v.label}`}
+            aria-label={ariaLabel}
             aria-pressed={isActive}
+            title={stockBadge?.label}
             className={cn(
               'bg-background relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
               isActive
@@ -281,6 +300,15 @@ function VariantThumbnails({
               <span className="text-muted-foreground flex h-full items-center justify-center text-[10px]">
                 —
               </span>
+            )}
+            {stockBadge && (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'absolute right-1 top-1 size-2 rounded-full ring-2 ring-background',
+                  stockBadge.color,
+                )}
+              />
             )}
           </button>
         );

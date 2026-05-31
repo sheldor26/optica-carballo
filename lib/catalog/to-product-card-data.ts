@@ -55,8 +55,18 @@ export function buildCardVariants(
       primaryImageScale: getImageScale(primary),
       secondaryImageScale: getImageScale(secondary),
       inStock: v.stock_qty > 0,
+      stockState: deriveStockState(v.stock_qty),
     };
   });
+}
+
+/** Threshold ≤3 alineado con VariantList "Solo quedan N". */
+function deriveStockState(
+  stockQty: number,
+): 'in_stock' | 'low_stock' | 'out_of_stock' {
+  if (stockQty <= 0) return 'out_of_stock';
+  if (stockQty <= 3) return 'low_stock';
+  return 'in_stock';
 }
 
 /**
@@ -165,6 +175,7 @@ export function toProductCardData(
       primaryImageScale: getImageScale(images.primary),
       secondaryImageScale: getImageScale(images.secondary),
       inStock: v.stock_qty > 0,
+      stockState: deriveStockState(v.stock_qty),
     };
   });
 

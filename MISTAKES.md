@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: indicador stock thumbnails implementado sin error nuevo
+
+**Estado**: N/A
+**Categoría**: UX detail
+
+Implementación limpia: agregué `stockState` como required al tipo → TypeScript forzó update en los 2 places (toProductCardData + buildCardVariants) → cualquier caller que NO lo populara hubiera fallado el compile. `tsc --noEmit` pass al primer intento. Sin error documentable.
+
 ## 2026-05-31 — Scale Vrast iter 1 (1.4/1.15) recortó la foto en `/marcas/rusty` — calibré scale "para que se vea grande" sin considerar que las patillas extendidas exceden el frame aspect 3/2 (3era recurrencia scale-iter del día)
 
 **Estado**: 🟡 Mitigado — bajado a 1.15/1.0 en iter 2. Sub-regla 15 (post-carga: comparar contra grid) ya documenta proceso, pero faltaba "verificar que scale > 1.2 no recorta el bbox del producto", especialmente en aviadores/wraparounds con patillas extendidas lateralmente.

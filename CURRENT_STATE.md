@@ -2,6 +2,29 @@
 
 ## Status
 
+🟢 **Indicador sutil de stock en thumbnails de variantes (grid cards)** (2026-05-31). Founder pidió: "aplicar algun simbolo en las galerias de variantes para que aparezca fuera de stock o que quedan pocas unidades... sutil y que la persona que vea eso entienda que no hay stock sin tener que entrar al producto".
+
+**Cambios** (commit pending):
+- `components/product/product-card.tsx`:
+  - Tipo `ProductCardVariant` ahora incluye `stockState: 'in_stock' | 'low_stock' | 'out_of_stock'` (required).
+  - `VariantThumbnails` renderiza dot chiquito (size-2) top-right del thumb según stockState:
+    - `out_of_stock`: dot **rojo** (`bg-red-500`) + opacity-50 existente (heredado).
+    - `low_stock`: dot **ámbar** (`bg-amber-500`) — threshold ≤3 unidades, alineado con VariantList "Solo quedan N".
+    - `in_stock` (4+): sin indicador.
+  - Ring-2 ring-background sobre el dot → contrast con cualquier fondo de foto.
+  - A11y: `aria-label` del button + `title` tooltip incluyen "(Sin stock)" o "(Pocas unidades)".
+- `lib/catalog/to-product-card-data.ts`: helper `deriveStockState()` agregado, llamado desde `buildCardVariants()` y desde `toProductCardData()` (los 2 lugares que construyen variants para cards).
+
+**Verificación**: `npx tsc --noEmit` pasa limpio.
+
+**Aplicación inmediata** (gracias a pipeline central — regla 15):
+- `/marcas/rusty`: Rusty Vrast C1 (verde) + C3 (gris) → dots rojos (stock 0). C4 (marrón) → dot ámbar (1 unidad, "última unidad").
+- `/anteojos-de-sol/mujer` y similares: ídem.
+- `/favoritos`: ídem.
+- Related products / Recently viewed: ídem.
+
+**Próximo paso**: commit + push. Founder verifica en producción si la sutileza es la correcta o si quiere algo más visible.
+
 🟢 **Scale Rusty Vrast iter 2: bajado a 1.15/1.0 (estaba 1.4/1.15 → cortaba)** (2026-05-31). Founder reportó "quedo cortada la foto del vrast, solucionar". Iter 1 (1.4 lateral) era demasiado agresivo — el aviador con patillas extendidas se salía del frame aspect 3/2.
 
 **Iteración**:
