@@ -51,7 +51,7 @@ Plan editorial vivo. Define **qué artículos escribir, en qué orden y con qué
 - **Longitud target**: 3.500-4.500 palabras
 - **Por qué prioritario**: conecta directamente con la feature del lector de receta IA. Tráfico de alta intención.
 - **Productos a embebir**: ninguno directo (es educacional puro), CTA hacia la herramienta IA.
-- **Estado**: 📝 Backlog
+- **Estado**: ✅ **Publicado** (2026-05-30). Drafted por `content-writer-medical`, validado por `optical-expert` con 3 correcciones obligatorias + 5 mejoras aplicadas. Autor Juan Carballo (Técnico Óptico), reviewer María Carlota Carballo (Regente Matriculada). ~4.000 palabras, 14 min lectura. 8 internal links (lector-de-receta, medidor-de-dnp, anteojos-de-receta, preguntas-frecuentes).
 
 ## 2. Pillar: Anteojos para computadora — Guía completa
 
