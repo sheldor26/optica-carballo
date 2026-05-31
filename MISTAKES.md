@@ -24,6 +24,53 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Hice fix parcial de `bg-muted/40` en iter 3 (solo container imagen) sin buscar todos los lugares afectados del componente → founder tuvo que reportar iter 4 con los thumbs
+
+**Estado**: 🟡 Mitigado — iter 4 cubrió el segundo spot (commit `96eea50`) + regla preventiva documentada.
+**Categoría**: Fix partial / Pattern propagation / Not searching all occurrences
+
+### Qué pasó
+
+En iter 3 (commit `276ae5a`) founder reportó "fondo gris en el Feeled". Cambié SOLO el container imagen del ProductCard (`bg-zinc-50` → `bg-background`). NO busqué otros lugares del componente con bg sutil similar.
+
+En iter 4, founder reportó: "los thumbs de variantes abajo también tienen fondo gris". Tuve que hacer commit `96eea50` con el segundo fix (`bg-muted/40` → `bg-background` en VariantThumbnails). Inmediato + reversible, pero 1 round innecesario de back-and-forth.
+
+### Causa raíz
+
+Cuando un fix corrige un pattern en UN lugar de un componente, **debí buscar SISTEMÁTICAMENTE todos los lugares del mismo componente donde aplique el mismo principio**. En este caso:
+- Fix iter 3 cambió `bg-zinc-50` (1 ocurrencia).
+- Pero en el mismo archivo había `bg-muted/40` (2 ocurrencias en VariantThumbnails) que TAMBIÉN son bg gris sobre asset blanco, mismo anti-pattern.
+
+Si hubiera hecho `grep -n "bg-muted\|bg-zinc-50\|bg-zinc-100" components/product/product-card.tsx` al hacer iter 3, habría detectado los 3 bgs grises + fix completo en 1 round.
+
+### Costo
+
+- 1 round extra de feedback founder (iter 4 reporte + fix).
+- Tiempo: ~10 min adicional.
+
+NO hubo daño durable: ambos fixes eran reversibles + chicos.
+
+### Regla preventiva
+
+**Cuando hago fix de pattern visual en un componente, ANTES de cerrar el fix**:
+
+1. **Grep el archivo entero** buscando el ANTI-pattern original (no solo el spot reportado).
+   - Ej: `grep -n "bg-muted\|bg-zinc-50" components/<file>.tsx`
+2. **Para cada match**: verificar si aplica la misma lógica del fix.
+3. **Aplicar fix unificado** en el commit inicial.
+4. **Documentar en commit message**: "checked all occurrences of `<anti-pattern>` in `<file>`, fixed N spots".
+
+### Trigger
+
+Cualquier fix de styling/color/spacing en un componente cuando el componente tiene 100+ líneas (suficiente para tener sub-elements no obvios).
+
+### Cross-link
+
+- Refuerza regla 14 ([[audit-antes-de-estimar]]) aplicada a fixes: audit del archivo entero ANTES de aplicar fix puntual.
+- Counter del learning "container bg matchea bg de assets" (commit `b975b9d`): el learning era CORRECTO, pero la APLICACIÓN fue parcial.
+
+---
+
 ## 2026-05-31 — Asumí "todas las fotos tienen fondo X" al diseñar container del ProductCard (`bg-zinc-50`) sin verificar fotos reales del catálogo
 
 **Estado**: 🟡 Mitigado — rollback parcial commit `276ae5a` (bg-zinc-50 → bg-background). Catalog grid premium iter 3 corrige issue.

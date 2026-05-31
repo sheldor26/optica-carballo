@@ -22,6 +22,54 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Al fixar un anti-pattern visual en un componente, GREP todo el archivo para encontrar OTRAS ocurrencias del mismo anti-pattern antes de cerrar el fix
+
+**Categoría**: Code fix discipline / Pattern propagation / Avoid partial fixes
+**Confianza**: 🟢 Alta (validado en iter 3→4 fix de bgs grises en ProductCard)
+
+### Qué funcionó (al revés — es lo que NO funcionó en iter 3 y SÍ debería hacer siempre)
+
+Después de fixar el `bg-zinc-50` en el container imagen del ProductCard (iter 3), founder tuvo que reportar iter 4 con los thumbs porque también tenían `bg-muted/40` (mismo anti-pattern, otro lugar del archivo). Un `grep -n "bg-muted\|bg-zinc"` antes de cerrar iter 3 habría detectado los 3 lugares + fix unificado en 1 round.
+
+### Por qué funciona
+
+Un anti-pattern visual (bg gris donde debería ser blanco para matchear assets) rara vez está en 1 solo lugar. Componentes con 100+ líneas (ProductCard tiene 295) suelen tener el mismo pattern aplicado en multiple spots por copy-paste histórico:
+- Container principal
+- Sub-elements (thumbs, placeholders)
+- Skeleton states
+- Empty states
+
+Founder reporta el spot MÁS visible primero. Si arregla solo eso, los menos visibles aparecen en próximo round.
+
+→ Solución: 30 segundos de `grep` antes de cerrar el fix.
+
+### Cómo replicar
+
+Al recibir reporte de issue visual ("el bg de X se ve mal", "el spacing de Y es raro"):
+
+1. **Identificar el anti-pattern**: ej `bg-muted/40` aplicado a container que aloja asset blanco.
+2. **Grep el archivo entero**: `grep -n "<anti-pattern>" <file>`.
+3. **Para cada ocurrencia**: verificar si aplica la misma lógica del fix.
+4. **Aplicar fix unificado** en el commit inicial.
+5. **Commit message**: mencionar "checked all occurrences, fixed N spots".
+
+### Trigger
+
+Cualquier fix de styling/color/spacing en componente con >100 líneas, especialmente si el componente tiene sub-elements claros (cards con header/body/footer, grids con thumbs, etc).
+
+### Aplicaciones futuras
+
+- Fix de typography inconsistente en un componente → grep todo el archivo por el font/size erróneo.
+- Fix de border-radius / shadow / spacing inconsistente → mismo approach.
+- Refactor de design tokens → grep TODO el codebase, no solo el archivo reportado.
+
+### Cross-link
+
+- Aplicación de regla 14 ([[audit-antes-de-estimar]]) a fixes: audit del archivo entero antes de fix.
+- Counter del MISTAKES del mismo turno [[fix-parcial-bg-muted-iter3]] — la causa raíz era no aplicar este learning.
+
+---
+
 ## 2026-05-31 — Container bg debe matchear bg dominante de los assets que aloja (foto blanca → container white, foto transparente → container neutral)
 
 **Categoría**: UI design / Container styling / Asset-aware decisions
