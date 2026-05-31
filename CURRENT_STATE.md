@@ -1,5 +1,77 @@
 # Óptica Carballo — Current State
 
+## 📋 Cierre FINAL de sesión 2026-05-31 (consolidado completo)
+
+**Arco de la sesión post-compactor** (~25 commits totales). Sintetizando lo más importante:
+
+### Productos cargados (6 productos nuevos del día)
+| # | Producto | Variantes | Stock | Polarizadas |
+|---|---|---|---|---|
+| 1 | Rusty Dearly | 3 | 28 | 1 (C4 SBLK) |
+| 2 | Rusty Vrast | 3 | 1 | 3 (las 3) |
+| 3 | Rusty Etiquet | 4 | 20 | 3 (no MBLK-BROWN) |
+| 4 | Rusty Tulle | 4 | 5 | 4 (las 4) |
+| 5 | Rusty Xold | 5 | **43** | 4 (no 0292/902) |
+| — | Vulk Day Light | 4 (UPDATE) | — | flag polarized=true agregado |
+
+**Total**: 19 variantes nuevas + 4 actualizadas. **Catálogo activo**: 10 productos × ~22 variantes activas.
+
+### Bugs resueltos
+1. **Imágenes más chicas en filtros de catálogo** (founder reportó al final de sesión). Causa raíz REAL: `tailwind.config.ts` tenía override `container screens 2xl: 1280px` mientras BrandPage usaba `max-w-screen-2xl` (1536px). **256px de diferencia** en desktop wide afectaba 8 catálogos. Fix: eliminar override + padding responsive matching BrandPage (commit `59010e0`).
+2. **Badge POLARIZADO no se renderizaba** (escrito en código pero buscaba campos que no existían en data). Fix: función `isPolarized` con 4 fallbacks robustos. 12 variantes ahora con badge visible.
+3. **Variant thumbnails faltaban en catálogos no-marca**. Fix sistémico: helper `buildCardVariants()` + queries populating + 4 componentes actualizados.
+4. **Layout VariantList recargado** con codes largos. Fix: 2 líneas (label+badge en 1, code+SKU en 2 gris).
+5. **Vrast scale 1.4 recortaba la foto**. Fix iter 2: 1.15/1.0.
+6. **Imágenes inconsistentes cross-catálogo**. Fix sistémico: `primaryImageScale` required en pipeline TypeScript-enforced.
+
+### Features nuevos
+- **Share buttons** PDP + artículos: 5 botones (WhatsApp + Facebook + Email + Copiar + Native share) en popover minimal sutil. Ubicado en row top junto a compare + wishlist. Tracking GA4 `share` event activo.
+- **og:image** populado en metadata de productos (foto primary) y artículos (heroImage).
+- **Indicador sutil de stock en thumbnails**: dot rojo (sin stock) + dot ámbar (≤3 unidades).
+- **Display de model_code** + badge POLARIZADO en VariantList.
+- **MCP Supabase activado** con autorización standing del founder para apply DML idempotente.
+
+### Decisiones técnicas importantes
+1. **Cross-source verification antes de hardcodear atributos**: para "polarizada vs no", siempre verificar 3 fuentes (precio + título ML + code) antes de afirmar. Aplicado exitosamente en Etiquet (1 no-pol detectada) y Xold (1 no-pol detectada). Evita el mistake del Dearly bisagras.
+2. **Pipeline central enforced por TypeScript**: campos required en `FilteredCatalogCard` / `WishlistProductCard` / `RelatedProductCard` previenen drift entre catálogos paralelos.
+3. **Autorización standing MCP** para seeds DML idempotentes (apply directo sin OK por turno). NO aplica a DDL/RLS/UPDATEs sin WHERE.
+4. **Sub-regla 15 obligatoria**: post-carga de producto, proponer scale override comparando contra grid existente ANTES de cerrar turno. Default 1.15/1.0 si no hay info visual.
+
+### Anti-patterns documentados (8+ entries en MISTAKES, todos del día)
+- 88 commits sin push afirmados sin verificar git rev-list
+- CLOUD_APPLIED.md desincronizado (10 seeds + 1 migración)
+- "Sin tornillos diminutos" inventado en Dearly (regla dura negocio #3)
+- Fix sistémico de scale solo cubría scale, no variants (pattern recurrence)
+- Blind spot share buttons (2+ meses sin proponerlos)
+- Badge Polarizado escrito pero nunca renderizó (code-data drift)
+- Scale Vrast 1.4 recortó (3era recurrencia scale-iter)
+- Model_code largo Yau quebró layout (no probé con caso extremo)
+- Diagnostiqué cache cuando era CSS (último turno, hipótesis apresurada)
+
+### Lessons replicables documentadas (6+ entries en LEARNINGS)
+- Endpoint `/api/admin/ml-import-preview/` sin auth → autocompletar seeds en 1 turno
+- MCP Supabase como source of truth vs memoria del founder
+- Founder cubre blind spot e-commerce baseline
+- Single point of normalization (pipeline central evita drift visual)
+- Autorización standing reduce fricción del loop de carga
+- Cross-source verification antes de hardcodear atributos
+- Query MCP de coverage real ANTES de escribir lógica que depende de JSONB
+
+### Estado git final
+- Branch: `main`
+- Origin sincronizado: ✅ último push `d4d3d76` (Rusty Xold)
+- Status limpio
+- TypeScript ✅ pass
+- 25+ commits del día en producción
+
+### Pendientes founder (próximo paso EXACTO)
+1. **Subir 11 fotos** al bucket `products/rusty-xold/` con los nombres elegidos por asistente (`XOLD <variant>-perfil.jpg`, `-frente.jpg` + `medidas.jpg`). Si los archivos tienen otros nombres → UPDATE puntual via MCP.
+2. **Verificar visualmente post-deploy**: imágenes mismo tamaño en TODOS los catálogos (incluyendo `/anteojos-de-sol?forma=aviador` que era el bug del container). Badge POLARIZADO en 16+ variantes. Indicadores stock (rojo + ámbar).
+3. **Vulk Stray polarizadas**: confirmar si alguna variante es polarizada (pendiente desde sesión anterior).
+4. **C2 Vrast**: cuando decidan comprarlo + cargarlo en ML, hacer seed adicional con UPDATE puntual.
+
+---
+
 🟢 **Rusty Xold cargado: 5 variantes G-Flex redondas unisex (mayor stock del catálogo)** (2026-05-31).
 
 **Cambios** (commit pending):

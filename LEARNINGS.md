@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Cierre de sesión: playbook end-to-end de carga de producto consolidado a 1 turno (audit → fetch → apply MCP → verify → scale → commit)
+
+**Categoría**: Workflow / Productivity / End-to-end pipeline
+**Confianza**: 🟢 Alta (validado 6 veces en sesión 2026-05-31: Dearly, Vrast, Etiquet, Tulle, Xold + UPDATE Day Light)
+
+**Qué funcionó**: A lo largo de la sesión consolidé un playbook de "cargar producto end-to-end" que ahora ejecuto en 1 turno chico (~3-5 min de trabajo asistente). Los pasos:
+
+1. **Audit MCP** (`SELECT slug`, `SELECT storage.objects`): slug libre + bucket vacío. Costo: ~2s.
+2. **Fetch ML JSONs en paralelo** (`curl + &` para N MLAs, luego `python3` parse): precio + stock + variations + family_id. Costo: ~3s para 5 MLAs.
+3. **Cross-source verification** (precio + título + code) para atributos críticos (polarizada, materiales): evita el mistake del Dearly de afirmaciones inventadas.
+4. **Apply via MCP** (`execute_sql` con BEGIN/COMMIT + ON CONFLICT idempotente): un solo round-trip a Cloud. Autorización standing del founder cubre esto.
+5. **Verificación MCP post-apply**: query de control con counts (`variants_active`, `total_stock`, `images_count`). Detecta cualquier issue antes de cerrar.
+6. **Scale override** (sub-regla 15): default 1.15/1.0 emparejando con grid existente. Comment con justificación de magnitud.
+7. **Seed local + CLOUD_APPLIED.md**: documentación tracking idempotente.
+8. **Commit + push**: 1 commit con mensaje descriptivo.
+
+**Por qué funciona**:
+- **Autorización standing** del founder elimina round-trips de confirmación que antes consumían 2-3 mensajes por producto.
+- **Endpoint ML sin auth** elimina la fricción de "founder me copia el JSON".
+- **MCP verification cierra el loop** sin necesidad de esperar deploy + visual check del founder.
+- **Sub-regla 15** garantiza que el producto sale calibrado visualmente desde el día 1 (evita iteración scale post-deploy).
+
+**Cómo replicar el pattern para próximos productos**:
+- Mismo orden de 8 pasos. Cada producto sale del audit al push en 1 turno.
+- Para multi-MLA: parallel curl + python parse (5 MLAs en ~3s).
+- Para single MLA con multi-variation: extraer SKUs + variation codes del attribute_combinations.
+- Si hay info ambigua (polarizada vs degradé): triangular 3 fuentes + decidir explícito en seed.
+
+**Generalización**: este pattern aplica a cualquier loop humano-IA con steps repetitivos y validables. Combinar (a) autorización standing por scope acotado, (b) verificación estructural post-acción, (c) datos en pipeline central evita fricción acumulada del loop step-by-step.
+
+**Próxima mejora posible**: macro/skill `/load-product` que tome URL ML + foto medidas y ejecute el playbook completo en background. Por ahora el founder usa lenguaje natural ("ahora vamos con este") y yo aplico la rutina. Funciona, pero un comando dedicado eliminaría incluso esa fricción.
+
 ## 2026-05-31 — Revisado — sin novedad: Tulle cargado siguiendo playbook consolidado + sub-regla 15
 
 **Categoría**: Product loading

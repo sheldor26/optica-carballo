@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: Xold cargado sin error nuevo (playbook consolidado ejecutado limpio)
+
+**Estado**: N/A
+**Categoría**: Product loading
+
+Carga del Rusty Xold ejecutada limpiamente siguiendo el playbook validado durante la sesión: audit + fetch ML paralelo (5 MLAs) + cross-source verification (1 no-polarizada detectada correctamente) + apply MCP + verify + scale override + commit + push. Sin tropiezos documentables. Pattern de cross-source para detectar variantes no-polarizadas ya está documentado en LEARNINGS del día.
+
 ## 2026-05-31 — Diagnostiqué bug "imágenes más chicas en filtros" como cache CDN cuando era CSS — diagnóstico apresurado sin verificar HTML real
 
 **Estado**: 🟡 Mitigado — fix aplicado a `tailwind.config.ts` (container max 1280→1536px + padding responsive matching BrandPage). Regla preventiva: para bugs visuales NO ASUMIR cache hasta verificar con curl/HTML que el render real difiere.
