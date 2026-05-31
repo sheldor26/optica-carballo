@@ -2,6 +2,19 @@
 
 ## Status
 
+🟢 **Hero v3: foto editorial llega al fondo del section + float animation sutil** (2026-05-30). Founder pidió "podrías hacer que esta imagen llegue hasta el final del hero? Y darle un efecto como que se mueva o algo?".
+
+Cambios en [components/home/home-hero.tsx](components/home/home-hero.tsx):
+- Section: `md:min-h-[720px] lg:min-h-[820px]` — altura mínima garantizada.
+- Grid: `items-center` → `md:items-end` + `md:py-0` (texto recupera padding propio con `md:py-28 lg:py-36`). La columna foto queda libre para extenderse al fondo.
+- Foto: `md:self-stretch` + container `md:h-full md:min-h-[720px]` + `object-bottom` → la imagen se ancla al piso del hero edge-to-edge.
+- Float animation: wrapper interno con `animate={{ y: [0, -10, 0] }}` + `duration: 6s, repeat: Infinity, ease: 'easeInOut'`. Separado del parallax `textY` existente para que ambos transforms se compongan limpios.
+- Respeta `useReducedMotion()` — si user tiene reduced-motion preference, no anima.
+
+**Decisión técnica**: float separado del parallax via wrapper interno. Componer 2 `motion.div` (uno con `style={{ y: textY }}` para parallax con scroll, otro hijo con `animate={{ y: [0, -10, 0] }}` para breathing) en lugar de fusionar todo en un solo motion.div con MotionValue compuesta. Más legible + cada efecto tiene su responsabilidad clara.
+
+Build verificado: `npx tsc --noEmit` OK + commit `38c1d1f`.
+
 🔴 **INCIDENTE PRIVACIDAD — recetas con datos personales en bucket PÚBLICO, acción correctiva inmediata founder** (2026-05-30). Detecté al bajar IMG_9437 para verificación visual:
 
 **Doble problema**:
