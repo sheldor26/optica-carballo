@@ -22,6 +22,65 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Auditar componentes existentes ANTES de crear nuevos cuando hay solapamiento funcional
+
+**Categoría**: Component reuse / Anti-duplication / Codebase awareness
+**Confianza**: 🟢 Alta (validado en Opción 1 bloques editoriales home)
+
+### Qué funcionó
+
+Founder pidió "3 bloques nuevos post-hero" (trust signals + cómo trabajamos + marcas). ANTES de implementar, leí `app/(storefront)/page.tsx` + listé `components/home/` → descubrí que **ya existían**:
+- `ValueProps` con los 4 trust signals correctos (regente / 30+ años / envíos / WhatsApp)
+- `BrandsSection` con grid de marcas
+
+Solo faltaba **`HowWeWork`** (4 pasos). Y el problema visual era de **POSICIÓN** + **estética plana**, no de ausencia.
+
+Si hubiera implementado el plan literal (3 bloques nuevos), habría:
+1. Duplicado los 4 trust signals (1 versión nueva + 1 vieja en `ValueProps` al final → conflict)
+2. Duplicado la grilla de marcas (1 versión nueva + `BrandsSection` original)
+3. Creado deuda técnica: 2 componentes haciendo lo mismo, founder confundido sobre cuál editar
+
+En cambio:
+- Refactoricé `ValueProps` con estética editorial nueva + lo moví de posición (post-newsletter → post-TrustMarquee)
+- Creé solo `HowWeWork` (lo que sí faltaba)
+- `BrandsSection` quedó intocado donde ya estaba bien
+
+### Por qué funciona
+
+En codebases que crecieron iterativamente (varios meses con commits diarios), **siempre hay solapamiento funcional latente**. El founder/user describe necesidades en lenguaje de producto ("bloques de trust signals"), no en lenguaje de codebase ("refactorizar ValueProps + moverlo + crear HowWeWork"). Es trabajo del developer mapear uno al otro.
+
+El check de 30 segundos (`ls components/home/` + leer `page.tsx`) detecta:
+- Componentes que ya hacen lo que se pide → refactor candidates
+- Componentes mal posicionados → reorder candidates
+- Genuine gaps → create candidates
+
+### Cómo replicar
+
+ANTES de crear cualquier componente nuevo en respuesta a un pedido de feature:
+
+1. **`ls` el directorio relevante** (`components/X/`, `app/Y/`).
+2. **Leer el archivo orquestador** (`page.tsx`, `layout.tsx`).
+3. **Identificar candidatos refactor vs nuevos** basándose en nombres + descripciones de componentes.
+4. **Si hay duda**, leer 1-2 componentes existentes que parecen relevantes.
+
+Si después del audit identificás que el feature pedido **se puede resolver refactorizando lo existente + creando solo lo que genuinamente falta**, esa siempre es la mejor opción.
+
+### Trigger
+
+Cualquier pedido de "agregar / crear / sumar X bloque/sección/feature" en codebase con >1 mes de historia → audit existente antes de crear.
+
+### Aplicaciones futuras
+
+- Opción 2 (PDP editorial): antes de "crear nuevo PDP", auditar `app/(storefront)/anteojos-de-sol/[slug]/page.tsx` + `components/product/` → refactor candidates vs new.
+- Opción 4 (sobre-nosotros): auditar `app/(storefront)/sobre-nosotros/page.tsx` existente antes de proponer "página nueva".
+- Recomendador IA: auditar `/recomendador-de-monturas` actual antes de proponer "feature nueva".
+
+### Cross-link
+
+Relacionado con [[trampas-del-experto-en-few-shot]]: ambos patrones son sobre **leer el contexto antes de actuar**. Uno es leer el dominio (óptica). El otro es leer el codebase. Mismo principio.
+
+---
+
 ## 2026-05-30 — Para few-shot de IA en dominio especializado, el "ground truth + trampas" del founder-experto vale más que la imagen sola
 
 **Categoría**: AI Features / Few-shot prompting / Domain expertise
