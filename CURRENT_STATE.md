@@ -64,13 +64,12 @@
 - TypeScript ✅ pass
 - 25+ commits del día en producción
 
-### Pendientes founder (próximo paso EXACTO)
-1. **Subir 11 fotos** al bucket `products/rusty-xold/` con los nombres elegidos por asistente (`XOLD <variant>-perfil.jpg`, `-frente.jpg` + `medidas.jpg`). Si los archivos tienen otros nombres → UPDATE puntual via MCP.
-2. **Verificar visualmente post-deploy**: imágenes mismo tamaño en TODOS los catálogos (incluyendo `/anteojos-de-sol?forma=aviador` que era el bug del container). Badge POLARIZADO en 16+ variantes. Indicadores stock (rojo + ámbar).
-3. **C2 Vrast**: cuando decidan comprarla + cargarla en ML, hacer seed adicional con UPDATE puntual.
-
-### Pendientes RESUELTOS (no acción requerida)
-- ~~Vulk Stray polarizadas~~: **NO APLICA** — el Stray es anteojo de RECETA (category=`anteojos-de-receta`), no de sol. Los lentes los pone el cliente al recetar. Flag polarized no aplica para receta. Verificado MCP 2026-05-31: category_slug=`anteojos-de-receta`, lens_treatment=[].
+### Pendientes founder
+✅ Sesión cerrada con todos los pendientes confirmados por founder 2026-05-31:
+- ✅ Fotos Rusty Xold subidas (11 archivos verificados MCP, avg 288 KB)
+- ✅ Bug container CSS confirmado resuelto en producción
+- ✅ Vulk Stray ya estaba en categoría receta — no aplica polarized
+- C2 Vrast: marcada como tema cerrado por founder hasta que él lo retome (regla persistente en memoria del agente)
 
 ---
 
