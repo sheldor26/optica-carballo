@@ -22,6 +22,68 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-30 — Refinamientos quirúrgicos vs rehacer: 3-5x mejor ROI cuando componente ya es funcional
+
+**Categoría**: Refactor strategy / Estimation / Anti-rewrite
+**Confianza**: 🟢 Alta (validado en 3 turnos consecutivos: hero/home → PDP → catalog)
+
+### Qué funcionó
+
+Plan original ofreció a founder 4 opciones con estimaciones:
+- Opción 1 — Bloques editoriales post-hero: ~3-4h
+- Opción 2 — PDP editorial: ~4-5h
+- Opción 3 — Catalog grid premium: ~2-3h
+
+**Real ejecutado** (refinamientos quirúrgicos tras audit):
+- Opción 1: ~1.5h (refactor ValueProps + crear solo HowWeWork que faltaba)
+- Opción 2: ~45 min (4 cambios CSS/tipografía en product-page.tsx)
+- Opción 3: ~30 min (2 archivos: ProductCard typography/hover + FrameShapeFilters)
+
+**Total real**: ~3h vs ~9-12h del plan original = **3-4x mejor ROI**.
+
+### Por qué funciona
+
+Cuando el codebase tiene 1-3 meses de historia (varios commits diarios), los componentes "feos" suelen ser **funcionalmente completos pero estéticamente desactualizados** porque crecieron iterativamente. El gap no es "falta de feature" sino "falta de consistencia visual con la última iteración del design system".
+
+Cuando founder pide "rehacer X bloque", el instinto del developer es **rehacer literal** (crear nuevo, deprecar viejo). Pero el 80-90% del tiempo el componente viejo:
+1. Ya tiene toda la lógica de negocio (variant swap, edge cases, JSON-LD, accessibility)
+2. Solo tiene tipografía/spacing/colores inconsistentes con la última iteración del site
+
+**Refinar > rehacer** porque:
+- Conservás todas las decisiones técnicas correctas previas (incluyendo edge cases que no recordás).
+- Reducís riesgo de regresión funcional (no tocás la lógica).
+- Implementás 3-5x más rápido (solo CSS/tipografía).
+- Es reversible fácil (git diff acotado).
+
+### Cómo replicar
+
+ANTES de implementar cualquier pedido de "mejorar/rehacer/rediseñar X bloque":
+
+1. **Audit funcional**: leer el componente actual + listar qué hace (lógica de negocio, edge cases, integrations).
+2. **Audit estético**: comparar tipografía/spacing/colores con la última iteración aprobada del site (hero, home, etc.).
+3. **Diagnóstico**: ¿el problema es funcional (falta feature) o estético (inconsistencia visual)?
+   - **Funcional** → crear/agregar lo que falta.
+   - **Estético** → refinar quirúrgicamente sin tocar lógica.
+   - **Ambos** → refinar primero, sumar funcional después si sigue faltando.
+4. **Re-estimar**: si el diagnóstico es "estético principalmente", la estimación cae 3-5x.
+
+### Trigger
+
+Cualquier pedido founder de "mejorar X bloque" en codebase con >1 mes de historia → audit funcional + estético antes de estimar/implementar.
+
+### Cross-link
+
+- Complementa [[auditar-antes-de-crear]]: ese learning es sobre DETECCIÓN (qué hay), este es sobre ACCIÓN (qué hacer con lo que hay).
+- Aplicación inmediata: si founder elige Opción 4 (sobre-nosotros) → audit primero, después decidir si refactor o crear.
+
+### Aplicaciones futuras
+
+- Cualquier feature "rediseño Y" del backlog (footer, header, página de marca, página individual de producto, etc.).
+- Cualquier "modernizar Z" — casi siempre es CSS/tipografía/spacing, no nueva funcionalidad.
+- Refactors técnicos también: "limpiar el módulo X" típicamente es 70% rename + 30% reorganize, no rewrite.
+
+---
+
 ## 2026-05-30 — Auditar componentes existentes ANTES de crear nuevos cuando hay solapamiento funcional
 
 **Categoría**: Component reuse / Anti-duplication / Codebase awareness
