@@ -38,7 +38,24 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Opción P implementada — pipeline normalización fotos con Claude Vision + sharp** (2026-05-31). Founder dijo "vamos con tu recomendación" → ejecuté P.
+🟡 **4 ideas "wow factor" / viralidad ofrecidas (U/V/W/X) — decisión founder pendiente** (2026-05-31). Founder preguntó "qué podemos hacer de copado en mi sitio? que genere la atención y atraiga personas?". Ideación de growth/marketing features:
+
+- **U (recomendada)** — Probador virtual de anteojos con IA (try-on): selfie → IA detecta landmarks faciales → compone anteojos del catálogo sobre la cara real. Botón "Compartir tu look" (Instagram/WhatsApp con marca de agua). Diferenciador competitivo enorme (ninguna óptica AR lo tiene bien hecho), viralidad natural, conversión 3-4x mejor. ~3-4 días reales.
+- **V** — Quiz interactivo "¿Cuál es tu anteojo ideal?" — 5-7 preguntas (uso, cara, estilo, presupuesto, receta) + resultado personalizado con 3 recomendaciones del catálogo. Shareable result page con OG image dinámica única ("Mi anteojo ideal es X" → comparte). ~6-8h. Quick win.
+- **W** — Galería "Probado por clientes reales" — clientes suben foto con anteojos nuevos + reseña + 10% descuento. Auto-moderación con Claude Vision. Trust signal real (no reviews falsas). ~5-6h.
+- **X** — Mini-serie de contenido (3-5 reels verticales): "Anatomía de un anteojo" con María Carlota armando productos. 0h código (producción del founder), después landing `/videos`.
+
+**Mi recomendación TOP**: U (probador virtual). Razones documentadas:
+1. Diferenciador competitivo único en AR.
+2. Aprovecha stack actual (Vision API, sharp, embeddings ya configurados).
+3. Marketing 24/7 (cada user que prueba es content creator orgánico).
+4. Conversión data: retailers de óptica internacionales reportan 3-4x mejora con try-on.
+
+**Alternativa rápida si quiere algo YA**: V (Quiz), ~6-8h en esta sesión.
+
+**Próximo paso**: founder elige U/V/W/X o combo. Si elige U, voy a auditar primero el approach técnico (Vision API landmarks faciales — investigar accuracy, fallbacks, edge cases).
+
+🟢 **Opción P implementada — pipeline normalización fotos con Claude Vision + sharp** (2026-05-31, superado por opciones nuevas arriba). Founder dijo "vamos con tu recomendación" → ejecuté P.
 
 **Cambios** (commit `3985b2a`):
 - `scripts/normalize-product-photos.ts` (NEW, ~280 líneas): pipeline TS con Claude Haiku 4.5 Vision (tool use `report_eyewear_bbox`) + sharp (crop/resize/composite). Output 2000×1333, anteojo centrado al 92%, fondo blanco puro.
