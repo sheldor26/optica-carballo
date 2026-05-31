@@ -24,6 +24,50 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Copié ciegamente scale overrides del Yau al Feeled sin verificar tamaño de origen de la foto → overshoot (corte de imagen)
+
+**Estado**: 🟡 Mitigado — fix iter 2 aplicado (1.15/1.05) + learning preventivo documentado.
+**Categoría**: Image scale / Empirical adjustment / Copy-paste without verification
+
+### Qué pasó
+
+Iter 1 fix: founder reportó Rusty Feeled chico en grid vs Yau. Yo apliqué scales del Yau (1.8 lateral / 1.4 frontal) reducidos un poco a 1.5/1.4 al Feeled. Founder reportó iter 1: "fondo solucionado pero MAL CORTADO" → la foto del Feeled se sale del frame con scale 1.5.
+
+Iter 2 fix: bajé a 1.15/1.05.
+
+### Causa raíz
+
+Apliqué un learning recién documentado ("copiar scale overrides del producto similar") sin **verificar la premisa**: que las fotos de origen tengan el anteojo en proporción similar. NO la verifiqué.
+
+Realidad de las fotos:
+- Yau lateral: anteojo ocupa ~52% W del frame → scale 1.8 para llegar a ~93%.
+- Feeled lateral: anteojo ocupa ~70% W del frame (foto distinta del fabricante) → scale 1.8 sería 126%, FUERA del frame.
+
+El learning previo estaba bien como **baseline conceptual** (mismo orden de magnitud), pero el valor exacto NO se puede copiar — depende de la foto específica.
+
+### Costo
+
+- 1 iter de feedback founder + ajuste (15 min).
+- Confusión temporal sobre por qué la foto se cortó.
+
+NO hubo daño durable: cambio CSS, reversible al instante.
+
+### Regla preventiva
+
+Cuando aplico **scale overrides nuevos** a un producto basándome en pattern de otro producto similar:
+
+1. **Verificar visualmente la proporción anteojo/frame en la foto** ANTES de aplicar scale. Abrir la foto en el bucket. Si el anteojo ocupa ~50% del frame → scale alto OK. Si ocupa ~70%+ → scale moderado.
+2. **Empezar conservador**: si dudo entre dos valores, ir con el MENOR primero. Mejor "todavía chico" + ajuste hacia arriba, que "cortado" + rollback + ajuste hacia abajo.
+3. **Heurística**: scale ideal × proporción_origen ≈ 90-95% (target visual del card). Si la foto ya ocupa 80% del frame, scale ≤ 1.15.
+4. **Documentar la baseline empírica**: cuando ajusto scale, dejar comment con el "scale ideal" + "porqué" para refining futuro.
+
+### Cross-link
+
+- Refuerza [[copiar-scale-overrides-de-producto-similar-al-nuevo]]: el learning previo es válido como BASELINE conceptual, pero el VALOR exacto requiere verificación empírica por foto.
+- Aplicación de regla 14 (audit antes de actuar): verificar la foto antes de copiar scale.
+
+---
+
 ## 2026-05-30 — Sobre-estimé 7 veces consecutivas el trabajo de "rehacer/mejorar X" sin auditar componente actual
 
 **Estado**: ✅ Cerrado — escalado a regla 14 de CLAUDE.md (2026-05-30 tras 7ma recurrencia con Opción G 404). El sistema lee CLAUDE.md al inicio de cada sesión → audit obligatorio antes de estimar se aplica automáticamente desde la próxima sesión.

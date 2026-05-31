@@ -38,7 +38,19 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Rusty Feeled — LIVE en producción + fix de scale visual aplicado** (2026-05-31). Founder pasó screenshot del grid `/anteojos-de-sol/rusty` mostrando el producto live junto al Yau → eso confirma que steps 2 y 3 (aplicar seed + verificar) se completaron implícitamente.
+🟢 **Rusty Feeled grid iter 2 — scale ajustado + thumbs habilitados con 1 variante** (2026-05-31). Founder reportó tras iter 1 (commit `a248a5b`):
+- **Foto cortada** con scale 1.5/1.4 (overshoot empírico).
+- **Falta thumb de variante única** en card (Yau muestra 3, Feeled muestra 0).
+
+**Fix iter 2** (commit `f98c48d`):
+- `lib/catalog/image-scale-overrides.ts`: scales Feeled `1.5/1.4` → `1.15/1.05`. Razón empírica: foto del Feeled tiene anteojo grande de origen (vs Yau que es chico de origen). Copiar scale del Yau ciegamente no aplicaba.
+- `components/product/product-card.tsx`: `hasMultipleVariants` (`> 1`) → `hasVariantThumbnails` (`>= 1` con guard `primaryImagePath != null`). Founder pidió consistencia visual: TODOS los cards muestran thumb de variante aunque sea 1 sola.
+
+**Decisión técnica registrada**: scales empíricos NO se copian ciegamente entre productos de misma marca — la magnitud depende de qué tan grande viene la foto ORIGINAL del fabricante. Copiar como baseline (regla del learning previo) sigue válido, pero hay que ajustar empírico tras deploy.
+
+**Próximo paso**: founder push + hard refresh `/anteojos-de-sol/rusty` → verificar foto completa + thumb visible.
+
+🟢 **Rusty Feeled — LIVE en producción + fix de scale visual aplicado** (2026-05-31, superado por iter 2 arriba). Founder pasó screenshot del grid `/anteojos-de-sol/rusty` mostrando el producto live junto al Yau → eso confirma que steps 2 y 3 (aplicar seed + verificar) se completaron implícitamente.
 
 **Issue detectado en verificación**: Rusty Feeled se veía visualmente más chico que el Rusty Yau en el grid (inconsistencia entre cards). Audit reveló: Yau tiene scale overrides 1.8/1.4 (saga 2026-05-30, iter 14), Feeled NO → scale 1.0 default.
 

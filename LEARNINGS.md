@@ -22,6 +22,42 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Card grid debe mostrar thumb de variante incluso con 1 sola variante (consistencia visual)
+
+**Categoría**: UI / Catalog grid / Founder feedback / Visual consistency
+**Confianza**: 🟡 Media (validado en feedback puntual founder, no aplicable a TODOS los e-commerce)
+
+### Qué funcionó
+
+Founder reportó inconsistencia entre cards: Yau mostraba 3 thumbs de variantes, Feeled mostraba 0 (porque tenía 1 sola variante y la lógica era `variants.length > 1`).
+
+Founder explícitamente pidió: "en la parte inferior debería aparecer al menos una Thumb foto de la variante que hay" → cambié a `>= 1` con guard de `primaryImagePath != null`.
+
+Resultado esperado tras deploy: TODOS los cards del grid muestran SOME thumb visible abajo, dando uniformidad visual al grid. No es funcional (no se puede cambiar a otra variante si hay 1 sola), es **estético** — el card se ve "completo" con thumb.
+
+### Por qué funciona
+
+Founder priorizó CONSISTENCIA VISUAL sobre PUREZA FUNCIONAL. La lógica original `> 1` era pura ("solo mostrar thumbs si sirve para cambiar variante"), pero generaba grids visualmente inconsistentes cuando había productos con 1 variante junto a productos con N variantes.
+
+Decisión de producto: **uniformidad > pureza funcional** en este caso. Cards uniformes generan mejor sensación de marca premium que cards "minimal cuando no aplica" + "rich cuando aplica".
+
+### Cómo replicar
+
+Cuando una UI muestra elementos opcionales solo "si aplica":
+1. Considerar si hay impacto visual de **inconsistencia entre items del mismo nivel** (en este caso, cards del mismo grid).
+2. Si sí → evaluar mostrar elemento opcional siempre que sea SEMÁNTICAMENTE válido (con guards para que no aparezca placeholder vacío).
+3. Si la decisión es de producto/branding más que de funcionalidad → priorizar consistencia.
+
+### Trigger
+
+Cuando founder reporta "todos los X se ven distintos en el grid" o "falta Y en algunos cards" → revisar condiciones de render condicional en componentes.
+
+### Cross-link
+
+Refuerza [[refinamientos-quirurgicos-vs-rehacer]]: un cambio chico (>1 a >=1) tuvo impacto visible grande. No requirió rehacer ProductCard ni VariantThumbnails.
+
+---
+
 ## 2026-05-31 — Al cargar producto nuevo de marca/línea existente, COPIAR scale overrides del producto similar (no empezar desde scale 1.0)
 
 **Categoría**: Product upload / Image scale / Visual consistency / Brand uniformity
