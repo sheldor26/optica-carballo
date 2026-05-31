@@ -38,7 +38,45 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟡 **6 opciones nuevas (I/J/K/L/M/N) ofrecidas — decisión founder pendiente** (2026-05-30). Founder rechazó las 3 opciones que tenía pending (H cargar productos / próximo artículo / few-shot lector) y pidió recomendaciones nuevas.
+🟢 **5 opciones (J/N/I/M/L) implementadas en batch — founder "vamos con todos"** (2026-05-30). K (RAG conversacional, 1-2 días) postpuesto para sesión dedicada.
+
+**Cambios en commit `67a8f2e`** (8 archivos):
+
+**J — OG image dinámica** (`app/opengraph-image.tsx` NUEVO):
+- `ImageResponse` de Next 15, runtime edge.
+- Estética editorial dark consistente con HomeHero (gradient + mesh glow + watermark ÓC + serif 90px).
+- 1200×630 estándar OG. Resuelve backlog explícito del founder.
+
+**N — Fix `OrganizationJsonLd`** (8va recurrencia meta-pattern):
+- Audit reveló que `Optician` YA es sub-tipo de LocalBusiness. Componente nuevo era redundante.
+- Fix real: `image: /og-image.png` (404) → `/opengraph-image` (servido por archivo nuevo de J).
+
+**I — FAQ + legales editorial**:
+- `/preguntas-frecuentes`: serif 4xl/5xl → 5xl-7xl + brand-dot eyebrow + ContactCta refinada.
+- `InfoPageShell` (compartido por 3 páginas legales): eyebrow "Información legal" + h1 4xl-6xl + prose con h2/h3 serif.
+
+**M — Footer editorial**:
+- `bg-muted/40` → `bg-zinc-50`. siteName serif 2xl/3xl. Section headings → eyebrow uppercase con brand-dot.
+- DRY: extracted `FooterColumn` component.
+- Header POSTPUESTO (navegación crítica merece audit dedicado).
+
+**L — Tier 2 lector receta: verificación adversarial**:
+- NEW `lib/prescription/verify-prompt.ts`: 12 heurísticas skeptic (eje idéntico raro, ADD sin tipo, cilindro positivo no transpuesto, notación compacta sospechosa, etc).
+- NEW `lib/prescription/verify-types.ts`: Zod schema + copy mapping.
+- `app/api/prescription/route.ts`: `runAdversarialVerification()` corre post-extracción. Aplica `confidenceAdjustment` + appendea warning flag. Es OPCIONAL: si falla devuelve data original (no romper flow del usuario).
+
+**Decisión técnica K postpuesto**: RAG conversacional sobre catálogo es feature de 1-2 días reales que requiere setup de embeddings + chat UI + streaming + edge cases. Lo separo para una sesión dedicada con foco completo.
+
+**Build verificado**: `npx tsc --noEmit` OK + `next build` OK.
+
+**Próximo paso**: founder pushea + prueba todo el batch. Si OK, próximos:
+- **K** — RAG conversacional (cuando haya sesión dedicada de 1-2 días)
+- Header refinado (audit dedicado)
+- H — cargar productos otras marcas (requiere data founder)
+- Próximo artículo Lote 1
+- Algo nuevo
+
+🟡 **6 opciones nuevas (I/J/K/L/M/N) ofrecidas — decisión founder pendiente** (2026-05-30, superado por implementación batch arriba). Founder rechazó las 3 opciones que tenía pending (H cargar productos / próximo artículo / few-shot lector) y pidió recomendaciones nuevas.
 
 **Audit ejecutado** (aplicando regla 14 recién escalada):
 - Header (86 líneas) + DesktopNav (274) + Footer (148) — existen, posiblemente refinables.
