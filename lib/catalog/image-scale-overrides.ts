@@ -164,18 +164,20 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-xold-receta/XOLD_CRY-PERFIL.jpg': 1.15,
   'rusty-xold-receta/XOLD_CRY-frente.jpg': 1.0,
 
-  // Vulk Booping — sub-regla 15 obligatoria post-carga: scale 1.15/1.0
-  // default. 8 entries (2 por variante × 4 variantes). Naming founder
-  // tiene inconsistencias (espacio extra "POL- frente" en algunos, sin
-  // dash "POL frente" en BROWN) respetado tal cual.
-  'vulk-booping/BOOPING L.PINKS10 POL-perfil.jpg': 1.15,
-  'vulk-booping/BOOPING L.PINKS10 POL- frente.jpg': 1.0,
-  'vulk-booping/BOOPING MBLKDRT-03 POL-perfil.jpg': 1.15,
-  'vulk-booping/BOOPING MBLKDRT-03 POL- frente.jpg': 1.0,
-  'vulk-booping/BOOPING MBLKG15 POL-perfil.jpg': 1.15,
-  'vulk-booping/BOOPING MBLKG15 POL- frente.jpg': 1.0,
-  'vulk-booping/BOOPING BROWNB15 POL-perfil.jpg': 1.15,
-  'vulk-booping/BOOPING BROWNB15 POL frente.jpg': 1.0,
+  // Vulk Booping — naming founder tiene inconsistencias (espacio extra
+  // "POL- frente" en algunos, sin dash "POL frente" en BROWN) respetado tal cual.
+  // Iter 1: 1.15/1.0 default → founder reportó "un poco más chico de lo
+  // ideal, agrandar 10-15%".
+  // Iter 2 (actual): 1.3/1.15 — +13% lateral / +15% frontal, dentro del
+  // rango del founder. Aplica cross-catálogo via pipeline central.
+  'vulk-booping/BOOPING L.PINKS10 POL-perfil.jpg': 1.3,
+  'vulk-booping/BOOPING L.PINKS10 POL- frente.jpg': 1.15,
+  'vulk-booping/BOOPING MBLKDRT-03 POL-perfil.jpg': 1.3,
+  'vulk-booping/BOOPING MBLKDRT-03 POL- frente.jpg': 1.15,
+  'vulk-booping/BOOPING MBLKG15 POL-perfil.jpg': 1.3,
+  'vulk-booping/BOOPING MBLKG15 POL- frente.jpg': 1.15,
+  'vulk-booping/BOOPING BROWNB15 POL-perfil.jpg': 1.3,
+  'vulk-booping/BOOPING BROWNB15 POL frente.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
