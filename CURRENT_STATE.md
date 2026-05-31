@@ -2,7 +2,55 @@
 
 ## Status
 
-🟢 **Recolección few-shot — 2/13 recetas con ground truth + 8 trampas oro acumuladas** (2026-05-30, en progreso).
+🟢 **Recolección few-shot — 3/13 recetas + 12 trampas + GAP de schema descubierto** (2026-05-30, en progreso).
+
+**Receta #3 tentativa (`03-presbicia-monofocal-cerca.jpg`)** — esperando confirm founder:
+- OD: esf +2.00, cil null, eje null, add null, confidence high
+- OI: esf +2.00, cil null, eje null, add null, confidence high
+- DNP: null, Tipo: monofocal, **Purpose: CERCA** (← campo nuevo propuesto)
+- Sin tratamientos visibles
+- WarningFlags: ["partial_data"]
+
+**4 trampas nuevas (total acumulado: 12)**:
+- (9) **"Lentes Cerca" en título** → uso de cerca (presbicia), no de lejos. Modelo debe interpretar +2.00 como ESF directa, NO como ADD.
+- (10) **+2.00 sin CIL/EJE** → hipermetropía/presbicia sin astigmatismo. ESF positivo válido post-45 años.
+- (11) **Sin tratamientos visibles** → array vacío, no error. Algunos oculistas no anotan tratamientos.
+- (12) **PII residual en margen superior** (nº afiliado "6083533870z (410)") → crop manual del founder no tapó completo. Mitigación: yo lo tapo programáticamente al integrar al few-shot (mask negro en zona top antes de embeber).
+
+**🚨 GAP de schema descubierto** (hallazgo crítico de este turno):
+El schema actual NO captura el USO del anteojo (lejos / cerca / intermedia). Recetas pueden ser:
+- Monofocal de lejos (#1 y #2 ya procesadas)
+- **Monofocal de cerca** (esta #3 — presbicia)
+- Monofocal intermedia (raro)
+- Bifocal/multifocal (lejos + add para cerca)
+
+Sin `purpose`: la regente al armar puede confundir uso → cliente recibe lentes de lejos cuando quería de cerca → catástrofe de devolución. **Riesgo de negocio real**.
+
+**Decisión técnica revisada** (Opción B ahora más justificada): extender schema con AMBOS hallazgos en 1 sola implementación:
+```typescript
+purpose: 'lejos' | 'cerca' | 'intermedia' | 'multifocal' | null
+lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other: string[] }
+```
+
+**2 preguntas abiertas críticas al founder este turno**:
+1. ¿+2.00 va en ESF como monofocal de cerca (asunción mía)? O en ADD (lo que cambiaría todo el flow)?
+2. ¿Confirmamos Opción B con `purpose` + `lensTreatments` juntos? Ahora con 2 hallazgos tiene mucho más sentido B que A.
+
+**Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
+
+🟡 **Receta #4 — re-crop requerido por PII residual GRAVE (sello + firma + cel + matrícula visibles)** (2026-05-30). Founder mandó receta con crop incompleto: ZONA 3 (abajo) muestra TODO el sello del Dr. Rubén Darío Bentos, su firma, celular, fecha. Es exactamente lo que el crop debía tapar. NO integro al few-shot hasta re-crop.
+
+Lo que sí pude descifrar de zona Rx útil:
+- "Lejos AR Bluecut" → monofocal lejos + tratamientos AR + Bluecut
+- "+0.75 AO" → AO = Ambos Ojos (notación compacta cuando OD=OI)
+- Sin DNP, sin más datos
+
+Trampa nueva detectada (vale aunque re-recortemos):
+- (13) **"AO" = Ambos Ojos**: notación compacta cuando OD y OI son iguales. Modelo debe expandir a ambos ojos con el mismo valor.
+
+Le pasé al founder esquema visual de 3 zonas (TAPAR/DEJAR/TAPAR) para que el re-crop quede consistente para las próximas 10 recetas.
+
+🟢 **Recolección few-shot — 2/13 recetas con ground truth + 8 trampas oro acumuladas** (2026-05-30, superado por entry 3/13 arriba).
 
 **Receta #2 (`02-anisometropia-leve-monofocal.jpg`)**:
 - OD: esf -0.25, cil -0.25, eje 175°, add null, confidence high

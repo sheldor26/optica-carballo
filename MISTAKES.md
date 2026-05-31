@@ -24,6 +24,50 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-30 — Asumí que founder no-técnico sabía cómo recortar correctamente datos PII de recetas (sin esquema visual previo)
+
+**Estado**: 🟡 Mitigado mid-sesión — esquema visual de 3 zonas (TAPAR/DEJAR/TAPAR) entregado al founder tras recurrencia detectada en receta #4.
+**Categoría**: Privacy / Founder-non-technical / Instrucciones implícitas
+
+### Qué pasó
+
+Tras recolectar recetas #1, #2 y #3 con crops aceptables (founder recortaba membrete superior + abajo), receta #4 vino con crop incompleto: ZONA 3 (abajo) mostraba **TODO** el sello del oftalmólogo + firma + celular + matrícula + fecha. Founder dejó visible exactamente lo que el flow de anonimización debe tapar.
+
+Detecté el problema al ver la imagen + paré integración + le pasé esquema visual ASCII de "3 zonas: ZONA 1 tapar (membrete) / ZONA 2 dejar (Rx puro) / ZONA 3 tapar (firma profesional)" para que el founder tenga referencia consistente para las próximas 10 recetas.
+
+### Causa raíz
+
+**Yo asumí que la regla implícita de "anonimizar" alcanzaba para que el founder no-técnico hiciera crops consistentes**. En recetas #1 y #2 los crops fueron OK por suerte/coincidencia (recetas que tenían los datos arriba abajo de la zona Rx, fácil de tapar). En #3 hubo PII residual leve (nº afiliado en margen superior). En #4 hubo PII residual grave (TODA la zona 3).
+
+**Pattern**: cuando le pido al founder no-técnico "anonimizá X" sin esquema visual concreto, va a interpretar la regla con criterio variable según la receta. Las primeras pueden salir bien por geometría favorable, después aparece una con layout distinto y el criterio falla.
+
+CLAUDE.md "Quién soy yo" lo dice claro: founder es no-técnico, confía en mis instrucciones. Si las instrucciones son verbales/abstractas ("tapá los datos personales"), el resultado depende de la interpretación. Si son visuales/concretas ("solo dejar la ZONA 2 según este esquema"), el resultado es replicable.
+
+### Costo
+
+- Receta #4 no integrada al few-shot (requiere re-recorte).
+- Tiempo perdido: founder hizo el crop una vez mal, va a tener que hacerlo de nuevo. Y las recetas #5-#13 que probablemente ya recortó con criterio inconsistente.
+- No hubo exposición pública esta vez (la imagen me llegó por chat, no bucket público), pero si la hubiera subido al bucket privado y yo la hubiera integrado al few-shot sin verificar visualmente → datos del Dr. Bentos viajarían a Anthropic con cada request del lector.
+
+### Regla preventiva
+
+**Cuando el founder no-técnico va a hacer trabajo manual repetitivo con criterio (anonimizar, normalizar, etiquetar, clasificar), proporcionar ESQUEMA VISUAL CONCRETO desde el primer pedido — no esperar a que falle.**
+
+Aplicaciones:
+- Anonimización de recetas → esquema 3 zonas TAPAR/DEJAR/TAPAR
+- Tagging de productos → ejemplo visual + tabla de atributos
+- Normalización de fotos → before/after screenshot
+- Categorización → árbol visual con ejemplos por nodo
+
+**Trigger**: cualquier instrucción que empiece con "anonimizá / normalizá / etiquetá / clasificá X" → agregar imagen/ASCII/ejemplo concreto antes de mandar.
+
+### Cross-link
+
+- Relacionado con [[bucket-publico-datos-medicos-sin-advertir]]: mismo patrón sistémico — cuando founder no-técnico depende de mis instrucciones técnicas, ser ULTRA específico. Verbal/abstracto = inconsistente.
+- También [[verificacion-visual-antes-de-integrar]] implícito: yo VERIFIQUÉ visualmente la imagen #4 antes de integrar al few-shot → detecté el problema antes de que se materialice. Buena costumbre que evitó incidente real.
+
+---
+
 ## 2026-05-30 — Sugerí al founder no-técnico subir datos médicos a bucket PÚBLICO (`brands-shared/`) sin advertir privacidad
 
 **Estado**: 🟡 Mitigado 2026-05-30 — founder confirmó borrado de las 13 recetas del bucket público. Ventana de exposición pública cerrada. Regla preventiva sigue activa para futuro.
