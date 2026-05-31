@@ -22,6 +22,56 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Container bg debe matchear bg dominante de los assets que aloja (foto blanca → container white, foto transparente → container neutral)
+
+**Categoría**: UI design / Container styling / Asset-aware decisions
+**Confianza**: 🟢 Alta (validado en rollback iter 3 catalog grid)
+
+### Qué funcionó
+
+Cuando founder reportó "fondo gris visible alrededor de la foto blanca del Feeled", el fix fue inmediato: cambiar `bg-zinc-50` → `bg-background` (white) en el container del ProductCard. La foto y el container ahora se fusionan visualmente sin borde aparente.
+
+Es el counter del MISTAKES previo (commit f0d7dd2 + este turno): aquel mistake fue "asumir sin verificar", este learning es la regla preventiva positiva.
+
+### Por qué funciona
+
+UI containers que alojan assets (fotos, logos, videos) tienen 2 estados visuales:
+- **Asset llena 100% el container**: el bg del container es invisible.
+- **Asset NO llena 100%** (object-contain, scale <1, aspect mismatch): el bg del container queda visible alrededor del asset.
+
+Si el bg del container es DISTINTO al bg dominante del asset, la zona visible se nota como un borde/halo de color distinto. El usuario lo lee como "bug visual".
+
+→ Regla simple: el bg del container debe matchear el bg dominante de los assets que aloja. Si todos los assets tienen fondo blanco isolated, container = white. Si todos son transparentes, container = cualquier color que no interfiera (zinc-50 puede aplicar). Si los assets son variados, normalizar primero.
+
+### Cómo replicar
+
+Cuando diseñes/refines un container que aloja assets externos:
+
+1. **Audit visual de 2-3 assets del bucket** (1-2 min).
+2. **Identificar bg dominante**: ¿blanco isolated? ¿transparente? ¿foto contextual con bg variado?
+3. **Decidir bg container**:
+   - Asset blanco isolated → container white (default).
+   - Asset transparente PNG → container con color del brand (ej zinc-50 sí aplica).
+   - Asset contextual con bg variado → considerar agregar overlay/gradient en el asset para uniformidad.
+4. **Cualquier decisión "premium feel" del bg** requiere normalizar assets primero.
+
+### Trigger
+
+Cualquier cambio de styling en containers de catálogo (grids, PDPs, galerías, hero) ANTES de aplicar estética nueva → verificar bg de assets.
+
+### Aplicaciones futuras
+
+- Próximo refactor de PDP gallery / catálogo grid.
+- Si decidimos hero con fotos editoriales (no transparentes): container hero debe matchear, no asumir.
+- Cualquier sección nueva con `bg-zinc-50` / `bg-zinc-100` / `bg-foreground` que aloje assets: verificar bg de los assets.
+
+### Cross-link
+
+- Counter-pattern positivo del [[mistake-bg-zinc-50-asumiendo-fotos]] (este mismo turno).
+- Refuerza regla 14 CLAUDE.md: audit antes de actuar también en UI.
+
+---
+
 ## 2026-05-31 — Card grid debe mostrar thumb de variante incluso con 1 sola variante (consistencia visual)
 
 **Categoría**: UI / Catalog grid / Founder feedback / Visual consistency

@@ -24,6 +24,49 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Asumí "todas las fotos tienen fondo X" al diseñar container del ProductCard (`bg-zinc-50`) sin verificar fotos reales del catálogo
+
+**Estado**: 🟡 Mitigado — rollback parcial commit `276ae5a` (bg-zinc-50 → bg-background). Catalog grid premium iter 3 corrige issue.
+**Categoría**: UI design / Container backgrounds / Assumption about asset properties
+
+### Qué pasó
+
+En commit `c368013` (Opción 3 catalog grid premium, 2026-05-30) cambié el container imagen del ProductCard de `bg-background` (white) a `bg-zinc-50` con la intención de "sutil contraste premium con el body de la página". La decisión fue puramente estética, sin verificar el background real de las fotos del catálogo.
+
+Realidad: la mayoría de fotos de productos vienen con **fondo blanco isolated** (estándar de fabricantes). Cuando scale del producto < 1.8 (la mayoría de los casos), la foto blanca NO llena el container → bg-zinc-50 visible como borde gris alrededor de la foto → inconsistencia visual entre productos según scale.
+
+Founder lo notó solo cuando cargamos el Rusty Feeled (scale 1.15) al lado del Yau (scale 1.8): "se nota fondo de otro color en el Feeled".
+
+### Causa raíz
+
+Tomé decisión de UI basada en **abstracción/aspiración** ("dark editorial premium feel") sin verificar la realidad de los **assets reales del catálogo** que iban a renderizarse dentro del container. Es subset de regla 14 (audit antes de actuar) aplicada a decisiones de UI: antes de cambiar background de un container que aloja assets, verificar qué background tienen los assets en el bucket.
+
+### Costo
+
+- 1 iter de feedback founder + rollback (15 min total).
+- 5 commits acumulados en el flujo grid Rusty (a248a5b → 373a0bd → f98c48d → f0d7dd2 → 276ae5a) — algunos hubieran sido evitables con audit del bg de fotos al inicio.
+
+### Regla preventiva
+
+**Cuando decidas el background/styling de un container que aloja assets externos** (fotos, logos, videos):
+
+1. **Audit visual mínimo** (1-2 min): abrir 2-3 assets del bucket, verificar fondo de cada uno.
+2. **Si los assets tienen fondo dominante específico** (ej white, transparent, dark): el container debe matchear ese fondo para evitar bordes visibles.
+3. **Si los assets tienen fondos variados**: aceptar la inconsistencia o normalizar los assets antes.
+4. **Si la decisión de container bg es aspiracional** ("queremos premium feel"): normalizar assets a un fondo consistente PRIMERO, después aplicar el styling del container.
+
+### Aplicaciones futuras
+
+- Próximos cambios de bg en grid cards / PDP gallery / hero / cualquier UI con assets externos.
+- Cuando carguemos productos de marcas nuevas (Vulk, Reef, Mormaii, Paula Cahen) cada una tiene convención propia de fotos → verificar bg dominante antes de tocar containers.
+
+### Cross-link
+
+- Refuerza regla 14 CLAUDE.md ([[audit-antes-de-estimar]]) aplicada a UI: audit visual de assets antes de styling de container.
+- Complementa [[scale-overrides-copiar-baseline-pero-verificar-foto]] (mistake previo en este flujo): ambos son sobre "verificar realidad del asset antes de aplicar pattern".
+
+---
+
 ## 2026-05-31 — Copié ciegamente scale overrides del Yau al Feeled sin verificar tamaño de origen de la foto → overshoot (corte de imagen)
 
 **Estado**: 🟡 Mitigado — fix iter 2 aplicado (1.15/1.05) + learning preventivo documentado.

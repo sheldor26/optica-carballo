@@ -38,7 +38,17 @@ lensTreatments: { antirreflex: bool, blueLight: bool, photochromic: bool, other:
 
 **Próximo paso**: founder confirma 2 preguntas + pasa receta #4.
 
-🟢 **Rusty Feeled grid iter 2 — scale ajustado + thumbs habilitados con 1 variante** (2026-05-31). Founder reportó tras iter 1 (commit `a248a5b`):
+🟢 **Rusty Feeled grid iter 3 — bg blanco en ProductCard (rollback parcial de catalog premium)** (2026-05-31). Founder reportó tras iter 2: "se nota fondo de otro color en el Feeled, debe ser blanco".
+
+**Causa raíz**: `bg-zinc-50` del container imagen (commit `c368013` catalog grid premium) creaba borde gris visible cuando la foto del producto (fondo blanco) no llenaba 100% el container. Yau no lo mostraba porque scale 1.8 extiende foto hasta los bordes; Feeled con scale 1.15 dejaba 6-8% de aire arriba/abajo donde se veía el gris.
+
+**Fix iter 3** (commit `276ae5a`): `bg-zinc-50` → `bg-background` (white) en `components/product/product-card.tsx`. Rollback parcial del catalog grid premium. El "premium feel" pasa a depender 100% del hover (shadow + scale-up); la pérdida del bg sutil es marginal.
+
+**Sub-issue diferido**: founder mencionó "Yau quizás muy grande". Le ofrecí 3 opciones (mantener / bajar a 1.4/1.2 / no insistir con Feeled). Mi recomendación: mantener (Yau llena bien, Feeled con bg blanco ya no muestra contraste). Esperando decisión founder.
+
+**Próximo paso**: founder push + verificar iter 3 → confirmar bg blanco resuelto + decidir si Yau requiere ajuste.
+
+🟢 **Rusty Feeled grid iter 2 — scale ajustado + thumbs habilitados con 1 variante** (2026-05-31, superado por iter 3 arriba). Founder reportó tras iter 1 (commit `a248a5b`):
 - **Foto cortada** con scale 1.5/1.4 (overshoot empírico).
 - **Falta thumb de variante única** en card (Yau muestra 3, Feeled muestra 0).
 
