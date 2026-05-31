@@ -177,6 +177,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-booping/BOOPING MBLKG15 POL- frente.jpg': 1.05,
   'vulk-booping/BOOPING BROWNB15 POL-perfil.jpg': 1.2,
   'vulk-booping/BOOPING BROWNB15 POL frente.jpg': 1.05,
+
+  // Vulk Arvin — counter-learning del mistake Booping iter 2: default 1.15/1.0
+  // CONSERVADOR. Si queda chico vs grid, subir escalonado a 1.2/1.05.
+  // No salto a 1.3 sin evidencia visual (sub-regla 15 + mistake escalado).
+  'vulk-arvin/ARVIN MBLK UV05-perfil.jpg': 1.15,
+  'vulk-arvin/ARVIN MBLK UV05-frente.jpg': 1.0,
+  'vulk-arvin/ARVIN MDBLU REVO-perfil.jpg': 1.15,
+  'vulk-arvin/ARVIN MDBLU REVO-frente.jpg': 1.0,
+  'vulk-arvin/ARVIN MBLK S10-perfil.jpg': 1.15,
+  'vulk-arvin/ARVIN MBLK S10-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

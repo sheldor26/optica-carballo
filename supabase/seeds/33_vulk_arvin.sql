@@ -1,0 +1,40 @@
+-- ============================================
+-- Seed 33: Vulk Arvin (sol) — cuadrados unisex G-Flex
+-- Fecha: 2026-05-31
+-- ============================================
+-- Modelo Vulk Arvin: cuadrados unisex grandes, frente + patillas G-Flex
+-- inyectado, bisagras metálicas con sistema flex, lente policarbonato
+-- UV400 cat 3. Apto para colocar lentes graduados. 2 de 3 variantes
+-- polarizadas (la MDBLU/REVO BLUE no es pol — efecto revo espejado en
+-- lugar de polarización).
+--
+-- 3 variantes (3 MLAs separados):
+--   SKU 112941 — MBLK / UV05 POL (Negro mate + degradé azul-verde POL)
+--     MLA1391397105. $85.883,09, stock 6 (DEFAULT).
+--   SKU 112944 — MDBLU / REVO BLUE (Azul mate + espejadas azules)
+--     MLA1528742870. $82.852,26, stock 4. NO POLARIZADA (revo).
+--   SKU 112940 — MBLK / S10 POL (Negro mate + gris oscuro POL)
+--     MLA1391436017. $85.883,09, stock 3.
+--
+-- Cross-source verification: REVO BLUE NO polarizada confirmada (precio
+-- menor + título "Espejado" no "Polarizado" + sin POL en code).
+--
+-- Total stock 13. Medidas: 140/54x43/19/145mm.
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: 3 variants, stock=13, 7 images, shape=cuadrado,
+-- prescription_adapter=true.
+--
+-- Scale override 1.15/1.0 default conservador (counter-learning del
+-- Booping iter 2 que recortó con 1.3).
+-- ============================================
+-- 📸 FOTOS pendientes (founder sube al bucket `products/vulk-arvin/`):
+--   ARVIN MBLK UV05-perfil.jpg + ARVIN MBLK UV05-frente.jpg
+--   ARVIN MDBLU REVO-perfil.jpg + ARVIN MDBLU REVO-frente.jpg
+--   ARVIN MBLK S10-perfil.jpg + ARVIN MBLK S10-frente.jpg
+--   medidas.jpg
+-- Naming elegido por asistente (founder no pasó nombres). Si tiene
+-- archivos con otros nombres, UPDATE puntual via MCP.
+-- ============================================
+
+-- Seed documental — INSERT real ya aplicado vía MCP.

@@ -22,6 +22,22 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Aplicar counter-learning del Booping iter 2 inmediatamente: Vulk Arvin cargado con scale 1.15/1.0 conservador desde el inicio (no salté a valores agresivos sin evidencia)
+
+**Categoría**: Pattern correction / Learning application
+**Confianza**: 🟢 Alta (el counter-learning escrito hace 30 min se aplicó EN VIVO al siguiente producto sin necesidad de iter ulterior)
+
+**Qué funcionó**: Después de invalidar el learning "aplicar medio-alto del rango" (Booping iter 2 recortó), el counter-learning quedó: **scale default 1.15/1.0 conservador, iter hacia arriba si queda chico**. Al cargar el Vulk Arvin (siguiente producto), apliqué EXACTAMENTE 1.15/1.0 desde el inicio en lugar de saltar a 1.25 o 1.3. Si queda chico tras deploy → iter hacia arriba. Si queda bien → cerrado en 1 commit.
+
+**Por qué funciona el counter-learning**:
+- **Costo del error asimétrico**: scale alto que recorta = recorte visible = founder reporta → 1 iter de fix. Scale bajo que queda chico = todavía visible pero no roto = founder reporta → 1 iter de subir. El primer caso erosiona percepción de calidad; el segundo no. Mejor riesgo asimétrico hacia "chico".
+- **Cap superior 1.3 es para evitar absurdos, no para usar como default**. Sub-regla 15 explicita esto.
+- **Evidencia empírica del día**: en 5 productos cargados antes del Arvin, el scale 1.15/1.0 quedó bien en 3/5 (Dearly, Etiquet, Tulle), necesitó +5% en 1 (Vrast 1.15→1.2 iter potencial — actualmente 1.15), y recortó al subir agresivo en 1 (Booping). 1.15 es la mediana correcta.
+
+**Replicabilidad**: aplicar 1.15/1.0 a TODOS los productos nuevos como default. Iter hacia arriba (no abajo) si feedback "queda chico". Iter HASTA EL CAP 1.3 (no más) salvo evidencia previa de que la foto soporta más.
+
+**Nota meta**: la velocidad de aplicación del counter-learning (5 min entre invalidar el original y aplicar el counter al siguiente producto) muestra que documentar mistakes con counter-pattern explícito EN EL MOMENTO acelera la corrección. Si solo hubiera marcado "INVALIDADO" sin escribir el counter-pattern, hubiera necesitado re-derivarlo en el próximo turno.
+
 ## 2026-05-31 — INVALIDADO 5 minutos después: aplicar medio-alto del rango del founder FALLÓ — quedó cortado. Corrección: empezar por mínimo del rango si no tengo info del aspect de la foto.
 
 **Categoría**: Iteration efficiency / Founder feedback interpretation

@@ -1,5 +1,30 @@
 # Óptica Carballo — Current State
 
+🟢 **Vulk Arvin cargado: 3 variantes cuadradas G-Flex, stock 13** (2026-05-31).
+
+**Cambios** (commit pending):
+- Cloud Apply via MCP: producto + 3 variantes + 7 imágenes.
+- `supabase/seeds/33_vulk_arvin.sql` doc seed.
+- `lib/catalog/image-scale-overrides.ts`: 6 entries 1.15/1.0 (counter-learning aplicado: NO empezar agresivo).
+- `CLOUD_APPLIED.md` actualizado.
+
+**Datos clave**:
+| SKU | Variante | Stock | Polarizada |
+|---|---|---|---|
+| 112941 | MBLK/UV05 POL (default, degradé azul-verde) | 6 | ✅ |
+| 112944 | MDBLU/REVO BLUE (revo espejado) | 4 | ❌ (revo, precio menor) |
+| 112940 | MBLK/S10 POL | 3 | ✅ |
+
+Precios: $85.883 (polarizadas) / $82.852 (revo). Stock total 13. Apto receta. Cuadrado unisex grande.
+
+**Decisión técnica**: REVO BLUE NO polarizada confirmada cross-source (precio menor + título "Espejado" + sin POL en code). Lens_effect="revo" en attributes para que chat IA distinga revo de polarized.
+
+**Counter-learning aplicado**: scale 1.15/1.0 conservador desde el inicio (no salté a 1.3 como con Booping iter 2 que recortó).
+
+**Pendiente founder**: subir 7 fotos al bucket `products/vulk-arvin/`. Nombres elegidos por asistente (founder no pasó nombres).
+
+---
+
 ## 📋 Cierre FINAL extendido sesión 2026-05-31 (post-Booping + scale iter)
 
 **3 cambios adicionales después de la consolidación previa `6c3fd07`**:

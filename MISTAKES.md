@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: Arvin cargado aplicando correctamente counter-learning del Booping (scale 1.15/1.0 conservador desde inicio)
+
+**Estado**: N/A
+**Categoría**: Product loading
+
+Carga del Vulk Arvin sin error documentable. Counter-learning del mistake Booping aplicado correctamente: scale 1.15/1.0 conservador desde el primer commit, sin saltar a valores agresivos sin evidencia. Cross-source verification de "REVO no polarizada" ejecutada correctamente (precio menor + título + code sin POL). Playbook consolidado del día ejecutado limpio (8va carga del día).
+
 ## 2026-05-31 — Documenté learning "aplicar medio-alto del rango del founder" Y 5 min después MI MISMO LEARNING falló (Booping iter 2 1.3/1.15 recortó) — meta-mistake: confiar en learning recién escrito sin validación empírica
 
 **Estado**: 🟡 Mitigado — learning invalidado en LEARNINGS.md (con counter-pattern documentado). Iter 3 corrige a 1.2/1.05. 4ta recurrencia del scale-iter pattern del día → ahora SÍ escalar a regla 16 en próxima sesión.
