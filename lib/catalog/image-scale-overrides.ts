@@ -115,8 +115,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 8 entries (2 por variante × 4 variantes).
   'rusty-etiquet/ETIQUET BROWN B15 POL p.jpg': 1.15,
   'rusty-etiquet/ETIQUET BROWN B15 POL f.jpg': 1.0,
-  'rusty-etiquet/ETIQUET SBLK S10 POL.jpg': 1.15,
-  'rusty-etiquet/ETIQUET SBLK 10 POL.jpg': 1.0,
+  'rusty-etiquet/ETIQUET SBLK S10 POL L.jpg': 1.15,
+  'rusty-etiquet/ETIQUET SBLK 10 POL F.jpg': 1.0,
   'rusty-etiquet/ETIQUET L.PINK DRT-03 POL. perfil.jpg': 1.15,
   'rusty-etiquet/ETIQUET L.PINK DRT-03 POL f.jpg': 1.0,
   'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-P.jpg': 1.15,

@@ -2,6 +2,8 @@
 
 ## Status
 
+🟢 **Fix paths fotos SBLK Etiquet (founder corrigió: tienen "L" y "F" al final)** (2026-05-31). Founder pasó nombres reales `ETIQUET SBLK S10 POL L.jpg` (lateral) + `ETIQUET SBLK 10 POL F.jpg` (frente). UPDATE puntual via MCP a 2 rows de `product_images` + sincronizado seed local + scale override.
+
 🟢 **Rusty Etiquet cargado: 4 variantes (3 polarizadas + 1 degradé) — apply via MCP + scale override sub-regla 15** (2026-05-31).
 
 **Cambios** (commit pending):

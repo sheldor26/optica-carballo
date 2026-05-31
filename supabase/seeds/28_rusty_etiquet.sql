@@ -37,8 +37,8 @@
 -- 📸 FOTOS pendientes (founder sube al bucket `products/rusty-etiquet/`):
 --   ETIQUET BROWN B15 POL p.jpg          (variante BROWN — lateral, primary del MODELO)
 --   ETIQUET BROWN B15 POL f.jpg          (variante BROWN — frontal)
---   ETIQUET SBLK S10 POL.jpg             (variante SBLK — lateral asumido por la "S" extra)
---   ETIQUET SBLK 10 POL.jpg              (variante SBLK — frontal asumido)
+--   ETIQUET SBLK S10 POL L.jpg           (variante SBLK — lateral, "L" final)
+--   ETIQUET SBLK 10 POL F.jpg            (variante SBLK — frontal, "F" final)
 --   ETIQUET L.PINK DRT-03 POL. perfil.jpg (variante L.PINK — lateral)
 --   ETIQUET L.PINK DRT-03 POL f.jpg      (variante L.PINK — frontal)
 --   ETIQUET MBLK-BROWN G.BROWN-P.jpg     (variante MBLK-BROWN — lateral)
@@ -190,12 +190,12 @@ VALUES
   -- Variante SBLK (sort 2-3)
   ((SELECT id FROM public.products WHERE slug = 'rusty-etiquet'),
    (SELECT id FROM public.product_variants WHERE sku = '957071'),
-   'rusty-etiquet/ETIQUET SBLK S10 POL.jpg',
+   'rusty-etiquet/ETIQUET SBLK S10 POL L.jpg',
    'Rusty Etiquet redondo mujer vista lateral 3/4, armazón negro brillo G-Flex con lentes gris oscuro polarizadas',
    1500, 1000, 2, false),
   ((SELECT id FROM public.products WHERE slug = 'rusty-etiquet'),
    (SELECT id FROM public.product_variants WHERE sku = '957071'),
-   'rusty-etiquet/ETIQUET SBLK 10 POL.jpg',
+   'rusty-etiquet/ETIQUET SBLK 10 POL F.jpg',
    'Rusty Etiquet redondo mujer vista frontal, armazón negro brillo con lentes gris oscuro',
    1500, 1000, 3, false),
   -- Variante L.PINK (sort 4-5)
