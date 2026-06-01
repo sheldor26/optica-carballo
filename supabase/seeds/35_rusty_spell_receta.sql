@@ -1,0 +1,34 @@
+-- ============================================
+-- Seed 35: Rusty Spell Receta — armazón cuadrado masculino G-Flex
+-- Fecha: 2026-05-31
+-- Origen: MLA1510168748 (multi-variation, 2 variantes)
+-- ============================================
+-- Versión RECETA del modelo Spell (armazón para colocar lentes graduados).
+-- Mismo armazón que `rusty-spell` (sol) pero category=receta + sin lentes.
+-- Frente + patillas G-Flex, bisagras flex, 12,6g (ultraliviano).
+--
+-- 2 variantes (1 MLA multi-variation):
+--   SKU 125757 — MBLU 670 OPTICAL (frente azul mate + patillas gris transp.)
+--     ML var 179922920405. stock 3 (DEFAULT).
+--   SKU 125755 — MBLK OPTICAL (negro mate)
+--     ML var 179922920403. stock 0.
+--
+-- Precio único $83.078. Total stock 3.
+-- Medidas img founder: 143/56x45/17/145mm. Peso 12,6g.
+-- Gender: male (founder: "diseño masculino").
+--
+-- ADICIONAL: UPDATE peso 12,6g al Rusty Spell SOL (slug `rusty-spell`) —
+-- founder pidió "aplicar peso de 12,6 gramos al rusty Spell de Sol".
+-- Verificado: sol tenía weight_grams=null, aplicado en mismo apply.
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: receta 2 variants, stock=3, 5 images, w=12.6;
+-- sol también con w=12.6.
+-- ============================================
+-- 📸 FOTOS (nombres del bucket img 2 founder):
+--   SPELL_MBLU_670_R_BLUE_perfil.jpg + SPELL_MBLU_670_R_BLUE_frente.jpg
+--   SPELL_MBLK_p.jpg + SPELL_MBLK_f.jpg  (p=perfil, f=frente)
+--   medidas.jpg
+-- ============================================
+
+-- Seed documental — INSERT real + UPDATE peso sol ya aplicados vía MCP.

@@ -203,6 +203,12 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-spell/SPELL-MBLUE 670 - R BLUE frente.jpg': 1.0,
   'rusty-spell/SPELL MBLK G15-perfil.jpg': 1.15,
   'rusty-spell/SPELL MBLK G15 f-frente.jpg': 1.0,
+
+  // Rusty Spell Receta — sub-regla 15: scale 1.15/1.0 default. 4 entries.
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.15,
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.0,
+  'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.15,
+  'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

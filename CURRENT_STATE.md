@@ -1,5 +1,21 @@
 # Óptica Carballo — Current State
 
+🟢 **Rusty Spell Receta cargado (2 variantes) + UPDATE peso 12.6g Spell sol** (2026-05-31).
+
+**Cambios** (commit pending):
+- Cloud Apply via MCP: producto `rusty-spell-receta` + 2 variantes + 5 imágenes + UPDATE peso Spell sol (12.6g, estaba null).
+- `supabase/seeds/35_rusty_spell_receta.sql` doc.
+- `lib/catalog/image-scale-overrides.ts`: 4 entries 1.15/1.0.
+- `CLOUD_APPLIED.md` actualizado.
+
+**Datos**: MBLU 670 OPTICAL (SKU 125757, azul/gris, stock 3, default), MBLK OPTICAL (SKU 125755, negro, stock 0). Precio único $83.078. Cuadrado masculino. 12.6g ultraliviano. Apto monofocal/bifocal/progresivo.
+
+**Catálogo ahora**: 15 productos (12 sol + 3 receta: Stray, Xold Receta, Spell Receta).
+
+**Pendiente founder**: subir 5 fotos a `products/rusty-spell-receta/` (nombres img 2: SPELL_MBLU_670_R_BLUE_*, SPELL_MBLK_p/f, medidas).
+
+---
+
 🟢 **Precio por variante en hover + deep-link `?v=<sku>` a la PDP + scale Spell SBLK** (2026-05-31).
 
 **Cambios** (commit pending):
