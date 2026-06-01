@@ -22,6 +22,20 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — El keyword research REAL reordena prioridades y destapa clusters de alto ROI que la estimación no ve
+
+**Categoría**: SEO / Contenido / Datos vs intuición
+**Confianza**: 🟢 Alta (demostrado con datos reales que contradijeron las estimaciones)
+
+**Qué funcionó**: El founder hizo keyword research real (Ubersuggest AR) de los 4 defectos refractivos. Los datos reales cambiaron decisiones que estaban tomadas sobre estimaciones:
+1. **Reordenó el ranking**: astigmatismo resultó el más grande (22.200), no miopía (12.100) como asumíamos.
+2. **Destapó 2 clusters transversales de altísimo ROI que nadie había propuesto**: "cómo se ve con X" (~5.000 búsquedas combinadas, dif 13-18) y "diferencias/comparación entre X e Y" (astigmatismo y miopia 5.400 + miopia o astigmatismo 5.400 + muchos, dif 10-20). Son los de mayor retorno y no estaban en el roadmap del seo-strategist ni en mi cabeza.
+3. **Confirmó la intención dominante**: "qué es" es la query rey → la pillar debe clavar la definición arriba de todo.
+
+**Por qué funciona / principio reutilizable**: ninguna cantidad de razonamiento experto sobre "qué buscaría la gente" iguala mirar el volumen real. Las estimaciones sirven para bocetar la ESTRUCTURA (qué clusters existen); la PRIORIZACIÓN y los huecos de oportunidad (clusters transversales, intenciones inesperadas) solo aparecen con datos reales.
+
+**Para la próxima**: antes de comprometer ORDEN de escritura o slugs, exigir keyword research real. Al recibirlo, no solo validar los temas previstos: peinar los datos buscando clusters transversales (comparaciones, "cómo se ve/funciona", "X vs Y") que suelen tener volumen alto y dif baja porque la competencia escribe artículos aislados, no comparativos. Ver MISTAKES 2026-06-01 (recomendé secuencia sobre estimaciones).
+
 ## 2026-06-01 — Comparador de calce: elegir la métrica que el usuario PUEDE obtener, no la más técnicamente completa
 
 **Categoría**: Producto / UX / Diseño de features

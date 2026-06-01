@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Recomendé una SECUENCIA de escritura ("arrancar por el cluster sol") sobre volúmenes ESTIMADos — el keyword research real la dio vuelta (astigmatismo 22.200 era el más grande)
+
+**Estado**: 🟡 Mitigado (se detectó antes de escribir nada, gracias al research real del founder; el orden se corrigió)
+**Categoría**: SEO / Priorización / Datos vs estimación
+
+**Qué pasó**: En el roadmap de clusters, el seo-strategist marcó sus volúmenes como "estimaciones a validar" (bien), PERO sobre esas estimaciones construyó —y yo presenté al founder— una recomendación de SECUENCIA concreta: "arrancar por el cluster D (anteojos de sol)". Cuando el founder trajo keyword research real, los datos contradijeron la base: astigmatismo (22.200) es mucho más grande que lo asumido, y aparecieron 2 clusters transversales de alto ROI que no estaban. Si el founder hubiera ejecutado la secuencia recomendada sin research, habríamos escrito primero contenido sub-óptimo.
+
+**Causa raíz**: confundí dos cosas que tienen distinto nivel de exigencia de datos. Bocetar la ESTRUCTURA (qué clusters existen, qué satélites) se puede hacer con estimaciones y criterio experto. Pero recomendar una PRIORIZACIÓN/ORDEN es una decisión que mueve plata y tiempo, y necesita datos reales. Marqué los números como "estimación" pero igual emití una recomendación de orden basada en ellos — el disclaimer no neutraliza una recomendación accionable construida encima.
+
+**Regla preventiva**: separar "estructura" de "secuencia". La estructura de un plan (clusters, artículos, cross-links) se puede proponer con estimaciones. La SECUENCIA de ejecución / qué se escribe primero NO se recomienda hasta tener keyword research real — y si se boceta antes, marcarla explícito como "orden tentativo, sujeto a research", no como recomendación. Aplica a cualquier priorización sobre datos estimados (no solo SEO). Ver LEARNINGS 2026-06-01 (el research real reordena prioridades).
+
 ## 2026-06-01 — Tomé una respuesta de AskUserQuestion ("Sí, tengo 3 sin interés") como hecho verificado y lo escribí en los docs — la realidad del founder era más matizada ("aún no configuro el gate, pero va a tener ≥3")
 
 **Estado**: 🟡 Mitigado (el founder corrigió en el siguiente mensaje; reescribí CURRENT_STATE + MISTAKES con el estado real antes de seguir)
