@@ -60,6 +60,7 @@ export function FitChecker({
   const [lensInput, setLensInput] = useState('');
   const [bridgeInput, setBridgeInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [showCalc, setShowCalc] = useState(false);
 
   useEffect(() => {
     const stored = readStoredReference();
@@ -139,10 +140,18 @@ export function FitChecker({
             </div>
           </div>
         </div>
-        <div className="mt-2 flex items-center justify-between">
-          <p className="text-muted-foreground text-[11px]">
-            Orientativo — el calce también depende del puente y la patilla.
-          </p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setShowCalc((s) => !s)}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px] underline-offset-2 hover:underline"
+          >
+            <ChevronDown
+              className={`size-3.5 transition-transform ${showCalc ? 'rotate-180' : ''}`}
+              aria-hidden="true"
+            />
+            ¿Cómo lo calculamos?
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -155,6 +164,45 @@ export function FitChecker({
             Editar mi medida
           </button>
         </div>
+
+        {showCalc && (
+          <div className="border-border text-muted-foreground mt-2 space-y-2 rounded-lg border border-dashed p-3 text-xs leading-relaxed">
+            <p>
+              Medimos el <strong>ancho del frente</strong>: los dos lentes más
+              el puente del medio.
+            </p>
+            <dl className="space-y-1">
+              <div className="flex items-baseline justify-between gap-3">
+                <dt>Tus anteojos</dt>
+                <dd className="text-foreground font-mono tabular-nums">
+                  {reference.lensWidthMm} + {reference.lensWidthMm} +{' '}
+                  {reference.bridgeMm} = {result.referenceWidthMm} mm
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-3">
+                <dt>Este modelo</dt>
+                <dd className="text-foreground font-mono tabular-nums">
+                  {productRef.lensWidthMm} + {productRef.lensWidthMm} +{' '}
+                  {productRef.bridgeMm} = {result.productWidthMm} mm
+                </dd>
+              </div>
+              <div className="border-border/60 flex items-baseline justify-between gap-3 border-t pt-1">
+                <dt className="text-foreground font-medium">Diferencia</dt>
+                <dd className="text-foreground font-mono font-medium tabular-nums">
+                  {diffAbs} mm {result.diffMm > 0 ? 'más ancho' : 'más angosto'}
+                </dd>
+              </div>
+            </dl>
+            <p className="text-[11px]">
+              Calibre y puente son los dos primeros números grabados en la
+              patilla (ej. <span className="font-mono">52▢18</span>).
+            </p>
+          </div>
+        )}
+
+        <p className="text-muted-foreground mt-2 text-[11px]">
+          Orientativo — el calce también depende del puente y la patilla.
+        </p>
       </div>
     );
   }

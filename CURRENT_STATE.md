@@ -11,7 +11,7 @@
 
 **Construido**:
 - `lib/catalog/fit-compare.ts` (NUEVO) — lógica pura: `productFitReference()` (extrae calibre+puente del JSONB, null si falta), `compareFit()` (diff en mm + veredicto en 5 niveles), labels + tonos. Umbrales: ±3mm = "muy parecido", ≤8mm = "un poco", >8mm = "notablemente". Rangos de validación (calibre 40-62, puente 12-26).
-- `components/product/fit-checker.tsx` (NUEVO, client) — sin referencia: form 2 inputs (calibre+puente) + ayuda "¿dónde lo leo?". Con referencia (localStorage `oc:fit-reference-v1`): veredicto con tono (verde/celeste/ámbar) + "editar mi medida". Guard `loaded` para evitar mismatch de hidratación. Devuelve null si el modelo no tiene calibre+puente.
+- `components/product/fit-checker.tsx` (NUEVO, client) — sin referencia: form 2 inputs (calibre+puente) + ayuda "¿dónde lo leo?". Con referencia (localStorage `oc:fit-reference-v1`): veredicto con tono (verde/celeste/ámbar) + desplegable **"¿Cómo lo calculamos?"** (muestra la cuenta en criollo: lente+lente+puente de cada armazón + diferencia, para el comprador no-técnico — pedido founder tras ver el número sin explicación) + "editar mi medida". Guard `loaded` para evitar mismatch de hidratación. Devuelve null si el modelo no tiene calibre+puente.
 - `components/catalog/product-page.tsx` (EDIT) — `<FitChecker>` después de `<ProductMeasurements>`.
 
 **Honestidad (regla negocio 4)**: el veredicto va etiquetado "Orientativo — el calce también depende del puente y la patilla". No promete; estima el factor dominante (ancho frontal).
