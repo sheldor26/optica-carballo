@@ -5,6 +5,12 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **#2 Cuotas en grid — DESBLOQUEADO, esperando go/no-go founder** (2026-06-01). Founder preguntó si las cuotas se pueden extraer de MP. Consulté `argentine-ecom`:
+- **Sí existe API** (`GET /v1/payment_methods/installments`, param `amount` + opcional `payment_method_id`/`bin`, credencial public_key o access_token, usar PRODUCCIÓN). Devuelve `payer_costs[]` con `installment_rate: 0` = sin interés. PERO no separa limpio "promo del vendedor" vs "interés del banco" (vienen mezcladas) y las cuotas sin interés NO vienen por default: el vendedor las activa y paga (~5-9% extra/venta) en panel MP → Costos → Cuotas sin interés.
+- **Hallazgo crítico**: el sitio mostraba "3 cuotas sin interés" HARDCODEADO en `product-price-block.tsx` — sería publicidad engañosa (Ley 24.240 art. 8) SI la promo no estuviera activa. **Founder CONFIRMÓ que tiene 3 cuotas sin interés activas en su panel MP** → el claim es verdadero. Riesgo descartado.
+- **Plan acordado (opción b del agente)**: NO usar la API (sobre-ingeniería para 30-40 productos donde la cuota es siempre 3 y solo varía `precio/3`). En su lugar: **config único single-source** (ej. `lib/site/installments.ts` con `INTEREST_FREE_INSTALLMENTS = 3`) → reemplazar el hardcode de la ficha + mostrar la línea de cuotas en el grid (`product-card.tsx`), consistente. Si el founder cambia la promo en MP, actualiza 1 valor.
+- **⬜ Próximo paso**: esperando go/no-go del founder para implementar (config + ficha + grid). Founder había dicho "cuotas no todavía" PERO era porque creía no tener la info MP — bloqueo ya resuelto.
+
 🟢 **#4 Comparador de calce "¿te va a quedar bien?" — ITER 1 COMPLETO** (2026-06-01). Founder eligió del menú de mejoras la opción #4 + decidió la referencia: **anteojos actuales del usuario (grabado), no cámara/cara**. Razón: optician-grade, honesto, sin entrelazar con el medidor DNP (que es precisión-crítica + gateado legalmente).
 
 **Decisión técnica clave**: comparamos por ancho "boxing" = `calibre×2 + puente`, NO por `frame_width_mm`. Por qué: el `frame_width_mm` rara vez está grabado en los anteojos del usuario → sería incomparable. El grabado de la patilla (ej. 52▢18-140) SÍ da calibre+puente. Se compara la dimensión que el usuario PUEDE obtener, no la más técnicamente completa.

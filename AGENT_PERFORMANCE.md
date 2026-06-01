@@ -61,13 +61,13 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 ## argentine-ecom
 
 - **Versión**: 1.0
-- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Estado**: 🟢 Invocado con buen resultado
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
-- **Invocaciones estimadas (último período)**: 0
-- **Casos de éxito**: -
+- **Última revisión**: 2026-06-01
+- **Invocaciones estimadas (último período)**: 1
+- **Casos de éxito**: 2026-06-01 — consulta sobre extracción de cuotas de MP. Respuesta excelente: endpoint correcto (`/v1/payment_methods/installments`), distinción honesta entre lo que sabe con certeza vs lo que pidió verificar con llamada real, flagueó el riesgo legal del hardcode "3 cuotas sin interés" (Ley 24.240), y dio recomendación de arquitectura escalonada (a/b/c) ajustada a la escala real (30-40 productos → opción config, no API). Cero alucinación de endpoints.
 - **Casos donde requirió corrección**: -
-- **Notas**: Conocimiento de MP, AFIP, Andreani cargado. Validar cuando se implemente cada integración.
+- **Notas**: Conocimiento de MP, AFIP, Andreani cargado. Primera invocación real validó la calidad. El patrón "decí explícito qué no sabés con certeza" funcionó muy bien para una consulta de compliance.
 
 ## ai-features-engineer
 

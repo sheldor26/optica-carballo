@@ -24,6 +24,18 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — "3 cuotas sin interés" hardcodeado en la ficha de producto: claim promocional/financiero sin atarlo a una fuente verificable (riesgo latente de publicidad engañosa)
+
+**Estado**: 🟡 Mitigado (resultó VERDADERO — el founder confirmó la promo activa en MP — pero el patrón es riesgoso; plan: centralizar a config único)
+**Categoría**: Compliance / Trust / Regla negocio 3 y 7
+**Detectado por**: el founder preguntó si las cuotas se podían extraer de MP → al auditar descubrí que el "3 cuotas sin interés" era texto fijo en `product-price-block.tsx`, no derivado de nada.
+
+**Qué pasó**: La ficha mostraba "3 cuotas sin interés de $X" hardcodeado. Las cuotas sin interés en MP NO vienen por default: el vendedor las activa y paga (~5-9% extra/venta). Si la cuenta no las tenía activas, el sitio estaría publicitando una promo inexistente → publicidad engañosa (Ley 24.240 art. 8: lo publicitado obliga al oferente). En este caso resultó verdadero (founder confirmó 3 sin interés activas), pero fue suerte: nadie había verificado el claim contra la fuente real (el panel MP) cuando se escribió.
+
+**Causa raíz**: hardcodear un claim promocional/financiero específico (un número de cuotas, un % de descuento, un plazo de envío) directamente en un componente, sin atarlo a una config con dueño claro ni verificar contra la fuente de verdad. El claim puede ser falso desde el día 1, o volverse falso cuando la realidad cambia (la promo se da de baja en MP) sin que nadie toque el código.
+
+**Regla preventiva**: cualquier claim cuantitativo que el negocio PUBLICITA (cuotas, % off, "envío gratis desde $X", "entrega en N días") va en una **config single-source con dueño explícito**, NUNCA hardcodeado en un componente, y al introducirlo se VERIFICA contra la fuente real (panel MP, política de envíos, etc.). Si no se puede verificar en el momento → texto genérico no-comprometedor ("elegí tu plan de cuotas en el checkout") hasta confirmarlo. Conecta con regla negocio 3 (no prometer lo que no se cumple) y 7 (trust signals reales). Ver CURRENT_STATE #2 para el plan de centralización.
+
 ## 2026-06-01 — Escribí en CURRENT_STATE un roadmap "ITER 2 (futuro, no urgente)" como si fuera mío para hacer, sin hacer `git pull` — una sesión paralela YA estaba construyendo ese iter 2 en simultáneo
 
 **Estado**: 🟡 Mitigado (el merge no rompió nada porque convergieron, pero fue suerte, no proceso)
