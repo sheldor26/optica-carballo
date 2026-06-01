@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Bloqueé la ESCRITURA de las guías esperando firmas que en realidad eran para PUBLICAR — confundí el gate de publicación con el de redacción
+
+**Estado**: 🟡 Mitigado (el founder lo aclaró: "las guías las hacés vos sin que nadie firme nada aún" → escribí la pillar de Astigmatismo en draft)
+**Categoría**: Proceso / Workflow / Suposición
+
+**Qué pasó**: Durante varios turnos cerré cada mensaje diciendo "falta tu ratificación + la firma de la regente para arrancar a escribir". El founder corrigió: las firmas son el gate para sacar a PÚBLICO (YMYL), no para escribir. Como las guías van en `draft: true` (invisibles, noindex), se podían escribir desde el principio y revisar/firmar antes de publicar. Bloqueé progreso real durante turnos por un gate mal ubicado.
+
+**Causa raíz**: tomé el workflow YMYL (optical-expert valida → founder ratifica → regente firma) y lo apliqué como precondición de TODO el pipeline, cuando en realidad es precondición solo del último paso (publicar). El mecanismo de borrador que yo mismo construí (draft = deployado pero oculto) era exactamente la herramienta para desacoplar "escribir/revisar" de "publicar" — y no até los cabos.
+
+**Regla preventiva**: separar gate de PRODUCCIÓN del gate de PUBLICACIÓN. Si existe un estado intermedio seguro (draft/borrador no público), el trabajo se hace HASTA ese estado sin esperar las aprobaciones finales; las aprobaciones gatean solo el salto a público. Antes de decir "no puedo avanzar hasta que X firme", preguntar: "¿qué puedo dejar listo en borrador mientras tanto?". Conecta con el patrón de no asumir de más y de aprovechar los estados intermedios (ver LEARNINGS sobre los 3 estados de visibilidad).
+
 ## 2026-06-01 — Los artículos `/guias` (un tipo de contenido indexable entero) NUNCA se agregaron al `sitemap.ts` — descubierto de casualidad auditando para el mecanismo de borrador
 
 **Estado**: 🟡 Mitigado parcial (registrado en BACKLOG para fixear; el artículo publicado igual puede indexarse vía links internos, pero pierde la señal del sitemap)
