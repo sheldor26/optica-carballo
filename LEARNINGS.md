@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Email de dominio sin pagar: separar "mandar" de "recibir", y elegir el forwarder según DÓNDE vive el DNS (no recomendar Cloudflare si el DNS no está en Cloudflare)
+
+**Categoría**: Infra / Email / Asesoría al founder
+**Confianza**: 🟢 Alta (corrección en vivo: recomendé Cloudflare Email Routing y al confirmar que el DNS está en Vercel tuve que rectificar a ImprovMX)
+
+**Qué funcionó / qué aprendí**: El founder preguntó si Google One le daba email `@dominio` (no — eso es Workspace, pago). La clave para no hacerlo pagar de gusto fue **descomponer la necesidad en 3**: (A) que el SITIO mande desde el dominio = solo registros DNS en Resend, **gratis, sin casilla**; (B) recibir en una casilla del dominio = servicio aparte; (C) el login admin del sitio puede seguir siendo el Gmail. La mayoría de la gente cree que necesita pagar un buzón para "tener email del dominio", cuando para MANDAR (que es lo que un e-commerce necesita) alcanza con DNS.
+
+**El error que casi cometo (y la regla)**: recomendé **Cloudflare Email Routing** (gratis) para recibir — PERO Cloudflare Email Routing exige que Cloudflare sea el proveedor de DNS (cambiar nameservers de todo el dominio). El DNS de opticacarballo.com.ar está **en Vercel**. Mover nameservers a Cloudflare es riesgoso (podés tumbar el sitio) e innecesario. **Regla**: antes de recomendar un servicio de email forwarding, preguntar DÓNDE vive el DNS. Si NO está en Cloudflare → usar un forwarder **basado en registros** (ImprovMX / Forward Email): agregás 2 MX + 1 TXT en el DNS actual, sin migrar nada. Cloudflare Email Routing solo conviene si el dominio YA está en Cloudflare.
+
+**Letra chica a comunicar siempre**: forwarding gratis = recibís en Gmail, pero tus RESPUESTAS manuales muestran el Gmail salvo que configures "send as" (SMTP, pago/setup extra). Los emails automáticos del sitio (Resend) sí salen del dominio — que es lo que importa para la marca.
+
 ## 2026-06-01 — Auth admin con allowlist por env + service-role detrás del gate: más simple y seguro que políticas RLS por email
 
 **Categoría**: Security / Arquitectura / Incremental delivery

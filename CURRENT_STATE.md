@@ -5,6 +5,14 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **Decisión email profesional `@opticacarballo.com.ar` — Opción B elegida (mandar + recibir gratis), esperando ejecución** (2026-06-01). Founder preguntó si Google One incluye email de dominio (NO — eso es Google Workspace, pago). Aclarado que las necesidades son separadas: (A) que el SITIO mande desde el dominio = solo DNS en Resend, gratis, sin casilla; (B) recibir en una casilla del dominio = servicio aparte; (C) `ADMIN_EMAILS` puede seguir siendo el Gmail. Founder eligió B.
+**Ajuste clave**: el DNS del dominio está **en Vercel**, así que NO usar Cloudflare Email Routing (exige mover nameservers, riesgoso). Camino correcto con DNS-en-Vercel:
+1. **Resend** → agregar dominio, pegar ~3 registros (SPF/DKIM/CNAME) en Vercel DNS → el sitio manda desde el dominio (destraba los emails del tracker Iter 2). **Próximo paso recomendado.**
+2. **ImprovMX** (gratis, no Cloudflare) → 2 registros MX en Vercel DNS → reenvía `juan@opticacarballo.com.ar` a Gmail.
+3. `ADMIN_EMAILS` = Gmail por ahora.
+**Letra chica**: las respuestas manuales del founder van a mostrar su Gmail hasta configurar "enviar como" (SMTP, pago/setup extra). Los emails automáticos del sitio (Resend) sí salen del dominio.
+**Estado**: esperando que founder arranque el setup de Resend (ofrecí guía paso a paso).
+
 🟢 **Data Fiscal ARCA/AFIP en el footer** (2026-06-01). Founder pasó el snippet oficial de AFIP (botón "Data Fiscal", obligatorio e-commerce AR). Agregado en `components/layout/site-footer.tsx`, base del footer junto al copyright. **Ajuste técnico**: URLs subidas de `http://` a `https://` (el sitio es HTTPS → el navegador bloquearía la imagen http por mixed-content). `<img>` plano (no next/image, es badge externo de compliance) + `rel="noopener noreferrer"` + `alt`. QR del CUIT del negocio sin tocar. Founder en paralelo va a armar el email profesional `@opticacarballo.com.ar` (Zoho/Workspace) para `ADMIN_EMAILS` + verificación Resend.
 
 🟢 **#6 Tracker de pedido — ITER 2 COMPLETO (admin UI con auth + emails automáticos + notas)** (2026-06-01). Founder eligió #6 Iter 2. Audit previo confirmó que casi toda la infra ya existía (`requireAuth`, `createAdminClient` service-role, trigger DB, Resend, tipos/labels). Scope construido:
