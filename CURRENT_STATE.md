@@ -11,7 +11,7 @@
 2. **ImprovMX** (gratis, no Cloudflare) → 2 registros MX en Vercel DNS → reenvía `juan@opticacarballo.com.ar` a Gmail.
 3. `ADMIN_EMAILS` = Gmail por ahora.
 **Letra chica**: las respuestas manuales del founder van a mostrar su Gmail hasta configurar "enviar como" (SMTP, pago/setup extra). Los emails automáticos del sitio (Resend) sí salen del dominio.
-**Estado**: esperando que founder arranque el setup de Resend (ofrecí guía paso a paso).
+**Estado** (act. 2026-06-01): **ImprovMX FUNCIONANDO** (paso 2 listo — el founder confirmó que recibe en Gmail). Founder ahora en el setup de **Resend** (paso 1). Le pasé guía paso a paso: agregar dominio → 3 registros DNS (MX en subdominio `send` + 2 TXT) en Vercel → verificar → API key → env vars `RESEND_API_KEY` / `RESEND_FROM_EMAIL` / `BUSINESS_ADMIN_EMAIL` en Vercel Production → redeploy. **Punto clave comunicado**: el MX de Resend va en `send` (subdominio), el de ImprovMX en la raíz → NO se pisan. Próximo: founder verifica dominio en Resend → hacemos prueba de envío real.
 
 🟢 **Data Fiscal ARCA/AFIP en el footer** (2026-06-01). Founder pasó el snippet oficial de AFIP (botón "Data Fiscal", obligatorio e-commerce AR). Agregado en `components/layout/site-footer.tsx`, base del footer junto al copyright. **Ajuste técnico**: URLs subidas de `http://` a `https://` (el sitio es HTTPS → el navegador bloquearía la imagen http por mixed-content). `<img>` plano (no next/image, es badge externo de compliance) + `rel="noopener noreferrer"` + `alt`. QR del CUIT del negocio sin tocar. Founder en paralelo va a armar el email profesional `@opticacarballo.com.ar` (Zoho/Workspace) para `ADMIN_EMAILS` + verificación Resend.
 
