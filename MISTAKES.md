@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Revisado — sin novedad: thumbnails clickeables implementados sin error
+
+**Estado**: N/A
+**Categoría**: Feature implementation
+
+Conversión de thumbnails `<button>` → `<Link ?v=>` ejecutada limpia. Verificado: sin links anidados (thumbnails son sibling del Link principal del card, no dentro). Hover preserva preview desktop, tap navega mobile. tsc pass. El único riesgo (que el bug del rebote volviera al navegar por thumbnail) está cubierto por el guard `appliedRef` del commit anterior — el deep-link se aplica una vez y el usuario controla después. Sin error nuevo documentable.
+
 ## 2026-05-31 — El deep-link `?v=` que agregué pisaba la selección manual de variante en la PDP — useEffect sin guard re-aplicaba el URL en cada re-render (bug shipped, founder lo reportó)
 
 **Estado**: 🟡 Mitigado — agregado `appliedRef` guard que aplica el deep-link UNA SOLA VEZ al montar. Después el usuario tiene control total.

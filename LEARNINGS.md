@@ -22,6 +22,28 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Feedback incremental del founder construyó un "sistema de variantes" coherente en 4 features encadenadas — cada una preparó la base de la siguiente
+
+**Categoría**: Product/UX systems / Incremental design
+**Confianza**: 🟢 Alta (las 4 features se ensamblaron sin re-trabajo porque cada una usó la infra de la anterior)
+
+**Qué funcionó**: El founder pidió, en turnos separados y sin un plan maestro explícito, 4 cosas sobre variantes en el grid:
+1. "Precio de la variante al hacer hover" → agregué `sku`+`priceCents` a `ProductCardVariant` (pipeline central).
+2. "Click en variante del grid abre la PDP en esa variante" → deep-link `?v=<sku>` usando el `sku` ya agregado en (1).
+3. "El thumbnail debería entrar a la publicación" → convertí thumbnails a `<Link ?v=>` reusando el deep-link de (2).
+4. Bug: "al cambiar variante rebota" → guard del useEffect del deep-link de (2).
+
+**Por qué se ensambló sin fricción**:
+- La feature (1) agregó `sku` al tipo + pipeline. Las features (2) y (3) lo NECESITABAN y ya estaba ahí — cero trabajo extra de data.
+- El deep-link `?v=` de (2) fue la pieza central; (3) solo cambió QUIÉN dispara la navegación (thumbnail vs card), (4) arregló CUÁNDO se aplica.
+- Todo pasó por el pipeline central de ProductCard → un solo lugar para tocar, propagación automática a todos los catálogos.
+
+**Lección sobre feedback incremental**: cuando el founder pide mejoras de a una sobre la misma área (variantes), conviene resolver cada una de forma que DEJE la infra lista para la siguiente probable. Ej: al agregar el precio por variante, agregué también `sku` (no lo necesitaba para el precio, pero era barato y "olía" a que el deep-link vendría). Esa anticipación barata ahorró un segundo pase por el pipeline.
+
+**Regla replicable**: en áreas donde el founder itera (catálogo, variantes, scale), preferir cambios que extiendan el modelo de datos central de forma reusable sobre parches puntuales. El costo marginal de agregar un campo más al tipo (`sku` junto a `priceCents`) es bajo; el costo de re-tocar el pipeline en el siguiente turno es alto. "Sobre-preparar levemente" la infra en áreas de iteración activa es eficiente, no over-engineering.
+
+**Contraejemplo (cuándo NO sobre-preparar)**: en áreas estables o de una-sola-vez (un fix de bug puntual, un seed único), agregar campos "por si acaso" SÍ es over-engineering. La heurística es: ¿el founder está iterando activamente acá? Si sí → preparar la base. Si no → mínimo necesario.
+
 ## 2026-05-31 — Pattern "2-en-1 lentes intercambiables" reusable: Sotion replicó la estructura del Yau (lenses_included array + RX insert) sin re-diseñar
 
 **Categoría**: Product modeling / Schema reuse

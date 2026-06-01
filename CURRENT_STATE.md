@@ -1,38 +1,24 @@
 # Óptica Carballo — Current State
 
-> Todas las cargas/features del 2026-05-31 están consolidadas en la sección
-> "🏁 CIERRE CONSOLIDADO" de abajo (regla anti doc-rot: una sola fuente de verdad
-> del día). Detalle por-producto en `CLOUD_APPLIED.md`.
+> Todas las cargas/features de la sesión 2026-05-31 → 2026-06-01 están consolidadas
+> en la sección "🏁 CIERRE CONSOLIDADO" de abajo (regla anti doc-rot: una sola fuente
+> de verdad). Las entries históricas por-producto más abajo son registro, no estado
+> vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-🟢 **Scale Sotion iter 2 (1.4→1.6) + audit cobertura scale en TODAS las superficies** (2026-05-31). Founder: "agrandar Sotion + asegurarte que el scale aplique en todas las categorías para todos los modelos".
+## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31 → 2026-06-01
 
-**Auditoría de cobertura de scale** (14 superficies que renderean foto de producto):
-- ✅ CON scale (grids/cards — las "categorías"): product-card (todos los catálogos sol/receta/género/forma/marca/favoritos), related-products, recently-viewed, compare (×3), swipe-deck, mi-cuenta/matches.
-- 🔧 GAPS CERRADOS este turno: `quick-view` (modal foto grande) + `search-dialog` (thumbnail resultado) — ahora aplican `getImageScale()`.
-- ⚪ SIN scale a propósito: `product-gallery` + `image-lightbox` (foto protagonista de la PDP, se ve completa, scale la recortaría) + `variant-list` (thumbnails 44px, scale imperceptible).
-
-**Resultado**: TODA superficie que representa el producto como thumbnail/card ahora respeta el scale central. El único lugar sin scale es la galería grande de la PDP (decisión correcta — ahí querés la foto completa).
-
-**Sotion scale**: 1.4/1.15 → 1.6/1.3 (founder "agrandar", fotos del Sotion con anteojo chico en frame). Si recorta, bajar a 1.5/1.25.
-
-**Verificación**: tsc pass.
-
-🟢 **Thumbnails de variante en ProductCard ahora navegan a la PDP de esa variante** (2026-06-01). Founder: "al hacer click en el thumbnail debería entrar a la publicación en esa variante".
-
-**Cambio**: `components/product/product-card.tsx` — `VariantThumbnails` convertido de `<button onClick>` a `<Link href="{productHref}?v={sku}">`.
-- **Desktop**: hover (onMouseEnter) previsualiza la variante en la foto grande del card SIN navegar; click navega a la PDP de esa variante (deep-link `?v=`).
-- **Mobile**: tap navega directo a la PDP de la variante (no hay hover).
-- El "+N" overflow box mobile → Link a la PDP general.
-- Combina con el deep-link `?v=` (commit `b86b1cb`) + el guard de selección manual (commit `57c995b`): al entrar por el thumbnail, la PDP abre con esa variante preseleccionada y el usuario puede cambiarla después.
-
-**Verificación**: tsc pass. Sin links anidados (thumbnails son sibling del Link principal del card).
-
-## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
-
-**Estado catálogo (verificado MCP al cierre, ~80 commits en el día)**:
+**Estado catálogo (verificado MCP, ~85 commits en la sesión)**:
 - `anteojos-de-sol`: **13 productos**, ~231 unidades
 - `anteojos-de-receta`: **3 productos**, 36 unidades
-- **16 productos activos totales** (al inicio del día había 6)
+- **16 productos activos totales** (al inicio había 6)
+
+**🔧 Cierre del bloque "sistema de variantes" (06-01)** — 4 features encadenadas en respuesta a feedback incremental del founder, ahora forman un sistema coherente:
+1. **Precio por variante en hover** — el precio del card sigue a la foto mostrada.
+2. **Deep-link `?v=<sku>`** — el card linkea a la PDP de la variante seleccionada (client-side, preserva ISR).
+3. **Thumbnails clickeables** — cada thumbnail del card es un `<Link>` a la PDP de esa variante (hover=preview desktop, tap=navega mobile).
+4. **Guard de selección manual** — fix del bug donde el deep-link rebotaba la selección (useEffect con `appliedRef`, aplica el `?v=` una sola vez al montar).
+
+**🔧 Audit cobertura de scale (06-01)** — 14 superficies auditadas. Gaps cerrados: quick-view + search-dialog ahora aplican `getImageScale()`. Confirmado: TODA superficie thumbnail/card respeta el scale central; sin scale solo galería grande PDP + lightbox (correcto, foto protagonista). Sotion scale 1.4→1.6.
 
 **Productos cargados/modificados HOY (11 nuevos + 2 updates de peso)**:
 | Producto | Variantes | Categoría | Notas |
