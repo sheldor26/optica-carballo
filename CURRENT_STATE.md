@@ -5,6 +5,12 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Vulk Disarn cargado (17º producto) + fix QR ARCA del footer** (2026-06-01).
+**Carga**: cuadrados de calce pequeño G-Flex, **ambas variantes polarizadas**. 2 variantes (SBLK-MDEMI/G15 POL SKU 958643 stock 4 default + STEELBLUE-MBLK/DRT-03 POL SKU 958640 stock 2), $79.815,45 c/u, stock total 6. Importado vía `/api/admin/ml-import-preview/MLA1866820108` (token ML que el founder autorizó) → WebFetch del endpoint (sin auth) → SQL aplicado vía MCP. Producto marcado `lens_treatment:["uv400","polarized"]` → aparece en /vulk/polarizados. Discrepancia resuelta: founder dijo "patillas negro brillo" en la 958640, pero foto (STEELBLUE-MBLK) + ML coinciden en MATE → cargado mate. Verificado MCP (2 variants, stock 6, 5 imgs, ambas polarized). Scale 1.15/1.0 conservador + 2 labels frame_color nuevos (negro-brillo-carey, steelblue-negro-mate). Seed doc 37 + CLOUD_APPLIED actualizados.
+**Catálogo ahora**: 14 sol + 3 receta = **17 productos activos**.
+**Fix QR ARCA**: el badge Data Fiscal del footer tenía un QR equivocado (`HOYo3ILqz6tYowCRWo8AVw`); founder pasó el corregido (`fLstQR06di9YY-9R4_zb6g`) → actualizado en `site-footer.tsx`.
+**Pendiente founder**: subir 5 fotos al bucket `products/vulk-disarn/` con nombres EXACTOS (sin "(1)" ni "." tras POL): `DISARN SBLK-MDEMI G15 POL-{perfil,frente}.jpg`, `DISARN STEELBLUE-MBLK DRT03 POL-{perfil,frente}.jpg`, `medidas.jpg`.
+
 🟡 **Decisión email profesional `@opticacarballo.com.ar` — Opción B elegida (mandar + recibir gratis), esperando ejecución** (2026-06-01). Founder preguntó si Google One incluye email de dominio (NO — eso es Google Workspace, pago). Aclarado que las necesidades son separadas: (A) que el SITIO mande desde el dominio = solo DNS en Resend, gratis, sin casilla; (B) recibir en una casilla del dominio = servicio aparte; (C) `ADMIN_EMAILS` puede seguir siendo el Gmail. Founder eligió B.
 **Ajuste clave**: el DNS del dominio está **en Vercel**, así que NO usar Cloudflare Email Routing (exige mover nameservers, riesgoso). Camino correcto con DNS-en-Vercel:
 1. **Resend** → agregar dominio, pegar ~3 registros (SPF/DKIM/CNAME) en Vercel DNS → el sitio manda desde el dominio (destraba los emails del tracker Iter 2). **Próximo paso recomendado.**

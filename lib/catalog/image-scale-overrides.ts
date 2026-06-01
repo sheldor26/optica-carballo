@@ -220,6 +220,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-FRENTE.jpg': 1.3,
   'rusty-sotion/MBLK-S10-POL-YELLOW-PERFIL.jpg': 1.6,
   'rusty-sotion/MBLK-S10-POL-YELLOW-FRENTE.jpg': 1.3,
+
+  // Vulk Disarn — cuadrado de calce pequeño. Counter-learning aplicado:
+  // default 1.15/1.0 CONSERVADOR (sub-regla 15 + mistake Booping iter 2).
+  // Si tras deploy queda chico vs grid → subir escalonado a 1.2/1.05.
+  // 4 entries (2 por variante × 2 variantes). medidas.jpg queda en 1.0.
+  'vulk-disarn/DISARN SBLK-MDEMI G15 POL-perfil.jpg': 1.15,
+  'vulk-disarn/DISARN SBLK-MDEMI G15 POL-frente.jpg': 1.0,
+  'vulk-disarn/DISARN STEELBLUE-MBLK DRT03 POL-perfil.jpg': 1.15,
+  'vulk-disarn/DISARN STEELBLUE-MBLK DRT03 POL-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

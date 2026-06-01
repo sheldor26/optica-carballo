@@ -119,7 +119,7 @@ export function SiteFooter() {
             evitar mixed-content. El QR es el del CUIT del negocio.
           */}
           <a
-            href="https://qr.afip.gob.ar/?qr=HOYo3ILqz6tYowCRWo8AVw,,"
+            href="https://qr.afip.gob.ar/?qr=fLstQR06di9YY-9R4_zb6g,,"
             target="_F960AFIPInfo"
             rel="noopener noreferrer"
             className="shrink-0"

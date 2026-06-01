@@ -1,0 +1,47 @@
+-- ============================================
+-- Seed 37: Vulk Disarn (sol) — cuadrados de calce pequeño G-Flex, polarizados
+-- Fecha: 2026-06-01
+-- ============================================
+-- Modelo Vulk Disarn: anteojos cuadrados de calce PEQUEÑO (frente angosto
+-- 132mm), pensados para rostros chicos/angostos. Frente + patillas G-Flex,
+-- bisagras metálicas sistema flex, lente policarbonato polarizado UV400 cat 3.
+-- AMBAS variantes polarizadas → producto marcado `lens_treatment:
+-- ["uv400","polarized"]` (aparece en /anteojos-de-sol/vulk/polarizados).
+--
+-- 2 variantes (1 MLA multi-variation MLA1866820108, $79.815,45 c/u):
+--   SKU 958643 — SBLK-MDEMI / G15 POL (DEFAULT, sort 1)
+--     Frente negro brillo + patillas carey + lentes verde G15 POL. Stock 4.
+--     variation_code 181239344024.
+--   SKU 958640 — STEELBLUE-MBLK / DRT-03 POL (sort 2)
+--     Frente azul acero translúcido + patillas negro mate + lentes gris
+--     degradé POL. Stock 2. variation_code 181239344026.
+--
+-- Cross-source verification de polarizada: ML `with_polarized_lens: Sí`,
+-- ambos codes con "POL", mismo precio → el "degradé" de la 958640 ES
+-- polarizado (NO aplica la regla degradé/revo=no-pol, que requiere precio
+-- menor + sin POL en code).
+--
+-- Discrepancia resuelta: founder escribió "patillas negro brillo" para la
+-- 958640, pero el nombre de su foto (STEELBLUE-MBLK) + ML ("Negro Mate")
+-- coinciden en MATE → se cargó MBLK (mate).
+--
+-- Total stock 6. Medidas: frente 132 / lente 47x45 / puente 21 / varilla 145 mm.
+--
+-- Importado vía endpoint /api/admin/ml-import-preview/MLA1866820108 (token
+-- OAuth ML) → datos crudos → SQL generado y aplicado vía MCP execute_sql
+-- 2026-06-01 con autorización standing.
+-- Verificación MCP: 2 variants, stock=6, 5 images, shape=cuadrado,
+-- lens_treatment incluye polarized, ambas variantes polarized=true.
+--
+-- Scale override 1.15/1.0 conservador (counter-learning Booping iter 2).
+-- Labels frame_color nuevos en variant-list.tsx: negro-brillo-carey +
+-- steelblue-negro-mate.
+-- ============================================
+-- 📸 FOTOS pendientes (founder sube al bucket `products/vulk-disarn/` con
+--    ESTOS nombres exactos — sacar el "(1)" y el "." tras POL):
+--   DISARN SBLK-MDEMI G15 POL-perfil.jpg + DISARN SBLK-MDEMI G15 POL-frente.jpg
+--   DISARN STEELBLUE-MBLK DRT03 POL-perfil.jpg + DISARN STEELBLUE-MBLK DRT03 POL-frente.jpg
+--   medidas.jpg
+-- ============================================
+
+-- Seed documental — INSERT real ya aplicado vía MCP.
