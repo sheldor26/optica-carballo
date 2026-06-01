@@ -187,6 +187,14 @@ Plan editorial vivo. Define **qué artículos escribir, en qué orden y con qué
 
 ---
 
+# Estándar SEO de producción → `ARTICLE_SEO_STANDARD.md`
+
+> La "biblia" SEO master-class que `content-writer-medical` aplica en CADA guía
+> (on-page, rich snippets, E-E-A-T, link juice a comercial, productos embebidos,
+> off-page, featured snippets, checklist pre-publicación + infra a construir).
+> Diseñada por seo-strategist (2026-06-01), corregida contra el código real.
+> **Leer ANTES de escribir cualquier guía.**
+
 # Clusters TÉCNICOS DE LENTE (roadmap 2026-06-01 — fuente de verdad: SEO_STRATEGY.md)
 
 > Founder pidió ordenar la redacción de los temas técnicos (diseño de lente,
