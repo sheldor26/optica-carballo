@@ -11,6 +11,12 @@ import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
 export type ProductCardVariant = {
   id: string;
+  /** SKU — para deep-link `?v=<sku>` a la PDP con esta variante preseleccionada. */
+  sku: string;
+  /** Precio de ESTA variante en centavos. Para mostrar el precio específico
+   * al hacer hover/select en el grid (founder 2026-05-31: variantes con
+   * precio distinto deben reflejar su precio al posarse). */
+  priceCents: number;
   /** Label legible (color del armazón). Para tooltip + a11y. */
   label: string;
   /** Imagen primary de esta variante (la que muestra el thumbnail). */
@@ -128,6 +134,27 @@ export function ProductCard({ product }: { product: ProductCardData }) {
     ? getProductImageUrl(currentImages.secondary)
     : null;
 
+  // Variante actualmente seleccionada (hover/click en thumbnail). Usada para
+  // (a) mostrar el precio específico de la variante si difiere del mínimo, y
+  // (b) deep-link `?v=<sku>` a la PDP con esa variante preseleccionada.
+  const selectedVariant =
+    selectedVariantId !== null
+      ? variants.find((v) => v.id === selectedVariantId)
+      : undefined;
+
+  // Precio mostrado: el de la variante seleccionada (si hay y está en stock
+  // o es la única info), fallback al mínimo del producto. Solo mostramos el
+  // precio de variante cuando difiere del mínimo, para no confundir.
+  const displayPriceCents = selectedVariant
+    ? selectedVariant.priceCents
+    : product.minPriceCents;
+
+  // href: si hay variante seleccionada, deep-link con su SKU para que la PDP
+  // abra mostrando esa variante (founder 2026-05-31).
+  const href = selectedVariant
+    ? `${product.href}?v=${encodeURIComponent(selectedVariant.sku)}`
+    : product.href;
+
   return (
     <article className="group/card relative flex h-full flex-col">
       <WishlistButton
@@ -138,9 +165,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         }}
         variant="card"
       />
-      <QuickView slug={product.slug} href={product.href} />
+      <QuickView slug={product.slug} href={href} />
       <Link
-        href={product.href}
+        href={href}
         className="flex h-full flex-col"
         aria-label={product.name}
       >
@@ -191,9 +218,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           <h3 className="text-foreground font-serif text-lg font-medium leading-tight tracking-[-0.01em] transition-colors duration-300 group-hover/card:text-foreground/90 md:text-xl">
             {product.name}
           </h3>
-          {product.minPriceCents !== null ? (
+          {displayPriceCents !== null ? (
             <p className="text-muted-foreground text-sm tabular-nums">
-              {formatPriceCents(product.minPriceCents)}
+              {formatPriceCents(displayPriceCents)}
             </p>
           ) : (
             <p className="text-muted-foreground text-sm">Sin stock</p>

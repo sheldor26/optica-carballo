@@ -21,6 +21,8 @@ import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 export function buildCardVariants(
   variants: Array<{
     id: string;
+    sku: string;
+    price_cents: number;
     stock_qty: number;
     is_active: boolean;
     sort_order: number;
@@ -49,6 +51,8 @@ export function buildCardVariants(
     const secondary = pool[1]?.storage_path ?? null;
     return {
       id: v.id,
+      sku: v.sku,
+      priceCents: v.price_cents,
       label: extractColorLabel(v.attributes),
       primaryImagePath: primary,
       secondaryImagePath: secondary,
@@ -169,6 +173,8 @@ export function toProductCardData(
     const images = buildVariantImages(v.id);
     return {
       id: v.id,
+      sku: v.sku,
+      priceCents: v.price_cents,
       label: extractColorLabel(v.attributes),
       primaryImagePath: images.primary,
       secondaryImagePath: images.secondary,

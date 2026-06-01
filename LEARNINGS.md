@@ -22,6 +22,29 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Deep-link a variante client-side (useSearchParams + Suspense) preserva el ISR de la PDP — NO pasar searchParams al page server component
+
+**Categoría**: Next.js / ISR / Architecture
+**Confianza**: 🟢 Alta (validado con tsc pass + es el patrón canónico Next 15 para searchParams en páginas estáticas)
+
+**El problema**: founder pidió que al clickear una variante en el grid, la PDP abra con esa variante seleccionada (`?v=<sku>`). La tentación obvia: hacer que el `page.tsx` acepte `searchParams` como prop y resuelva el sku→id server-side.
+
+**Por qué eso es trampa**: en Next 15 App Router, si un page component accede a `searchParams`, la ruta se vuelve **dinámica** y pierde el prerender estático / ISR. Las PDPs tienen `revalidate=300` (ISR) — pasar searchParams al page rompería el cache estático para TODAS las visitas, no solo las con `?v=`. Penalización de performance + SEO innecesaria.
+
+**Solución correcta**: leer el searchParam CLIENT-SIDE.
+- Componente cliente `VariantUrlSync` que usa `useSearchParams()`, lee `?v=<sku>`, resuelve vía un mapa `skuToId` (provisto por el server), y llama `selectVariant(id)` en useEffect.
+- Se envuelve en `<Suspense fallback={null}>` — requisito de `useSearchParams()` en páginas estáticas (Next fuerza client-render del subtree hasta el Suspense boundary, el resto de la página sigue estática/ISR).
+- El page NO toca searchParams → ISR intacto.
+
+**Por qué funciona**:
+- La página se sirve prerendereada (ISR) para SEO + performance.
+- El `?v=` se resuelve en el cliente tras hidratación — imperceptible para el usuario (el thumbnail ya muestra la variante correcta porque el grid pasó el deep-link).
+- `skuToId` se serializa del server al client como prop normal (es un objeto chico).
+
+**Regla replicable**: cualquier feature que dependa de query params en una página con ISR/SSG → leer el param client-side con useSearchParams + Suspense, NUNCA via el searchParams prop del page (que mata el prerender). Aplica a filtros, deep-links, estados de UI vía URL.
+
+**Generalización**: el principio es "no degradar el rendering mode de la página por una feature secundaria". searchParams server-side es apropiado SOLO en páginas que ya son dinámicas por naturaleza (búsqueda, dashboards, checkout). Para páginas de contenido (PDPs, artículos, catálogos con ISR) → client-side.
+
 ## 2026-05-31 — Playbook de carga de producto consolidado: 9 productos cargados en 1 sesión, tiempo decreciente por iteración (curva de aprendizaje real)
 
 **Categoría**: Workflow / Throughput / Playbook maturity

@@ -1,5 +1,23 @@
 # Óptica Carballo — Current State
 
+🟢 **Precio por variante en hover + deep-link `?v=<sku>` a la PDP + scale Spell SBLK** (2026-05-31).
+
+**Cambios** (commit pending):
+- `lib/catalog/queries.ts`: `sku` agregado a 9 selects de card + a row types `ProductCardSource`/`FilteredCatalogRow`/`WishlistProductRow`.
+- `components/product/product-card.tsx`: `ProductCardVariant` ahora tiene `sku` + `priceCents`. Precio mostrado = el de la variante cuya foto se ve (default o hovereada). href con `?v=<sku>` de la variante seleccionada.
+- `lib/catalog/to-product-card-data.ts`: `buildCardVariants` + `toProductCardData` populan sku + priceCents.
+- `lib/product/variant-selection.tsx`: nuevo `VariantUrlSync` (client) que lee `?v=<sku>` y preselecciona la variante. Client-side para preservar ISR.
+- `components/catalog/product-page.tsx`: `<Suspense><VariantUrlSync skuToId={...}/></Suspense>` dentro del provider. Aplica a PDP sol + receta (componente compartido).
+- `lib/catalog/image-scale-overrides.ts`: Spell SBLK lateral 1.15→1.3.
+
+**Decisión de diseño**: el precio del card ahora corresponde SIEMPRE a la variante cuya foto se muestra (coherencia foto↔precio). Antes mostraba minPriceCents aunque la foto fuera de otra variante con precio distinto — eso era el bug. Solo cambia visiblemente en productos multi-precio (Spell, Xold, Arvin, Etiquet).
+
+**Verificación**: `npx tsc --noEmit` pass.
+
+**Próximo paso founder**: verificar post-deploy: (a) hover sobre variante de Spell/Xold cambia el precio, (b) click en variante 3 del grid → PDP abre con variante 3 seleccionada.
+
+---
+
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
 
 **Estado catálogo (verificado MCP al cierre)**:

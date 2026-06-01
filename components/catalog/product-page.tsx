@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +37,10 @@ import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { isCheckoutEnabled } from '@/lib/features';
 import { fetchRelatedProducts } from '@/lib/catalog/queries';
-import { VariantSelectionProvider } from '@/lib/product/variant-selection';
+import {
+  VariantSelectionProvider,
+  VariantUrlSync,
+} from '@/lib/product/variant-selection';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { ProductDetailData } from '@/lib/catalog/queries';
 
@@ -255,8 +259,17 @@ export async function ProductDetailPage({
   const defaultVariantId =
     inStockVariants[0]?.id ?? activeVariants[0]?.id ?? null;
 
+  // Mapa SKU → id para resolver el deep-link `?v=<sku>` del grid (client-side
+  // vía VariantUrlSync, preserva el ISR de la PDP).
+  const skuToId = Object.fromEntries(
+    activeVariants.map((v) => [v.sku, v.id]),
+  );
+
   return (
     <VariantSelectionProvider defaultVariantId={defaultVariantId}>
+    <Suspense fallback={null}>
+      <VariantUrlSync skuToId={skuToId} />
+    </Suspense>
     <main className="container py-8 md:py-12">
       <BreadcrumbJsonLd
         items={[

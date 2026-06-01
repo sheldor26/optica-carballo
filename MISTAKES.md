@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: feature precio-por-variante + deep-link implementada sin error (pipeline central + Next 15 client searchParams)
+
+**Estado**: N/A
+**Categoría**: Feature implementation
+
+Implementación de las 2 features (precio dinámico por variante + deep-link `?v=`) ejecutada limpia. `sku`+`priceCents` agregados al pipeline central (sed para 9 selects + types + helpers), TypeScript forzó coherencia (pass al primer intento). Deep-link resuelto client-side con useSearchParams+Suspense (preserva ISR — documentado en LEARNINGS como decisión arquitectónica correcta, NO mistake). Sin error documentable. El único riesgo latente: el cambio de comportamiento del precio (ahora = variante visible, antes = mínimo) podría sorprender al founder — pero es la corrección de un bug de coherencia, comunicado explícitamente en el mensaje de entrega.
+
 ## 2026-05-31 — Patrón sistémico del día: stop hook reportó "falta consolidación final" en 6+ turnos seguidos — yo cerraba cada carga de producto pero NO consolidaba la sesión como arco completo
 
 **Estado**: 🟡 Mitigado — cierre consolidado de sesión escrito al final con tabla de los 9 productos + bugs + features + decisiones + próximos pasos. Pero el pattern recurrió MUCHAS veces en la sesión.

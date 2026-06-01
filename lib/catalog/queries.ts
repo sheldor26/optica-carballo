@@ -31,6 +31,7 @@ export type ProductCardSource = {
   is_featured: boolean;
   variants: Array<{
     id: string;
+    sku: string;
     price_cents: number;
     stock_qty: number;
     is_active: boolean;
@@ -157,7 +158,7 @@ export async function fetchBrandPage(
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
+      'slug, name, short_description, is_featured, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -220,7 +221,7 @@ export async function fetchBrandPageByGender(args: {
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
+      'slug, name, short_description, is_featured, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -279,7 +280,7 @@ export async function fetchBrandPageByFilter(args: {
   let query = supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
+      'slug, name, short_description, is_featured, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -835,6 +836,7 @@ type FilteredCatalogRow = {
   category: { slug: string; is_active: boolean };
   variants: Array<{
     id: string;
+    sku: string;
     price_cents: number;
     stock_qty: number;
     is_active: boolean;
@@ -873,7 +875,7 @@ export async function fetchProductsByCategoryAndShapes(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
         images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
@@ -941,7 +943,7 @@ export async function fetchProductsByFrameShapes(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
         images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
@@ -1018,7 +1020,7 @@ export async function fetchCategoryByGender(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
         images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
@@ -1083,7 +1085,7 @@ export async function fetchCategoryByFilter(args: {
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
         images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )
@@ -1166,6 +1168,7 @@ type WishlistProductRow = {
   category: { slug: string; is_active: boolean };
   variants: Array<{
     id: string;
+    sku: string;
     price_cents: number;
     stock_qty: number;
     is_active: boolean;
@@ -1217,7 +1220,7 @@ export async function fetchProductsBySlugs(
         short_description,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
-        variants:product_variants(id, price_cents, stock_qty, is_active, sort_order, attributes),
+        variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
         images:product_images(storage_path, is_primary, sort_order, variant_id)
       `,
     )

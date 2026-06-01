@@ -192,7 +192,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 10 entries (2 por variante × 5 variantes). Naming inconsistente del
   // founder (underscores en MBLK S10, espacios en otros, sin "perfil" en
   // MBLU 670 lateral) respetado tal cual.
-  'rusty-spell/SPELL SBLK - S10 POL perfil.jpg': 1.15,
+  // SBLK lateral quedó más chica que el resto del grid (founder 2026-05-31) → 1.3.
+  'rusty-spell/SPELL SBLK - S10 POL perfil.jpg': 1.3,
   'rusty-spell/SPELL SBLK - S10 POL frente.jpg': 1.0,
   'rusty-spell/SPELL MBLK GBU30-perfil.jpg': 1.15,
   'rusty-spell/SPELL MBLK GBU30-frente.jpg': 1.0,
