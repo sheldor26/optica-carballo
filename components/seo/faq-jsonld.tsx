@@ -1,7 +1,7 @@
-import type { FaqItem } from '@/lib/content/faqs';
+import type { FaqEntry } from '@/lib/content/faqs';
 
 type Props = {
-  items: FaqItem[];
+  items: FaqEntry[];
 };
 
 /**

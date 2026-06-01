@@ -6,6 +6,8 @@ import { ArticleHeader } from '@/components/articles/article-header';
 import { RelatedArticles } from '@/components/articles/related-articles';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ArticleJsonLd } from '@/components/seo/article-jsonld';
+import { FaqJsonLd } from '@/components/seo/faq-jsonld';
+import { FaqAccordion } from '@/components/faqs/faq-accordion';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import {
   getAllArticleSlugs,
@@ -112,6 +114,9 @@ export default async function GuiaPage({
         ]}
       />
       <ArticleJsonLd frontmatter={frontmatter} />
+      {frontmatter.faqs && frontmatter.faqs.length > 0 && (
+        <FaqJsonLd items={frontmatter.faqs} />
+      )}
 
       {frontmatter.draft && (
         <div className="mb-8 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
@@ -147,6 +152,17 @@ export default async function GuiaPage({
       <div className="prose prose-zinc max-w-none prose-headings:font-serif prose-headings:tracking-tight prose-h2:text-3xl prose-h2:font-medium prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-medium prose-h3:mt-8 prose-h3:mb-3 prose-p:text-base prose-p:leading-relaxed prose-li:text-base prose-li:leading-relaxed prose-strong:text-foreground prose-strong:font-semibold prose-a:text-foreground prose-a:underline prose-a:underline-offset-2 prose-a:decoration-foreground/30 hover:prose-a:decoration-foreground prose-blockquote:border-l-2 prose-blockquote:border-brand prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-foreground/80 md:prose-lg">
         <MDXContent />
       </div>
+
+      {frontmatter.faqs && frontmatter.faqs.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-foreground font-serif text-3xl font-medium tracking-tight">
+            Preguntas frecuentes
+          </h2>
+          <div className="mt-5">
+            <FaqAccordion items={frontmatter.faqs} />
+          </div>
+        </section>
+      )}
 
       <RevealOnScroll>
         <ArticleFooter

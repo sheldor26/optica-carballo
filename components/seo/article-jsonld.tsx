@@ -35,15 +35,29 @@ export function ArticleJsonLd({
   const pageUrl = `${SITE_URL}/guias/${frontmatter.slug}`;
   const imageUrl = articleImageUrl(frontmatter.heroImage);
 
+  // Guías de salud (con `medicalCondition`) suben a MedicalWebPage + about +
+  // lastReviewed → señal YMYL fuerte para Google. El resto queda como Article.
+  const isMedical = Boolean(frontmatter.medicalCondition);
+
   const data = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': isMedical ? 'MedicalWebPage' : 'Article',
     headline: frontmatter.title,
     description: frontmatter.description,
     datePublished: frontmatter.publishedAt,
     dateModified: frontmatter.updatedAt,
     inLanguage: 'es-AR',
     keywords: frontmatter.keywords.join(', '),
+    ...(isMedical
+      ? {
+          about: {
+            '@type': 'MedicalCondition',
+            name: frontmatter.medicalCondition,
+          },
+          // Revisado por la regente matriculada — E-E-A-T YMYL.
+          lastReviewed: frontmatter.updatedAt,
+        }
+      : {}),
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': pageUrl,

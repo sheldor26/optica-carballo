@@ -24,11 +24,16 @@ export type FaqCategory =
   | 'nosotros'
   | 'tecnicas';
 
-export type FaqItem = {
+/** Shape mínimo de una FAQ — lo que necesitan `FaqAccordion` y `FaqJsonLd`.
+ * Las FAQs de artículos usan este shape (sin `category`, que es del FAQ global). */
+export type FaqEntry = {
   id: string;
   question: string;
   /** Respuesta puede contener bullets simples con `\n- item`. El renderer maneja la conversión. */
   answer: string;
+};
+
+export type FaqItem = FaqEntry & {
   category: FaqCategory;
   /** Si true, se incluye en el subset destacado del home (máx 6 con featured). */
   featured?: boolean;

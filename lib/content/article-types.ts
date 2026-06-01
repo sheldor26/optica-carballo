@@ -78,6 +78,20 @@ export interface ArticleFrontmatter {
    * (404 hasta para el founder).
    */
   draft?: boolean;
+  /**
+   * Preguntas frecuentes de la guía. Si está presente, la page renderiza:
+   * (a) un acordeón VISIBLE al final + (b) `FAQPage` JSON-LD con el MISMO
+   * contenido (Google exige que coincidan). 3-6 preguntas sacadas de
+   * People-Also-Ask / keyword research. Ver ARTICLE_SEO_STANDARD.md §2.2.
+   */
+  faqs?: { id: string; question: string; answer: string }[];
+  /**
+   * Si está presente, el JSON-LD sube de `Article` a `MedicalWebPage` con
+   * `about: MedicalCondition` + `lastReviewed` (E-E-A-T YMYL). Usar el nombre
+   * clínico de la condición, ej. "Astigmatismo", "Presbicia". Omitir en guías
+   * NO médicas (forma de cara, tendencias) → quedan como `Article`.
+   */
+  medicalCondition?: string;
 }
 
 /** Artículo completo — frontmatter + contenido MDX raw. El contenido se

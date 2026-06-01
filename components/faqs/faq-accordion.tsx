@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { FaqItem } from '@/lib/content/faqs';
+import type { FaqEntry } from '@/lib/content/faqs';
 
 type Props = {
-  items: FaqItem[];
+  items: FaqEntry[];
   /** ID inicialmente abierto (deep-link `?faq=slug` o `#slug`). */
   defaultOpenId?: string;
 };
