@@ -24,6 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Revisado — sin novedad: Sotion cargado reusando pattern 2-en-1 del Yau sin error
+
+**Estado**: N/A
+**Categoría**: Product loading
+
+Carga del Sotion ejecutada limpia reusando la estructura del Yau (documentado en LEARNINGS). Scale 1.4/1.15 elegido a propósito (envolvente, no el 1.15 default — análogo correcto al Yau, no al caso Booping). Verificación MCP OK. Sin error documentable. Único riesgo latente: el scale 1.4 podría recortar (como pasó con Vrast iter 1) — pero el análogo Yau con 1.4 lateral funciona bien, así que la apuesta es informada. Si recorta, iter a 1.2.
+
 ## 2026-05-31 — Revisado — sin novedad: feature precio-por-variante + deep-link implementada sin error (pipeline central + Next 15 client searchParams)
 
 **Estado**: N/A

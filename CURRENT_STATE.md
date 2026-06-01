@@ -1,17 +1,15 @@
 # Óptica Carballo — Current State
 
-🟢 **Rusty Sotion cargado: deportivo envolvente 2-en-1, 3 variantes** (2026-05-31). 2do modelo 2-en-1 del catálogo (otro: Yau). Producto más caro ($101.560). Apply via MCP. Variantes: MBLUE/R.GREEN (stock 5 default), MBLK/R.BLUE (3), MBLK/S10 (2). Polarizadas + amarillas intercambiables + RX Insert para receta. Envolvente Base-8, air ventilation, 140/67x47/17/125mm. Scale 1.4/1.15 (envolvente como Yau). Fotos pendientes: 7 a `products/rusty-sotion/` (MAYÚSCULAS, nombres en seed 36). **Catálogo: 16 productos** (13 sol + 3 receta). Detalle en CLOUD_APPLIED seed 36.
-
-> Las entries individuales de cada carga/feature del 2026-05-31 fueron consolidadas
-> en la sección "🏁 CIERRE CONSOLIDADO" de abajo (regla anti doc-rot: una sola fuente
-> de verdad del día, no apilar entries). Para detalle por-producto ver `CLOUD_APPLIED.md`.
+> Todas las cargas/features del 2026-05-31 están consolidadas en la sección
+> "🏁 CIERRE CONSOLIDADO" de abajo (regla anti doc-rot: una sola fuente de verdad
+> del día). Detalle por-producto en `CLOUD_APPLIED.md`.
 
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
 
-**Estado catálogo (verificado MCP al cierre, 70 commits en el día)**:
-- `anteojos-de-sol`: **12 productos**, 221 unidades
+**Estado catálogo (verificado MCP al cierre, ~80 commits en el día)**:
+- `anteojos-de-sol`: **13 productos**, ~231 unidades
 - `anteojos-de-receta`: **3 productos**, 36 unidades
-- **15 productos activos totales** (al inicio del día había 6)
+- **16 productos activos totales** (al inicio del día había 6)
 
 **Productos cargados/modificados HOY (11 nuevos + 2 updates de peso)**:
 | Producto | Variantes | Categoría | Notas |
@@ -26,9 +24,10 @@
 | Vulk Arvin | 3 | sol | cuadrado, counter-learning scale |
 | Rusty Spell | 5 | sol | cuadrado, 2 pol + 3 no-pol + UPDATE peso 12.6g |
 | Rusty Spell Receta | 2 | **receta** | cuadrado masculino, 12.6g |
+| Rusty Sotion | 3 | sol | **deportivo envolvente 2-en-1** (2do tras Yau), RX insert, $101.560 el más caro |
 | Vulk Day Light | (update) | sol | marcado polarized=true (4 variantes) |
 
-Total variantes nuevas: ~42. 5 productos con cross-source verification de polarizada (Etiquet, Xold, Arvin, Spell, + Day Light). 3 productos receta nuevos/existentes (Stray, Xold Receta, Spell Receta).
+Total variantes nuevas: ~45. 5 productos con cross-source verification de polarizada (Etiquet, Xold, Arvin, Spell, + Day Light). 3 productos receta (Stray, Xold Receta, Spell Receta). 2 modelos 2-en-1 con lentes intercambiables (Yau, Sotion).
 
 **Bugs estructurales resueltos HOY**:
 1. **Container CSS** (`tailwind.config.ts`): override `2xl:1280px` → 1536px default + padding responsive. Afectó 8 catálogos (eran 256px más chicos que BrandPage).
@@ -59,7 +58,7 @@ Total variantes nuevas: ~42. 5 productos con cross-source verification de polari
 - MISTAKES: container-as-cache misdiagnosis, badge code-data drift, scale-too-aggressive, doc-rot CLOUD_APPLIED, per-task-vs-session-arc closure
 
 **Pendiente founder (próximo paso EXACTO)**:
-1. Subir fotos pendientes a buckets: `rusty-spell/` (11), `vulk-arvin/` (7), `rusty-spell-receta/` (5). (Resto ya subidas: Dearly, Vrast, Etiquet, Tulle, Xold, Xold Receta, Booping.)
+1. Subir fotos pendientes a buckets: `rusty-spell/` (11), `vulk-arvin/` (7), `rusty-spell-receta/` (5), `rusty-sotion/` (7). (Resto ya subidas: Dearly, Vrast, Etiquet, Tulle, Xold, Xold Receta, Booping.)
 2. Verificar post-deploy: 15 productos tamaños consistentes + precio-por-variante en hover (Spell/Xold/Arvin multi-precio) + deep-link `?v=` funciona.
 3. Decidir próxima dirección: más productos / artículos SEO (2 publicados, faltan ~15 para cluster) / Opción Z tracker pedidos / audit baseline e-commerce.
 

@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Pattern "2-en-1 lentes intercambiables" reusable: Sotion replicó la estructura del Yau (lenses_included array + RX insert) sin re-diseñar
+
+**Categoría**: Product modeling / Schema reuse
+**Confianza**: 🟢 Alta (2do producto con la misma estructura, copiada del Yau con cero fricción)
+
+**Qué funcionó**: El Rusty Sotion es deportivo 2-en-1 (lentes polarizadas montadas + par amarillas intercambiables + adaptador receta) — exactamente el concepto del Rusty Yau cargado semanas atrás. En vez de inventar un modelado nuevo, reusé la estructura de `attributes` del Yau:
+- `interchangeable_lenses: true`
+- `lenses_included: [{type, treatment, default_mounted, use_case}, ...]` — array que describe cada par
+- `prescription_adapter: true` (+ `prescription_adapter_type: "rx_insert"` para el Sotion, que usa insert interno vs el adaptador del Yau)
+- `lens_features: ["air_ventilation", "base_8"]`
+- callouts con la misma lógica ("las amarillas NO son polarizadas a propósito")
+
+**Por qué funciona**:
+- El schema JSONB de attributes es flexible — un pattern bien diseñado (lenses_included) se reusa sin migración.
+- El Yau ya había validado la estructura con el founder (callouts sobre cuándo usar cada par). Copiar = heredar esa validación.
+- Diferencias específicas (rx_insert vs adaptador, base_8) se agregan como keys extra sin romper el pattern base.
+
+**Cómo replicar**: cuando aparece un producto que comparte concepto con uno ya cargado (2-en-1, multi-lente, clip-on, etc.), buscar el seed del producto análogo y copiar su estructura de attributes. NO re-modelar desde cero. Los productos deportivos Rusty (Yau, Sotion, Feeled) comparten mucho — son una "familia" de schema.
+
+**Catálogo de patterns de producto establecidos hasta ahora**:
+- **Single-lens sol** (Dearly, Vrast, Etiquet, Tulle, Xold, Booping, Arvin, Spell): polarized flag + measurements + callouts.
+- **2-en-1 deportivo** (Yau, Sotion): lenses_included array + interchangeable + prescription_adapter.
+- **Receta** (Stray, Xold Receta, Spell Receta): lens_compatibility array (monofocal/bifocal/progresivo), sin lens_treatment, gender-specific.
+
 ## 2026-05-31 — Deep-link a variante client-side (useSearchParams + Suspense) preserva el ISR de la PDP — NO pasar searchParams al page server component
 
 **Categoría**: Next.js / ISR / Architecture
