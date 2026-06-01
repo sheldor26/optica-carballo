@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { OrderDetailView } from '@/components/account/order-detail';
 import { requireAuth } from '@/lib/auth/server';
-import { fetchOrderById } from '@/lib/orders/queries';
+import { fetchOrderById, fetchOrderStatusEvents } from '@/lib/orders/queries';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,9 +22,11 @@ export default async function Page({
   const order = await fetchOrderById(id);
   if (!order) notFound();
 
+  const events = await fetchOrderStatusEvents(id);
+
   return (
     <main className="container max-w-3xl py-8 md:py-12">
-      <OrderDetailView order={order} />
+      <OrderDetailView order={order} events={events} />
     </main>
   );
 }

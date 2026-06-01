@@ -10,7 +10,7 @@
 **Audit del estado (qué YA existe)**: lector receta IA, recomendador monturas IA, medidor DNP, chat RAG, swipe/matches, comparador, favoritos, alertas precio/stock, quick view, guías. **El sitio ya tiene más herramientas que la mayoría de ópticas AR — no faltan herramientas gimmick.**
 
 **Gaps detectados en el audit**:
-- ❌ NO hay `@vercel/analytics` ni Speed Insights instalado → **no medimos performance** (optimizamos a ciegas). Ver MISTAKES.
+- ✅ RESUELTO: Speed Insights instalado (2026-06-01) → ya medimos Core Web Vitals de campo. (`@vercel/analytics` de eventos sigue sin instalar, pero no es bloqueante.)
 - Cuotas solo en PDP, no en grid (conversión).
 - Sin try-on (probador virtual con cámara) — el diferenciador real de óptica online.
 - 2 artículos /guias (faltan ~15 para cluster SEO).
@@ -44,32 +44,32 @@
 
 ---
 
-🟧 **#6 Tracker de pedido (Opción Z) — EN CONSTRUCCIÓN, checkpoint pre-compact** (2026-06-01). Founder aprobó "dale con tus recomendaciones". Scope decidido: iter 1 sin admin UI (la regente cambia status desde Supabase Dashboard, un trigger registra el timeline; admin UI + emails = iter 2 con auth).
+🟢 **#6 Tracker de pedido (Opción Z) — ITER 1 COMPLETO** (2026-06-01). Founder aprobó "dale con tus recomendaciones". Scope iter 1: sin admin UI (la regente cambia status desde Supabase Dashboard, un trigger registra el timeline; admin UI + emails = iter 2 con auth).
 
-**✅ HECHO este turno**:
+**✅ HECHO (iter 1 completo)**:
 - Migración `20260601000000_order_status_tracking.sql` APLICADA en Cloud (verificado MCP: tabla + trigger OK):
   - `orders.status` CHECK ahora incluye `'reviewed'` (revisado por óptica).
   - Tabla `order_status_events` (timeline) + index + RLS (cliente lee eventos de sus pedidos).
   - Trigger `on_order_status_change` (BEFORE UPDATE OF status): auto-registra evento + setea paid_at/shipped_at/delivered_at.
   - Backfill de orders existentes (0 — no hay pedidos reales aún).
+- `lib/orders/types.ts` — agregado `'reviewed'` a `OrderStatus` + tipo `OrderStatusEvent`.
+- `lib/orders/labels.ts` — label ("Revisado por óptica") + tono (info) para `reviewed`.
+- `lib/orders/order-status.ts` (NUEVO) — `buildTracker(status, events)`: función pura que proyecta los 8 estados técnicos sobre 5 pasos visibles (paid→preparing→reviewed→shipped→delivered), marca cada paso completed/current/pending, adjunta timestamp del timeline, y maneja off-path (cancelled/refunded) + awaiting-payment (pending).
+- `lib/orders/queries.ts` — `fetchOrderStatusEvents(orderId)` (lee timeline ASC, RLS auto-filtra).
+- `components/account/order-timeline.tsx` (NUEVO) — stepper vertical mobile-first, server component puro. Check verde = completado, ShieldCheck en "Revisado por óptica matriculada" (diferencial), badge "En curso" en el paso actual, fechas. Banner especial para cancelado/reembolsado.
+- Integrado en `app/(account)/mi-cuenta/pedidos/[id]/page.tsx` + `components/account/order-detail.tsx` (fetch events + render `<OrderTimeline/>` arriba del detalle).
+- `pnpm tsc --noEmit` limpio. Lint: solo warnings preexistentes, cero en archivos nuevos.
 
-**⬜ FALTA (próximo turno, retomar acá)**:
-1. `lib/orders/order-status.ts` — mapeo de los 8 estados técnicos → 5 visibles del tracker:
-   - `paid` → "Pago confirmado"
-   - `preparing` → "En preparación"
-   - `reviewed` → "Revisado por óptica matriculada"
-   - `shipped` → "Enviado" (+ tracking Andreani si hay)
-   - `delivered` → "Entregado"
-   - (`pending` no se muestra; `cancelled`/`refunded` = estado especial)
-   - Helper que dado el status actual + array de eventos, devuelve el stepper (paso actual + completados + fechas).
-2. **Stepper visual** en `app/(account)/mi-cuenta/pedidos/[id]/page.tsx` — el componente que ve el CLIENTE (timeline vertical con checks + fechas). Fetch de `order_status_events` del pedido.
-3. **Registrar migración en `CLOUD_APPLIED.md`** (sección migraciones).
+**Cómo lo usa la regente (iter 1)**: Supabase Dashboard → tabla `orders` → editar `status` de un pedido (`paid`→`preparing`→`reviewed`→`shipped`→`delivered`). El trigger registra el evento con timestamp; el cliente ve el stepper actualizado en su pedido. Sin admin UI todavía (evita exponer PII sin auth).
 
-**⬜ ITER 2 (después)**:
-4. Admin UI `/admin/pedidos` con AUTH (allowlist email env `ADMIN_EMAILS` — muestra PII de clientes, NO puede ir sin auth). Lista pedidos + botón cambiar estado.
-5. Email automático por cambio de estado (extender `lib/emails/send-order-emails.ts`) — disparado desde la server action del admin UI (el trigger DB no puede mandar emails).
+**⬜ ITER 2 (futuro, no urgente)**:
+1. Admin UI `/admin/pedidos` con AUTH (allowlist email env `ADMIN_EMAILS` — muestra PII de clientes, NO puede ir sin auth). Lista pedidos + botón cambiar estado.
+2. Email automático por cambio de estado (extender `lib/emails/send-order-emails.ts`) — disparado desde la server action del admin UI (el trigger DB no puede mandar emails).
+3. Mostrar `note` de cada evento si la regente la cargó (ya viene en el tipo; el stepper aún usa solo el label default).
 
-**Pendiente #1 velocidad**: `@vercel/speed-insights` NO se instaló — `npm install` falló porque **el proyecto usa pnpm** (hay `.pnpm` en node_modules). Comando correcto: `pnpm add @vercel/speed-insights` + `<SpeedInsights/>` en `app/layout.tsx` (junto al `<GoogleAnalytics/>` línea 55). AVIF ya aplicado (commit `7de4655`). **Nota**: usar pnpm para TODA instalación de dependencias en este proyecto, no npm.
+🟢 **#1 velocidad — Speed Insights INSTALADO** (2026-06-01). `pnpm add @vercel/speed-insights` (v2.0.0) + `<SpeedInsights/>` en `app/layout.tsx` (junto a `<GoogleAnalytics/>`). Ya medimos Core Web Vitals de CAMPO (LCP/CLS/INP reales de usuarios) en el dashboard de Vercel. AVIF ya aplicado antes (commit `7de4655`). **Nota**: usar pnpm para TODA instalación de dependencias en este proyecto, no npm.
+
+**Opcional no-urgente**: comprimir las 18 fotos >150 KB del bucket (script `scripts/normalize-product-photos.ts`) — no afecta al usuario (Next las procesa) pero reduce storage.
 
 ---
 

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Inter } from 'next/font/google';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
 import './globals.css';
 
@@ -53,6 +54,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {children}
         <GoogleAnalytics />
+        <SpeedInsights />
       </body>
     </html>
   );

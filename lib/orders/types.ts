@@ -8,10 +8,21 @@ export type OrderStatus =
   | 'pending'
   | 'paid'
   | 'preparing'
+  | 'reviewed'
   | 'shipped'
   | 'delivered'
   | 'cancelled'
   | 'refunded';
+
+/**
+ * Un cambio de estado registrado en el timeline (tabla
+ * `order_status_events`, poblada por trigger al cambiar `orders.status`).
+ */
+export type OrderStatusEvent = {
+  status: OrderStatus;
+  note: string | null;
+  createdAt: string; // ISO
+};
 
 export type OrderListItem = {
   id: string;

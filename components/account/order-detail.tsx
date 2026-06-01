@@ -2,12 +2,19 @@ import Link from 'next/link';
 import { ExternalLink, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OrderStatusBadge } from '@/components/account/order-status-badge';
+import { OrderTimeline } from '@/components/account/order-timeline';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
-import type { OrderDetail } from '@/lib/orders/types';
+import type { OrderDetail, OrderStatusEvent } from '@/lib/orders/types';
 
-export function OrderDetailView({ order }: { order: OrderDetail }) {
+export function OrderDetailView({
+  order,
+  events,
+}: {
+  order: OrderDetail;
+  events: OrderStatusEvent[];
+}) {
   const whatsappLink = getWhatsappLinkWithContext(
     `Hola! Te consulto por mi pedido ${order.orderNumber}.`,
   );
@@ -38,6 +45,9 @@ export function OrderDetailView({ order }: { order: OrderDetail }) {
         </div>
         <OrderStatusBadge status={order.status} />
       </header>
+
+      {/* Tracker de pedido en vivo */}
+      <OrderTimeline status={order.status} events={events} />
 
       {/* Tracking destacado si está enviado */}
       {order.trackingNumber && (

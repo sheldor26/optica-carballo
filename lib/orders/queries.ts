@@ -5,6 +5,7 @@ import type {
   OrderItem,
   OrderListItem,
   OrderStatus,
+  OrderStatusEvent,
 } from './types';
 
 /**
@@ -125,4 +126,27 @@ export async function fetchOrderById(
     deliveredAt: orderRow.delivered_at,
     items,
   };
+}
+
+/**
+ * Timeline de cambios de estado de una order (tabla `order_status_events`,
+ * poblada por trigger). RLS solo deja leer eventos de las orders del user
+ * actual. Devuelve ASC por fecha (el primero es el más antiguo).
+ */
+export async function fetchOrderStatusEvents(
+  orderId: string,
+): Promise<OrderStatusEvent[]> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from('order_status_events')
+    .select('status, note, created_at')
+    .eq('order_id', orderId)
+    .order('created_at', { ascending: true });
+
+  return (data ?? []).map((ev) => ({
+    status: ev.status as OrderStatus,
+    note: ev.note,
+    createdAt: ev.created_at,
+  }));
 }
