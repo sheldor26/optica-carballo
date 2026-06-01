@@ -31,7 +31,7 @@
 
 **Extras**: gateado `/admin/product-copy-gen` con `requireAdmin()` (antes solo noindex). `ADMIN_EMAILS` + `BUSINESS_ADMIN_EMAIL` documentados en `.env.example`.
 
-**⚠️ Verificación pendiente**: `node_modules` no está instalado en este checkout + el proxy local rompe el TLS de pnpm/corepack. `tsc` local NO se pudo correr esta sesión (npm install en curso al cerrar). **Revisar el type-check en el preview de Vercel** o cuando se reinstalen deps. El código se revisó manualmente contra los patrones existentes (copiado de queries.ts / send-order-emails.ts / order-detail.tsx).
+**✅ Verificación CONFIRMADA**: `tsc` local no se pudo correr (node_modules ausente + proxy TLS), así que se difirió al build de Vercel. Pusheado a `main` (commits `7d8440d` tracker Iter 2 + `38ac19f` footer AFIP) → **deploy `READY` en producción** (`dpl_Epk3...`, opticacarballo.com.ar). Como `next build` corre type-check + lint, un build READY = tsc limpio. Iter 2 + footer compilan sin errores en prod.
 
 **Pendiente founder para activar**:
 1. Setear `ADMIN_EMAILS` en Vercel (env) con el email con el que te logueás al sitio (hoy tu Gmail; después el profesional @opticacarballo.com.ar vía Zoho/Workspace).
