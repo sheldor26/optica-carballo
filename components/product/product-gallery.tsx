@@ -154,7 +154,11 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
                     src={url}
                     alt=""
                     fill
-                    sizes="120px"
+                    /* En desktop cada thumb se renderiza ~230px (la columna de
+                       galería es ~50vw); en mobile ~30vw. El "120px" anterior
+                       sub-pedía resolución y los thumbs salían borrosos en
+                       desktop/retina (el visor no usa este sizes → ahí nítido). */
+                    sizes="(min-width: 768px) 240px, 30vw"
                     className="object-contain"
                   />
                 </button>

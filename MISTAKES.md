@@ -24,6 +24,18 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Thumbnails de la galería borrosos en desktop: `next/image sizes="120px"` sub-pedía resolución vs su tamaño renderizado real (~230px)
+
+**Estado**: 🟡 Mitigado (sizes corregido a `(min-width: 768px) 240px, 30vw`)
+**Categoría**: Performance / next/image / UI
+**Detectado por**: founder ("la 1ª foto nítida, las otras 2 no; en el visor se ven bien, solo en la galería").
+
+**Qué pasó**: En `product-gallery.tsx` los thumbnails usaban `sizes="120px"` fijo. Pero en desktop la columna de galería es ~50vw → cada thumb se renderiza ~230px. En retina (2x) un thumb de 230px necesita ~460px de imagen; con `sizes="120px"` Next servía ~120-256px → **upscaling → borroso**. En mobile (~120px real) se veía bien, y el lightbox/visor usa otro path full-res → por eso "solo en la galería". El origen estaba sano (las fotos pesaban parecido, ~100KB c/u).
+
+**Causa raíz**: setear `sizes` de `next/image` al tamaño MÍNIMO/mobile en vez del tamaño MÁXIMO renderizado. `sizes` le dice a Next qué ancho servir; si subestima, sirve chico y el browser lo agranda (borroso). No se nota en mobile pero sí en desktop/retina.
+
+**Regla preventiva**: en cualquier `<Image fill>`, `sizes` debe reflejar el ancho renderizado MÁS GRANDE (el breakpoint desktop), no el mobile. Patrón: `sizes="(min-width: 768px) <px-desktop>, <vw-mobile>"`. Si una imagen se ve nítida en el visor pero borrosa en su miniatura, el sospechoso #1 es un `sizes` subdimensionado, NO la calidad del archivo.
+
 ## 2026-06-01 — Mandé un `git push` a background y di el commit por pusheado — el push se colgó por OOM y el commit nunca llegó a origin (lo detectó el stop hook, no yo)
 
 **Estado**: 🟡 Mitigado (detectado vía lista de deployments de Vercel: el commit del badge `ddaaba8` NO aparecía → el push de background estaba colgado; lo maté con TaskStop y pusheé en foreground con retry)

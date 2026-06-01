@@ -5,6 +5,8 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Fix thumbnails borrosos de la galería (PDP)** (2026-06-01). Founder reportó (tras subir fotos del Disarn) que en la galería de la PDP la 1ª foto se veía nítida y las otras borrosas, pero en el visor/lightbox bien. Causa: `product-gallery.tsx` pedía los thumbnails con `next/image sizes="120px"` fijo, pero en desktop se renderizan ~230px → en retina Next servía chico → upscaling borroso (mobile no se notaba; lightbox usa otro path). Fix: `sizes="(min-width: 768px) 240px, 30vw"`. Afecta a TODAS las galerías de producto (mejora general). Origen sano (las fotos pesan parecido). Founder ya subió las 5 fotos del Disarn al bucket. **Verificación**: build Vercel.
+
 🟢 **Badge "Talle Junior" sobre la foto (data-driven, PDP + grilla)** (2026-06-01). Founder pidió un badge en el extremo superior de la foto del Vulk Disarn para identificar el calce junior (talle chico). Decisiones founder: badge de texto estilado (no su logo raster), texto "Talle Junior", alcance PDP + grilla de catálogo.
 **Implementación (pipeline central, regla 15)**:
 - DB: `products.attributes.size_fit = "junior"` en el Disarn (vía MCP).
