@@ -22,6 +22,24 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Agregar un campo per-producto a las cards = tocar 4 tipos fuente paralelos + sus selects + los maps inline de las páginas. Mapear TODOS los consumers ANTES de editar evita superficies olvidadas
+
+**Categoría**: Arquitectura / Pipeline de cards / Regla 15
+**Confianza**: 🟢 Alta (aplicado al badge "Talle Junior" — cero superficies rotas ni olvidadas)
+
+**Qué funcionó**: Para el badge data-driven, antes de editar mapeé TODOS los caminos que terminan en `<ProductCard>`. Descubrí que NO hay una sola pipeline: hay **4 tipos fuente paralelos** que convergen en `<ProductCard>`:
+1. `ProductCardSource` → `toProductCardData()` (brand-page / gender / filter de marca).
+2. `FilteredCatalogCard` → 4 builders (shape, gender global, filter global, recomendador de monturas).
+3. `WishlistProductCard` (favoritos).
+4. `RecommendedProduct` (recomendador de rostro, mapea desde FilteredCatalogCard).
+Además, 3 páginas arman el objeto ProductCard **inline** (gender/shape/category-filtered/favoritos), así que el campo hay que mapearlo a mano ahí también.
+
+**La movida correcta**: (1) el campo nuevo se deriva de un único helper (`deriveSizeFit`), (2) se agrega como REQUERIDO a los tipos fuente que sí lo proveen y como OPCIONAL en `ProductCardData` (así swipe / related, que no lo setean, NO rompen), (3) `attributes` del producto NO viene en los selects de card por default → hay que agregarlo a cada select Y al Row type donde se deriva (TS lo tipa vía `.returns<RowType>()`).
+
+**Por qué funciona**: hacer el campo OPCIONAL en el tipo central (`ProductCardData.sizeFit?`) y REQUERIDO solo en los tipos fuente que lo proveen evita romper consumers que no participan (swipe, related). El audit-de-consumers-primero (grep `<ProductCard`) listó las 8 superficies antes de tocar nada — sin eso habría olvidado el recomendador de rostro (que tiene su propio `RecommendedProduct`).
+
+**Para la próxima**: otro flag per-producto en cards (ej "edición limitada", "última unidad") = helper de derivación + opcional en ProductCardData + requerido en los 4 tipos fuente + `attributes` en sus selects + map en las 3 páginas inline. Candidato a mediano plazo: un solo builder central para no repetir el threading (mismo norte que el TODO de `to-product-card-data.ts` sobre migrar scale a DB).
+
 ## 2026-06-01 — Email de dominio sin pagar: separar "mandar" de "recibir", y elegir el forwarder según DÓNDE vive el DNS (no recomendar Cloudflare si el DNS no está en Cloudflare)
 
 **Categoría**: Infra / Email / Asesoría al founder
