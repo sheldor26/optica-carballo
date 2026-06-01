@@ -204,12 +204,12 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-spell/SPELL MBLK G15-perfil.jpg': 1.15,
   'rusty-spell/SPELL MBLK G15 f-frente.jpg': 1.0,
 
-  // Rusty Spell Receta — iter 2: 1.15/1.0 → 1.3/1.15 (founder "agrandar un
-  // poquito más"). Cap 1.3 respetado.
-  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.3,
-  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.15,
-  'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.3,
-  'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.15,
+  // Rusty Spell Receta — iter 3: 1.3 se pasó de ancho (founder), bajado a
+  // 1.2/1.05. Sweet spot entre 1.15 (chico) y 1.3 (grande).
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.2,
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.05,
+  'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.2,
+  'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.05,
 };
 
 export function getImageScale(path: string | null | undefined): number {
