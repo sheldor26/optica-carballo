@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — `git push` falló con OutOfMemoryException del credential manager (GCM) — NO es auth rota, es memoria; reintentar
+
+**Estado**: 🟡 Mitigado (reintento resolvió; documentado para no malinterpretar)
+**Categoría**: Entorno / Git / Tooling
+
+**Qué pasó**: Al pushear la carga del Vulk Disarn, `git push` falló con `Excepción no controlada: OutOfMemoryException` + `could not read Username for 'https://github.com'`. Parecía credenciales rotas. Pasó en Bash y en PowerShell. Pero pushes anteriores en la MISMA sesión habían funcionado. Un reintento (~1 min después) funcionó sin cambiar nada.
+
+**Causa raíz**: el helper es Git Credential Manager (`credential.helper=manager`), un proceso .NET que se lanza en cada push. Con la máquina baja de memoria (mismo entorno que ya falló con el TLS de pnpm/corepack y con node_modules ausente), GCM no arranca y tira OOM → git cae al prompt de usuario (inexistente en modo no-interactivo) → falla. NO falta la credencial: está en Windows Credential Manager.
+
+**Regla preventiva**: si `git push` falla con `OutOfMemoryException` y/o `could not read Username` PERO antes en la sesión funcionó → NO asumir auth rota, NO reconfigurar credenciales, NO `gh auth login`. **Reintentar el push** (1-2 veces). El commit ya está local y seguro. Si persiste, pedir al founder que libere memoria. Corolario del patrón "entorno con recursos limitados" (mismo origen que el TLS de pnpm y node_modules ausente).
+
 ## 2026-06-01 — Cerré (intenté) el turno del tracker Iter 2 con la verificación `tsc` todavía corriendo en background — "apenas termine te confirmo" es cierre prematuro
 
 **Estado**: 🟡 Mitigado (corregido: docs cerrados + verificación marcada explícitamente como DIFERIDA, no "pendiente vaga")
