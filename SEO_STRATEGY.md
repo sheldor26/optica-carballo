@@ -331,6 +331,63 @@ Cuanto más alto, más prioridad. Esto da:
 
 Cada cluster tiene un pillar (3.000-5.000 palabras) y 5-8 satélites (1.200-2.000 palabras).
 
+## 🎯 MAPA DE KEYWORDS — Defectos refractivos (research real AR, Ubersuggest 2026-06-01)
+
+> Volúmenes y dificultad REALES (no estimaciones) provistos por el founder.
+> Fuente de verdad para `content-writer-medical` al escribir las 4 pillars +
+> satélites. Vol = búsquedas/mes AR. Dif = SEO difficulty (0-100).
+>
+> **Hallazgo clave**: astigmatismo es el de mayor volumen (22.200), no miopía.
+> Dos clusters transversales de alto volumen + baja dificultad que NO estaban
+> en el plan original: "cómo se ve" y "diferencias/comparación". Priorizarlos.
+
+### Pillar ASTIGMATISMO — slug `/guias/astigmatismo`
+- **Primaria**: `astigmatismo` (22.200/29), `astigmatismo que es` (14.800/21), `que es el astigmatismo` (2.900/21)
+- **Secundarias a incluir**: `astigmatismo definicion` (590/39), `astigmatismo que significa` (260/23), `astigmatismo causas` (110/26), `astigmatismo es hereditario` (110/10), `astigmatismo ocular` (110/34)
+- **Satélites**:
+  - `/guias/astigmatismo-como-se-ve` → `astigmatismo como se ve` (1.900/13) + `como se ve con astigmatismo` (1.900/18) + `como ve una persona con astigmatismo` (1.300/15) + `astigmatismo como se ve de noche` (20/7). 🥇 baja dif, alto volumen.
+  - `/guias/como-se-corrige-el-astigmatismo` → `como se corrige el astigmatismo` (480/22) + `astigmatismo que es y como se corrige` (480/24) + `se opera el astigmatismo` (590/10, ⚠️ YMYL derivar) + `astigmatismo se corrige con lentes` (50/8)
+  - `/guias/test-de-astigmatismo` → `test de astigmatismo` (110/10) + `astigmatismo test` (110/11) + `como saber si tengo astigmatismo` (110/10). 🥇
+  - `/guias/tipos-de-astigmatismo` → `tipos de astigmatismo` (90/12) + `astigmatismo regular e irregular` (30/6) + `grados de astigmatismo` (110/13) + `astigmatismo miopico` (480/15). (Técnico — regular vs irregular, ver brief.)
+
+### Pillar HIPERMETROPÍA — slug `/guias/hipermetropia`
+- **Primaria**: `hipermetropia` (14.800/37), `hipermetropia que es` (5.400/15), `que es la hipermetropia` (1.300/16)
+- **Secundarias**: `hipermetropia significado` (260/28), `hipermetropia como se ve` (170/16), `hipermetropia como ven` (50/13), `tratamiento para hipermetropia` (40/16)
+- **Satélites**:
+  - `/guias/hipermetropia-y-presbicia-no-son-lo-mismo` → `hipermetropia y presbicia` (210/17) + `hipermetropia presbicia` (210/23) + `hipermetropia y presbicia es lo mismo` (30/7). (Punto #3 del brief técnico.)
+  - `/guias/hipermetropia-en-ninos` → YMYL (ambliopía/ojo vago); vol bajo pero importante. Firma regente.
+  - `/guias/hipermetropia-latente-y-manifiesta` → técnico/autoridad (vol bajo, demuestra E-E-A-T).
+
+### Pillar MIOPÍA — slug `/guias/miopia`
+- **Primaria**: `miopia` (12.100/37-45), `miopia que es` (8.100/28), `que es miopia` (1.900/18)
+- **Secundarias**: `miopia como se ve` (320/22), `miopia significado` (110/26), `miopia causas` (90/23), `la miopia es hereditaria` (140/15), `miopia ojo` (260/20)
+- **Satélites**:
+  - `/guias/miopia-magna-alta` → `miopia magna` (320/16) + `miopia alta` (70/20). 🔴 YMYL: riesgo retiniano, controles, banderas rojas (desprendimiento). Firma regente.
+  - `/guias/grados-de-miopia` → `grados de miopia` (140/12) + `tipos de miopia` (170/14) + `miopia leve` (70/20)
+  - `/guias/se-puede-operar-la-miopia` → `miopia se puede operar`/`la miopia se opera` (390/17-21). ⚠️ YMYL fuerte: decisión del oftalmólogo, honestidad sobre que no frena la elongación.
+  - `/guias/miopia-en-ninos-control` → control de progresión (decisión médica), YMYL. Firma regente.
+
+### Pillar PRESBICIA — slug `/guias/presbicia`
+- **Primaria**: `presbicia que es` (4.400/15), `que es la presbicia` (1.600/23), `que presbicia` (1.600/25), `presbicia definicion` (390/30)
+- **⚠️ Validar aparte**: `vista cansada` (término coloquial dominante AR según brief técnico — NO está en este research, hacer research específico; es probablemente alto volumen y clave para SEO).
+- **Satélites**:
+  - `/guias/presbicia-vs-otros` o cruces: `presbicia y miopia` (110/12) + `astigmatismo y presbicia` (390/9, 🥇 baja dif) + `hipermetropia y presbicia` (210/17)
+  - multifocales vs bifocales → CRUCE con cluster A (diseño de lente), no duplicar.
+
+### 🥇 SATÉLITES TRANSVERSALES (cross-condición) — alto volumen, baja dificultad, PRIORIDAD
+> No "pertenecen" a una sola pillar — son comparativos. Enlazar a las 3-4 pillars. Capturan volumen enorme a dif 10-20.
+- `/guias/diferencia-miopia-hipermetropia-astigmatismo` → `astigmatismo y miopia` (5.400/12) + `miopia o astigmatismo` (5.400/20) + `astigmatismo miopia diferencia` (880/10) + `astigmatismo y miopia diferencia` (720/17) + `que es el astigmatismo y la miopia` (480/12) + `diferencia entre astigmatismo y miopia` (260/11) + `astigmatismo hipermetropia` (1.000/11) + `hipermetropia y astigmatismo` (880/11) + `miopia y hipermetropia` (170/11). **El artículo de mayor ROI del set.**
+- `/guias/astigmatismo-y-miopia-juntos` → `astigmatismo y miopia juntos` (170/12) + `astigmatismo miopico` (480/15) + `como ve una persona con miopia y astigmatismo` (480/24) + `miopia y astigmatismo como se ve` (320/17). (Combo clínico muy común.)
+
+### Secuencia de escritura sugerida (por ROI: volumen × baja dif × intención)
+1. **Pillar Astigmatismo** (el más grande, 22.200) + satélite `astigmatismo-como-se-ve` (5.000 comb, dif 13).
+2. **Satélite transversal `diferencia-miopia-hipermetropia-astigmatismo`** (volumen enorme, dif 10-12) — se puede escribir apenas existan las 3 pillars para enlazar, o como puente temprano.
+3. **Pillar Miopía** + **Pillar Hipermetropía** (habilitan el transversal y los "vs presbicia").
+4. **Pillar Presbicia** (+ validar "vista cansada" antes).
+5. Resto de satélites por cluster.
+
+---
+
 ## Cluster 1: Astigmatismo
 
 **Pillar**: `/guias/astigmatismo-guia-completa`
