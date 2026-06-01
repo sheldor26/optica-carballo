@@ -62,6 +62,10 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 - [ ] **Confirmar `customerId` MiCorreo** en tu perfil del portal.
 - [ ] **Confirmar CP de origen** de los envíos (Virasoro, Corrientes — probablemente 3342, verificar).
 
+## 🟡 Pendiente pre-launch — prender cuotas (acción del founder + 1 línea de código)
+
+- [ ] **Prender la visibilidad de cuotas** cuando el checkout MP esté operativo Y la promo de ≥3 cuotas sin interés esté ACTIVA en el panel de Mercado Pago. La feature está construida pero OCULTA detrás de un flag. Para prenderla: en [lib/site/installments.ts](lib/site/installments.ts) cambiar `INSTALLMENTS_ENABLED = false` → `true` (aparece en ficha + grid). Cambiar el nº de cuotas = `INTEREST_FREE_INSTALLMENTS`. ⚠️ No prender antes de tener la promo activa en MP — sería publicidad engañosa (Ley 24.240 art. 8, ver MISTAKES 2026-06-01).
+
 ## 🔴 Pendiente bloqueante para cart en producción (acción del founder)
 
 - [ ] **Generar `CART_COOKIE_SECRET` para Vercel** (production env):

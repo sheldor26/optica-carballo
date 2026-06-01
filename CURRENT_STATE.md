@@ -5,7 +5,16 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-🟡 **#2 Cuotas en grid — DESBLOQUEADO, esperando go/no-go founder** (2026-06-01). Founder preguntó si las cuotas se pueden extraer de MP. Consulté `argentine-ecom`:
+🟢 **#2 Cuotas (ficha + grid) — CONSTRUIDO, OCULTO detrás de flag** (2026-06-01). Founder pidió: construir según recomendación PERO mantener oculto hasta terminar de setear el procesador de pagos + envíos.
+
+**Construido**:
+- `lib/site/installments.ts` (NUEVO) — single source: `INTEREST_FREE_INSTALLMENTS = 3`, `INSTALLMENTS_ENABLED = false` (interruptor maestro), `installmentAmountCents(priceCents)`.
+- `components/product/product-price-block.tsx` (EDIT) — reemplazado el hardcode "3 cuotas sin interés" por el config; TODA la financiación (cuotas + "Pagás con tarjeta vía MP. Hasta 12 cuotas") ahora va detrás de `INSTALLMENTS_ENABLED`. Con flag OFF: ficha muestra solo precio + stock + envío.
+- `components/product/product-card.tsx` (EDIT) — línea "{N} cuotas sin interés de $X" debajo del precio en el grid, también detrás del flag.
+
+**🔑 CÓMO PRENDERLO (founder/próximo turno)**: en `lib/site/installments.ts` poner `INSTALLMENTS_ENABLED = true` → aparece en ficha + grid de una. Hacerlo SOLO cuando: (1) checkout MP operativo, (2) promo de ≥3 cuotas sin interés ACTIVA en panel MP (si no, publicidad engañosa — ver MISTAKES). Cambiar el nº de cuotas = tocar `INTEREST_FREE_INSTALLMENTS`.
+
+**Verificación**: `tsc` limpio + lint sin issues nuevos (warnings de product-card son preexistentes). Con flag OFF (estado actual), el sitio no muestra ninguna mención de cuotas. Founder preguntó si las cuotas se pueden extraer de MP. Consulté `argentine-ecom`:
 - **Sí existe API** (`GET /v1/payment_methods/installments`, param `amount` + opcional `payment_method_id`/`bin`, credencial public_key o access_token, usar PRODUCCIÓN). Devuelve `payer_costs[]` con `installment_rate: 0` = sin interés. PERO no separa limpio "promo del vendedor" vs "interés del banco" (vienen mezcladas) y las cuotas sin interés NO vienen por default: el vendedor las activa y paga (~5-9% extra/venta) en panel MP → Costos → Cuotas sin interés.
 - **Hallazgo crítico**: el sitio mostraba "3 cuotas sin interés" HARDCODEADO en `product-price-block.tsx` — sería publicidad engañosa (Ley 24.240 art. 8) SI la promo no estuviera activa al vender.
 - **Estado real (founder aclaró)**: el gate/checkout MP **todavía NO está configurado**, pero el founder se compromete a tener **al menos 3 cuotas sin interés** cuando lo configure (antes del launch de pagos). O sea: pre-launch para pagos → nadie checkout-ea hoy → sin consumidor real expuesto. El "3" es el piso firme acordado.

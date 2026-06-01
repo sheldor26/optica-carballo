@@ -3,6 +3,11 @@
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { formatPriceCents } from '@/lib/format/currency';
 import { ShippingEstimator } from '@/components/product/shipping-estimator';
+import {
+  INSTALLMENTS_ENABLED,
+  INTEREST_FREE_INSTALLMENTS,
+  installmentAmountCents,
+} from '@/lib/site/installments';
 
 type PriceVariant = {
   id: string;
@@ -51,19 +56,21 @@ export function ProductPriceBlock({
       <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
         {priceText}
       </p>
-      {selected && (
-        <p className="text-foreground mt-2 text-xs font-medium sm:text-sm">
-          3 cuotas sin interés de{' '}
-          <span className="font-semibold">
-            {formatPriceCents(Math.round(selected.priceCents / 3))}
-          </span>
-        </p>
+      {INSTALLMENTS_ENABLED && selected && (
+        <>
+          <p className="text-foreground mt-2 text-xs font-medium sm:text-sm">
+            {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
+            <span className="font-semibold">
+              {formatPriceCents(installmentAmountCents(selected.priceCents))}
+            </span>
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            Pagás con tarjeta de crédito vía{' '}
+            <span className="text-foreground font-medium">Mercado Pago</span>.
+            Hasta 12 cuotas según el banco.
+          </p>
+        </>
       )}
-      <p className="text-muted-foreground mt-1 text-xs">
-        Pagás con tarjeta de crédito vía{' '}
-        <span className="text-foreground font-medium">Mercado Pago</span>.
-        Hasta 12 cuotas según el banco.
-      </p>
       {inStock ? (
         <>
           <div className="border-border/40 mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t pt-3 text-xs">

@@ -5,6 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
+import {
+  INSTALLMENTS_ENABLED,
+  INTEREST_FREE_INSTALLMENTS,
+  installmentAmountCents,
+} from '@/lib/site/installments';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { QuickView } from '@/components/product/quick-view';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
@@ -228,9 +233,17 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             {product.name}
           </h3>
           {displayPriceCents !== null ? (
-            <p className="text-muted-foreground text-sm tabular-nums">
-              {formatPriceCents(displayPriceCents)}
-            </p>
+            <>
+              <p className="text-muted-foreground text-sm tabular-nums">
+                {formatPriceCents(displayPriceCents)}
+              </p>
+              {INSTALLMENTS_ENABLED && (
+                <p className="text-foreground/80 text-xs tabular-nums">
+                  {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
+                  {formatPriceCents(installmentAmountCents(displayPriceCents))}
+                </p>
+              )}
+            </>
           ) : (
             <p className="text-muted-foreground text-sm">Sin stock</p>
           )}
