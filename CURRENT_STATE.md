@@ -44,7 +44,36 @@
 
 ---
 
-🟡 **#6 Tracker de pedido (Opción Z) — audit hecho, plan listo, esperando OK de scope** (2026-06-01). **La infra ya existe casi toda** (audit bajó la estimación de 1-2 días a ~1 día):
+🟧 **#6 Tracker de pedido (Opción Z) — EN CONSTRUCCIÓN, checkpoint pre-compact** (2026-06-01). Founder aprobó "dale con tus recomendaciones". Scope decidido: iter 1 sin admin UI (la regente cambia status desde Supabase Dashboard, un trigger registra el timeline; admin UI + emails = iter 2 con auth).
+
+**✅ HECHO este turno**:
+- Migración `20260601000000_order_status_tracking.sql` APLICADA en Cloud (verificado MCP: tabla + trigger OK):
+  - `orders.status` CHECK ahora incluye `'reviewed'` (revisado por óptica).
+  - Tabla `order_status_events` (timeline) + index + RLS (cliente lee eventos de sus pedidos).
+  - Trigger `on_order_status_change` (BEFORE UPDATE OF status): auto-registra evento + setea paid_at/shipped_at/delivered_at.
+  - Backfill de orders existentes (0 — no hay pedidos reales aún).
+
+**⬜ FALTA (próximo turno, retomar acá)**:
+1. `lib/orders/order-status.ts` — mapeo de los 8 estados técnicos → 5 visibles del tracker:
+   - `paid` → "Pago confirmado"
+   - `preparing` → "En preparación"
+   - `reviewed` → "Revisado por óptica matriculada"
+   - `shipped` → "Enviado" (+ tracking Andreani si hay)
+   - `delivered` → "Entregado"
+   - (`pending` no se muestra; `cancelled`/`refunded` = estado especial)
+   - Helper que dado el status actual + array de eventos, devuelve el stepper (paso actual + completados + fechas).
+2. **Stepper visual** en `app/(account)/mi-cuenta/pedidos/[id]/page.tsx` — el componente que ve el CLIENTE (timeline vertical con checks + fechas). Fetch de `order_status_events` del pedido.
+3. **Registrar migración en `CLOUD_APPLIED.md`** (sección migraciones).
+
+**⬜ ITER 2 (después)**:
+4. Admin UI `/admin/pedidos` con AUTH (allowlist email env `ADMIN_EMAILS` — muestra PII de clientes, NO puede ir sin auth). Lista pedidos + botón cambiar estado.
+5. Email automático por cambio de estado (extender `lib/emails/send-order-emails.ts`) — disparado desde la server action del admin UI (el trigger DB no puede mandar emails).
+
+**Pendiente #1 velocidad**: `@vercel/speed-insights` NO se instaló (sin red en el entorno). Retomar: `npm install @vercel/speed-insights` + `<SpeedInsights/>` en `app/layout.tsx`. AVIF ya aplicado (commit `7de4655`).
+
+---
+
+🟡 **#6 audit previo (infra existente)** (2026-06-01). **La infra ya existe casi toda** (audit bajó la estimación de 1-2 días a ~1 día):
 - ✅ Tabla `orders` con columna `status` (CHECK: pending/paid/preparing/shipped/delivered/cancelled/refunded) + index.
 - ✅ Resend configurado (`lib/emails/` con confirmación cliente + notif admin).
 - ✅ `app/(account)/mi-cuenta/pedidos/[id]/page.tsx` — página de detalle de pedido YA existe.
