@@ -12,6 +12,11 @@
 - **⚠️ Prerequisito antes de escribir**: agregar los 4 valores al `type ArticleCluster` (`lib/content/article-types.ts`) + `CLUSTER_LABELS` (`lib/content/article-clusters.ts`) — si no, breadcrumb/internal-linking/`BreadcrumbList` schema salen rotos. Audit del archivo real antes de tocar (regla 14).
 - **⬜ Próximo paso**: founder confirma secuencia → (1) agregar clusters al type, (2) `optical-expert` valida precisión técnica del primer artículo, (3) `content-writer-medical` escribe pillar D. Validación de volúmenes (salvo polarizados + "con aumento") pendiente de keyword research formal AR.
 
+**ACTUALIZACIÓN (founder decidió arrancar por defectos refractivos, NO por sol)**: el founder eligió empezar por lo básico/fundacional (miopía, hipermetropía, astigmatismo, presbicia — clusters 1-4 existentes) en vez de cluster D. Razón: contenido de salud base donde su credencial técnica pesa. Workflow acordado: optical-expert valida → founder ratifica lo importante → regente firma lo clínico.
+- **✅ HECHO**: `optical-expert` produjo brief técnico de los 4 → guardado en `content/briefs/defectos-refractivos.md` (mecanismo óptico, signos, latente/manifiesta, regular/irregular, mitos, terminología AR, banderas rojas YMYL + 12 puntos para ratificar, 7 marcados 🩺 para firma regente).
+- **⬜ EN PARALELO**: (a) **founder**: estudio de volúmenes de keywords de los 4 (lo hace él, pasa los números). (b) **founder ratifica** los 12 puntos del brief; (c) **regente firma** los 7 clínicos (🩺). Recién con (a)+(b)+(c) → `content-writer-medical` escribe la primera pillar.
+- **Datos a confirmar con regente antes de fijar en texto**: umbral "miopía alta" (−6.00 D ref, no rígido) e inicio presbicia (40-45 consenso).
+
 🟢 **#2 Cuotas (ficha + grid) — CONSTRUIDO, OCULTO detrás de flag** (2026-06-01). Founder pidió: construir según recomendación PERO mantener oculto hasta terminar de setear el procesador de pagos + envíos.
 
 **Construido**:

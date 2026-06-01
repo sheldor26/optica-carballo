@@ -58,6 +58,16 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 - **Casos donde requirió corrección**: -
 - **Notas**: Coordinación con optical-expert para validar precisión técnica. Validar tono argentino.
 
+## optical-expert
+
+- **Versión**: 1.0
+- **Estado**: 🟢 Invocado con buen resultado
+- **Última revisión**: 2026-06-01
+- **Invocaciones estimadas (último período)**: 1+
+- **Casos de éxito**: 2026-06-01 — brief técnico de los 4 defectos refractivos (miopía/hipermetropía/astigmatismo/presbicia) para validar antes de redactar. Output excelente: mecanismo óptico correcto, signos de graduación, latente vs manifiesta, regular vs irregular, mitos a desmentir, terminología AR ("vista cansada" para SEO), banderas rojas YMYL, y la sección pedida "lo más importante para ratificar" (12 puntos, 7 marcados 🩺 para firma de regente). Honestidad sobre limitaciones (multifocales, láser). Flag honesto: marcó "−6.00 / 40-45 años" como rangos de consenso a confirmar, no cifras rígidas.
+- **Casos donde requirió corrección**: -
+- **Notas**: Encaja perfecto en el workflow YMYL: optical-expert valida → founder ratifica → regente firma lo clínico. Brief guardado en `content/briefs/defectos-refractivos.md` como fuente de verdad para content-writer-medical.
+
 ## seo-strategist
 
 - **Versión**: 1.0
