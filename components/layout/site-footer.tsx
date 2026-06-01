@@ -108,9 +108,32 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="border-foreground/10 text-muted-foreground mt-10 border-t pt-6 text-xs">
-          © {year} {business.siteName}. Todos los derechos reservados.
-        </p>
+        <div className="border-foreground/10 mt-10 flex flex-col items-start gap-6 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-muted-foreground text-xs">
+            © {year} {business.siteName}. Todos los derechos reservados.
+          </p>
+
+          {/*
+            Data Fiscal — ARCA (ex AFIP). Obligatorio para e-commerce AR.
+            Badge externo: <img> plano (no next/image) + URLs en https para
+            evitar mixed-content. El QR es el del CUIT del negocio.
+          */}
+          <a
+            href="https://qr.afip.gob.ar/?qr=HOYo3ILqz6tYowCRWo8AVw,,"
+            target="_F960AFIPInfo"
+            rel="noopener noreferrer"
+            className="shrink-0"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://www.afip.gob.ar/images/f960/DATAWEB.jpg"
+              alt="Data Fiscal — ARCA (AFIP)"
+              width={60}
+              height={90}
+              className="h-auto w-[60px]"
+            />
+          </a>
+        </div>
       </div>
     </footer>
   );
