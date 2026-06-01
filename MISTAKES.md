@@ -24,6 +24,51 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — El deep-link `?v=` que agregué pisaba la selección manual de variante en la PDP — useEffect sin guard re-aplicaba el URL en cada re-render (bug shipped, founder lo reportó)
+
+**Estado**: 🟡 Mitigado — agregado `appliedRef` guard que aplica el deep-link UNA SOLA VEZ al montar. Después el usuario tiene control total.
+**Categoría**: React / useEffect / Feature shipped con bug / Regression introducida por mí
+**Patrón**: effect-reapplies-and-fights-user-input
+
+**Qué pasó**: En el commit `b86b1cb` agregué `VariantUrlSync` para el deep-link `?v=<sku>`. El useEffect leía el searchParam y llamaba `selectVariant(id)` con deps `[searchParams, skuToId, selectVariant]`. Bug: cuando el usuario hacía click en otra variante en la PDP → `selectVariant` cambiaba el estado → re-render → el useEffect se re-ejecutaba (las deps no cambiaban pero el effect corría igual en re-renders donde React lo reevaluaba) → volvía a forzar la variante del `?v=` original → la selección del usuario "rebotaba". Imposible cambiar de variante si entraste por un deep-link.
+
+**Causa raíz**:
+1. **useEffect de "inicialización" sin guard de una-sola-vez**. El deep-link es una acción de MOUNT (leer estado inicial del URL), no una sincronización continua. Pero lo escribí como si fuera reactivo a searchParams, sin marcar que ya se aplicó.
+2. **No probé el flujo completo**: entrar por deep-link → intentar cambiar variante. Probé que el deep-link seleccionaba la variante correcta (✓) pero NO que después se pudiera cambiar. Mismo pattern que el mistake "shipped-but-untested-against-real-data" — probé el happy path, no la interacción siguiente.
+3. **Conflicto effect-vs-state**: cuando un useEffect escribe a un estado que el usuario también controla, necesita un guard para no pelear con el input del usuario. Lo omití.
+
+**Costos**:
+- Bug shipped a producción (founder lo encontró usando la PDP real)
+- Funcionalidad core rota (cambiar variante en PDP) por una feature secundaria (deep-link)
+- El deep-link que agregué para MEJORAR la UX terminó rompiendo una interacción básica
+
+**Regla preventiva**:
+1. **useEffect que lee estado inicial de URL/props y escribe a state controlado por el usuario → SIEMPRE con guard `useRef(false)` de una-sola-aplicación**. El patrón "sincronizar una vez al montar" requiere el ref, no deps.
+2. **Al agregar una feature que escribe a un estado compartido con el usuario** (selección, formulario, toggle), probar la secuencia: feature actúa → usuario actúa → ¿el usuario gana? Si el effect re-pisa al usuario, hay bug.
+3. **Test de interacción, no solo de estado inicial**: "el deep-link selecciona la variante" NO basta; "después puedo cambiarla" es el test completo.
+
+**Verificación contra recurrencia**: cualquier useEffect futuro que llame un setter de estado user-facing → revisar si necesita guard de una-sola-vez o cleanup. Si el effect "corrige" algo que el usuario puede cambiar, casi siempre necesita guard.
+
+## 2026-05-31 — quick-view + search-dialog renderaban foto de producto SIN scale — 2 superficies que se escaparon del pipeline central de scale (gap detectado por audit del founder)
+
+**Estado**: 🟡 Mitigado — ambas cerradas con `getImageScale()`. Pero revela que la regla 15 ("scale en TODAS las categorías") estaba garantizada SOLO para las superficies que pasan por ProductCard/buildCardVariants, NO para superficies que renderean foto con su propio `<Image>`.
+**Categoría**: Pipeline coverage / Regla 15 incompleta / Hidden surface
+**Patrón**: pipeline-covers-main-path-not-all-render-sites
+
+**Qué pasó**: Founder pidió "asegurarte de que el scale aplique en todas las categorías para todos los modelos". Al auditar las 14 superficies que renderean foto de producto, encontré 2 que NO aplicaban scale: `quick-view` (modal con foto grande del producto) y `search-dialog` (thumbnail en resultados de búsqueda). Ambas usan su propio `<Image>` con `getProductImageUrl()` pero nunca llamaban `getImageScale()`.
+
+**Causa raíz**:
+1. **La regla 15 garantiza scale vía el TIPO `ProductCardVariant`** (TypeScript fuerza primaryImageScale). Pero eso solo cubre superficies que consumen ese tipo (ProductCard y sus derivados). quick-view y search-dialog tienen sus PROPIOS shapes de datos (QuickViewData, SearchResult) que NO incluyen scale → no hay enforcement.
+2. **"Single point of normalization" se aplicó al query layer de cards**, pero quick-view y search hacen sus propios fetches con shapes distintos.
+3. **El audit proactivo lo pedí yo mismo en un LEARNING previo** ("si descubro superficie de UI nueva que renderiza fotos, auditar que use el scale") pero no lo había EJECUTADO sistemáticamente — esperé a que el founder lo pidiera.
+
+**Regla preventiva**:
+1. **`getImageScale(path)` es función pura** — cualquier superficie que renderee foto de producto puede llamarla directamente sin necesitar el tipo ProductCardVariant. Para superficies con shape propio (quick-view, search, futuras), aplicar `style={{ transform: scale(getImageScale(path)) }}` directo.
+2. **Audit de cobertura de scale como check recurrente**: `grep -rln getProductImageUrl components app` → para cada resultado, verificar si aplica scale o si es contexto donde no corresponde (lightbox/galería grande). Correr este audit cada vez que se agrega una superficie nueva que muestra producto.
+3. **Distinguir 2 contextos**: (a) thumbnail/card representativo → SÍ scale; (b) foto protagonista full-size (galería PDP, lightbox) → NO scale (se ve completa). variant-list thumbnails 44px → marginal, opcional.
+
+**Verificación contra recurrencia**: documentado el set completo de superficies en CURRENT_STATE. Próxima superficie nueva que renderee producto → correr el grep de cobertura antes de cerrar.
+
 ## 2026-05-31 — Revisado — sin novedad: Sotion cargado reusando pattern 2-en-1 del Yau sin error
 
 **Estado**: N/A

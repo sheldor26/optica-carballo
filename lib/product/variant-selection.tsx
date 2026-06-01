@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -65,12 +66,25 @@ export function VariantUrlSync({
 }) {
   const searchParams = useSearchParams();
   const { selectVariant } = useVariantSelection();
+  // Guard: aplicar el deep-link `?v=` SOLO UNA VEZ (al montar). Sin esto, el
+  // useEffect re-corría en cada re-render y pisaba la selección manual del
+  // usuario → al cambiar de variante, "rebotaba" a la del URL. Bug reportado
+  // founder 2026-05-31. Una vez aplicado el deep-link inicial, el usuario
+  // tiene control total.
+  const appliedRef = useRef(false);
 
   useEffect(() => {
+    if (appliedRef.current) return;
     const sku = searchParams.get('v');
-    if (!sku) return;
+    if (!sku) {
+      // Sin ?v=: marcamos como "aplicado" igual, para no interferir nunca
+      // con la selección del usuario.
+      appliedRef.current = true;
+      return;
+    }
     const id = skuToId[sku];
     if (id) selectVariant(id);
+    appliedRef.current = true;
   }, [searchParams, skuToId, selectVariant]);
 
   return null;

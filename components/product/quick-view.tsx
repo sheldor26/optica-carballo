@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { getProductQuickViewAction } from '@/lib/catalog/quick-view';
 import { track, Events } from '@/lib/analytics/track';
@@ -130,6 +131,7 @@ function QuickViewBody({
             alt={data.name}
             fill
             sizes="(max-width: 768px) 100vw, 400px"
+            style={{ transform: `scale(${getImageScale(imagePath)})` }}
             className="object-contain p-6"
           />
         ) : (

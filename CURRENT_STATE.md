@@ -4,6 +4,19 @@
 > "🏁 CIERRE CONSOLIDADO" de abajo (regla anti doc-rot: una sola fuente de verdad
 > del día). Detalle por-producto en `CLOUD_APPLIED.md`.
 
+🟢 **Scale Sotion iter 2 (1.4→1.6) + audit cobertura scale en TODAS las superficies** (2026-05-31). Founder: "agrandar Sotion + asegurarte que el scale aplique en todas las categorías para todos los modelos".
+
+**Auditoría de cobertura de scale** (14 superficies que renderean foto de producto):
+- ✅ CON scale (grids/cards — las "categorías"): product-card (todos los catálogos sol/receta/género/forma/marca/favoritos), related-products, recently-viewed, compare (×3), swipe-deck, mi-cuenta/matches.
+- 🔧 GAPS CERRADOS este turno: `quick-view` (modal foto grande) + `search-dialog` (thumbnail resultado) — ahora aplican `getImageScale()`.
+- ⚪ SIN scale a propósito: `product-gallery` + `image-lightbox` (foto protagonista de la PDP, se ve completa, scale la recortaría) + `variant-list` (thumbnails 44px, scale imperceptible).
+
+**Resultado**: TODA superficie que representa el producto como thumbnail/card ahora respeta el scale central. El único lugar sin scale es la galería grande de la PDP (decisión correcta — ahí querés la foto completa).
+
+**Sotion scale**: 1.4/1.15 → 1.6/1.3 (founder "agrandar", fotos del Sotion con anteojo chico en frame). Si recorta, bajar a 1.5/1.25.
+
+**Verificación**: tsc pass.
+
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
 
 **Estado catálogo (verificado MCP al cierre, ~80 commits en el día)**:

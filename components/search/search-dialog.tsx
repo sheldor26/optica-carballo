@@ -12,6 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { searchAction } from '@/lib/catalog/search';
 import type { SearchResults } from '@/lib/catalog/search';
 import { track, Events } from '@/lib/analytics/track';
@@ -392,6 +393,7 @@ function ProductRow({
             alt=""
             width={48}
             height={48}
+            style={{ transform: `scale(${getImageScale(product.primaryImagePath)})` }}
             className="size-full object-contain p-1"
           />
         ) : (
