@@ -1,89 +1,67 @@
 # Óptica Carballo — Current State
 
-🟢 **Rusty Spell Receta cargado (2 variantes) + UPDATE peso 12.6g Spell sol** (2026-05-31).
-
-**Cambios** (commit pending):
-- Cloud Apply via MCP: producto `rusty-spell-receta` + 2 variantes + 5 imágenes + UPDATE peso Spell sol (12.6g, estaba null).
-- `supabase/seeds/35_rusty_spell_receta.sql` doc.
-- `lib/catalog/image-scale-overrides.ts`: 4 entries 1.15/1.0.
-- `CLOUD_APPLIED.md` actualizado.
-
-**Datos**: MBLU 670 OPTICAL (SKU 125757, azul/gris, stock 3, default), MBLK OPTICAL (SKU 125755, negro, stock 0). Precio único $83.078. Cuadrado masculino. 12.6g ultraliviano. Apto monofocal/bifocal/progresivo.
-
-**Catálogo ahora**: 15 productos (12 sol + 3 receta: Stray, Xold Receta, Spell Receta).
-
-**Pendiente founder**: subir 5 fotos a `products/rusty-spell-receta/` (nombres img 2: SPELL_MBLU_670_R_BLUE_*, SPELL_MBLK_p/f, medidas).
-
----
-
-🟢 **Precio por variante en hover + deep-link `?v=<sku>` a la PDP + scale Spell SBLK** (2026-05-31).
-
-**Cambios** (commit pending):
-- `lib/catalog/queries.ts`: `sku` agregado a 9 selects de card + a row types `ProductCardSource`/`FilteredCatalogRow`/`WishlistProductRow`.
-- `components/product/product-card.tsx`: `ProductCardVariant` ahora tiene `sku` + `priceCents`. Precio mostrado = el de la variante cuya foto se ve (default o hovereada). href con `?v=<sku>` de la variante seleccionada.
-- `lib/catalog/to-product-card-data.ts`: `buildCardVariants` + `toProductCardData` populan sku + priceCents.
-- `lib/product/variant-selection.tsx`: nuevo `VariantUrlSync` (client) que lee `?v=<sku>` y preselecciona la variante. Client-side para preservar ISR.
-- `components/catalog/product-page.tsx`: `<Suspense><VariantUrlSync skuToId={...}/></Suspense>` dentro del provider. Aplica a PDP sol + receta (componente compartido).
-- `lib/catalog/image-scale-overrides.ts`: Spell SBLK lateral 1.15→1.3.
-
-**Decisión de diseño**: el precio del card ahora corresponde SIEMPRE a la variante cuya foto se muestra (coherencia foto↔precio). Antes mostraba minPriceCents aunque la foto fuera de otra variante con precio distinto — eso era el bug. Solo cambia visiblemente en productos multi-precio (Spell, Xold, Arvin, Etiquet).
-
-**Verificación**: `npx tsc --noEmit` pass.
-
-**Próximo paso founder**: verificar post-deploy: (a) hover sobre variante de Spell/Xold cambia el precio, (b) click en variante 3 del grid → PDP abre con variante 3 seleccionada.
-
----
+> Las entries individuales de cada carga/feature del 2026-05-31 fueron consolidadas
+> en la sección "🏁 CIERRE CONSOLIDADO" de abajo (regla anti doc-rot: una sola fuente
+> de verdad del día, no apilar entries). Para detalle por-producto ver `CLOUD_APPLIED.md`.
 
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
 
-**Estado catálogo (verificado MCP al cierre)**:
-- `anteojos-de-sol`: **12 productos**, 221 unidades de stock total
-- `anteojos-de-receta`: **2 productos**, 33 unidades
-- **14 productos activos totales** (al inicio del día había 6)
+**Estado catálogo (verificado MCP al cierre, 70 commits en el día)**:
+- `anteojos-de-sol`: **12 productos**, 221 unidades
+- `anteojos-de-receta`: **3 productos**, 36 unidades
+- **15 productos activos totales** (al inicio del día había 6)
 
-**Productos cargados/modificados HOY (8 nuevos + 1 update)**:
+**Productos cargados/modificados HOY (11 nuevos + 2 updates de peso)**:
 | Producto | Variantes | Categoría | Notas |
 |---|---|---|---|
 | Rusty Dearly | 3 | sol | cuadrado femenino, fix descripción bisagras honestas |
 | Rusty Vrast | 3 | sol | aviador metal, scale iter 2 |
 | Rusty Etiquet | 4 | sol | redondo femenino, 3 pol + 1 degradé |
 | Rusty Tulle | 4 | sol | aviador metal + terminales acetato |
-| Rusty Xold | 5 | sol | redondo unisex, mayor stock (43), + UPDATE peso 21.5g |
+| Rusty Xold | 5 | sol | redondo unisex + UPDATE peso 21.5g |
 | Rusty Xold Receta | 4 | **receta** | 1er Rusty receta, sin mención Bluecut |
-| Vulk Booping | 4 | sol | redondo, 18.9g ultraliviano, scale iter 3 |
-| Vulk Arvin | 3 | sol | cuadrado, counter-learning scale aplicado |
-| Rusty Spell | 5 | sol | cuadrado, 2 pol + 3 no-pol |
+| Vulk Booping | 4 | sol | redondo, 18.9g, scale iter 3 |
+| Vulk Arvin | 3 | sol | cuadrado, counter-learning scale |
+| Rusty Spell | 5 | sol | cuadrado, 2 pol + 3 no-pol + UPDATE peso 12.6g |
+| Rusty Spell Receta | 2 | **receta** | cuadrado masculino, 12.6g |
 | Vulk Day Light | (update) | sol | marcado polarized=true (4 variantes) |
 
+Total variantes nuevas: ~42. 5 productos con cross-source verification de polarizada (Etiquet, Xold, Arvin, Spell, + Day Light). 3 productos receta nuevos/existentes (Stray, Xold Receta, Spell Receta).
+
 **Bugs estructurales resueltos HOY**:
-1. **Container CSS** (`tailwind.config.ts`): catálogos con `container` eran 256px más chicos que BrandPage (`max-w-screen-2xl`). Override `2xl:1280px` eliminado → 1536px default + padding responsive. Afectó 8 catálogos.
-2. **Badge POLARIZADO roto**: `isPolarized()` buscaba campos que no existían en seeds. Robustecido a 4 fuentes (polarized + is_polarized + lens_treatment + "POL" en model_code).
-3. **Variant thumbnails faltantes** en gender/shape/favoritos (no pasaban por pipeline central).
-4. **Scale inconsistente cross-catálogo**: movido `getImageScale` a query layer (Single point of normalization).
-5. **Layout VariantList 3 líneas** → reorganizado a 2 (model_code + SKU en línea gris secundaria).
+1. **Container CSS** (`tailwind.config.ts`): override `2xl:1280px` → 1536px default + padding responsive. Afectó 8 catálogos (eran 256px más chicos que BrandPage).
+2. **Badge POLARIZADO roto**: `isPolarized()` robustecido a 4 fuentes.
+3. **Variant thumbnails faltantes** en gender/shape/favoritos → pipeline central.
+4. **Scale inconsistente cross-catálogo**: `getImageScale` movido a query layer.
+5. **Layout VariantList 3 líneas** → 2 (model_code + SKU en línea gris).
 
 **Features nuevos HOY**:
-- Share buttons (WhatsApp/FB/Email/Copiar/Native) variant minimal + og:image en PDP/artículos + tracking GA4
-- Indicador sutil de stock en thumbnails (dot rojo sin stock / ámbar pocas unidades)
+- Share buttons (variant minimal) + og:image PDP/artículos + tracking GA4
+- Indicador sutil de stock en thumbnails (dot rojo/ámbar)
 - Display de model_code en VariantList
-- MCP Supabase conectado → autorización standing para apply de seeds DML
+- MCP Supabase → autorización standing para apply de seeds DML
+- **Precio por variante en hover** (precio sigue a la foto, coherencia foto↔precio)
+- **Deep-link `?v=<sku>`** del grid a la PDP (client-side, preserva ISR)
 
 **Decisiones técnicas consolidadas**:
-- **Cross-source verification de polarizada**: cuando founder dice "todas polarizadas" pero hay anomalías (precio menor + título "Degradé"/"Revo" + code sin "POL"), domina la triangulación. Aplicado en Etiquet, Xold, Arvin, Spell.
-- **Scale default conservador 1.15/1.0** (counter-learning del Booping iter 2 que recortó con 1.3). Iterar hacia arriba si queda chico, nunca empezar agresivo.
-- **NO mencionar Bluecut** en productos receta (founder: cristales se venden por separado).
-- **Sub-regla 15 escalada a CLAUDE.md**: cada carga propone scale override comparando contra grid.
+- **Cross-source verification de polarizada**: precio menor + título "Degradé"/"Revo" + code sin "POL" → NO polarizada, aunque founder diga "todas". Aplicado 5 veces.
+- **Scale default conservador 1.15/1.0** (counter-learning Booping iter 2). Iterar arriba si chico, nunca empezar agresivo. Cap 1.3.
+- **NO mencionar Bluecut** en receta (cristales se venden por separado).
+- **searchParams client-side** (no en page server component) para preservar ISR de PDPs.
+- **Precio = variante visible** (no minPriceCents) para coherencia foto↔precio.
 
 **Reglas/memoria persistente creadas**:
 - `CLAUDE.md` regla 15 + sub-regla post-carga
 - Memoria agente: `feedback-c2-vrast-no-mencionar.md`
-- LEARNINGS: Single point of normalization, MCP coverage query, cross-source verification, counter-learning scale, autorización standing MCP
-- MISTAKES: container-as-cache misdiagnosis, badge code-data drift, scale-too-aggressive, doc-rot CLOUD_APPLIED
+- LEARNINGS: Single point of normalization, MCP coverage query, cross-source verification, counter-learning scale, autorización standing MCP, playbook carga consolidado, client-side searchParams para ISR
+- MISTAKES: container-as-cache misdiagnosis, badge code-data drift, scale-too-aggressive, doc-rot CLOUD_APPLIED, per-task-vs-session-arc closure
 
-**Próximo paso exacto (founder)**:
-1. Subir fotos pendientes a buckets: `rusty-spell/` (11), `vulk-arvin/` (7). (Resto ya subidas.)
-2. Verificar visualmente catálogo completo post-deploy (14 productos, tamaños consistentes).
-3. Decidir próxima dirección: más productos / artículos SEO / Opción Z tracker pedidos / audit baseline e-commerce.
+**Pendiente founder (próximo paso EXACTO)**:
+1. Subir fotos pendientes a buckets: `rusty-spell/` (11), `vulk-arvin/` (7), `rusty-spell-receta/` (5). (Resto ya subidas: Dearly, Vrast, Etiquet, Tulle, Xold, Xold Receta, Booping.)
+2. Verificar post-deploy: 15 productos tamaños consistentes + precio-por-variante en hover (Spell/Xold/Arvin multi-precio) + deep-link `?v=` funciona.
+3. Decidir próxima dirección: más productos / artículos SEO (2 publicados, faltan ~15 para cluster) / Opción Z tracker pedidos / audit baseline e-commerce.
+
+**Pendientes operativos NO resueltos** (fuera de carga producto): Resend domain, MP webhook productivo, few-shot lector receta (4/13 pausado).
 
 **Pendientes operativos NO resueltos** (fuera de carga de producto):
 - Resend domain verification (para emails transaccionales)
