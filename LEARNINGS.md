@@ -22,6 +22,25 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Feature con panel admin de PII: iter 1 con trigger DB + dashboard de la DB, difiriendo el admin UI con auth a iter 2 — entrega valor sin meter auth a las apuradas
+
+**Categoría**: Scoping / Security / Incremental delivery
+**Confianza**: 🟢 Alta (aplicado al tracker de pedidos — entregó el timeline visible al cliente sin construir auth admin, que era el riesgo)
+
+**Qué funcionó**: El tracker de pedido (Opción Z) "naturalmente" pedía un panel admin donde la regente cambia el estado del pedido. PERO ese panel muestra PII de clientes (nombre, dirección, teléfono) → NO puede ir sin auth. Construir auth admin bien (allowlist, sesiones, protección de rutas) es un sub-proyecto en sí, y meterlo a las apuradas arriesga exponer datos personales.
+
+**La movida**: para iter 1, en vez de admin UI, usé un **trigger DB** que auto-registra el timeline cuando cambia `orders.status`. La regente cambia el estado desde el **Supabase Dashboard** (que ya usa y está protegido por el login de Supabase). El cliente ve el tracker. Cero auth nueva, cero superficie de PII expuesta, valor entregado (el timeline visible al comprador, que es el trust signal).
+
+**Por qué funciona**:
+- El "panel admin" de iter 1 es una herramienta que YA existe y YA tiene auth (el dashboard de la DB). No reinvento la rueda.
+- El trigger DB hace el trabajo (registrar eventos + timestamps) sin que nadie tenga que construir UI.
+- El cliente —que es quien recibe el valor (ver su pedido progresar)— tiene su UI (el stepper), protegida por su propio login.
+- El admin UI propio (iter 2) se construye DESPUÉS, con auth bien diseñada, sin presión.
+
+**Regla replicable**: cuando una feature necesita que un operador interno (regente, admin) manipule datos sensibles, preguntar "¿puedo usar el dashboard de la DB / una herramienta existente con auth para iter 1, y diferir el panel propio?". El panel admin custom casi siempre es lo más caro + riesgoso (auth + PII) de una feature. Diferirlo deja entregar el 80% del valor (lo que ve el usuario final) rápido y seguro.
+
+**Anti-pattern evitado**: construir un `/admin/algo` sin auth "porque es rápido" cuando muestra PII. El admin sin auth que ya existe en el proyecto (`/admin/product-copy-gen`) es tolerable porque NO muestra datos de clientes — pero un `/admin/pedidos` sin auth sería una fuga de PII. La distinción es el tipo de dato, no la conveniencia.
+
 ## 2026-06-01 — Audit de velocidad sin instalar nada: curl (peso HTML) + MCP storage (peso fotos) + curl al /_next/image (formato/peso REAL servido) da el 80% del diagnóstico
 
 **Categoría**: Performance / Diagnostic sin herramientas pesadas

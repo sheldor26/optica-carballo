@@ -69,7 +69,7 @@
 4. Admin UI `/admin/pedidos` con AUTH (allowlist email env `ADMIN_EMAILS` — muestra PII de clientes, NO puede ir sin auth). Lista pedidos + botón cambiar estado.
 5. Email automático por cambio de estado (extender `lib/emails/send-order-emails.ts`) — disparado desde la server action del admin UI (el trigger DB no puede mandar emails).
 
-**Pendiente #1 velocidad**: `@vercel/speed-insights` NO se instaló (sin red en el entorno). Retomar: `npm install @vercel/speed-insights` + `<SpeedInsights/>` en `app/layout.tsx`. AVIF ya aplicado (commit `7de4655`).
+**Pendiente #1 velocidad**: `@vercel/speed-insights` NO se instaló — `npm install` falló porque **el proyecto usa pnpm** (hay `.pnpm` en node_modules). Comando correcto: `pnpm add @vercel/speed-insights` + `<SpeedInsights/>` en `app/layout.tsx` (junto al `<GoogleAnalytics/>` línea 55). AVIF ya aplicado (commit `7de4655`). **Nota**: usar pnpm para TODA instalación de dependencias en este proyecto, no npm.
 
 ---
 
