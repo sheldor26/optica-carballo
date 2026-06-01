@@ -24,6 +24,7 @@ export type RecommendedProduct = {
   href: string;
   categorySlug: string;
   brandSlug: string;
+  sizeFit: string | null;
 };
 
 const DEFAULT_LIMIT = 5;
@@ -57,5 +58,6 @@ export async function fetchRecommendedProducts(
     href: `/${card.categorySlug}/${card.brandSlug}/${card.slug}`,
     categorySlug: card.categorySlug,
     brandSlug: card.brandSlug,
+    sizeFit: card.sizeFit,
   }));
 }

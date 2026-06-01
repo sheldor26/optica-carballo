@@ -127,6 +127,7 @@ export function ShapeCatalogPage({
                   secondaryImagePath: p.secondaryImagePath,
                   primaryImageScale: p.primaryImageScale,
                   secondaryImageScale: p.secondaryImageScale,
+                  sizeFit: p.sizeFit,
                   variants: p.variants,
                   href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                   categorySlug: p.categorySlug,

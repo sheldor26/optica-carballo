@@ -1,6 +1,7 @@
 import type { ProductCardData, ProductCardVariant } from '@/components/product/product-card';
 import type { ProductCardSource } from '@/lib/catalog/queries';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
+import { deriveSizeFit } from '@/lib/catalog/size-fit';
 
 /**
  * Helper público: construye `ProductCardVariant[]` para los thumbnails del
@@ -158,6 +159,7 @@ export function toProductCardData(
       href: `${hrefPrefix}/${source.slug}`,
       categorySlug,
       brandSlug,
+      sizeFit: deriveSizeFit(source.attributes),
       variants: [],
     };
   }
@@ -198,6 +200,7 @@ export function toProductCardData(
     href: `${hrefPrefix}/${source.slug}`,
     categorySlug,
     brandSlug,
+    sizeFit: deriveSizeFit(source.attributes),
     variants: variantThumbs,
   };
 }

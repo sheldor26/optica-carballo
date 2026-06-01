@@ -11,6 +11,7 @@ import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { NewArrivalBadge } from '@/components/product/new-arrival-badge';
+import { deriveSizeFit } from '@/lib/catalog/size-fit';
 import { ProductAttributes } from '@/components/product/product-attributes';
 import { ProductCalloutAt } from '@/components/product/product-callouts';
 import { ProductGallery } from '@/components/product/product-gallery';
@@ -329,6 +330,7 @@ export async function ProductDetailPage({
         <ProductGallery
           productName={product.name}
           images={buildGalleryImages(product)}
+          sizeFit={deriveSizeFit(product.attributes)}
         />
 
         {/* Columna info: sticky en desktop para que quede visible al

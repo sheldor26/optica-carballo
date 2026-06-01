@@ -5,6 +5,16 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Badge "Talle Junior" sobre la foto (data-driven, PDP + grilla)** (2026-06-01). Founder pidió un badge en el extremo superior de la foto del Vulk Disarn para identificar el calce junior (talle chico). Decisiones founder: badge de texto estilado (no su logo raster), texto "Talle Junior", alcance PDP + grilla de catálogo.
+**Implementación (pipeline central, regla 15)**:
+- DB: `products.attributes.size_fit = "junior"` en el Disarn (vía MCP).
+- `lib/catalog/size-fit.ts` (NUEVO) — `SizeFit` type + `SIZE_FIT_LABELS` + `deriveSizeFit(attributes)` (single source).
+- `components/product/size-fit-badge.tsx` (NUEVO) — badge verde con ícono Ruler, valida contra labels conocidos.
+- Threading por las 4 superficies de card que terminan en `<ProductCard>`: `ProductCardSource` (+ `attributes` en 3 selects + `toProductCardData`), `FilteredCatalogCard` (4 builders: shape/gender/filter/recomendador), `WishlistProductCard` (favoritos), `RecommendedProduct` (recomendador de rostro). Campo `sizeFit` agregado a cada tipo + mapeado en las 3 páginas que arman ProductCard inline (gender/shape/category-filtered/favoritos).
+- PDP: `ProductGallery` recibe `sizeFit` y overlaya el badge sobre la foto principal (arriba-izquierda).
+- `RelatedProductCard` (strip de relacionados) y swipe quedaron FUERA de scope (UI propia / strip secundario) — `sizeFit` es opcional en ProductCardData, así que no rompen.
+**Verificación**: `tsc` diferido al build de Vercel (sin node_modules local). Cambio multi-archivo (~14 archivos) — vigilar el build.
+
 🟢 **Vulk Disarn cargado (17º producto) + fix QR ARCA del footer** (2026-06-01).
 **Carga**: cuadrados de calce pequeño G-Flex, **ambas variantes polarizadas**. 2 variantes (SBLK-MDEMI/G15 POL SKU 958643 stock 4 default + STEELBLUE-MBLK/DRT-03 POL SKU 958640 stock 2), $79.815,45 c/u, stock total 6. Importado vía `/api/admin/ml-import-preview/MLA1866820108` (token ML que el founder autorizó) → WebFetch del endpoint (sin auth) → SQL aplicado vía MCP. Producto marcado `lens_treatment:["uv400","polarized"]` → aparece en /vulk/polarizados. Discrepancia resuelta: founder dijo "patillas negro brillo" en la 958640, pero foto (STEELBLUE-MBLK) + ML coinciden en MATE → cargado mate. Verificado MCP (2 variants, stock 6, 5 imgs, ambas polarized). Scale 1.15/1.0 conservador + 2 labels frame_color nuevos (negro-brillo-carey, steelblue-negro-mate). Seed doc 37 + CLOUD_APPLIED actualizados.
 **Catálogo ahora**: 14 sol + 3 receta = **17 productos activos**.

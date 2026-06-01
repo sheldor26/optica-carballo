@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
+import { deriveSizeFit } from '@/lib/catalog/size-fit';
 import { buildCardVariants } from '@/lib/catalog/to-product-card-data';
 import type { ProductCardVariant } from '@/components/product/product-card';
 
@@ -29,6 +30,8 @@ export type ProductCardSource = {
   name: string;
   short_description: string | null;
   is_featured: boolean;
+  /** JSONB del producto. Para derivar el badge de talle (`size_fit`). */
+  attributes?: Record<string, unknown>;
   variants: Array<{
     id: string;
     sku: string;
@@ -158,7 +161,7 @@ export async function fetchBrandPage(
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
+      'slug, name, short_description, is_featured, attributes, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -221,7 +224,7 @@ export async function fetchBrandPageByGender(args: {
   const { data: products } = await supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
+      'slug, name, short_description, is_featured, attributes, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -280,7 +283,7 @@ export async function fetchBrandPageByFilter(args: {
   let query = supabase
     .from('products')
     .select(
-      'slug, name, short_description, is_featured, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
+      'slug, name, short_description, is_featured, attributes, variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes), images:product_images(storage_path, is_primary, sort_order, variant_id)',
     )
     .eq('brand_id', brand.id)
     .eq('category_id', cat.id)
@@ -821,6 +824,8 @@ export type FilteredCatalogCard = {
    * reportó 2026-05-31 que tamaños eran inconsistentes entre catálogos. */
   primaryImageScale: number;
   secondaryImageScale: number;
+  /** Talle del armazón (`attributes.size_fit`) para el badge sobre la foto. */
+  sizeFit: string | null;
   /** Variantes para los thumbnails clickeables del card. Sin esto, en este
    * catálogo el producto NO muestra mini-thumbs de variantes (mientras
    * que /marcas/<slug> sí los muestra). Founder reportó 2026-05-31 que
@@ -832,6 +837,7 @@ type FilteredCatalogRow = {
   slug: string;
   name: string;
   short_description: string | null;
+  attributes: Record<string, unknown>;
   brand: { slug: string; name: string; is_active: boolean };
   category: { slug: string; is_active: boolean };
   variants: Array<{
@@ -873,6 +879,7 @@ export async function fetchProductsByCategoryAndShapes(args: {
         slug,
         name,
         short_description,
+        attributes,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
@@ -915,6 +922,7 @@ export async function fetchProductsByCategoryAndShapes(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        sizeFit: deriveSizeFit(row.attributes),
         variants: buildCardVariants(row.variants, row.images),
       };
     });
@@ -941,6 +949,7 @@ export async function fetchProductsByFrameShapes(args: {
         slug,
         name,
         short_description,
+        attributes,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
@@ -982,6 +991,7 @@ export async function fetchProductsByFrameShapes(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        sizeFit: deriveSizeFit(row.attributes),
         variants: buildCardVariants(row.variants, row.images),
       };
     });
@@ -1018,6 +1028,7 @@ export async function fetchCategoryByGender(args: {
         slug,
         name,
         short_description,
+        attributes,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
@@ -1055,6 +1066,7 @@ export async function fetchCategoryByGender(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        sizeFit: deriveSizeFit(row.attributes),
         variants: buildCardVariants(row.variants, row.images),
       };
     });
@@ -1083,6 +1095,7 @@ export async function fetchCategoryByFilter(args: {
         slug,
         name,
         short_description,
+        attributes,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
@@ -1127,6 +1140,7 @@ export async function fetchCategoryByFilter(args: {
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        sizeFit: deriveSizeFit(row.attributes),
         variants: buildCardVariants(row.variants, row.images),
       };
     });
@@ -1164,6 +1178,7 @@ type WishlistProductRow = {
   slug: string;
   name: string;
   short_description: string | null;
+  attributes: Record<string, unknown>;
   brand: { slug: string; name: string; is_active: boolean };
   category: { slug: string; is_active: boolean };
   variants: Array<{
@@ -1196,6 +1211,7 @@ export type WishlistProductCard = {
   secondaryImagePath: string | null;
   primaryImageScale: number;
   secondaryImageScale: number;
+  sizeFit: string | null;
   variants: ProductCardVariant[];
 };
 
@@ -1218,6 +1234,7 @@ export async function fetchProductsBySlugs(
         slug,
         name,
         short_description,
+        attributes,
         brand:brands!inner(slug, name, is_active),
         category:categories!inner(slug, is_active),
         variants:product_variants(id, sku, price_cents, stock_qty, is_active, sort_order, attributes),
@@ -1258,6 +1275,7 @@ export async function fetchProductsBySlugs(
         secondaryImagePath,
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
+        sizeFit: deriveSizeFit(row.attributes),
         variants: buildCardVariants(row.variants, row.images),
       };
     });

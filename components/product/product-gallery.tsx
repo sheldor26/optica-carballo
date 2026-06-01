@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { ImageLightbox } from '@/components/product/image-lightbox';
+import { SizeFitBadge } from '@/components/product/size-fit-badge';
 import type { ProductImage } from '@/lib/catalog/queries';
 
 /**
@@ -20,6 +21,8 @@ const VISIBLE_THUMBS = 3;
 type Props = {
   productName: string;
   images: ProductImage[];
+  /** Talle del armazón (`attributes.size_fit`) para el badge sobre la foto. */
+  sizeFit?: string | null;
 };
 
 function sortImages(images: ProductImage[]): ProductImage[] {
@@ -39,7 +42,7 @@ function sortImages(images: ProductImage[]): ProductImage[] {
   });
 }
 
-export function ProductGallery({ productName, images }: Props) {
+export function ProductGallery({ productName, images, sizeFit }: Props) {
   const { selectedVariantId } = useVariantSelection();
 
   const sorted = useMemo(() => {
@@ -115,6 +118,11 @@ export function ProductGallery({ productName, images }: Props) {
             priority={activeIdx === 0}
           />
         </div>
+        {sizeFit && (
+          <span className="pointer-events-none absolute left-3 top-3 z-10">
+            <SizeFitBadge sizeFit={sizeFit} />
+          </span>
+        )}
       </button>
       {sorted.length > 1 && (
         <div className="relative">

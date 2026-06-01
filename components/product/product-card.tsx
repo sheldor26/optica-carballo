@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { QuickView } from '@/components/product/quick-view';
+import { SizeFitBadge } from '@/components/product/size-fit-badge';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
 export type ProductCardVariant = {
@@ -54,6 +55,9 @@ export type ProductCardData = {
   /** Para construir entry de wishlist. */
   categorySlug: string;
   brandSlug: string;
+  /** Talle del armazón (`attributes.size_fit`) para el badge sobre la foto.
+   * Ej "junior". Null/undefined = sin badge. Ver `lib/catalog/size-fit.ts`. */
+  sizeFit?: string | null;
   /** Variantes para thumbnails clickeables. La primera entrada suele ser la
    * misma que primaryImagePath / secondaryImagePath. Si solo hay 1 variante
    * o el shape no lo provee (compat con consumers viejos), los thumbs NO
@@ -166,6 +170,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         variant="card"
       />
       <QuickView slug={product.slug} href={href} />
+      {product.sizeFit && (
+        <div className="pointer-events-none absolute left-2 top-2 z-10">
+          <SizeFitBadge sizeFit={product.sizeFit} size="sm" />
+        </div>
+      )}
       <Link
         href={href}
         className="flex h-full flex-col"
