@@ -5,6 +5,23 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **#4 Comparador de calce "¿te va a quedar bien?" — ITER 1 COMPLETO** (2026-06-01). Founder eligió del menú de mejoras la opción #4 + decidió la referencia: **anteojos actuales del usuario (grabado), no cámara/cara**. Razón: optician-grade, honesto, sin entrelazar con el medidor DNP (que es precisión-crítica + gateado legalmente).
+
+**Decisión técnica clave**: comparamos por ancho "boxing" = `calibre×2 + puente`, NO por `frame_width_mm`. Por qué: el `frame_width_mm` rara vez está grabado en los anteojos del usuario → sería incomparable. El grabado de la patilla (ej. 52▢18-140) SÍ da calibre+puente. Se compara la dimensión que el usuario PUEDE obtener, no la más técnicamente completa.
+
+**Construido**:
+- `lib/catalog/fit-compare.ts` (NUEVO) — lógica pura: `productFitReference()` (extrae calibre+puente del JSONB, null si falta), `compareFit()` (diff en mm + veredicto en 5 niveles), labels + tonos. Umbrales: ±3mm = "muy parecido", ≤8mm = "un poco", >8mm = "notablemente". Rangos de validación (calibre 40-62, puente 12-26).
+- `components/product/fit-checker.tsx` (NUEVO, client) — sin referencia: form 2 inputs (calibre+puente) + ayuda "¿dónde lo leo?". Con referencia (localStorage `oc:fit-reference-v1`): veredicto con tono (verde/celeste/ámbar) + "editar mi medida". Guard `loaded` para evitar mismatch de hidratación. Devuelve null si el modelo no tiene calibre+puente.
+- `components/catalog/product-page.tsx` (EDIT) — `<FitChecker>` después de `<ProductMeasurements>`.
+
+**Honestidad (regla negocio 4)**: el veredicto va etiquetado "Orientativo — el calce también depende del puente y la patilla". No promete; estima el factor dominante (ancho frontal).
+
+**Persistencia**: localStorage → el usuario ingresa su medida UNA vez y aplica en todos los productos. Sin DB, sin librería nueva, sin cámara.
+
+**Verificación**: `tsc --noEmit` limpio + lint sin issues nuevos. Logic chequeada (ref 52/18=122mm vs modelo 54/19=127mm → +5mm → "un poco más holgado"). Falta verificación visual en prod (build Vercel) + que el founder lo pruebe en una PDP.
+
+**⬜ Iter 2 posible (futuro)**: parse de un solo campo "pegá el grabado 52▢18-140"; considerar puente por separado para calce nasal; recordar referencia en el perfil (no solo localStorage) para usuarios logueados.
+
 🟢 **Fix thumbnails borrosos de la galería (PDP)** (2026-06-01). Founder reportó (tras subir fotos del Disarn) que en la galería de la PDP la 1ª foto se veía nítida y las otras borrosas, pero en el visor/lightbox bien. Causa: `product-gallery.tsx` pedía los thumbnails con `next/image sizes="120px"` fijo, pero en desktop se renderizan ~230px → en retina Next servía chico → upscaling borroso (mobile no se notaba; lightbox usa otro path). Fix: `sizes="(min-width: 768px) 240px, 30vw"`. Afecta a TODAS las galerías de producto (mejora general). Origen sano (las fotos pesan parecido). Founder ya subió las 5 fotos del Disarn al bucket. **Verificación**: build Vercel.
 
 🟢 **Badge "Talle Junior" sobre la foto (data-driven, PDP + grilla)** (2026-06-01). Founder pidió un badge en el extremo superior de la foto del Vulk Disarn para identificar el calce junior (talle chico). Decisiones founder: badge de texto estilado (no su logo raster), texto "Talle Junior", alcance PDP + grilla de catálogo.

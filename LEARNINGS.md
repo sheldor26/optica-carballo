@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Comparador de calce: elegir la métrica que el usuario PUEDE obtener, no la más técnicamente completa
+
+**Categoría**: Producto / UX / Diseño de features
+**Confianza**: 🟢 Alta (decisión de diseño que define la viabilidad del feature, no un detalle)
+
+**Qué funcionó**: Para el comparador "¿te va a quedar bien?" teníamos `frame_width_mm` (ancho total, la medida técnicamente más precisa para el calce). Pero la referencia del usuario sale del grabado de la patilla de sus anteojos actuales (`52▢18-140`), que da calibre + puente — NO el ancho total. Si comparábamos contra `frame_width_mm`, el usuario no tendría con qué llenar el dato → feature muerto. La movida correcta: comparar por ancho "boxing" = `calibre×2 + puente`, que es exactamente lo que el usuario puede leer. Misma fórmula de los dos lados = comparación válida.
+
+**Por qué funciona / principio reutilizable**: en cualquier feature donde el usuario aporta un dato de referencia, la métrica de comparación tiene que ser una que el usuario PUEDA conseguir con bajo esfuerzo, aunque sea menos "completa" que la ideal. La precisión teórica no sirve si nadie puede llenar el input. Mismo razonamiento por el que NO se entrelazó esto con el medidor DNP (cámara): el DNP es precisión-crítica y gateado legalmente — sumar fricción y riesgo para un feature orientativo habría sido sobre-ingeniería.
+
+**Para la próxima**: antes de elegir la métrica de un comparador/estimador, preguntar "¿de dónde saca el usuario su lado de la comparación?" y derivar la métrica desde ahí, no desde el dato más rico que tenemos en la DB. Etiquetar siempre el resultado como orientativo si la métrica es una aproximación (regla negocio 4).
+
 ## 2026-06-01 — Dos sesiones Claude en paralelo construyeron iter 1 e iter 2 del MISMO feature sin conflicto, porque ambas convergieron en el mismo modelo de datos (`order_status_events` + `note`)
 
 **Categoría**: Proceso / Sesiones paralelas / Diseño de datos

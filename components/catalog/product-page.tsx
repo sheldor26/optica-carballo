@@ -18,6 +18,7 @@ import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductHighlights } from '@/components/product/product-highlights';
 import { ProductIncludes } from '@/components/product/product-includes';
 import { ProductMeasurements } from '@/components/product/product-measurements';
+import { FitChecker } from '@/components/product/fit-checker';
 import { ProductPriceBlock } from '@/components/product/product-price-block';
 import { ProductTrustSignals } from '@/components/product/product-trust-signals';
 import { ProductFaqs } from '@/components/product/product-faqs';
@@ -450,6 +451,8 @@ export async function ProductDetailPage({
           <ProductAttributes attributes={product.attributes} />
 
           <ProductMeasurements attributes={product.attributes} />
+
+          <FitChecker attributes={product.attributes} />
 
           <ProductIncludes attributes={product.attributes} />
 
