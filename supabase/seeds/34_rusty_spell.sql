@@ -1,0 +1,40 @@
+-- ============================================
+-- Seed 34: Rusty Spell (sol) — cuadrados unisex G-Flex
+-- Fecha: 2026-05-31
+-- ============================================
+-- Modelo Rusty Spell: cuadrados unisex moda urbana, frente + patillas
+-- G-Flex, bisagras flex customizadas, lente policarbonato UV400. 2 de 5
+-- variantes son polarizadas (las S10). Las otras 3 son degradé/revo/G15
+-- NO polarizadas (confirmado cross-source: precio menor + título + code).
+--
+-- 5 variantes (5 MLAs separados):
+--   SKU 125751 — SBLK / S10 POL (Negro brillo + gris oscuro POL)
+--     MLA1397923163. $81.804,47, stock 13 (DEFAULT — polarizada, premium).
+--   SKU 125749 — MBLK / GBU30 (Negro mate + gris a azul degradé, NO POL)
+--     MLA1453813623. $73.661,17, stock 13.
+--   SKU 125750 — MBLK / S10 POL (Negro mate + gris oscuro POL)
+--     MLA1401348333. $85.924,92, stock 6.
+--   SKU 125754 — MBLU 670 / R. BLUE (Azul mate + espejadas azules revo, NO POL)
+--     MLA1441317097. $79.373,23, stock 5.
+--   SKU 125758 — MBLK / G15 (Negro mate + verde G15, NO POL)
+--     MLA1440073729. $73.661,17, stock 1.
+--
+-- Total stock 38. Medidas 143/56x45/17/145mm.
+-- Bisagras flex customizadas (detalle del modelo).
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: variants=5, stock=38, images=11, pol=2, shape=cuadrado.
+--
+-- Scale override 1.15/1.0 default conservador (counter-learning Booping).
+-- ============================================
+-- 📸 FOTOS (nombres del bucket — naming MUY inconsistente del founder,
+-- respetado tal cual):
+--   SPELL SBLK - S10 POL perfil.jpg + SPELL SBLK - S10 POL frente.jpg
+--   SPELL MBLK GBU30-perfil.jpg + SPELL MBLK GBU30-frente.jpg
+--   SPELL_MBLK_-_S10_POL_perfil.jpg + SPELL_MBLK_-_S10_POL_frente.jpg  (underscores)
+--   SPELL-MBLUE 670 - R BLUE.jpg + SPELL-MBLUE 670 - R BLUE frente.jpg  (lateral SIN "perfil")
+--   SPELL MBLK G15-perfil.jpg + SPELL MBLK G15 f-frente.jpg  ("f-frente")
+--   medidas.jpg
+-- ============================================
+
+-- Seed documental — INSERT real ya aplicado vía MCP.

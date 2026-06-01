@@ -187,6 +187,21 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-arvin/ARVIN MDBLU REVO-frente.jpg': 1.0,
   'vulk-arvin/ARVIN MBLK S10-perfil.jpg': 1.15,
   'vulk-arvin/ARVIN MBLK S10-frente.jpg': 1.0,
+
+  // Rusty Spell — counter-learning aplicado: scale 1.15/1.0 conservador.
+  // 10 entries (2 por variante × 5 variantes). Naming inconsistente del
+  // founder (underscores en MBLK S10, espacios en otros, sin "perfil" en
+  // MBLU 670 lateral) respetado tal cual.
+  'rusty-spell/SPELL SBLK - S10 POL perfil.jpg': 1.15,
+  'rusty-spell/SPELL SBLK - S10 POL frente.jpg': 1.0,
+  'rusty-spell/SPELL MBLK GBU30-perfil.jpg': 1.15,
+  'rusty-spell/SPELL MBLK GBU30-frente.jpg': 1.0,
+  'rusty-spell/SPELL_MBLK_-_S10_POL_perfil.jpg': 1.15,
+  'rusty-spell/SPELL_MBLK_-_S10_POL_frente.jpg': 1.0,
+  'rusty-spell/SPELL-MBLUE 670 - R BLUE.jpg': 1.15,
+  'rusty-spell/SPELL-MBLUE 670 - R BLUE frente.jpg': 1.0,
+  'rusty-spell/SPELL MBLK G15-perfil.jpg': 1.15,
+  'rusty-spell/SPELL MBLK G15 f-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

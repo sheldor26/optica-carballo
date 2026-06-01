@@ -1,5 +1,28 @@
 # Óptica Carballo — Current State
 
+🟢 **Rusty Spell cargado: 5 variantes cuadradas G-Flex, stock 38** (2026-05-31).
+
+**Cambios** (commit pending):
+- Cloud Apply via MCP: producto + 5 variantes + 11 imágenes.
+- `supabase/seeds/34_rusty_spell.sql` doc seed.
+- `lib/catalog/image-scale-overrides.ts`: 10 entries 1.15/1.0 (counter-learning).
+- `CLOUD_APPLIED.md` actualizado.
+
+**Datos clave**:
+| SKU | Variante | Precio | Stock | Pol |
+|---|---|---|---|---|
+| 125751 | SBLK/S10 POL (default) | $81.804 | 13 | ✅ |
+| 125749 | MBLK/GBU30 (degradé) | $73.661 | 13 | ❌ |
+| 125750 | MBLK/S10 POL | $85.924 | 6 | ✅ |
+| 125754 | MBLU 670/R.BLUE (revo) | $79.373 | 5 | ❌ |
+| 125758 | MBLK/G15 | $73.661 | 1 | ❌ |
+
+Total stock 38. 2 de 5 polarizadas (cross-source verificado). Cuadrado unisex. Bisagras flex customizadas.
+
+**Pendiente founder**: subir 11 fotos al bucket `products/rusty-spell/` (naming MUY inconsistente del founder respetado tal cual — underscores, espacios, "f-frente", lateral MBLU sin "perfil").
+
+---
+
 🟢 **Vulk Arvin cargado: 3 variantes cuadradas G-Flex, stock 13** (2026-05-31).
 
 **Cambios** (commit pending):
