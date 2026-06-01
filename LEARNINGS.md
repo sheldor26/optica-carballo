@@ -22,6 +22,32 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Audit de velocidad sin instalar nada: curl (peso HTML) + MCP storage (peso fotos) + curl al /_next/image (formato/peso REAL servido) da el 80% del diagnóstico
+
+**Categoría**: Performance / Diagnostic sin herramientas pesadas
+**Confianza**: 🟢 Alta (diagnostiqué que el sitio está rápido con 3 comandos, sin instalar Lighthouse ni Speed Insights)
+
+**Qué funcionó**: El founder pidió "mejorar velocidad". En vez de instalar herramientas de una (regla 6) o asumir, hice un audit de laboratorio con lo que ya tenía:
+1. **Peso HTML**: `curl --compressed -o /dev/null -w "%{size_download}"` a las páginas clave → 10-29 KB gzip (livianos).
+2. **Peso fotos origen**: query MCP a `storage.objects.metadata` → avg 159 KB, max 1.2 MB (alarmante a primera vista).
+3. **Peso REAL servido**: `curl` al endpoint `/_next/image?url=...&w=640&q=75` con `Accept: image/avif,image/webp` → **4.96 KB WebP**. ESTA es la métrica que importa.
+
+El paso 3 fue el revelador: aunque las fotos del bucket pesan hasta 1.2 MB, Next las re-comprime a 5 KB para el usuario. El "problema" del paso 2 era un falso positivo.
+
+**Por qué funciona**:
+- El peso del ARCHIVO ORIGEN (bucket) ≠ peso SERVIDO al usuario. Next.js Image hace resize + recompresión on-the-fly. Medir el origen engaña.
+- `curl` al `/_next/image` con el `Accept` header correcto muestra exactamente lo que recibe el browser (formato + bytes).
+- No necesité instalar nada para el 80% del diagnóstico. Speed Insights solo agrega las métricas de CAMPO (LCP/CLS/INP reales de usuarios), que es el 20% restante.
+
+**Regla replicable** (audit de velocidad de un sitio Next/Vercel sin instalar nada):
+1. `curl --compressed` a páginas clave → peso HTML.
+2. Identificar el asset más pesado (imágenes casi siempre) → medir su peso ORIGEN.
+3. **Medir el peso SERVIDO** con `curl` al `/_next/image?...&w=<ancho real>&q=75` + `Accept: image/avif,image/webp`. Comparar origen vs servido.
+4. Verificar formato servido (content-type) → si es WebP, habilitar AVIF en next.config (gratis, ~20% menos).
+5. Solo DESPUÉS, si se necesitan métricas de campo, proponer Speed Insights.
+
+**Generalización**: antes de instalar herramientas de observabilidad o asumir un problema de performance, los comandos básicos (curl + inspección de config + medición del asset real servido) dan diagnóstico suficiente para decidir si vale la pena profundizar. "Medir lo que el usuario realmente recibe", no lo que está en el origen.
+
 ## 2026-06-01 — Revisado — sin novedad: audit antes de proponer ideas estratégicas (aplica el pattern ya documentado, sin novedad replicable)
 
 **Categoría**: Strategy / Audit-before-propose

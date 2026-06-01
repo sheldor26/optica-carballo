@@ -25,6 +25,37 @@
 
 **Próximo paso exacto**: founder elige. Mi recomendación: arrancar por #1 (audit velocidad) para tener datos antes de invertir. Si quiere conversión rápida → #2; diferenciarse → #3; SEO → #5.
 
+🟢 **#1 Audit de velocidad ejecutado: el sitio YA está rápido + AVIF habilitado** (2026-06-01). Founder aprobó #1 (velocidad) + #6 (tracker pedidos).
+
+**Resultado audit velocidad (datos reales medidos)**:
+| Métrica | Valor |
+|---|---|
+| HTML home / catálogo / PDP | 23.8 / 10.8 / 29.2 KB gzip (livianos) |
+| Foto de card servida | **4.96 KB WebP** (Next re-comprime on-the-fly) |
+| Fotos bucket origen | avg 159 KB, max 1.2 MB, 19.86 MB total / 128 fotos |
+
+**Hallazgo**: el sitio NO es lento. Next optimiza imágenes automáticamente — la foto de 1.2 MB del bucket llega al usuario como 5 KB WebP. El peso del bucket no afecta velocidad del usuario final.
+
+**Aplicado**: `next.config.mjs` → `formats: ['image/avif','image/webp']`. Servía solo WebP; ahora AVIF primero (~20% menos peso, gratis). Commit pending.
+
+**Pendiente decisión founder**: ¿instalar `@vercel/speed-insights`? (regla 6 — librería nueva). Es la única forma de tener Core Web Vitals de CAMPO reales (LCP/CLS/INP de usuarios). 2 líneas, gratis en Vercel, cero riesgo. Sin esto, el audit es de laboratorio (lo que medí), no de campo.
+
+**Opcional no-urgente**: comprimir las 18 fotos >150 KB del bucket (la de 1.2 MB sobre todo) — no afecta al usuario (Next las procesa) pero reduce trabajo de optimización + storage. El script `scripts/normalize-product-photos.ts` ya existe para esto.
+
+---
+
+🟡 **#6 Tracker de pedido (Opción Z) — audit hecho, plan listo, esperando OK de scope** (2026-06-01). **La infra ya existe casi toda** (audit bajó la estimación de 1-2 días a ~1 día):
+- ✅ Tabla `orders` con columna `status` (CHECK: pending/paid/preparing/shipped/delivered/cancelled/refunded) + index.
+- ✅ Resend configurado (`lib/emails/` con confirmación cliente + notif admin).
+- ✅ `app/(account)/mi-cuenta/pedidos/[id]/page.tsx` — página de detalle de pedido YA existe.
+- ❌ Falta: (a) tabla `order_status_events` (timeline opcional), (b) admin UI para que la regente cambie estado, (c) stepper visual del estado en la página de pedido, (d) email automático por cambio de estado.
+
+**Decisiones de scope que necesito del founder antes de construir**:
+1. **¿Quién cambia el estado del pedido?** Opción A: admin UI nueva en `/admin/pedidos` (la regente entra y clickea). Opción B: directo desde Supabase dashboard (cero UI, pero técnico). Recomiendo A.
+2. **¿Qué estados ve el cliente?** Los 7 actuales son técnicos. Propongo mapear a 4-5 visibles: "Pago confirmado → En preparación → Revisado por óptica → Enviado → Entregado".
+3. **¿Email en cada cambio o solo en "enviado"?** Más emails = más trust pero más ruido. Recomiendo: email en "enviado" (con tracking Andreani) + opcional "en preparación".
+4. **¿Timeline visible (con fechas de cada paso) o solo estado actual?** Timeline requiere la tabla `order_status_events`. Estado actual solo usa `orders.status`. Recomiendo timeline (más lindo, más trust).
+
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31 → 2026-06-01
 
 **Estado catálogo (verificado MCP, ~85 commits en la sesión)**:

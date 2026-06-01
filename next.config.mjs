@@ -8,6 +8,10 @@ const nextConfig = {
   // rehype (GFM, autolinks, syntax highlight), se suman en `withMDX` abajo.
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
   images: {
+    // AVIF primero (comprime ~20% más que WebP) con fallback WebP para
+    // browsers viejos. Next negocia según Accept header del browser.
+    // Audit 2026-06-01: el sitio servía solo WebP (default). Gratis.
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
       { protocol: 'http', hostname: '127.0.0.1', port: '54321' },

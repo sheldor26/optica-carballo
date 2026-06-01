@@ -26,7 +26,7 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ## 2026-06-01 — Gap detectado en audit: el sitio NO tiene analytics de performance instalado (@vercel/analytics / Speed Insights) — venimos optimizando velocidad de imágenes "a ciegas" sin medición
 
-**Estado**: 🔴 Abierto — gap del proyecto, no se ha instalado medición. Founder debe decidir si arrancamos por el audit de velocidad (opción #1 del menú estratégico).
+**Estado**: 🟡 Mitigado parcial — audit de LABORATORIO ejecutado (curl + peso imágenes via MCP + formato servido). Reveló que el sitio YA está rápido (Next sirve fotos como 5 KB WebP). AVIF habilitado. PENDIENTE: instalar Speed Insights para métricas de CAMPO reales (esperando OK founder, regla 6). **Lección confirmada parcialmente falsa**: sí optimizábamos sin medir, PERO resultó que Next ya hacía el trabajo bien — el "problema" de fotos de 1.2 MB en bucket NO afectaba al usuario. Moraleja: medir antes de asumir AMBAS direcciones (ni "está lento" ni "está rápido" sin datos).
 **Categoría**: Observability / Performance / Anti-pattern del proyecto
 **Patrón**: optimize-without-measurement
 
