@@ -41,10 +41,10 @@ function readArticleFile(filename: string): Article {
   };
 }
 
-/** Lista todos los artículos publicados (frontmatter solo, sin content).
- * Excluye archivos que empiezan con `_` (drafts/templates).
- * Ordenado por `publishedAt` descendente (más reciente primero). */
-export function listArticles(): ArticleSummary[] {
+/** Lee el frontmatter de todos los .mdx (excluye `_*` templates), SIN filtrar
+ * drafts. Uso interno + `generateStaticParams` (los drafts se pre-renderizan
+ * para que el founder los vea rápido por URL en la nube). */
+function readAllFrontmatter(): ArticleSummary[] {
   if (!fs.existsSync(ARTICLES_DIR)) return [];
 
   const filenames = fs
@@ -52,11 +52,17 @@ export function listArticles(): ArticleSummary[] {
     .filter((f) => /\.mdx?$/.test(f))
     .filter((f) => !f.startsWith('_'));
 
-  const articles = filenames.map((f) => readArticleFile(f).frontmatter);
+  return filenames
+    .map((f) => readArticleFile(f).frontmatter)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+}
 
-  return articles.sort((a, b) =>
-    b.publishedAt.localeCompare(a.publishedAt),
-  );
+/** Lista los artículos PUBLICADOS (frontmatter solo). Excluye `_*` templates
+ * Y los `draft: true` (que existen/deployan pero no se listan ni indexan).
+ * Ordenado por `publishedAt` descendente. Esta es la lista pública: índice
+ * /guias, relacionados, listas por cluster. */
+export function listArticles(): ArticleSummary[] {
+  return readAllFrontmatter().filter((a) => a.draft !== true);
 }
 
 /** Obtiene un artículo por slug. Devuelve null si no existe.
@@ -75,9 +81,12 @@ export function getArticle(slug: string): Article | null {
   return null;
 }
 
-/** Devuelve los slugs de artículos para `generateStaticParams`. */
+/** Devuelve los slugs de TODOS los artículos (incluidos `draft: true`) para
+ * `generateStaticParams`. Los drafts se pre-renderizan para que sean accesibles
+ * por URL en la nube (el público igual no los encuentra: no están listados y
+ * van `noindex`). */
 export function getAllArticleSlugs(): string[] {
-  return listArticles().map((a) => a.slug);
+  return readAllFrontmatter().map((a) => a.slug);
 }
 
 /** Resuelve `relatedSlugs` del frontmatter a summaries.

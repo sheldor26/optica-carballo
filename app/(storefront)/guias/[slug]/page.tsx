@@ -43,6 +43,9 @@ export async function generateMetadata({
     description: frontmatter.description,
     keywords: frontmatter.keywords,
     alternates: { canonical: pageUrl },
+    // Borrador: accesible por URL (revisión del founder en la nube) pero
+    // Google NO lo indexa hasta que se publique (draft: false).
+    ...(frontmatter.draft ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       title: frontmatter.title,
       description: frontmatter.description,
@@ -109,6 +112,15 @@ export default async function GuiaPage({
         ]}
       />
       <ArticleJsonLd frontmatter={frontmatter} />
+
+      {frontmatter.draft && (
+        <div className="mb-8 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          <strong>Borrador — no visible al público.</strong> Esta guía está
+          desplegada solo para revisión. No aparece en el listado de guías ni
+          se indexa en Google. Para publicarla, sacá <code>draft: true</code> del
+          frontmatter.
+        </div>
+      )}
 
       <nav aria-label="Breadcrumb" className="text-muted-foreground mb-8 text-sm">
         <ol className="flex flex-wrap items-center gap-1">

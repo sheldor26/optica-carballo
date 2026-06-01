@@ -367,12 +367,16 @@ Cada cluster tiene un pillar (3.000-5.000 palabras) y 5-8 satélites (1.200-2.00
   - `/guias/se-puede-operar-la-miopia` → `miopia se puede operar`/`la miopia se opera` (390/17-21). ⚠️ YMYL fuerte: decisión del oftalmólogo, honestidad sobre que no frena la elongación.
   - `/guias/miopia-en-ninos-control` → control de progresión (decisión médica), YMYL. Firma regente.
 
-### Pillar PRESBICIA — slug `/guias/presbicia`
-- **Primaria**: `presbicia que es` (4.400/15), `que es la presbicia` (1.600/23), `que presbicia` (1.600/25), `presbicia definicion` (390/30)
-- **⚠️ Validar aparte**: `vista cansada` (término coloquial dominante AR según brief técnico — NO está en este research, hacer research específico; es probablemente alto volumen y clave para SEO).
+### Pillar PRESBICIA — slug `/guias/presbicia`  (research real AR 2026-06-01 — REVISADO)
+> ⚠️ Corrección: presbicia es MUCHO más grande de lo estimado. Head term = **12.100/21** (empata con miopía), no 4.400.
+- **Primaria**: `presbicia` (12.100/21), `presbicia que es` (4.400/15), `que presbicia` (1.600/25), `que es la presbicia` (720/23)
+- **Secundarias**: `presbicia definicion` (390/30), `presbicia que es y como se corrige` (260/14), `presbicia como se ve` (140/20), `sintomas de la presbicia` (140/12), `presbicia significado` (90/31), `presbicia en mujeres` (90/20)
+- **⚠️ "vista cansada"**: sigue SIN aparecer como head term en el research (señales: `por qué a la presbicia se le llama vista cansada`, `presbicia o vista cansada` 10). Hacer research puntual de `vista cansada` — es el término coloquial dominante AR y casi seguro tiene volumen alto. Igual, USAR "vista cansada" como sinónimo en la pillar (title/H2/cuerpo).
 - **Satélites**:
-  - `/guias/presbicia-vs-otros` o cruces: `presbicia y miopia` (110/12) + `astigmatismo y presbicia` (390/9, 🥇 baja dif) + `hipermetropia y presbicia` (210/17)
-  - multifocales vs bifocales → CRUCE con cluster A (diseño de lente), no duplicar.
+  - 🥇 `/guias/gotas-para-la-presbicia-funcionan` → **sub-cluster grande + comercial + YMYL**: `gotas para la presbicia` (3.600/16) + `presbicia con gotas` (880/31) + `gotas para presbicia` (720/12) + `presbicia gotas` (210/15) + variantes "elea/argentina/precio" (~6.000 comb). **Tema honestidad perfecto**: las gotas (Elea/pilocarpina) — qué hacen, qué no, para quién. 🔴 YMYL: producto farmacológico, claims con cuidado, derivar a oftalmólogo. Firma regente.
+  - `/guias/se-puede-operar-la-presbicia` → `presbicia se opera`/`la presbicia se opera` (880/10) + `presbicia es operable` (30-50/17-27). ⚠️ YMYL: decisión médica.
+  - `/guias/lentes-para-presbicia` → `lentes para presbicia` (140/11) + `anteojos para la presbicia` (110/11) + `lentes de contacto para presbicia` (140/10). Transaccional → CRUCE con cluster A (multifocales/progresivos), no duplicar; este enfoca "qué lente para presbicia", A enfoca el diseño.
+  - Cruces: `astigmatismo y presbicia` (390/9, 🥇) + `presbicia y miopia` (110/11) + `hipermetropia y presbicia` (210/17) → alimentan el satélite transversal de diferencias.
 
 ### 🥇 SATÉLITES TRANSVERSALES (cross-condición) — alto volumen, baja dificultad, PRIORIDAD
 > No "pertenecen" a una sola pillar — son comparativos. Enlazar a las 3-4 pillars. Capturan volumen enorme a dif 10-20.

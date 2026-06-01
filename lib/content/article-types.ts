@@ -69,6 +69,15 @@ export interface ArticleFrontmatter {
   heroImage: string | null;
   heroImageAlt: string | null;
   relatedSlugs: string[];
+  /**
+   * Borrador "unlisted": si es `true`, el artículo se DESPLIEGA y es accesible
+   * por su URL (para que el founder lo revise en la nube), pero NO aparece en
+   * el índice /guias, ni en relacionados, ni en listas por cluster, y se marca
+   * `noindex` (Google no lo indexa). Pasar a `false`/omitir para publicarlo.
+   * Distinto del prefijo `_` en el filename, que oculta el archivo del todo
+   * (404 hasta para el founder).
+   */
+  draft?: boolean;
 }
 
 /** Artículo completo — frontmatter + contenido MDX raw. El contenido se
