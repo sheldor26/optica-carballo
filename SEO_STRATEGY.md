@@ -438,6 +438,92 @@ Cada cluster tiene un pillar (3.000-5.000 palabras) y 5-8 satélites (1.200-2.00
 
 ---
 
+# Topic clusters TÉCNICOS DE LENTE (añadidos 2026-06-01 — diseñados por seo-strategist)
+
+> Gap detectado: los clusters 1-9 cubren patologías, uso y elección de armazón,
+> pero los temas TÉCNICOS DE LA LENTE (diseño, material, tratamiento, sol técnico)
+> estaban sueltos. Son mid-funnel de ALTA intención de compra y el moat técnico
+> del founder. **Volúmenes = ESTIMACIONES a validar con keyword research formal
+> (Ubersuggest AR), salvo donde se indica que ya están en research.** Precisión
+> técnica de cada tema → validar con `optical-expert` antes de publicar.
+>
+> Nomenclatura: "cristales"/"lentes" = componente óptico; "anteojos" = producto
+> terminado; "armazón" = marco. No canibalizar entre sí.
+>
+> **Prerequisito de implementación** (obligatorio antes de escribir): agregar los
+> 4 valores nuevos al `type ArticleCluster` (`lib/content/article-types.ts`) +
+> `CLUSTER_LABELS` (`lib/content/article-clusters.ts`), si no el breadcrumb,
+> internal linking y `BreadcrumbList` schema salen rotos. Valores sugeridos:
+> `diseno-de-lente`, `materiales-de-lente`, `tratamientos-de-lente`,
+> `anteojos-de-sol-tecnico`.
+
+## Cluster A (10): Diseño de lente — monofocal / bifocal / progresivo
+
+**Pillar**: `/guias/tipos-de-lentes-receta-guia-completa` — "Tipos de cristales: monofocales, bifocales y progresivos"
+
+**Satélites**:
+- `/guias/lentes-multifocales-progresivos-que-son` — kw "lentes progresivos"
+- `/guias/progresivos-vs-bifocales`
+- `/guias/lentes-monofocales-que-son`
+- `/guias/lentes-ocupacionales-oficina`
+- `/guias/primera-vez-progresivos-adaptacion` (retención post-compra)
+- `/guias/lentes-progresivos-precio-argentina` (transaccional puro)
+
+**Cruces**: → `/anteojos-de-receta/multifocales` + `/monofocales`; → `/guias/como-leer-receta-anteojos` (ADD/adición ya explicado ahí).
+
+## Cluster B (11): Materiales de lente — CR-39 / policarbonato / MR-8 / alto índice / vidrio
+
+**Pillar**: `/guias/materiales-de-lentes-cual-elegir` — "Materiales de cristales: CR-39, policarbonato, MR-8 y alto índice"
+⚠️ = la guía firmada "Policarbonato/CR-39/MR-8" del Plan 2026. NO es artículo nuevo: es el ancla del cluster.
+
+**Satélites**:
+- `/guias/policarbonato-que-es-lentes`
+- `/guias/cr-39-organico-que-es`
+- `/guias/lentes-alto-indice-graduacion-alta` (ticket alto; puente con miopía/hipermetropía alta)
+- `/guias/lentes-vidrio-vs-organico` (legacy, vidrio casi discontinuado)
+- `/guias/lentes-policarbonato-vs-cr39`
+- `/guias/cristales-anteojos-ninos-resistentes` → `/anteojos-de-receta/infantiles`
+
+**Cruces**: material y diseño son decisiones paralelas → linkeo bidireccional pillar A ↔ pillar B.
+
+## Cluster C (12): Tratamientos de lente — antirreflex / filtro azul / fotocromáticos
+
+**Pillar**: `/guias/tratamientos-de-lentes-guia-completa` — "Tratamientos para cristales: antirreflex, filtro azul y fotocromáticos"
+
+**Satélites**:
+- `/guias/antirreflex-que-es-sirve`
+- `/guias/filtro-luz-azul-evidencia-real` — bluecut, **diferenciador honesto** (evidencia real)
+- `/guias/lentes-fotocromaticos-que-son`
+- `/guias/fotocromatico-bluecut-combinado`
+- `/guias/tratamientos-lentes-valen-la-pena` (comparativa honesta + CTA WhatsApp)
+
+**⚠️ Riesgo de canibalización a vigilar**: `filtro-luz-azul-evidencia-real` (C) vs Cluster 5 (computadora). Deslinde: Cluster 5 = fatiga visual/hábitos/ergonomía; Cluster C = qué es el recubrimiento + evidencia. Cross-link bidireccional, NO duplicar.
+
+## Cluster D (13): Anteojos de sol técnico — filtros 0-4 / polarizado vs tintado
+
+**Pillar**: `/guias/anteojos-de-sol-guia-completa` — "Cómo elegir anteojos de sol: filtros, polarizados y protección UV"
+
+**Satélites**:
+- `/guias/polarizados-cuando-sirven` — kw "lentes polarizados" (1.700 vol / dif 10, **ya en research**). = guía firmada del Plan.
+- `/guias/polarizado-vs-tintado-diferencia`
+- `/guias/categorias-filtro-solar-0-a-4`
+- `/guias/proteccion-uv-anteojos-de-sol` (YMYL, E-E-A-T reforzado byline regente)
+- `/guias/lentes-espejados-degrade-tipos`
+- `/guias/anteojos-de-sol-con-aumento` (3.200 vol / dif 18, **ya en research**; puente sol↔receta)
+
+**Cruces**: → `/anteojos-de-sol/polarizados`, `/anteojos-de-sol` raíz, marcas top. Catálogo de sol YA cargado → ROI rápido.
+
+## Secuencia de implementación recomendada (seo-strategist)
+
+Método: completar UN cluster (pillar + 3-5 satélites) antes del siguiente, no pillars sueltas.
+
+1. **Cluster D (sol técnico) PRIMERO** — mayor volumen transaccional del sitio (sol 12.100), catálogo cargado, keyword validada (polarizados 1.700/10), pillar+satélite ya firmados. Arranque concreto: pillar D + `polarizados-cuando-sirven`.
+2. **Cluster B (materiales)** — pillar ya firmada, intención pre-compra de receta máxima, moat técnico, habilita puente alto-índice↔miopía alta (sube ticket).
+3. **Cluster A (diseño)** — progresivos alta intención; va tras B porque material+diseño se venden juntos.
+4. **Cluster C (tratamientos)** — último: resolver antes la canibalización bluecut↔computadora; antirreflex/fotocromático son add-ons, no driver.
+
+---
+
 # Structured Data (JSON-LD)
 
 ## Tipos por página

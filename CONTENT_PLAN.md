@@ -187,6 +187,26 @@ Plan editorial vivo. Define **qué artículos escribir, en qué orden y con qué
 
 ---
 
+# Clusters TÉCNICOS DE LENTE (roadmap 2026-06-01 — fuente de verdad: SEO_STRATEGY.md)
+
+> Founder pidió ordenar la redacción de los temas técnicos (diseño de lente,
+> materiales, tratamientos, anteojos de sol técnico). El roadmap completo
+> (pillar + satélites + slugs + keyword targets + cross-links) vive en
+> **`SEO_STRATEGY.md` → sección "Topic clusters TÉCNICOS DE LENTE"** (clusters
+> A/B/C/D = 10/11/12/13). Acá solo la SECUENCIA y el prerequisito.
+>
+> **Prerequisito antes de escribir** (obligatorio): agregar los 4 valores al
+> `type ArticleCluster` + `CLUSTER_LABELS` (`lib/content/`), si no breadcrumb/
+> schema rotos. Audit del archivo real antes de tocar (regla 14).
+>
+> **Secuencia**: (1) Cluster D sol técnico [pillar + `polarizados-cuando-sirven`],
+> (2) Cluster B materiales, (3) Cluster A diseño, (4) Cluster C tratamientos.
+> Razón D primero: mayor volumen transaccional (sol 12.100), catálogo cargado,
+> keyword validada (polarizados 1.700/10), pillar+satélite ya firmados.
+>
+> **Validación pendiente**: volúmenes (salvo polarizados y "con aumento") =
+> estimación → keyword research formal AR. Precisión técnica → `optical-expert`.
+
 # Lote 2 — Post-launch / Mes 2
 
 ## 16. Pillar: Astigmatismo — Guía completa

@@ -5,6 +5,13 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **Roadmap editorial: 4 clusters técnicos de lente diseñados — esperando founder para arrancar a escribir** (2026-06-01). Founder pidió "organizar cómo vamos a hacer la redacción de artículos/guías... esquema o roadmap + clusters para SEO". Auditoría: **solo 1 artículo publicado** (`como-leer-receta-anteojos.mdx` — corrige el "2 publicados" que figuraba antes). 9 clusters ya planeados en SEO_STRATEGY (patologías + uso + elección armazón). 8 clusters en código (`type ArticleCluster`).
+- **Hallazgo**: los temas técnicos de la lente que listó el founder (diseño mono/bi/progresivo, materiales CR39/poli/MR-8/vidrio, tratamientos AR/bluecut/fotocromático, sol técnico tintado-vs-polarizado/filtros) NO eran clusters — estaban sueltos. Son mid-funnel alta intención + moat técnico del founder.
+- **seo-strategist diseñó 4 clusters nuevos** (A diseño, B materiales, C tratamientos, D sol técnico) con pillar+satélites+slugs+keyword targets+cross-links. Documentado en `SEO_STRATEGY.md` (sección "Topic clusters TÉCNICOS DE LENTE", clusters 10-13) + puntero en `CONTENT_PLAN.md`.
+- **Secuencia recomendada**: D (sol) → B (materiales) → A (diseño) → C (tratamientos). Arranque: pillar D + `polarizados-cuando-sirven` (keyword validada 1.700/10, catálogo de sol cargado, ya firmado en Plan).
+- **⚠️ Prerequisito antes de escribir**: agregar los 4 valores al `type ArticleCluster` (`lib/content/article-types.ts`) + `CLUSTER_LABELS` (`lib/content/article-clusters.ts`) — si no, breadcrumb/internal-linking/`BreadcrumbList` schema salen rotos. Audit del archivo real antes de tocar (regla 14).
+- **⬜ Próximo paso**: founder confirma secuencia → (1) agregar clusters al type, (2) `optical-expert` valida precisión técnica del primer artículo, (3) `content-writer-medical` escribe pillar D. Validación de volúmenes (salvo polarizados + "con aumento") pendiente de keyword research formal AR.
+
 🟢 **#2 Cuotas (ficha + grid) — CONSTRUIDO, OCULTO detrás de flag** (2026-06-01). Founder pidió: construir según recomendación PERO mantener oculto hasta terminar de setear el procesador de pagos + envíos.
 
 **Construido**:

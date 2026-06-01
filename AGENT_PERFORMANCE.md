@@ -58,6 +58,16 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 - **Casos donde requirió corrección**: -
 - **Notas**: Coordinación con optical-expert para validar precisión técnica. Validar tono argentino.
 
+## seo-strategist
+
+- **Versión**: 1.0
+- **Estado**: 🟢 Invocado con buen resultado
+- **Última revisión**: 2026-06-01
+- **Invocaciones estimadas (último período)**: 1+
+- **Casos de éxito**: 2026-06-01 — diseño de roadmap de 4 clusters técnicos de lente (diseño/materiales/tratamientos/sol). Output excelente: arquitectura pillar+satélites con slugs y títulos AR, 7 puentes cross-cluster anti-canibalización, secuencia priorizada justificada (D primero por volumen+catálogo+keyword validada), y un hallazgo técnico valioso no pedido explícito: el prerequisito de agregar los clusters al `type ArticleCluster` antes de escribir (si no, breadcrumb/schema rotos). Marcó explícito qué volúmenes son estimación vs research real, y respetó regla 14 (no estimó horas sin audit).
+- **Casos donde requirió corrección**: -
+- **Notas**: ⚠️ Tuvo un bloqueo de I/O de herramientas en su sesión (no pudo releer SEO_STRATEGY.md) → trabajó sobre el contexto que le pasé (que era exacto y auditado). El output fue sólido igual. Para próximas invocaciones, pasarle el contexto auditado en el prompt mitiga el riesgo si el I/O falla.
+
 ## argentine-ecom
 
 - **Versión**: 1.0
