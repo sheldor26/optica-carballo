@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Mandé un `git push` a background y di el commit por pusheado — el push se colgó por OOM y el commit nunca llegó a origin (lo detectó el stop hook, no yo)
+
+**Estado**: 🟡 Mitigado (detectado vía lista de deployments de Vercel: el commit del badge `ddaaba8` NO aparecía → el push de background estaba colgado; lo maté con TaskStop y pusheé en foreground con retry)
+**Categoría**: Proceso / Git / Entorno con OOM
+
+**Qué pasó**: Commiteé el badge "Talle Junior" y mandé `git add && commit && push` como UN comando en `run_in_background`. El commit se hizo, pero el `git push` se colgó por el OOM del credential manager (mismo problema ya documentado). Yo asumí que había pusheado y pasé a "esperar el build". El stop hook me obligó a cerrar; al chequear los deployments de Vercel, el commit `ddaaba8` NO estaba → el push nunca había llegado. O sea: estaba "esperando un build" de un commit que no existía en origin.
+
+**Causa raíz**: combiné dos malas decisiones. (1) Backgroundear un `git push` que en este entorno OOM-cuelga de forma intermitente — un push en background que cuelga no notifica claramente el fallo, queda "running" para siempre. (2) Asumir éxito sin confirmar que el remoto avanzó (no verifiqué `ahead` ni los deployments antes de decir "esperando el build").
+
+**Regla preventiva**: en este entorno, **NUNCA backgroundear `git push`**. Pushear en foreground con el loop de retry (por el OOM), y SIEMPRE confirmar que landeó: `git status -sb` no debe decir `ahead`, o verificar que el commit SHA aparece en los deployments de Vercel. "Commiteé" ≠ "pusheé"; "lancé el push" ≠ "el remoto tiene el commit". Combina con la regla del OOM de GCM (mismo origen): el push es frágil acá, tratarlo como operación que requiere confirmación explícita.
+
 ## 2026-06-01 — `git push` falló con OutOfMemoryException del credential manager (GCM) — NO es auth rota, es memoria; reintentar
 
 **Estado**: 🟡 Mitigado (reintento resolvió; documentado para no malinterpretar)
