@@ -24,6 +24,27 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Gap detectado en audit: el sitio NO tiene analytics de performance instalado (@vercel/analytics / Speed Insights) — venimos optimizando velocidad de imágenes "a ciegas" sin medición
+
+**Estado**: 🔴 Abierto — gap del proyecto, no se ha instalado medición. Founder debe decidir si arrancamos por el audit de velocidad (opción #1 del menú estratégico).
+**Categoría**: Observability / Performance / Anti-pattern del proyecto
+**Patrón**: optimize-without-measurement
+
+**Qué pasó**: Durante toda la sesión maratónica hice ~15 ajustes de scale de imágenes + un fix de container CSS + optimizaciones visuales, TODOS basados en feedback visual del founder ("se ve chico", "se pasó de ancho") — NUNCA en métricas reales de performance (LCP, peso de página, CLS). Al auditar el estado para proponer mejoras, confirmé que el proyecto no tiene `@vercel/analytics` ni `@vercel/speed-insights` instalado. No tenemos ningún número de qué tan rápido carga el sitio ni qué imágenes pesan más.
+
+**Causa raíz**:
+1. **El proyecto priorizó features sobre observabilidad**. Es razonable en fase temprana (construir > medir), pero ya hay 16 productos con múltiples fotos cada uno — el peso de imágenes empieza a importar para SEO (Core Web Vitals es factor de ranking) y conversión (mobile AR con conexiones lentas).
+2. **El scale de imágenes (transform CSS) NO reduce el peso del archivo** — solo cambia el render. Si una foto pesa 288 KB (como las del Xold), el scale 1.2 no la hace más liviana. Estuvimos optimizando lo visual sin tocar lo que afecta velocidad real.
+3. **Sin medición, no sé si el sitio es rápido o lento**. Todas mis afirmaciones sobre "preserva ISR", "performance" fueron teóricas, no medidas.
+
+**Regla preventiva**:
+1. **Instalar medición ANTES de afirmar nada sobre performance**. `@vercel/speed-insights` + `@vercel/analytics` son 2 líneas en el layout. Da Core Web Vitals reales de producción.
+2. **Distinguir "optimización visual" (scale, layout) de "optimización de velocidad" (peso de archivo, lazy load, formato)**. Son cosas distintas. El scale de imágenes es lo primero, NO lo segundo.
+3. **Para fotos de producto**: verificar que se sirven en AVIF/WebP (Next lo hace por default pero confirmar) + que el `sizes` esté bien (no servir 3840px para un thumbnail de 64px). Las fotos del founder entran a 288 KB — comprimibles.
+4. **Cuando el founder pregunte por "velocidad"**: la respuesta correcta es medir primero, no asumir. Ya lo propuse como opción #1.
+
+**Verificación contra recurrencia**: si founder aprueba el audit de velocidad, instalar Speed Insights + correr Lighthouse + reportar números reales antes de optimizar. Si NO lo aprueba ahora, dejar documentado que cualquier afirmación sobre performance del sitio es no-verificada hasta que haya medición.
+
 ## 2026-06-01 — Revisado — sin novedad: thumbnails clickeables implementados sin error
 
 **Estado**: N/A

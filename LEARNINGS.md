@@ -22,6 +22,13 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Revisado — sin novedad: audit antes de proponer ideas estratégicas (aplica el pattern ya documentado, sin novedad replicable)
+
+**Categoría**: Strategy / Audit-before-propose
+**Confianza**: 🟢 N/A (no aplica — refuerza el pattern de "audit antes de estimar/proponer" ya en regla 14 + LEARNINGS de blind spot e-commerce)
+
+Cuando el founder preguntó "qué agregar para mejorar", audité el estado (ls de páginas/API + grep de deps) ANTES de tirar ideas. Eso evitó proponer herramientas que YA existen (lector receta, recomendador, DNP, chat, swipe) y permitió detectar gaps reales (sin analytics de performance, cuotas solo en PDP). El valor del pattern ya está documentado en regla 14 ("audit obligatorio antes de estimar") + el LEARNING del blind spot de e-commerce baseline. El único hallazgo nuevo (gap de medición de performance) quedó en MISTAKES como anti-pattern del proyecto, no como learning. Sin novedad replicable adicional.
+
 ## 2026-06-01 — Feedback incremental del founder construyó un "sistema de variantes" coherente en 4 features encadenadas — cada una preparó la base de la siguiente
 
 **Categoría**: Product/UX systems / Incremental design

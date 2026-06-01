@@ -5,6 +5,26 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **Conversación estratégica: menú de mejoras del sitio — esperando decisión founder** (2026-06-01). Founder preguntó "qué podemos agregar para mejorar (herramientas, velocidad, responsividad, utilidades)". Hice audit del estado + propuse 6 opciones priorizadas. NO se ejecutó nada todavía — esperando que founder elija dirección.
+
+**Audit del estado (qué YA existe)**: lector receta IA, recomendador monturas IA, medidor DNP, chat RAG, swipe/matches, comparador, favoritos, alertas precio/stock, quick view, guías. **El sitio ya tiene más herramientas que la mayoría de ópticas AR — no faltan herramientas gimmick.**
+
+**Gaps detectados en el audit**:
+- ❌ NO hay `@vercel/analytics` ni Speed Insights instalado → **no medimos performance** (optimizamos a ciegas). Ver MISTAKES.
+- Cuotas solo en PDP, no en grid (conversión).
+- Sin try-on (probador virtual con cámara) — el diferenciador real de óptica online.
+- 2 artículos /guias (faltan ~15 para cluster SEO).
+
+**6 opciones ofrecidas (priorizadas impacto/esfuerzo)**:
+1. 🟢 Audit velocidad real (Speed Insights + Lighthouse + optimizar LCP/CLS/AVIF) — RECOMENDADA primero (medible, sin decisión de producto).
+2. 🟢 Cuotas visibles en grid (conversión).
+3. 🟡 Probador virtual try-on cámara (diferenciador grande, 2-4 días).
+4. 🟡 Comparador de medidas "¿te va a quedar bien?" (anti-devolución).
+5. 🔵 Más artículos /guias (SEO).
+6. 🔵 Tracker pedido en vivo (Opción Z, requiere Resend).
+
+**Próximo paso exacto**: founder elige. Mi recomendación: arrancar por #1 (audit velocidad) para tener datos antes de invertir. Si quiere conversión rápida → #2; diferenciarse → #3; SEO → #5.
+
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31 → 2026-06-01
 
 **Estado catálogo (verificado MCP, ~85 commits en la sesión)**:
