@@ -22,6 +22,20 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — "Ocultar contenido" tiene 3 estados distintos, no 1: elegir según QUIÉN tiene que poder verlo
+
+**Categoría**: Arquitectura / Contenido / Visibilidad
+**Confianza**: 🟢 Alta (el codebase ya tenía un mecanismo de "oculto" que NO servía para el pedido)
+
+**Qué funcionó**: El founder pidió subir las guías "invisibles al público pero que las pueda ver yo en la nube". El codebase YA tenía un mecanismo de borrador (prefijo `_` en el filename) que esconde el archivo del todo → 404 hasta para el founder. Usarlo habría sido lo cómodo y lo INCORRECTO. Antes de codear, separé los 3 estados reales de visibilidad:
+1. **Fully hidden** (404 para todos) — prefijo `_`. Sirve para templates/placeholders que nadie debe ver.
+2. **Unlisted** (deployado + `noindex` + accesible por URL, fuera de listados/sitemap) — `draft: true`. Sirve para revisión del founder en la nube sin exponer al público ni a Google.
+3. **Público** (listado + indexado).
+
+**Por qué funciona / principio reutilizable**: la pregunta correcta no es "¿oculto sí o no?" sino "¿QUIÉN tiene que poder verlo y por qué canal?". El founder por URL directa = unlisted. Nadie = fully hidden. Todos = público. Cada respuesta es una implementación distinta (filtrado de listas vs 404 vs nada). Conflarlas lleva a construir lo que no sirve. Aplica a cualquier feature de visibilidad (productos, pedidos, páginas).
+
+**Para la próxima**: ante un pedido de "ocultar X", preguntar/derivar quién necesita acceso y por qué vía, y mapearlo a uno de los 3 estados antes de tocar código. Reusa el patrón de auditar-lo-existente-primero (el `_` ya estaba, pero no era lo pedido).
+
 ## 2026-06-01 — El keyword research REAL reordena prioridades y destapa clusters de alto ROI que la estimación no ve
 
 **Categoría**: SEO / Contenido / Datos vs intuición

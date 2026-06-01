@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Los artículos `/guias` (un tipo de contenido indexable entero) NUNCA se agregaron al `sitemap.ts` — descubierto de casualidad auditando para el mecanismo de borrador
+
+**Estado**: 🟡 Mitigado parcial (registrado en BACKLOG para fixear; el artículo publicado igual puede indexarse vía links internos, pero pierde la señal del sitemap)
+**Categoría**: SEO técnico / Sitemap / Cobertura
+
+**Qué pasó**: Mientras auditaba `app/sitemap.ts` para asegurarme de que los borradores quedaran fuera, descubrí que el sitemap NO incluye NINGÚN artículo de `/guias` — ni el índice `/guias`, ni el artículo ya publicado (`como-leer-receta-anteojos`). Tiene home, categorías, marcas, productos, páginas legales — pero el cluster editorial entero quedó afuera. Cuando se construyó el sistema de guías, nadie cableó el content-type al sitemap.
+
+**Causa raíz**: al agregar un tipo de contenido nuevo indexable (guías), no se actualizó el sitemap como parte del "definition of done". El sitemap se trata como algo que se escribió una vez y no como algo que crece con cada superficie indexable nueva. Es un gap silencioso: no rompe nada, no tira error, simplemente el contenido nuevo no le llega a Google por el canal más directo.
+
+**Regla preventiva**: agregar al checklist de "tipo de contenido nuevo indexable" (artículos, landings, categorías, herramientas): wirearlo a `app/sitemap.ts`. Cuando se cree/publique una superficie con URL propia destinada a rankear, verificar que aparezca en el sitemap ANTES de dar por cerrado. Para guías: el sitemap debe derivar de `listArticles()` (que ya excluye `draft: true` → los borradores no se filtran al sitemap, bien). Registrado en BACKLOG.
+
 ## 2026-06-01 — Recomendé una SECUENCIA de escritura ("arrancar por el cluster sol") sobre volúmenes ESTIMADos — el keyword research real la dio vuelta (astigmatismo 22.200 era el más grande)
 
 **Estado**: 🟡 Mitigado (se detectó antes de escribir nada, gracias al research real del founder; el orden se corrigió)

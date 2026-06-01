@@ -112,6 +112,7 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ## 🟢 Mejoras técnicas (sin urgencia)
 
+- [ ] **Agregar `/guias` + artículos al `app/sitemap.ts`** (gap descubierto 2026-06-01, ver MISTAKES). Hoy NINGÚN artículo ni el índice `/guias` están en el sitemap. Derivar de `listArticles()` (ya excluye `draft: true`, así que los borradores no se filtran solos). Agregar entry `/guias` (priority ~0.7) + un map sobre `listArticles()` (priority ~0.6, lastModified = updatedAt). Hacerlo cuando se publique el primer artículo nuevo del plan de defectos refractivos (o antes).
 - [ ] **Migrar `pnpm lint`** a la CLI nueva de ESLint (Next 15 deprecó
   `next lint`, en Next 16 se elimina). Comando: `npx @next/codemod@canary
   next-lint-to-eslint-cli .`. No urgente — sigue funcionando bien.
