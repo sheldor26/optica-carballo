@@ -26,11 +26,11 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ## 2026-06-01 — "3 cuotas sin interés" hardcodeado en la ficha de producto: claim promocional/financiero sin atarlo a una fuente verificable (riesgo latente de publicidad engañosa)
 
-**Estado**: 🟡 Mitigado (resultó VERDADERO — el founder confirmó la promo activa en MP — pero el patrón es riesgoso; plan: centralizar a config único)
+**Estado**: 🟡 Mitigado (el gate de pago AÚN NO está configurado; founder se compromete a ≥3 cuotas sin interés antes de ir live → el claim será verdadero al momento de ventas reales. Pre-launch para pagos = sin consumidor real expuesto hoy. Plan: centralizar a config único)
 **Categoría**: Compliance / Trust / Regla negocio 3 y 7
 **Detectado por**: el founder preguntó si las cuotas se podían extraer de MP → al auditar descubrí que el "3 cuotas sin interés" era texto fijo en `product-price-block.tsx`, no derivado de nada.
 
-**Qué pasó**: La ficha mostraba "3 cuotas sin interés de $X" hardcodeado. Las cuotas sin interés en MP NO vienen por default: el vendedor las activa y paga (~5-9% extra/venta). Si la cuenta no las tenía activas, el sitio estaría publicitando una promo inexistente → publicidad engañosa (Ley 24.240 art. 8: lo publicitado obliga al oferente). En este caso resultó verdadero (founder confirmó 3 sin interés activas), pero fue suerte: nadie había verificado el claim contra la fuente real (el panel MP) cuando se escribió.
+**Qué pasó**: La ficha mostraba "3 cuotas sin interés de $X" hardcodeado. Las cuotas sin interés en MP NO vienen por default: el vendedor las activa y paga (~5-9% extra/venta). Si la cuenta no las tiene activas al momento de vender, el sitio estaría publicitando una promo inexistente → publicidad engañosa (Ley 24.240 art. 8: lo publicitado obliga al oferente). Estado real (corregido): el gate de pago todavía no está configurado y el founder se compromete a tener ≥3 sin interés antes del launch — o sea el claim es una intención firme, no un hecho verificado HOY. Pre-launch = nadie checkout-ea todavía, así que no hay exposición real aún; PERO el claim no debe quedar "huérfano" cuando se prenda el checkout.
 
 **Causa raíz**: hardcodear un claim promocional/financiero específico (un número de cuotas, un % de descuento, un plazo de envío) directamente en un componente, sin atarlo a una config con dueño claro ni verificar contra la fuente de verdad. El claim puede ser falso desde el día 1, o volverse falso cuando la realidad cambia (la promo se da de baja en MP) sin que nadie toque el código.
 
