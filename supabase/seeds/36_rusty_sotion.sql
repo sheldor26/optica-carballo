@@ -1,0 +1,42 @@
+-- ============================================
+-- Seed 36: Rusty Sotion (sol) — deportivo envolvente 2-en-1
+-- Fecha: 2026-05-31
+-- Origen: MLA1736414766 (multi-variation, 3 variantes)
+-- ============================================
+-- Modelo Rusty Sotion: deportivo envolvente para ciclismo/outdoor. Concepto
+-- 2-en-1 (igual al Yau): lentes polarizadas montadas + par adicional de
+-- lentes amarillas intercambiables. PLUS: RX Insert (adaptador interno) para
+-- cristales graduados. Curvatura Base-8, air ventilation. Frente+patillas
+-- G-Flex, bisagras plásticas.
+--
+-- 3 variantes (1 MLA multi-variation, todas $101.560,13):
+--   SKU 126072 — MBLUE/R.GREEN POL-YELLOW (azul/turquesa + verde espejado)
+--     ML var 180275685150. stock 5 (DEFAULT).
+--   SKU 126071 — MBLK/R.BLUE POL-YELLOW (negro/azul + azul espejado)
+--     ML var 180275685146. stock 3.
+--   SKU 126070 — MBLK/S10 POL-YELLOW (negro/rojo + gris oscuro)
+--     ML var 180275685148. stock 2.
+--
+-- Total stock 10. Medidas 140/67x47/17/125mm (las patillas 125 son cortas,
+-- típico de envolvente deportivo).
+--
+-- Las lentes amarillas NO son polarizadas (a propósito — mejor contraste con
+-- poca luz). Documentado en callout + lenses_included array.
+--
+-- Es el 2do modelo 2-en-1 del catálogo (el otro es Rusty Yau). Comparten
+-- estructura attributes.lenses_included.
+--
+-- Aplicado vía MCP execute_sql 2026-05-31 con autorización standing.
+-- Verificación MCP: variants=3, stock=10, images=7, shape=envolvente,
+-- interchangeable_lenses=true, prescription_adapter=true.
+--
+-- Scale 1.4/1.15 (envolvente como Yau, no el 1.15 default).
+-- ============================================
+-- 📸 FOTOS (nombres del bucket img 1 founder, MAYÚSCULAS):
+--   MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg + -FRENTE.jpg
+--   MBLK-R-BLUE-POL-YELLOW-PERFIL.jpg + -FRENTE.jpg
+--   MBLK-S10-POL-YELLOW-PERFIL.jpg + -FRENTE.jpg
+--   medidas.jpg
+-- ============================================
+
+-- Seed documental — INSERT real ya aplicado vía MCP.

@@ -210,6 +210,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.05,
   'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.2,
   'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.05,
+
+  // Rusty Sotion — envolvente deportivo como el Yau. Las fotos de envolventes
+  // suelen tener el anteojo más chico en el frame (patillas extendidas) →
+  // arranco en 1.4/1.15 como el Yau iter 3 (no 1.15 default). Si recorta,
+  // bajar a 1.2/1.05.
+  'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.4,
+  'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.15,
+  'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-PERFIL.jpg': 1.4,
+  'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-FRENTE.jpg': 1.15,
+  'rusty-sotion/MBLK-S10-POL-YELLOW-PERFIL.jpg': 1.4,
+  'rusty-sotion/MBLK-S10-POL-YELLOW-FRENTE.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
