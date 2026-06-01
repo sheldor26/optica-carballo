@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Escribí en CURRENT_STATE un roadmap "ITER 2 (futuro, no urgente)" como si fuera mío para hacer, sin hacer `git pull` — una sesión paralela YA estaba construyendo ese iter 2 en simultáneo
+
+**Estado**: 🟡 Mitigado (el merge no rompió nada porque convergieron, pero fue suerte, no proceso)
+**Categoría**: Proceso / Sesiones paralelas / Doc-rot
+
+**Qué pasó**: Cerré el iter 1 del tracker de pedidos y en CURRENT_STATE escribí una sección "⬜ ITER 2 (futuro, no urgente): admin UI con auth + email por cambio de estado" como pendiente a futuro. Al pushear y luego hacer `git pull`, descubrí que una sesión paralela **ya había construido exactamente ese iter 2** (admin UI, `lib/auth/admin.ts`, email-policy, etc.) mientras yo escribía que era "futuro". Mi CURRENT_STATE nació desactualizado en el momento de escribirlo.
+
+**Causa raíz**: redacté el estado del proyecto asumiendo que yo era el único actor, sin verificar el remoto. Cuando hay sesiones paralelas (confirmado: las hay), el `origin/main` puede tener trabajo que contradice lo que estoy por declarar como "pendiente/futuro". Declarar algo "no hecho / futuro" sin chequear origin es tan riesgoso como declararlo "hecho" sin chequear git diff.
+
+**Regla preventiva**: antes de escribir roadmaps multi-iteración o secciones "⬜ FALTA / futuro" en CURRENT_STATE, hacer `git fetch && git log origin/main --oneline -10` para ver si una sesión paralela ya avanzó eso. Si no puedo verificar, framear explícito: "desde la vista de ESTA sesión, falta X (puede haber sido hecho en paralelo)". El schema/migración aplicado es el contrato compartido entre sesiones; el roadmap de UI NO lo es y se desactualiza solo. Ver LEARNINGS 2026-06-01 (sesiones paralelas convergen vía el modelo de datos).
+
 ## 2026-06-01 — Thumbnails de la galería borrosos en desktop: `next/image sizes="120px"` sub-pedía resolución vs su tamaño renderizado real (~230px)
 
 **Estado**: 🟡 Mitigado (sizes corregido a `(min-width: 768px) 240px, 30vw`)

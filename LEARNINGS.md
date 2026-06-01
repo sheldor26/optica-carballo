@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Dos sesiones Claude en paralelo construyeron iter 1 e iter 2 del MISMO feature sin conflicto, porque ambas convergieron en el mismo modelo de datos (`order_status_events` + `note`)
+
+**Categoría**: Proceso / Sesiones paralelas / Diseño de datos
+**Confianza**: 🟡 Media (una sola observación — funcionó, pero hubo suerte además de diseño)
+
+**Qué pasó**: Construí el iter 1 del tracker de pedidos (stepper cliente: `buildTracker` + `OrderTimeline` + `fetchOrderStatusEvents`) y lo pusheé. Al hacer `git pull` después, una sesión paralela había construido el iter 2 (admin UI con auth + email por cambio de estado) Y había extendido mis archivos exactos (`order-status.ts`, `order-timeline.tsx`) para soportar `note` por evento. **Cero conflictos de merge** y el resultado quedó coherente.
+
+**Por qué funcionó**: la migración DB (`order_status_events` con columnas `status`, `note`, `created_at`) ya estaba aplicada ANTES de que cualquiera de las dos sesiones tocara el frontend. Esa migración fue el **contrato compartido**: ambas sesiones leyeron el mismo schema y derivaron UIs compatibles. El campo `note` ya existía en la tabla (lo dejé en el iter 1 como "futuro"), así que la sesión paralela solo lo cableó al render — extendió, no reescribió.
+
+**Para la próxima**: cuando hay sesiones paralelas posibles (el founder trabaja con varias), **la migración/schema aplicado es el punto de sincronización**. Si dos sesiones acuerdan el modelo de datos primero, el frontend puede construirse en paralelo sin pisarse. El riesgo NO mitigado: si las dos sesiones hubieran arrancado el MISMO iter (ej. ambas el stepper cliente), habría sido trabajo duplicado o conflicto real. Ver MISTAKES 2026-06-01 sobre escribir roadmaps en CURRENT_STATE sin `git pull` previo.
+
 ## 2026-06-01 — Agregar un campo per-producto a las cards = tocar 4 tipos fuente paralelos + sus selects + los maps inline de las páginas. Mapear TODOS los consumers ANTES de editar evita superficies olvidadas
 
 **Categoría**: Arquitectura / Pipeline de cards / Regla 15
