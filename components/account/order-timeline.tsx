@@ -120,6 +120,11 @@ export function OrderTimeline({
                     {node.description}
                   </p>
                 )}
+                {node.note && (
+                  <p className="text-foreground bg-muted/50 mt-1.5 rounded-md px-2.5 py-1.5 text-xs leading-relaxed">
+                    {node.note}
+                  </p>
+                )}
                 {node.at && (
                   <p className="text-muted-foreground mt-1 text-[11px] tabular-nums">
                     {formatOrderDate(node.at)}

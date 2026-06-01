@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ProductCopyForm } from '@/components/admin/product-copy-form';
+import { requireAdmin } from '@/lib/auth/admin';
 
 export const metadata: Metadata = {
   title: 'Generador de copy de producto — Admin',
@@ -17,10 +18,13 @@ export const metadata: Metadata = {
  * IA al cargar productos nuevos. Acelera el armado de las 5 marcas
  * pendientes (Mormaii, Reef, Paula Cahen D'Anvers, etc.).
  *
- * Sin auth iter 1 — el endpoint tiene rate limit por IP como única defensa.
- * Robots:noindex para que no aparezca en buscadores.
+ * Gateado por `requireAdmin()` (allowlist ADMIN_EMAILS) + rate limit por IP en
+ * el endpoint + robots:noindex. Antes era público (solo noindex) — cerrado en
+ * Iter 2 del tracker de pedidos.
  */
-export default function Page() {
+export default async function Page() {
+  await requireAdmin();
+
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-6 py-12">
       <header>

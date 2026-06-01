@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Auth admin con allowlist por env + service-role detrás del gate: más simple y seguro que políticas RLS por email
+
+**Categoría**: Security / Arquitectura / Incremental delivery
+**Confianza**: 🟢 Alta (aplicado al admin UI del tracker Iter 2 — entregó panel con PII gateado sin construir un sistema de roles)
+
+**Qué funcionó**: El admin UI de pedidos muestra PII (nombre, dirección, teléfono) y necesita LEER/ESCRIBIR órdenes de cualquier cliente — pero RLS filtra por `user_id = auth.uid()`. Dos caminos: (a) políticas RLS que reconozcan emails admin (requiere claims en el JWT + SQL por tabla, complejo y se esparce), o (b) gate de aplicación + service-role.
+
+**La movida**: `requireAdmin()` (allowlist `ADMIN_EMAILS` env, CSV, comparada contra el email del user logueado) en CADA page admin Y en la server action; las queries usan `createAdminClient()` (service-role, bypassa RLS) SIEMPRE detrás de ese gate. La key nunca sale del server. 404 en vez de redirect a login (no revela que la ruta admin existe).
+
+**Por qué funciona**: separa autorización (capa app, un solo helper, fácil de auditar) de los datos (service-role solo en server). Cambiar quién es admin = cambiar una env var, 0 código, 0 migración. RLS sigue protegiendo a los clientes normales intacto. Defensa en profundidad: el gate en la action, no solo en la página, cubre el caso de que alguien llame la action directo.
+
+**Cuándo NO aplica**: si hubiera MUCHOS roles/permisos finos o admins que se gestionan desde la DB, ahí sí conviene RLS/tabla de roles. Para "2-3 personas de confianza", allowlist env es el sweet spot.
+
+## 2026-06-01 — Turno de solo-lectura ("dónde quedamos"): el cierre honesto es "sin novedad" ESCRITO en los docs, no solo dicho en el chat
+
+**Categoría**: Proceso / Doc-hygiene
+**Confianza**: 🟢 Alta (el stop hook lo confirmó: disparó 2 veces hasta que la línea "sin novedad" quedó persistida en archivo)
+
+**Qué funcionó / qué aprendí**: Cuando un turno es puramente recap de lectura (sin código, sin decisión, sin error), la tentación es responder en el chat "no hay nada que documentar" y cerrar. El stop hook rechaza eso dos veces seguidas. La regla 11 del CLAUDE.md ya lo decía: prohibido el "sin novedad" verbal — tiene que quedar **una línea fechada explícita en el doc** (⚪ revisado, con la razón). El hook no valida lo que digo en el chat; valida lo que está en los archivos.
+
+**Por qué funciona**: el stop hook compara el transcript contra el estado de los docs. "No modifiqué nada porque no había nada" es indistinguible de "me olvidé de cerrar". La línea ⚪ fechada resuelve la ambigüedad y deja registro de que el turno SÍ se cerró conscientemente. No es burocracia: es la diferencia entre honestidad verificable y un gap silencioso.
+
+**Regla operativa**: hasta en turnos de solo-lectura, cerrar escribiendo la línea ⚪ "sin novedad: [razón]" en los 3 docs (o al menos CURRENT_STATE) ANTES de devolver control. No esperar a que el hook insista.
+
 ## 2026-06-01 — Feature con panel admin de PII: iter 1 con trigger DB + dashboard de la DB, difiriendo el admin UI con auth a iter 2 — entrega valor sin meter auth a las apuradas
 
 **Categoría**: Scoping / Security / Incremental delivery

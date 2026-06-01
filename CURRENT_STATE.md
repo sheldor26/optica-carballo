@@ -5,6 +5,45 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Data Fiscal ARCA/AFIP en el footer** (2026-06-01). Founder pasó el snippet oficial de AFIP (botón "Data Fiscal", obligatorio e-commerce AR). Agregado en `components/layout/site-footer.tsx`, base del footer junto al copyright. **Ajuste técnico**: URLs subidas de `http://` a `https://` (el sitio es HTTPS → el navegador bloquearía la imagen http por mixed-content). `<img>` plano (no next/image, es badge externo de compliance) + `rel="noopener noreferrer"` + `alt`. QR del CUIT del negocio sin tocar. Founder en paralelo va a armar el email profesional `@opticacarballo.com.ar` (Zoho/Workspace) para `ADMIN_EMAILS` + verificación Resend.
+
+🟢 **#6 Tracker de pedido — ITER 2 COMPLETO (admin UI con auth + emails automáticos + notas)** (2026-06-01). Founder eligió #6 Iter 2. Audit previo confirmó que casi toda la infra ya existía (`requireAuth`, `createAdminClient` service-role, trigger DB, Resend, tipos/labels). Scope construido:
+
+**Auth de admin (lo nuevo, security-critical)**:
+- `lib/auth/admin.ts` (NUEVO) — `requireAdmin()` / `isAdminEmail()` / `getAdminEmails()`. Allowlist por env `ADMIN_EMAILS` (CSV) comparada contra el email del usuario logueado. Si no autorizado → `notFound()` (404, NO redirect a login — no revela que la ruta existe). Se llama en CADA page admin Y en la action (defensa en profundidad).
+- **Decisión técnica**: leer/escribir órdenes ajenas con `createAdminClient()` (service-role, bypassa RLS) detrás de `requireAdmin()`, en vez de inventar políticas RLS por email. Más simple y seguro (regla 5): la key nunca sale del server.
+
+**Admin UI** `/admin/pedidos`:
+- `app/admin/pedidos/page.tsx` (NUEVO) — lista de TODOS los pedidos (cliente, email, total, estado, fecha).
+- `app/admin/pedidos/[id]/page.tsx` (NUEVO) — detalle con PII + items + dirección + timeline + control de estado.
+- `lib/orders/admin-queries.ts` (NUEVO) — `fetchAllOrders` / `fetchOrderByIdAdmin` / `fetchOrderStatusEventsAdmin` (service-role).
+- `app/admin/pedidos/actions.ts` (NUEVO) — server action `updateOrderStatusAction`: requireAdmin → UPDATE (trigger registra evento + timestamps) → parchea nota al evento → email best-effort. Detecta no-op (mismo estado).
+- `components/admin/order-status-control.tsx` (NUEVO, client) — selector de estado + nota opcional + avisa cuáles disparan email (✉️). useTransition + router.refresh.
+
+**Emails automáticos por cambio de estado** (founder eligió los 4: preparing, reviewed, shipped, delivered):
+- `lib/orders/email-policy.ts` (NUEVO) — `CUSTOMER_NOTIFY_STATUSES` + `shouldNotifyCustomer()` (single source).
+- `lib/emails/templates/order-status-update-customer.ts` (NUEVO) — copy por estado, tono argentino, tracking en shipped, botón "Ver mi pedido". El email de "Revisado por óptica matriculada" comunica el diferencial real.
+- `lib/emails/send-order-emails.ts` — `sendOrderStatusUpdateToCustomer()` (best-effort, no tira excepción).
+
+**Notas en el tracker (item 3)**:
+- `lib/orders/order-status.ts` — `TrackerNode.note` + `buildTracker` lo puebla del timeline.
+- `components/account/order-timeline.tsx` — renderiza la nota si existe.
+
+**Extras**: gateado `/admin/product-copy-gen` con `requireAdmin()` (antes solo noindex). `ADMIN_EMAILS` + `BUSINESS_ADMIN_EMAIL` documentados en `.env.example`.
+
+**⚠️ Verificación pendiente**: `node_modules` no está instalado en este checkout + el proxy local rompe el TLS de pnpm/corepack. `tsc` local NO se pudo correr esta sesión (npm install en curso al cerrar). **Revisar el type-check en el preview de Vercel** o cuando se reinstalen deps. El código se revisó manualmente contra los patrones existentes (copiado de queries.ts / send-order-emails.ts / order-detail.tsx).
+
+**Pendiente founder para activar**:
+1. Setear `ADMIN_EMAILS` en Vercel (env) con el email con el que te logueás al sitio (hoy tu Gmail; después el profesional @opticacarballo.com.ar vía Zoho/Workspace).
+2. Loguearte y entrar a `/admin/pedidos`.
+3. (Para que los emails salgan bien) verificar dominio Resend — hoy salen desde `onboarding@resend.dev`.
+
+**⬜ ITER 3 (futuro)**: input de tracking_number en el admin UI (hoy se carga desde Supabase); link al admin desde el header cuando el user es admin.
+
+---
+
+⚪ **Sesión de recap "dónde quedamos" — sin novedad técnica** (2026-06-01). Turno de solo-lectura: el founder pidió orientación, leí los docs y devolví el estado vigente. NO hubo código, decisión técnica ni error nuevo. El estado vigente sigue siendo el cierre consolidado del commit `90f8901` (tracker Iter 1 + Speed Insights). Próximo paso exacto sin cambios → ver "Pendiente founder" en el cierre consolidado de abajo.
+
 🟡 **Conversación estratégica: menú de mejoras del sitio — esperando decisión founder** (2026-06-01). Founder preguntó "qué podemos agregar para mejorar (herramientas, velocidad, responsividad, utilidades)". Hice audit del estado + propuse 6 opciones priorizadas. NO se ejecutó nada todavía — esperando que founder elija dirección.
 
 **Audit del estado (qué YA existe)**: lector receta IA, recomendador monturas IA, medidor DNP, chat RAG, swipe/matches, comparador, favoritos, alertas precio/stock, quick view, guías. **El sitio ya tiene más herramientas que la mayoría de ópticas AR — no faltan herramientas gimmick.**

@@ -24,6 +24,28 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Cerré (intenté) el turno del tracker Iter 2 con la verificación `tsc` todavía corriendo en background — "apenas termine te confirmo" es cierre prematuro
+
+**Estado**: 🟡 Mitigado (corregido: docs cerrados + verificación marcada explícitamente como DIFERIDA, no "pendiente vaga")
+**Categoría**: Proceso / Verificación / Closure
+
+**Qué pasó**: Construí todo el Iter 2 (admin UI + emails). `node_modules` NO estaba instalado en el checkout y el proxy local rompe el TLS de pnpm/corepack (`UNABLE_TO_VERIFY_LEAF_SIGNATURE`), así que `tsc` no podía correr. Lancé `npm install` en background y mandé un mensaje tipo cierre ("apenas termine te confirmo si está limpio") devolviendo control al founder con la verificación a medias y MISTAKES sin tocar. El stop hook lo marcó.
+
+**Causa raíz**: dos cosas. (1) Confundí "lancé la verificación" con "verifiqué" — un install en background que puede colgarse por TLS no es una verificación completada. (2) Volví a caer en el cierre prematuro: mensaje que devuelve control sin los 3 docs cerrados (mismo patrón que el de "sin novedad solo en el chat" de hoy y los de la sesión 2026-05-28).
+
+**Regla preventiva**: cuando la verificación (tsc/lint/build) no se puede completar en el turno —entorno roto, install que cuelga, falta de red— NO escribir "apenas termine confirmo". En su lugar: (a) declarar la verificación **DIFERIDA** con el motivo concreto y dónde se va a verificar (ej: "preview de Vercel"), (b) cerrar los 3 docs igual, (c) recién ahí devolver control. Un `git push` dispara el type-check de Vercel — ese es el fallback de verificación válido cuando el entorno local no puede. "Pendiente" vago ❌; "diferido a X con motivo Y" ✅.
+
+## 2026-06-01 — Intenté cerrar un turno de recap declarando "sin novedad" SOLO en el chat, sin escribirlo en los docs — el stop hook lo rechazó 2 veces
+
+**Estado**: 🟡 Mitigado (corregido en el mismo turno: línea ⚪ persistida en CURRENT_STATE/LEARNINGS/MISTAKES)
+**Categoría**: Proceso / Doc-hygiene / Stop-hook
+
+**Qué pasó**: El founder pidió "dónde quedamos" (turno de solo-lectura). Respondí el recap y, al cerrar, dije en el chat "ningún archivo fue modificado, y eso es correcto". El stop hook disparó, insistí con la misma justificación verbal, y disparó de nuevo. Recién se satisfizo cuando escribí la línea "sin novedad" en los archivos.
+
+**Causa raíz**: confundí "no hay feature que documentar" con "no hay nada que escribir". La regla 11 del CLAUDE.md ya exige el "Revisado — sin novedad: [razón]" ESCRITO, no verbal. El stop hook valida el estado de los docs, no mis afirmaciones en el chat. Un cierre verbal es, para el hook, indistinguible de un cierre olvidado.
+
+**Regla preventiva**: en CUALQUIER turno que devuelva control al founder —incluido recap de solo-lectura— escribir la línea ⚪ fechada "sin novedad: [razón]" en CURRENT_STATE (mínimo) ANTES de redactar el mensaje de cierre. Nunca argumentar el "sin novedad" solo en el chat. Si el hook insiste 2 veces sobre lo mismo, dejar de defender la postura y persistir la línea (corolario de la regla 13: corregir, no defender).
+
 ## 2026-06-01 — Gap detectado en audit: el sitio NO tiene analytics de performance instalado (@vercel/analytics / Speed Insights) — venimos optimizando velocidad de imágenes "a ciegas" sin medición
 
 **Estado**: 🟡 Mitigado parcial — audit de LABORATORIO ejecutado (curl + peso imágenes via MCP + formato servido). Reveló que el sitio YA está rápido (Next sirve fotos como 5 KB WebP). AVIF habilitado. PENDIENTE: instalar Speed Insights para métricas de CAMPO reales (esperando OK founder, regla 6). **Lección confirmada parcialmente falsa**: sí optimizábamos sin medir, PERO resultó que Next ya hacía el trabajo bien — el "problema" de fotos de 1.2 MB en bucket NO afectaba al usuario. Moraleja: medir antes de asumir AMBAS direcciones (ni "está lento" ni "está rápido" sin datos).

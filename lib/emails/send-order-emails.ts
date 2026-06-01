@@ -8,6 +8,10 @@ import {
   buildAdminOrderEmail,
   type AdminEmailData,
 } from './templates/order-notification-admin';
+import {
+  buildStatusUpdateEmail,
+  type StatusUpdateEmailData,
+} from './templates/order-status-update-customer';
 
 export type SendResult = { ok: true; id: string } | { ok: false; error: string };
 
@@ -22,6 +26,42 @@ export async function sendOrderConfirmationToCustomer(args: {
   data: CustomerEmailData;
 }): Promise<SendResult> {
   const { subject, html, text } = buildCustomerOrderEmail(args.data);
+
+  try {
+    const resend = getResendClient();
+    const result = await resend.emails.send({
+      from: getFromAddress(),
+      to: args.to,
+      subject,
+      html,
+      text,
+    });
+
+    if (result.error) {
+      return { ok: false, error: result.error.message };
+    }
+    return { ok: true, id: result.data?.id ?? 'unknown' };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+/**
+ * Manda el email al cliente cuando la óptica cambia el estado de su pedido
+ * (preparing / reviewed / shipped / delivered). Disparado desde la server
+ * action del panel admin — el trigger DB NO puede mandar emails.
+ *
+ * Best-effort: si Resend falla, retorna error pero NO tira excepción (el
+ * cambio de estado ya se persistió; un email caído no debe revertirlo).
+ */
+export async function sendOrderStatusUpdateToCustomer(args: {
+  to: string;
+  data: StatusUpdateEmailData;
+}): Promise<SendResult> {
+  const { subject, html, text } = buildStatusUpdateEmail(args.data);
 
   try {
     const resend = getResendClient();

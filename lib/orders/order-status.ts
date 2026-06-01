@@ -48,6 +48,8 @@ export type TrackerNode = {
   state: TrackerNodeState;
   /** Timestamp ISO en que se alcanzó este paso (del timeline), o null. */
   at: string | null;
+  /** Nota cargada por la óptica al alcanzar este paso, o null. */
+  note: string | null;
 };
 
 export type Tracker = {
@@ -73,11 +75,15 @@ export function buildTracker(
       : null;
   const awaitingPayment = currentStatus === 'pending';
 
-  // Primer timestamp en que se registró cada status (los eventos vienen
+  // Primer timestamp + nota en que se registró cada status (los eventos vienen
   // ordenados ASC por created_at, así que el primero gana).
   const reachedAt = new Map<OrderStatus, string>();
+  const noteByStatus = new Map<OrderStatus, string>();
   for (const ev of events) {
     if (!reachedAt.has(ev.status)) reachedAt.set(ev.status, ev.createdAt);
+    if (ev.note && !noteByStatus.has(ev.status)) {
+      noteByStatus.set(ev.status, ev.note);
+    }
   }
 
   // Índice del paso actual dentro del happy path. -1 si el status no es un
@@ -106,6 +112,7 @@ export function buildTracker(
       description: TRACKER_STEP_DESCRIPTIONS[step],
       state,
       at: reachedAt.get(step) ?? null,
+      note: noteByStatus.get(step) ?? null,
     };
   });
 
