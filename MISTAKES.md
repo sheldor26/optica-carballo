@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-01 — Tomé una respuesta de AskUserQuestion ("Sí, tengo 3 sin interés") como hecho verificado y lo escribí en los docs — la realidad del founder era más matizada ("aún no configuro el gate, pero va a tener ≥3")
+
+**Estado**: 🟡 Mitigado (el founder corrigió en el siguiente mensaje; reescribí CURRENT_STATE + MISTAKES con el estado real antes de seguir)
+**Categoría**: Proceso / Comunicación / Diseño de preguntas
+
+**Qué pasó**: Ofrecí una pregunta de opción-múltiple con la opción "Sí, tengo 3 cuotas sin interés". El founder la eligió (era la más cercana a su intención) y yo la registré en CURRENT_STATE y MISTAKES como "founder CONFIRMÓ que tiene 3 cuotas sin interés ACTIVAS en su panel MP → claim verdadero, riesgo descartado". Acto seguido el founder aclaró: "pasa que aún no tengo el gate configurado, pero lo va a tener en al menos 3 cuotas sin interés". O sea: convertí una intención futura en un hecho presente verificado, y encima lo escribí en docs de compliance donde la precisión importa.
+
+**Causa raíz**: las opciones que YO redacto en AskUserQuestion fuerzan al usuario a elegir la más cercana, que rara vez captura el matiz exacto de su realidad. Tratar esa elección como una afirmación literal y precisa —especialmente para algo verificable como "promo activa sí/no"— es asumir de más. El label de la opción es MÍO, no del founder; él solo eligió el casillero menos malo.
+
+**Regla preventiva**: una respuesta de opción-múltiple indica DIRECCIÓN, no un hecho verificado con la redacción exacta de la opción. Para cosas verificables y sensibles (estado de una promo, si algo está configurado/activo, números de compliance), NO escribir en docs "el founder confirmó X" basándome solo en que tildó una opción que yo escribí — confirmar en prosa ("entonces hoy la promo está activa, ¿sí?") o framear el doc como intención ("founder se compromete a X") hasta tener confirmación explícita. Conecta con el otro mistake de hoy (claim sin fuente verificable).
+
 ## 2026-06-01 — "3 cuotas sin interés" hardcodeado en la ficha de producto: claim promocional/financiero sin atarlo a una fuente verificable (riesgo latente de publicidad engañosa)
 
 **Estado**: 🟡 Mitigado (el gate de pago AÚN NO está configurado; founder se compromete a ≥3 cuotas sin interés antes de ir live → el claim será verdadero al momento de ventas reales. Pre-launch para pagos = sin consumidor real expuesto hoy. Plan: centralizar a config único)
