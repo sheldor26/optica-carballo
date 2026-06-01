@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-01 — Front-loadear el spec (brief técnico + keyword map + estándar) convierte la escritura del artículo en "ensamblaje" rápido y consistente
+
+**Categoría**: Proceso / Contenido / Producción
+**Confianza**: 🟢 Alta (la pillar de Astigmatismo se escribió de una, completa y sin idas y vueltas)
+
+**Qué funcionó**: Para escribir la pillar de Astigmatismo NO arranqué de cero. Tenía tres insumos ya preparados de turnos anteriores: (1) el **brief técnico validado** por optical-expert (`content/briefs/defectos-refractivos.md` — facts, signos, mitos, banderas rojas), (2) el **mapa de keywords real** (qué primaria/secundarias, qué intención), y (3) el **estándar de producción** (`ARTICLE_SEO_STANDARD.md` — estructura, answer-first, FAQ, link juice, checklist). Con esos tres, escribir fue ensamblar: la estructura de H2 salió del mapa de keywords + PAA, los facts del brief, el formato del estándar. Una sola pasada, sin re-trabajo.
+
+**Por qué funciona / principio reutilizable**: el costo de producir contenido de calidad se mueve al spec, no a la redacción. Invertir una vez en brief + keywords + estándar hace que CADA artículo siguiente sea más barato y más consistente (todos comparten la misma vara). Es el mismo principio que un design system: la inversión inicial se amortiza en cada pieza. Lo opuesto —escribir improvisando y "después le metemos SEO"— produce contenido desparejo y obliga a re-pasadas.
+
+**Para la próxima**: antes de producir en volumen (artículos, fichas, landings), preguntar "¿tengo el spec hecho?" (facts validados + targets + estándar de formato). Si no, hacerlo primero: el primer item tarda más pero del 2º en adelante es ensamblaje. Las próximas guías (astigmatismo-como-se-ve, diferencias, miopía, etc.) deberían salir aún más rápido reusando estos tres insumos.
+
 ## 2026-06-01 — "Ocultar contenido" tiene 3 estados distintos, no 1: elegir según QUIÉN tiene que poder verlo
 
 **Categoría**: Arquitectura / Contenido / Visibilidad
