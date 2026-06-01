@@ -238,6 +238,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           variants={variants}
           selectedVariantId={selectedVariantId}
           onSelect={setSelectedVariantId}
+          productHref={product.href}
         />
       )}
     </article>
@@ -250,9 +251,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
 const MAX_VISIBLE_THUMBS_MOBILE = 3;
 
 /**
- * Tira horizontal de thumbnails (uno por variante). Click cambia la imagen
- * mostrada en la card. Sin stock → tinte gris. Si hay más de MAX_VISIBLE_THUMBS,
- * mostramos "+N" al final (sin overflow horizontal).
+ * Tira horizontal de thumbnails (uno por variante). Cada thumbnail es un
+ * Link a la PDP de ESA variante (deep-link `?v=<sku>`) — founder 2026-05-31:
+ * "al hacer click en el thumbnail debería entrar a la publicación en esa
+ * variante". En desktop, hover (onMouseEnter) previsualiza la variante en la
+ * foto grande del card sin navegar; el click navega. En mobile (sin hover),
+ * el tap navega directo a la PDP de la variante.
  *
  * Mobile: solo 3 thumbs visibles. Desktop (sm+): hasta 5. Indicador "+N"
  * dinámico según breakpoint (CSS-only, hidden/sm:flex).
@@ -261,10 +265,13 @@ function VariantThumbnails({
   variants,
   selectedVariantId,
   onSelect,
+  productHref,
 }: {
   variants: ProductCardVariant[];
   selectedVariantId: string | null;
   onSelect: (id: string) => void;
+  /** href base del producto (sin query) para construir el deep-link `?v=`. */
+  productHref: string;
 }) {
   const visible = variants.slice(0, MAX_VISIBLE_THUMBS);
   const hiddenCount = variants.length - visible.length;
@@ -298,13 +305,12 @@ function VariantThumbnails({
           ? `Ver ${v.label} (${stockBadge.label})`
           : `Ver ${v.label}`;
         return (
-          <button
+          <Link
             key={v.id}
-            type="button"
-            onClick={() => onSelect(v.id)}
+            href={`${productHref}?v=${encodeURIComponent(v.sku)}`}
             onMouseEnter={() => onSelect(v.id)}
             aria-label={ariaLabel}
-            aria-pressed={isActive}
+            aria-current={isActive ? 'true' : undefined}
             title={stockBadge?.label}
             className={cn(
               'bg-background relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
@@ -337,19 +343,20 @@ function VariantThumbnails({
                 )}
               />
             )}
-          </button>
+          </Link>
         );
       })}
       {/* Cuadrito "+N" mobile: ocupa lugar del 3er thumb cuando hay >3 variantes.
           Solo visible en mobile/tablet (<md). Linkea al PDP para ver todas las
           variantes. */}
       {showMobileOverflowBox && (
-        <div
-          aria-hidden="true"
-          className="bg-background border-border/60 text-muted-foreground flex size-16 shrink-0 items-center justify-center rounded border text-sm font-medium md:hidden"
+        <Link
+          href={productHref}
+          aria-label={`Ver las ${variants.length} variantes`}
+          className="bg-background border-border/60 text-muted-foreground hover:border-foreground/40 flex size-16 shrink-0 items-center justify-center rounded border text-sm font-medium transition-colors md:hidden"
         >
           +{hiddenCountMobile}
-        </div>
+        </Link>
       )}
       {/* Desktop (md+): indicador "+N" text inline si hay más de 5 variantes. */}
       {hiddenCount > 0 && (

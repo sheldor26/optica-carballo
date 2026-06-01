@@ -17,6 +17,16 @@
 
 **Verificación**: tsc pass.
 
+🟢 **Thumbnails de variante en ProductCard ahora navegan a la PDP de esa variante** (2026-06-01). Founder: "al hacer click en el thumbnail debería entrar a la publicación en esa variante".
+
+**Cambio**: `components/product/product-card.tsx` — `VariantThumbnails` convertido de `<button onClick>` a `<Link href="{productHref}?v={sku}">`.
+- **Desktop**: hover (onMouseEnter) previsualiza la variante en la foto grande del card SIN navegar; click navega a la PDP de esa variante (deep-link `?v=`).
+- **Mobile**: tap navega directo a la PDP de la variante (no hay hover).
+- El "+N" overflow box mobile → Link a la PDP general.
+- Combina con el deep-link `?v=` (commit `b86b1cb`) + el guard de selección manual (commit `57c995b`): al entrar por el thumbnail, la PDP abre con esa variante preseleccionada y el usuario puede cambiarla después.
+
+**Verificación**: tsc pass. Sin links anidados (thumbnails son sibling del Link principal del card).
+
 ## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
 
 **Estado catálogo (verificado MCP al cierre, ~80 commits en el día)**:
