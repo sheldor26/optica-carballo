@@ -1,5 +1,63 @@
 # Óptica Carballo — Current State
 
+## 🏁 CIERRE CONSOLIDADO — sesión maratónica 2026-05-31
+
+**Estado catálogo (verificado MCP al cierre)**:
+- `anteojos-de-sol`: **12 productos**, 221 unidades de stock total
+- `anteojos-de-receta`: **2 productos**, 33 unidades
+- **14 productos activos totales** (al inicio del día había 6)
+
+**Productos cargados/modificados HOY (8 nuevos + 1 update)**:
+| Producto | Variantes | Categoría | Notas |
+|---|---|---|---|
+| Rusty Dearly | 3 | sol | cuadrado femenino, fix descripción bisagras honestas |
+| Rusty Vrast | 3 | sol | aviador metal, scale iter 2 |
+| Rusty Etiquet | 4 | sol | redondo femenino, 3 pol + 1 degradé |
+| Rusty Tulle | 4 | sol | aviador metal + terminales acetato |
+| Rusty Xold | 5 | sol | redondo unisex, mayor stock (43), + UPDATE peso 21.5g |
+| Rusty Xold Receta | 4 | **receta** | 1er Rusty receta, sin mención Bluecut |
+| Vulk Booping | 4 | sol | redondo, 18.9g ultraliviano, scale iter 3 |
+| Vulk Arvin | 3 | sol | cuadrado, counter-learning scale aplicado |
+| Rusty Spell | 5 | sol | cuadrado, 2 pol + 3 no-pol |
+| Vulk Day Light | (update) | sol | marcado polarized=true (4 variantes) |
+
+**Bugs estructurales resueltos HOY**:
+1. **Container CSS** (`tailwind.config.ts`): catálogos con `container` eran 256px más chicos que BrandPage (`max-w-screen-2xl`). Override `2xl:1280px` eliminado → 1536px default + padding responsive. Afectó 8 catálogos.
+2. **Badge POLARIZADO roto**: `isPolarized()` buscaba campos que no existían en seeds. Robustecido a 4 fuentes (polarized + is_polarized + lens_treatment + "POL" en model_code).
+3. **Variant thumbnails faltantes** en gender/shape/favoritos (no pasaban por pipeline central).
+4. **Scale inconsistente cross-catálogo**: movido `getImageScale` a query layer (Single point of normalization).
+5. **Layout VariantList 3 líneas** → reorganizado a 2 (model_code + SKU en línea gris secundaria).
+
+**Features nuevos HOY**:
+- Share buttons (WhatsApp/FB/Email/Copiar/Native) variant minimal + og:image en PDP/artículos + tracking GA4
+- Indicador sutil de stock en thumbnails (dot rojo sin stock / ámbar pocas unidades)
+- Display de model_code en VariantList
+- MCP Supabase conectado → autorización standing para apply de seeds DML
+
+**Decisiones técnicas consolidadas**:
+- **Cross-source verification de polarizada**: cuando founder dice "todas polarizadas" pero hay anomalías (precio menor + título "Degradé"/"Revo" + code sin "POL"), domina la triangulación. Aplicado en Etiquet, Xold, Arvin, Spell.
+- **Scale default conservador 1.15/1.0** (counter-learning del Booping iter 2 que recortó con 1.3). Iterar hacia arriba si queda chico, nunca empezar agresivo.
+- **NO mencionar Bluecut** en productos receta (founder: cristales se venden por separado).
+- **Sub-regla 15 escalada a CLAUDE.md**: cada carga propone scale override comparando contra grid.
+
+**Reglas/memoria persistente creadas**:
+- `CLAUDE.md` regla 15 + sub-regla post-carga
+- Memoria agente: `feedback-c2-vrast-no-mencionar.md`
+- LEARNINGS: Single point of normalization, MCP coverage query, cross-source verification, counter-learning scale, autorización standing MCP
+- MISTAKES: container-as-cache misdiagnosis, badge code-data drift, scale-too-aggressive, doc-rot CLOUD_APPLIED
+
+**Próximo paso exacto (founder)**:
+1. Subir fotos pendientes a buckets: `rusty-spell/` (11), `vulk-arvin/` (7). (Resto ya subidas.)
+2. Verificar visualmente catálogo completo post-deploy (14 productos, tamaños consistentes).
+3. Decidir próxima dirección: más productos / artículos SEO / Opción Z tracker pedidos / audit baseline e-commerce.
+
+**Pendientes operativos NO resueltos** (fuera de carga de producto):
+- Resend domain verification (para emails transaccionales)
+- MP webhook productivo
+- Few-shot lector receta (4/13, pausado)
+
+---
+
 🟢 **Rusty Spell cargado: 5 variantes cuadradas G-Flex, stock 38** (2026-05-31).
 
 **Cambios** (commit pending):

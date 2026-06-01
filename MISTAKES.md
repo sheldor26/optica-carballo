@@ -24,6 +24,30 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-05-31 — Patrón sistémico del día: stop hook reportó "falta consolidación final" en 6+ turnos seguidos — yo cerraba cada carga de producto pero NO consolidaba la sesión como arco completo
+
+**Estado**: 🟡 Mitigado — cierre consolidado de sesión escrito al final con tabla de los 9 productos + bugs + features + decisiones + próximos pasos. Pero el pattern recurrió MUCHAS veces en la sesión.
+**Categoría**: Documentation / Session closure / Stop hook recurrence
+**Patrón**: per-task-closure-without-session-arc-consolidation
+
+**Qué pasó**: Durante la sesión maratónica (9 productos + 5 bugs + features), después de CADA carga yo actualizaba CURRENT_STATE.md con la entry del producto recién cargado + commit. Pero el stop hook reportó repetidamente (6+ veces) que faltaba la "consolidación final de la sesión completa" — un cierre que contemple el ARCO entero (todos los productos, decisiones técnicas transversales, problemas, próximos pasos), no solo el último ítem.
+
+**Causa raíz**:
+1. **Confundí "actualicé CURRENT_STATE con lo último" con "cerré la sesión"**. Cada entry individual era correcta pero el doc carecía de una vista consolidada del día.
+2. **La sesión fue inusualmente larga** (9 cargas + bugs + features en un solo hilo). En sesiones cortas, la última entry ES el resumen. En esta, el arco era demasiado grande para que la última entry lo capturara.
+3. **El stop hook esperaba un formato específico** (qué se construyó TODO + decisiones + problemas + próximo paso) que yo daba parcialmente turno a turno pero nunca consolidado.
+
+**Costos**:
+- Stop hook disparó 6+ veces pidiendo lo mismo → ruido en la sesión
+- Si el founder retoma en otra sesión y lee solo la última entry, no ve el panorama completo del día sin scrollear 9 entries
+
+**Regla preventiva**:
+1. **En sesiones con 3+ tareas mayores (cargas, bugs, features)**: además de la entry por-tarea, mantener UNA sección "Cierre consolidado de sesión" al tope de CURRENT_STATE.md que se ACTUALIZA (no se duplica) con la vista de arco completo.
+2. **Cuando el stop hook pide consolidación 2+ veces**: hacer el cierre consolidado COMPLETO inmediatamente, no otra entry incremental. (Regla 13 análoga: corregir, no defender.)
+3. **Estructura del cierre consolidado**: (a) estado del sistema verificado, (b) tabla de todo lo construido, (c) bugs resueltos, (d) features, (e) decisiones técnicas transversales, (f) próximo paso exacto, (g) pendientes operativos.
+
+**Verificación contra recurrencia**: en la próxima sesión larga, después de la 3ra tarea mayor, crear/actualizar la sección "Cierre consolidado" proactivamente — no esperar a que el stop hook lo pida.
+
 ## 2026-05-31 — Revisado — sin novedad: Arvin cargado aplicando correctamente counter-learning del Booping (scale 1.15/1.0 conservador desde inicio)
 
 **Estado**: N/A

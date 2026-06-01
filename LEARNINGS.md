@@ -22,6 +22,34 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-05-31 — Playbook de carga de producto consolidado: 9 productos cargados en 1 sesión, tiempo decreciente por iteración (curva de aprendizaje real)
+
+**Categoría**: Workflow / Throughput / Playbook maturity
+**Confianza**: 🟢 Alta (9 cargas en una sesión, el 8vo-9no producto tomó ~1/3 del tiempo del primero)
+
+**Qué funcionó**: La sesión cargó 9 productos (Dearly, Vrast, Etiquet, Tulle, Xold, Xold Receta, Booping, Arvin, Spell). El playbook se consolidó a esta secuencia fija que ejecuto sin re-pensar:
+
+1. **Audit paralelo**: `SELECT slug` (slug libre?) + `curl` los N MLAs en background simultáneo + parse con python one-liner.
+2. **Cross-source verification** de atributos binarios (polarizada) cuando hay señales de heterogeneidad.
+3. **Apply via MCP** en un solo `execute_sql` transaccional (BEGIN...COMMIT) con producto + variantes + imágenes.
+4. **Verificación MCP** con SELECT de conteos (variants/stock/images/shape).
+5. **Scale override** 1.15/1.0 default en `image-scale-overrides.ts`.
+6. **Seed doc local** (referencia + idempotencia).
+7. **CLOUD_APPLIED.md** entry con verificación.
+8. **Commit + push**.
+
+**Por qué funciona el throughput creciente**:
+- **Paralelización del fetch**: los N curl corren en background simultáneo, no secuencial. 5 MLAs en el tiempo de 1.
+- **Plantilla de seed estable**: copio la estructura del seed anterior, cambio datos. El JSONB de attributes/callouts tiene forma fija.
+- **MCP elimina round-trips**: apply + verify en el mismo turno, sin esperar al founder.
+- **Decisiones pre-resueltas**: scale 1.15 default, cross-source para polarizada, naming respetado tal cual. No re-litigo cada vez.
+
+**Métricas de la sesión**: 9 productos, 35 variantes nuevas, ~254 unidades de stock, 67 commits, 0 errores de apply (todos los COMMIT exitosos al primer intento gracias a verificación MCP previa).
+
+**Replicabilidad**: este playbook es ahora el estándar para carga de producto. Próxima sesión de carga masiva → seguir los 8 pasos en orden. Si aparece un producto que no encaja (ej. multi-categoría, bundle, lente intercambiable nuevo), documentar la variación.
+
+**Límite identificado**: el bottleneck NO es mi velocidad de carga — es (a) el founder subiendo fotos al bucket, (b) pasándome URLs ML + SKUs. Para acelerar más, founder podría batchear: pasarme 5 modelos juntos con todos sus datos, y yo los cargo en paralelo con un workflow.
+
 ## 2026-05-31 — Aplicar counter-learning del Booping iter 2 inmediatamente: Vulk Arvin cargado con scale 1.15/1.0 conservador desde el inicio (no salté a valores agresivos sin evidencia)
 
 **Categoría**: Pattern correction / Learning application
