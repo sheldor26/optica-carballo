@@ -131,8 +131,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-zaedit/ZAEDIT_MBLK_S10POL_f.jpg': 1.0,
   'rusty-zaedit/ZAEDIT_SBLK_DRT03_p.jpg': 1.15,
   'rusty-zaedit/ZAEDIT_SBLK_DRT03_f.jpg': 1.0,
-  'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_p.jpg': 1.15,
-  'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_f.jpg': 1.0,
+  'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_POL_p.jpg': 1.15,
+  'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_POL_f.jpg': 1.0,
 
   // Rusty Tulle — sub-regla 15 obligatoria post-carga: scale 1.15
   // default emparejando con Vrast iter 2 (mismo aviador metal). Si tras

@@ -19,8 +19,11 @@
 --     price $77.366,29, stock 5. POLARIZADA.
 --
 --   SKU 127062 — MBLK / REVO BLUE
---     negro mate + lentes azul espejado (revo). MLA1564461732.
---     price $85.888,07, stock 5. NO POLARIZADA (espejada, coating premium).
+--     negro mate + lentes azul espejado (revo) POLARIZADAS. MLA1564461732.
+--     price $85.888,07, stock 5. POLARIZADA (corrección founder 2026-06-02:
+--     son las últimas del espejado azul polarizado; ML decía pol, founder
+--     primero dijo que no, después confirmó que SÍ). Fotos renombradas a
+--     ZAEDIT_MBLK_R_BLUE_POL_{p,f}.jpg.
 --
 -- Medidas (imagen técnica del founder):
 --   frame_width_mm: 146
@@ -35,9 +38,9 @@
 --   ZAEDIT_MBLK_S10POL_f.jpg  (S10 — frente)
 --   ZAEDIT_SBLK_DRT03_p.jpg   (DRT03 — perfil)
 --   ZAEDIT_SBLK_DRT03_f.jpg   (DRT03 — frente)
---   ZAEDIT_MBLK_R_BLUE_p.jpg  (REVO — perfil)
---   ZAEDIT_MBLK_R_BLUE_f.jpg  (REVO — frente)
---   medidas.jpg               (esquema técnico común al modelo)
+--   ZAEDIT_MBLK_R_BLUE_POL_p.jpg  (REVO — perfil)
+--   ZAEDIT_MBLK_R_BLUE_POL_f.jpg  (REVO — frente)
+--   medidas.jpg                   (esquema técnico común al modelo)
 -- ============================================
 
 BEGIN;
@@ -61,14 +64,14 @@ VALUES (
   (SELECT id FROM sol),
   'rusty-zaedit',
   'Rusty Zaedit',
-  'Anteojos de sol wayfarer unisex con frente y patillas en G-Flex (23,2g). Lentes de policarbonato UV400, 2 de 3 variantes polarizadas. Diseño clásico versátil.',
-  E'Los Rusty Zaedit son anteojos de sol con la silueta wayfarer clásica, unisex y súper versátil: funcionan para manejar, la playa, la ciudad o cualquier salida al aire libre, y combinan tanto con un look casual como con uno más arreglado.\n\nEl frente y las patillas están construidos en G-Flex, un termoplástico flexible patentado por Rusty que aguanta torsiones, golpes y caídas mejor que un acetato tradicional. Con solo 23,2 gramos son livianos y cómodos para todo el día.\n\nLas lentes son de policarbonato, un material liviano y resistente a impactos que protege los ojos sin astillarse, con protección UV400 que filtra el 100% de los rayos UVA y UVB.\n\nDisponible en 3 variantes:\n\n• MBLK / S10 POL (SKU 127063):\nNegro mate con lentes gris oscuro polarizadas. La opción más clásica y sobria. Las lentes polarizadas eliminan los reflejos del asfalto, el agua, los capots y los vidrios — claves para manejar de día y para la playa.\n\n• SBLK / DRT03 (SKU 127060):\nNegro brillo con lentes gris oscuro degradé polarizadas. El degradé aclara la parte de abajo del lente, un look más relajado, manteniendo la ventaja de la polarización contra los reflejos.\n\n• MBLK / REVO BLUE (SKU 127062):\nNegro mate con lentes azul espejado (revo). La opción más llamativa y de mayor impacto visual. El espejado azul es un acabado premium; esta variante NO es polarizada — es la elección de estilo por sobre la función anti-reflejo.\n\nIncluye estuche original Rusty y franela de microfibra. Garantía oficial 1 año del fabricante contra defectos.',
+  'Anteojos de sol wayfarer unisex con frente y patillas en G-Flex (23,2g). Lentes de policarbonato UV400, las 3 variantes polarizadas. Diseño clásico versátil.',
+  E'Los Rusty Zaedit son anteojos de sol con la silueta wayfarer clásica, unisex y súper versátil: funcionan para manejar, la playa, la ciudad o cualquier salida al aire libre, y combinan tanto con un look casual como con uno más arreglado.\n\nEl frente y las patillas están construidos en G-Flex, un termoplástico flexible patentado por Rusty que aguanta torsiones, golpes y caídas mejor que un acetato tradicional. Con solo 23,2 gramos son livianos y cómodos para todo el día.\n\nLas lentes son de policarbonato, un material liviano y resistente a impactos que protege los ojos sin astillarse, con protección UV400 que filtra el 100% de los rayos UVA y UVB. Las tres variantes son polarizadas: el lente polarizado elimina los reflejos del asfalto, el agua, los capots y los vidrios — clave para manejar de día y para la playa.\n\nDisponible en 3 variantes:\n\n• MBLK / S10 POL (SKU 127063):\nNegro mate con lentes gris oscuro polarizadas. La opción más clásica y sobria.\n\n• SBLK / DRT03 (SKU 127060):\nNegro brillo con lentes gris oscuro degradé polarizadas. El degradé aclara la parte de abajo del lente, un look más relajado.\n\n• MBLK / REVO BLUE (SKU 127062):\nNegro mate con lentes azul espejado (revo) polarizadas. La opción más llamativa y de mayor impacto visual, con la ventaja de la polarización. Es la última disponibilidad del espejado azul polarizado.\n\nIncluye estuche original Rusty y franela de microfibra. Garantía oficial 1 año del fabricante contra defectos.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "wayfarer",
     "temple_material": "g-flex",
     "lens_material": "policarbonato",
-    "lens_treatment": ["uv400"],
+    "lens_treatment": ["uv400", "polarized"],
     "gender": "unisex",
     "line": "urbana",
     "interchangeable_lenses": false,
@@ -93,8 +96,8 @@ VALUES (
       {
         "type": "recommendation",
         "position": "middle",
-        "title": "¿Polarizado o espejado?",
-        "body": "Si lo vas a usar para manejar o en la playa, elegí una variante polarizada (MBLK/S10 o SBLK/DRT03): eliminan el reflejo del asfalto y el agua. Si buscás impacto visual y estilo por sobre todo, la MBLK/REVO BLUE espejada es la más llamativa (aunque no es polarizada)."
+        "title": "Las 3 variantes son polarizadas",
+        "body": "Todas tienen lente polarizado, que elimina los reflejos del asfalto y el agua — ideal para manejar y para la playa. La diferencia entre ellas es solo estética: gris clásico (S10), gris degradé (DRT03) o azul espejado revo (REVO BLUE), la más llamativa."
       },
       {
         "type": "tip",
@@ -112,7 +115,7 @@ VALUES (
   true,
   false,
   'Rusty Zaedit Anteojos de Sol Wayfarer Unisex Polarizados | Óptica Carballo',
-  'Anteojos Rusty Zaedit wayfarer unisex: G-Flex, lente policarbonato UV400, 23,2g. 3 variantes (2 polarizadas + 1 espejada revo). Stock real y envíos a toda Argentina.'
+  'Anteojos Rusty Zaedit wayfarer unisex: G-Flex, lente policarbonato UV400 polarizado, 23,2g. 3 variantes (gris, degradé y azul espejado revo). Stock real y envíos a toda Argentina.'
 )
 ON CONFLICT (slug) DO UPDATE SET
   name              = EXCLUDED.name,
@@ -140,9 +143,9 @@ VALUES
   ((SELECT id FROM public.products WHERE slug = 'rusty-zaedit'), '127060',
    '{"frame_color":"negro-brillo","lens_color":"gris-oscuro-degrade","model_code":"SBLK / DRT03","polarized":true}'::jsonb,
    7736629, 5, true, 2, 'MLA1429775495', NULL),
-  -- 127062 MBLK / REVO BLUE — espejada NO polarizada (coating premium)
+  -- 127062 MBLK / REVO BLUE — espejada POLARIZADA (últimas del pol; corrección founder 2026-06-02)
   ((SELECT id FROM public.products WHERE slug = 'rusty-zaedit'), '127062',
-   '{"frame_color":"negro-mate","lens_color":"azul-espejado","model_code":"MBLK / REVO BLUE","polarized":false}'::jsonb,
+   '{"frame_color":"negro-mate","lens_color":"azul-espejado","model_code":"MBLK / REVO BLUE","polarized":true}'::jsonb,
    8588807, 5, true, 3, 'MLA1564461732', NULL)
 ON CONFLICT (sku) DO UPDATE SET
   product_id                  = EXCLUDED.product_id,
@@ -187,13 +190,13 @@ VALUES
   -- Variante MBLK/REVO BLUE (sort 4-5)
   ((SELECT id FROM public.products WHERE slug = 'rusty-zaedit'),
    (SELECT id FROM public.product_variants WHERE sku = '127062'),
-   'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_p.jpg',
-   'Rusty Zaedit wayfarer vista lateral 3/4, armazón negro mate con lentes azul espejado revo',
+   'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_POL_p.jpg',
+   'Rusty Zaedit wayfarer vista lateral 3/4, armazón negro mate con lentes azul espejado revo polarizadas',
    1500, 1000, 4, false),
   ((SELECT id FROM public.products WHERE slug = 'rusty-zaedit'),
    (SELECT id FROM public.product_variants WHERE sku = '127062'),
-   'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_f.jpg',
-   'Rusty Zaedit wayfarer vista frontal, armazón negro mate con lentes azul espejado revo',
+   'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_POL_f.jpg',
+   'Rusty Zaedit wayfarer vista frontal, armazón negro mate con lentes azul espejado revo polarizadas',
    1500, 1000, 5, false),
   -- Esquema técnico de medidas (común al modelo, sin variante)
   ((SELECT id FROM public.products WHERE slug = 'rusty-zaedit'),
