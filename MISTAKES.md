@@ -24,6 +24,20 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — `.contains()` de supabase-js con un array JS sobre columna jsonb → 22P02 → página de polarizados vacía
+
+**Estado**: ✅ Cerrado (estructural: se pasa JSON string)
+**Categoría**: Supabase / PostgREST / jsonb / Bug en producción (silencioso)
+
+**Qué pasó**: El founder reportó que `/anteojos-de-sol/polarizados` no mostraba NINGÚN producto, pese a haber 9 con `lens_treatment` producto-nivel = "polarized". Causa: `query.contains('attributes->lens_treatment', ['polarized'])` — supabase-js serializa un **array JS** como literal de array de Postgres `{polarized}`, que para una columna **jsonb** es inválido → PostgREST devuelve error `22P02 "invalid input syntax for type json"` → supabase-js retorna `{ data: null }` → la función hace `if (!data) return []` → grid vacío, sin error visible.
+
+**Causa raíz**: el operador de containment (`cs`/`@>`) sobre jsonb necesita el valor como **JSON** (`["polarized"]`), no como literal de array PG (`{polarized}`). `.contains(col, jsArray)` produce la forma equivocada para jsonb (sirve para columnas tipo `text[]`, no jsonb). El patrón fallaba en 2 funciones (`fetchCategoryByFilter` + filtro brand-level) — probablemente nunca funcionó, no se notó hasta tener data polarizada + revisar la página.
+
+**Regla preventiva**:
+1. Para containment jsonb en supabase-js, pasar SIEMPRE un **JSON string**: `.contains('col->jsonb_path', JSON.stringify([value]))`, NO un array JS.
+2. `if (!data) return []` enmascara errores de PostgREST como "0 resultados". Cuando una query con filtro devuelve vacío inesperado, loguear/inspeccionar `error` (no solo `data`) — un filtro inválido y un "no hay resultados" se ven igual.
+3. Validación de filtros nuevos contra jsonb: probar la forma exacta del query contra la REST API (`?col=cs.["x"]` URL-encoded) ANTES de asumir que `.contains()` lo arma bien.
+
 ## 2026-06-02 — Exportar un helper de un módulo `'use client'` y llamarlo desde un server component → 500 en runtime (tsc NO lo detecta)
 
 **Estado**: ✅ Cerrado (estructural: helpers/constantes movidos a módulo server-safe)

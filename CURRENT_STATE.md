@@ -5,6 +5,11 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Bugfix: `/anteojos-de-sol/polarizados` estaba VACÍA — jsonb containment mal serializado** (2026-06-02, commit `a8eaba3`). `.contains('attributes->lens_treatment', ['polarized'])` mandaba `{polarized}` (literal array PG) → 22P02 → data=null → []. Fix: `JSON.stringify([value])` → `["polarized"]`. Verificado: REST API 9 productos, página 13 cards. Aplicado en las 2 ocurrencias (fetchCategoryByFilter + brand-level). Ver MISTAKES.
+**⬜ 2 decisiones de data pendientes founder** (detectadas al debuggear):
+  1. **`rusty-yau`** tiene `lens_treatment` producto-nivel "polarized" pero NINGUNA de sus 3 variantes está flageada `polarized` → aparece en /polarizados sin variante polarizada real. Inconsistencia: ¿es polarizado o no? (si no, sacar "polarized" del producto).
+  2. **Modelos parcialmente polarizados** (Xold 4/5, Etiquet 3/4, Spell 2/5, Arvin 2/3, Bruk 2/3, Reporter 2/3, Dapper 1/4, Dearly 1/3, Biller 1/5) NO aparecen en /polarizados (convención actual: producto-nivel "polarized" solo si TODAS las variantes lo son). ¿Querés que los modelos con AL MENOS una variante polarizada también aparezcan? (cambio de criterio del filtro).
+
 🟢 **Mejora del sitio — eje CONVERSIÓN/UX: 3 batches EJECUTADOS + verificados (tsc + runtime 200)** (2026-06-02). Founder pidió "mejoremos el sitio", eligió **Conversión/UX** y luego "todos" los batches. Corrí 3 auditorías CRO en paralelo (PDP, grid, home) y apliqué los fixes. Commits: `d36da2e` (B1), `5ede559` (B2), `36cb189` (B3), `1eef59a` (fix client/server boundary).
 
 **Batch 1 — compliance + quick-wins**: hero "cuotas sin interés"→"pago seguro con Mercado Pago" (compliance #3/#7); quick-view "consultá disponibilidad"→"Sin stock por ahora" (regla dura #1); card muestra MARCA (eyebrow) en grids multi-marca; badge "Polarizado" que sigue a la variante mostrada (honesto en parciales); "N colores"; home reordenado (Categorías sube tras el trust; HomeTools antes de marcas); trust marquee nombra a la regente María Carlota.
