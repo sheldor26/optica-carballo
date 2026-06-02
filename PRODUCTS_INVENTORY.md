@@ -53,7 +53,8 @@ Por cada marca/categoría, trackeamos:
 | Rusty: Feeled MBLK TENNIS | 1 | 1 | pendiente founder | 1 | 🟡 Seed 23 listo, esperando fotos en bucket |
 | Rusty: Dearly (cuadrado femenino, 3 variantes) | 1 | 3 variantes | pendiente founder | 1 | 🟡 Seed 24 listo, esperando 9 TODOs (precio/stock/var_code) + 7 fotos en bucket |
 | Rusty: Zaedit (wayfarer unisex, 3 variantes) | 1 | 3 (stock 14) | 6 (verificar bucket) | 1 | ✅ Aplicado MCP (seed 38). 2 pol + REVO no-pol. Precio/stock vía ml-import-preview. Founder: chequear grid/scale. |
-| _Nota: tabla desactualizada (faltan Vrast/Etiquet/Tulle/Xold/Spell/Sotion/etc.). Fuente de verdad de seeds aplicados = `supabase/CLOUD_APPLIED.md`._ | | | | | |
+| Vulk: 53&3 Marky Ramone (aviador, edición especial, 5 variantes) | 1 | 5 (stock 12; 2 con stock) | 12 (pendiente bucket) | 1 | ✅ Aplicado MCP (seed 39). Las 5 polarizadas → /vulk/polarizados. Estuche tributo custom. Founder: subir fotos + chequear grid. |
+| _Nota: tabla desactualizada (faltan Vrast/Etiquet/Tulle/Xold/Spell/Sotion/Zaedit/etc.). Fuente de verdad de seeds aplicados = `supabase/CLOUD_APPLIED.md`._ | | | | | |
 | Reef | 0 | 0 | 0 | 0 | 🔴 |
 | Vulk | 0 | 0 | 0 | 0 | 🔴 |
 | Infinit | 0 | 0 | 0 | 0 | 🔴 |

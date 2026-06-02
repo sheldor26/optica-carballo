@@ -5,12 +5,10 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-🟡 **Producto EN CURSO: Vulk 53&3 Marky Ramone (sol, aviador edición especial) — esperando stock real del founder** (2026-06-02). 1 MLA multi-variación (MLA2008030952), precio único $104.799. 5 variantes (S/G15 958211, LG/02 958213, MG/20 958214, S/25 958216, MBLK/03 958212), todas polarizadas → `lens_treatment` con polarized (irá a /vulk/polarizados). Metal + terminal acetato (firma Marky Ramone), aviador, policarbonato UV400 cat3, unisex, Large. Medidas 145/57×55/12/145, 25g.
-- **⚠️ BLOQUEO stock (único pendiente)**: ML dice S/G15=7, LG/02=5, y **MG/20/S/25/MBLK/03 = 0**, pero el founder tiene stock físico real (ML desactualizado) → esperando que confirme stock por variante. NO aplicar sin esto (regla dura: solo stock físico real).
-- **MBLK/03 RESUELTA**: el founder confirmó que SÍ va, con fotos `53&3 MBLK 03 POL - PERFIL/FRENTE.jpg` → las 5 variantes tienen foto. Solo falta su stock.
-- **Estuche especial decidido**: NO usar la imagen genérica Vulk → `attributes.hide_brand_includes_image=true` + agregar `estuche_ramones.jpg` como imagen del modelo (founder la sube a `products/vulk-53-3/`). Mecanismo verificado en `product-page.tsx` (buildGalleryImages).
-- **Fotos**: perfil/frente × 4 variantes (S/G15, S/25, MG/20, LG/02), nombres tipo `53&3 S-G15 POL- PERFIL.jpg`. Primaria del grid = S/G15 perfil (mayor stock). Precio/stock vía ml-import-preview (token activo).
-- **Próximo paso**: founder pasa stock real → escribir seed 39 + aplicar MCP + scale + estuche_ramones + docs.
+🟢 **Producto cargado: Vulk 53&3 Marky Ramone (sol, aviador edición especial) — APLICADO** (2026-06-02). Seed `39_vulk_53_3_marky_ramone.sql` aplicado vía MCP + verificado: 5 variantes (todas polarizadas → `/vulk/polarizados`), stock 12 (S/G15=7, LG/02=5; MG/20/S/25/MBLK/03=0 confirmado por founder), 12 imágenes, primaria S/G15 perfil. Precio único $104.799. 1 MLA multi-variación con variation codes (sync stock OK).
+- **Estuche especial**: `hide_brand_includes_image=true` → NO muestra el estuche genérico Vulk; muestra `vulk-53-3/estuche-ramones.jpg` (caja tributo + estuche firmado) como imagen del modelo. Verificado en DB.
+- **Filenames URL-safe**: fotos en `products/vulk-53-3/` con nombres `533-...-pol-{perfil,frente}.jpg` (sin `&` — ver LEARNINGS). Scale 1.15/1.0, sin verificación visual.
+- **⬜ Pendiente founder**: subir las 12 fotos al bucket (10 variantes + `estuche-ramones.jpg` + `medidas.jpg`) con esos nombres exactos + chequear grid/scale.
 
 🟢 **Producto cargado: Rusty Zaedit (sol) — APLICADO** (2026-06-02). Wayfarer unisex G-Flex, 3 variantes (S10 POL 127063 / DRT03 127060 / REVO BLUE 127062), 2 polarizadas + REVO no-polarizada. Seed `38_rusty_zaedit.sql` aplicado vía MCP + verificado (variants=3, stock=14, pol=2, imgs=6). Scale 1.15/1.0 en `image-scale-overrides.ts`.
 - **Desbloqueo clave**: precio/stock NO los dio el founder y WebFetch a ML da 403 → el founder hizo **OAuth ML nuevo** y usé el endpoint `/api/admin/ml-import-preview/[itemId]` (sin auth, usa el token guardado) para fetchear los 3 items (precio + stock + título). Es el método para próximas cargas: con token activo, `curl https://opticacarballo.com.ar/api/admin/ml-import-preview/MLAxxxx`.

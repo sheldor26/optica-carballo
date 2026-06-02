@@ -241,6 +241,21 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-disarn/DISARN SBLK-MDEMI G15 POL-frente.jpg': 1.0,
   'vulk-disarn/DISARN STEELBLUE-MBLK DRT03 POL-perfil.jpg': 1.15,
   'vulk-disarn/DISARN STEELBLUE-MBLK DRT03 POL-frente.jpg': 1.0,
+
+  // Vulk 53&3 Marky Ramone — sub-regla 15: perfil 1.15 / frente 1.0 (aviador
+  // metal, como Tulle/Vrast). NO verificado visualmente — founder debe chequear
+  // el grid tras subir fotos. Si queda chico → subir 1.2; si recorta → 1.05/1.0.
+  // 10 entries (2 por variante × 5). medidas.jpg y estuche-ramones.jpg sin scale.
+  'vulk-53-3/533-s-g15-pol-perfil.jpg': 1.15,
+  'vulk-53-3/533-s-g15-pol-frente.jpg': 1.0,
+  'vulk-53-3/533-lg02-pol-perfil.jpg': 1.15,
+  'vulk-53-3/533-lg02-pol-frente.jpg': 1.0,
+  'vulk-53-3/533-mg20-pol-perfil.jpg': 1.15,
+  'vulk-53-3/533-mg20-pol-frente.jpg': 1.0,
+  'vulk-53-3/533-s-25-pol-perfil.jpg': 1.15,
+  'vulk-53-3/533-s-25-pol-frente.jpg': 1.0,
+  'vulk-53-3/533-mblk03-pol-perfil.jpg': 1.15,
+  'vulk-53-3/533-mblk03-pol-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
