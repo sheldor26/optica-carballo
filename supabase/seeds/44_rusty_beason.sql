@@ -9,7 +9,7 @@
 -- 4 variantes en 4 MLAs (todas publicaciones simples). Stock=ML:
 --   SKU 128791 — L.PINK/G.GREY   caramelo + gris oscuro degradé. MLA1507005400. $66.457,11, stock 13 (mayor stock → primary).
 --   SKU 128790 — SBLK/G15        negro brillo + verde G15.        MLA1506967192. $66.457,11, stock 5.
---   SKU 128792 — S.PINK/G.BROWN  rosa + marrón degradé.           MLA1563836742. $66.457,11, stock 1.  ⚠️ SIN FOTOS en bucket (cae al primary).
+--   SKU 128792 — S.PINK/G.BROWN  rosa + marrón degradé.           MLA1563836742. $66.457,11, stock 1.
 --   SKU 128794 — SBLK/GS9B       negro brillo + marrón degradé.   MLA1866311556. $66.724, stock 0 (paused).
 --
 -- Medidas: 141 / 54x50 / 16 / 145 mm.
@@ -21,8 +21,8 @@
 --   BEASON GALERIA-WEB-LPINK-GGREY PERFIL.jpg / BEASON AGALERIA-WEB-LPINK-GGREY FRENTE.jpg  (L.PINK — perfil primary del modelo)
 --   BEASON GALERIA-WEB-SBLK-G15 perfil.jpg / BEASON AGALERIA-WEB-SBLK-G15 frente.jpg / BEASON GALERIA-WEB-SBLK-G15.jpg
 --   BEASON SBLKGS9B-perfil.jpg / BEASON SBLKGS9B-frente.jpg
+--   BEASON GALERIA-WEB-SPINK-GBROWN PERFIL.jpg / BEASON AGALERIA-WEB-SPINK-GBROWN FRENTE.jpg
 --   medidas.jpg
---   ⚠️ S.PINK/G.BROWN (128792) NO tiene fotos en el bucket — pendiente subir.
 -- ============================================
 
 BEGIN;
@@ -46,6 +46,7 @@ VALUES (
     "interchangeable_lenses": false,
     "prescription_adapter": false,
     "measurements": {"frame_width_mm": 141, "lens_width_mm": 54, "lens_height_mm": 50, "bridge_mm": 16, "temple_length_mm": 145},
+    "weight_grams": 26,
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "callouts": [
@@ -83,7 +84,6 @@ ON CONFLICT (sku) DO UPDATE SET
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
 -- Imágenes. Primary del modelo: L.PINK/G.GREY perfil (mayor stock). Perfil = primaria de cada variante.
--- S.PINK/G.BROWN sin fotos (pendiente bucket).
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-beason'), (SELECT id FROM public.product_variants WHERE sku='128791'),
@@ -100,6 +100,10 @@ VALUES
    'rusty-beason/BEASON SBLKGS9B-perfil.jpg', 'Anteojo de sol Rusty Beason cat eye vista lateral, armazón negro brillo con lente marrón degradé', 1500, 1000, 5, false),
   ((SELECT id FROM public.products WHERE slug='rusty-beason'), (SELECT id FROM public.product_variants WHERE sku='128794'),
    'rusty-beason/BEASON SBLKGS9B-frente.jpg', 'Anteojo de sol Rusty Beason cat eye vista frontal, armazón negro brillo con lente marrón degradé', 1500, 1000, 6, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-beason'), (SELECT id FROM public.product_variants WHERE sku='128792'),
+   'rusty-beason/BEASON GALERIA-WEB-SPINK-GBROWN PERFIL.jpg', 'Anteojo de sol Rusty Beason cat eye vista lateral, armazón rosa con lente marrón degradé', 1500, 1000, 8, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-beason'), (SELECT id FROM public.product_variants WHERE sku='128792'),
+   'rusty-beason/BEASON AGALERIA-WEB-SPINK-GBROWN FRENTE.jpg', 'Anteojo de sol Rusty Beason cat eye vista frontal, armazón rosa con lente marrón degradé', 1500, 1000, 9, false),
   ((SELECT id FROM public.products WHERE slug='rusty-beason'), NULL,
    'rusty-beason/medidas.jpg', 'Esquema técnico de medidas Rusty Beason: frente 141mm, lente 54x50mm, puente 16mm, varilla 145mm', 1500, 1500, 7, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

@@ -308,6 +308,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-beason/BEASON GALERIA-WEB-SBLK-G15.jpg': 1.0,
   'rusty-beason/BEASON SBLKGS9B-perfil.jpg': 1.15,
   'rusty-beason/BEASON SBLKGS9B-frente.jpg': 1.0,
+  'rusty-beason/BEASON GALERIA-WEB-SPINK-GBROWN PERFIL.jpg': 1.15,
+  'rusty-beason/BEASON AGALERIA-WEB-SPINK-GBROWN FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
