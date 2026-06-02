@@ -80,8 +80,11 @@ export function FrameShapeFilters({ availableShapes, selectedShapes }: Props) {
   return (
     <div className="border-border/40 border-y bg-background py-5 md:py-6">
       <div className="container">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
-          <p className="text-foreground/60 mr-2 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em]">
+        {/* Mobile: scroll horizontal (antes flex-wrap apilaba 8+ chips en 3-4
+            filas y empujaba el grid fuera de pantalla — audit CRO). Desktop:
+            wrap normal. Scrollbar oculta. */}
+        <div className="flex items-center gap-x-3 gap-y-2.5 overflow-x-auto md:flex-wrap md:overflow-visible [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <p className="text-foreground/60 mr-2 inline-flex shrink-0 items-center gap-2 text-xs font-medium uppercase tracking-[0.18em]">
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
             Filtrar por forma
           </p>
@@ -94,7 +97,7 @@ export function FrameShapeFilters({ availableShapes, selectedShapes }: Props) {
                 onClick={() => toggle(shape)}
                 aria-pressed={active}
                 className={cn(
-                  'rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-300',
+                  'shrink-0 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-300',
                   active
                     ? 'border-foreground bg-foreground text-background shadow-sm'
                     : 'border-border/60 bg-background text-foreground hover:border-foreground/40 hover:bg-zinc-50',
@@ -108,7 +111,7 @@ export function FrameShapeFilters({ availableShapes, selectedShapes }: Props) {
             <button
               type="button"
               onClick={clear}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted/40 inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1.5 text-sm transition-colors"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted/40 inline-flex shrink-0 items-center gap-1 rounded-full border border-transparent px-3 py-1.5 text-sm transition-colors"
             >
               <X className="size-3.5" />
               Limpiar

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { CategoryFilteredPage } from '@/components/catalog/category-filtered-page';
 import { CategoryIndexPage } from '@/components/catalog/category-index-page';
+import { normalizeSort } from '@/components/catalog/catalog-sort';
+import { sortCatalog } from '@/lib/catalog/sort';
 import { CATEGORIES } from '@/lib/catalog/categories';
 import { buildCategoryIndexMetadata } from '@/lib/catalog/metadata';
 import {
@@ -22,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   );
 }
 
-type SearchParams = Promise<{ forma?: string }>;
+type SearchParams = Promise<{ forma?: string; orden?: string }>;
 
 export default async function Page({
   searchParams,
@@ -33,6 +35,7 @@ export default async function Page({
   const selectedShapes = params.forma
     ? params.forma.split(',').filter((s) => s.length > 0)
     : [];
+  const sort = normalizeSort(params.orden);
 
   if (selectedShapes.length > 0) {
     const [products, availableShapes] = await Promise.all([
@@ -45,9 +48,10 @@ export default async function Page({
     return (
       <CategoryFilteredPage
         category={CATEGORY}
-        products={products}
+        products={sortCatalog(products, sort)}
         availableShapes={availableShapes}
         selectedShapes={selectedShapes}
+        sort={sort}
       />
     );
   }

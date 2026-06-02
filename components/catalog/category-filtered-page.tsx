@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FrameShapeFilters } from '@/components/catalog/frame-shape-filters';
+import { CatalogSort, type SortValue } from '@/components/catalog/catalog-sort';
 import { ProductCard } from '@/components/product/product-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';
@@ -11,6 +12,7 @@ type Props = {
   products: FilteredCatalogCard[];
   availableShapes: string[];
   selectedShapes: string[];
+  sort: SortValue;
 };
 
 /**
@@ -27,6 +29,7 @@ export function CategoryFilteredPage({
   products,
   availableShapes,
   selectedShapes,
+  sort,
 }: Props) {
   return (
     <>
@@ -48,11 +51,14 @@ export function CategoryFilteredPage({
             {category.name}{' '}
             <span className="italic font-normal text-foreground/70">filtrados</span>
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
-            {products.length === 0
-              ? 'No encontramos productos con esa forma. Probá con otra o limpiá los filtros.'
-              : `${products.length} ${products.length === 1 ? 'modelo' : 'modelos'} en stock.`}
-          </p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-muted-foreground text-sm">
+              {products.length === 0
+                ? 'No encontramos productos con esa forma. Probá con otra o limpiá los filtros.'
+                : `${products.length} ${products.length === 1 ? 'modelo' : 'modelos'} en stock.`}
+            </p>
+            {products.length > 1 && <CatalogSort selected={sort} />}
+          </div>
         </RevealOnScroll>
 
         {products.length === 0 ? (
