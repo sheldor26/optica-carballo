@@ -20,17 +20,18 @@
 -- Medidas: 145 / 57x55 / 12 / 145 mm. Peso 25g.
 --
 -- 🎁 ESTUCHE ESPECIAL: NO usa la imagen genérica de estuche Vulk. Se setea
--- attributes.hide_brand_includes_image = true y se agrega `estuche-ramones.jpg`
+-- attributes.hide_brand_includes_image = true y se agrega `estuche_ramones.jpg`
 -- como imagen del modelo (caja tributo + estuche firmado).
 --
--- 📸 FOTOS (bucket products/vulk-53-3/, nombres URL-safe sin '&'):
---   533-s-g15-pol-perfil.jpg / -frente.jpg
---   533-lg02-pol-perfil.jpg  / -frente.jpg
---   533-mg20-pol-perfil.jpg  / -frente.jpg
---   533-s-25-pol-perfil.jpg  / -frente.jpg
---   533-mblk03-pol-perfil.jpg/ -frente.jpg
---   estuche-ramones.jpg      (caja/estuche tributo — reemplaza la genérica Vulk)
---   medidas.jpg              (esquema técnico)
+-- 📸 FOTOS (bucket products/vulk-53-3/, nombres reales del founder — con
+--    espacios, sin '&'; naming inconsistente "POL- " vs "POL - " respetado):
+--   53-3 S-G15 POL- PERFIL.jpg / FRENTE.jpg
+--   53-3 LG02 POL- PERFIL.jpg  / FRENTE.jpg
+--   53-3 MG20 POL - PERFIL.jpg / FRENTE.jpg
+--   53-3 S-25POL- PERFIL.jpg   / FRENTE.jpg
+--   53-3 MBLK 03 POL - PERFIL.jpg / FRENTE.jpg
+--   estuche_ramones.jpg        (caja/estuche tributo — reemplaza la genérica Vulk)
+--   medidas.jpg                (esquema técnico)
 -- ============================================
 
 BEGIN;
@@ -115,37 +116,37 @@ ON CONFLICT (sku) DO UPDATE SET
   mercadolibre_item_id = EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code = EXCLUDED.mercadolibre_variation_code, updated_at = now();
 
--- Imágenes: 2 por variante + medidas + estuche-ramones. Primary: S/G15 perfil.
+-- Imágenes: 2 por variante + medidas + estuche_ramones. Primary: S/G15 perfil.
 INSERT INTO public.product_images (
   product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary
 )
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958211'),
-   'vulk-53-3/533-s-g15-pol-perfil.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal plateado con lente verde G15 polarizada', 1500, 1000, 0, true),
+   'vulk-53-3/53-3 S-G15 POL- PERFIL.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal plateado con lente verde G15 polarizada', 1500, 1000, 0, true),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958211'),
-   'vulk-53-3/533-s-g15-pol-frente.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal plateado con lente verde G15 polarizada', 1500, 1000, 1, false),
+   'vulk-53-3/53-3 S-G15 POL- FRENTE.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal plateado con lente verde G15 polarizada', 1500, 1000, 1, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958213'),
-   'vulk-53-3/533-lg02-pol-perfil.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal dorado con lente marrón degradé polarizada', 1500, 1000, 2, false),
+   'vulk-53-3/53-3 LG02 POL- PERFIL.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal dorado con lente marrón degradé polarizada', 1500, 1000, 2, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958213'),
-   'vulk-53-3/533-lg02-pol-frente.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal dorado con lente marrón degradé polarizada', 1500, 1000, 3, false),
+   'vulk-53-3/53-3 LG02 POL- FRENTE.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal dorado con lente marrón degradé polarizada', 1500, 1000, 3, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958214'),
-   'vulk-53-3/533-mg20-pol-perfil.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal gris mate con lente roja polarizada', 1500, 1000, 4, false),
+   'vulk-53-3/53-3 MG20 POL - PERFIL.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal gris mate con lente roja polarizada', 1500, 1000, 4, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958214'),
-   'vulk-53-3/533-mg20-pol-frente.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal gris mate con lente roja polarizada', 1500, 1000, 5, false),
+   'vulk-53-3/53-3 MG20 POL - FRENTE.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal gris mate con lente roja polarizada', 1500, 1000, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958216'),
-   'vulk-53-3/533-s-25-pol-perfil.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal plateado con lente gris oscuro degradé polarizada', 1500, 1000, 6, false),
+   'vulk-53-3/53-3 S-25POL- PERFIL.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal plateado con lente gris oscuro degradé polarizada', 1500, 1000, 6, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958216'),
-   'vulk-53-3/533-s-25-pol-frente.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal plateado con lente gris oscuro degradé polarizada', 1500, 1000, 7, false),
+   'vulk-53-3/53-3 S-25POL- FRENTE.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal plateado con lente gris oscuro degradé polarizada', 1500, 1000, 7, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958212'),
-   'vulk-53-3/533-mblk03-pol-perfil.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal negro con lente negra degradé polarizada', 1500, 1000, 8, false),
+   'vulk-53-3/53-3 MBLK 03 POL - PERFIL.jpg', 'Vulk 53&3 Marky Ramone aviador vista lateral 3/4, armazón metal negro con lente negra degradé polarizada', 1500, 1000, 8, false),
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), (SELECT id FROM public.product_variants WHERE sku='958212'),
-   'vulk-53-3/533-mblk03-pol-frente.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal negro con lente negra degradé polarizada', 1500, 1000, 9, false),
+   'vulk-53-3/53-3 MBLK 03 POL - FRENTE.jpg', 'Vulk 53&3 Marky Ramone aviador vista frontal, armazón metal negro con lente negra degradé polarizada', 1500, 1000, 9, false),
   -- Esquema de medidas (modelo)
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), NULL,
    'vulk-53-3/medidas.jpg', 'Esquema técnico de medidas Vulk 53&3: frente 145mm, lente 57x55mm, puente 12mm, varilla 145mm', 1500, 1500, 10, false),
   -- Estuche/caja tributo (modelo) — reemplaza la imagen genérica de estuche Vulk
   ((SELECT id FROM public.products WHERE slug='vulk-53-3'), NULL,
-   'vulk-53-3/estuche-ramones.jpg', 'Caja tributo y estuche original firmado de la edición especial Vulk 53&3 Marky Ramone', 1500, 1000, 11, false)
+   'vulk-53-3/estuche_ramones.jpg', 'Caja tributo y estuche original firmado de la edición especial Vulk 53&3 Marky Ramone', 1500, 1000, 11, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id = EXCLUDED.variant_id, alt_text = EXCLUDED.alt_text,
   sort_order = EXCLUDED.sort_order, is_primary = EXCLUDED.is_primary, updated_at = now();

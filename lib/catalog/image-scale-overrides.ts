@@ -246,16 +246,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // metal, como Tulle/Vrast). NO verificado visualmente — founder debe chequear
   // el grid tras subir fotos. Si queda chico → subir 1.2; si recorta → 1.05/1.0.
   // 10 entries (2 por variante × 5). medidas.jpg y estuche-ramones.jpg sin scale.
-  'vulk-53-3/533-s-g15-pol-perfil.jpg': 1.15,
-  'vulk-53-3/533-s-g15-pol-frente.jpg': 1.0,
-  'vulk-53-3/533-lg02-pol-perfil.jpg': 1.15,
-  'vulk-53-3/533-lg02-pol-frente.jpg': 1.0,
-  'vulk-53-3/533-mg20-pol-perfil.jpg': 1.15,
-  'vulk-53-3/533-mg20-pol-frente.jpg': 1.0,
-  'vulk-53-3/533-s-25-pol-perfil.jpg': 1.15,
-  'vulk-53-3/533-s-25-pol-frente.jpg': 1.0,
-  'vulk-53-3/533-mblk03-pol-perfil.jpg': 1.15,
-  'vulk-53-3/533-mblk03-pol-frente.jpg': 1.0,
+  'vulk-53-3/53-3 S-G15 POL- PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 S-G15 POL- FRENTE.jpg': 1.0,
+  'vulk-53-3/53-3 LG02 POL- PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 LG02 POL- FRENTE.jpg': 1.0,
+  'vulk-53-3/53-3 MG20 POL - PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 MG20 POL - FRENTE.jpg': 1.0,
+  'vulk-53-3/53-3 S-25POL- PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 S-25POL- FRENTE.jpg': 1.0,
+  'vulk-53-3/53-3 MBLK 03 POL - PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 MBLK 03 POL - FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
