@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Omití `medidas.jpg` en la carga inicial de Zaedit (asumí que la lista de archivos del founder era exhaustiva)
+
+**Estado**: 🟡 Mitigado (founder lo recordó → agregada vía MCP, seed actualizado)
+**Categoría**: Carga de productos / Suposición
+
+**Qué pasó**: Al cargar Rusty Zaedit, el founder pegó 6 nombres de archivo (perfil/frente × 3 variantes) sin `medidas.jpg`. Lo cargué sin el esquema de medidas, cuando ese esquema es un asset ESTÁNDAR del modelo (Etiquet y todos los Rusty lo tienen como imagen del modelo, `variant_id NULL`). El founder tuvo que avisar "falta agregar medidas.jpg (que ya está en el bucket)".
+
+**Causa raíz**: tomé la lista de archivos pegada como exhaustiva, en vez de cruzarla contra el patrón conocido del modelo (que siempre incluye un esquema de medidas). El founder me había dado las medidas en una imagen aparte (img 2), señal de que el esquema existía.
+
+**Regla preventiva**: al cargar un producto, si un asset estándar (`medidas.jpg` / esquema técnico) NO aparece en la entrega de archivos pero el founder SÍ dio las medidas, PREGUNTAR explícito "¿subiste medidas.jpg al bucket?" antes de cerrar la carga, en vez de omitirlo en silencio. Sumar `medidas.jpg` al checklist de carga de productos.
+
 ## 2026-06-01 — Bloqueé la ESCRITURA de las guías esperando firmas que en realidad eran para PUBLICAR — confundí el gate de publicación con el de redacción
 
 **Estado**: 🟡 Mitigado (el founder lo aclaró: "las guías las hacés vos sin que nadie firme nada aún" → escribí la pillar de Astigmatismo en draft)
