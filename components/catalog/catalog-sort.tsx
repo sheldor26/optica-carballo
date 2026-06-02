@@ -2,21 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { ArrowUpDown } from 'lucide-react';
-
-/** Opciones de orden del grid. Persisten en `?orden=` (SEO + share). */
-export const SORT_OPTIONS = [
-  { value: 'relevancia', label: 'Relevancia' },
-  { value: 'precio-asc', label: 'Precio: menor a mayor' },
-  { value: 'precio-desc', label: 'Precio: mayor a menor' },
-] as const;
-
-export type SortValue = (typeof SORT_OPTIONS)[number]['value'];
-
-export function normalizeSort(value: string | undefined): SortValue {
-  return SORT_OPTIONS.some((o) => o.value === value)
-    ? (value as SortValue)
-    : 'relevancia';
-}
+import { SORT_OPTIONS, type SortValue } from '@/lib/catalog/sort';
 
 /**
  * Selector de orden del catálogo filtrado. Actualiza `?orden=` preservando

@@ -1,5 +1,20 @@
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';
-import type { SortValue } from '@/components/catalog/catalog-sort';
+
+/** Opciones de orden del grid. Persisten en `?orden=` (SEO + share).
+ * Server-safe (sin 'use client') para que las pages las puedan importar. */
+export const SORT_OPTIONS = [
+  { value: 'relevancia', label: 'Relevancia' },
+  { value: 'precio-asc', label: 'Precio: menor a mayor' },
+  { value: 'precio-desc', label: 'Precio: mayor a menor' },
+] as const;
+
+export type SortValue = (typeof SORT_OPTIONS)[number]['value'];
+
+export function normalizeSort(value: string | undefined): SortValue {
+  return SORT_OPTIONS.some((o) => o.value === value)
+    ? (value as SortValue)
+    : 'relevancia';
+}
 
 /**
  * Ordena el catálogo filtrado según la opción elegida (`?orden=`).

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FrameShapeFilters } from '@/components/catalog/frame-shape-filters';
-import { CatalogSort, type SortValue } from '@/components/catalog/catalog-sort';
+import { CatalogSort } from '@/components/catalog/catalog-sort';
+import type { SortValue } from '@/lib/catalog/sort';
 import { ProductCard } from '@/components/product/product-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';

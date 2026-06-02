@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { CategoryFilteredPage } from '@/components/catalog/category-filtered-page';
 import { CategoryIndexPage } from '@/components/catalog/category-index-page';
-import { normalizeSort } from '@/components/catalog/catalog-sort';
-import { sortCatalog } from '@/lib/catalog/sort';
+import { normalizeSort, sortCatalog } from '@/lib/catalog/sort';
 import { CATEGORIES } from '@/lib/catalog/categories';
 import { buildCategoryIndexMetadata } from '@/lib/catalog/metadata';
 import {
