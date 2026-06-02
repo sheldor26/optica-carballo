@@ -22,6 +22,21 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Dónde filtrar el catálogo: query (columnas/FK) vs post-fetch en JS (valores derivados)
+
+**Categoría**: Catálogo / Arquitectura de queries / Performance
+**Confianza**: 🟡 Media-alta (decisión aplicada con buen resultado este turno)
+
+**Qué funcionó**: Al sumar filtros de marca + precio a la vista filtrada, separé el criterio según el tipo de dato:
+- **Marca → en la query** (`.in('brand.slug', ...)` sobre el join inner): es una FK/columna directa, el filtro es exacto y barato en SQL.
+- **Precio → post-fetch en JS** (`filterByPriceBucket`): `minPriceCents` es un **valor derivado** (mínimo de las variantes con stock), no una columna — filtrarlo en SQL exigiría un agregado/subquery complejo. Con el catálogo actual (~21 productos/categoría) traer y filtrar en memoria es trivial y mucho más simple. Mismo criterio que ya usaba `sortCatalog`.
+
+Además, factoricé los buckets/parsers en `lib/catalog/filters.ts` **server-safe** (sin `'use client'`) — repitiendo la lección del bug de `normalizeSort`: constantes/helpers compartidos por page (server) y barra de filtros (client) van en `lib/`, nunca en el componente client. Y verifiqué cada combo de filtro con curl (200 + conteos reales) antes de cerrar.
+
+**Por qué funciona / principio reutilizable**: filtrar en SQL solo paga cuando el campo es indexable/directo y el dataset grande; para valores derivados o catálogos chicos, post-fetch en JS es más simple y correcto. Reevaluar SOLO si el catálogo crece a cientos de productos por categoría (ahí conviene materializar `min_price_cents` en la tabla y filtrar en SQL).
+
+**Para la próxima**: nuevos filtros de catálogo → preguntar "¿es columna/FK o valor derivado?" antes de decidir query vs JS. Constantes/parsers compartidos → `lib/`. Validar combos con curl.
+
 ## 2026-06-02 — Auditoría CRO con 3 subagentes en paralelo (PDP / grid / home) antes de tocar código
 
 **Categoría**: Proceso / CRO / Uso de subagentes
