@@ -264,6 +264,19 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Revo Green venía un poco más grande que el resto (founder 2026-06-02) → 1.0.
   'rusty-bruk/bruk-perfil-revo green.jpg': 1.0,
   'rusty-bruk/BRUK SBLK-POL-S10-perfil.jpg': 1.15,
+
+  // Vulk Biller — hexagonal. Perfil 1.15 / frente-lateral 1.0. Nombres reales
+  // del founder (casing/espacios inconsistentes, AQ31 en webp). Sin verificación
+  // visual — founder chequea grid.
+  'vulk-biller/BILLER AQ31 PERFIL.webp': 1.15,
+  'vulk-biller/BILLER AQ31 FRENTE.webp': 1.0,
+  'vulk-biller/Biller MBLK 046 S10 perfil.jpg': 1.15,
+  'vulk-biller/Biller MBLK 046  S10 Frontal.jpg': 1.0,
+  'vulk-biller/BILLER 669k 068 PERFIL.jpg': 1.15,
+  'vulk-biller/BILLER 669k 068 FRONTAL.jpg': 1.0,
+  'vulk-biller/Biller SBLK 206 118 perfil.jpg': 1.15,
+  'vulk-biller/Biller SBLK 206 118  Lateral.jpg': 1.0,
+  'vulk-biller/Biller SBLK 068 902 perfil.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
