@@ -6,7 +6,8 @@
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
 🟡 **Producto EN CURSO: Vulk 53&3 Marky Ramone (sol, aviador edición especial) — esperando stock real del founder** (2026-06-02). 1 MLA multi-variación (MLA2008030952), precio único $104.799. 5 variantes (S/G15 958211, LG/02 958213, MG/20 958214, S/25 958216, MBLK/03 958212), todas polarizadas → `lens_treatment` con polarized (irá a /vulk/polarizados). Metal + terminal acetato (firma Marky Ramone), aviador, policarbonato UV400 cat3, unisex, Large. Medidas 145/57×55/12/145, 25g.
-- **⚠️ BLOQUEO stock**: ML dice S/G15=7, LG/02=5, y **MG/20/S/25/MBLK/03 = 0**. PERO el founder dio fotos de MG/20 y S/25 (no de MBLK/03). El stock real lo sabe el founder (ML desactualizado) → esperando que confirme stock por variante + si carga MBLK/03 (sin foto) o no. NO aplicar sin esto (regla dura: solo stock físico real).
+- **⚠️ BLOQUEO stock (único pendiente)**: ML dice S/G15=7, LG/02=5, y **MG/20/S/25/MBLK/03 = 0**, pero el founder tiene stock físico real (ML desactualizado) → esperando que confirme stock por variante. NO aplicar sin esto (regla dura: solo stock físico real).
+- **MBLK/03 RESUELTA**: el founder confirmó que SÍ va, con fotos `53&3 MBLK 03 POL - PERFIL/FRENTE.jpg` → las 5 variantes tienen foto. Solo falta su stock.
 - **Estuche especial decidido**: NO usar la imagen genérica Vulk → `attributes.hide_brand_includes_image=true` + agregar `estuche_ramones.jpg` como imagen del modelo (founder la sube a `products/vulk-53-3/`). Mecanismo verificado en `product-page.tsx` (buildGalleryImages).
 - **Fotos**: perfil/frente × 4 variantes (S/G15, S/25, MG/20, LG/02), nombres tipo `53&3 S-G15 POL- PERFIL.jpg`. Primaria del grid = S/G15 perfil (mayor stock). Precio/stock vía ml-import-preview (token activo).
 - **Próximo paso**: founder pasa stock real → escribir seed 39 + aplicar MCP + scale + estuche_ramones + docs.
