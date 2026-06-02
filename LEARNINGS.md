@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Front-loadear el spec convierte la producción en ensamblaje (y la hace consistente)
+
+**Categoría**: Proceso / Producción de contenido / Calidad
+**Confianza**: 🟢 Alta
+
+**Qué funcionó**: Antes de escribir la primera guía (Astigmatismo), habíamos producido en turnos previos: (a) brief técnico validado por optical-expert, (b) mapa de keywords real, (c) estándar SEO master-class (`ARTICLE_SEO_STANDARD.md`), (d) infra (mdx-components, FAQPage, MedicalWebPage, draft). Cuando llegó el momento de escribir, la guía salió rápido, completa y "impecable" sin improvisar: cada sección, FAQ, CTA, schema y regla de honestidad ya estaba especificada. Escribir fue **ensamblar** el spec, no inventar.
+
+**Por qué funciona / principio reutilizable**: cuando una tarea se va a repetir N veces (acá: ~20 guías), invertir primero en el spec/estándar/infra paga en cada repetición — consistencia garantizada + velocidad + menos errores + el output cumple el bar por construcción, no por suerte. El costo del spec se amortiza; la alternativa (improvisar cada guía) acumula deuda e inconsistencia. Conecta con [[separar-gate-produccion-de-publicacion]]: el draft permitió empezar a ensamblar sin esperar las firmas finales.
+
+**Para la próxima**: ante un pedido de "hacelo impecable / master class" sobre algo repetible, NO saltar directo a producir. Primero: ¿existe el estándar/brief/infra? Si no, construirlo (idealmente con el agente especialista) y recién después producir contra él. Las guías siguientes (miopía, etc.) deben reusar el mismo brief + keyword map + estándar.
+
 ## 2026-06-01 — Front-loadear el spec (brief técnico + keyword map + estándar) convierte la escritura del artículo en "ensamblaje" rápido y consistente
 
 **Categoría**: Proceso / Contenido / Producción
