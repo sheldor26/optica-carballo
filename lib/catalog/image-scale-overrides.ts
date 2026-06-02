@@ -122,6 +122,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-P.jpg': 1.15,
   'rusty-etiquet/ETIQUET MBLK-BROWN G.BROWN-F.jpg': 1.0,
 
+  // Rusty Zaedit — sub-regla 15 obligatoria post-carga: scale perfil 1.15 /
+  // frente 1.0 emparejando con Etiquet/Vrast (mismo patrón wayfarer/cuadrado
+  // G-Flex). NO verificado visualmente aún (founder debe chequear grid tras
+  // deploy): si queda chico → subir a 1.2; si recorta → bajar a 1.05/1.0.
+  // 6 entries (2 por variante × 3 variantes). Perfil (_p) primario.
+  'rusty-zaedit/ZAEDIT_MBLK_S10POL_p.jpg': 1.15,
+  'rusty-zaedit/ZAEDIT_MBLK_S10POL_f.jpg': 1.0,
+  'rusty-zaedit/ZAEDIT_SBLK_DRT03_p.jpg': 1.15,
+  'rusty-zaedit/ZAEDIT_SBLK_DRT03_f.jpg': 1.0,
+  'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_p.jpg': 1.15,
+  'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_f.jpg': 1.0,
+
   // Rusty Tulle — sub-regla 15 obligatoria post-carga: scale 1.15
   // default emparejando con Vrast iter 2 (mismo aviador metal). Si tras
   // deploy queda chico vs grid → subir escalonado a 1.2/1.1. Si recorta

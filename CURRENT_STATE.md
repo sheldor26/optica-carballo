@@ -5,6 +5,11 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Producto cargado: Rusty Zaedit (sol) — APLICADO** (2026-06-02). Wayfarer unisex G-Flex, 3 variantes (S10 POL 127063 / DRT03 127060 / REVO BLUE 127062), 2 polarizadas + REVO no-polarizada. Seed `38_rusty_zaedit.sql` aplicado vía MCP + verificado (variants=3, stock=14, pol=2, imgs=6). Scale 1.15/1.0 en `image-scale-overrides.ts`.
+- **Desbloqueo clave**: precio/stock NO los dio el founder y WebFetch a ML da 403 → el founder hizo **OAuth ML nuevo** y usé el endpoint `/api/admin/ml-import-preview/[itemId]` (sin auth, usa el token guardado) para fetchear los 3 items (precio + stock + título). Es el método para próximas cargas: con token activo, `curl https://opticacarballo.com.ar/api/admin/ml-import-preview/MLAxxxx`.
+- **Cross-source honestidad**: ML decía REVO "polarizado" pero el founder confirmó que NO → `polarized=false` (REVO es la más cara, $85.888 — coating premium, no polarización).
+- **⬜ Pendiente founder**: (a) chequear el grid en la nube y avisar si el scale (1.15/1.0) necesita ajuste — NO lo verifiqué visualmente; (b) confirmar que las 6 fotos están en el bucket `products/rusty-zaedit/` con esos nombres exactos.
+
 🟢 **Estándar SEO master-class de guías CREADO** (2026-06-01). Founder pidió que las guías sean "MASTER CLASS de SEO": todas las técnicas internas+externas, rich snippets, E-E-A-T, link juice a productos, etc. seo-strategist diseñó el estándar completo → guardado en `ARTICLE_SEO_STANDARD.md` (on-page, structured data, E-E-A-T, link juice→comercial con mapeo por pillar, productos embebidos, off-page honesto, featured snippets, checklist pre-publicación, infra a construir). Puntero en CONTENT_PLAN.
 - **⚠️ El agente confabuló estado del código** (I/O fallando, 2da vez — ver AGENT_PERFORMANCE): dijo `ArticleJsonLd` hace `return null` (FALSO, renderiza Article completo), citó `lib/guides`/`seoTitle` inexistentes. **Corregí TODO el grounding contra el código real antes de persistir.** El estándar estratégico es sólido; el estado real está verificado en la sección "Estado real del código" del doc.
 - **✅ Infra P0 CONSTRUIDA** (2026-06-01, founder aprobó "construí la P0 ahora"):

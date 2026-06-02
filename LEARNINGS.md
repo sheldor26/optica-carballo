@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Para cargar productos: el endpoint `ml-import-preview` + token OAuth saca precio/stock solo (no hace falta que el founder los tipee)
+
+**Categoría**: Proceso / Carga de productos / Integraciones
+**Confianza**: 🟢 Alta (probado en la carga de Rusty Zaedit)
+
+**Qué funcionó**: Al cargar Rusty Zaedit, el founder dio SKUs + MLAs + specs pero NO precio ni stock. `WebFetch` directo a las páginas de ML da **403** (ML bloquea scrapers) y la API pública `api.mercadolibre.com/items/MLAxxx` ahora también (403 PolicyAgent). La solución: el proyecto YA tiene `app/api/admin/ml-import-preview/[itemId]/route.ts` (sin auth, usa el token OAuth guardado en `marketplace_integrations`). Con el founder logueado vía ML OAuth, `curl https://opticacarballo.com.ar/api/admin/ml-import-preview/MLA<id>` devuelve el JSON del item (precio, available_quantity, status, title) — fetch automático, sin tipear.
+
+**Por qué funciona / principio reutilizable**: cuando una fuente externa bloquea el acceso directo (scraping/403), buscar si el proyecto YA tiene un camino autenticado a esa fuente (un endpoint, una lib con token) antes de pedirle el dato al humano. Acá el dato venía gratis vía infra existente. La pista fue del founder ("token nuevo") + recordar que existía el endpoint admin.
+
+**Para la próxima carga de producto**: pedir solo SKUs + MLAs + fotos + medidas + confirmación de polarizado; el precio y stock los saco vía `ml-import-preview` (verificar primero que el token ML esté activo — si da error de token, pedir al founder que rehaga el OAuth). Igual, **el stock real lo manda el founder si difiere de ML** (vendemos stock físico real, no el de ML). Conecta con [[front-loadear-el-spec]] y el playbook de carga de productos.
+
 ## 2026-06-02 — Front-loadear el spec convierte la producción en ensamblaje (y la hace consistente)
 
 **Categoría**: Proceso / Producción de contenido / Calidad
