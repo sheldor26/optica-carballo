@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Convención `lens_treatment` a nivel producto: "polarized" SOLO si TODAS las variantes lo son
+
+**Categoría**: Carga de productos / Consistencia de datos / SEO (filtro /polarizados)
+**Confianza**: 🟢 Alta (verificado contra 4 productos en DB)
+
+**Qué funcionó**: Al cargar Rusty Bruk (2 de 3 variantes polarizadas) dudé si poner `"polarized"` en el `attributes.lens_treatment` del producto (lo que lo haría aparecer en `/{marca}/polarizados`). En vez de asumir, consulté la DB de los productos análogos: Etiquet (3/4 pol), Spell (2/5), Arvin (2/3) → TODOS con `["uv400"]` solo; Zaedit (3/3) → `["uv400","polarized"]`. Convención clara: **el flag a nivel producto va solo cuando el 100% de las variantes son polarizadas**. Apliqué `["uv400"]` a Bruk → consistente.
+
+**Por qué funciona / principio reutilizable**: el filtro `/polarizados` es product-level (`lens_treatment_includes polarized`), binario por producto. La convención evita que un producto mayormente-no-polarizado aparezca en el filtro de polarizados. Cada variante igual lleva su flag `polarized` individual (badge POLARIZADO per-variante). Antes de setear un atributo que dispara un filtro/comportamiento, verificar la convención en productos ya cargados en vez de inventarla.
+
+**Para la próxima carga**: `lens_treatment` del producto = `["uv400"]` por defecto; agregar `"polarized"` SOLO si las N variantes son todas polarizadas. El badge per-variante sale del flag `polarized` de cada variante, independiente de esto.
+
 ## 2026-06-02 — Los nombres de archivo de fotos de producto deben ser URL-safe (`getProductImageUrl` NO encodea el path)
 
 **Categoría**: Carga de productos / Storage / Bug prevenido
