@@ -61,6 +61,7 @@ export function FitChecker({
   const [bridgeInput, setBridgeInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [showCalc, setShowCalc] = useState(false);
+  const [showMeasure, setShowMeasure] = useState(false);
 
   useEffect(() => {
     const stored = readStoredReference();
@@ -220,17 +221,30 @@ export function FitChecker({
           encontrar grabados en la patilla).
         </p>
 
-        <button
-          type="button"
-          onClick={() => setShowHelp((s) => !s)}
-          className="text-muted-foreground hover:text-foreground mt-2 inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline"
-        >
-          <ChevronDown
-            className={`size-3.5 transition-transform ${showHelp ? 'rotate-180' : ''}`}
-            aria-hidden="true"
-          />
-          ¿Dónde lo leo?
-        </button>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+          <button
+            type="button"
+            onClick={() => setShowHelp((s) => !s)}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline"
+          >
+            <ChevronDown
+              className={`size-3.5 transition-transform ${showHelp ? 'rotate-180' : ''}`}
+              aria-hidden="true"
+            />
+            ¿Dónde lo leo?
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMeasure((s) => !s)}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs underline-offset-2 hover:underline"
+          >
+            <ChevronDown
+              className={`size-3.5 transition-transform ${showMeasure ? 'rotate-180' : ''}`}
+              aria-hidden="true"
+            />
+            ¿No encontrás las medidas?
+          </button>
+        </div>
         {showHelp && (
           <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
             En la parte interna de la patilla suele haber tres números, por
@@ -239,6 +253,28 @@ export function FitChecker({
             <strong>puente</strong> (18) y el tercero el largo de la patilla
             (140, no lo necesitamos acá).
           </p>
+        )}
+        {showMeasure && (
+          <div className="text-muted-foreground mt-2 space-y-1.5 text-xs leading-relaxed">
+            <p>
+              En anteojos viejos el grabado a veces se borra. Si no lo
+              encontrás, medilos con una <strong>regla en milímetros</strong>:
+            </p>
+            <ul className="list-disc space-y-1 pl-4">
+              <li>
+                <strong>Calibre</strong>: el ancho de <strong>un</strong> lente
+                solo, de borde a borde en horizontal, en su parte más ancha.
+              </li>
+              <li>
+                <strong>Puente</strong>: la separación entre los dos lentes (el
+                espacio que queda sobre la nariz), de un aro al otro.
+              </li>
+            </ul>
+            <p>
+              Es una medida aproximada, pero alcanza perfecto para comparar el
+              calce.
+            </p>
+          </div>
         )}
 
         <div className="mt-3 flex flex-wrap items-end gap-3">
