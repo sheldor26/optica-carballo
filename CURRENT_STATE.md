@@ -5,6 +5,8 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Producto cargado: Rusty Dapper (sol, G-Flex, unisex) — APLICADO** (2026-06-02). Seed `42_rusty_dapper.sql` aplicado vía MCP + verificado. 4 variantes en 4 MLAs (todas simples): SBH/6208 marrón SKU 958072 stock 4 (active, primary); SBLK/S10 958070 stock 1 **única POLARIZADA**; GREY/UVS17 958071 stock 0; ORANGE/118 958073 stock 0. 1 de 4 pol → `lens_treatment ["uv400"]`. Armazón+patillas G-Flex, bisagra metálica Flex, policarbonato UV400 cat3, 30,7g. Medidas 137/48×49/21/130. Precio/stock traídos del endpoint ml-import-preview **en producción** (las env vars ML no están en local). 9 imágenes ASCII URL-safe `DAPPER_*` verificadas HTTP 200. Primary=SBH/6208 perfil (mayor stock). Scale 1.15/1.0. **⬜ Pendiente founder**: confirmar `frame_shape` (cargado "redondo" tentativo; títulos ML dicen redondo/ovalado) + chequeo visual del grid.
+
 🟢 **Producto cargado: Vulk Biller (sol, hexagonal G-Flex/Monel, apto receta) — APLICADO** (2026-06-02). Seed `41_vulk_biller.sql` aplicado vía MCP + verificado. 5 variantes (AQ31 663-056 SKU 125181 stock 6 default; MBLK-046/S10 125187 única polarizada; 669k-068/CH79 125188; SBLK-206/118 125189; SBLK-068/902 LTD 125180). MLA1904276470 multi-variación (669k+AQ31). 1 de 5 pol → `lens_treatment ["uv400"]`. prescription_adapter=true. 10 imágenes verificadas HTTP 200 (AQ31 webp; founder renombró el 068/902 sacando el `/`). Primary=AQ31 perfil. Scale 1.15/1.0. **⬜ Pendiente founder**: chequeo visual del grid.
 - **Histórico (resuelto)**: AQ31 era 5ta variante oculta en MLA multi-variación; los 2 bloqueos (SKU AQ31=125181, rename del archivo 068/902 que tenía `/`) los resolvió el founder.
 

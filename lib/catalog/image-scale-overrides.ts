@@ -277,6 +277,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-biller/Biller SBLK 206 118 perfil.jpg': 1.15,
   'vulk-biller/Biller SBLK 206 118  Lateral.jpg': 1.0,
   'vulk-biller/Biller SBLK 068 902 perfil.jpg': 1.15,
+
+  // Rusty Dapper — sub-regla 15 post-carga: perfil 1.15 / frente 1.0 (mismo
+  // estilo de foto studio que Zaedit/Bruk, misma marca). Pendiente verificación
+  // visual del founder en el grid.
+  'rusty-dapper/DAPPER_SBH_6208_p.jpg': 1.15,
+  'rusty-dapper/DAPPER_SBH_6208_f.jpg': 1.0,
+  'rusty-dapper/DAPPER_SBLK_S10POL_p.jpg': 1.15,
+  'rusty-dapper/DAPPER_SBLK_S10POL_f.jpg': 1.0,
+  'rusty-dapper/DAPPER_GREY_UVS17_p.jpg': 1.15,
+  'rusty-dapper/DAPPER_GREY_UVS17_f.jpg': 1.0,
+  'rusty-dapper/DAPPER_ORANGE_118_p.jpg': 1.15,
+  'rusty-dapper/DAPPER_ORANGE_118_f.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

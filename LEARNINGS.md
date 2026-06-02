@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — El endpoint `ml-import-preview` solo funciona en PRODUCCIÓN, no en local
+
+**Categoría**: Carga de productos / Workflow / Tooling
+**Confianza**: 🟢 Alta (verificado este turno)
+
+**Qué funcionó**: Al cargar Rusty Dapper, el endpoint local `http://localhost:3000/api/admin/ml-import-preview/<MLA>` devolvió **500** (`ML_CLIENT_ID y ML_CLIENT_SECRET son requeridas`). Esas credenciales OAuth de Mercado Libre **solo están en Vercel**, no en `.env.local` (que solo tiene Mercado Pago). El token guardado vive en la tabla `marketplace_integrations` pero `mlFetch` falla antes de usarlo si faltan client id/secret. **Solución**: pegarle al mismo endpoint pero en producción → `https://opticacarballo.com.ar/api/admin/ml-import-preview/<MLA>` (HTTP 200, devuelve el JSON crudo del item con price/available_quantity/variations).
+
+**Por qué funciona / principio reutilizable**: el endpoint es `force-dynamic` y no tiene auth (iter 1), así que corre igual en prod con las env vars correctas. Para futuras cargas: NO perder tiempo levantando `pnpm dev` para fetchear ML — ir directo a producción. (El dev server solo hace falta si necesito probar render local.)
+
+**Para la próxima carga**: `curl -s "https://opticacarballo.com.ar/api/admin/ml-import-preview/MLA<id>"` para price/stock/variations. Mismo patrón para verificar imágenes: `<NEXT_PUBLIC_SUPABASE_URL>/storage/v1/object/public/products/<carpeta>/<archivo>` con espacios como `%20`.
+
 ## 2026-06-02 — Convención `lens_treatment` a nivel producto: "polarized" SOLO si TODAS las variantes lo son
 
 **Categoría**: Carga de productos / Consistencia de datos / SEO (filtro /polarizados)
