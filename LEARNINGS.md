@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Los nombres de archivo de fotos de producto deben ser URL-safe (`getProductImageUrl` NO encodea el path)
+
+**Categoría**: Carga de productos / Storage / Bug prevenido
+**Confianza**: 🟢 Alta (verificado en el código)
+
+**Qué funcionó**: Al cargar Vulk **53&3**, antes de decirle al founder a qué bucket subir, revisé `lib/storage/product-image-url.ts`. El builder interpola el `storage_path` directo en la URL **sin encodear** (`${SUPABASE_URL}/.../${PRODUCTS_BUCKET}/${storagePath}`). El `&` de "53&3" habría roto la URL (corta el path / se interpreta como separador). Lo detecté ANTES de que el founder subiera las fotos con `&` y quedaran rotas → le pasé nombres limpios (`533-s-g15-pol-perfil.jpg`).
+
+**Por qué funciona / principio reutilizable**: cuando un asset se referencia por una URL construida por interpolación simple (sin `encodeURIComponent`), el nombre del archivo es parte del contrato. Caracteres como `&`, `#`, `?`, `+` y espacios rompen o degradan la URL. Verificar el builder antes de definir nombres de archivo.
+
+**Para la próxima carga de producto**: pedir/usar nombres de archivo **URL-safe** desde el arranque: sin `&`, `#`, `?`, idealmente sin espacios ni mayúsculas (minúsculas + guiones). Sumar al checklist de carga: "validar que los filenames no tengan caracteres que rompan la URL". Los productos viejos con espacios (Etiquet, Spell) funcionan porque el navegador tolera espacios, pero `&` no se tolera.
+
 ## 2026-06-02 — Para cargar productos: el endpoint `ml-import-preview` + token OAuth saca precio/stock solo (no hace falta que el founder los tipee)
 
 **Categoría**: Proceso / Carga de productos / Integraciones
