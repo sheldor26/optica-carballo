@@ -298,6 +298,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-reporter/Reporter MBLK S10 Pol frente.jpg': 1.0,
   'vulk-reporter/REPORTER L GREY DRT03 POL PERFIL.jpg': 1.15,
   'vulk-reporter/REPORTER L GREY DRT03 POL FRONTAL.jpg': 1.0,
+
+  // Rusty Beason — cat eye femenino. Perfil 1.15 / frente 1.0 (default studio).
+  // Las fotos son "GALERIA-WEB" → pendiente verificación visual del founder.
+  'rusty-beason/BEASON GALERIA-WEB-LPINK-GGREY PERFIL.jpg': 1.15,
+  'rusty-beason/BEASON AGALERIA-WEB-LPINK-GGREY FRENTE.jpg': 1.0,
+  'rusty-beason/BEASON GALERIA-WEB-SBLK-G15 perfil.jpg': 1.15,
+  'rusty-beason/BEASON AGALERIA-WEB-SBLK-G15 frente.jpg': 1.0,
+  'rusty-beason/BEASON GALERIA-WEB-SBLK-G15.jpg': 1.0,
+  'rusty-beason/BEASON SBLKGS9B-perfil.jpg': 1.15,
+  'rusty-beason/BEASON SBLKGS9B-frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

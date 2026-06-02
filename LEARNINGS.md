@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Consultar `storage.objects` para los nombres EXACTOS de fotos antes de armar el seed
+
+**Categoría**: Carga de productos / Storage / Error prevenido
+**Confianza**: 🟢 Alta (prevenó error real este turno)
+
+**Qué funcionó**: Al cargar Rusty Beason, la lista de fotos que pasó el founder (captura) venía **cortada abajo** y con prefijos inconsistentes (`AGALERIA-WEB-...` con A inicial, vs `GALERIA-WEB-...`). En vez de transcribir la captura (riesgo de typo + omisión), corrí `SELECT name FROM storage.objects WHERE bucket_id='products' AND name ILIKE 'rusty-beason/%'`. Eso reveló: (a) los nombres reales exactos con sus prefijos raros, (b) que **S.PINK/G.BROWN no tenía fotos** subidas (4 variantes pero solo 3 con imágenes). Cargué los paths exactos y flageé la variante sin foto.
+
+**Por qué funciona / principio reutilizable**: `storage.objects` es la fuente de verdad de qué hay en el bucket. Una captura de pantalla puede estar cortada, tener typos de OCR, o no mostrar todo. Refuerza la regla previa "no asumir que la lista del founder es exhaustiva" (MISTAKES medidas.jpg) — pero la mejora: en vez de *preguntar* si falta algo, **consultar el bucket directo**.
+
+**Para la próxima carga**: SIEMPRE `SELECT name FROM storage.objects WHERE bucket_id='products' AND name ILIKE '<slug>/%'` antes de escribir las filas de `product_images`. Cruzar contra las variantes para detectar las que quedan sin foto.
+
 ## 2026-06-02 — El endpoint `ml-import-preview` solo funciona en PRODUCCIÓN, no en local
 
 **Categoría**: Carga de productos / Workflow / Tooling
