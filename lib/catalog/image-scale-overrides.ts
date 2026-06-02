@@ -289,6 +289,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-dapper/DAPPER_GREY_UVS17_f.jpg': 1.0,
   'rusty-dapper/DAPPER_ORANGE_118_p.jpg': 1.15,
   'rusty-dapper/DAPPER_ORANGE_118_f.jpg': 1.0,
+
+  // Vulk Reporter — sub-regla 15 post-carga: perfil 1.15 / frente 1.0 (foto
+  // studio estilo Zaedit/Dapper). Pendiente verificación visual del founder.
+  'vulk-reporter/REPORTER MBLK G GREEN PERFIL.jpg': 1.15,
+  'vulk-reporter/REPORTER MBLK G GREEN FRONTAL.jpg': 1.0,
+  'vulk-reporter/Reporter MBLK S10 Pol Perfil.jpg': 1.15,
+  'vulk-reporter/Reporter MBLK S10 Pol frente.jpg': 1.0,
+  'vulk-reporter/REPORTER L GREY DRT03 POL PERFIL.jpg': 1.15,
+  'vulk-reporter/REPORTER L GREY DRT03 POL FRONTAL.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
