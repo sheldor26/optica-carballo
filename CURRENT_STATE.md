@@ -5,6 +5,11 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **Producto EN CURSO: Vulk Biller (sol, hexagonal G-Flex/Monel, apto receta) — esperando 2 definiciones del founder** (2026-06-02). 4 MLAs. Precio/stock ML: MBLK-046/S10 POL (125187) $86.087,27 stock 1 ✅pol; 669k-068/CH79 (125188) $74.250,81 stock 7; SBLK-206/118 (125189) $70.975 stock 0 pausado; SBLK-068/902 LTD (125180) $70.975 stock 0 pausado. Solo 1 de 4 polarizada → `lens_treatment=["uv400"]`. Hexagonal, G-Flex + Monel + acetato, bisagra integrada, prescription_adapter=true, policarbonato UV400 cat3, 13g, mediano, 143/51×44/21/145.
+- **⚠️ Bloqueo 1 (AQ31)**: hay fotos `BILLER AQ31 PERFIL/FRENTE.webp` pero AQ31 NO está en los 4 SKUs → ¿5ta variante? Esperando SKU + MLA o confirmación de dejarla afuera.
+- **⚠️ Bloqueo 2 (filenames con `/`)**: varios archivos tienen `/` (ej `Biller SBLK 206 / 118 perfil.jpg`) que en Supabase crea carpetas → rompe. Founder debe renombrar sin `/` (le propuse nombres limpios `biller-<code>-perfil/frente.jpg` en `products/vulk-biller/`).
+- **Próximo paso**: founder define AQ31 + renombra archivos → seed 41 + MCP + scale + docs. Stock = ML (regla guardada). frame_shape "hexagonal" (sin página de filtro dedicada, es atributo).
+
 🟢 **Producto cargado: Rusty Bruk (sol, cuadrado G-Flex) — APLICADO** (2026-06-02). Seed `40_rusty_bruk.sql` aplicado vía MCP + verificado. 3 variantes (MBLK/S10 POL stock 2 default; MBLK/Revo Green stock 1 NO pol; SBLK/S10 POL stock 0 pausado-ML). 2 de 3 polarizadas → `lens_treatment=["uv400"]` (no entra a /polarizados; convención: producto-level pol solo si TODAS). Bisagras con tornillos (honesto), cat 3, G-Flex, 141/50×48/18/145, peso desconocido, forma cuadrado. Solo fotos de PERFIL (verificadas HTTP 200). Scale 1.15.
 - **🔑 Reglas de stock confirmadas por founder** (guardadas en memoria `feedback-stock-siempre-ml.md`): el stock es SIEMPRE el de ML; cargar TODAS las variantes aunque estén en 0 (se sincronizan al reponer en ML). → NO volver a preguntar por stock en cargas futuras; usar el de ml-import-preview directo.
 - **Ajuste scale (2026-06-02)**: founder reportó que la variante 2 (Revo Green) se veía un poco más grande → `bruk-perfil-revo green.jpg` bajado 1.15 → 1.0 (las otras 2 quedaron en 1.15, perfectas). Commit 57f0399.
