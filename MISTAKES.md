@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Cierres informales recurrentes: terminar turnos con "¿seguimos?" sin el checklist explícito de 3 docs, y no documentar micro-cambios
+
+**Estado**: 🟡 Recurrente en esta sesión (el stop hook lo marcó ~10 veces) — regla preventiva adoptada
+**Categoría**: Proceso / Cierre de sesión / Disciplina de docs
+
+**Qué pasó**: A lo largo de la sesión de carga de productos cerré varios turnos con una pregunta abierta ("¿cargamos otro?", "¿seguimos?") sin emitir el checklist explícito ✅/⚪ de los 3 docs, y traté micro-cambios (ej. ajustar un valor de scale 1.15→1.0) como "no documentables", dejándolos sin nota en CURRENT_STATE. El stop hook lo flagueó repetidamente.
+
+**Causa raíz**: asumí que un cambio chico o un turno conversacional no ameritaba el ritual de cierre completo. Pero en este proyecto el cierre NO es opcional ni escala con el tamaño del cambio: cualquier turno que toca algo necesita (a) su nota en CURRENT_STATE y (b) el checklist explícito de los 3 items (✅ modificado / ⚪ revisado-sin-novedad con razón). "Sin novedad" es un estado válido PERO hay que declararlo explícito en el cierre, no omitir el cierre.
+
+**Regla preventiva**: en CADA turno que produce un cambio (por chico que sea), antes de cualquier pregunta conversacional: (1) anotar el cambio en CURRENT_STATE aunque sea una línea, (2) emitir el checklist de cierre con los 3 docs marcados ✅/⚪ + razón, (3) recién después preguntar si seguimos. Un ajuste de un solo valor (scale, precio, flag) SÍ va a CURRENT_STATE. Conecta con la "Definición operacional de fin de sesión" de CLAUDE.md.
+
 ## 2026-06-02 — Omití `medidas.jpg` en la carga inicial de Zaedit (asumí que la lista de archivos del founder era exhaustiva)
 
 **Estado**: 🟡 Mitigado (founder lo recordó → agregada vía MCP, seed actualizado)

@@ -7,7 +7,8 @@
 
 🟢 **Producto cargado: Rusty Bruk (sol, cuadrado G-Flex) — APLICADO** (2026-06-02). Seed `40_rusty_bruk.sql` aplicado vía MCP + verificado. 3 variantes (MBLK/S10 POL stock 2 default; MBLK/Revo Green stock 1 NO pol; SBLK/S10 POL stock 0 pausado-ML). 2 de 3 polarizadas → `lens_treatment=["uv400"]` (no entra a /polarizados; convención: producto-level pol solo si TODAS). Bisagras con tornillos (honesto), cat 3, G-Flex, 141/50×48/18/145, peso desconocido, forma cuadrado. Solo fotos de PERFIL (verificadas HTTP 200). Scale 1.15.
 - **🔑 Reglas de stock confirmadas por founder** (guardadas en memoria `feedback-stock-siempre-ml.md`): el stock es SIEMPRE el de ML; cargar TODAS las variantes aunque estén en 0 (se sincronizan al reponer en ML). → NO volver a preguntar por stock en cargas futuras; usar el de ml-import-preview directo.
-- **⬜ Pendiente founder**: chequeo visual del grid/scale. (Forma "cuadrado" asumida — ML mixto ovalado/cuadrado; si es ovalado, avisar.)
+- **Ajuste scale (2026-06-02)**: founder reportó que la variante 2 (Revo Green) se veía un poco más grande → `bruk-perfil-revo green.jpg` bajado 1.15 → 1.0 (las otras 2 quedaron en 1.15, perfectas). Commit 57f0399.
+- **⬜ Pendiente founder**: confirmar forma (cuadrado asumido — ML mixto ovalado/cuadrado; si es ovalado, avisar).
 
 🟢 **Producto cargado: Vulk 53&3 Marky Ramone (sol, aviador edición especial) — APLICADO** (2026-06-02). Seed `39_vulk_53_3_marky_ramone.sql` aplicado vía MCP + verificado: 5 variantes (todas polarizadas → `/vulk/polarizados`), stock 12 (S/G15=7, LG/02=5; MG/20/S/25/MBLK/03=0 confirmado por founder), 12 imágenes, primaria S/G15 perfil. Precio único $104.799. 1 MLA multi-variación con variation codes (sync stock OK).
 - **Estuche especial**: `hide_brand_includes_image=true` → NO muestra el estuche genérico Vulk; muestra `vulk-53-3/estuche-ramones.jpg` (caja tributo + estuche firmado) como imagen del modelo. Verificado en DB.
