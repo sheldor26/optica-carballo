@@ -135,6 +135,7 @@ export function GenderCatalogPage({
                   href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                   categorySlug: p.categorySlug,
                   brandSlug: p.brandSlug,
+                  brandName: p.brandName,
                 }}
               />
             </RevealOnScroll>

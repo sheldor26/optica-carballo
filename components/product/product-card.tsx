@@ -40,6 +40,10 @@ export type ProductCardVariant = {
    * - `in_stock`: stock_qty 4+ → sin indicador.
    * Threshold ≤3 alineado con VariantList "Solo quedan N". */
   stockState: 'in_stock' | 'low_stock' | 'out_of_stock';
+  /** Si ESTA variante es polarizada (`attributes.polarized === true`). El
+   * badge "Polarizado" de la card sigue a la variante mostrada — honesto en
+   * modelos parcialmente polarizados (no todas las variantes lo son). */
+  polarized?: boolean;
 };
 
 export type ProductCardData = {
@@ -60,6 +64,10 @@ export type ProductCardData = {
   /** Para construir entry de wishlist. */
   categorySlug: string;
   brandSlug: string;
+  /** Nombre legible de la marca (ej "Rusty"). Se muestra como eyebrow arriba
+   * del nombre SOLO en grids multi-marca (categoría/forma/género/favoritos/
+   * related). En páginas de una marca se omite (redundante). */
+  brandName?: string;
   /** Talle del armazón (`attributes.size_fit`) para el badge sobre la foto.
    * Ej "junior". Null/undefined = sin badge. Ver `lib/catalog/size-fit.ts`. */
   sizeFit?: string | null;
@@ -151,6 +159,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       ? variants.find((v) => v.id === selectedVariantId)
       : undefined;
 
+  // Badge "Polarizado": sigue a la variante mostrada (igual que el precio).
+  // Honesto en modelos parcialmente polarizados — solo aparece cuando la
+  // variante previsualizada lo es. Fallback a la primera variante.
+  const isPolarized = (selectedVariant ?? variants[0])?.polarized === true;
+
   // Precio mostrado: el de la variante seleccionada (si hay y está en stock
   // o es la única info), fallback al mínimo del producto. Solo mostramos el
   // precio de variante cuando difiere del mínimo, para no confundir.
@@ -226,9 +239,19 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               Foto pendiente
             </div>
           )}
+          {isPolarized && (
+            <span className="absolute bottom-2 left-2 rounded-full bg-zinc-900/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white backdrop-blur-sm">
+              Polarizado
+            </span>
+          )}
         </div>
 
         <div className="mt-5 flex flex-1 flex-col items-center gap-2 text-center">
+          {product.brandName && (
+            <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.18em]">
+              {product.brandName}
+            </p>
+          )}
           <h3 className="text-foreground font-serif text-lg font-medium leading-tight tracking-[-0.01em] transition-colors duration-300 group-hover/card:text-foreground/90 md:text-xl">
             {product.name}
           </h3>
@@ -250,6 +273,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           {outOfStock && product.minPriceCents !== null && (
             <p className="text-muted-foreground/70 mt-0.5 text-xs uppercase tracking-wider">
               Sin stock
+            </p>
+          )}
+          {variants.length > 1 && (
+            <p className="text-muted-foreground/70 text-xs">
+              {variants.length} colores
             </p>
           )}
         </div>

@@ -61,6 +61,7 @@ export function buildCardVariants(
       secondaryImageScale: getImageScale(secondary),
       inStock: v.stock_qty > 0,
       stockState: deriveStockState(v.stock_qty),
+      polarized: v.attributes?.polarized === true,
     };
   });
 }
@@ -184,6 +185,7 @@ export function toProductCardData(
       secondaryImageScale: getImageScale(images.secondary),
       inStock: v.stock_qty > 0,
       stockState: deriveStockState(v.stock_qty),
+      polarized: v.attributes?.polarized === true,
     };
   });
 

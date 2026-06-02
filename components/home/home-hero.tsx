@@ -98,7 +98,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
 
           <p className="hero-reveal hero-reveal-3 mt-8 max-w-xl text-balance text-base text-white/70 md:text-lg">
             Atención personalizada por técnico óptico matriculado.
-            30+ años en Argentina. Envíos a todo el país y cuotas sin interés.
+            30+ años en Argentina. Envíos a todo el país y pago seguro con Mercado Pago.
           </p>
 
           <div className="hero-reveal hero-reveal-4 mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -165,7 +165,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
             <div className="relative aspect-[2/3] w-full md:aspect-auto md:h-full md:min-h-[720px] lg:min-h-[820px]">
               <Image
                 src={HERO_EDITORIAL_URL}
-                alt="Editorial Óptica Carballo"
+                alt="Modelo usando anteojos — Óptica Carballo, anteojos originales con asesoramiento óptico"
                 fill
                 sizes="(max-width: 768px) 90vw, 45vw"
                 priority

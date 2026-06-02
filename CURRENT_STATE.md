@@ -5,6 +5,22 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **Mejora del sitio — eje CONVERSIÓN/UX: audit hecho, plan propuesto, esperando go founder** (2026-06-02). Founder pidió "mejoremos el sitio" y eligió eje **Conversión / pulido UX**. Corrí 3 auditorías CRO en paralelo (PDP, grid/card, home) con hallazgos grounded (archivo:línea). NO se tocó código todavía.
+
+**2 hallazgos de COMPLIANCE (rompen reglas duras del negocio, van sí o sí)**:
+- `home-hero.tsx:101` promete "cuotas sin interés" → viola regla #3 (no prometer lo que no se cumple) + #7 (trust real). Fix: copy honesto "Pagás con Mercado Pago" hasta confirmar cuotas reales en MP.
+- `quick-view.tsx:171-172` dice "Sin stock — consultá disponibilidad" → viola regla dura #1 (cero "consultar disponibilidad"). Fix: "Sin stock por ahora" + alerta de stock.
+
+**Top hallazgos CRO (alto impacto / bajo riesgo)**:
+- Card NO muestra la MARCA (brandName se trae en query pero no se pinta — `product-card.tsx:231`, `category-filtered-page.tsx:78`). Dato de decisión #1 en óptica.
+- Card sin badge "Polarizado" (dato en DB, filtra en backend, no se muestra — `product-card.tsx:178`).
+- Home invertida: ~2 pantallas de contenido editorial antes de ver Categorías (`page.tsx:43-49`). Reorden = 2 min, mayor impacto.
+- Trust marquee dice "óptica matriculada habilitada" (genérico) en vez de nombrar a la regente María Carlota (diferencial real — `trust-marquee.tsx:4`).
+- PDP: CTA primario (WhatsApp con checkout apagado) fragmentado y al fondo; precio sin línea de medios de pago; stock de variante no se refleja en price-block; CreateAlertButton arriba del precio (`product-page.tsx:404,422,433,459`).
+- Grid sin selector de ORDEN (precio/novedades) y filtros mobile pobres (solo forma, flex-wrap apila; faltan marca/precio).
+
+**Plan propuesto en 3 batches** (Batch 1 = compliance + quick-wins safe; Batch 2 = PDP conversión; Batch 3 = grid power). **⬜ Próximo paso**: founder elige qué batch ejecuto. Recomendación: Batch 1 ya (incluye los 2 fixes de compliance). Audits completos en transcript; agentes: PDP `adcb394be2a19ea3e`, grid `a10257d0a57e62d27`, home `a57b30bb35ff7a926`.
+
 🟢 **Producto cargado: Rusty Beason (sol, cat eye femenino, G-Flex) — APLICADO** (2026-06-02). Seed `44_rusty_beason.sql` aplicado vía MCP + verificado. 4 variantes (todas simples, ninguna polarizada → `lens_treatment ["uv400"]`): L.PINK/G.GREY SKU 128791 stock 13 (primary); SBLK/G15 128790 stock 5; S.PINK/G.BROWN 128792 stock 1; SBLK/GS9B 128794 stock 0. G-Flex, bisagras plásticas reforzadas, policarbonato UV400 cat3. Medidas 141/54×50/16/145, cat_eye, gender=female. 10 imágenes verificadas HTTP 200 (founder subió las 2 de S.PINK/G.BROWN → agregadas MCP, 0 variantes sin foto). Peso 26,2g. Primary=L.PINK perfil (mayor stock). Scale 1.15/1.0. **Beason COMPLETO.** **⬜ Pendiente founder**: chequeo visual del grid. Reporter: founder dijo NO a la 4ª variación + NO tocar LGREY → **Reporter cerrado**.
 
 🟢 **Producto cargado: Vulk Reporter (sol, cuadrado G-Flex, apto receta) — APLICADO** (2026-06-02). Seed `43_vulk_reporter.sql` aplicado vía MCP + verificado. 3 variantes: MBLK/G.GREEN SKU 194165 stock 5 (simple, primary, NO pol); MBLK/S10 194164 stock 3 **POLARIZADA**; LGREY/DRT03 129260 stock 4 **POLARIZADA** (las 2 pol son variaciones de la MLA multi-var 1866713114). 2 de 3 pol → `lens_treatment ["uv400"]`. G-Flex inyectado, bisagras plásticas integradas, policarbonato UV400 cat3, apto receta. Medidas 142/55×48/11/138, cuadrado. 7 imágenes verificadas HTTP 200 (medidas en .webp). Primary=MBLK/G.GREEN perfil (mayor stock). Scale 1.15/1.0. **⬜ Pendientes founder**: (1) ¿cargar la 4ª variación MBLK/S10 verde degradé (stock 0, sin SKU/fotos)?; (2) confirmar tonalidad de LGREY/DRT03; (3) chequeo visual del grid.

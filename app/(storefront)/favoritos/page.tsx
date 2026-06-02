@@ -82,6 +82,7 @@ export default async function Page() {
                 href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                 categorySlug: p.categorySlug,
                 brandSlug: p.brandSlug,
+                brandName: p.brandName,
               }}
             />
           ))}

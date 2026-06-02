@@ -41,12 +41,17 @@ export default async function HomePage() {
       <WebsiteJsonLd />
       <HomeHero siteName={siteName} whatsappLink={whatsappLink} />
       <TrustMarquee />
+      {/* Orden CRO (2026-06-02): lo más vendedor —elegir sol/receta— arriba,
+          apenas pasado el trust. El storytelling (ValueProps/HowWeWork) y el
+          diferenciador IA (HomeTools) refuerzan DESPUÉS de mostrar el camino
+          a producto. Antes Categorías caía tras ~2 pantallas de contenido
+          editorial (audit CRO). */}
+      <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
       <ValueProps />
       <HowWeWork />
-      <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
+      <HomeTools />
       <BrandsSection brands={allBrands} />
       <RecentlyViewed heading="Estuviste mirando" limit={6} minToRender={3} />
-      <HomeTools />
       <HomeFaqs />
       <NewsletterSection />
     </>

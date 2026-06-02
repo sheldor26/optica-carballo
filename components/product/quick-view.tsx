@@ -168,7 +168,7 @@ function QuickViewBody({
           )}
           {price !== undefined && !inStock && (
             <p className="text-muted-foreground/80 mt-1 text-xs">
-              Sin stock — consultá disponibilidad
+              Sin stock por ahora
             </p>
           )}
         </div>

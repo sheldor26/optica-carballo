@@ -90,6 +90,7 @@ export function CategoryFilteredPage({
                     href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                     categorySlug: p.categorySlug,
                     brandSlug: p.brandSlug,
+                    brandName: p.brandName,
                   }}
                 />
               </RevealOnScroll>

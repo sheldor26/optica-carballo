@@ -1,7 +1,7 @@
 import { CheckCircle2, Truck, ShieldCheck, Sparkles, MapPin } from 'lucide-react';
 
 const ITEMS = [
-  { icon: ShieldCheck, label: 'Óptica matriculada habilitada' },
+  { icon: ShieldCheck, label: 'María Carlota Carballo, óptica regente matriculada' },
   { icon: MapPin, label: 'Más de 30 años en Argentina' },
   { icon: Truck, label: 'Envíos a todo el país' },
   { icon: CheckCircle2, label: 'Stock real verificado' },

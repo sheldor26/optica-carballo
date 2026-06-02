@@ -132,6 +132,7 @@ export function ShapeCatalogPage({
                   href: `/${p.categorySlug}/${p.brandSlug}/${p.slug}`,
                   categorySlug: p.categorySlug,
                   brandSlug: p.brandSlug,
+                  brandName: p.brandName,
                 }}
               />
             </RevealOnScroll>
