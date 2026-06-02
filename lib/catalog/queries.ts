@@ -294,9 +294,14 @@ export async function fetchBrandPageByFilter(args: {
   } else if (args.filter.type === 'frame_material') {
     query = query.eq('attributes->>frame_material', args.filter.value);
   } else {
-    // jsonb array contains: para `lens_treatment: ["polarized", "uv400"]`
-    // matchear cuando contiene `["polarized"]`.
-    query = query.contains('attributes->lens_treatment', [args.filter.value]);
+    // jsonb containment: el valor debe ir como JSON (`["polarized"]`), NO como
+    // array JS — `.contains(col, ['polarized'])` lo serializa como literal de
+    // array PG `{polarized}` → error 22P02 "invalid input syntax for type json"
+    // → la query falla y devuelve [] (página de polarizados vacía, bug 2026-06-02).
+    query = query.contains(
+      'attributes->lens_treatment',
+      JSON.stringify([args.filter.value]),
+    );
   }
 
   const { data: products } = await query
@@ -1110,7 +1115,14 @@ export async function fetchCategoryByFilter(args: {
   } else if (args.filter.type === 'frame_material') {
     query = query.eq('attributes->>frame_material', args.filter.value);
   } else {
-    query = query.contains('attributes->lens_treatment', [args.filter.value]);
+    // jsonb containment: el valor debe ir como JSON (`["polarized"]`), NO como
+    // array JS — `.contains(col, ['polarized'])` lo serializa como literal de
+    // array PG `{polarized}` → error 22P02 "invalid input syntax for type json"
+    // → la query falla y devuelve [] (página de polarizados vacía, bug 2026-06-02).
+    query = query.contains(
+      'attributes->lens_treatment',
+      JSON.stringify([args.filter.value]),
+    );
   }
 
   const { data } = await query.returns<FilteredCatalogRow[]>();
