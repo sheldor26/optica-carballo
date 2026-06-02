@@ -256,6 +256,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-53-3/53-3 S-25POL- FRENTE.jpg': 1.0,
   'vulk-53-3/53-3 MBLK 03 POL - PERFIL.jpg': 1.15,
   'vulk-53-3/53-3 MBLK 03 POL - FRENTE.jpg': 1.0,
+
+  // Rusty Bruk — solo fotos de perfil (1 por variante, son las primarias del
+  // grid). Scale 1.15 (cuadrado G-Flex, como Etiquet/Zaedit). Sin verificación
+  // visual — founder chequea grid. Nombres reales con espacios.
+  'rusty-bruk/BRUK MBLK-S10-perfil.jpg': 1.15,
+  'rusty-bruk/bruk-perfil-revo green.jpg': 1.15,
+  'rusty-bruk/BRUK SBLK-POL-S10-perfil.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
