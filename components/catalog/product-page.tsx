@@ -27,7 +27,6 @@ import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card'
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
 import { VariantList } from '@/components/product/variant-list';
-import { WhatsappCta } from '@/components/product/whatsapp-cta';
 import { ShareButtons } from '@/components/share/share-buttons';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 import { CreateAlertButton } from '@/components/alerts/create-alert-button';
@@ -458,10 +457,6 @@ export async function ProductDetailPage({
           <FitChecker attributes={product.attributes} />
 
           <ProductIncludes attributes={product.attributes} />
-
-          <div className="flex flex-wrap items-center gap-2">
-            <WhatsappCta productName={product.name} inStock={isInStock} />
-          </div>
         </div>
 
       </div>
