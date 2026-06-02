@@ -1,9 +1,12 @@
-import { Award, Truck, RotateCcw, Stethoscope } from 'lucide-react';
+import Link from 'next/link';
+import { Award, Truck, RotateCcw, Stethoscope, FileText, Undo2 } from 'lucide-react';
 
 type Signal = {
   icon: typeof Award;
   title: string;
   description: string;
+  /** Si está presente, el signal es clickeable (link a la política). */
+  href?: string;
 };
 
 const SIGNALS: Signal[] = [
@@ -23,9 +26,21 @@ const SIGNALS: Signal[] = [
     description: 'Con Andreani con seguimiento',
   },
   {
+    icon: FileText,
+    title: 'Factura A o B',
+    description: 'Electrónica, cumple AFIP',
+  },
+  {
     icon: RotateCcw,
     title: 'Cambios y devoluciones',
     description: 'Hasta 30 días sin uso',
+    href: '/politica-de-devolucion',
+  },
+  {
+    icon: Undo2,
+    title: 'Botón de arrepentimiento',
+    description: 'Cancelás hasta 10 días',
+    href: '/boton-de-arrepentimiento',
   },
 ];
 
@@ -42,14 +57,11 @@ const SIGNALS: Signal[] = [
 export function ProductTrustSignals() {
   return (
     <div className="border-border/60 bg-muted/20 rounded-xl border p-4">
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {SIGNALS.map((signal) => {
           const Icon = signal.icon;
-          return (
-            <li
-              key={signal.title}
-              className="flex flex-col items-start gap-2"
-            >
+          const body = (
+            <>
               <span
                 aria-hidden="true"
                 className="border-border/60 bg-background flex size-9 items-center justify-center rounded-full border"
@@ -67,6 +79,20 @@ export function ProductTrustSignals() {
                   {signal.description}
                 </p>
               </div>
+            </>
+          );
+          return (
+            <li key={signal.title} className="flex flex-col items-start gap-2">
+              {signal.href ? (
+                <Link
+                  href={signal.href}
+                  className="group/sig flex flex-col items-start gap-2 rounded-md outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {body}
+                </Link>
+              ) : (
+                body
+              )}
             </li>
           );
         })}

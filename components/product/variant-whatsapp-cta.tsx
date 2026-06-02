@@ -17,6 +17,9 @@ export function VariantWhatsappCta({
   variantLabel,
   priceCents,
   inStock,
+  size = 'sm',
+  fullWidth = false,
+  label = 'Consultar',
 }: {
   productName: string;
   brandName: string;
@@ -24,6 +27,10 @@ export function VariantWhatsappCta({
   variantLabel: string;
   priceCents: number;
   inStock: boolean;
+  /** `lg` + `fullWidth` para el CTA primario de la PDP. Default `sm` inline. */
+  size?: 'sm' | 'lg';
+  fullWidth?: boolean;
+  label?: string;
 }) {
   const priceText = formatPriceCents(priceCents);
   const message =
@@ -35,9 +42,10 @@ export function VariantWhatsappCta({
   return (
     <Button
       asChild
-      size="sm"
+      size={size}
       variant={inStock ? 'default' : 'outline'}
       disabled={!inStock}
+      className={fullWidth ? 'w-full' : undefined}
     >
       <a
         href={link}
@@ -46,7 +54,7 @@ export function VariantWhatsappCta({
         aria-label={`Consultar por WhatsApp sobre ${productName} ${variantLabel}`}
       >
         <MessageCircle className="size-4" />
-        Consultar
+        {label}
       </a>
     </Button>
   );

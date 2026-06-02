@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Check, Loader2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { addToCart } from '@/lib/cart/actions';
 
 /**
@@ -15,10 +16,15 @@ export function AddToCartButton({
   variantId,
   disabled = false,
   variantLabel,
+  size = 'sm',
+  fullWidth = false,
 }: {
   variantId: string;
   disabled?: boolean;
   variantLabel: string;
+  /** `lg` + `fullWidth` para el CTA primario de la PDP. Default `sm` inline. */
+  size?: 'sm' | 'lg';
+  fullWidth?: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -39,14 +45,15 @@ export function AddToCartButton({
   };
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className={cn('flex flex-col gap-1', fullWidth ? 'items-stretch' : 'items-end')}>
       <Button
         type="button"
-        size="sm"
+        size={size}
         variant={justAdded ? 'secondary' : 'default'}
         disabled={disabled || pending}
         onClick={handleClick}
         aria-label={`Agregar ${variantLabel} al carrito`}
+        className={fullWidth ? 'w-full' : undefined}
       >
         {pending ? (
           <>

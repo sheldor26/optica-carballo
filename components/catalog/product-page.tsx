@@ -368,7 +368,7 @@ export async function ProductDetailPage({
                   </Link>
                   <NewArrivalBadge attributes={product.attributes} />
                 </div>
-                <h1 className="text-balance font-serif text-4xl font-medium leading-[1.0] tracking-[-0.02em] md:text-5xl lg:text-6xl">
+                <h1 className="text-balance font-serif text-3xl font-medium leading-[1.05] tracking-[-0.02em] md:text-5xl md:leading-[1.0] lg:text-6xl">
                   {product.name}
                 </h1>
               </div>
@@ -401,16 +401,6 @@ export async function ProductDetailPage({
             <p className="text-muted-foreground mt-3 text-sm font-medium uppercase tracking-[0.15em] md:text-base">
               {subtitle}
             </p>
-            <div className="mt-3">
-              <CreateAlertButton
-                productId={product.id}
-                variantId={null}
-                productName={product.name}
-                inStock={isInStock}
-                isAuthenticated={isAuthenticated}
-                hasExistingAlert={hasExistingAlert}
-              />
-            </div>
             {product.short_description && (
               <p className="text-muted-foreground mt-2 text-sm md:text-base">
                 {product.short_description}
@@ -427,6 +417,19 @@ export async function ProductDetailPage({
             }))}
             fallbackLabel={priceLabel}
           />
+
+          {/* Alerta de precio/stock: movida debajo del precio (antes empujaba
+              el precio fuera del above-the-fold mobile — audit CRO). */}
+          <div className="-mt-4">
+            <CreateAlertButton
+              productId={product.id}
+              variantId={null}
+              productName={product.name}
+              inStock={isInStock}
+              isAuthenticated={isAuthenticated}
+              hasExistingAlert={hasExistingAlert}
+            />
+          </div>
 
           <ProductTrustSignals />
 

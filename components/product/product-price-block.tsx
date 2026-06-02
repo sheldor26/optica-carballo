@@ -1,6 +1,7 @@
 'use client';
 
 import { useVariantSelection } from '@/lib/product/variant-selection';
+import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { ShippingEstimator } from '@/components/product/shipping-estimator';
 import {
@@ -42,6 +43,21 @@ export function ProductPriceBlock({
     ? selected.stockQty > 0
     : variants.some((v) => v.stockQty > 0);
 
+  // Stock real de la variante seleccionada (fallback: el mayor entre variantes)
+  // para reflejar escasez REAL cerca del precio (audit CRO). Threshold ≤3
+  // alineado con VariantList y la card del grid. Sin urgencia falsa.
+  const stockQty = selected
+    ? selected.stockQty
+    : Math.max(0, ...variants.map((v) => v.stockQty));
+  const lowStock = inStock && stockQty <= 3;
+  const stockLabel = !inStock
+    ? 'Sin stock'
+    : stockQty === 1
+      ? '¡Última unidad!'
+      : lowStock
+        ? `Quedan ${stockQty}`
+        : 'En stock';
+
   if (!priceText) {
     return (
       <p className="text-muted-foreground text-base">Sin stock disponible</p>
@@ -56,7 +72,7 @@ export function ProductPriceBlock({
       <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
         {priceText}
       </p>
-      {INSTALLMENTS_ENABLED && selected && (
+      {INSTALLMENTS_ENABLED && selected ? (
         <>
           <p className="text-foreground mt-2 text-xs font-medium sm:text-sm">
             {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
@@ -70,13 +86,31 @@ export function ProductPriceBlock({
             Hasta 12 cuotas según el banco.
           </p>
         </>
+      ) : (
+        // Cuotas apagadas (INSTALLMENTS_ENABLED=false): mostrar igual los medios
+        // de pago — "¿puedo pagar en cuotas?" es ansiedad #1 en AR. Honesto, sin
+        // prometer cuotas sin interés (depende de promos de MP que no controlamos).
+        <p className="text-muted-foreground mt-2 text-xs">
+          Pagás con tarjeta, débito o transferencia vía{' '}
+          <span className="text-foreground font-medium">Mercado Pago</span>.
+        </p>
       )}
       {inStock ? (
         <>
           <div className="border-border/40 mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t pt-3 text-xs">
-            <p className="text-muted-foreground inline-flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-green-600" />
-              En stock
+            <p
+              className={cn(
+                'inline-flex items-center gap-1.5',
+                lowStock ? 'text-amber-600 font-medium' : 'text-muted-foreground',
+              )}
+            >
+              <span
+                className={cn(
+                  'size-1.5 rounded-full',
+                  lowStock ? 'bg-amber-500' : 'bg-green-600',
+                )}
+              />
+              {stockLabel}
             </p>
             <p className="text-muted-foreground inline-flex items-center gap-1.5">
               <span className="size-1 rounded-full bg-foreground/30" />

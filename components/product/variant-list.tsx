@@ -139,8 +139,56 @@ export function VariantList({
     );
   }
 
+  // Variante activa para el CTA primario: la seleccionada, fallback a la 1ª.
+  const selected =
+    variants.find((v) => v.id === selectedVariantId) ?? variants[0]!;
+  const selectedLabel = describeVariant(selected.attributes);
+  const selectedInStock = selected.stockQty > 0;
+
   return (
     <div>
+      {/* CTA primario: refleja la variante elegida y es la acción dominante de
+          la página (audit CRO — antes el CTA grande estaba al fondo y los de
+          variante competían). Listo para swap WhatsApp↔carrito según el flag. */}
+      {showVariantCta && (
+        <div className="mb-5">
+          <p className="text-muted-foreground mb-2 text-xs">
+            Elegiste:{' '}
+            <span className="text-foreground font-medium">{selectedLabel}</span>
+            {isPolarized(selected.attributes) && (
+              <span className="text-blue-700"> · Polarizado</span>
+            )}{' '}
+            · {formatPriceCents(selected.priceCents)}
+          </p>
+          {checkoutEnabled ? (
+            <AddToCartButton
+              variantId={selected.id}
+              variantLabel={selectedLabel}
+              disabled={!selectedInStock}
+              size="lg"
+              fullWidth
+            />
+          ) : (
+            <VariantWhatsappCta
+              productName={productName}
+              brandName={brandName}
+              sku={selected.sku}
+              variantLabel={selectedLabel}
+              priceCents={selected.priceCents}
+              inStock={selectedInStock}
+              size="lg"
+              fullWidth
+              label="Consultar por WhatsApp"
+            />
+          )}
+          {!selectedInStock && (
+            <p className="text-muted-foreground mt-1.5 text-xs">
+              Esta variante está sin stock. Mirá las demás abajo.
+            </p>
+          )}
+        </div>
+      )}
+
       <h2 className="text-foreground text-sm font-semibold tracking-tight">
         Variantes disponibles
       </h2>
@@ -226,50 +274,28 @@ export function VariantList({
                   </p>
                 </div>
               </div>
-              <div
-                className="flex items-center gap-4"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="text-right">
-                  <p className="text-foreground font-semibold">
-                    {formatPriceCents(v.priceCents)}
-                  </p>
-                  <p
-                    className={cn(
-                      'text-xs',
-                      !inStock
-                        ? 'text-destructive'
-                        : v.stockQty <= 3
-                          ? 'font-medium text-amber-600 dark:text-amber-500'
-                          : 'text-muted-foreground',
-                    )}
-                  >
-                    {!inStock
-                      ? 'Sin stock'
-                      : v.stockQty === 1
-                        ? '¡Última unidad!'
-                        : v.stockQty <= 3
-                          ? `Solo quedan ${v.stockQty}`
-                          : `${v.stockQty} en stock`}
-                  </p>
-                </div>
-                {showVariantCta &&
-                  (checkoutEnabled ? (
-                    <AddToCartButton
-                      variantId={v.id}
-                      variantLabel={label}
-                      disabled={!inStock}
-                    />
-                  ) : (
-                    <VariantWhatsappCta
-                      productName={productName}
-                      brandName={brandName}
-                      sku={v.sku}
-                      variantLabel={label}
-                      priceCents={v.priceCents}
-                      inStock={inStock}
-                    />
-                  ))}
+              <div className="text-right">
+                <p className="text-foreground font-semibold">
+                  {formatPriceCents(v.priceCents)}
+                </p>
+                <p
+                  className={cn(
+                    'text-xs',
+                    !inStock
+                      ? 'text-destructive'
+                      : v.stockQty <= 3
+                        ? 'font-medium text-amber-600 dark:text-amber-500'
+                        : 'text-muted-foreground',
+                  )}
+                >
+                  {!inStock
+                    ? 'Sin stock'
+                    : v.stockQty === 1
+                      ? '¡Última unidad!'
+                      : v.stockQty <= 3
+                        ? `Solo quedan ${v.stockQty}`
+                        : `${v.stockQty} en stock`}
+                </p>
               </div>
             </li>
           );
