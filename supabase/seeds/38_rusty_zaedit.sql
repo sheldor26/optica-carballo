@@ -37,7 +37,7 @@
 --   ZAEDIT_SBLK_DRT03_f.jpg   (DRT03 — frente)
 --   ZAEDIT_MBLK_R_BLUE_p.jpg  (REVO — perfil)
 --   ZAEDIT_MBLK_R_BLUE_f.jpg  (REVO — frente)
--- (sin medidas.jpg — no incluida en la entrega del founder)
+--   medidas.jpg               (esquema técnico común al modelo)
 -- ============================================
 
 BEGIN;
@@ -194,7 +194,13 @@ VALUES
    (SELECT id FROM public.product_variants WHERE sku = '127062'),
    'rusty-zaedit/ZAEDIT_MBLK_R_BLUE_f.jpg',
    'Rusty Zaedit wayfarer vista frontal, armazón negro mate con lentes azul espejado revo',
-   1500, 1000, 5, false)
+   1500, 1000, 5, false),
+  -- Esquema técnico de medidas (común al modelo, sin variante)
+  ((SELECT id FROM public.products WHERE slug = 'rusty-zaedit'),
+   NULL,
+   'rusty-zaedit/medidas.jpg',
+   'Esquema técnico de medidas Rusty Zaedit: frente 146mm, lente 59x50mm, puente 19mm, varilla 135mm',
+   1500, 1500, 6, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id  = EXCLUDED.variant_id,
   alt_text    = EXCLUDED.alt_text,
