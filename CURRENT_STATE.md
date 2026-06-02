@@ -5,21 +5,16 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-🟡 **Mejora del sitio — eje CONVERSIÓN/UX: audit hecho, plan propuesto, esperando go founder** (2026-06-02). Founder pidió "mejoremos el sitio" y eligió eje **Conversión / pulido UX**. Corrí 3 auditorías CRO en paralelo (PDP, grid/card, home) con hallazgos grounded (archivo:línea). NO se tocó código todavía.
+🟢 **Mejora del sitio — eje CONVERSIÓN/UX: 3 batches EJECUTADOS + verificados (tsc + runtime 200)** (2026-06-02). Founder pidió "mejoremos el sitio", eligió **Conversión/UX** y luego "todos" los batches. Corrí 3 auditorías CRO en paralelo (PDP, grid, home) y apliqué los fixes. Commits: `d36da2e` (B1), `5ede559` (B2), `36cb189` (B3), `1eef59a` (fix client/server boundary).
 
-**2 hallazgos de COMPLIANCE (rompen reglas duras del negocio, van sí o sí)**:
-- `home-hero.tsx:101` promete "cuotas sin interés" → viola regla #3 (no prometer lo que no se cumple) + #7 (trust real). Fix: copy honesto "Pagás con Mercado Pago" hasta confirmar cuotas reales en MP.
-- `quick-view.tsx:171-172` dice "Sin stock — consultá disponibilidad" → viola regla dura #1 (cero "consultar disponibilidad"). Fix: "Sin stock por ahora" + alerta de stock.
+**Batch 1 — compliance + quick-wins**: hero "cuotas sin interés"→"pago seguro con Mercado Pago" (compliance #3/#7); quick-view "consultá disponibilidad"→"Sin stock por ahora" (regla dura #1); card muestra MARCA (eyebrow) en grids multi-marca; badge "Polarizado" que sigue a la variante mostrada (honesto en parciales); "N colores"; home reordenado (Categorías sube tras el trust; HomeTools antes de marcas); trust marquee nombra a la regente María Carlota.
 
-**Top hallazgos CRO (alto impacto / bajo riesgo)**:
-- Card NO muestra la MARCA (brandName se trae en query pero no se pinta — `product-card.tsx:231`, `category-filtered-page.tsx:78`). Dato de decisión #1 en óptica.
-- Card sin badge "Polarizado" (dato en DB, filtra en backend, no se muestra — `product-card.tsx:178`).
-- Home invertida: ~2 pantallas de contenido editorial antes de ver Categorías (`page.tsx:43-49`). Reorden = 2 min, mayor impacto.
-- Trust marquee dice "óptica matriculada habilitada" (genérico) en vez de nombrar a la regente María Carlota (diferencial real — `trust-marquee.tsx:4`).
-- PDP: CTA primario (WhatsApp con checkout apagado) fragmentado y al fondo; precio sin línea de medios de pago; stock de variante no se refleja en price-block; CreateAlertButton arriba del precio (`product-page.tsx:404,422,433,459`).
-- Grid sin selector de ORDEN (precio/novedades) y filtros mobile pobres (solo forma, flex-wrap apila; faltan marca/precio).
+**Batch 2 — PDP**: CTA primario único y prominente arriba de variantes (full-width, refleja la variante elegida, listo para swap WhatsApp↔carrito); se quitan los botones por fila (redundantes); price-block con línea de medios de pago cuando cuotas off + stock real de variante ("Última unidad"/"Quedan N"); CreateAlertButton movido debajo del precio; H1 mobile reducido; trust signals +Factura A/B +Botón de arrepentimiento (link) + devolución clickeable.
 
-**Plan propuesto en 3 batches** (Batch 1 = compliance + quick-wins safe; Batch 2 = PDP conversión; Batch 3 = grid power). **⬜ Próximo paso**: founder elige qué batch ejecuto. Recomendación: Batch 1 ya (incluye los 2 fixes de compliance). Audits completos en transcript; agentes: PDP `adcb394be2a19ea3e`, grid `a10257d0a57e62d27`, home `a57b30bb35ff7a926`.
+**Batch 3 — grid**: selector "Ordenar por" (relevancia/precio asc/desc) en `?orden=`, server-side, sol+receta; filtros por forma con scroll horizontal mobile.
+
+**⬜ Follow-up propuesto (NO hecho)**: filtros por marca + rango de precio en la vista filtrada (feature más grande). Try-on con cámara sigue sin empezar.
+**⬜ Pendiente founder**: revisar en producción cuando deploye (mirar home reordenado, card con marca/polarizado, PDP con CTA primario, sort en `/anteojos-de-sol?forma=X`). Nota: el badge "Polarizado" de la card sigue a la variante previsualizada — en modelos parciales (Reporter, Dapper) aparece solo al hover de la variante polarizada.
 
 🟢 **Producto cargado: Rusty Beason (sol, cat eye femenino, G-Flex) — APLICADO** (2026-06-02). Seed `44_rusty_beason.sql` aplicado vía MCP + verificado. 4 variantes (todas simples, ninguna polarizada → `lens_treatment ["uv400"]`): L.PINK/G.GREY SKU 128791 stock 13 (primary); SBLK/G15 128790 stock 5; S.PINK/G.BROWN 128792 stock 1; SBLK/GS9B 128794 stock 0. G-Flex, bisagras plásticas reforzadas, policarbonato UV400 cat3. Medidas 141/54×50/16/145, cat_eye, gender=female. 10 imágenes verificadas HTTP 200 (founder subió las 2 de S.PINK/G.BROWN → agregadas MCP, 0 variantes sin foto). Peso 26,2g. Primary=L.PINK perfil (mayor stock). Scale 1.15/1.0. **Beason COMPLETO.** **⬜ Pendiente founder**: chequeo visual del grid. Reporter: founder dijo NO a la 4ª variación + NO tocar LGREY → **Reporter cerrado**.
 

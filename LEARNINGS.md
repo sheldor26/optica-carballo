@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Auditoría CRO con 3 subagentes en paralelo (PDP / grid / home) antes de tocar código
+
+**Categoría**: Proceso / CRO / Uso de subagentes
+**Confianza**: 🟡 Media-alta (1 aplicación exitosa este turno)
+
+**Qué funcionó**: Ante un pedido amplio ("mejoremos el sitio" → eje conversión), en vez de improvisar lancé 3 subagentes en paralelo, uno por superficie (PDP, grid/card, home), cada uno con criterios CRO explícitos para óptica AR y la instrucción de devolver TOP-5 fricciones con `archivo:línea` + quick-wins, sin escribir código. Volvieron en ~1-1.5 min con hallazgos accionables y grounded (incluidos 2 de compliance que yo no tenía presentes: claim "cuotas sin interés" y "consultá disponibilidad"). Eso convirtió un pedido vago en un plan de 3 batches priorizados que el founder pudo aprobar de una.
+
+**Por qué funciona / principio reutilizable**: las superficies de conversión son independientes → se auditan en paralelo sin contención. Pedir `archivo:línea` obliga al agente a leer código real (no opinar en abstracto) y me deja verificar antes de aplicar. Separar AUDIT (read-only) de EJECUCIÓN evita que un agente "arregle" algo sin mi criterio.
+
+**Para la próxima**: para cualquier mejora transversal de UX/CRO/SEO, auditar en paralelo por superficie primero (read-only, con `archivo:línea`), sintetizar en batches priorizados, pedir go, y recién ahí ejecutar yo. Marcar siempre los hallazgos de compliance como "van sí o sí".
+
 ## 2026-06-02 — Consultar `storage.objects` para los nombres EXACTOS de fotos antes de armar el seed
 
 **Categoría**: Carga de productos / Storage / Error prevenido

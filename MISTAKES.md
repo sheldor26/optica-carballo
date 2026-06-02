@@ -24,6 +24,19 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Exportar un helper de un módulo `'use client'` y llamarlo desde un server component → 500 en runtime (tsc NO lo detecta)
+
+**Estado**: ✅ Cerrado (estructural: helpers/constantes movidos a módulo server-safe)
+**Categoría**: Next.js App Router / Client-Server boundary / Bug en runtime
+
+**Qué pasó**: En el Batch 3 de CRO puse `SORT_OPTIONS`, `SortValue` y `normalizeSort()` en `components/catalog/catalog-sort.tsx`, que tiene `'use client'`. Las pages server (`anteojos-de-sol/page.tsx`, `anteojos-de-receta/page.tsx`) importaban `normalizeSort()` para leer `?orden=`. `pnpm tsc --noEmit` pasó limpio, pero en runtime la ruta filtrada tiraba **500**: `"Attempted to call normalizeSort() from the server but normalizeSort is on the client"`. Lo detecté solo porque hice un curl de sanity-check a la ruta filtrada (no por tsc ni por el build incremental).
+
+**Causa raíz**: en App Router, un módulo `'use client'` solo puede exportar componentes para renderizar — sus funciones/constantes NO son invocables desde código server. tsc no modela esa frontera, así que un import "válido" en tipos explota en runtime.
+
+**Regla preventiva**:
+1. Constantes, tipos y funciones puras que consuman TANTO server como client van en un módulo **sin** `'use client'` (ej `lib/...`). El componente client los importa de ahí; nunca al revés.
+2. **tsc no alcanza para validar cambios de UI**: después de tocar pages/components, hacer un curl de sanity (HTTP 200) a las rutas afectadas —incluyendo variantes con searchParams (`?forma=&orden=`)— antes de declarar el trabajo cerrado.
+
 ## 2026-06-02 — Cierres informales recurrentes: terminar turnos con "¿seguimos?" sin el checklist explícito de 3 docs, y no documentar micro-cambios
 
 **Estado**: 🟡 Recurrente en esta sesión (el stop hook lo marcó ~10 veces) — regla preventiva adoptada
