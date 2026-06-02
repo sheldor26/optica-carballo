@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { FrameShapeFilters } from '@/components/catalog/frame-shape-filters';
+import { CatalogFilterBar } from '@/components/catalog/catalog-filter-bar';
 import { CatalogSort } from '@/components/catalog/catalog-sort';
 import type { SortValue } from '@/lib/catalog/sort';
+import type { PriceBucketValue } from '@/lib/catalog/filters';
 import { ProductCard } from '@/components/product/product-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';
@@ -13,6 +14,9 @@ type Props = {
   products: FilteredCatalogCard[];
   availableShapes: string[];
   selectedShapes: string[];
+  availableBrands: { slug: string; name: string }[];
+  selectedBrands: string[];
+  selectedPrice: PriceBucketValue | null;
   sort: SortValue;
 };
 
@@ -30,13 +34,19 @@ export function CategoryFilteredPage({
   products,
   availableShapes,
   selectedShapes,
+  availableBrands,
+  selectedBrands,
+  selectedPrice,
   sort,
 }: Props) {
   return (
     <>
-      <FrameShapeFilters
+      <CatalogFilterBar
         availableShapes={availableShapes}
         selectedShapes={selectedShapes}
+        availableBrands={availableBrands}
+        selectedBrands={selectedBrands}
+        selectedPrice={selectedPrice}
       />
       <main className="container py-8 md:py-12">
         <RevealOnScroll className="mb-8 max-w-3xl">
@@ -55,7 +65,7 @@ export function CategoryFilteredPage({
           <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
             <p className="text-muted-foreground text-sm">
               {products.length === 0
-                ? 'No encontramos productos con esa forma. Probá con otra o limpiá los filtros.'
+                ? 'No encontramos productos con estos filtros. Probá con otra combinación o limpialos.'
                 : `${products.length} ${products.length === 1 ? 'modelo' : 'modelos'} en stock.`}
             </p>
             {products.length > 1 && <CatalogSort selected={sort} />}
@@ -68,7 +78,7 @@ export function CategoryFilteredPage({
               No hay productos con esta combinación de filtros todavía.
             </p>
             <p className="text-muted-foreground mt-2 text-sm">
-              Probá con otra forma o explorá las marcas.
+              Probá con otra combinación de filtros o explorá las marcas.
             </p>
             <Button asChild className="mt-4" variant="outline">
               <Link href={`/${category.slug}`}>Ver todas las marcas</Link>

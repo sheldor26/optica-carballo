@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 import { CategoryFilteredPage } from '@/components/catalog/category-filtered-page';
 import { CategoryIndexPage } from '@/components/catalog/category-index-page';
 import { normalizeSort, sortCatalog } from '@/lib/catalog/sort';
+import {
+  filterByPriceBucket,
+  normalizePriceBucket,
+  parseCsvParam,
+} from '@/lib/catalog/filters';
 import { CATEGORIES } from '@/lib/catalog/categories';
 import { buildCategoryIndexMetadata } from '@/lib/catalog/metadata';
 import {
@@ -23,7 +28,12 @@ export async function generateMetadata(): Promise<Metadata> {
   );
 }
 
-type SearchParams = Promise<{ forma?: string; orden?: string }>;
+type SearchParams = Promise<{
+  forma?: string;
+  marca?: string;
+  precio?: string;
+  orden?: string;
+}>;
 
 export default async function Page({
   searchParams,
@@ -31,25 +41,36 @@ export default async function Page({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const selectedShapes = params.forma
-    ? params.forma.split(',').filter((s) => s.length > 0)
-    : [];
+  const selectedShapes = parseCsvParam(params.forma);
+  const selectedBrands = parseCsvParam(params.marca);
+  const selectedPrice = normalizePriceBucket(params.precio);
   const sort = normalizeSort(params.orden);
+  const hasFilters =
+    selectedShapes.length > 0 || selectedBrands.length > 0 || selectedPrice !== null;
 
-  if (selectedShapes.length > 0) {
-    const [products, availableShapes] = await Promise.all([
+  if (hasFilters) {
+    const [rawProducts, availableShapes, brands] = await Promise.all([
       fetchProductsByCategoryAndShapes({
         categorySlug: CATEGORY.slug,
         frameShapes: selectedShapes,
+        brandSlugs: selectedBrands,
       }),
       fetchAvailableFrameShapes(CATEGORY.slug),
+      fetchCategoryIndex(CATEGORY),
     ]);
+    const products = sortCatalog(
+      filterByPriceBucket(rawProducts, selectedPrice),
+      sort,
+    );
     return (
       <CategoryFilteredPage
         category={CATEGORY}
-        products={sortCatalog(products, sort)}
+        products={products}
         availableShapes={availableShapes}
         selectedShapes={selectedShapes}
+        availableBrands={brands.map((b) => ({ slug: b.slug, name: b.name }))}
+        selectedBrands={selectedBrands}
+        selectedPrice={selectedPrice}
         sort={sort}
       />
     );

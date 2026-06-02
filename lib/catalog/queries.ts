@@ -874,6 +874,8 @@ type FilteredCatalogRow = {
 export async function fetchProductsByCategoryAndShapes(args: {
   categorySlug: string;
   frameShapes: string[];
+  /** Filtro opcional por marca (slugs). Vacío/undefined = todas las marcas. */
+  brandSlugs?: string[];
 }): Promise<FilteredCatalogCard[]> {
   const supabase = createStaticClient();
 
@@ -898,6 +900,13 @@ export async function fetchProductsByCategoryAndShapes(args: {
     query = query.eq('attributes->>frame_shape', args.frameShapes[0]!);
   } else if (args.frameShapes.length > 1) {
     query = query.in('attributes->>frame_shape', args.frameShapes);
+  }
+
+  const brandSlugs = args.brandSlugs ?? [];
+  if (brandSlugs.length === 1) {
+    query = query.eq('brand.slug', brandSlugs[0]!);
+  } else if (brandSlugs.length > 1) {
+    query = query.in('brand.slug', brandSlugs);
   }
 
   const { data } = await query.returns<FilteredCatalogRow[]>();
