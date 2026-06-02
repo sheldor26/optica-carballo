@@ -261,7 +261,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // grid). Scale 1.15 (cuadrado G-Flex, como Etiquet/Zaedit). Sin verificación
   // visual — founder chequea grid. Nombres reales con espacios.
   'rusty-bruk/BRUK MBLK-S10-perfil.jpg': 1.15,
-  'rusty-bruk/bruk-perfil-revo green.jpg': 1.15,
+  // Revo Green venía un poco más grande que el resto (founder 2026-06-02) → 1.0.
+  'rusty-bruk/bruk-perfil-revo green.jpg': 1.0,
   'rusty-bruk/BRUK SBLK-POL-S10-perfil.jpg': 1.15,
 };
 
