@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Para "¿la foto está disponible?" el CDN (HTTP 200) manda; `storage.objects` puede tener lag
+
+**Categoría**: Storage / Verificación
+**Confianza**: 🟢 Alta (observado este turno)
+
+**Qué funcionó**: Refinamiento del learning previo ("consultar storage.objects para nombres exactos"). Resultó que `storage.objects` puede ir **detrás** del CDN para uploads muy recientes: dio vacío para el Misty Receta cuando las fotos YA estaban servidas (CDN 200). El flujo robusto: (1) `storage.objects` para descubrir nombres, pero (2) **el HTTP 200 del CDN es la verificación de disponibilidad definitiva** — el seed se aplica solo cuando las URLs públicas dan 200. Probar el CDN "por las dudas" cuando storage.objects daba vacío evitó pedirle al founder que re-subiera fotos que ya estaban.
+
+**Por qué funciona / principio reutilizable**: hay dos sistemas (tabla de metadata vs object store/CDN) que pueden desincronizarse momentáneamente. Para una decisión de "¿puedo enlazar esta foto?", la verdad operativa es servir el byte (CDN 200), no el registro en la tabla. Ver [[el mistake del mismo día sobre storage.objects lag]].
+
+**Para la próxima**: mantener el orden — storage.objects (nombres) → CDN curl 200 (disponibilidad, decisión de aplicar). Si discrepan, gana el CDN.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (preparación seed Rusty Misty Receta)
 
 Constancia de cierre (regla 11): no hubo learning nuevo. La carga del Misty Receta reusó convenciones ya documentadas: multi-variante con `variation_code` (ver learning Vulk Biller), convención de receta `lens_compatibility` + `hinge_system` (heredada de Spell/Xold receta), y `size_fit` estructurado + callout (learning del Misty sol, mismo turno). Nada nuevo que sistematizar.

@@ -24,6 +24,20 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Afirmar "las fotos no están subidas" basándome solo en `storage.objects` (que tenía lag de replicación)
+
+**Estado**: ✅ Cerrado (rule: cruzar con CDN antes de concluir)
+**Categoría**: Storage / Verificación / Comunicación con founder
+
+**Qué pasó**: El founder subió las 6 fotos del Misty Receta y me pasó los nombres. Consulté `SELECT ... FROM storage.objects WHERE name ILIKE 'rusty-misty-receta/%'` → **vacío**, y también `%MISTY_373%`/`%MISTY_0292%` → vacío. Concluí y le DIJE al founder "todavía NO están en el bucket, faltó subirlas". Pero al probar el CDN igual por las dudas (`curl` HTTP), las 7 daban **200** — SÍ estaban. `storage.objects` (tabla de metadata) tenía lag de replicación respecto del object store / CDN para uploads muy recientes.
+
+**Causa raíz**: asumí que `storage.objects` es la fuente de verdad inmediata de "¿existe el objeto?". No lo es para uploads recién hechos — puede ir por detrás del CDN. Le transmití al founder una conclusión incorrecta (que tenía que volver a subir).
+
+**Regla preventiva**:
+1. `storage.objects` es buena para descubrir NOMBRES exactos, pero si da vacío y el founder dice que ya subió, **NO concluir "no están" — cruzar con el CDN** (`curl -o /dev/null -w '%{http_code}'` a la URL pública). El 200 del CDN manda.
+2. Antes de pedirle al founder que "vuelva a subir", verificar por las DOS vías. Evita mandarlo a rehacer algo ya hecho.
+
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (preparación seed Rusty Misty Receta)
 
 Constancia de cierre (regla 11): no se cometió error. El seed del Misty Receta quedó PREPARADO (no aplicado) a la espera de fotos + confirmación de shape — gestión de incertidumbre correcta (no inventar nombres de fotos ni aplicar imageless), no un fallo. Apliqué la lección previa de consultar `storage.objects` antes de asumir fotos. Sin regla preventiva nueva.
