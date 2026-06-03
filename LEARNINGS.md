@@ -22,6 +22,10 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (ajuste copy Misty)
+
+Constancia de cierre (regla 11): sin learning nuevo. Ajuste de copy (sacar párrafo duplicado del callout). Aplica el mismo principio ya conocido de no repetir el mismo mensaje en callout y descripción; nada nuevo que sistematizar.
+
 ## 2026-06-02 — Para "¿la foto está disponible?" el CDN (HTTP 200) manda; `storage.objects` puede tener lag
 
 **Categoría**: Storage / Verificación

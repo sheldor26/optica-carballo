@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (ajuste copy Misty: sacar párrafo duplicado)
+
+Constancia de cierre (regla 11): no hubo error. Ajuste de copy menor — quité el párrafo intro que duplicaba el callout "Talle chico" en ambos Misty (sol+receta), vía MCP + seeds sincronizados. Patrón leve a tener presente (no duplicar callout↔descripción al cargar), no amerita regla preventiva formal. Shape redondo confirmado por founder.
+
 ## 2026-06-02 — Afirmar "las fotos no están subidas" basándome solo en `storage.objects` (que tenía lag de replicación)
 
 **Estado**: ✅ Cerrado (rule: cruzar con CDN antes de concluir)
