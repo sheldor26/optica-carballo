@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (carga Rusty Gresent)
+
+Constancia de cierre (regla 11): no se cometió error. La carga pasó verificación MCP + 9 fotos CDN 200. Se detectó un **conflicto de medidas** entre la imagen medidas.webp (138/60/14) y el texto del founder (128/50/18) → cargué las de la imagen (lo que ve el cliente) y lo flagueé para confirmar. **El founder confirmó: las correctas son las de la imagen** (el texto era autogenerado). Gestión de discrepancia correcta (no inventar, cargar lo visible, marcar y pedir confirmación). Aprendizaje liviano: cuando el founder pega una descripción larga tipo marketing, sus medidas pueden ser autogeneradas/erróneas → priorizar la imagen medidas.webp y confirmar. Sin regla preventiva formal nueva.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (ajuste copy Misty: sacar párrafo duplicado)
 
 Constancia de cierre (regla 11): no hubo error. Ajuste de copy menor — quité el párrafo intro que duplicaba el callout "Talle chico" en ambos Misty (sol+receta), vía MCP + seeds sincronizados. Patrón leve a tener presente (no duplicar callout↔descripción al cargar), no amerita regla preventiva formal. Shape redondo confirmado por founder.
