@@ -273,7 +273,7 @@ export async function buildProductMetadata(
   const description =
     product.meta_description ??
     product.short_description ??
-    `${product.name} en Óptica Carballo. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`;
+    `${product.name} en Óptica Carballo. Envíos a todo Argentina, pago seguro con Mercado Pago y asesoramiento de técnico óptico matriculado.`;
   const url = `${SITE_URL}/${category.slug}/${brandSlug}/${productSlug}`;
 
   return {

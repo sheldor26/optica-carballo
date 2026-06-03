@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { renderInlineBold, stripInlineBold } from '@/lib/format/inline-bold';
 import {
   getBrandAssetUrl,
   shouldInvertLogo,
@@ -187,7 +188,7 @@ function DescriptionWithCallouts({
       <div className="space-y-4 [&_p]:text-balance">
         {paragraphs.slice(0, midIdx).map((para, i) => (
           <p key={`pre-${i}`} className="whitespace-pre-wrap">
-            {para}
+            {renderInlineBold(para)}
           </p>
         ))}
       </div>
@@ -199,7 +200,7 @@ function DescriptionWithCallouts({
       <div className="space-y-4 [&_p]:text-balance">
         {paragraphs.slice(midIdx).map((para, i) => (
           <p key={`post-${i}`} className="whitespace-pre-wrap">
-            {para}
+            {renderInlineBold(para)}
           </p>
         ))}
       </div>
@@ -283,7 +284,11 @@ export async function ProductDetailPage({
       {!isPlaceholder(product.name) && (
         <ProductJsonLd
           name={product.name}
-          description={product.description ?? product.short_description}
+          description={
+            product.description
+              ? stripInlineBold(product.description)
+              : product.short_description
+          }
           brandName={product.brand.name}
           brandUrl={brandUrl}
           pageUrl={pageUrl}
