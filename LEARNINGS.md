@@ -22,7 +22,7 @@ Sirve para:
 
 # Log de learnings
 
-## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back)
+## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back + confirmación shape wayfarer)
 
 Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de 4 MLAs simples con nombres de foto MUY inconsistentes (dots/dashes/"galeria"/sin-espacio) — resueltos consultando storage.objects + verificando CDN 200 (patrón ya documentado en learnings previos de filenames + storage-vs-CDN). Nada nuevo que sistematizar.
 

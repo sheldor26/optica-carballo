@@ -24,7 +24,7 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
-## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back)
+## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back + confirmación shape wayfarer)
 
 Constancia de cierre (regla 11): no se cometió error. Way Back se cargó/verificó limpio (MCP: variantes=4, pol=3, imgs=9, vars_sin_foto=0; 9 fotos CDN 200). Shape "wayfarer" cargado tentativo y flageado para confirmación del founder (ML mezclaba rectangular/cuadrado) — gestión de ambigüedad correcta, no error. Sin regla preventiva nueva.
 
