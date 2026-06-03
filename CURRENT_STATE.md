@@ -5,6 +5,8 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Producto cargado: Rusty Misty (sol, redondo unisex, TALLE CHICO) — APLICADO** (2026-06-02, commit `46d0ece`). Seed `47_rusty_misty.sql` aplicado vía MCP + verificado. 3 variantes: L.ROSE/GS9B 125739 stock 13 (primary, NO pol); BROWN/UB18 POL 127032 stock 6 **POL**; MBLK/S10 POL 127030 stock 4 **POL**. 2 de 3 pol → `lens_treatment ["uv400"]` (entra a /polarizados). **Talle chico** (size_fit="chico" → badge "Talle chico" + callout warning prominente; founder pidió énfasis fuerte por reclamos de talle). **Nuevo token size_fit "chico"** agregado a `lib/catalog/size-fit.ts` (≠ "junior"/infantil). G-Flex + bisagras metálicas Flex, redondo, unisex, 17,8g. Medidas 132/44×42/22/145. 7 imágenes 200. Primary=L.ROSE perfil. Scale 1.15/1.0. **⬜ Pendiente founder**: chequeo visual del grid (incl. ¿primary L.ROSE rosa OK para un unisex, o preferís MBLK negro?).
+
 🟢 **3 ajustes (pedidos founder) — EJECUTADOS + verificados runtime** (2026-06-02, commit `5f88937`):
 1. **Escala Eslav**: perfil **1.65** (founder lo aprobó, quedó perfecto) / frente **1.3** (subió a 1.5 y el founder lo bajó −0.2 porque quedaba muy grande). Commit final del frente: `6e12419`. Ambas variantes.
 2. **Precio solo con stock (estricto)**: el precio sigue a la variante elegida y figura SOLO si esa variante tiene stock. Card: variante OOS seleccionada → precio vacío "Sin stock" (nunca el de otra variante). PDP `ProductPriceBlock`: variante/producto sin stock → oculta precio + medios de pago, muestra "Sin stock".

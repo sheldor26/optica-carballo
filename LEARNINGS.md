@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Talle como dato estructurado (`size_fit`) + callout warning, no solo texto, cuando hay reclamos de talle
+
+**Categoría**: Carga de productos / UX / Anti-devolución
+**Confianza**: 🟡 Media (aplicado a Rusty Misty; validar con datos de devoluciones)
+
+**Qué funcionó**: El founder reportó reclamos de talle en el Rusty Misty (armazón chico) y pidió "énfasis fuerte". En vez de solo escribirlo en la descripción, lo resolví en 3 capas: (1) dato estructurado `size_fit: "chico"` → badge "Talle chico" visible en card Y PDP (pipeline central, regla 15); (2) callout `type: "warning"` arriba de todo con el mensaje explícito "armazón pequeño, para rostros chicos, revisá las medidas"; (3) mención en short_description + meta. Agregué el token "chico" a `size-fit.ts` en vez de reusar "junior" (que se lee como infantil y confundiría).
+
+**Por qué funciona / principio reutilizable**: un atributo que genera devoluciones (talle) debe ser un dato estructurado con badge, no una línea perdida en la descripción — aparece en el grid ANTES del click y en la decisión de compra. El `warning` callout es legítimo (info real anti-devolución, no urgencia falsa). Y si el vocabulario existente no encaja (junior≠chico), agregar el token correcto es mejor que forzar uno que confunde.
+
+**Para la próxima**: cualquier producto con particularidad de talle/calce que pueda generar reclamos → `size_fit` + callout warning, no solo prosa. Tokens de talle viven en `lib/catalog/size-fit.ts` (hoy: junior, chico).
+
 ## 2026-06-02 — Centralizar la detección de "polarizado" en una función robusta destapó variantes que el criterio viejo perdía
 
 **Categoría**: Catálogo / Datos / Refactor que reveló un gap
