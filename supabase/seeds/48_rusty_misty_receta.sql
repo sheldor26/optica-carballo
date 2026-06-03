@@ -27,7 +27,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM rx), 'rusty-misty-receta', 'Rusty Misty (receta)',
   'Armazón de receta Rusty Misty: redondo unisex de TALLE CHICO (para rostros pequeños). G-Flex con bisagras metálicas Flex, muy liviano (17,8 g). Apto para lentes monofocales, bifocales y progresivos.',
-  E'⚠️ IMPORTANTE: el Rusty Misty es de **talle chico** — un armazón pequeño, pensado para **rostros chicos o angostos**. Si tenés un rostro mediano o grande, probablemente te quede chico. Mirá bien las medidas antes de comprar (frente 132 mm).\n\nEs un armazón de receta REDONDO unisex. Frente y patillas de G-Flex con **bisagras metálicas Flex**, y con solo 17,8 gramos es de los más livianos del catálogo — ideal para usar todo el día sin que marque.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• MBLK (SKU 125734): negro mate.\n• 373K (SKU 125731): marrón.\n• 0292 (SKU 125730): caramelo.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Es un armazón de receta REDONDO unisex. Frente y patillas de G-Flex con **bisagras metálicas Flex**, y con solo 17,8 gramos es de los más livianos del catálogo — ideal para usar todo el día sin que marque.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• MBLK (SKU 125734): negro mate.\n• 373K (SKU 125731): marrón.\n• 0292 (SKU 125730): caramelo.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "redondo",
