@@ -7,13 +7,17 @@
  * tanto en la PDP como en las cards del catálogo (pipeline central, regla 15).
  */
 
-export type SizeFit = 'junior';
+export type SizeFit = 'junior' | 'chico';
 
-const SIZE_FIT_VALUES: readonly SizeFit[] = ['junior'];
+const SIZE_FIT_VALUES: readonly SizeFit[] = ['junior', 'chico'];
 
-/** Label visible del badge por talle. Español argentino de óptica. */
+/** Label visible del badge por talle. Español argentino de óptica.
+ * `chico`: armazón pequeño para rostros chicos (NO infantil, a diferencia de
+ * "junior") — agregado para Rusty Misty (founder pidió énfasis fuerte por
+ * reclamos de talle). */
 export const SIZE_FIT_LABELS: Record<SizeFit, string> = {
   junior: 'Talle Junior',
+  chico: 'Talle chico',
 };
 
 /**

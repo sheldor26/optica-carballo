@@ -324,6 +324,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-eslav/MBLK-S10-YELLOW---FRENTE.jpg': 1.3,
   'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.65,
   'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.3,
+
+  // Rusty Misty — redondo talle chico. Perfil 1.15 / frente 1.0 (default studio).
+  // Pendiente verificación visual del founder (armazón pequeño).
+  'rusty-misty/MISTY_L.ROSEGS9B-pefil.jpg': 1.15,
+  'rusty-misty/MISTY_L.ROSEGS9B-frente.jpg': 1.0,
+  'rusty-misty/MISTY_BROWN_UB18_POL-p.jpg': 1.15,
+  'rusty-misty/MISTY_BROWN_UB18_POL_f.jpg': 1.0,
+  'rusty-misty/MISTY_MBLK_S10_Pol_P.jpg': 1.15,
+  'rusty-misty/MISTY_MBLK_S10_Pol_f.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
