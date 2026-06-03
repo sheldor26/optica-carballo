@@ -185,7 +185,7 @@ function DescriptionWithCallouts({
       <div className="mb-5">
         <ProductCalloutAt attributes={attributes} position="top" />
       </div>
-      <div className="space-y-4 [&_p]:text-balance">
+      <div className="space-y-4 [&_p]:text-pretty">
         {paragraphs.slice(0, midIdx).map((para, i) => (
           <p key={`pre-${i}`} className="whitespace-pre-wrap">
             {renderInlineBold(para)}
@@ -197,7 +197,7 @@ function DescriptionWithCallouts({
           <ProductCalloutAt attributes={attributes} position="middle" />
         </div>
       )}
-      <div className="space-y-4 [&_p]:text-balance">
+      <div className="space-y-4 [&_p]:text-pretty">
         {paragraphs.slice(midIdx).map((para, i) => (
           <p key={`post-${i}`} className="whitespace-pre-wrap">
             {renderInlineBold(para)}
