@@ -342,6 +342,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-misty-receta/MISTY_373_frente.jpg': 1.0,
   'rusty-misty-receta/MISTY_0292_perfil.jpg': 1.15,
   'rusty-misty-receta/MISTY_0292_frente.jpg': 1.0,
+
+  // Rusty Gresent — aviador doble puente. Founder 2026-06-02: perfil (lateral)
+  // +0.2 → 1.35 (se veía chico en el grid); frente 1.0.
+  'rusty-gresent/GRESENT_SDEMI_GG47_-_p.jpg': 1.35,
+  'rusty-gresent/GRESENT_SDEMI_GG47_-_F.jpg': 1.0,
+  'rusty-gresent/GRESENT_sbh_gs9_-_p.jpg': 1.35,
+  'rusty-gresent/GRESENT_sbh_gs9_-_f.jpg': 1.0,
+  'rusty-gresent/GRESENT_MBLK_GS16_-_p.jpg': 1.35,
+  'rusty-gresent/GRESENT_MBLK_GS16_-_F.jpg': 1.0,
+  'rusty-gresent/GRESENT_SBLK_3237_-_P.jpg': 1.35,
+  'rusty-gresent/GRESENT_SBLK_3237_-_F.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
