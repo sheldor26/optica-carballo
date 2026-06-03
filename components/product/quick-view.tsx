@@ -153,23 +153,22 @@ function QuickViewBody({
         )}
 
         <div className="border-border/40 mt-5 border-t pt-5">
-          {price !== undefined ? (
-            <p className="text-foreground font-serif text-2xl font-medium tracking-tight md:text-3xl">
-              {formatPriceCents(price)}
-            </p>
-          ) : (
+          {/* Founder 2026-06-02: el precio SOLO figura cuando hay stock. Si la
+              variante elegida está agotada, mostramos "Sin stock" sin precio. */}
+          {price === undefined ? (
             <p className="text-muted-foreground text-sm">Sin variantes activas</p>
-          )}
-          {price !== undefined && inStock && (
-            <p className="text-muted-foreground mt-1 inline-flex items-center gap-1.5 text-xs">
-              <span className="size-1.5 rounded-full bg-green-600" />
-              En stock
-            </p>
-          )}
-          {price !== undefined && !inStock && (
-            <p className="text-muted-foreground/80 mt-1 text-xs">
-              Sin stock por ahora
-            </p>
+          ) : inStock ? (
+            <>
+              <p className="text-foreground font-serif text-2xl font-medium tracking-tight md:text-3xl">
+                {formatPriceCents(price)}
+              </p>
+              <p className="text-muted-foreground mt-1 inline-flex items-center gap-1.5 text-xs">
+                <span className="size-1.5 rounded-full bg-green-600" />
+                En stock
+              </p>
+            </>
+          ) : (
+            <p className="text-muted-foreground/80 text-sm">Sin stock por ahora</p>
           )}
         </div>
 

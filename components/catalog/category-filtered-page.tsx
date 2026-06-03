@@ -39,6 +39,14 @@ export function CategoryFilteredPage({
   selectedPrice,
   sort,
 }: Props) {
+  // ¿Hay algún filtro activo? Sin filtros, esta vista es el catálogo COMPLETO
+  // de la categoría (founder 2026-06-02: "Ver todos" debe mostrar todos los
+  // modelos sin importar marca ni forma, no una grilla de marcas).
+  const anyFilterActive =
+    selectedShapes.length > 0 ||
+    selectedBrands.length > 0 ||
+    selectedPrice !== null;
+
   return (
     <>
       <CatalogFilterBar
@@ -50,23 +58,32 @@ export function CategoryFilteredPage({
       />
       <main className="container py-8 md:py-12">
         <RevealOnScroll className="mb-8 max-w-3xl">
-          <p className="text-muted-foreground text-sm">
-            <Link
-              href={`/${category.slug}`}
-              className="hover:text-foreground underline-offset-2 hover:underline"
-            >
-              ← Ver todas las marcas
-            </Link>
-          </p>
+          {anyFilterActive && (
+            <p className="text-muted-foreground text-sm">
+              <Link
+                href={`/${category.slug}`}
+                className="hover:text-foreground underline-offset-2 hover:underline"
+              >
+                ← Ver todos los modelos
+              </Link>
+            </p>
+          )}
           <h1 className="text-foreground mt-3 font-serif text-3xl font-medium tracking-tight md:text-4xl">
-            {category.name}{' '}
-            <span className="italic font-normal text-foreground/70">filtrados</span>
+            {category.name}
+            {anyFilterActive && (
+              <>
+                {' '}
+                <span className="italic font-normal text-foreground/70">
+                  filtrados
+                </span>
+              </>
+            )}
           </h1>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
             <p className="text-muted-foreground text-sm">
               {products.length === 0
                 ? 'No encontramos productos con estos filtros. Probá con otra combinación o limpialos.'
-                : `${products.length} ${products.length === 1 ? 'modelo' : 'modelos'} en stock.`}
+                : `${products.length} ${products.length === 1 ? 'modelo' : 'modelos'}.`}
             </p>
             {products.length > 1 && <CatalogSort selected={sort} />}
           </div>
@@ -78,15 +95,15 @@ export function CategoryFilteredPage({
               No hay productos con esta combinación de filtros todavía.
             </p>
             <p className="text-muted-foreground mt-2 text-sm">
-              Probá con otra combinación de filtros o explorá las marcas.
+              Probá con otra combinación de filtros.
             </p>
             <Button asChild className="mt-4" variant="outline">
-              <Link href={`/${category.slug}`}>Ver todas las marcas</Link>
+              <Link href={`/${category.slug}`}>Ver todos los modelos</Link>
             </Button>
           </div>
         ) : (
           <section
-            aria-label={`Productos filtrados de ${category.name.toLowerCase()}`}
+            aria-label={`${category.name} — ${products.length} modelos`}
             className="grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20"
           >
             {products.map((p, idx) => (

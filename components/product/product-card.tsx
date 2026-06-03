@@ -164,12 +164,18 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   // variante previsualizada lo es. Fallback a la primera variante.
   const isPolarized = (selectedVariant ?? variants[0])?.polarized === true;
 
-  // Precio mostrado: el de la variante seleccionada (si hay y está en stock
-  // o es la única info), fallback al mínimo del producto. Solo mostramos el
-  // precio de variante cuando difiere del mínimo, para no confundir.
-  const displayPriceCents = selectedVariant
-    ? selectedVariant.priceCents
-    : product.minPriceCents;
+  // Precio mostrado (founder 2026-06-02: "que solamente figure el precio cuando
+  // haya en stock"):
+  // - Producto sin stock → NO mostrar precio (null → "Sin stock").
+  // - Variante seleccionada CON stock → su precio.
+  // - Variante seleccionada SIN stock (pero el producto tiene otras con stock)
+  //   → caer al mínimo "desde" de las variantes en stock. Nunca mostramos el
+  //   precio de una variante agotada.
+  const displayPriceCents = outOfStock
+    ? null
+    : selectedVariant && selectedVariant.inStock
+      ? selectedVariant.priceCents
+      : product.minPriceCents;
 
   // href: si hay variante seleccionada, deep-link con su SKU para que la PDP
   // abra mostrando esa variante (founder 2026-05-31).
@@ -269,11 +275,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             </>
           ) : (
             <p className="text-muted-foreground text-sm">Sin stock</p>
-          )}
-          {outOfStock && product.minPriceCents !== null && (
-            <p className="text-muted-foreground/70 mt-0.5 text-xs uppercase tracking-wider">
-              Sin stock
-            </p>
           )}
           {variants.length > 1 && (
             <p className="text-muted-foreground/70 text-xs">
