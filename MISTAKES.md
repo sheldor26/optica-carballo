@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back)
+
+Constancia de cierre (regla 11): no se cometió error. Way Back se cargó/verificó limpio (MCP: variantes=4, pol=3, imgs=9, vars_sin_foto=0; 9 fotos CDN 200). Shape "wayfarer" cargado tentativo y flageado para confirmación del founder (ML mezclaba rectangular/cuadrado) — gestión de ambigüedad correcta, no error. Sin regla preventiva nueva.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (perf imágenes + pillar Miopía draft)
 
 Constancia de cierre (regla 11): no se cometió error en el trabajo. El fix de perf (sizes + skip 2ª imagen mobile) pasó tsc + runtime; la guía Miopía se verificó (PDP 200, noindex/draft, FAQPage, fuera del listado). Único desliz menor: al editar LEARNINGS inserté el entry arriba del header "# Log de learnings" y lo corregí en el acto (sin commitear el estado malo). El learning útil (display:none corta la descarga lazy) quedó en LEARNINGS. Sin regla preventiva nueva.
