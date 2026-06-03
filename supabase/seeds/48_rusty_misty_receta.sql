@@ -72,9 +72,26 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- ⚠️ TODO IMÁGENES: pendiente que el founder suba las fotos a `rusty-misty-receta/`
--- y pase los nombres. Primary del modelo = MBLK perfil (mayor stock). Perfil =
--- primaria de cada variante. Completar este INSERT antes de aplicar:
--- INSERT INTO public.product_images (...) VALUES (... 'rusty-misty-receta/<archivo>' ...);
+-- Imágenes. Primary del modelo: MBLK perfil (mayor stock). Perfil = primaria de
+-- cada variante. ⚠️ Nombres del screenshot del founder — VERIFICAR HTTP 200
+-- antes de aplicar (al 2026-06-02 NO estaban subidas a rusty-misty-receta/).
+INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
+VALUES
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), (SELECT id FROM public.product_variants WHERE sku='125734'),
+   'rusty-misty-receta/MISTY_MBLK_perfil.jpg', 'Armazón de receta Rusty Misty redondo talle chico vista lateral, negro mate', 1500, 1000, 0, true),
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), (SELECT id FROM public.product_variants WHERE sku='125734'),
+   'rusty-misty-receta/MISTY_MBLK_frente.jpg', 'Armazón de receta Rusty Misty redondo talle chico vista frontal, negro mate', 1500, 1000, 1, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), (SELECT id FROM public.product_variants WHERE sku='125731'),
+   'rusty-misty-receta/MISTY_373_perfil.jpg', 'Armazón de receta Rusty Misty redondo talle chico vista lateral, marrón', 1500, 1000, 2, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), (SELECT id FROM public.product_variants WHERE sku='125731'),
+   'rusty-misty-receta/MISTY_373_frente.jpg', 'Armazón de receta Rusty Misty redondo talle chico vista frontal, marrón', 1500, 1000, 3, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), (SELECT id FROM public.product_variants WHERE sku='125730'),
+   'rusty-misty-receta/MISTY_0292_perfil.jpg', 'Armazón de receta Rusty Misty redondo talle chico vista lateral, caramelo', 1500, 1000, 4, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), (SELECT id FROM public.product_variants WHERE sku='125730'),
+   'rusty-misty-receta/MISTY_0292_frente.jpg', 'Armazón de receta Rusty Misty redondo talle chico vista frontal, caramelo', 1500, 1000, 5, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-misty-receta'), NULL,
+   'rusty-misty-receta/medidas.jpg', 'Esquema técnico de medidas Rusty Misty: frente 132mm, lente 44x42mm, puente 22mm, varilla 145mm', 1500, 1500, 6, false)
+ON CONFLICT (product_id, storage_path) DO UPDATE SET
+  variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
 COMMIT;

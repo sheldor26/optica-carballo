@@ -333,6 +333,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-misty/MISTY_BROWN_UB18_POL_f.jpg': 1.0,
   'rusty-misty/MISTY_MBLK_S10_Pol_P.jpg': 1.15,
   'rusty-misty/MISTY_MBLK_S10_Pol_f.jpg': 1.0,
+
+  // Rusty Misty Receta — armazón óptico redondo talle chico. Perfil 1.15 /
+  // frente 1.0 (default). Pendiente verificación visual del founder.
+  'rusty-misty-receta/MISTY_MBLK_perfil.jpg': 1.15,
+  'rusty-misty-receta/MISTY_MBLK_frente.jpg': 1.0,
+  'rusty-misty-receta/MISTY_373_perfil.jpg': 1.15,
+  'rusty-misty-receta/MISTY_373_frente.jpg': 1.0,
+  'rusty-misty-receta/MISTY_0292_perfil.jpg': 1.15,
+  'rusty-misty-receta/MISTY_0292_frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
