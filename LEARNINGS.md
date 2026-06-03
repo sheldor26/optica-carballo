@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — El `sizes` de next/image debe coincidir con las columnas REALES del grid (si no, sirve imágenes 2× más grandes)
+
+**Categoría**: Performance / next/image
+**Confianza**: 🟢 Alta (bug encontrado + corregido)
+
+**Qué funcionó**: Ante "¿se pueden agilizar las imágenes?", audité y encontré que la `ProductCard` declaraba `sizes="(max-width: 640px) 100vw, ..."` pero TODOS los grids del catálogo son `grid-cols-2` en mobile (cada card ocupa ~50vw, no 100vw). Con `100vw`, Next elige del srcset un candidato ~2× más ancho del que se muestra → en celular se descargaba el doble de pixeles al pedo. Corregido a `(max-width: 768px) 50vw, 33vw` (2-col mobile / 3-col desktop). Gratis, sin tocar imágenes.
+
+**Por qué funciona / principio reutilizable**: `sizes` le dice a Next qué ancho de imagen servir del srcset. Si miente (dice más de lo real), sirve de más. Debe reflejar el ancho REAL del slot en cada breakpoint = las columnas del grid. Un `sizes` desincronizado del CSS es un costo invisible (no rompe nada, solo pesa de más).
+
+**Para la próxima**: cada vez que se cambian las columnas de un grid (grid-cols-*), revisar el `sizes` del `<Image>` que vive adentro. Hoy: catálogo 2-col mobile / 3-col md → `(max-width: 768px) 50vw, 33vw`.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (carga Rusty Gresent)
 
 Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de un multi-variante (reusó el patrón de variation_code documentado en Vulk Biller) + descripción con `**negrita**` ya soportada (learning del fix render). Las fotos se verificaron por CDN 200 (ya documentado). Nada nuevo que sistematizar.

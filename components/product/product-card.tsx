@@ -221,7 +221,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 src={primaryUrl}
                 alt=""
                 fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                sizes="(max-width: 768px) 50vw, 33vw"
                 style={{ transform: `scale(${currentImages.primaryScale})` }}
                 className={cn(
                   'object-contain transition-all duration-700 ease-out group-hover/image:scale-[1.04]',
@@ -234,7 +234,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   src={secondaryUrl}
                   alt=""
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 50vw, 33vw"
                   style={{ transform: `scale(${currentImages.secondaryScale})` }}
                   className="object-contain opacity-0 transition-all duration-700 ease-out group-hover/image:scale-[1.04] group-hover/image:opacity-100"
                 />

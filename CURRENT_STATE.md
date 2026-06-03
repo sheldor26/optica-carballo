@@ -5,6 +5,8 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Perf imágenes: fix `sizes` de la card (mobile servía 2× de más)** (2026-06-02). Founder preguntó por agilizar carga. Audit: optimización Next ON (AVIF/WebP, ~5KB servidos), pero `ProductCard` declaraba `sizes="(max-width:640px) 100vw,..."` mientras los grids son `grid-cols-2` mobile (~50vw) → Next servía imágenes 2× más anchas en celular. Corregido a `(max-width: 768px) 50vw, 33vw`. **⬜ Follow-up ofrecido (no hecho)**: (a) comprimir orígenes pesados del bucket (hasta 1,2MB) con `scripts/normalize-product-photos.ts` → acelera la 1ª optimización (cache fría); (b) no cargar la 2ª foto (hover) en mobile → ~mitad de requests en celular; (c) blur placeholders. Esperando decisión founder.
+
 🟢 **Fix ancho de descripción en PDP** (2026-06-02, commit `a68082b`): las descripciones de producto usaban `[&_p]:text-balance` → en párrafos de body angostaba el texto a ~mitad del ancho (reporte founder en Misty). Cambiado a `[&_p]:text-pretty` (evita huérfanas sin reducir ancho) en `DescriptionWithCallouts`. Aplica a TODAS las PDP. (`text-balance` queda solo en títulos/h1/h2, que es su uso correcto.)
 **Consulta no-proyecto**: founder preguntó por un "script de ARCA" que le falla — verificado que NO hay nada de ARCA/AFIP en el repo de la óptica (facturación va por Tusfacturas). Es externo; le pedí el error exacto para diagnosticar (síntomas: conexión/500 = ARCA caído; certificado/token = config suya). Sin acción en el código.
 
