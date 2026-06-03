@@ -28,11 +28,25 @@ export const BRAND_LABELS: Record<(typeof BRAND_SLUGS)[number], string> = {
   'paula-cahen-danvers': "Paula Cahen D'Anvers",
 };
 
+/** Logos de marca (storage path en bucket `brand-assets`) para mostrar en el
+ * mega-nav en vez del nombre en texto. Convención `-dark`/`-light` para que
+ * `shouldInvertLogo` decida la inversión sobre el fondo claro del menú. */
+export const BRAND_LOGOS: Record<(typeof BRAND_SLUGS)[number], string> = {
+  vulk: 'brand-logos/vulk-logo-dark.svg',
+  rusty: 'brand-logos/rusty-logo-dark.svg',
+  mormaii: 'brand-logos/mormaii-logo-dark.svg',
+  reef: 'brand-logos/reef-logo-light.svg',
+  'paula-cahen-danvers': 'brand-logos/paula-cahen-danvers-logo-dark.svg',
+};
+
 export type MegaItem = {
   label: string;
   href: string;
   /** Marca link externo (target=_blank rel=noopener) — usado para WhatsApp. */
   external?: boolean;
+  /** Si está, el item se renderiza como LOGO de marca (storage path en
+   * `brand-assets`) en vez de texto. `label` queda como alt/fallback. */
+  brandLogo?: string;
 };
 
 export type MegaSection = {
@@ -105,6 +119,7 @@ export function buildSolMegaMenu(): MegaMenu {
             heading: 'Por marca',
             items: BRAND_SLUGS.map((slug) => ({
               label: BRAND_LABELS[slug],
+              brandLogo: BRAND_LOGOS[slug],
               href: `/anteojos-de-sol/${slug}`,
             })),
           },
@@ -158,6 +173,7 @@ export function buildRecetaMegaMenu(): MegaMenu {
             heading: 'Por marca',
             items: BRAND_SLUGS.map((slug) => ({
               label: BRAND_LABELS[slug],
+              brandLogo: BRAND_LOGOS[slug],
               href: `/anteojos-de-receta/${slug}`,
             })),
           },
@@ -204,6 +220,7 @@ export function buildMarcasMegaMenu(): MegaMenu {
               { label: 'Ver hub de marcas', href: '/marcas' },
               ...BRAND_SLUGS.map((slug) => ({
                 label: BRAND_LABELS[slug],
+                brandLogo: BRAND_LOGOS[slug],
                 href: `/anteojos-de-sol/${slug}`,
               })),
             ],
