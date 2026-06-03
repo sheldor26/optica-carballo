@@ -1,13 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getBrandAssetUrl, shouldInvertLogo } from '@/lib/storage/brand-asset-url';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import {
   buildMarcasMegaMenu,
@@ -204,31 +202,13 @@ function SectionBlock({
           <li key={item.href}>
             <Link
               href={item.href}
-              className={cn(
-                'inline-flex items-center transition-colors',
-                item.brandLogo
-                  ? 'opacity-80 hover:opacity-100'
-                  : 'text-foreground hover:text-brand text-sm font-medium',
-              )}
+              className="text-foreground hover:text-brand text-sm font-medium transition-colors"
               onClick={onLinkClick}
               {...(item.external
                 ? { target: '_blank', rel: 'noopener noreferrer' }
                 : {})}
             >
-              {item.brandLogo ? (
-                <Image
-                  src={getBrandAssetUrl(item.brandLogo)}
-                  alt={item.label}
-                  width={120}
-                  height={28}
-                  className={cn(
-                    'h-5 w-auto object-contain',
-                    shouldInvertLogo(item.brandLogo, 'light-bg') && 'brightness-0',
-                  )}
-                />
-              ) : (
-                item.label
-              )}
+              {item.label}
             </Link>
           </li>
         ))}
