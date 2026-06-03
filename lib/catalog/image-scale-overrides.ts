@@ -317,6 +317,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-vorez/VOREZ AGALERIA-WEB-MROSE-HGB1 frente.jpg': 1.0,
   'rusty-vorez/VOREZ GALERIA-WEB-SBLK-S10-POL perfil.jpg': 1.15,
   'rusty-vorez/VOREZ AGALERIA-WEB-SBLK-S10-POL frente.jpg': 1.0,
+
+  // Rusty Eslav — deportivo envolvente. Perfil 1.15 / frente 1.0 (default).
+  // Pendiente verificación visual del founder (envolvente = lente ancha, puede
+  // necesitar ajuste).
+  'rusty-eslav/MBLK-S10-YELLOW---PERFIL.jpg': 1.15,
+  'rusty-eslav/MBLK-S10-YELLOW---FRENTE.jpg': 1.0,
+  'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.15,
+  'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
