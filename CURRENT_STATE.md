@@ -7,6 +7,8 @@
 
 🟢 **Chequeos visuales de grid CONFIRMADOS OK por founder** (2026-06-02): Vorez, Eslav (perfil 1.65/frente 1.3), Misty sol+receta, Gresent (perfil 1.20). Todos los scales recientes quedaron aprobados — ya no hay "pendiente chequeo visual" en esos productos.
 
+🟢 **Bugfix: precio en variantes sin stock — `VariantList`** (2026-06-02, commit `89d15e0`). La regla "precio solo con stock" estaba en 3 superficies (card, price-block, quick-view) pero faltaba la 4ª: cada fila de `VariantList` mostraba el precio aunque la variante estuviera sin stock (reporte founder, MBLK Way Back $86.228). Arreglado: fila OOS → solo "Sin stock"; el "Elegiste:" del CTA primario también oculta el precio si la elegida está agotada. Verificado: 86.228 ya no aparece en la PDP. Ahora las 4 superficies de precio respetan la regla. Ver MISTAKES (lección: enumerar todos los call-sites en cambios transversales).
+
 🟢 **Producto cargado: Vulk Way Back (sol, wayfarer, 4 variantes) — APLICADO** (2026-06-02). Seed `50_vulk_way_back.sql` aplicado MCP + verificado. 4 MLAs simples: SBLK/S10 POL 128857 stock 3 (primary); MDBLU/REVO BLUE POL 128853 azul espejada stock 3; GREEN PEARL/G.GREY 128854 stock 3 (NO pol); MBLK/S10 POL 128855 stock 0. 3 de 4 pol → `lens_treatment ["uv400"]` (entra a /polarizados). G-Flex + bisagras metálicas Flex. Medidas 146/56×43/19/145. 9 imágenes 200 (nombres muy inconsistentes). Primary=SBLK perfil. Scale 1.15/1.0. `frame_shape="wayfarer"` confirmado por founder (2026-06-02). **⬜ Pendiente founder**: chequeo grid.
 
 🟢 **Mejoras 2026-06-02 (founder eligió: velocidad imágenes + contenido SEO)**:

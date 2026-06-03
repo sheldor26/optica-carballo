@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Apliqué una regla transversal (ocultar precio sin stock) superficie por superficie y me quedó una sin cubrir
+
+**Estado**: ✅ Cerrado (las 4 superficies cubiertas)
+**Categoría**: Proceso / Cambios transversales / Cobertura incompleta
+
+**Qué pasó**: La regla "el precio solo figura cuando hay stock" la implementé en 3 superficies (card del grid, `ProductPriceBlock` de la PDP, quick-view) pero **omití la `VariantList`** — cada fila de variante seguía mostrando el precio aunque estuviera sin stock. El founder lo encontró (variante MBLK del Way Back, "Sin stock" pero con $86.228 visible).
+
+**Causa raíz**: apliqué el cambio en las superficies que tenía a mano / que el founder mencionó, sin **enumerar TODAS las que renderizan precio**. Un cambio de regla transversal exige buscar todos los call-sites, no ir corrigiendo de a uno a medida que aparecen reportes.
+
+**Regla preventiva**: ante una regla transversal (formato/visibilidad de un dato que aparece en varios lados), ANTES de codear hacer un `grep` de todos los call-sites (`formatPriceCents`, etc.) y listar las superficies a tocar. El precio de producto/variante se renderiza en al menos 4 lugares: `product-card.tsx`, `product-price-block.tsx`, `quick-view.tsx`, `variant-list.tsx` (+ carrito). Cubrirlas todas en el mismo cambio.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back + confirmación shape wayfarer)
 
 Constancia de cierre (regla 11): no se cometió error. Way Back se cargó/verificó limpio (MCP: variantes=4, pol=3, imgs=9, vars_sin_foto=0; 9 fotos CDN 200). Shape "wayfarer" cargado tentativo y flageado para confirmación del founder (ML mezclaba rectangular/cuadrado) — gestión de ambigüedad correcta, no error. Sin regla preventiva nueva.
