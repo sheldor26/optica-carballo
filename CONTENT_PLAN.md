@@ -217,9 +217,9 @@ Plan editorial vivo. Define **qué artículos escribir, en qué orden y con qué
 
 # Lote 2 — Post-launch / Mes 2
 
-## 16. Pillar: Astigmatismo — Guía completa
-## 17. Pillar: Miopía — Guía completa
-## 18. Pillar: Presbicia — Guía completa
+## 16. ✍️ Pillar: Astigmatismo — Guía completa (DRAFT escrito `content/guias/astigmatismo.mdx`, pendiente firma regente para publicar)
+## 17. ✍️ Pillar: Miopía — Guía completa (DRAFT escrito 2026-06-02 `content/guias/miopia.mdx`, pendiente firma regente para publicar)
+## 18. Pillar: Presbicia — Guía completa (PRÓXIMO del cluster)
 ## 19. Satélite: Multifocales vs bifocales
 ## 20. Satélite: Cuándo empieza la presbicia
 ## 21. Satélite: Astigmatismo en niños
