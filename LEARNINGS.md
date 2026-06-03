@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — La convención de naming `-dark`/`-light` en logos paga: extender el nav a logos fue trivial
+
+**Categoría**: Componentes / Reuso
+**Confianza**: 🟡 Media (1 reuso esta sesión)
+
+**Qué funcionó**: Para probar logos de marca en el mega-nav, la extensión fue mínima y limpia: campo opcional `brandLogo` en `MegaItem` + `BRAND_LOGOS` map, y el render reusó `getBrandAssetUrl` + `shouldInvertLogo` (ya existentes para la PDP). Reef (logo claro) se auto-invierte sobre el fondo claro del menú sin lógica nueva, gracias a la convención de naming `-light`/`-dark`. Un campo opcional en el tipo de datos + un helper compartido = feature reversible sin tocar la estructura.
+
+**Por qué funciona / principio reutilizable**: cuando una decisión transversal (acá: convención de naming de logos para inversión) está encapsulada en un helper, agregar una superficie nueva que la necesite es enchufar el helper, no reimplementar. Pagó el haber centralizado `shouldInvertLogo` en su momento.
+
+**Para la próxima**: features visuales "a probar" → campo opcional en el tipo + helper compartido → fácil de prender/apagar/revertir según el veredicto del founder.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD adicional (cierre sesión perf/scale/logos)
 
 Constancia de cierre (regla 11): el learning útil de la sesión ya está arriba ("sizes de next/image debe coincidir con las columnas del grid", commit 885e537). El ajuste de scale del Gresent y la consulta de diseño de logos en el nav no aportan learning nuevo (uno es cosmético, el otro es una recomendación de diseño registrada en CURRENT_STATE).

@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Anunciar la actualización de docs ("lo actualizo a...") y NO ejecutarla, terminando con una pregunta
+
+**Estado**: 🟡 Recurrente (el stop hook lo viene marcando)
+**Categoría**: Proceso / Cierre de sesión
+
+**Qué pasó**: Tras implementar los logos en el nav, en el mensaje de cierre escribí "CURRENT_STATE lo tenía como decisión abierta → lo actualizo a..." y terminé con "¿Actualizo el CURRENT_STATE y seguimos?" — anuncié la actualización en futuro/condicional pero NO hice el `git add/commit`. El stop hook lo marcó (otra vez el patrón de cerrar con pregunta sin completar los 3 docs).
+
+**Causa raíz**: tratar la actualización de docs como algo "a confirmar con el founder" cuando es una acción mía obligatoria de cierre, no opcional. Decir "lo actualizo" ≠ actualizarlo.
+
+**Regla preventiva**: NUNCA escribir "lo actualizo/voy a actualizar el doc" en un mensaje de cierre — ejecutar el Edit + commit ANTES de redactar el mensaje. Si el mensaje menciona un doc en futuro, es señal de que falta ejecutar. Los docs se actualizan y commitean primero; el mensaje al founder los reporta en pasado ("actualicé X").
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (perf sizes + scale Gresent + consulta logos en nav)
 
 Constancia de cierre (regla 11): no se cometió error. El fix de `sizes` (perf) pasó tsc; el ajuste de scale del Gresent (1.20) es cosmético; la consulta de logos en el mega-nav fue advisory (di recomendación: no en el nav, sí logo wall — registrada en CURRENT_STATE, sin código). Sin error ni anti-pattern nuevo. El learning de la sesión (sizes debe matchear las columnas del grid) ya quedó en LEARNINGS (commit 885e537).
