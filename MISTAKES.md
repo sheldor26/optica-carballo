@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (perf sizes + scale Gresent + consulta logos en nav)
+
+Constancia de cierre (regla 11): no se cometió error. El fix de `sizes` (perf) pasó tsc; el ajuste de scale del Gresent (1.20) es cosmético; la consulta de logos en el mega-nav fue advisory (di recomendación: no en el nav, sí logo wall — registrada en CURRENT_STATE, sin código). Sin error ni anti-pattern nuevo. El learning de la sesión (sizes debe matchear las columnas del grid) ya quedó en LEARNINGS (commit 885e537).
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (carga Rusty Gresent)
 
 Constancia de cierre (regla 11): no se cometió error. La carga pasó verificación MCP + 9 fotos CDN 200. Se detectó un **conflicto de medidas** entre la imagen medidas.webp (138/60/14) y el texto del founder (128/50/18) → cargué las de la imagen (lo que ve el cliente) y lo flagueé para confirmar. **El founder confirmó: las correctas son las de la imagen** (el texto era autogenerado). Gestión de discrepancia correcta (no inventar, cargar lo visible, marcar y pedir confirmación). Aprendizaje liviano: cuando el founder pega una descripción larga tipo marketing, sus medidas pueden ser autogeneradas/erróneas → priorizar la imagen medidas.webp y confirmar. Sin regla preventiva formal nueva.

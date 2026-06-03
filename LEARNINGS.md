@@ -22,6 +22,10 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Revisado, SIN NOVEDAD adicional (cierre sesión perf/scale/logos)
+
+Constancia de cierre (regla 11): el learning útil de la sesión ya está arriba ("sizes de next/image debe coincidir con las columnas del grid", commit 885e537). El ajuste de scale del Gresent y la consulta de diseño de logos en el nav no aportan learning nuevo (uno es cosmético, el otro es una recomendación de diseño registrada en CURRENT_STATE).
+
 ## 2026-06-02 — El `sizes` de next/image debe coincidir con las columnas REALES del grid (si no, sirve imágenes 2× más grandes)
 
 **Categoría**: Performance / next/image
