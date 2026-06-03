@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — `hidden sm:block` evita que next/image descargue una imagen en mobile (no solo la oculta)
+
+**Categoría**: Performance / next/image
+**Confianza**: 🟢 Alta (técnica conocida, aplicada este turno)
+
+**Qué funcionó**: La card cargaba 2 fotos por producto (primary + secondary para la swap de hover). La swap es solo desktop, pero en mobile la 2ª igual se descargaba (lazy load al entrar al viewport) = bytes al pedo. Solución: `hidden sm:block` en el `<Image>` secundario. `hidden` = `display:none` en mobile → el elemento no tiene caja → el lazy-load (IntersectionObserver) nunca dispara → **el browser no baja la imagen** hasta el breakpoint `sm` donde pasa a `block`. Resultado: ~mitad de requests de imágenes en celular. Acompañé con `sizes` que reflejan que es desktop-only.
+
+**Por qué funciona / principio reutilizable**: `display:none` no es solo visual — corta la descarga de imágenes lazy. Sirve para cualquier imagen "solo desktop" (hover, decorativos): `hidden sm:block` ahorra ancho de banda real en mobile, no solo la esconde. (Ojo: NO usar para imágenes above-the-fold que sí se ven en mobile.)
+
+**Para la próxima**: imagen que solo aplica en desktop → `hidden sm:block` + `sizes` desktop-only. Para esconder visualmente PERO precargando, sería opacity/visibility; para ahorrar descarga, `display:none`.
+
 ## 2026-06-02 — La convención de naming `-dark`/`-light` en logos paga: extender el nav a logos fue trivial
 
 **Categoría**: Componentes / Reuso

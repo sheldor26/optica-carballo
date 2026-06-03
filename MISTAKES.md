@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (perf imágenes + pillar Miopía draft)
+
+Constancia de cierre (regla 11): no se cometió error en el trabajo. El fix de perf (sizes + skip 2ª imagen mobile) pasó tsc + runtime; la guía Miopía se verificó (PDP 200, noindex/draft, FAQPage, fuera del listado). Único desliz menor: al editar LEARNINGS inserté el entry arriba del header "# Log de learnings" y lo corregí en el acto (sin commitear el estado malo). El learning útil (display:none corta la descarga lazy) quedó en LEARNINGS. Sin regla preventiva nueva.
+
 ## 2026-06-02 — Anunciar la actualización de docs ("lo actualizo a...") y NO ejecutarla, terminando con una pregunta
 
 **Estado**: 🟡 Recurrente (el stop hook lo viene marcando)
