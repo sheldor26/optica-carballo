@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (preparación seed Rusty Misty Receta)
+
+Constancia de cierre (regla 11): no se cometió error. El seed del Misty Receta quedó PREPARADO (no aplicado) a la espera de fotos + confirmación de shape — gestión de incertidumbre correcta (no inventar nombres de fotos ni aplicar imageless), no un fallo. Apliqué la lección previa de consultar `storage.objects` antes de asumir fotos. Sin regla preventiva nueva.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (sesión escala Eslav + precio-solo-stock + /polarizados por variante)
 
 **Estado**: ⚪ Sin error nuevo ni anti-pattern (1 gap pre-existente revelado, ya documentado como learning).

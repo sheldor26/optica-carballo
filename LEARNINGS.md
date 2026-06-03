@@ -22,6 +22,10 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (preparación seed Rusty Misty Receta)
+
+Constancia de cierre (regla 11): no hubo learning nuevo. La carga del Misty Receta reusó convenciones ya documentadas: multi-variante con `variation_code` (ver learning Vulk Biller), convención de receta `lens_compatibility` + `hinge_system` (heredada de Spell/Xold receta), y `size_fit` estructurado + callout (learning del Misty sol, mismo turno). Nada nuevo que sistematizar.
+
 ## 2026-06-02 — Talle como dato estructurado (`size_fit`) + callout warning, no solo texto, cuando hay reclamos de talle
 
 **Categoría**: Carga de productos / UX / Anti-devolución
