@@ -318,12 +318,12 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-vorez/VOREZ GALERIA-WEB-SBLK-S10-POL perfil.jpg': 1.15,
   'rusty-vorez/VOREZ AGALERIA-WEB-SBLK-S10-POL frente.jpg': 1.0,
 
-  // Rusty Eslav — deportivo envolvente. Founder 2026-06-02: agrandar +0.5 (la
-  // lente envolvente ancha se veía chica en el card) → perfil 1.65 / frente 1.5.
+  // Rusty Eslav — deportivo envolvente. Founder 2026-06-02: perfil 1.65 (quedó
+  // perfecto); frente bajado -0.2 → 1.3 (estaba muy grande). Ambas variantes.
   'rusty-eslav/MBLK-S10-YELLOW---PERFIL.jpg': 1.65,
-  'rusty-eslav/MBLK-S10-YELLOW---FRENTE.jpg': 1.5,
+  'rusty-eslav/MBLK-S10-YELLOW---FRENTE.jpg': 1.3,
   'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.65,
-  'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.5,
+  'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.3,
 };
 
 export function getImageScale(path: string | null | undefined): number {
