@@ -22,6 +22,21 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Render vs strip de markdown inline: dos funciones, una para HTML visible y otra para datos estructurados
+
+**Categoría**: Contenido / Render / SEO
+**Confianza**: 🟡 Media-alta (resolvió el bug de negritas limpio, sin librería)
+
+**Qué funcionó**: Para arreglar las `**negritas**` que salían literales, en vez de meter una librería de markdown (regla 6) escribí dos helpers chicos en `lib/format/inline-bold.tsx`:
+- `renderInlineBold(text)` → parte por `/\*\*(.+?)\*\*/g` y envuelve los tramos en `<strong>`. Para la descripción VISIBLE.
+- `stripInlineBold(text)` → reemplaza `**...**` por el contenido pelado. Para JSON-LD / meta / og (texto plano).
+
+El mismo string fuente alimenta dos destinos con necesidades opuestas (HTML con formato vs texto limpio), y cada uno tiene su función. Cero dependencias nuevas, y el formato del catálogo es tan acotado (solo negrita) que un split por regex alcanza.
+
+**Por qué funciona / principio reutilizable**: cuando un texto con marcado va a más de un destino, separar "render" (a nodos/HTML) de "strip" (a texto plano) evita que el marcado se filtre donde no corresponde (ej. asteriscos en un rich snippet de Google). Para marcado mínimo, no hace falta una lib de markdown — un par de regex es más simple y auditable.
+
+**Para la próxima**: si aparece otra necesidad de formato en descripciones (italic, listas), evaluar si conviene una lib real (`react-markdown`) en vez de seguir sumando regex. Hoy con solo negrita, los helpers bastan.
+
 ## 2026-06-02 — Verificar de QUÉ producto son las fotos antes de usarlas (colisión de nombres entre carpetas)
 
 **Categoría**: Carga de productos / Storage / Error prevenido

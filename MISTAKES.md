@@ -24,6 +24,20 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Markdown `**negrita**` guardado en descripciones de producto sin render que lo parsee → asteriscos literales en TODAS las PDP
+
+**Estado**: ✅ Cerrado (renderer agregado)
+**Categoría**: Contenido / Render / Bug en producción (visible, no detectable por tsc)
+
+**Qué pasó**: Las descripciones de producto se redactaron con `**negrita**` (sintaxis markdown), asumiendo que se renderizaban como rich text. Pero `DescriptionWithCallouts` las pinta como **texto plano** (`<p>{para}</p>`) → los `**` aparecían LITERALES en pantalla, en todos los productos. El founder lo reportó. Además los `**` viajaban crudos al JSON-LD del producto (schema.org). Venía así desde la primera carga; nadie lo notó porque tsc no valida contenido y la review visual no se había hecho con foco en la descripción larga.
+
+**Causa raíz**: se mezcló una convención de autoría (markdown) con un campo que se renderiza como texto plano. No hay un contrato explícito de "este campo soporta markdown / este no". El generador de descripciones (mío, al cargar productos) metió `**` sin que existiera el render correspondiente.
+
+**Regla preventiva**:
+1. Si un campo de texto va a llevar formato (`**negrita**`, etc.), confirmar que su superficie de render lo parsea ANTES de redactarlo así. Para Óptica Carballo: las descripciones de producto SÍ soportan `**negrita**` ahora (`renderInlineBold` en `DescriptionWithCallouts`), pero NADA más de markdown (sin `_italic_`, `#`, links). Mantener las descripciones a solo `**negrita**` + `\n\n` párrafos + `•` bullets.
+2. Para usos NO-HTML del mismo texto (JSON-LD, meta, og) usar `stripInlineBold()` — el markdown no debe filtrarse a datos estructurados.
+3. Revisar SIEMPRE una PDP renderada de verdad (no solo el seed) al cerrar una tanda de cargas — un `**` literal se ve en 2 segundos mirando la página.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (sesión Eslav aplicado + "ver todos" + precio-solo-con-stock)
 
 **Estado**: ⚪ Sin error nuevo ni anti-pattern.
