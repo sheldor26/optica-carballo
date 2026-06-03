@@ -131,8 +131,9 @@ export function VariantList({
             <span className="text-foreground font-medium">{selectedLabel}</span>
             {isPolarized(selected.attributes) && (
               <span className="text-blue-700"> · Polarizado</span>
-            )}{' '}
-            · {formatPriceCents(selected.priceCents)}
+            )}
+            {/* Precio solo si la variante elegida tiene stock. */}
+            {selectedInStock && <> · {formatPriceCents(selected.priceCents)}</>}
           </p>
           {checkoutEnabled ? (
             <AddToCartButton
@@ -249,9 +250,13 @@ export function VariantList({
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-foreground font-semibold">
-                  {formatPriceCents(v.priceCents)}
-                </p>
+                {/* Precio SOLO si hay stock (founder 2026-06-02): una variante
+                    agotada no muestra precio, solo "Sin stock". */}
+                {inStock && (
+                  <p className="text-foreground font-semibold">
+                    {formatPriceCents(v.priceCents)}
+                  </p>
+                )}
                 <p
                   className={cn(
                     'text-xs',
