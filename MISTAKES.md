@@ -24,6 +24,12 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (sesión carga Vorez aplicada + Eslav preparado)
+
+**Estado**: ⚪ Sin error nuevo ni anti-pattern.
+
+Constancia de cierre (regla 11): no se cometió error. Vorez se cargó/verificó limpio (MCP + 5 fotos 200). En Eslav, el potencial error (usar fotos de nombre similar que en realidad eran del Sotion existente) se EVITÓ verificando ownership en `product_images` antes de aplicar → quedó documentado como learning, no como mistake. Frené la aplicación del seed a la espera de fotos + confirmación de no-duplicación: gestión de incertidumbre correcta, no un fallo. Sin regla preventiva nueva.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (sesión filtros marca/precio + cleanup CTA + inicio carga Vorez)
 
 **Estado**: ⚪ Sin error nuevo ni anti-pattern.

@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Verificar de QUÉ producto son las fotos antes de usarlas (colisión de nombres entre carpetas)
+
+**Categoría**: Carga de productos / Storage / Error prevenido
+**Confianza**: 🟢 Alta (prevenó usar fotos ajenas este turno)
+
+**Qué funcionó**: Al cargar Rusty Eslav, busqué sus fotos en storage y encontré archivos de nombre casi idéntico (`MBLUE-R-GREEN-POL-YELLOW-*`, `MBLK-S10-POL-YELLOW-*`) pero en la carpeta `rusty-sotion/`. En vez de asumir que servían para Eslav, crucé contra `product_images` del Sotion existente y confirmé que **son de Sotion** (Sotion es otro deportivo envolvente polarizado con lentes amarillas, líneas casi gemelas). Conclusión: las fotos de Eslav NO estaban subidas → frené la aplicación del seed y pedí subirlas a `rusty-eslav/`. Evité linkear fotos de otro producto.
+
+**Por qué funciona / principio reutilizable**: en catálogos con líneas gemelas (Eslav/Sotion, mismas variantes de color), los nombres de archivo colisionan. La carpeta (`<slug>/`) es lo único que separa. Antes de usar una foto cuyo nombre matchea lo que espero, verificar (a) que esté en la carpeta del producto correcto y (b) que no esté ya referenciada por otro `product_images`. Reafirma el learning de `storage.objects` (consultar el bucket, no la captura).
+
+**Para la próxima**: si las fotos esperadas aparecen en una carpeta de OTRO producto, NO usarlas — confirmar con el founder que las suba a `<slug>/` propio. Y si dos modelos se parecen sospechosamente (mismas variantes + fotos), preguntar si no es duplicación antes de crear el producto.
+
 ## 2026-06-02 — Dónde filtrar el catálogo: query (columnas/FK) vs post-fetch en JS (valores derivados)
 
 **Categoría**: Catálogo / Arquitectura de queries / Performance
