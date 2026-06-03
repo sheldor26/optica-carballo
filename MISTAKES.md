@@ -24,6 +24,12 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (sesión Eslav aplicado + "ver todos" + precio-solo-con-stock)
+
+**Estado**: ⚪ Sin error nuevo ni anti-pattern.
+
+Constancia de cierre (regla 11): no se cometió error. Eslav se aplicó/verificó limpio (MCP + 5 fotos 200) tras confirmación del founder (Eslav≠Sotion). Los 2 ajustes de catálogo ("Ver todos" = catálogo completo + ocultar precio sin stock) pasaron `tsc` + runtime (sol=23, receta=3, marca=vulk=8; header "filtrados"/backlink solo con filtro). Nota de mantenimiento (no error): `CategoryIndexPage` quedó sin uso tras el cambio — dead code dejado como referencia; si se confirma que no se reusa, candidato a borrar en limpieza futura. Sin regla preventiva nueva.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (sesión carga Vorez aplicada + Eslav preparado)
 
 **Estado**: ⚪ Sin error nuevo ni anti-pattern.
