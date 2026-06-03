@@ -75,7 +75,8 @@ VALUES (
   '{
     "frame_color": "azul-mate",
     "lens_color": "verde-espejado",
-    "model_code": "MBLUE/R. GREEN POL - YELLOW"
+    "model_code": "MBLUE/R. GREEN POL - YELLOW",
+    "polarized": true
   }'::jsonb,
   10390200,
   3,

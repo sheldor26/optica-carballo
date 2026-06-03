@@ -136,7 +136,8 @@ VALUES (
   '{
     "frame_color": "negro-mate",
     "lens_color": "gris-oscuro",
-    "model_code": "MBLK/S10 POL YELLOW"
+    "model_code": "MBLK/S10 POL YELLOW",
+    "polarized": true
   }'::jsonb,
   9835002,
   4,

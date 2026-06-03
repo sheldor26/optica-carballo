@@ -46,7 +46,8 @@ VALUES (
   '{
     "frame_color": "negro-mate",
     "lens_color": "azul-espejado",
-    "model_code": "MBLK/R. BLUE POL - YELLOW"
+    "model_code": "MBLK/R. BLUE POL - YELLOW",
+    "polarized": true
   }'::jsonb,
   10390200,
   0,

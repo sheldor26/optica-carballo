@@ -5,6 +5,10 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Fix negritas en descripciones + Yau polarizado** (2026-06-02, commits `a6ae9b9` + UPDATE MCP):
+- **Negritas**: las descripciones guardaban `**negrita**` pero se renderizaban como texto plano (mostraban asteriscos — reporte founder). `lib/format/inline-bold.tsx` nuevo: `renderInlineBold()` → `<strong>` en la descripción visible (font-semibold, resalta); `stripInlineBold()` → quita `**` en el JSON-LD del producto (texto plano para schema.org). Fallback de meta description ya no dice "cuotas sin interés". Verificado: 0 asteriscos `**` en el HTML, `<strong>` renderiza.
+- **Yau**: founder confirmó que TODAS sus variantes son polarizadas → seteado `polarized:true` en las 3 (126080/81/82) vía MCP + seeds 10/13/15 sincronizados. Resuelve la inconsistencia (a) de polarizados. **Pendiente decisión (b)**: criterio de /polarizados ("todas" actual vs "al menos una") — founder aún no respondió.
+
 🟢 **2 ajustes de catálogo (pedidos founder) — EJECUTADOS + verificados** (2026-06-02, commit `c90191e`):
 1. **"Ver todos" muestra TODOS los modelos**: `/anteojos-de-sol` y `/anteojos-de-receta` ahora renderizan el catálogo completo de productos por defecto (antes mostraban grilla de marcas que obligaba a elegir una). Vista filtrada y completa = mismo `CategoryFilteredPage`; el header dice "filtrados" + backlink "Ver todos los modelos" SOLO con filtro activo. Marcas se navegan por chips + mega-nav + /marcas. `CategoryIndexPage` queda SIN USO (dead code, se deja como referencia; `fetchCategoryPriceRange` solo lo usaba esa). Verificado: sol=23 modelos, receta=3, marca=vulk=8.
 2. **Precio solo con stock**: producto sin stock → NO figura precio (card del grid + quick-view); nunca se muestra el precio de una variante agotada (si el producto tiene otras con stock, cae al "desde" en stock). Card: `displayPriceCents = outOfStock ? null : (variante en stock ? su precio : minPrice)`.
