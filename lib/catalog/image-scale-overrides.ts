@@ -353,6 +353,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-gresent/GRESENT_MBLK_GS16_-_F.jpg': 1.0,
   'rusty-gresent/GRESENT_SBLK_3237_-_P.jpg': 1.2,
   'rusty-gresent/GRESENT_SBLK_3237_-_F.jpg': 1.0,
+
+  // Vulk Way Back — wayfarer. Perfil 1.15 / frente 1.0 (default). Nombres con
+  // formatos inconsistentes (SBLK sin "galeria"). Pendiente verificación founder.
+  'vulk-way-back/WAY BACK-SBLK-S10-PERFIL.jpg': 1.15,
+  'vulk-way-back/WAYBACK-SBLK-S10 F.jpg': 1.0,
+  'vulk-way-back/WAY BACK MDBLU-REVO BLUE p galeria.jpg': 1.15,
+  'vulk-way-back/WAY BACK MDBLU-REVO BLUE f galeria.jpg': 1.0,
+  'vulk-way-back/Way back- green pearl g.grey p galeria.jpg': 1.15,
+  'vulk-way-back/Way back- green pearl g.grey f galeria.jpg': 1.0,
+  'vulk-way-back/WAY BACK MBLK S10 POL P galeria.jpg': 1.15,
+  'vulk-way-back/WAY BACK MBLK S10 POL. F galeria.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
