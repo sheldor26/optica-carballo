@@ -310,6 +310,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-beason/BEASON SBLKGS9B-frente.jpg': 1.0,
   'rusty-beason/BEASON GALERIA-WEB-SPINK-GBROWN PERFIL.jpg': 1.15,
   'rusty-beason/BEASON AGALERIA-WEB-SPINK-GBROWN FRENTE.jpg': 1.0,
+
+  // Rusty Vorez — cuadrado femenino. Perfil 1.15 / frente 1.0 (foto GALERIA-WEB
+  // estilo Beason). Pendiente verificación visual del founder.
+  'rusty-vorez/VOREZ GALERIA-WEB-MROSE-HGB1 Perfil.jpg': 1.15,
+  'rusty-vorez/VOREZ AGALERIA-WEB-MROSE-HGB1 frente.jpg': 1.0,
+  'rusty-vorez/VOREZ GALERIA-WEB-SBLK-S10-POL perfil.jpg': 1.15,
+  'rusty-vorez/VOREZ AGALERIA-WEB-SBLK-S10-POL frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
