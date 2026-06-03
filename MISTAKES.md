@@ -24,6 +24,12 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (sesión filtros marca/precio + cleanup CTA + inicio carga Vorez)
+
+**Estado**: ⚪ Sin error nuevo ni anti-pattern.
+
+Constancia de cierre (regla 11): en esta sesión NO se cometió ningún error ni se descubrió anti-pattern. La feature de filtros marca/precio pasó `tsc` + 6 combos de runtime (200 + conteos reales) a la primera; el cleanup del CTA redundante en la PDP renderizó OK (200). El riesgo conocido del turno anterior (helper en módulo `'use client'` llamado desde server → 500) se EVITÓ proactivamente poniendo `lib/catalog/filters.ts` server-safe desde el arranque. La carga de Rusty Vorez quedó en espera de input del founder (2 SKUs + subir fotos), que es estado normal de flujo, no un error. Sin regla preventiva nueva.
+
 ## 2026-06-02 — `.contains()` de supabase-js con un array JS sobre columna jsonb → 22P02 → página de polarizados vacía
 
 **Estado**: ✅ Cerrado (estructural: se pasa JSON string)
