@@ -24,6 +24,12 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-02 — Revisado, SIN NOVEDAD (sesión escala Eslav + precio-solo-stock + /polarizados por variante)
+
+**Estado**: ⚪ Sin error nuevo ni anti-pattern (1 gap pre-existente revelado, ya documentado como learning).
+
+Constancia de cierre (regla 11): los 3 ajustes pasaron `tsc` + runtime (/polarizados 9→22, Beason/Feeled excluidos, Yamain captado; PDP/card OK). El único hallazgo fue un gap PRE-EXISTENTE (el filtro viejo de /polarizados perdía variantes con flag `is_polarized` por inconsistencia de flags entre seeds) — registrado en LEARNINGS (centralizar el detector lo destapó y resolvió), no es un error de esta sesión. Follow-up conocido: brand-level `/marca/polarizados` sigue con criterio viejo (anotado en CURRENT_STATE). Sin regla preventiva nueva.
+
 ## 2026-06-02 — Markdown `**negrita**` guardado en descripciones de producto sin render que lo parsee → asteriscos literales en TODAS las PDP
 
 **Estado**: ✅ Cerrado (renderer agregado)

@@ -132,6 +132,18 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   (Polarizados, Deportivos, Con aumento — este último ADR-010).
   Implementación con `categories.parent_id`.
 - [ ] **Filtros** dentro de página de marca (color, forma, precio rango).
+- [ ] **Anteojos de receta con Clip-on** (founder 2026-06-02): a futuro habrá
+  armazones de receta que incluyen un **clip-on polarizado** (accesorio que se
+  monta sobre el armazón). Implica: modelar el clip-on como atributo/variante,
+  decidir si entra a `/polarizados` (el accesorio es polarizado, no la lente
+  base) y cómo se comunica. Hoy receta NO tiene polarizados (por eso no existe
+  `/anteojos-de-receta/polarizados`); cuando lleguen los clip-on, reevaluar.
+- [ ] **Migrar brand-level `/marca/polarizados` al criterio "al menos una
+  variante polarizada"** (2026-06-02): el `/polarizados` general ya usa
+  `toPolarizedCatalog` (≥1 variante pol + card reducida), pero
+  `/anteojos-de-sol/<marca>/polarizados` sigue con el criterio viejo
+  (product-level "todas") vía `fetchBrandPageByFilter`. Unificar para
+  consistencia.
 
 ---
 

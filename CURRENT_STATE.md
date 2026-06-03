@@ -5,6 +5,12 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **3 ajustes (pedidos founder) — EJECUTADOS + verificados runtime** (2026-06-02, commit `5f88937`):
+1. **Escala Eslav +0.5**: perfil 1.65 / frente 1.5 (la lente envolvente se veía chica).
+2. **Precio solo con stock (estricto)**: el precio sigue a la variante elegida y figura SOLO si esa variante tiene stock. Card: variante OOS seleccionada → precio vacío "Sin stock" (nunca el de otra variante). PDP `ProductPriceBlock`: variante/producto sin stock → oculta precio + medios de pago, muestra "Sin stock".
+3. **/polarizados = solo variante polarizada** (resuelve decisión (b), founder eligió "al menos una"): a `/polarizados` entra cualquier producto con AL MENOS una variante polarizada, y la card representa SOLO la(s) polarizada(s) (precio/stock/imagen recalculados). Nuevo `lib/catalog/polarized.ts`: `isPolarizedVariant()` (detector robusto: polarized/is_polarized/lens_treatment/model_code POL — fuente única, antes duplicado en variant-list) + `toPolarizedCatalog()`. Verificado: /polarizados 9→22 modelos; Beason/Feeled excluidos; Yamain ahora captado (usaba `is_polarized`, el criterio viejo lo perdía).
+**⬜ Follow-up pendiente**: el brand-level `/anteojos-de-sol/<marca>/polarizados` sigue con el criterio viejo (product-level "todas") — usa otro path de query (`fetchBrandPageByFilter` + toProductCardData). Inconsistente con el `/polarizados` general hasta migrarlo. Flagueado, no bloqueante.
+
 🟢 **Fix negritas en descripciones + Yau polarizado** (2026-06-02, commits `a6ae9b9` + UPDATE MCP):
 - **Negritas**: las descripciones guardaban `**negrita**` pero se renderizaban como texto plano (mostraban asteriscos — reporte founder). `lib/format/inline-bold.tsx` nuevo: `renderInlineBold()` → `<strong>` en la descripción visible (font-semibold, resalta); `stripInlineBold()` → quita `**` en el JSON-LD del producto (texto plano para schema.org). Fallback de meta description ya no dice "cuotas sin interés". Verificado: 0 asteriscos `**` en el HTML, `<strong>` renderiza.
 - **Yau**: founder confirmó que TODAS sus variantes son polarizadas → seteado `polarized:true` en las 3 (126080/81/82) vía MCP + seeds 10/13/15 sincronizados. Resuelve la inconsistencia (a) de polarizados. **Pendiente decisión (b)**: criterio de /polarizados ("todas" actual vs "al menos una") — founder aún no respondió.

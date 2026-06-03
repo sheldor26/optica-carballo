@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-02 — Centralizar la detección de "polarizado" en una función robusta destapó variantes que el criterio viejo perdía
+
+**Categoría**: Catálogo / Datos / Refactor que reveló un gap
+**Confianza**: 🟡 Media-alta (validado este turno)
+
+**Qué funcionó**: Al rehacer `/polarizados` ("entra el producto con ≥1 variante polarizada"), extraje la detección a `isPolarizedVariant()` en `lib/catalog/polarized.ts` (fuente única, antes duplicada en variant-list) que chequea 4 fuentes: `polarized`, `is_polarized`, `lens_treatment[]`, y `model_code` con "POL". Al usarla, **Vulk Yamain apareció en /polarizados** — su variante polarizada usa el flag `is_polarized` (no `polarized`), así que el criterio anterior (product-level `lens_treatment @> ["polarized"]`) la perdía por completo. O sea: la inconsistencia de flags entre seeds (`polarized` vs `is_polarized` vs `model_code POL`) hacía que el filtro viejo tuviera falsos negativos silenciosos.
+
+**Por qué funciona / principio reutilizable**: cuando un mismo concepto ("¿es polarizado?") se decide en varios lugares con lógicas distintas, hay drift y gaps. Centralizar en una función tolerante a las variantes de datos (a) elimina duplicación y (b) hace que TODOS los consumidores (badge de card, variant-list, filtro /polarizados) coincidan. Bonus: exponer el detector reveló datos mal-flageados sin tener que auditarlos a mano.
+
+**Para la próxima**: cuando un atributo se guardó con flags inconsistentes entre seeds (pasa seguido acá), el fix correcto no es normalizar 30 seeds a mano sino un detector único tolerante + usarlo en todos lados. Y a futuro, fijar UN flag canónico (`polarized`) en `PRODUCT_SCHEMA` y migrar gradualmente.
+
 ## 2026-06-02 — Render vs strip de markdown inline: dos funciones, una para HTML visible y otra para datos estructurados
 
 **Categoría**: Contenido / Render / SEO
