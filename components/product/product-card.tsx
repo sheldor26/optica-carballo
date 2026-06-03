@@ -234,9 +234,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                   src={secondaryUrl}
                   alt=""
                   fill
-                  sizes="(max-width: 768px) 50vw, 33vw"
+                  // Solo desktop (sm+): la swap de hover no existe en mobile.
+                  // `hidden` en mobile = display:none → el browser NO descarga
+                  // la 2ª foto en celular (perf: ~mitad de requests de imágenes).
+                  sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 1px"
                   style={{ transform: `scale(${currentImages.secondaryScale})` }}
-                  className="object-contain opacity-0 transition-all duration-700 ease-out group-hover/image:scale-[1.04] group-hover/image:opacity-100"
+                  className="hidden object-contain opacity-0 transition-all duration-700 ease-out group-hover/image:scale-[1.04] group-hover/image:opacity-100 sm:block"
                 />
               )}
             </>
