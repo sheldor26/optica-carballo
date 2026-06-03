@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { VariantWhatsappCta } from '@/components/product/variant-whatsapp-cta';
 import { useVariantSelection } from '@/lib/product/variant-selection';
+import { isPolarizedVariant as isPolarized } from '@/lib/catalog/polarized';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { cn } from '@/lib/utils';
@@ -70,33 +71,6 @@ function describeVariant(attrs: AttributesJson): string {
   const size = typeof attrs.size === 'string' ? attrs.size : null;
   const parts = [frame, lens, size].filter((v): v is string => Boolean(v));
   return parts.length > 0 ? parts.join(' / ') : 'Variante';
-}
-
-/** Detecta si una variante tiene lentes polarizadas. 4 fuentes posibles:
- * 1. Flag `polarized=true` (seeds Rusty Vrast, Rusty Dearly C4, etc.).
- * 2. Flag `is_polarized=true` (seeds Vulk Yamain SBLK POL).
- * 3. Array `lens_treatment` que incluya 'polarized' (a nivel variant).
- * 4. `model_code` contiene "POL" (Rusty Yau — no tiene flag pero "POL"
- *    aparece en el modelo: "MBLK/S10 POL YELLOW", etc.).
- * Acepta valores como boolean true o string "true" (JSONB puede entregar
- * cualquiera de los 2 según cómo se serializa). */
-function isPolarized(attrs: AttributesJson): boolean {
-  const polarized = attrs.polarized;
-  if (polarized === true || polarized === 'true') return true;
-  const isPol = attrs.is_polarized;
-  if (isPol === true || isPol === 'true') return true;
-  if (Array.isArray(attrs.lens_treatment)) {
-    if (
-      attrs.lens_treatment.some(
-        (t) => typeof t === 'string' && t === 'polarized',
-      )
-    ) {
-      return true;
-    }
-  }
-  const modelCode = attrs.model_code;
-  if (typeof modelCode === 'string' && /\bPOL\b/i.test(modelCode)) return true;
-  return false;
 }
 
 /** Extrae el código de modelo del fabricante (`model_code`) para mostrarlo

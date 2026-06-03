@@ -1,6 +1,7 @@
 import type { ProductCardData, ProductCardVariant } from '@/components/product/product-card';
 import type { ProductCardSource } from '@/lib/catalog/queries';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
+import { isPolarizedVariant } from '@/lib/catalog/polarized';
 import { deriveSizeFit } from '@/lib/catalog/size-fit';
 
 /**
@@ -61,7 +62,7 @@ export function buildCardVariants(
       secondaryImageScale: getImageScale(secondary),
       inStock: v.stock_qty > 0,
       stockState: deriveStockState(v.stock_qty),
-      polarized: v.attributes?.polarized === true,
+      polarized: isPolarizedVariant(v.attributes),
     };
   });
 }
@@ -185,7 +186,7 @@ export function toProductCardData(
       secondaryImageScale: getImageScale(images.secondary),
       inStock: v.stock_qty > 0,
       stockState: deriveStockState(v.stock_qty),
-      polarized: v.attributes?.polarized === true,
+      polarized: isPolarizedVariant(v.attributes),
     };
   });
 

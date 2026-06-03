@@ -164,17 +164,17 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   // variante previsualizada lo es. Fallback a la primera variante.
   const isPolarized = (selectedVariant ?? variants[0])?.polarized === true;
 
-  // Precio mostrado (founder 2026-06-02: "que solamente figure el precio cuando
-  // haya en stock"):
-  // - Producto sin stock → NO mostrar precio (null → "Sin stock").
-  // - Variante seleccionada CON stock → su precio.
-  // - Variante seleccionada SIN stock (pero el producto tiene otras con stock)
-  //   → caer al mínimo "desde" de las variantes en stock. Nunca mostramos el
-  //   precio de una variante agotada.
-  const displayPriceCents = outOfStock
-    ? null
-    : selectedVariant && selectedVariant.inStock
+  // Precio mostrado (founder 2026-06-02: el precio sigue a la variante elegida y
+  // SOLO figura si esa variante tiene stock):
+  // - Variante seleccionada → su precio si tiene stock, vacío (null) si no.
+  // - Sin variante seleccionada (edge) → mínimo del producto si hay stock, si no null.
+  // Nunca mostramos el precio de otra variante cuando la elegida está agotada.
+  const displayPriceCents = selectedVariant
+    ? selectedVariant.inStock
       ? selectedVariant.priceCents
+      : null
+    : outOfStock
+      ? null
       : product.minPriceCents;
 
   // href: si hay variante seleccionada, deep-link con su SKU para que la PDP

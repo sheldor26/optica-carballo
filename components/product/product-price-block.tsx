@@ -66,37 +66,39 @@ export function ProductPriceBlock({
 
   return (
     <div className="border-border/60 from-muted/30 to-background rounded-xl border bg-gradient-to-br p-5">
-      <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-        Precio
-      </p>
-      <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
-        {priceText}
-      </p>
-      {INSTALLMENTS_ENABLED && selected ? (
-        <>
-          <p className="text-foreground mt-2 text-xs font-medium sm:text-sm">
-            {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
-            <span className="font-semibold">
-              {formatPriceCents(installmentAmountCents(selected.priceCents))}
-            </span>
-          </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            Pagás con tarjeta de crédito vía{' '}
-            <span className="text-foreground font-medium">Mercado Pago</span>.
-            Hasta 12 cuotas según el banco.
-          </p>
-        </>
-      ) : (
-        // Cuotas apagadas (INSTALLMENTS_ENABLED=false): mostrar igual los medios
-        // de pago — "¿puedo pagar en cuotas?" es ansiedad #1 en AR. Honesto, sin
-        // prometer cuotas sin interés (depende de promos de MP que no controlamos).
-        <p className="text-muted-foreground mt-2 text-xs">
-          Pagás con tarjeta, débito o transferencia vía{' '}
-          <span className="text-foreground font-medium">Mercado Pago</span>.
-        </p>
-      )}
+      {/* Founder 2026-06-02: el precio SOLO figura cuando la variante elegida
+          tiene stock. Si está agotada, ocultamos precio + medios de pago y
+          mostramos "Sin stock" (nunca el precio de una variante sin stock). */}
       {inStock ? (
         <>
+          <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+            Precio
+          </p>
+          <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
+            {priceText}
+          </p>
+          {INSTALLMENTS_ENABLED && selected ? (
+            <>
+              <p className="text-foreground mt-2 text-xs font-medium sm:text-sm">
+                {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
+                <span className="font-semibold">
+                  {formatPriceCents(installmentAmountCents(selected.priceCents))}
+                </span>
+              </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Pagás con tarjeta de crédito vía{' '}
+                <span className="text-foreground font-medium">Mercado Pago</span>.
+                Hasta 12 cuotas según el banco.
+              </p>
+            </>
+          ) : (
+            // Cuotas apagadas: mostrar igual los medios de pago. Honesto, sin
+            // prometer cuotas sin interés (depende de promos de MP).
+            <p className="text-muted-foreground mt-2 text-xs">
+              Pagás con tarjeta, débito o transferencia vía{' '}
+              <span className="text-foreground font-medium">Mercado Pago</span>.
+            </p>
+          )}
           <div className="border-border/40 mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t pt-3 text-xs">
             <p
               className={cn(
@@ -122,10 +124,13 @@ export function ProductPriceBlock({
           </div>
         </>
       ) : (
-        <div className="border-border/40 mt-3 border-t pt-3 text-xs">
-          <p className="text-destructive inline-flex items-center gap-1.5">
+        <div className="text-sm">
+          <p className="text-destructive inline-flex items-center gap-1.5 font-medium">
             <span className="bg-destructive size-1.5 rounded-full" />
             Sin stock
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            Esta variante está sin stock por ahora. Mirá las demás opciones.
           </p>
         </div>
       )}

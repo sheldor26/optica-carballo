@@ -4,7 +4,8 @@ import { ShapeCatalogPage } from '@/components/catalog/shape-catalog-page';
 import { CATEGORIES } from '@/lib/catalog/categories';
 import { getBrandFilter } from '@/lib/catalog/brand-filters';
 import { buildCategoryShapeMetadata } from '@/lib/catalog/metadata';
-import { fetchCategoryByFilter } from '@/lib/catalog/queries';
+import { fetchProductsByCategoryAndShapes } from '@/lib/catalog/queries';
+import { toPolarizedCatalog } from '@/lib/catalog/polarized';
 
 const CATEGORY = CATEGORIES.sol;
 const FILTER = getBrandFilter('polarizados');
@@ -23,9 +24,13 @@ export function generateMetadata(): Metadata {
 
 export default async function Page() {
   if (!FILTER) notFound();
-  const products = await fetchCategoryByFilter({
+  // Founder 2026-06-02: a /polarizados entra cualquier producto con AL MENOS una
+  // variante polarizada, y la card representa SOLO esa(s) variante(s). Traemos
+  // todo el catálogo y lo reducimos a las variantes polarizadas.
+  const all = await fetchProductsByCategoryAndShapes({
     categorySlug: CATEGORY.slug,
-    filter: FILTER.filter,
+    frameShapes: [],
   });
+  const products = toPolarizedCatalog(all);
   return <ShapeCatalogPage category={CATEGORY} filter={FILTER} products={products} />;
 }
