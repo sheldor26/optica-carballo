@@ -6,7 +6,7 @@
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
 🟢 **3 ajustes (pedidos founder) — EJECUTADOS + verificados runtime** (2026-06-02, commit `5f88937`):
-1. **Escala Eslav +0.5**: perfil 1.65 / frente 1.5 (la lente envolvente se veía chica).
+1. **Escala Eslav**: perfil **1.65** (founder lo aprobó, quedó perfecto) / frente **1.3** (subió a 1.5 y el founder lo bajó −0.2 porque quedaba muy grande). Commit final del frente: `6e12419`. Ambas variantes.
 2. **Precio solo con stock (estricto)**: el precio sigue a la variante elegida y figura SOLO si esa variante tiene stock. Card: variante OOS seleccionada → precio vacío "Sin stock" (nunca el de otra variante). PDP `ProductPriceBlock`: variante/producto sin stock → oculta precio + medios de pago, muestra "Sin stock".
 3. **/polarizados = solo variante polarizada** (resuelve decisión (b), founder eligió "al menos una"): a `/polarizados` entra cualquier producto con AL MENOS una variante polarizada, y la card representa SOLO la(s) polarizada(s) (precio/stock/imagen recalculados). Nuevo `lib/catalog/polarized.ts`: `isPolarizedVariant()` (detector robusto: polarized/is_polarized/lens_treatment/model_code POL — fuente única, antes duplicado en variant-list) + `toPolarizedCatalog()`. Verificado: /polarizados 9→22 modelos; Beason/Feeled excluidos; Yamain ahora captado (usaba `is_polarized`, el criterio viejo lo perdía).
 **⬜ Follow-up pendiente**: el brand-level `/anteojos-de-sol/<marca>/polarizados` sigue con el criterio viejo (product-level "todas") — usa otro path de query (`fetchBrandPageByFilter` + toProductCardData). Inconsistente con el `/polarizados` general hasta migrarlo. Flagueado, no bloqueante.
