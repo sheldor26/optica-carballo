@@ -364,6 +364,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-way-back/Way back- green pearl g.grey f galeria.jpg': 1.0,
   'vulk-way-back/WAY BACK MBLK S10 POL P galeria.jpg': 1.15,
   'vulk-way-back/WAY BACK MBLK S10 POL. F galeria.jpg': 1.0,
+
+  // Vulk Deserve — cuadrado grande G-Flex. Perfil 1.15 / frente 1.0 (default,
+  // mismo patrón que Reporter/Vorez). ⚠️ baseline SIN verificación visual: las
+  // fotos no estaban en el bucket al cargar (sub-regla 15: comparar contra el
+  // grid cuando el founder las suba; si queda chico → 1.2, si recorta → 1.05/1.0).
+  'vulk-deserve/DESERVE-MBLK S10 POL- P.jpg': 1.15,
+  'vulk-deserve/DESERVE-MBLK S10 POL- f.jpg': 1.0,
+  'vulk-deserve/DESERVE-SBLK-GDARK-GREY p.jpg': 1.15,
+  'vulk-deserve/DESERVE-SBLK-GDARK-GREY f.jpg': 1.0,
+  'vulk-deserve/DESERVE-MBLK-G3262-EMERALD p.jpg': 1.15,
+  'vulk-deserve/DESERVE-MBLK-G3262-EMERALD f.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

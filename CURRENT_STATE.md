@@ -5,6 +5,10 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟡 **Producto Vulk Deserve (sol, cuadrado grande, G-Flex) — SEED LISTO, NO APLICADO** (2026-06-04). Seed `51_vulk_deserve.sql` escrito + scale override agregado (1.15/1.0 baseline). **BLOQUEADO esperando fotos**: el bucket `vulk-deserve/` da 400 en CDN (storage.objects vacío + CDN confirmado = NO subidas). 3 variantes simples (datos ML verificados): MBLK/S10 POL 112937 $79.991,75 stock 6 (primary, **POL**); SBLK/G.DARK GREY 112935 $73.329,51 stock 5; MBLK/G3262 EMERALD 112930 $78.793,56 stock 4 (NO pol, antirreflex interno). 1 de 3 pol → `lens_treatment ["uv400"]` (entra a /polarizados). Medidas 146/59×58/16/145, talle large, unisex. **⬜ Próximo paso exacto**: founder sube las 7 fotos a `vulk-deserve/` con los nombres del seed (`DESERVE-MBLK S10 POL- P.jpg`, etc.) → verifico HTTP 200 en CDN → aplico el seed vía MCP → chequeo visual del scale en grid. Founder preguntó nada sobre badge "Talle grande" (ofrecido, no hecho — requiere token nuevo en `size-fit.ts`).
+
+🟢 **Vulk Way Back: peso 26g cargado** (2026-06-04). Founder pasó el dato faltante. `weight_grams:26` UPDATE vía MCP + seed 50 sincronizado.
+
 🟢 **Chequeos visuales de grid CONFIRMADOS OK por founder** (2026-06-02): Vorez, Eslav (perfil 1.65/frente 1.3), Misty sol+receta, Gresent (perfil 1.20). Todos los scales recientes quedaron aprobados — ya no hay "pendiente chequeo visual" en esos productos.
 
 🟢 **Bugfix: precio en variantes sin stock — `VariantList`** (2026-06-02, commit `89d15e0`). La regla "precio solo con stock" estaba en 3 superficies (card, price-block, quick-view) pero faltaba la 4ª: cada fila de `VariantList` mostraba el precio aunque la variante estuviera sin stock (reporte founder, MBLK Way Back $86.228). Arreglado: fila OOS → solo "Sin stock"; el "Elegiste:" del CTA primario también oculta el precio si la elegida está agotada. Verificado: 86.228 ya no aparece en la PDP. Ahora las 4 superficies de precio respetan la regla. Ver MISTAKES (lección: enumerar todos los call-sites en cambios transversales).

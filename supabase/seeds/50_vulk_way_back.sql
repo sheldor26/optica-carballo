@@ -45,6 +45,7 @@ VALUES (
     "line": "urbana",
     "interchangeable_lenses": false,
     "prescription_adapter": false,
+    "weight_grams": 26,
     "measurements": {"frame_width_mm": 146, "lens_width_mm": 56, "lens_height_mm": 43, "bridge_mm": 19, "temple_length_mm": 145},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
