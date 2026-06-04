@@ -22,6 +22,10 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-04 — Revisado, SIN NOVEDAD (seed Rusty Dileri, no aplicado)
+
+Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de 2 MLAs simples (cuadrado femenino), bloqueada esperando fotos (carpeta vacía + CDN 400) → seed listo, no aplicado. El patrón "hold hasta CDN 200" ya está documentado (caso Deserve). Nada nuevo.
+
 ## 2026-06-04 — Fotos compartidas entre variantes + constraint de path único (carga Rusty CCCP)
 
 **Contexto**: el CCCP tiene 4 variantes (2 pol + 2 antirreflex) pero el founder subió solo 2 pares de fotos ("el modelo es el mismo, solo varía pol/no-pol"). El único eje visual real es el color del frente (MBLK negro mate vs SBLK negro brillo).

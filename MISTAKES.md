@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-04 — Revisado, SIN NOVEDAD (seed Rusty Dileri, no aplicado)
+
+Constancia de cierre (regla 11): sin error nuevo. Seed armado y en hold esperando fotos, siguiendo el flujo documentado. Nada que corregir.
+
 ## 2026-06-04 — Al agregar fotos AR rompí la convención "medidas última" → quedó primera en la galería de esas variantes (Rusty CCCP)
 
 **Qué pasó**: al atar las 4 fotos AR del CCCP les puse `sort_order` 5–8, pero dejé `medidas.webp` (global) en 4. La galería de la PDP muestra, por variante, `[fotos de la variante + global]` ordenado por `sort_order`. Para las variantes AR (fotos 5–8) la medidas (4) ordenaba PRIMERA; para las POL (fotos 0–3) quedaba tercera (bien). Founder lo reportó.
