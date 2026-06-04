@@ -375,6 +375,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-deserve/DESERVE-SBLK-GDARK-GREY f.jpg': 1.0,
   'vulk-deserve/DESERVE-MBLK-G3262-EMERALD p.jpg': 1.15,
   'vulk-deserve/DESERVE-MBLK-G3262-EMERALD f.jpg': 1.0,
+
+  // Vulk Katleen — cuadrado femenino G-Flex ultra liviano. Perfil 1.15 / frente
+  // 1.0 (default, mismo patrón que Beason/Vorez femeninos). Pendiente chequeo
+  // visual del founder. Naming inconsistente del founder respetado.
+  'vulk-katleen/KATLEEN SDEMI-SBLK GB27 -Perfil.jpg': 1.15,
+  'vulk-katleen/KATLEEN SDEMI-SBLK GB27 - F.jpg': 1.0,
+  'vulk-katleen/katleen mblk s10 pol p.jpg': 1.15,
+  'vulk-katleen/katleen mblk s10 pol f.jpg': 1.0,
+  'vulk-katleen/KATLEEN MBLK C8B15_perfil.jpg': 1.15,
+  'vulk-katleen/KATLEEN MBLK C8B15_frente.jpg': 1.0,
+  'vulk-katleen/KATLEEN MSIENNA HGG1 p.jpg': 1.15,
+  'vulk-katleen/KATLEEN MSIENNA HGG1 f.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

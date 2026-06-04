@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen)
+
+Constancia de cierre (regla 11): sin error nuevo. Carga estándar siguiendo el flujo documentado (datos ML por endpoint prod, cross-check CDN, verificación MCP + runtime). Nada que corregir ni anti-pattern nuevo.
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Deserve + peso Way Back)
 
 Constancia de cierre (regla 11): sin error nuevo este turno. La carga del Deserve siguió bien el flujo documentado: datos ML por endpoint de producción, cross-check de fotos por CDN, y al detectar 400 (fotos no subidas) se evitó el anti-pattern de aplicar un producto activo con imágenes rotas — se dejó el seed listo y se devolvió el próximo paso al founder (esto quedó como learning positivo, no como mistake). El peso del Way Back fue un UPDATE de data directo. Nada que corregir ni anti-pattern nuevo que registrar.
