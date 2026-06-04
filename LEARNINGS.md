@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-04 — `storage.objects` vacío + CDN 400 = fotos genuinamente NO subidas → armar el seed pero NO aplicarlo
+
+**Categoría**: Carga de productos / Integridad del grid en vivo
+**Confianza**: 🟢 Alta (caso complementario, aplicado este turno con Vulk Deserve)
+
+**Qué funcionó**: Al cargar el Vulk Deserve, `storage.objects ILIKE 'vulk-deserve/%'` dio vacío. El learning previo ([[el del 2026-06-02 sobre CDN 200 manda cuando storage.objects tiene lag]]) dice "no asumir que está ausente solo porque la tabla está vacía — cruzar con CDN". Lo hice: el CDN dio **400** para los 7 paths (y 200 para una foto de control de Way Back, confirmando que la URL base estaba bien). Vacío en la tabla **+ 400 en el CDN** = las fotos realmente no están subidas, no es lag. Decisión: escribir el seed completo + scale override + docs (queda listo para aplicar en 1 paso) pero **NO aplicarlo vía MCP**, porque el producto es `is_active=true` y saldría en el grid en vivo con imágenes rotas (404). Próximo paso explícito al founder: subir fotos → re-verifico CDN 200 → aplico.
+
+**Por qué funciona / principio reutilizable**: el CDN es la fuente de verdad bidireccional, no solo para confirmar presencia (200) sino también ausencia (400 + tabla vacía). Y la regla de integridad: **un seed de producto activo no se aplica hasta que TODAS sus fotos dan 200** — mejor un producto "pendiente" en docs que un producto roto en el grid público. El trabajo no-bloqueado por fotos (datos ML, atributos, copy, scale baseline, docs) se hace igual para que la aplicación final sea atómica.
+
+**Para la próxima**: orden de carga = `storage.objects` (nombres) → CDN curl (200=aplicar / 400+tabla vacía=hold) → aplicar MCP solo con todo en 200. Si las fotos no están, dejar seed+overrides+docs listos y devolver al founder el próximo paso exacto (nombres de archivo + carpeta), no aplicar a medias.
+
 ## 2026-06-02 — Revisado, SIN NOVEDAD (carga Vulk Way Back + confirmación shape wayfarer)
 
 Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de 4 MLAs simples con nombres de foto MUY inconsistentes (dots/dashes/"galeria"/sin-espacio) — resueltos consultando storage.objects + verificando CDN 200 (patrón ya documentado en learnings previos de filenames + storage-vs-CDN). Nada nuevo que sistematizar.
