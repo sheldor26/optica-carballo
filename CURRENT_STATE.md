@@ -5,6 +5,31 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+## 🏁 CIERRE DE SESIÓN 2026-06-04 (consolidado)
+
+**Qué se cargó (5 productos)**:
+- ✅ **Vulk Deserve** (sol, cuadrado grande unisex, 3 var) — APLICADO + verificado.
+- ✅ **Vulk Katleen** (sol, cuadrado femenino ultra liviano, 4 var) — APLICADO + verificado.
+- ✅ **Vulk Katleen Receta** (armazón cuadrado femenino, 3 var) — APLICADO + verificado. Cierra el dúo sol+receta.
+- ✅ **Rusty CCCP** (sol, envolvente deportivo, 4 var: 2 pol + 2 antirreflex) — APLICADO + verificado.
+- 🟡 **Rusty Dileri** (sol, cuadrado femenino, 2 var) — SEED LISTO, **NO aplicado** (esperando fotos).
+- Además: **Vulk Way Back** peso 26g cargado (UPDATE MCP + seed sync).
+
+**Decisiones técnicas transversales**:
+1. **Fotos compartidas entre variantes + constraint `UNIQUE(product_id,storage_path)`** (CCCP): cuando el founder sube menos fotos que variantes pero quiere que cada una muestre su color de frente, la solución es **COPIAR el archivo en el bucket** con sufijo (storage API `/object/copy`, auth `SUPABASE_SERVICE_ROLE_KEY`) y atar la copia a su variante — NO un fallback por código (tocaría 4 superficies de resolución de imagen). Ver LEARNINGS.
+2. **`sort_order` de assets globales (medidas) = SIEMPRE el más alto** del producto, por encima de toda foto de variante (incluso las agregadas después), para que la galería por-variante lo muestre último. Roto y arreglado en CCCP.
+3. **Scale overrides**: todos los nuevos en baseline 1.15/1.0 (femeninos/cuadrados) salvo pendientes de chequeo visual. CCCP envolvente probablemente necesite bump (~1.5, como Eslav 1.65).
+4. **Hold-hasta-CDN-200**: si la carpeta del bucket está vacía (`.emptyFolderPlaceholder` + CDN 400), armar el seed pero NO aplicar hasta que el founder suba las fotos (evita imágenes rotas en grid en vivo). Aplicado a Deserve (destrabado) y Dileri (pendiente).
+
+**Problemas encontrados y resueltos**: casing de nombres de foto (`medidas.webp` vs `Medidas.webp` en Deserve; doble espacio en Katleen Receta; `POl` minúscula en Dileri) → siempre cazados con curl al CDN antes de aplicar. CCCP: medidas quedaba primera en galería de variantes AR → fix sort_order. CCCP: asumí mal que variantes sin foto era "esperado" cuando el founder quería reusar (corregido + MISTAKES).
+
+**Próximo paso exacto (toda la sesión)**:
+1. **Dileri**: founder sube las 5 fotos a `rusty-dileri/` → verifico CDN → aplico MCP → chequeo scale. (bloqueante)
+2. **Chequeos visuales de scale pendientes del founder** (no bloqueantes): Deserve, Katleen sol, Katleen receta (todos 1.15/1.0 baseline) y **CCCP** (probable bump a ~1.5).
+3. Hilo abierto sin tocar: guías SEO (hipermetropía → presbicia), logo wall de marcas.
+
+---
+
 🟡 **Producto Rusty Dileri (sol, cuadrado femenino liviano) — SEED LISTO, NO APLICADO** (2026-06-04). Seed `55_rusty_dileri.sql` escrito + scale override (1.15/1.0). **BLOQUEADO esperando fotos**: `rusty-dileri/` tiene solo `.emptyFolderPlaceholder` + CDN 400 = NO subidas. 2 variantes simples (datos ML verificados): SBLK/S10 POL 127042 $78.869,25 stock 3 (primary, **POL**, MLA1575782743); SIENNA/G.GREEN 127043 $73.661,17 stock 3 (NO pol, MLA1480729607). 1 de 2 pol → `lens_treatment ["uv400"]`. gender=female, 31,8g, cat 3, medidas 140/52×53/15/135. Frente G-Flex, patillas Flex Temple. **⬜ Próximo paso exacto**: founder sube las 5 fotos a `rusty-dileri/` → verifico HTTP 200 en CDN (ojo casing: la perfil SBLK es `POl` minúscula) → aplico seed vía MCP → chequeo scale en grid.
 
 🟢 **Producto Rusty CCCP (sol, deportivo envolvente, 2 pol + 2 antirreflex) — APLICADO** (2026-06-04). Seed `54_rusty_cccp.sql` aplicado vía MCP + verificado runtime (PDP 200, 5 `<strong>`, "envolvente", en /polarizados). 4 variantes en 3 MLAs: SBLK/S10 POL 1118 $93.631,97 stock 4 (primary, **POL**, simple); MBLK/S10 POL 001120 $93.631,97 stock 2 (**POL**, simple); MBLK/S10 100 $81.416 stock 2 (antirreflex interno, var 188468060561); SBLK/S10 101 $81.416 stock 0 (antirreflex interno, var 182612309796) — las 2 antirreflex son variaciones de la multi-variante MLA1468677535. 2 de 4 pol → `lens_treatment ["uv400"]`. G-Flex, envolvente deportivo, unisex, policarbonato 100% UV. Medidas 139/68×45/16/108 (varilla corta). **Fotos por color de frente (founder 2026-06-04)**: founder subió 2 pares (SBLK POL + MBLK); pidió que MBLK-AR use las fotos del MBLK y SBLK-AR las del SBLK (mismo armazón). El constraint UNIQUE(product_id,storage_path) impide reusar un archivo en 2 variantes → COPIÉ los 2 pares en el bucket con sufijo "AR" (storage API /object/copy) y los até a las variantes AR. Ahora `vars_sin_foto=0`, 9 imágenes, cada variante muestra su color. Scale baseline 1.15/1.0 (conservador; ojo: los otros envolventes Eslav/Sotion necesitaron ~1.6, puede requerir bump). Verificación MCP: `variantes=4, pol=2, stock=8, imgs=9, vars_sin_foto=0, con_varcode=2`. **Fix 2026-06-04**: la medidas global quedaba primera en la galería de las variantes AR (le había puesto sort 4 y a las fotos AR 5–8) → la subí a sort 9 (convención: medidas siempre última). Ver MISTAKES. **⬜ Pendiente founder**: chequeo visual del scale (probable que haya que agrandar, como Eslav).
