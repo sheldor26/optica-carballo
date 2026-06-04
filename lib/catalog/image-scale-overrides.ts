@@ -412,13 +412,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-cccp/CCCP SBLK-S10 AR perfil.jpg': 1.15,
   'rusty-cccp/CCCP SBLK-S10 AR frente.jpg': 1.0,
 
-  // Rusty Dileri — cuadrado femenino liviano. Founder 2026-06-04: "un poco más
-  // grande, especialmente la lateral +0.05" → perfil 1.15→1.20 (es la primaria
-  // del grid), frente 1.0→1.05. Ambas variantes.
-  'rusty-dileri/DILERI_SBLK_S10_POl_p.jpg': 1.2,
-  'rusty-dileri/DILERI_SBLK_S10_POL_f.jpg': 1.05,
-  'rusty-dileri/DILERI_SIENNA_G._GREEN-perfil.jpg': 1.2,
-  'rusty-dileri/DILERI_SIENNA_G._GREEN-frente.jpg': 1.05,
+  // Rusty Dileri — cuadrado femenino liviano. Founder 2026-06-04: iter 1 perfil
+  // 1.15→1.20 / frente 1.0→1.05; iter 2 "+0.05 más" → perfil 1.25 / frente 1.10.
+  // Ambas variantes.
+  'rusty-dileri/DILERI_SBLK_S10_POl_p.jpg': 1.25,
+  'rusty-dileri/DILERI_SBLK_S10_POL_f.jpg': 1.1,
+  'rusty-dileri/DILERI_SIENNA_G._GREEN-perfil.jpg': 1.25,
+  'rusty-dileri/DILERI_SIENNA_G._GREEN-frente.jpg': 1.1,
 };
 
 export function getImageScale(path: string | null | undefined): number {
