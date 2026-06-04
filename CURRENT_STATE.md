@@ -5,6 +5,8 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+🟢 **Forma "Deportivos" (envolvente) agregada al nav + ruta** (2026-06-04). Founder reportó que faltaba la forma envolvente en "POR FORMA" del mega-nav. Agregado: (1) `BRAND_FILTERS` nuevo entry `deportivos` (label "Deportivos" elegido por founder vs "Envolvente"; filtra `frame_shape='envolvente'`, solo categoría sol — no hay envolventes de receta); (2) ruta `app/(storefront)/anteojos-de-sol/deportivos/page.tsx` (mirror de wayfarer); (3) link "Deportivos" en "Por forma" del `buildSolMegaMenu`. Verificado runtime: `/anteojos-de-sol/deportivos` 200 con los 5 envolventes (CCCP, Eslav, Feeled, Sotion, Yau). tsc OK. Commit pendiente.
+
 ## 🏁 CIERRE DE SESIÓN 2026-06-04 (consolidado)
 
 **Qué se cargó (5 productos)**:

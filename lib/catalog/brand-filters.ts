@@ -66,6 +66,16 @@ export const BRAND_FILTERS: BrandFilter[] = [
     metaPhrase: 'forma rectangular',
   },
   {
+    // "Deportivos" = forma envolvente (wraparound). Label elegido por founder
+    // 2026-06-04 ("deportivos" por volumen de búsqueda; la forma DB es
+    // 'envolvente'). Solo sol: no hay envolventes de receta.
+    urlSlug: 'deportivos',
+    label: 'Deportivos',
+    categories: ['sol'],
+    filter: { type: 'frame_shape', value: 'envolvente' },
+    metaPhrase: 'envolventes deportivos',
+  },
+  {
     urlSlug: 'acetato',
     label: 'Acetato',
     categories: ['sol', 'receta'],

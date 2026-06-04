@@ -120,6 +120,7 @@ export function buildSolMegaMenu(): MegaMenu {
               { label: 'Aviador', href: '/anteojos-de-sol/aviador' },
               { label: 'Cat eye', href: '/anteojos-de-sol/cat-eye' },
               { label: 'Rectangulares', href: '/anteojos-de-sol/rectangular' },
+              { label: 'Deportivos', href: '/anteojos-de-sol/deportivos' },
             ],
           },
           {
