@@ -24,9 +24,13 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
-## 2026-06-04 — Revisado, SIN NOVEDAD (carga Rusty CCCP)
+## 2026-06-04 — Asumí que dejar variantes sin foto era "esperado" cuando el founder quería reusar las fotos (carga Rusty CCCP)
 
-Constancia de cierre (regla 11): sin error nuevo. El caso de "fotos compartidas entre variantes" se resolvió bien y quedó documentado como learning (no mistake). Verificación CDN/MCP/runtime OK.
+**Qué pasó**: al cargar el CCCP con 2 pares de fotos para 4 variantes, asumí que las 2 sin foto cayeran al primary era el comportamiento deseado y lo documenté como "esperado". El founder corrigió: quería que cada variante mostrara la foto de SU color de frente (MBLK-AR con fotos MBLK, SBLK-AR con fotos SBLK).
+
+**Causa raíz**: tomé la restricción técnica (UNIQUE storage_path) como límite del resultado, en vez de preguntarle al founder qué esperaba ver en cada variante sin foto. Default silencioso ("cae al primary") en lugar de confirmar la intención.
+
+**Regla preventiva**: cuando el founder sube menos fotos que variantes, NO asumir el fallback. Preguntar "¿qué foto querés que muestre cada variante sin foto propia?" o, si es obvio (mismo armazón distinto tratamiento), proponer reusar la del color correspondiente vía copia en bucket. La solución quedó documentada en LEARNINGS (storage /object/copy). Verificación CDN/MCP/runtime OK.
 
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen Receta)
 

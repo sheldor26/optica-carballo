@@ -406,6 +406,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-cccp/CCCP SBLK-S10 POL frente.jpg': 1.0,
   'rusty-cccp/CCCP MBLK S10 perfil.jpg': 1.15,
   'rusty-cccp/CCCP MBLK S10 frente.jpg': 1.0,
+  // Copias AR (mismo armazón, founder pidió reusar la foto del color de frente).
+  'rusty-cccp/CCCP MBLK S10 AR perfil.jpg': 1.15,
+  'rusty-cccp/CCCP MBLK S10 AR frente.jpg': 1.0,
+  'rusty-cccp/CCCP SBLK-S10 AR perfil.jpg': 1.15,
+  'rusty-cccp/CCCP SBLK-S10 AR frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

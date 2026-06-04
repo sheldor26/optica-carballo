@@ -17,10 +17,15 @@
 --
 -- 📸 FOTOS (bucket products/rusty-cccp/, verificadas HTTP 200). Founder subió solo
 -- 2 pares (SBLK POL + MBLK) porque el modelo es el mismo y solo varía pol/no-pol.
--- Path único por producto → SBLK POL → variante SBLK POL (primary), MBLK → variante
--- MBLK POL. Las 2 no-pol (100/101) comparten el look y caen al primary (sin foto propia).
---   CCCP SBLK-S10 POL perfil.jpg / CCCP SBLK-S10 POL frente.jpg  (primary del modelo)
---   CCCP MBLK S10 perfil.jpg / CCCP MBLK S10 frente.jpg
+-- El constraint UNIQUE(product_id, storage_path) impide atar un mismo archivo a 2
+-- variantes → founder pidió (2026-06-04) que el MBLK-AR use las fotos del MBLK y el
+-- SBLK-AR las del SBLK (mismo armazón). Solución: se COPIARON los 2 pares en el bucket
+-- con sufijo "AR" (storage API /object/copy) y se ataron a las variantes AR. Así cada
+-- variante muestra la foto de su color de frente (vars_sin_foto=0).
+--   CCCP SBLK-S10 POL perfil.jpg / CCCP SBLK-S10 POL frente.jpg  (primary; var SBLK POL)
+--   CCCP MBLK S10 perfil.jpg / CCCP MBLK S10 frente.jpg          (var MBLK POL)
+--   CCCP MBLK S10 AR perfil.jpg / CCCP MBLK S10 AR frente.jpg    (COPIA de MBLK; var MBLK AR)
+--   CCCP SBLK-S10 AR perfil.jpg / CCCP SBLK-S10 AR frente.jpg    (COPIA de SBLK; var SBLK AR)
 --   medidas.webp
 -- ============================================
 
@@ -81,8 +86,9 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- Imágenes. Primary del modelo: SBLK/S10 POL perfil. Founder subió 2 pares (el
--- modelo es el mismo); las 2 no-pol comparten look y caen al primary (sin foto propia).
+-- Imágenes. Primary del modelo: SBLK/S10 POL perfil. Cada variante muestra la foto
+-- de su color de frente: MBLK POL + MBLK AR usan fotos MBLK; SBLK POL + SBLK AR usan
+-- fotos SBLK (las "AR" son copias en bucket, ver nota arriba). vars_sin_foto=0.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='1118'),
@@ -93,6 +99,16 @@ VALUES
    'rusty-cccp/CCCP MBLK S10 perfil.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista lateral, negro mate con lente gris oscuro', 1500, 1000, 2, false),
   ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='001120'),
    'rusty-cccp/CCCP MBLK S10 frente.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista frontal, negro mate con lente gris oscuro', 1500, 1000, 3, false),
+  -- MBLK AR (SKU 100): copias de las fotos MBLK (mismo armazón negro mate).
+  ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='100'),
+   'rusty-cccp/CCCP MBLK S10 AR perfil.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista lateral, negro mate con lente gris oscuro antirreflex', 1500, 1000, 5, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='100'),
+   'rusty-cccp/CCCP MBLK S10 AR frente.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista frontal, negro mate con lente gris oscuro antirreflex', 1500, 1000, 6, false),
+  -- SBLK AR (SKU 101): copias de las fotos SBLK (mismo armazón negro brillo).
+  ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='101'),
+   'rusty-cccp/CCCP SBLK-S10 AR perfil.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista lateral, negro brillo con lente gris oscuro antirreflex', 1500, 1000, 7, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='101'),
+   'rusty-cccp/CCCP SBLK-S10 AR frente.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista frontal, negro brillo con lente gris oscuro antirreflex', 1500, 1000, 8, false),
   ((SELECT id FROM public.products WHERE slug='rusty-cccp'), NULL,
    'rusty-cccp/medidas.webp', 'Esquema técnico de medidas Rusty CCCP: frente 139mm, lente 68x45mm, puente 16mm, varilla 108mm', 1500, 1500, 4, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

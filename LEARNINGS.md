@@ -28,9 +28,11 @@ Sirve para:
 
 **Problema técnico**: `product_images` tiene `ON CONFLICT (product_id, storage_path)` → **un mismo storage_path NO puede atarse a dos variant_id distintos** dentro del mismo producto. No se puede "reusar" una foto para 2 variantes.
 
-**Solución aplicada**: asignar cada par de fotos a UNA variante representativa por color de frente (SBLK POL→variante SBLK POL = primary; MBLK→variante MBLK POL). Las otras 2 variantes (mismo look) quedan **sin foto propia** y caen al primary del producto en el grid/PDP. Resultado `vars_sin_foto=2` es **esperado y correcto**, no un bug.
+**Solución correcta (la que pidió el founder)**: cada variante debe mostrar la foto de SU color de frente — el MBLK-AR usa las fotos del MBLK, el SBLK-AR las del SBLK. Como el constraint impide reusar un path, se **COPIAN los archivos en el bucket** con un sufijo (ej. "AR") vía la storage API `POST /storage/v1/object/copy` (auth con `SUPABASE_SERVICE_ROLE_KEY` de `.env.local`), y se ata cada copia a su variante. Resultado `vars_sin_foto=0`, cada variante con su color.
 
-**Cómo aplicar**: cuando el founder diga "subo solo N fotos, el modelo es el mismo", (1) identificar el eje visual real (normalmente color de frente), (2) atar cada foto a la variante más representativa de ese eje (preferir las de mayor stock / la primary), (3) aceptar `vars_sin_foto > 0` y documentarlo explícito en el seed + CLOUD_APPLIED para que no se confunda con un olvido. NO intentar duplicar el path (rompe el ON CONFLICT). Ver [[stock-siempre-ml]] para la convención de cargar todas las variantes.
+**Por qué COPIA y no fallback por código**: la resolución de imagen por `variant_id` vive en 4 puntos (buildCardVariants + toProductCardData.buildVariantImages en `to-product-card-data.ts`; buildGalleryImages + findPrimaryImagePathForVariant en `product-page.tsx`). Un fallback "por frame_color" tendría que tocar los 4 de forma consistente (riesgo transversal, como el bug de precio OOS en 4 superficies). La copia en storage es local al producto, cero código, y funciona en las 4 superficies porque cada variante tiene filas de imagen reales.
+
+**Cómo aplicar**: cuando el founder diga "subo solo N fotos, el modelo es el mismo" PERO quiera que cada variante muestre su color: (1) identificar el eje visual (color de frente); (2) copiar en el bucket los pares que faltan con sufijo distintivo (`/object/copy`); (3) atar cada copia a su variante en `product_images`; (4) agregar scale overrides para los paths nuevos; (5) documentar la copia en el seed (es reproducible pero los archivos son copias — si el founder reemplaza una foto, hay que reemplazar también la copia). Ver [[stock-siempre-ml]].
 
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen Receta)
 
