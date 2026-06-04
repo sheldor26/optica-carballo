@@ -109,8 +109,10 @@ VALUES
    'rusty-cccp/CCCP SBLK-S10 AR perfil.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista lateral, negro brillo con lente gris oscuro antirreflex', 1500, 1000, 7, false),
   ((SELECT id FROM public.products WHERE slug='rusty-cccp'), (SELECT id FROM public.product_variants WHERE sku='101'),
    'rusty-cccp/CCCP SBLK-S10 AR frente.jpg', 'Anteojo de sol Rusty CCCP envolvente deportivo vista frontal, negro brillo con lente gris oscuro antirreflex', 1500, 1000, 8, false),
+  -- medidas SIEMPRE última (sort 9 > todas las fotos de variante) para que en la
+  -- galería de cada variante quede al final, no primera (founder 2026-06-04).
   ((SELECT id FROM public.products WHERE slug='rusty-cccp'), NULL,
-   'rusty-cccp/medidas.webp', 'Esquema técnico de medidas Rusty CCCP: frente 139mm, lente 68x45mm, puente 16mm, varilla 108mm', 1500, 1500, 4, false)
+   'rusty-cccp/medidas.webp', 'Esquema técnico de medidas Rusty CCCP: frente 139mm, lente 68x45mm, puente 16mm, varilla 108mm', 1500, 1500, 9, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 

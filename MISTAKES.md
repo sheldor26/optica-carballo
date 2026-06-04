@@ -24,6 +24,14 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-04 — Al agregar fotos AR rompí la convención "medidas última" → quedó primera en la galería de esas variantes (Rusty CCCP)
+
+**Qué pasó**: al atar las 4 fotos AR del CCCP les puse `sort_order` 5–8, pero dejé `medidas.webp` (global) en 4. La galería de la PDP muestra, por variante, `[fotos de la variante + global]` ordenado por `sort_order`. Para las variantes AR (fotos 5–8) la medidas (4) ordenaba PRIMERA; para las POL (fotos 0–3) quedaba tercera (bien). Founder lo reportó.
+
+**Causa raíz**: agregué filas de imagen a un producto existente sin revisar que el asset global (`medidas.webp`) mantuviera el `sort_order` MÁS ALTO. En todos los demás seeds la medidas es la última; acá la dejé en el medio.
+
+**Regla preventiva**: el/los asset(s) globales (variant_id=NULL: medidas, y cualquier shot compartido) deben tener SIEMPRE el `sort_order` más alto del producto, por encima de TODAS las fotos de variante — incluso las que se agreguen después. Al insertar imágenes nuevas en un producto ya cargado: (1) mirar el `sort_order` actual de la medidas, (2) si las nuevas filas lo superan, bumpear la medidas por encima. Verificable: `SELECT storage_path, sort_order ... ORDER BY sort_order` → la(s) global(es) al final.
+
 ## 2026-06-04 — Asumí que dejar variantes sin foto era "esperado" cuando el founder quería reusar las fotos (carga Rusty CCCP)
 
 **Qué pasó**: al cargar el CCCP con 2 pares de fotos para 4 variantes, asumí que las 2 sin foto cayeran al primary era el comportamiento deseado y lo documenté como "esperado". El founder corrigió: quería que cada variante mostrara la foto de SU color de frente (MBLK-AR con fotos MBLK, SBLK-AR con fotos SBLK).
