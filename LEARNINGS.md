@@ -22,6 +22,16 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-04 — Fotos compartidas entre variantes + constraint de path único (carga Rusty CCCP)
+
+**Contexto**: el CCCP tiene 4 variantes (2 pol + 2 antirreflex) pero el founder subió solo 2 pares de fotos ("el modelo es el mismo, solo varía pol/no-pol"). El único eje visual real es el color del frente (MBLK negro mate vs SBLK negro brillo).
+
+**Problema técnico**: `product_images` tiene `ON CONFLICT (product_id, storage_path)` → **un mismo storage_path NO puede atarse a dos variant_id distintos** dentro del mismo producto. No se puede "reusar" una foto para 2 variantes.
+
+**Solución aplicada**: asignar cada par de fotos a UNA variante representativa por color de frente (SBLK POL→variante SBLK POL = primary; MBLK→variante MBLK POL). Las otras 2 variantes (mismo look) quedan **sin foto propia** y caen al primary del producto en el grid/PDP. Resultado `vars_sin_foto=2` es **esperado y correcto**, no un bug.
+
+**Cómo aplicar**: cuando el founder diga "subo solo N fotos, el modelo es el mismo", (1) identificar el eje visual real (normalmente color de frente), (2) atar cada foto a la variante más representativa de ese eje (preferir las de mayor stock / la primary), (3) aceptar `vars_sin_foto > 0` y documentarlo explícito en el seed + CLOUD_APPLIED para que no se confunda con un olvido. NO intentar duplicar el path (rompe el ON CONFLICT). Ver [[stock-siempre-ml]] para la convención de cargar todas las variantes.
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen Receta)
 
 Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de la versión receta del Katleen sol (reusó la convención receta documentada en Misty/Xold: `lens_compatibility` + `hinge_system`, sin lens/polarized) + multi-variante (variation_code, ya documentado). El naming con DOBLE espacio (`KATLEEN M0292  perfil.jpg`) se cazó con el curl al CDN antes de aplicar (patrón ya documentado). Nada nuevo que sistematizar.

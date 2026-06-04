@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-04 — Revisado, SIN NOVEDAD (carga Rusty CCCP)
+
+Constancia de cierre (regla 11): sin error nuevo. El caso de "fotos compartidas entre variantes" se resolvió bien y quedó documentado como learning (no mistake). Verificación CDN/MCP/runtime OK.
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen Receta)
 
 Constancia de cierre (regla 11): sin error nuevo. Carga receta estándar siguiendo convención documentada + verificación CDN/MCP/runtime. Nada que corregir.

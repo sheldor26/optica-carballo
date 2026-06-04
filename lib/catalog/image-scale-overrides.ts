@@ -397,6 +397,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-katleen-receta/KATLEEN M0292 - Frente.jpg': 1.0,
   'vulk-katleen-receta/KATLEEN-0292 perfil.jpg': 1.15,
   'vulk-katleen-receta/KATLEEN-0292 FRENTE.jpg': 1.0,
+
+  // Rusty CCCP — envolvente deportivo (wraparound), como Eslav/Sotion. Las fotos
+  // de envolvente suelen dejar el anteojo chico en el frame → arranco en 1.15/1.0
+  // CONSERVADOR (no salto a 1.6 sin evidencia, counter-learning Sotion/Booping).
+  // Pendiente chequeo visual del founder: si queda chico vs grid, subir escalonado.
+  'rusty-cccp/CCCP SBLK-S10 POL perfil.jpg': 1.15,
+  'rusty-cccp/CCCP SBLK-S10 POL frente.jpg': 1.0,
+  'rusty-cccp/CCCP MBLK S10 perfil.jpg': 1.15,
+  'rusty-cccp/CCCP MBLK S10 frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
