@@ -24,6 +24,10 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen Receta)
+
+Constancia de cierre (regla 11): sin error nuevo. Carga receta estándar siguiendo convención documentada + verificación CDN/MCP/runtime. Nada que corregir.
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen)
 
 Constancia de cierre (regla 11): sin error nuevo. Carga estándar siguiendo el flujo documentado (datos ML por endpoint prod, cross-check CDN, verificación MCP + runtime). Nada que corregir ni anti-pattern nuevo.

@@ -387,6 +387,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-katleen/KATLEEN MBLK C8B15_frente.jpg': 1.0,
   'vulk-katleen/KATLEEN MSIENNA HGG1 p.jpg': 1.15,
   'vulk-katleen/KATLEEN MSIENNA HGG1 f.jpg': 1.0,
+
+  // Vulk Katleen Receta — armazón óptico cuadrado femenino. Perfil 1.15 / frente
+  // 1.0 (default, mismo patrón que Misty/Xold receta). Pendiente chequeo visual.
+  // Naming inconsistente respetado (M0292 con DOBLE espacio antes de "perfil").
+  'vulk-katleen-receta/KATLEEN-MBLK perfil.jpg': 1.15,
+  'vulk-katleen-receta/KATLEEN-MBLK frente.jpg': 1.0,
+  'vulk-katleen-receta/KATLEEN M0292  perfil.jpg': 1.15,
+  'vulk-katleen-receta/KATLEEN M0292 - Frente.jpg': 1.0,
+  'vulk-katleen-receta/KATLEEN-0292 perfil.jpg': 1.15,
+  'vulk-katleen-receta/KATLEEN-0292 FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

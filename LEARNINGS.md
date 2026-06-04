@@ -22,6 +22,10 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen Receta)
+
+Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de la versión receta del Katleen sol (reusó la convención receta documentada en Misty/Xold: `lens_compatibility` + `hinge_system`, sin lens/polarized) + multi-variante (variation_code, ya documentado). El naming con DOBLE espacio (`KATLEEN M0292  perfil.jpg`) se cazó con el curl al CDN antes de aplicar (patrón ya documentado). Nada nuevo que sistematizar.
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (carga Vulk Katleen)
 
 Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de 4 MLAs simples (cuadrado femenino). El patrón "CDN manda sobre storage.objects" se **reconfirmó por 3ª vez** (storage tenía solo `.emptyFolderPlaceholder` por lag, CDN dio 200 → fotos sí estaban, apliqué directo). Ya está documentado abajo y candidato a regla permanente (regla 4 de este archivo). Nada nuevo que sistematizar.
