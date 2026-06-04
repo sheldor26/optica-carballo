@@ -419,6 +419,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-dileri/DILERI_SBLK_S10_POL_f.jpg': 1.1,
   'rusty-dileri/DILERI_SIENNA_G._GREEN-perfil.jpg': 1.25,
   'rusty-dileri/DILERI_SIENNA_G._GREEN-frente.jpg': 1.1,
+
+  // Vulk Lady Piny — redondo femenino G-Flex + acetato. Perfil 1.15 / frente 1.0
+  // (default femenino como Beason/Vorez/Katleen). Pendiente chequeo visual.
+  // Casing del founder: 285 usa "Frente" mayúscula, el resto "frente".
+  'vulk-lady-piny/285-UFC0096 GB10S perfil.jpg': 1.15,
+  'vulk-lady-piny/285-UFC0096 GB10S Frente.jpg': 1.0,
+  'vulk-lady-piny/292-UFQ0028 GS9B perfil.jpg': 1.15,
+  'vulk-lady-piny/292-UFQ0028 GS9B frente.jpg': 1.0,
+  'vulk-lady-piny/SBLK-UFQ0003 SG16 perfil.jpg': 1.15,
+  'vulk-lady-piny/SBLK-UFQ0003 SG16 frente.jpg': 1.0,
+  'vulk-lady-piny/SBLK-UQ0178 BG26 pol perfil.jpg': 1.15,
+  'vulk-lady-piny/SBLK-UQ0178 BG26 pol frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
