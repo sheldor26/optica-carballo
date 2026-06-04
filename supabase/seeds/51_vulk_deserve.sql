@@ -21,7 +21,7 @@
 --   DESERVE-MBLK S10 POL- P.jpg / DESERVE-MBLK S10 POL- f.jpg   (primary del modelo)
 --   DESERVE-SBLK-GDARK-GREY p.jpg / DESERVE-SBLK-GDARK-GREY f.jpg
 --   DESERVE-MBLK-G3262-EMERALD p.jpg / DESERVE-MBLK-G3262-EMERALD f.jpg
---   Medidas.webp
+--   medidas.webp
 -- ============================================
 
 BEGIN;
@@ -94,7 +94,7 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-deserve'), (SELECT id FROM public.product_variants WHERE sku='112930'),
    'vulk-deserve/DESERVE-MBLK-G3262-EMERALD f.jpg', 'Anteojo de sol Vulk Deserve cuadrado grande vista frontal, negro mate con lente emerald verde espejada', 1500, 1000, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-deserve'), NULL,
-   'vulk-deserve/Medidas.webp', 'Esquema técnico de medidas Vulk Deserve: frente 146mm, lente 59x58mm, puente 16mm, varilla 145mm', 1500, 1500, 6, false)
+   'vulk-deserve/medidas.webp', 'Esquema técnico de medidas Vulk Deserve: frente 146mm, lente 59x58mm, puente 16mm, varilla 145mm', 1500, 1500, 6, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
