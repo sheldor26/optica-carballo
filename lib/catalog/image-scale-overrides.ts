@@ -431,6 +431,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-lady-piny/SBLK-UFQ0003 SG16 frente.jpg': 1.0,
   'vulk-lady-piny/SBLK-UQ0178 BG26 pol perfil.jpg': 1.15,
   'vulk-lady-piny/SBLK-UQ0178 BG26 pol frente.jpg': 1.0,
+
+  // Vulk Clems Receta — armazón ovalado ultra liviano. Perfil 1.15 / frente 1.0
+  // (default, como Misty/Xold/Katleen receta). Pendiente chequeo visual.
+  // Casing: CRY/SBLK en .jpg, MBLK en .webp.
+  'vulk-clems/CLEMS CRY P.jpg': 1.15,
+  'vulk-clems/CLEMS CRY F.jpg': 1.0,
+  'vulk-clems/CLEMS MBLK P.webp': 1.15,
+  'vulk-clems/CLEMS MBLK F.webp': 1.0,
+  'vulk-clems/CLEMS SBLK P.jpg': 1.15,
+  'vulk-clems/CLEMS SBLK F.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
