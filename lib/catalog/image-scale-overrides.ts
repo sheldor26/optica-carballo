@@ -414,11 +414,12 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Dileri — cuadrado femenino liviano. Founder 2026-06-04: iter 1 perfil
   // 1.15→1.20 / frente 1.0→1.05; iter 2 "+0.05 más" → perfil 1.25 / frente 1.10.
+  // Founder 2026-06-05: "-0.1 en todos los grids" → iter 3 perfil 1.15 / frente 1.0.
   // Ambas variantes.
-  'rusty-dileri/DILERI_SBLK_S10_POl_p.jpg': 1.25,
-  'rusty-dileri/DILERI_SBLK_S10_POL_f.jpg': 1.1,
-  'rusty-dileri/DILERI_SIENNA_G._GREEN-perfil.jpg': 1.25,
-  'rusty-dileri/DILERI_SIENNA_G._GREEN-frente.jpg': 1.1,
+  'rusty-dileri/DILERI_SBLK_S10_POl_p.jpg': 1.15,
+  'rusty-dileri/DILERI_SBLK_S10_POL_f.jpg': 1.0,
+  'rusty-dileri/DILERI_SIENNA_G._GREEN-perfil.jpg': 1.15,
+  'rusty-dileri/DILERI_SIENNA_G._GREEN-frente.jpg': 1.0,
 
   // Vulk Lady Piny — redondo femenino G-Flex + acetato. Perfil 1.15 / frente 1.0
   // (default femenino como Beason/Vorez/Katleen). Pendiente chequeo visual.
@@ -447,13 +448,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // chico en el frame → necesita más scale que Sotion/Eslav (1.6) aunque sea el mismo
   // tipo. Founder 2026-06-05: iter 1 (1.6/1.3) "sigue viéndose chica" → iter 2 perfil
   // 2.0 / frente 1.6 "quedó muy grande" → iter 3 (punto medio) 1.8/1.45 "un poco más
-  // chico" → iter 4 perfil 1.7 / frente 1.4.
-  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.7,
-  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.4,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.7,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.4,
-  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.7,
-  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.4,
+  // chico" → iter 4 1.7/1.4 → iter 5 1.6/1.35 → iter 6 "-0.1 más" perfil 1.5 / frente 1.25.
+  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.5,
+  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.25,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.5,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.25,
+  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.5,
+  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.25,
 };
 
 export function getImageScale(path: string | null | undefined): number {

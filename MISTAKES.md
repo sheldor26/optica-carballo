@@ -24,6 +24,14 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-05 — Declaré el scale del Esvep "FINAL / ✅ cerrado" sobre un juicio visual subjetivo; el founder lo reabrió al turno siguiente
+
+**Qué pasó**: tras 4 iteraciones de scale (1.6 → 2.0 → 1.8 → 1.7) el founder eligió 1.7 vía bracket. Marqué en CURRENT_STATE "iter 4 (FINAL)" + "✅ Scale cerrado" y commiteé. En el turno inmediato siguiente el founder dijo "proba 1.6". El label "FINAL" quedó desmentido en minutos y tuve que re-editar CURRENT_STATE para sacarlo (lo detectó el stop hook como inconsistencia).
+
+**Causa raíz**: traté una preferencia estética subjetiva (cuánto scale "se ve bien") como si fuera una decisión cerrable de una vez. El scale de una foto es un parámetro que el founder puede querer afinar varias veces mirando el grid en distintos momentos/dispositivos; no es un hecho verificable que se "cierra". Aplicar el sello "FINAL/✅ cerrado" a algo subjetivo crea inconsistencia apenas cambia de opinión y erosiona la confianza en esos sellos (relacionado con regla 12: ✅ debe ser verificable).
+
+**Regla preventiva**: para parámetros de juicio visual/estético (scale, crop, orden de fotos), NO usar "FINAL" ni "✅ cerrado" en CURRENT_STATE. Usar "valor actual: X (confirmado este turno, ajustable)". Reservar "cerrado" para hechos verificables (migración aplicada, test verde, variante en stock). Estado: 🟡 Mitigado.
+
 ## 2026-06-05 — El scale override (regla 15) NUNCA se aplicaba en la galería de la PDP — solo en las cards del grid
 
 **Qué pasó**: el founder reportó que tras subir el scale del Esvep de 1.15 → 1.6 → 2.0 "nada surtía efecto, se veía igual que al principio". Yo había verificado que el `scale()` SÍ se aplicaba... pero solo en el grid (`/deportivos`). El founder estaba mirando la **PDP** (página de producto), donde `components/product/product-gallery.tsx` renderizaba la imagen principal y los thumbs **sin** consultar `getImageScale()` — solo tenía el hover `group-hover:scale-[1.03]`. Resultado: en la PDP TODOS los productos se veían a tamaño natural, ignorando el override, desde siempre.
