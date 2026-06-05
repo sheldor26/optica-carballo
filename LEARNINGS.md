@@ -22,6 +22,18 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-05 — "Sigue chica" no siempre es scale mal: verificar que el `scale()` se aplica ANTES de subirlo; las fotos 2:1 necesitan más scale que el default del tipo
+
+**Contexto**: subí el Esvep envolvente a 1.6/1.3 (el valor que funcionó en Sotion/Eslav) y el founder dijo "sigue viéndose chica". Antes de seguir tirando números al azar, diagnostiqué.
+
+**Diagnóstico que funcionó** (2 pasos, ~2 min):
+1. **¿El path matchea?** Comparé el `storage_path` real de la primaria en la DB contra la clave del override carácter por carácter (clave: nombres con guiones múltiples como `ESVEP-MBLK--S10-POL---perfil.jpg` se prestan a typos). Matcheaba.
+2. **¿El scale se aplica?** `curl` al grid + `grep -o 'scale([0-9.]*)'`: confirmé que `scale(1.6)` estaba en el HTML. O sea el override andaba; NO era bug.
+
+**La causa real**: la foto del Esvep es **muy ancha (1000×491, relación 2:1)**. En una card aspect 3/2 con `object-contain`, una foto 2:1 entra por ancho y deja barras arriba/abajo → el anteojo ocupa ~73% de la altura ANTES del scale, y si además está chico dentro del cuadro, el default del tipo ("envolvente" = 1.6) no alcanza. Subió a 2.0/1.6.
+
+**Regla**: cuando el founder dice "se ve chica" tras un scale, (1) NO asumir que el número está mal — primero verificá que el `scale()` aparece en el HTML renderizado y que el path matchea la clave del override; (2) mirá el aspect ratio de la foto: las 2:1 (anchas) necesitan más scale que las 3:2 para el mismo tamaño visual de anteojo. El "default por tipo de armazón" es punto de partida, no garantía. Ver [[el-sizes-de-next-image-debe-coincidir-con-las-columnas-reales-del-grid]].
+
 ## 2026-06-05 — Carga parcial + completar incremental cuando una variante tiene input sucio (Rusty Esvep)
 
 **Contexto**: el Esvep tenía 3 variantes pero una (SBLK no-pol) vino con SKU duplicado (112881, igual que la SBLK POL) → habría roto el `UNIQUE(sku)`. Las otras 2 estaban limpias.
