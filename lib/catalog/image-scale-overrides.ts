@@ -443,13 +443,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-clems/CLEMS SBLK P.jpg': 1.25,
   'vulk-clems/CLEMS SBLK F.jpg': 1.1,
 
-  // Rusty Esvep — envolvente deportivo (como Eslav/Sotion/CCCP). Baseline 1.15/1.0
-  // CONSERVADOR; los envolventes suelen necesitar bump (Eslav 1.65, Sotion 1.6) —
-  // pendiente chequeo visual del founder. Naming con guiones múltiples del founder.
-  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.15,
-  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.0,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.15,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.0,
+  // Rusty Esvep — envolvente deportivo. Founder 2026-06-05: "considerablemente más
+  // chico que el resto" → perfil 1.6 / frente 1.3 (igual que Sotion 1.6 / Eslav 1.65;
+  // las fotos de envolvente dejan el anteojo chico en el frame). Incluye la SBLK no-pol.
+  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.6,
+  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.3,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.6,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.3,
+  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.6,
+  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.3,
 };
 
 export function getImageScale(path: string | null | undefined): number {
