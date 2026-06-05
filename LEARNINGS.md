@@ -22,6 +22,18 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-05 — Cómo cambiar la variante predeterminada (y la imagen del grid) de un producto ya cargado
+
+**Contexto**: founder pidió que el Vulk Clems abriera con la variante MBLK (no la CRY que estaba primera) y que la card del grid mostrara la foto del MBLK.
+
+**Qué funciona**: la "variante por default" sale de `toProductCardData` → `defaultVariant = sortedInStock[0]` (la primera CON stock ordenada por `sort_order`). Y la imagen del grid = la primaria de esa variante. Entonces, para cambiar el default de un producto ya cargado, alcanza con **2 UPDATEs**:
+1. `product_variants.sort_order = 1` en la variante deseada (y reacomodar las demás 2,3…). Esto la vuelve el `defaultVariant`.
+2. `product_images.is_primary = true` en su foto de perfil (y `false` en la de la vieja default), para que cualquier path que use el flag `is_primary` también la elija.
+
+No hace falta tocar código — es 100% data. Verificable: `curl /<categoria>` y grepear el nombre de archivo de la foto en la card.
+
+**Bonus (scale por variante divergente)**: el override de scale es **por-path**, así que variantes del MISMO producto pueden tener scales distintos cuando sus fotos vienen de orígenes/tamaños distintos (Clems: MBLK en .webp a 1.15 vs CRY/SBLK en .jpg a 1.25, porque el anteojo se veía más chico en esas 2). No asumir scale uniforme por producto si las fotos no son homogéneas. Ver [[stock-siempre-ml]].
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (seed Rusty Dileri, no aplicado)
 
 Constancia de cierre (regla 11): sin learning nuevo. Carga estándar de 2 MLAs simples (cuadrado femenino), bloqueada esperando fotos (carpeta vacía + CDN 400) → seed listo, no aplicado. El patrón "hold hasta CDN 200" ya está documentado (caso Deserve). Nada nuevo.
