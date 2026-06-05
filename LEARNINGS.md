@@ -10012,6 +10012,28 @@ Cuando un endpoint admin sin-auth devuelve `no_integration` / `not_found` en loc
 - Debugging de integraciones cuya credencial/estado vive en la DB de prod.
 - NO usar para operaciones de ESCRITURA contra prod sin confirmar con founder — esto fue solo lectura.
 
+## 2026-06-05 — Bracketing de scale en vez de iterar un valor por vez
+
+**Categoría**: UX de catálogo / proceso de ajuste de imágenes
+**Confianza**: 🟡 Media (observación de proceso, no validada con segundo caso aún)
+
+### Qué pasó
+
+El scale del Esvep tomó 4 iteraciones de ida y vuelta con el founder: 1.6 ("chica") → 2.0 ("muy grande") → 1.8 ("un poco más chico") → 1.7. Cada ronda fue un solo valor, mirar el grid, ajustar. Lento de converger y cada ronda dispara un turno completo.
+
+### Qué hubiera funcionado mejor
+
+Cuando un scale "rebota" (chica → grande), en vez de proponer un único valor intermedio y esperar, **ofrecer un bracket visual**: "te dejo 1.65 / 1.75 / 1.85, ¿cuál?". El founder elige una vez y converge en 1 ronda en lugar de 3. Especialmente para fotos de aspect ratio raro (Esvep 1000×491 2:1) donde el scale "correcto" no es predecible desde el tipo de producto.
+
+### Regla preventiva
+
+A la 2ª iteración de scale del mismo producto (cuando ya rebotó entre chico y grande), cambiar de "propongo un valor" a "propongo un bracket de 3 y elegís". No seguir iterando de a uno.
+
+### Cuándo aplicar
+
+- Ajuste de `image-scale-overrides.ts` que ya tuvo ≥2 rondas sin converger.
+- NO aplica a la primera propuesta de scale (ahí va el valor único comparado contra el grid, regla 15 sub-regla).
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

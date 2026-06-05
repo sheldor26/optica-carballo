@@ -446,13 +446,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Rusty Esvep — envolvente deportivo. Foto MUY ancha (1000×491, 2:1) con el anteojo
   // chico en el frame → necesita más scale que Sotion/Eslav (1.6) aunque sea el mismo
   // tipo. Founder 2026-06-05: iter 1 (1.6/1.3) "sigue viéndose chica" → iter 2 perfil
-  // 2.0 / frente 1.6 "quedó muy grande" → iter 3 (punto medio) perfil 1.8 / frente 1.45.
-  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.8,
-  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.45,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.8,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.45,
-  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.8,
-  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.45,
+  // 2.0 / frente 1.6 "quedó muy grande" → iter 3 (punto medio) 1.8/1.45 "un poco más
+  // chico" → iter 4 perfil 1.7 / frente 1.4.
+  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.7,
+  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.4,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.7,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.4,
+  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.7,
+  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.4,
 };
 
 export function getImageScale(path: string | null | undefined): number {
