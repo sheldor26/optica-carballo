@@ -24,6 +24,17 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-05 — El scale override (regla 15) NUNCA se aplicaba en la galería de la PDP — solo en las cards del grid
+
+**Qué pasó**: el founder reportó que tras subir el scale del Esvep de 1.15 → 1.6 → 2.0 "nada surtía efecto, se veía igual que al principio". Yo había verificado que el `scale()` SÍ se aplicaba... pero solo en el grid (`/deportivos`). El founder estaba mirando la **PDP** (página de producto), donde `components/product/product-gallery.tsx` renderizaba la imagen principal y los thumbs **sin** consultar `getImageScale()` — solo tenía el hover `group-hover:scale-[1.03]`. Resultado: en la PDP TODOS los productos se veían a tamaño natural, ignorando el override, desde siempre.
+
+**Causa raíz**: el sistema de scale se cableó en la **pipeline de datos de las cards** (`ProductCardData.primaryImageScale` ← `getImageScale` en `to-product-card-data.ts`), pero la PDP no usa esa pipeline: `ProductGallery` recibe `ProductImage[]` crudo y lo renderiza directo. La regla 15 dice "el scale aplica en TODAS las superficies (PDP incluida)", pero la implementación cubrió las cards y se olvidó de la galería. Mismo patrón que el bug de precio OOS (regla transversal aplicada superficie-por-superficie, una quedó afuera).
+
+**Regla preventiva**: una transformación visual que debe aplicar a "todas las superficies de imagen de producto" (regla 15) se cablea por **componente de render**, no solo en la pipeline de datos. Superficies a enumerar SIEMPRE: cards del grid (`product-card.tsx` vía `to-product-card-data`), **galería de la PDP (`product-gallery.tsx`)**, quick-view, lightbox, related, favoritos, recently-viewed. Al tocar/auditar el scale: `grep -rl "getImageScale\|<Image" components/` y confirmar que cada render de foto de producto lo consulta. Verificación cross-surface: `grep -oc 'scale(N)'` en grid + PDP, no solo en un grid.
+
+**Fix aplicado**: `product-gallery.tsx` ahora aplica `getImageScale(storage_path)` en la imagen principal (en un wrapper, para coexistir con el hover) y en cada thumb. Verificado scale(2) del Esvep en 6 superficies (todos-sol, deportivos, polarizados, rusty, hombre, PDP). El lightbox queda a tamaño natural a propósito (es el zoom para inspeccionar la foto real).
+
+
 ## 2026-06-04 — Revisado, SIN NOVEDAD (seed Rusty Dileri, no aplicado)
 
 Constancia de cierre (regla 11): sin error nuevo. Seed armado y en hold esperando fotos, siguiendo el flujo documentado. Nada que corregir.

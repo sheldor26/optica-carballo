@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { ImageLightbox } from '@/components/product/image-lightbox';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
@@ -90,6 +91,9 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
 
   const active = sorted[activeIdx] ?? sorted[0]!;
   const activeUrl = getProductImageUrl(active.storage_path);
+  // Mismo scale override que el grid (regla 15): la PDP debe verse igual que la
+  // card. Se aplica en un wrapper para coexistir con el hover scale de la imagen.
+  const activeScale = getImageScale(active.storage_path);
 
   return (
     // Sticky en desktop: la gallery sigue al scroll mientras user lee la info
@@ -108,7 +112,10 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
             vienen con buen margen propio. Iter previo (p-8) seguía dando
             sensación de foto chica vs contenedor. Ahora la foto ocupa
             ~90% del cuadrado disponible. */}
-        <div className="relative h-full w-full">
+        <div
+          className="relative h-full w-full"
+          style={{ transform: `scale(${activeScale})` }}
+        >
           <Image
             src={activeUrl}
             alt={active.alt_text}
@@ -160,6 +167,7 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
                        desktop/retina (el visor no usa este sizes → ahí nítido). */
                     sizes="(min-width: 768px) 240px, 30vw"
                     className="object-contain"
+                    style={{ transform: `scale(${getImageScale(img.storage_path)})` }}
                   />
                 </button>
               );
