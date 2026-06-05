@@ -442,6 +442,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-clems/CLEMS MBLK F.webp': 1.0,
   'vulk-clems/CLEMS SBLK P.jpg': 1.25,
   'vulk-clems/CLEMS SBLK F.jpg': 1.1,
+
+  // Rusty Esvep — envolvente deportivo (como Eslav/Sotion/CCCP). Baseline 1.15/1.0
+  // CONSERVADOR; los envolventes suelen necesitar bump (Eslav 1.65, Sotion 1.6) —
+  // pendiente chequeo visual del founder. Naming con guiones múltiples del founder.
+  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.15,
+  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.0,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.15,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
