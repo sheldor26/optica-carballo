@@ -22,6 +22,16 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-05 — Carga parcial + completar incremental cuando una variante tiene input sucio (Rusty Esvep)
+
+**Contexto**: el Esvep tenía 3 variantes pero una (SBLK no-pol) vino con SKU duplicado (112881, igual que la SBLK POL) → habría roto el `UNIQUE(sku)`. Las otras 2 estaban limpias.
+
+**Qué funcionó**: NO bloquear todo el producto por una variante con dato sucio. Cargué las 2 variantes limpias (producto live, vendible) y dejé la 3ª pendiente, flagueada explícita en CURRENT_STATE/CLOUD_APPLIED. Cuando el founder pasó el SKU real (112880), la completé **incremental** con un solo MCP: `UPDATE products` (descripción 2→3 variantes) + `INSERT variant` + `INSERT images`, sin reaplicar todo el seed. Después sincronicé el seed en disco para reproducibilidad.
+
+**Cómo aplicar**: si N-1 variantes están limpias y 1 tiene input ambiguo (SKU dup, foto sin mapear, medida faltante), cargá las limpias YA y dejá la dudosa como TODO flagueado. Completá con UPDATE/INSERT incremental cuando llegue el dato. Da valor inmediato y evita que un dato sucio frene todo el producto. Ver [[stock-siempre-ml]].
+
+**Sub-nota (límite de imágenes del harness)**: cuando la conversación ya tiene MUCHAS imágenes, el harness no deja abrir imágenes nuevas (error "many-image requests", aunque la imagen sea <2000px). Si necesitás ver una foto para resolver una ambigüedad y no podés, asigná por mejor-criterio y **flagueá explícito** que fue a ojo para que el founder confirme — no inventes silenciosamente (counter del mistake de fotos del CCCP).
+
 ## 2026-06-05 — Cómo cambiar la variante predeterminada (y la imagen del grid) de un producto ya cargado
 
 **Contexto**: founder pidió que el Vulk Clems abriera con la variante MBLK (no la CRY que estaba primera) y que la card del grid mostrara la foto del MBLK.
