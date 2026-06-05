@@ -443,15 +443,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-clems/CLEMS SBLK P.jpg': 1.25,
   'vulk-clems/CLEMS SBLK F.jpg': 1.1,
 
-  // Rusty Esvep — envolvente deportivo. Founder 2026-06-05: "considerablemente más
-  // chico que el resto" → perfil 1.6 / frente 1.3 (igual que Sotion 1.6 / Eslav 1.65;
-  // las fotos de envolvente dejan el anteojo chico en el frame). Incluye la SBLK no-pol.
-  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.6,
-  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.3,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.6,
-  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.3,
-  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.6,
-  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.3,
+  // Rusty Esvep — envolvente deportivo. Foto MUY ancha (1000×491, 2:1) con el anteojo
+  // chico en el frame → necesita más scale que Sotion/Eslav (1.6) aunque sea el mismo
+  // tipo. Founder 2026-06-05: iter 1 (1.6/1.3) "sigue viéndose chica" → iter 2 perfil
+  // 2.0 / frente 1.6. Incluye la SBLK no-pol. Si recorta mucho las patillas, bajar a 1.85/1.5.
+  'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 2.0,
+  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.6,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 2.0,
+  'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.6,
+  'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 2.0,
+  'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.6,
 };
 
 export function getImageScale(path: string | null | undefined): number {
