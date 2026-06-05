@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-05 — Diagnóstico de "el cambio no surte efecto": separar "no se aplica" de "se aplica pero el valor es chico", y verificar POR SUPERFICIE
+
+**Contexto**: el founder reportó que subir el scale del Esvep (1.15→1.6→2.0) "no surtía efecto, se veía igual que al principio". Tentación: seguir subiendo el número a ciegas. En vez de eso, el diagnóstico que funcionó:
+
+1. **Confirmar que el override se aplica** antes de cambiar el valor: `grep -o 'scale([0-9.]*)'` en el HTML renderizado del grid → apareció `scale(1.6)` → el override SÍ funcionaba ahí. Esto descartó "el valor es chico" como única causa.
+2. **Verificar el path exacto** DB vs override key (con nombres de archivo ruidosos —guiones múltiples— es fácil un mismatch silencioso). Matcheaban → no era eso.
+3. **Verificar SUPERFICIE POR SUPERFICIE**, no una sola: corrí el mismo `grep -oc 'scale(2)'` en todos-sol, deportivos, polarizados, rusty, hombre Y la PDP. La PDP daba 0 → ahí estaba el agujero (la galería no consultaba `getImageScale`).
+4. **Preguntar/inferir qué pantalla mira el founder**: estaba en la PDP, justo la superficie sin override.
+
+**Cómo aplicar**: cuando un cambio "no se ve", NO subir el valor a ciegas. Primero `grep` el HTML para confirmar si la transformación está presente; si está en algunas superficies y en otras no, el bug es de cobertura (falta cablearla en un componente), no de valor. Verificar SIEMPRE el set completo de superficies de la regla 15, incluida la PDP. Ver MISTAKES 2026-06-05 (el fix concreto). Relacionado con [[stock-siempre-ml]] (verificar en runtime, no asumir).
+
 ## 2026-06-05 — "Sigue chica" no siempre es scale mal: verificar que el `scale()` se aplica ANTES de subirlo; las fotos 2:1 necesitan más scale que el default del tipo
 
 **Contexto**: subí el Esvep envolvente a 1.6/1.3 (el valor que funcionó en Sotion/Eslav) y el founder dijo "sigue viéndose chica". Antes de seguir tirando números al azar, diagnostiqué.
