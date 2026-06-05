@@ -62,12 +62,13 @@ ON CONFLICT (slug) DO UPDATE SET
 
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), '123036',
-   '{"frame_color":"transparente","model_code":"CRY-GUN OPTICS"}'::jsonb,
-   8341002, 5, true, 1, 'MLA1436023889', '180952431090'),
+  -- MBLK = variante predeterminada (sort 1) por pedido del founder (2026-06-05).
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), '123030',
    '{"frame_color":"negro-mate","model_code":"MBLK-BLUE OPTICS"}'::jsonb,
-   8341002, 4, true, 2, 'MLA1436023889', '180952431086'),
+   8341002, 4, true, 1, 'MLA1436023889', '180952431086'),
+  ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), '123036',
+   '{"frame_color":"transparente","model_code":"CRY-GUN OPTICS"}'::jsonb,
+   8341002, 5, true, 2, 'MLA1436023889', '180952431090'),
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), '123031',
    '{"frame_color":"negro-brillo","model_code":"SBLK-GUN OPTICS"}'::jsonb,
    8341002, 2, true, 3, 'MLA1436023889', '180952431088')
@@ -76,15 +77,16 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- Imágenes. Primary del modelo: CRY perfil. medidas SIEMPRE última (sort 9).
+-- Imágenes. Primary del modelo: MBLK perfil (founder lo puso predeterminado 2026-06-05).
+-- medidas SIEMPRE última (sort 9).
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), (SELECT id FROM public.product_variants WHERE sku='123036'),
-   'vulk-clems/CLEMS CRY P.jpg', 'Armazón de receta Vulk Clems ovalado vista lateral, transparente con patillas gunmetal', 1500, 1000, 0, true),
+   'vulk-clems/CLEMS CRY P.jpg', 'Armazón de receta Vulk Clems ovalado vista lateral, transparente con patillas gunmetal', 1500, 1000, 0, false),
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), (SELECT id FROM public.product_variants WHERE sku='123036'),
    'vulk-clems/CLEMS CRY F.jpg', 'Armazón de receta Vulk Clems ovalado vista frontal, transparente con patillas gunmetal', 1500, 1000, 1, false),
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), (SELECT id FROM public.product_variants WHERE sku='123030'),
-   'vulk-clems/CLEMS MBLK P.webp', 'Armazón de receta Vulk Clems ovalado vista lateral, negro mate con patillas azul metalizadas', 1500, 1000, 2, false),
+   'vulk-clems/CLEMS MBLK P.webp', 'Armazón de receta Vulk Clems ovalado vista lateral, negro mate con patillas azul metalizadas', 1500, 1000, 2, true),
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), (SELECT id FROM public.product_variants WHERE sku='123030'),
    'vulk-clems/CLEMS MBLK F.webp', 'Armazón de receta Vulk Clems ovalado vista frontal, negro mate con patillas azul metalizadas', 1500, 1000, 3, false),
   ((SELECT id FROM public.products WHERE slug='vulk-clems-receta'), (SELECT id FROM public.product_variants WHERE sku='123031'),

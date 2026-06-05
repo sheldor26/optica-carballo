@@ -432,15 +432,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-lady-piny/SBLK-UQ0178 BG26 pol perfil.jpg': 1.15,
   'vulk-lady-piny/SBLK-UQ0178 BG26 pol frente.jpg': 1.0,
 
-  // Vulk Clems Receta — armazón ovalado ultra liviano. Perfil 1.15 / frente 1.0
-  // (default, como Misty/Xold/Katleen receta). Pendiente chequeo visual.
+  // Vulk Clems Receta — armazón ovalado ultra liviano. MBLK queda 1.15/1.0; founder
+  // 2026-06-05 reportó que CRY y SBLK se veían más chicas (sus fotos tienen el
+  // anteojo más chico en el frame) → CRY/SBLK perfil 1.25 / frente 1.10 para emparejar.
   // Casing: CRY/SBLK en .jpg, MBLK en .webp.
-  'vulk-clems/CLEMS CRY P.jpg': 1.15,
-  'vulk-clems/CLEMS CRY F.jpg': 1.0,
+  'vulk-clems/CLEMS CRY P.jpg': 1.25,
+  'vulk-clems/CLEMS CRY F.jpg': 1.1,
   'vulk-clems/CLEMS MBLK P.webp': 1.15,
   'vulk-clems/CLEMS MBLK F.webp': 1.0,
-  'vulk-clems/CLEMS SBLK P.jpg': 1.15,
-  'vulk-clems/CLEMS SBLK F.jpg': 1.0,
+  'vulk-clems/CLEMS SBLK P.jpg': 1.25,
+  'vulk-clems/CLEMS SBLK F.jpg': 1.1,
 };
 
 export function getImageScale(path: string | null | undefined): number {
