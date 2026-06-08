@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Trigger BEFORE INSERT que inserta en una tabla hija con FK al propio registro → FK violation en cada INSERT
+
+**Estado**: ✅ Cerrado (fix estructural aplicado)
+
+**Qué pasó**: el trigger del tracker de pedidos (`on_order_status_change`, migración 20260601000000) era `BEFORE INSERT OR UPDATE OF status` y su función insertaba en `order_status_events` (que tiene FK `order_id → orders.id`) usando `NEW.id`. En un **BEFORE INSERT la fila de `orders` todavía no existe**, así que el INSERT en la tabla hija violaba el FK. **Cada creación de orden por el checkout fallaba** con `violates foreign key constraint`. Se descubrió recién en la 1ra prueba e2e real del checkout — estuvo **una semana latente** porque (a) los cambios de status manuales son UPDATE (la fila ya existe → FK OK) y (b) nunca se había creado una orden por el flujo (checkout apagado).
+
+**Causa raíz**: poner en un trigger **BEFORE INSERT** una operación que depende de que el registro **ya exista** (insertar en una tabla hija con FK al registro). BEFORE corre antes de materializar la fila → cualquier FK hacia ella falla. El motivo de usar BEFORE era legítimo (poder modificar `NEW.*_at`), pero se mezcló con una responsabilidad que requiere AFTER.
+
+**Regla preventiva**: en triggers de fila, **separar por timing según la necesidad**: lo que MODIFICA `NEW` va en BEFORE; lo que INSERTA en tablas hijas con FK al registro (o cualquier cosa que necesite que la fila ya exista) va en **AFTER**. Si una función hace ambas, partirla en dos triggers (BEFORE + AFTER). Y: **probar el INSERT real, no solo el UPDATE** — un trigger `INSERT OR UPDATE` puede pasar el UPDATE y romper el INSERT (o viceversa). Conecta con la regla de validar el camino completo end-to-end antes de dar por hecho un flujo.
+
 ## 2026-06-08 — Comando "guardar si no existe" que no actualiza el valor existente → token MP viejo quedó en `.env.local`
 
 **Estado**: 🟡 Mitigado
