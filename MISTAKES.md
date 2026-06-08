@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Comando "guardar si no existe" que no actualiza el valor existente → token MP viejo quedó en `.env.local`
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: para guardar el `MP_ACCESS_TOKEN` nuevo (de prueba, `APP_USR-...`) en `.env.local` usé `grep -q "^MP_ACCESS_TOKEN=" && echo "ya estaba" || append`. Como YA había un `MP_ACCESS_TOKEN` (un `TEST-...` viejo, de otra app/proyecto), el comando solo imprimió "ya estaba" y **no reemplazó el valor**. El smoke corrió con el token equivocado. Lo cacé porque `mp-smoke.ts` imprime el **prefijo** del token (`TEST-` vs `APP_USR-`): vi "TEST-" cuando esperaba "APP_USR-". Reemplazado con `sed`.
+
+**Causa raíz**: lógica **create-if-not-exists** cuando la intención era **upsert** (crear *o actualizar*). Un valor stale es peor que uno ausente: parece configurado pero está mal, y falla silencioso.
+
+**Regla preventiva**: al setear una credencial en `.env.local` que puede ya existir, usar **upsert** (reemplazar la línea con `sed`, o reescribir) — nunca append-if-missing. Y validar el **valor**, no solo la presencia: el smoke debe imprimir metadata identificable (prefijo, longitud, `live_mode`) **sin** exponer el secreto, justamente para detectar un valor equivocado. Acá esa metadata salvó el día.
+
 ## 2026-06-08 — Webhook URL puesta en "Redirect URIs" en vez de "Notificaciones callbacks URL" (config MP, cazado a tiempo)
 
 **Estado**: 🟡 Mitigado
