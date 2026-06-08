@@ -84,11 +84,11 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 - **Versión**: 1.0
 - **Estado**: 🟢 Invocado con buen resultado
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-06-01
-- **Invocaciones estimadas (último período)**: 1
-- **Casos de éxito**: 2026-06-01 — consulta sobre extracción de cuotas de MP. Respuesta excelente: endpoint correcto (`/v1/payment_methods/installments`), distinción honesta entre lo que sabe con certeza vs lo que pidió verificar con llamada real, flagueó el riesgo legal del hardcode "3 cuotas sin interés" (Ley 24.240), y dio recomendación de arquitectura escalonada (a/b/c) ajustada a la escala real (30-40 productos → opción config, no API). Cero alucinación de endpoints.
-- **Casos donde requirió corrección**: -
-- **Notas**: Conocimiento de MP, AFIP, Andreani cargado. Primera invocación real validó la calidad. El patrón "decí explícito qué no sabés con certeza" funcionó muy bien para una consulta de compliance.
+- **Última revisión**: 2026-06-08
+- **Invocaciones estimadas (último período)**: 2
+- **Casos de éxito**: (1) 2026-06-01 — consulta sobre extracción de cuotas de MP. Respuesta excelente: endpoint correcto (`/v1/payment_methods/installments`), distinción honesta entre lo que sabe con certeza vs lo que pidió verificar con llamada real, flagueó el riesgo legal del hardcode "3 cuotas sin interés" (Ley 24.240), recomendación de arquitectura escalonada. Cero alucinación de endpoints. (2) 2026-06-08 — paso a paso para conseguir/configurar credenciales MP Checkout Pro (crear app, TEST vs PROD, usuarios+tarjetas de prueba, webhook + signature secret, checklist de prod, gotchas argentinos cuotas/MODO/fiscal). El procedimiento de credenciales fue muy bueno y útil.
+- **Casos donde requirió corrección**: 2026-06-08 — el agente intentó "auditar el código MP" pero su shell se reinició a mitad de ejecución y **alucinó el estado del codebase**: reportó rutas inexistentes (`lib/mercadopago/`, `app/api/checkout/route.ts`) y afirmó que el webhook era un "stub con `void payload` que no confirma pagos". FALSO — el código real está en `lib/mp/` y el webhook procesa pagos completos (verificado por mí con grep antes de pasarle nada al founder). Si no lo verificaba, le pasaba al founder un "heads-up" alarmante y falso. Lección: el agente NO debería afirmar estado de código tras un fallo de entorno; y el orquestador debe verificar afirmaciones de subagente sobre el código que contradicen conocimiento directo.
+- **Notas**: Conocimiento de MP, AFIP, Andreani cargado. Fuerte en procedimientos/trámites de proveedores argentinos (su fortaleza real, vía web). Debilidad detectada: las herramientas de FS pueden darle output errático tras reboot → sus lecturas de archivos son menos confiables que su conocimiento de dominio. Preferir usarlo para el "cómo del trámite", y verificar localmente cualquier afirmación suya sobre el código.
 
 ## ai-features-engineer
 

@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Verificar las afirmaciones de un subagente sobre el código antes de propagarlas
+
+**Contexto**: invoqué `argentine-ecom` para el trámite de credenciales de Mercado Pago. El procedimiento (su fortaleza real, vía web) fue excelente y útil. Pero cuando intentó "auditar el código" su shell se reinició a mitad y **alucinó**: reportó rutas inexistentes (`lib/mercadopago/`, `app/api/checkout/route.ts`) y afirmó que el webhook era "un stub con `void payload` que no confirma pagos". Yo había leído y editado ese webhook minutos antes — SÍ procesa pagos (marca `paid`, manda emails). Verifiqué con `ls`/`grep` antes de pasarle nada al founder; era falso.
+
+**Por qué importa**: pasar ese "heads-up" sin verificar le habría dado al founder información **alarmante y falsa** ("tu webhook no confirma pagos") justo cuando va a activar los pagos — erosiona confianza y manda a debuggear algo que funciona.
+
+**Regla**: el output de un subagente es un **insumo, no verdad**. Si una afirmación sobre el código (a) contradice lo que vi directamente o (b) es barata de checkear con `ls`/`grep`, verificar antes de actuar o propagar. Los agentes con web son fuertes en dominio/trámites y **erráticos en filesystem tras fallos de entorno** (reboot) — usar su conocimiento de dominio, no su lectura de archivos. Registrado también en AGENT_PERFORMANCE.
+
 ## 2026-06-08 — Al agregar un estado/método nuevo, auditar TODAS las superficies que lo muestran (UI cliente + admin + emails)
 
 **Contexto**: agregué un 3er método de envío (`branch` = sucursal del Correo). Al "cerrar" el display, en vez de tocar solo el detalle de pedido del cliente (lo que se pidió), grepié `shipping_method` en todo el repo y cubrí cada superficie que muestra el método: detalle cliente, detalle admin, email de confirmación al cliente, email de notificación al admin.
