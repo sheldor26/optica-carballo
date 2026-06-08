@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — La prueba e2e REAL destapa bugs latentes que typecheck/lint/build no ven (y un error específico = diagnóstico directo)
+
+**Contexto**: el trigger `BEFORE INSERT` roto (insertaba en `order_status_events` con FK a una orden que aún no existía) **pasó typecheck, lint, build y estuvo una semana sin detectarse**. Lo destapó la **primera compra de prueba real (e2e)** en el sitio. Por qué se escondió: (a) las herramientas estáticas no ejecutan lógica de DB/runtime; (b) el camino que fallaba (INSERT de orden vía checkout) nunca se había ejecutado (checkout OFF); (c) los UPDATE manuales de status (regente) sí funcionaban → falsa confianza de "el tracking anda".
+
+**Segundo acierto — diagnóstico inmediato por error específico**: el mensaje de Postgres nombró tabla + constraint exactos (`violates foreign key constraint order_status_events_order_id_fkey`) → fui directo a la migración del trigger, confirmé el estado real en el cloud (verificar antes de tocar prod) y armé el fix en minutos. Un error genérico ("no se pudo crear la orden") habría costado mucho más.
+
+**Regla**: antes de activar un flujo crítico (pagos, alta de datos, facturación), correr el **camino completo con datos reales** al menos una vez — `typecheck`/`lint`/`build` verdes NO significan "el flujo anda". Y preservar/propagar errores específicos (nombres de constraint, IDs) hasta los logs, porque colapsan el tiempo de diagnóstico. Conecta con la entrada de MISTAKES del mismo día (BEFORE vs AFTER en triggers).
+
 ## 2026-06-08 — Un smoke de credenciales debe imprimir METADATA (no el secreto): caza valores stale/equivocados
 
 **Contexto**: `mp-smoke.ts` imprime el **prefijo** del token (`TEST-` / `APP_USR-`), su **longitud** y el **`live_mode`** — nunca el secreto. Cuando un `MP_ACCESS_TOKEN` viejo (`TEST-...`, de otro proyecto) quedó sin reemplazar en `.env.local`, el smoke mostró prefijo `"TEST-"` cuando yo esperaba `"APP_USR-"` → detecté al instante que estaba usando la credencial **equivocada** (no ausente: válida pero de otro lado).
