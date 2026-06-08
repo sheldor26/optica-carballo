@@ -24,6 +24,26 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Credenciales reales de API pegadas en `.env.example` (archivo trackeado) en vez de `.env.local` (cazado antes de git)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: integrando la API MiCorreo, el founder (no-técnico) pegó las credenciales reales (`MICORREO_API_USER`, `MICORREO_API_PASSWORD`, `MICORREO_CUSTOMER_ID`) directamente en `.env.example` — el template que **SÍ se commitea** al repo — y además las repitió en texto plano al final del archivo. Lo detecté en el system-reminder del diff. Verifiqué que NO habían llegado a git (`git show HEAD:.env.example | grep` limpio; `.gitignore` cubre `.env*.local` y `.env`). Restauré los placeholders en `.env.example`, moví las credenciales a `.env.local` (gitignored), confirmé con `git check-ignore .env.local` y un grep de que el template quedó sin secretos.
+
+**Causa raíz**: el founder es no-técnico (declarado en CLAUDE.md) y no distingue `.env.example` (template público, se commitea) de `.env.local` (secretos, gitignored) — para él son "el archivo de las variables". Cuando le pido "cargá las credenciales", el nombre del archivo no es obvio. Si yo no intercepto, un secreto puede entrar al repo (que está en GitHub, aunque sea privado) y quedar en la historia de git para siempre — caro de revertir (rewrite history + rotar credenciales).
+
+**Regla preventiva**: cuando pida credenciales/secretos al founder, (1) **decir explícito el archivo destino**: "pegalas en `.env.local` (NO en `.env.example`)", o directamente ofrecer crearlo yo; (2) **después de cualquier turno que toque env**, antes de proponer commit, correr `git show HEAD:.env.example` + grep de secretos conocidos y `git check-ignore` del archivo de secretos; (3) **nunca** dejar valores reales en archivos trackeados — `.env.example` es solo placeholders (`your-xxx`, `00xxxxxxxx`). Conecta con regla core 7 (no tocar configs de seguridad sin verificar dos veces). Nota: las credenciales pasaron por el chat → recomendar al founder rotarlas como higiene (no urgente porque no se filtraron a git).
+
+## 2026-06-06 — Casi shippeo "3 cuotas sin interés" en el video de producto sin verificar la política (near-miss, cazado a tiempo)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: armando el frame de precio del video HyperFrames (Rusty Esvep), escribí `priceNote: 'Precio final · 3 cuotas sin interés'` por inercia de "copy vendedor". Lo rendericé y recién en el review visual me pregunté si era verdad. Grep en `BUSINESS_POLICIES.md` → no hay ninguna política de cuotas confirmada. Lo saqué antes de cerrar (quedó solo "Precio final", con comentario en `data.js` de no afirmar promos sin confirmar).
+
+**Causa raíz**: los assets de marketing (videos, imágenes, copy de redes) son tan "contenido del negocio" como las páginas del sitio, pero es fácil tratarlos como decorativos y meterles claims de venta (cuotas, descuentos, "el mejor", beneficios) sin pasarlos por las reglas duras del negocio (regla dura #3 "no prometer lo que no podemos cumplir" + #7 "trust signals reales, no inventados"). El riesgo es peor en video porque queda "lindo" y se publica sin segundo filtro.
+
+**Regla preventiva**: **todo claim numérico/comercial en un asset de marketing (cuotas, % off, plazos de envío, superlativos, beneficios técnicos) se verifica contra `BUSINESS_POLICIES.md` ANTES de renderizar/publicar.** Si no está documentado, no se afirma. Default seguro = solo datos verificables (precio real del seed, specs reales, "envío a todo el país", "óptica matriculada"). Las reglas duras del negocio aplican a los videos/redes igual que al sitio.
+
 ## 2026-06-05 — Declaré el scale del Esvep "FINAL / ✅ cerrado" sobre un juicio visual subjetivo; el founder lo reabrió al turno siguiente
 
 **Qué pasó**: tras 4 iteraciones de scale (1.6 → 2.0 → 1.8 → 1.7) el founder eligió 1.7 vía bracket. Marqué en CURRENT_STATE "iter 4 (FINAL)" + "✅ Scale cerrado" y commiteé. En el turno inmediato siguiente el founder dijo "proba 1.6". El label "FINAL" quedó desmentido en minutos y tuve que re-editar CURRENT_STATE para sacarlo (lo detectó el stop hook como inconsistencia).

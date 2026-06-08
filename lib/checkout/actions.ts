@@ -7,7 +7,8 @@ import { getCurrentProfile } from '@/lib/auth/server';
 import { readCartCookie, deleteCartCookie } from '@/lib/cart/cookie';
 import { resolveCart } from '@/lib/cart/queries';
 import { fetchAddressById } from '@/lib/addresses/queries';
-import { calculateShipping, pickupQuote } from '@/lib/shipping';
+import { pickupQuote } from '@/lib/shipping';
+import { resolveShippingQuotes } from '@/lib/shipping-server';
 import { isCheckoutEnabled } from '@/lib/features';
 import { createOrderFromCart, updateOrderMpPreference } from './orders';
 import { createCheckoutPreference } from '@/lib/mp/preferences';
@@ -20,6 +21,7 @@ export type CheckoutFormState = {
 
 // Schema discriminated por shipping_method.
 // - delivery: address_id obligatorio (UUID válido de address del user).
+// - branch: address_id obligatorio + agency_code (sucursal del Correo elegida).
 // - pickup: address_id opcional (no se valida); usa pickupQuote() en su lugar.
 const inputSchema = z.discriminatedUnion('shipping_method', [
   z.object({
@@ -27,10 +29,25 @@ const inputSchema = z.discriminatedUnion('shipping_method', [
     address_id: z.uuid({ error: 'Elegí una dirección de envío.' }),
   }),
   z.object({
+    shipping_method: z.literal('branch'),
+    address_id: z.uuid({ error: 'Elegí una dirección de envío.' }),
+    agency_code: z
+      .string()
+      .trim()
+      .min(1, { error: 'Elegí una sucursal del Correo.' }),
+    agency_name: z.string().trim().optional(),
+  }),
+  z.object({
     shipping_method: z.literal('pickup'),
     address_id: z.string().optional(),
   }),
 ]);
+
+function normalizeMethod(raw: FormDataEntryValue | null): string {
+  if (raw === 'pickup') return 'pickup';
+  if (raw === 'branch') return 'branch';
+  return 'delivery';
+}
 
 export async function submitCheckout(
   _prev: CheckoutFormState,
@@ -40,10 +57,11 @@ export async function submitCheckout(
     return { ok: false, error: 'El checkout no está habilitado.' };
   }
 
-  const rawMethod = formData.get('shipping_method');
   const parsed = inputSchema.safeParse({
-    shipping_method: rawMethod === 'pickup' ? 'pickup' : 'delivery',
+    shipping_method: normalizeMethod(formData.get('shipping_method')),
     address_id: formData.get('address_id') || undefined,
+    agency_code: formData.get('agency_code') || undefined,
+    agency_name: formData.get('agency_name') || undefined,
   });
   if (!parsed.success) {
     return {
@@ -63,9 +81,12 @@ export async function submitCheckout(
     return { ok: false, error: 'Tu cuenta no tiene email asociado.' };
   }
 
-  // Address: requerido para delivery, opcional para pickup.
+  // Address: requerido para delivery y branch, opcional para pickup.
   let address: Awaited<ReturnType<typeof fetchAddressById>> = null;
-  if (parsed.data.shipping_method === 'delivery') {
+  if (
+    parsed.data.shipping_method === 'delivery' ||
+    parsed.data.shipping_method === 'branch'
+  ) {
     address = await fetchAddressById(parsed.data.address_id);
     if (!address) {
       return { ok: false, error: 'La dirección elegida no existe.' };
@@ -85,14 +106,43 @@ export async function submitCheckout(
     };
   }
 
-  // Shipping: pickup siempre gratis, delivery según provincia.
-  const shipping =
-    parsed.data.shipping_method === 'pickup'
-      ? pickupQuote()
-      : calculateShipping({
-          subtotalCents: resolved.subtotalCents,
-          provinceName: address!.province,
-        });
+  // Shipping (cotización FINAL que se persiste):
+  // - pickup: gratis.
+  // - delivery/branch: cotiza con la API MiCorreo (CP del cliente). Domicilio
+  //   cae a tabla por zonas si la API falla; sucursal requiere la API (si no
+  //   hay cotización de sucursal, error claro y el user usa domicilio).
+  let shipping;
+  let deliveryType: 'D' | 'S' | null = null;
+  let agencyCode: string | null = null;
+  let agencyName: string | null = null;
+
+  if (parsed.data.shipping_method === 'pickup') {
+    shipping = pickupQuote();
+  } else {
+    const quotes = await resolveShippingQuotes({
+      subtotalCents: resolved.subtotalCents,
+      provinceName: address!.province,
+      postalCode: address!.postal_code,
+      itemCount: resolved.items.reduce((n, it) => n + it.quantity, 0),
+    });
+
+    if (parsed.data.shipping_method === 'branch') {
+      if (!quotes.branch) {
+        return {
+          ok: false,
+          error:
+            'No pudimos cotizar el envío a sucursal. Probá envío a domicilio.',
+        };
+      }
+      shipping = quotes.branch;
+      deliveryType = 'S';
+      agencyCode = parsed.data.agency_code;
+      agencyName = parsed.data.agency_name ?? null;
+    } else {
+      shipping = quotes.delivery;
+      deliveryType = 'D';
+    }
+  }
 
   const customerName =
     profile?.display_name?.trim() ||
@@ -107,6 +157,10 @@ export async function submitCheckout(
     cart: resolved,
     address,
     shipping,
+    shippingMethod: parsed.data.shipping_method,
+    deliveryType,
+    agencyCode,
+    agencyName,
   });
 
   if (!result.ok) {

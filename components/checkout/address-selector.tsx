@@ -12,13 +12,21 @@ import type { Address } from '@/lib/addresses/types';
 export function AddressSelector({
   addresses,
   defaultAddressId,
+  onSelect,
 }: {
   addresses: Address[];
   defaultAddressId?: string | null;
+  /** Notifica la dirección elegida (para re-cotizar envío en el checkout). */
+  onSelect?: (addressId: string) => void;
 }) {
   const [selectedId, setSelectedId] = useState<string>(
     defaultAddressId ?? addresses[0]?.id ?? '',
   );
+
+  function handleSelect(id: string) {
+    setSelectedId(id);
+    onSelect?.(id);
+  }
 
   return (
     <fieldset className="space-y-3">
@@ -45,7 +53,7 @@ export function AddressSelector({
               name="address_id"
               value={address.id}
               defaultChecked={isSelected}
-              onChange={() => setSelectedId(address.id)}
+              onChange={() => handleSelect(address.id)}
               className="mt-0.5 size-4"
               required
             />

@@ -9,34 +9,68 @@ import { AddressSelector } from '@/components/checkout/address-selector';
 import { CheckoutSummary } from '@/components/checkout/checkout-summary';
 import { ShippingMethodSelector } from '@/components/checkout/shipping-method-selector';
 import { submitCheckout, type CheckoutFormState } from '@/lib/checkout/actions';
-import { pickupQuote, type ShippingMethod } from '@/lib/shipping';
+import {
+  pickupQuote,
+  type ShippingMethod,
+  type ShippingQuote,
+} from '@/lib/shipping';
 import type { Address } from '@/lib/addresses/types';
 import type { ResolvedCart } from '@/lib/cart/types';
-import type { ShippingQuote } from '@/lib/shipping';
+import type { CorreoBranch } from '@/lib/correo/types';
+
+/** Cotizaciones + sucursales pre-calculadas en el server por dirección. */
+export type ShippingOptions = {
+  delivery: ShippingQuote;
+  branch: ShippingQuote | null;
+  branches: CorreoBranch[];
+};
 
 const initialState: CheckoutFormState = { ok: false };
 
 export function CheckoutPage({
   cart,
   addresses,
-  shipping,
+  shippingByAddress,
+  defaultAddressId,
+  fallbackShipping,
   pickupAddress,
 }: {
   cart: ResolvedCart;
   addresses: Address[];
-  shipping: ShippingQuote;
+  shippingByAddress: Record<string, ShippingOptions>;
+  defaultAddressId: string | null;
+  fallbackShipping: ShippingQuote;
   pickupAddress: string | null;
 }) {
   const [state, formAction] = useActionState(submitCheckout, initialState);
   const [method, setMethod] = useState<ShippingMethod>('delivery');
-  const defaultAddress = addresses.find((a) => a.is_default) ?? addresses[0];
+  const [selectedAddressId, setSelectedAddressId] = useState<string>(
+    defaultAddressId ?? addresses[0]?.id ?? '',
+  );
+  const [selectedBranchCode, setSelectedBranchCode] = useState<string>('');
 
-  // Calculamos el quote efectivo según el método seleccionado.
+  // Opciones de envío de la dirección elegida (pre-cotizadas en el server).
+  const options = shippingByAddress[selectedAddressId] ?? null;
+  const deliveryQuote = options?.delivery ?? fallbackShipping;
+  const branchQuote = options?.branch ?? null;
+  const branches = options?.branches ?? [];
+
   const pickup = pickupQuote();
-  const activeQuote: ShippingQuote = method === 'pickup' ? pickup : shipping;
+  const activeQuote: ShippingQuote =
+    method === 'pickup'
+      ? pickup
+      : method === 'branch'
+        ? (branchQuote ?? deliveryQuote)
+        : deliveryQuote;
 
-  const needsAddressForDelivery =
-    method === 'delivery' && addresses.length === 0;
+  const needsAddressForDelivery = method !== 'pickup' && addresses.length === 0;
+  const branchNotChosen = method === 'branch' && !selectedBranchCode;
+
+  function handleAddressSelect(id: string) {
+    setSelectedAddressId(id);
+    // Las sucursales son por provincia → al cambiar de dirección, reset.
+    setSelectedBranchCode('');
+  }
 
   return (
     <main className="container max-w-5xl py-8 md:py-12">
@@ -59,14 +93,18 @@ export function CheckoutPage({
           <ShippingMethodSelector
             selected={method}
             onChange={setMethod}
-            deliveryQuote={shipping}
+            deliveryQuote={deliveryQuote}
+            branchQuote={branchQuote}
+            branches={branches}
+            selectedBranchCode={selectedBranchCode}
+            onBranchChange={setSelectedBranchCode}
             pickupAddress={pickupAddress}
           />
 
-          {method === 'delivery' && (
+          {method !== 'pickup' && (
             <div>
               <h2 className="text-foreground font-serif text-xl font-medium tracking-tight">
-                Dirección de envío
+                {method === 'branch' ? 'Tus datos de envío' : 'Dirección de envío'}
               </h2>
               {needsAddressForDelivery ? (
                 <div className="border-border mt-4 rounded-xl border border-dashed p-6 text-center">
@@ -87,7 +125,8 @@ export function CheckoutPage({
                 <div className="mt-4 space-y-3">
                   <AddressSelector
                     addresses={addresses}
-                    defaultAddressId={defaultAddress?.id}
+                    defaultAddressId={defaultAddressId}
+                    onSelect={handleAddressSelect}
                   />
                   <p className="text-muted-foreground text-xs">
                     <Link
@@ -116,7 +155,9 @@ export function CheckoutPage({
             type="submit"
             size="lg"
             className="w-full"
-            disabled={needsAddressForDelivery || cart.hasIssues}
+            disabled={
+              needsAddressForDelivery || branchNotChosen || cart.hasIssues
+            }
           >
             Confirmar pedido
           </Button>

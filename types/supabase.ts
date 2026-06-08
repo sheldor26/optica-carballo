@@ -283,11 +283,14 @@ export type Database = {
           prescription_snapshot: Json | null
           shipped_at: string | null
           shipping_address_id: string | null
+          shipping_agency_code: string | null
+          shipping_agency_name: string | null
           shipping_apartment: string | null
           shipping_cents: number
           shipping_city: string | null
           shipping_cost_cents: number | null
           shipping_country: string | null
+          shipping_delivery_type: string | null
           shipping_method: string | null
           shipping_number: string | null
           shipping_phone: string | null
@@ -325,11 +328,14 @@ export type Database = {
           prescription_snapshot?: Json | null
           shipped_at?: string | null
           shipping_address_id?: string | null
+          shipping_agency_code?: string | null
+          shipping_agency_name?: string | null
           shipping_apartment?: string | null
           shipping_cents?: number
           shipping_city?: string | null
           shipping_cost_cents?: number | null
           shipping_country?: string | null
+          shipping_delivery_type?: string | null
           shipping_method?: string | null
           shipping_number?: string | null
           shipping_phone?: string | null
@@ -367,11 +373,14 @@ export type Database = {
           prescription_snapshot?: Json | null
           shipped_at?: string | null
           shipping_address_id?: string | null
+          shipping_agency_code?: string | null
+          shipping_agency_name?: string | null
           shipping_apartment?: string | null
           shipping_cents?: number
           shipping_city?: string | null
           shipping_cost_cents?: number | null
           shipping_country?: string | null
+          shipping_delivery_type?: string | null
           shipping_method?: string | null
           shipping_number?: string | null
           shipping_phone?: string | null

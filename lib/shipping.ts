@@ -27,7 +27,13 @@ import { AR_PROVINCES, type ArProvince } from '@/lib/addresses/constants';
 /** Subtotal del cart (en centavos) a partir del cual el envío es gratis. */
 export const FREE_SHIPPING_THRESHOLD_CENTS = 80_000_00; // $80.000
 
-export type ShippingMethod = 'delivery' | 'pickup';
+/**
+ * Método de envío elegido en el checkout:
+ * - `delivery`: envío a domicilio (API MiCorreo tipo "D" / tabla por zonas).
+ * - `branch`: retiro en sucursal del Correo (API MiCorreo tipo "S").
+ * - `pickup`: retiro en el local de Virasoro (gratis).
+ */
+export type ShippingMethod = 'delivery' | 'branch' | 'pickup';
 
 export type ShippingZone =
   | 'caba_gba'

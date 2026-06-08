@@ -5,7 +5,9 @@ import { requireAuth } from '@/lib/auth/server';
 import { readCartCookie } from '@/lib/cart/cookie';
 import { resolveCart } from '@/lib/cart/queries';
 import { fetchUserAddresses } from '@/lib/addresses/queries';
+import { resolveShippingQuotes } from '@/lib/shipping-server';
 import { calculateShipping } from '@/lib/shipping';
+import { listBranches } from '@/lib/correo/agencies';
 import { isCheckoutEnabled } from '@/lib/features';
 import { getBusinessInfo } from '@/lib/site/business';
 
@@ -37,9 +39,35 @@ export default async function Page() {
   // para mostrar algo en el resumen mientras el user crea la primera.
   const defaultAddress =
     addresses.find((a) => a.is_default) ?? addresses[0] ?? null;
-  const shipping = calculateShipping({
+  const itemCount = resolved.items.reduce((n, it) => n + it.quantity, 0);
+
+  // Pre-cotizamos domicilio + sucursal + listamos sucursales para cada
+  // dirección del user (cap 6). El client lee del map según la dirección
+  // elegida, sin re-fetch. Caso típico (1 dirección) = 1 cotización.
+  const shippingEntries = await Promise.all(
+    addresses.slice(0, 6).map(async (a) => {
+      const [quotes, branches] = await Promise.all([
+        resolveShippingQuotes({
+          subtotalCents: resolved.subtotalCents,
+          provinceName: a.province,
+          postalCode: a.postal_code,
+          itemCount,
+        }),
+        listBranches(a.province),
+      ]);
+      return [
+        a.id,
+        { delivery: quotes.delivery, branch: quotes.branch, branches },
+      ] as const;
+    }),
+  );
+  const shippingByAddress = Object.fromEntries(shippingEntries);
+
+  // Fallback para mostrar algo en el resumen cuando el user no tiene
+  // direcciones todavía (zona conservadora).
+  const fallbackShipping = calculateShipping({
     subtotalCents: resolved.subtotalCents,
-    provinceName: defaultAddress?.province ?? 'Buenos Aires',
+    provinceName: 'Buenos Aires',
   });
 
   // Armar dirección legible del local para mostrar como destino de retiro.
@@ -57,7 +85,9 @@ export default async function Page() {
     <CheckoutPage
       cart={resolved}
       addresses={addresses}
-      shipping={shipping}
+      shippingByAddress={shippingByAddress}
+      defaultAddressId={defaultAddress?.id ?? null}
+      fallbackShipping={fallbackShipping}
       pickupAddress={pickupAddress}
     />
   );

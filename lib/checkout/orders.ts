@@ -2,7 +2,7 @@ import 'server-only';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ResolvedCart } from '@/lib/cart/types';
 import type { Address } from '@/lib/addresses/types';
-import type { ShippingQuote } from '@/lib/shipping';
+import type { ShippingMethod, ShippingQuote } from '@/lib/shipping';
 
 /**
  * Crea la orden en DB con snapshots inmutables (ADR-007).
@@ -34,12 +34,33 @@ export async function createOrderFromCart(args: {
   customerName: string;
   customerPhone?: string | null;
   cart: ResolvedCart;
-  /** null cuando shipping.method === 'pickup' (retiro en local sin envío). */
+  /** null cuando shippingMethod === 'pickup' (retiro en local sin envío). */
   address: Address | null;
   shipping: ShippingQuote;
+  /** Método de negocio: 'delivery' | 'branch' | 'pickup'. */
+  shippingMethod: ShippingMethod;
+  /** Tipo MiCorreo: 'D' domicilio, 'S' sucursal, null pickup/sin API. */
+  deliveryType?: 'D' | 'S' | null;
+  /** Código de sucursal del Correo elegida (cuando branch). */
+  agencyCode?: string | null;
+  /** Snapshot del nombre de la sucursal (ADR-007). */
+  agencyName?: string | null;
 }): Promise<CreateOrderResult> {
-  const { userId, userEmail, customerName, customerPhone, cart, address, shipping } = args;
-  const isPickup = shipping.method === 'pickup';
+  const {
+    userId,
+    userEmail,
+    customerName,
+    customerPhone,
+    cart,
+    address,
+    shipping,
+    shippingMethod,
+    deliveryType = null,
+    agencyCode = null,
+    agencyName = null,
+  } = args;
+  const isPickup = shippingMethod === 'pickup';
+  const isBranch = shippingMethod === 'branch';
 
   if (cart.items.length === 0) {
     return { ok: false, error: 'El carrito está vacío.' };
@@ -103,12 +124,17 @@ export async function createOrderFromCart(args: {
       shipping_cents: effectiveShippingCents,
       discount_cents: discountCents,
       total_cents: totalCents,
-      shipping_method: isPickup ? 'pickup' : 'delivery',
+      shipping_method: shippingMethod,
+      shipping_delivery_type: deliveryType,
+      shipping_agency_code: agencyCode,
+      shipping_agency_name: agencyName,
       coupon_id: cart.coupon?.id ?? null,
       coupon_code: cart.coupon?.code ?? null,
       notes: isPickup
         ? 'Retiro en local · Coordinar entrega por WhatsApp'
-        : `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
+        : isBranch
+          ? `Sucursal Correo: ${agencyName ?? agencyCode ?? '—'}${shipping.isFree ? ' · Envío gratis' : ''}`
+          : `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
     })
     .select('id, order_number')
     .single();

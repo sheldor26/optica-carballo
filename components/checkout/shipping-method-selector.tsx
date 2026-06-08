@@ -1,30 +1,52 @@
 'use client';
 
-import { Home, Store } from 'lucide-react';
+import { Home, Store, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import type { ShippingMethod, ShippingQuote } from '@/lib/shipping';
+import type { CorreoBranch } from '@/lib/correo/types';
 
 type Props = {
   selected: ShippingMethod;
   onChange: (method: ShippingMethod) => void;
   deliveryQuote: ShippingQuote;
+  /** Cotización de sucursal del Correo. null = no ofrecer la opción. */
+  branchQuote: ShippingQuote | null;
+  branches: CorreoBranch[];
+  selectedBranchCode: string;
+  onBranchChange: (code: string) => void;
   pickupAddress: string | null;
+  /** true mientras se re-cotiza al cambiar de dirección. */
+  loading?: boolean;
 };
+
+function priceLabel(quote: ShippingQuote): string {
+  return quote.isFree ? 'Gratis' : formatPriceCents(quote.cents);
+}
 
 export function ShippingMethodSelector({
   selected,
   onChange,
   deliveryQuote,
+  branchQuote,
+  branches,
+  selectedBranchCode,
+  onBranchChange,
   pickupAddress,
+  loading = false,
 }: Props) {
+  const showBranch = branchQuote !== null;
+
   return (
     <div>
       <h2 className="text-foreground font-serif text-xl font-medium tracking-tight">
         Cómo lo querés recibir
       </h2>
       <div
-        className="mt-4 grid gap-3 sm:grid-cols-2"
+        className={cn(
+          'mt-4 grid gap-3',
+          showBranch ? 'sm:grid-cols-3' : 'sm:grid-cols-2',
+        )}
         role="radiogroup"
         aria-label="Método de envío"
       >
@@ -32,14 +54,20 @@ export function ShippingMethodSelector({
           icon={Home}
           title="Envío a domicilio"
           subtitle={deliveryQuote.zoneLabel}
-          price={
-            deliveryQuote.isFree
-              ? 'Gratis'
-              : formatPriceCents(deliveryQuote.cents)
-          }
+          price={loading ? '...' : priceLabel(deliveryQuote)}
           selected={selected === 'delivery'}
           onClick={() => onChange('delivery')}
         />
+        {showBranch && (
+          <MethodOption
+            icon={Building2}
+            title="Sucursal del Correo"
+            subtitle="Retirás más barato"
+            price={loading ? '...' : priceLabel(branchQuote)}
+            selected={selected === 'branch'}
+            onClick={() => onChange('branch')}
+          />
+        )}
         <MethodOption
           icon={Store}
           title="Retiro en local"
@@ -49,11 +77,58 @@ export function ShippingMethodSelector({
           onClick={() => onChange('pickup')}
         />
       </div>
-      <input
-        type="hidden"
-        name="shipping_method"
-        value={selected}
-      />
+
+      {/* Selector de sucursal del Correo */}
+      {selected === 'branch' && showBranch && (
+        <div className="border-border/60 bg-muted/20 mt-4 rounded-lg border p-4">
+          <label
+            htmlFor="agency_code"
+            className="text-foreground block text-sm font-medium"
+          >
+            Elegí dónde retirar
+          </label>
+          {branches.length > 0 ? (
+            <select
+              id="agency_code"
+              name="agency_code"
+              value={selectedBranchCode}
+              onChange={(e) => onBranchChange(e.target.value)}
+              className="border-border bg-background text-foreground focus:border-foreground mt-2 w-full rounded-md border px-3 py-2 text-sm outline-none"
+              required
+            >
+              <option value="" disabled>
+                Seleccioná una sucursal…
+              </option>
+              {branches.map((b) => (
+                <option key={b.code} value={b.code}>
+                  {b.name} — {b.address}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <p className="text-muted-foreground mt-2 text-xs">
+              No encontramos sucursales en esa provincia. Probá envío a
+              domicilio o coordinamos por WhatsApp.
+            </p>
+          )}
+          {/* Snapshot del nombre de la sucursal para guardar en la orden. */}
+          <input
+            type="hidden"
+            name="agency_name"
+            value={
+              branches.find((b) => b.code === selectedBranchCode)
+                ? `${branches.find((b) => b.code === selectedBranchCode)!.name} — ${branches.find((b) => b.code === selectedBranchCode)!.address}`
+                : ''
+            }
+          />
+          <p className="text-muted-foreground mt-2 text-xs">
+            Te avisamos por WhatsApp cuando tu pedido esté en la sucursal.
+          </p>
+        </div>
+      )}
+
+      <input type="hidden" name="shipping_method" value={selected} />
+
       {selected === 'pickup' && pickupAddress && (
         <div className="border-brand/30 bg-brand/5 mt-4 rounded-lg border p-4 text-sm">
           <p className="text-foreground">
@@ -64,7 +139,6 @@ export function ShippingMethodSelector({
           </p>
         </div>
       )}
-      {/* Si pickup pero no hay direccion confirmada, alertar */}
       {selected === 'pickup' && !pickupAddress && (
         <p className="text-muted-foreground mt-3 text-xs">
           Una vez confirmada la compra, te contactamos por WhatsApp para

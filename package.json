@@ -18,7 +18,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > types/supabase.ts",
-    "normalize-photos": "tsx scripts/normalize-product-photos.ts"
+    "normalize-photos": "tsx scripts/normalize-product-photos.ts",
+    "correo:smoke": "tsx --env-file=.env.local scripts/correo-smoke.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",

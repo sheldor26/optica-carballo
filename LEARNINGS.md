@@ -22,6 +22,34 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Integrar API externa (MiCorreo): smoke test self-contained ANTES de wirear + no confiar en campos de response no garantizados
+
+**Contexto**: integración de la API MiCorreo (Correo Argentino) para cotizar envíos. Tres patrones que funcionaron:
+
+1. **Smoke test self-contained que NO importa el código de la app**: `scripts/correo-smoke.ts` re-implementa el mínimo (login + /rates con `fetch` plano) en vez de importar `lib/correo/*`. Beneficios: (a) **aísla el diagnóstico** — si el smoke pasa pero la web falla, es nuestro wiring; si ambos fallan, es la credencial/endpoint; (b) **evita el problema de `server-only`** — los módulos `lib/correo/*` tienen `import 'server-only'` que tira error fuera del contexto react-server (un script `tsx` plano resuelve la condition `default`→`index.js` que throwea), así que importarlos desde un script no anda. El smoke independiente esquiva eso. Validó las credenciales contra PROD en el primer intento.
+
+2. **No confiar en campos de response no garantizados**: el manual mostraba `{ token, expires }`, pero en la práctica `expires` vino **vacío**. Como el `auth.ts` ya leía el vencimiento del claim `exp` del propio JWT (`Buffer.from(token.split('.')[1],'base64')` → `.exp*1000`) con fallback a TTL fijo, el token cache funcionó igual. Lección: cuando un proveedor te da un JWT, el `exp` del token es **fuente de verdad inequívoca** (epoch UTC) — mejor que un campo `expires` string sin timezone que además puede no venir.
+
+3. **Wrapper con fallback que nunca rompe el flujo crítico**: `resolveDeliveryQuote()` envuelve la llamada a la API en try/catch y cae a la tabla por zonas (`calculateShipping`, pura) ante cualquier error. El checkout cotiza siempre, con o sin API. Patrón replicable para toda integración externa en un path crítico (pago, envío, factura).
+
+**Por qué funciona**: separar "¿anda el proveedor?" de "¿anda mi código?" colapsa el espacio de debugging. Y diseñar el degradado ANTES de necesitarlo evita que una caída de un tercero tire una venta.
+
+**Candidato a regla** (si se repite en otra integración): "toda API externa nueva arranca con un smoke self-contained + un wrapper con fallback al comportamiento previo".
+
+## 2026-06-06 — HyperFrames (HTML→MP4): leer la doc/scaffold ANTES de improvisar, fuentes deterministas, y binarios aislados sin tocar el sistema
+
+**Contexto**: founder pidió "hacer algo con hyperframe". Era una CLI desconocida (`npx hyperframes render`, HeyGen). Armé un template de video de producto 1:1 en `marketing/product-video/`. Lo que funcionó:
+
+1. **Identificar qué es ANTES de actuar**: `grep` en el codebase (no existía) → `AskUserQuestion` ("¿qué es hyperframe?") → respondió "npx hyperframes render" → web search. Evitó construir sobre una suposición errónea (pensé que podía ser marca/librería/efecto).
+2. **Usar el scaffold oficial como fuente de verdad del formato**: `hyperframes init` generó un `CLAUDE.md` con las reglas exactas (clips necesitan `class="clip"` + `data-start/duration/track-index`; timeline GSAP en pausa en `window.__timelines`; **determinismo: sin `Date.now`/`Math.random`/`fetch`**). Leer eso > adivinar el formato.
+3. **Fuentes deterministas**: el compilador NO resuelve `var(--serif)` ni Google Fonts (warning explícito + fallback a fuente genérica). HyperFrames trae un set mapeado (Inter, Playfair Display, etc.). Usar nombres literales mapeados → tipografía correcta SIN depender de la red en el render. Bajé Fraunces → Playfair Display (sustituto elegante mapeado).
+4. **Binarios pesados sin tocar el sistema**: faltaba FFmpeg+FFprobe y no había brew. En vez de instalar Homebrew (cambio global), usé `ffmpeg-static`/`ffprobe-static` (npm, aislados) + symlinks `bin/` + `postinstall` que los recrea. `npm run render` quedó self-contained y portable.
+5. **Validar con frames extraídos**: `ffmpeg -ss <t> -frames:v 1` por escena + leer los JPG con el harness → review visual real antes de declarar "listo".
+
+**Por qué funciona**: tool nueva + no-técnico esperando un resultado → el riesgo es construir sobre un malentendido o dejar algo no-determinístico que rompa en otra máquina. Anclar en el scaffold oficial y aislar las dependencias da un entregable reproducible y versionable.
+
+**Aplicable a**: cualquier tool/CLI nueva (identificar→scaffold→doc local→aislar deps→validar output). Candidato a regla si se repite.
+
 ## 2026-06-05 — Diagnóstico de "el cambio no surte efecto": separar "no se aplica" de "se aplica pero el valor es chico", y verificar POR SUPERFICIE
 
 **Contexto**: el founder reportó que subir el scale del Esvep (1.15→1.6→2.0) "no surtía efecto, se veía igual que al principio". Tentación: seguir subiendo el número a ciegas. En vez de eso, el diagnóstico que funcionó:
