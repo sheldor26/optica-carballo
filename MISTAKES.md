@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Activar el checkout en prod sin verificar TODAS las env vars del flujo (la 1ra venta no avisó al founder)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: la primera venta real (OC-2026-00005) se procesó perfecto (pago, stock, email al cliente) pero el founder **nunca recibió la notificación de venta**. Causa: `BUSINESS_ADMIN_EMAIL` no estaba cargada en Vercel, y `sendOrderNotificationToAdmin` está diseñado para **saltearse en silencio** si esa var está vacía (devuelve `{ok:true, id:'skipped'}`, no error). Al activar MP en prod se verificaron las 4 vars de MP + las de envío, pero no las de notificación (que tienen fallback silencioso).
+
+**Causa raíz**: las env vars con "fallback silencioso" (no rompen nada si faltan) son invisibles en una prueba e2e — el flujo "funciona" sin ellas, así que no saltan. Un checklist de activación que solo mira "¿el flujo corre?" las omite por definición.
+
+**Regla preventiva**: al activar un flujo nuevo en producción, enumerar **TODAS** las env vars que el flujo toca —incluidas las opcionales con fallback silencioso (emails admin, analytics, etc.)— y verificar una por una que estén en el entorno deployado. No alcanza con "la prueba e2e pasó": un opcional faltante no rompe la prueba pero sí degrada el producto. Para `BUSINESS_ADMIN_EMAIL` específicamente: sin ella no hay aviso de venta (las ventas igual quedan en `/admin/pedidos`). Considerar loguear un `warn` visible cuando un envío se saltea por config faltante, para que no sea 100% silencioso.
+
 ## 2026-06-08 — Confundir las credenciales de un TEST USER con las "credenciales de prueba" de la APP (mismatch con webhook)
 
 **Estado**: 🟡 Mitigado
