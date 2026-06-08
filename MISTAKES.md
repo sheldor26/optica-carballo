@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Confundir las credenciales de un TEST USER con las "credenciales de prueba" de la APP (mismatch con webhook)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el founder cargó como credenciales de MP las de un **usuario de prueba** (app `6981039109262255`, `APP_USR-...`), creyendo que eran "las credenciales de prueba". Pero la app real es **OPTICA CARBALLO** (`7985093275864504`), cuyas credenciales de prueba son **`TEST-7985...`**. Como la clave secreta del webhook se configuró en la app `7985`, las preferencias creadas con el ecosistema `6981` **nunca** habrían validado la firma del webhook (apps con dueño distinto). Detectado con el **MCP de Mercado Pago** (`application_list` + `get_credentials`), que mostró la app real y sus credenciales `TEST-`.
+
+**Causa raíz**: la UI de MP mezcla dos formas de "probar": (a) credenciales de prueba **de la app** (`TEST-<appId>`), y (b) **usuarios de prueba** (test users, cada uno con su propia app `APP_USR-...`). Ambas "son de prueba", pero pertenecen a apps distintas. El webhook secret y las credenciales de producción son de la app real; usar las de un test user como credenciales del sitio rompe la consistencia.
+
+**Regla preventiva**: las credenciales del SITIO deben ser de la **misma app** donde se configura el webhook y de donde saldrán las de producción. Verificar el `application_id` embebido en el token (`TEST-<appId>-...` / `APP_USR-<appId>-...`) — debe ser el de la app real, **no** el de un test user. El test user se usa SOLO como **comprador** de prueba, nunca como fuente de las credenciales del sitio. Con el MCP de MP, `get_credentials` devuelve las correctas.
+
 ## 2026-06-08 — Trigger BEFORE INSERT que inserta en una tabla hija con FK al propio registro → FK violation en cada INSERT
 
 **Estado**: ✅ Cerrado (fix estructural aplicado)
