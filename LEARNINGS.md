@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Testing de Checkout Pro (MP): el `payer.email` no puede ser una cuenta real de MP
+
+**Contexto**: al probar un pago, MP rechazaba con el mensaje genérico "una de las partes con la que intentás hacer el pago es de prueba". La pista real **no** estaba en ese texto sino en la pantalla "Revisá tu pago", que mostraba el **email del pagador** = el email real del founder (`jua...@hotmail`), que es su cuenta real de MP. El sitio manda `payer.email` = email del usuario logueado, y el founder se había logueado en el sitio con su email real. Vendedor de prueba + comprador real = mismatch.
+
+**Aprendizaje**: para testear Checkout Pro con credenciales de prueba, **todas las partes deben ser de prueba**, incluido el comprador. El `payer.email` tiene que ser de un test user comprador o de un email **no registrado en MP**. Como el email sale del usuario logueado en el sitio, hay que loguearse en el sitio con un email de prueba (lo que choca con la confirmación de email del signup → o usar un email propio no-MP, o desactivar la confirmación temporalmente).
+
+**Regla**: al testear pagos, verificar **qué identidad/email** se usa como comprador (no solo la tarjeta de prueba) — el error suele ser genérico, pero la pantalla de revisión del proveedor muestra al pagador real. Y recordar: esto es limitación de *testing*; en producción (cliente real + credenciales de producción) funciona normal — no tocar el código por esto.
+
 ## 2026-06-08 — La prueba e2e REAL destapa bugs latentes que typecheck/lint/build no ven (y un error específico = diagnóstico directo)
 
 **Contexto**: el trigger `BEFORE INSERT` roto (insertaba en `order_status_events` con FK a una orden que aún no existía) **pasó typecheck, lint, build y estuvo una semana sin detectarse**. Lo destapó la **primera compra de prueba real (e2e)** en el sitio. Por qué se escondió: (a) las herramientas estáticas no ejecutan lógica de DB/runtime; (b) el camino que fallaba (INSERT de orden vía checkout) nunca se había ejecutado (checkout OFF); (c) los UPDATE manuales de status (regente) sí funcionaban → falsa confianza de "el tracking anda".
