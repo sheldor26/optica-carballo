@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Pago e2e validado: verificar el estado en la BASE, no confiar en la página de éxito
+
+**Contexto**: el pago de prueba de MP aprobó (orden OC-2026-00005, página "¡Gracias por tu compra!" con `status=approved` en la URL). En vez de declarar "anda" con la captura, consulté la base vía MCP: `orders.status='paid'`, `payment_status='approved'`, `paid_at` seteado, y el timeline (`order_status_events`) mostró `pending` → `paid` 57s después. **Eso es lo que realmente prueba la integración**: la página de éxito es solo el `back_url` (el redirect del browser), que MP arma con los query params del retorno — un atacante o un error podría mostrarla sin que el pago se haya procesado. El que la orden pase a `paid` en la DB confirma que el **webhook** recibió la notificación server-to-server, **validó la firma HMAC** y ejecutó la lógica de negocio.
+
+**Aprendizaje**: la verdad de un pago vive en el webhook + el estado persistido, no en el redirect de éxito. Al validar checkout, mirar siempre: (1) `status`/`payment_status`/`paid_at` en `orders`; (2) el evento `paid` en el timeline (prueba que el trigger AFTER corrió); (3) idealmente, el `mp_payment_id` coincide con el de la pantalla. El MCP de Supabase hace esta verificación trivial.
+
+**Regla**: nunca declarar un flujo de pago "funcionando" por la pantalla de éxito sola — confirmar el estado server-side (webhook + DB). Conecta con la entrada de abajo (la prueba e2e real destapa bugs) y con la regla del proyecto de no declarar ✅ sin verificación.
+
 ## 2026-06-08 — Testing de Checkout Pro (MP): el `payer.email` no puede ser una cuenta real de MP
 
 **Contexto**: al probar un pago, MP rechazaba con el mensaje genérico "una de las partes con la que intentás hacer el pago es de prueba". La pista real **no** estaba en ese texto sino en la pantalla "Revisá tu pago", que mostraba el **email del pagador** = el email real del founder (`jua...@hotmail`), que es su cuenta real de MP. El sitio manda `payer.email` = email del usuario logueado, y el founder se había logueado en el sitio con su email real. Vendedor de prueba + comprador real = mismatch.
