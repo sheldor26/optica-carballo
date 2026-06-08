@@ -32,7 +32,9 @@ Sirve para:
 
 3. **Wrapper con fallback que nunca rompe el flujo crítico**: `resolveDeliveryQuote()` envuelve la llamada a la API en try/catch y cae a la tabla por zonas (`calculateShipping`, pura) ante cualquier error. El checkout cotiza siempre, con o sin API. Patrón replicable para toda integración externa en un path crítico (pago, envío, factura).
 
-**Por qué funciona**: separar "¿anda el proveedor?" de "¿anda mi código?" colapsa el espacio de debugging. Y diseñar el degradado ANTES de necesitarlo evita que una caída de un tercero tire una venta.
+4. **Verificación multi-zona reutilizable con lista curada de "cabeceras"**: el smoke evolucionó a `pnpm correo:smoke zonas`, que cotiza una lista fija de CPs **cabecera de cobertura garantizada** (capitales / ciudades grandes) y reporta "N/N OK". Clave para una API de logística: NO verificar con CPs cualquiera (algunos son área rural sin cobertura y devuelven `rates:[]`, un falso negativo) sino con cabeceras conocidas. Así, un resultado "22/22" es señal inequívoca de salud de la integración, repetible post-deploy / post-cambio de credenciales.
+
+**Por qué funciona**: separar "¿anda el proveedor?" de "¿anda mi código?" colapsa el espacio de debugging. Y diseñar el degradado ANTES de necesitarlo evita que una caída de un tercero tire una venta. La lista curada elimina el ruido de datos de prueba malos.
 
 **Candidato a regla** (si se repite en otra integración): "toda API externa nueva arranca con un smoke self-contained + un wrapper con fallback al comportamiento previo".
 

@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Test de validación valioso corrido en `/tmp` y borrado, en vez de dejarlo como herramienta del repo
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: para validar la cotización de MiCorreo corrí las 24 zonas del founder con un script temporal (`/tmp/correo-zonas.mjs`) que borré después de cada corrida. El test era valioso y claramente repetible (verificación de salud de la integración), pero quedó efímero. El founder tuvo que pedir explícitamente "para un smoke test infalible reemplazá esos dos por estos" para que recién ahí lo promoviera a `pnpm correo:smoke zonas` (script del repo, reutilizable).
+
+**Causa raíz**: tratar un test de integración como descartable ("lo corro una vez y lo borro") cuando en realidad es un chequeo que se va a querer repetir (post-deploy, tras rotar credenciales, periódicamente). El script ya estaba escrito — moverlo a `/tmp` en vez de a `scripts/` no ahorró nada y tiró trabajo reutilizable.
+
+**Regla preventiva**: si un test ad-hoc (a) valida una integración externa y (b) tiene chance de repetirse, crearlo **directo como script del repo** (`scripts/*` + comando en `package.json`), no en `/tmp`. El costo de tipearlo es el mismo y queda como herramienta de verificación. `/tmp` solo para exploración descartable de verdad (un curl puntual, un parse one-off).
+
 ## 2026-06-08 — Credenciales reales de API pegadas en `.env.example` (archivo trackeado) en vez de `.env.local` (cazado antes de git)
 
 **Estado**: 🟡 Mitigado
