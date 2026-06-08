@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Webhook URL puesta en "Redirect URIs" en vez de "Notificaciones callbacks URL" (config MP, cazado a tiempo)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el founder (no-técnico), configurando la app de Mercado Pago, pegó la URL del webhook (`/api/mp/webhook`) en el campo **"Redirect URIs"**. Si quedaba así, MP nunca habría posteado los eventos de pago a nuestro endpoint → ningún pago se confirmaría solo. Lo cacé al ver la captura y lo corregí (va en "Notificaciones callbacks URL").
+
+**Causa raíz**: los paneles de pagos tienen DOS campos de URL que suenan parecido — **Redirect/return URL** (OAuth: a dónde vuelve el usuario tras autorizar) y **Notification/callback URL** (webhook: a dónde el proveedor postea eventos). Un no-técnico no distingue "redirect" de "notification". Y en mi paso a paso previo di la URL del webhook **sin aclarar en qué campo exacto va** — dejé lugar a la confusión.
+
+**Regla preventiva**: cuando entrego una URL de webhook para configurar en un panel, decir **explícito el nombre del campo destino** ("va en *Notificaciones callbacks URL*, NO en *Redirect URIs*") y explicar en una línea qué es cada uno. Vale para MP, ML, AFIP y cualquier proveedor que tenga OAuth + webhooks juntos. Conecta con LEARNINGS del mismo día.
+
 ## 2026-06-08 — Test de validación valioso corrido en `/tmp` y borrado, en vez de dejarlo como herramienta del repo
 
 **Estado**: 🟡 Mitigado

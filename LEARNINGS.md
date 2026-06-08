@@ -22,6 +22,15 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Config de webhook: la Notification URL NO va en "Redirect URIs" (y Checkout Pro no usa scopes de ML)
+
+**Contexto**: guiando al founder (no-técnico) en el panel de aplicaciones de Mercado Libre/MP. Dos cosas que conviene saber/anticipar:
+
+1. **Redirect URI ≠ Notification/callback URL**. El webhook (a dónde el proveedor postea los eventos de pago) va en **"Notificaciones callbacks URL"**, no en "Redirect URIs" (que es el return de un login OAuth y no se usa en Checkout Pro). El founder los confundió; si quedaba mal, los pagos nunca se confirmaban.
+2. **El panel "Configuración y scopes" es el avanzado de Mercado Libre** (OAuth, unidades de negocio, scopes de publicaciones/órdenes, tópicos). Para **Checkout Pro** (cobrar en cuenta propia) NO hace falta NADA de eso — son de la API de ML (marketplace), que en este proyecto es la integración futura de sync de stock (ADR-024), no los pagos.
+
+**Regla**: al entregar una URL de webhook para configurar, decir SIEMPRE el nombre exacto del campo destino y diferenciarlo del redirect/return URL (se confunden seguido, sobre todo un no-técnico). Y para Checkout Pro, dejar OAuth/scopes/tópicos vacíos. Conecta con la entrada de MISTAKES del mismo día.
+
 ## 2026-06-08 — Verificar las afirmaciones de un subagente sobre el código antes de propagarlas
 
 **Contexto**: invoqué `argentine-ecom` para el trámite de credenciales de Mercado Pago. El procedimiento (su fortaleza real, vía web) fue excelente y útil. Pero cuando intentó "auditar el código" su shell se reinició a mitad y **alucinó**: reportó rutas inexistentes (`lib/mercadopago/`, `app/api/checkout/route.ts`) y afirmó que el webhook era "un stub con `void payload` que no confirma pagos". Yo había leído y editado ese webhook minutos antes — SÍ procesa pagos (marca `paid`, manda emails). Verifiqué con `ls`/`grep` antes de pasarle nada al founder; era falso.
