@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Un smoke de credenciales debe imprimir METADATA (no el secreto): caza valores stale/equivocados
+
+**Contexto**: `mp-smoke.ts` imprime el **prefijo** del token (`TEST-` / `APP_USR-`), su **longitud** y el **`live_mode`** — nunca el secreto. Cuando un `MP_ACCESS_TOKEN` viejo (`TEST-...`, de otro proyecto) quedó sin reemplazar en `.env.local`, el smoke mostró prefijo `"TEST-"` cuando yo esperaba `"APP_USR-"` → detecté al instante que estaba usando la credencial **equivocada** (no ausente: válida pero de otro lado).
+
+**Por qué funciona**: un secreto no se puede mostrar (seguridad), pero su **metadata identificable** (prefijo, longitud, flags como `live_mode`, últimos dígitos) sí, y alcanza para confirmar que es el valor correcto sin exponerlo. Un smoke que solo dice "OK / falla" NO habría detectado un token **válido-pero-equivocado** (el TEST- viejo creaba preferencias bien).
+
+**Regla**: todo smoke / health-check de una credencial imprime metadata identificable (prefijo, longitud, modo test/prod, sufijo) **sin** exponer el secreto. Distingue "la credencial es válida" de "es LA credencial correcta". Conecta con la entrada de MISTAKES del mismo día (upsert vs append-if-missing).
+
 ## 2026-06-08 — Config de webhook: la Notification URL NO va en "Redirect URIs" (y Checkout Pro no usa scopes de ML)
 
 **Contexto**: guiando al founder (no-técnico) en el panel de aplicaciones de Mercado Libre/MP. Dos cosas que conviene saber/anticipar:
