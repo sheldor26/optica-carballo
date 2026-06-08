@@ -13,7 +13,9 @@ export type CustomerEmailData = {
     quantity: number;
     unitPriceCents: number;
   }>;
-  shippingMethod?: 'delivery' | 'pickup';
+  shippingMethod?: 'delivery' | 'branch' | 'pickup';
+  /** Solo para branch. Nombre/dirección de la sucursal del Correo elegida. */
+  branchName?: string | null;
   /** null cuando shippingMethod === 'pickup' (retiro en local). */
   shippingAddress: {
     recipientName: string;
@@ -49,6 +51,7 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
     .join('');
 
   const isPickup = data.shippingMethod === 'pickup';
+  const isBranch = data.shippingMethod === 'branch';
   const apartmentLine = data.shippingAddress?.apartment
     ? ` · ${escapeHtml(data.shippingAddress.apartment)}`
     : '';
@@ -69,6 +72,16 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
     </p>
     <p style="margin:0 0 20px;color:#71717a;font-size:13px;line-height:1.5;">
       Te avisamos por WhatsApp cuando tu pedido esté listo para retirar.
+    </p>`
+    : '';
+  const branchBlock = isBranch
+    ? `
+    <h2 style="margin:0 0 8px;font-size:16px;color:#18181b;">Retirás en sucursal del Correo</h2>
+    <p style="margin:0 0 8px;color:#52525b;font-size:14px;line-height:1.6;">
+      ${data.branchName ? escapeHtml(data.branchName) : 'Sucursal del Correo Argentino'}
+    </p>
+    <p style="margin:0 0 20px;color:#71717a;font-size:13px;line-height:1.5;">
+      Te avisamos por WhatsApp cuando tu pedido esté en la sucursal para retirar.
     </p>`
     : '';
 
@@ -120,7 +133,7 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
       </tr>
     </table>
 
-    ${isPickup ? pickupBlock : deliveryBlock}
+    ${isPickup ? pickupBlock : isBranch ? branchBlock : deliveryBlock}
 
     <p style="margin:24px 0 0;color:#52525b;font-size:13px;line-height:1.5;">
       Si tenés alguna duda, respondé este email y te respondemos a la brevedad.
@@ -151,6 +164,12 @@ export function buildCustomerOrderEmail(data: CustomerEmailData): {
           `  ${data.pickupAddress ?? 'Óptica Carballo'}`,
           '  Te avisamos por WhatsApp cuando esté listo.',
         ]
+      : isBranch
+        ? [
+            'Retirás en sucursal del Correo:',
+            `  ${data.branchName ?? 'Sucursal del Correo Argentino'}`,
+            '  Te avisamos por WhatsApp cuando esté en la sucursal.',
+          ]
       : data.shippingAddress
         ? [
             'Enviamos a:',

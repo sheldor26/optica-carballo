@@ -22,6 +22,16 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Al agregar un estado/método nuevo, auditar TODAS las superficies que lo muestran (UI cliente + admin + emails)
+
+**Contexto**: agregué un 3er método de envío (`branch` = sucursal del Correo). Al "cerrar" el display, en vez de tocar solo el detalle de pedido del cliente (lo que se pidió), grepié `shipping_method` en todo el repo y cubrí cada superficie que muestra el método: detalle cliente, detalle admin, email de confirmación al cliente, email de notificación al admin.
+
+**Resultado**: cacé un **bug latente** — los dos templates de email manejaban solo `delivery`/`pickup`, así que un envío a sucursal habría mostrado al cliente "te enviamos a <tu dirección de casa>" (engañoso) en vez de la sucursal. Lo arreglé en el mismo cambio (agregué el caso `branch` + `branchName` a ambos templates + al armado en el webhook).
+
+**Por qué funciona**: un dato nuevo de dominio (método de envío, estado de pago, tipo de producto) se renderiza en N superficies; tratar solo la que te piden deja las otras inconsistentes y se convierte en bug cuando se activa el flujo. Es el mismo principio que la regla 15 del proyecto (image scale en TODAS las superficies de catálogo).
+
+**Candidato a regla**: al introducir un valor/estado nuevo en un dominio (envío, pago, status de orden), `grep` el campo en todo el repo y cubrir cada superficie en el mismo cambio — web cliente, web admin, emails, y futuras (factura/PDF). No esperar a que el bug aparezca en producción.
+
 ## 2026-06-08 — Integrar API externa (MiCorreo): smoke test self-contained ANTES de wirear + no confiar en campos de response no garantizados
 
 **Contexto**: integración de la API MiCorreo (Correo Argentino) para cotizar envíos. Tres patrones que funcionaron:

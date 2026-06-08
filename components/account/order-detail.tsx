@@ -149,7 +149,9 @@ export function OrderDetailView({
           <h2 className="text-foreground text-base font-semibold">
             {order.shippingMethod === 'pickup'
               ? 'Retiro en local'
-              : 'Dirección de envío'}
+              : order.shippingMethod === 'branch'
+                ? 'Retiro en sucursal del Correo'
+                : 'Dirección de envío'}
           </h2>
           {order.shippingMethod === 'pickup' ? (
             <div className="text-muted-foreground mt-3 text-sm leading-relaxed">
@@ -158,6 +160,22 @@ export function OrderDetailView({
               </p>
               <p className="mt-1">
                 Te avisamos por WhatsApp cuando esté listo para retirar.
+              </p>
+            </div>
+          ) : order.shippingMethod === 'branch' ? (
+            <div className="text-muted-foreground mt-3 text-sm leading-relaxed">
+              <p className="text-foreground font-medium">
+                {order.shippingAgencyName ?? 'Sucursal del Correo Argentino'}
+              </p>
+              {order.shippingRecipientName && (
+                <p className="mt-1">
+                  A nombre de {order.shippingRecipientName}
+                  {order.shippingPhone ? ` · Tel: ${order.shippingPhone}` : ''}
+                </p>
+              )}
+              <p className="mt-1">
+                Te avisamos por WhatsApp cuando tu pedido esté en la sucursal
+                para retirar.
               </p>
             </div>
           ) : order.shippingStreet ? (

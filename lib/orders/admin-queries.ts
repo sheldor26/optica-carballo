@@ -83,6 +83,7 @@ export async function fetchOrderByIdAdmin(
        shipping_recipient_name, shipping_street, shipping_number,
        shipping_apartment, shipping_city, shipping_province,
        shipping_postal_code, shipping_phone, shipping_method,
+       shipping_delivery_type, shipping_agency_code, shipping_agency_name,
        tracking_number, mp_payment_id, invoice_url, notes,
        created_at, paid_at, shipped_at, delivered_at`,
     )
@@ -132,6 +133,9 @@ export async function fetchOrderByIdAdmin(
     shippingPostalCode: orderRow.shipping_postal_code,
     shippingPhone: orderRow.shipping_phone,
     shippingMethod: orderRow.shipping_method,
+    shippingDeliveryType: orderRow.shipping_delivery_type,
+    shippingAgencyCode: orderRow.shipping_agency_code,
+    shippingAgencyName: orderRow.shipping_agency_name,
     trackingNumber: orderRow.tracking_number,
     mpPaymentId: orderRow.mp_payment_id,
     invoiceUrl: orderRow.invoice_url,

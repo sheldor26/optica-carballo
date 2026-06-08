@@ -55,6 +55,12 @@ export type OrderDetail = {
   shippingPostalCode: string | null;
   shippingPhone: string | null;
   shippingMethod: string | null;
+  /** Tipo MiCorreo: 'D' domicilio, 'S' sucursal, null retiro local/sin API. */
+  shippingDeliveryType: string | null;
+  /** Código de sucursal del Correo (cuando method='branch'). */
+  shippingAgencyCode: string | null;
+  /** Nombre/dirección de la sucursal elegida (snapshot). */
+  shippingAgencyName: string | null;
   trackingNumber: string | null;
   mpPaymentId: string | null;
   invoiceUrl: string | null;

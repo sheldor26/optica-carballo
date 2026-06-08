@@ -16,7 +16,9 @@ export type AdminEmailData = {
     quantity: number;
     unitPriceCents: number;
   }>;
-  shippingMethod?: 'delivery' | 'pickup';
+  shippingMethod?: 'delivery' | 'branch' | 'pickup';
+  /** Solo para branch. Nombre/dirección de la sucursal del Correo a despachar. */
+  branchName?: string | null;
   shippingAddress: {
     recipientName: string;
     street: string;
@@ -58,6 +60,7 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
     .join('');
 
   const isPickup = data.shippingMethod === 'pickup';
+  const isBranch = data.shippingMethod === 'branch';
   const apartmentLine = data.shippingAddress?.apartment
     ? ` · ${escapeHtml(data.shippingAddress.apartment)}`
     : '';
@@ -71,7 +74,14 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
       Cliente retira en: ${escapeHtml(data.pickupAddress ?? 'Óptica Carballo')}<br/>
       Contactar por WhatsApp para coordinar fecha/hora.
     </p>`
-    : data.shippingAddress
+    : isBranch
+      ? `
+    <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">📦 ENVÍO A SUCURSAL DEL CORREO</h2>
+    <p style="margin:0 0 20px;color:#52525b;font-size:13px;line-height:1.6;">
+      Despachar a sucursal: <strong>${escapeHtml(data.branchName ?? 'Sucursal del Correo')}</strong><br/>
+      Destinatario: ${escapeHtml(data.customerName)}${data.customerPhone ? ` · Tel: ${escapeHtml(data.customerPhone)}` : ''}
+    </p>`
+      : data.shippingAddress
       ? `
     <h2 style="margin:0 0 8px;font-size:15px;color:#18181b;">Dirección de envío</h2>
     <p style="margin:0 0 20px;color:#52525b;font-size:13px;line-height:1.6;">
@@ -152,6 +162,12 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
           `  Cliente retira en: ${data.pickupAddress ?? 'Óptica Carballo'}`,
           '  Contactar por WhatsApp para coordinar fecha/hora.',
         ]
+      : isBranch
+        ? [
+            '📦 ENVÍO A SUCURSAL DEL CORREO',
+            `  Despachar a sucursal: ${data.branchName ?? 'Sucursal del Correo'}`,
+            `  Destinatario: ${data.customerName}${data.customerPhone ? ` · Tel: ${data.customerPhone}` : ''}`,
+          ]
       : data.shippingAddress
         ? [
             'Dirección de envío:',

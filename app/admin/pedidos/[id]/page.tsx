@@ -171,12 +171,46 @@ export default async function Page({
             <h2 className="text-foreground text-base font-semibold">
               {order.shippingMethod === 'pickup'
                 ? 'Retiro en local'
-                : 'Dirección de envío'}
+                : order.shippingMethod === 'branch'
+                  ? 'Envío a sucursal del Correo'
+                  : 'Dirección de envío'}
             </h2>
             {order.shippingMethod === 'pickup' ? (
               <p className="text-muted-foreground mt-3 text-sm">
                 El cliente retira en el local.
               </p>
+            ) : order.shippingMethod === 'branch' ? (
+              <div className="text-muted-foreground mt-3 text-sm leading-relaxed">
+                <p className="text-foreground font-medium">
+                  {order.shippingAgencyName ?? 'Sucursal del Correo'}
+                </p>
+                {order.shippingAgencyCode && (
+                  <p className="mt-1">
+                    Código sucursal:{' '}
+                    <span className="text-foreground font-mono">
+                      {order.shippingAgencyCode}
+                    </span>
+                  </p>
+                )}
+                {order.shippingRecipientName && (
+                  <p className="mt-1">
+                    Destinatario:{' '}
+                    <span className="text-foreground">
+                      {order.shippingRecipientName}
+                    </span>
+                    {order.shippingPhone ? ` · Tel: ${order.shippingPhone}` : ''}
+                  </p>
+                )}
+                {(order.shippingCity || order.shippingProvince) && (
+                  <p className="mt-1">
+                    Zona del cliente: {order.shippingCity}
+                    {order.shippingProvince ? `, ${order.shippingProvince}` : ''}
+                    {order.shippingPostalCode
+                      ? ` (${order.shippingPostalCode})`
+                      : ''}
+                  </p>
+                )}
+              </div>
             ) : order.shippingStreet ? (
               <address className="text-muted-foreground mt-3 text-sm leading-relaxed not-italic">
                 {order.shippingRecipientName && (

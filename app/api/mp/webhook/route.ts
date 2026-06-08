@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
   const { data: orderRow, error: orderErr } = await supabase
     .from('orders')
     .select(
-      'id, order_number, status, customer_name, customer_email, customer_phone, total_cents, subtotal_cents, shipping_cents, mp_payment_id, paid_at, shipping_recipient_name, shipping_street, shipping_number, shipping_apartment, shipping_city, shipping_province, shipping_postal_code, shipping_phone, shipping_method',
+      'id, order_number, status, customer_name, customer_email, customer_phone, total_cents, subtotal_cents, shipping_cents, mp_payment_id, paid_at, shipping_recipient_name, shipping_street, shipping_number, shipping_apartment, shipping_city, shipping_province, shipping_postal_code, shipping_phone, shipping_method, shipping_delivery_type, shipping_agency_name',
     )
     .eq('order_number', orderNumber)
     .maybeSingle();
@@ -162,7 +162,14 @@ export async function POST(request: NextRequest) {
       unitPriceCents: it.unit_price_cents,
     }));
 
-    const isPickup = orderRow.shipping_method === 'pickup';
+    const method: 'delivery' | 'branch' | 'pickup' =
+      orderRow.shipping_method === 'pickup'
+        ? 'pickup'
+        : orderRow.shipping_method === 'branch'
+          ? 'branch'
+          : 'delivery';
+    const isPickup = method === 'pickup';
+    const isDelivery = method === 'delivery';
     const businessAddress = (() => {
       const parts = [
         process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_STREET,
@@ -179,10 +186,10 @@ export async function POST(request: NextRequest) {
       subtotalCents: orderRow.subtotal_cents,
       shippingCents: orderRow.shipping_cents,
       items: itemsForEmail,
-      shippingMethod: isPickup ? 'pickup' : 'delivery',
-      shippingAddress: isPickup
-        ? null
-        : {
+      shippingMethod: method,
+      branchName: orderRow.shipping_agency_name,
+      shippingAddress: isDelivery
+        ? {
             recipientName: orderRow.shipping_recipient_name ?? orderRow.customer_name,
             street: orderRow.shipping_street ?? '',
             number: orderRow.shipping_number ?? '',
@@ -190,7 +197,8 @@ export async function POST(request: NextRequest) {
             city: orderRow.shipping_city ?? '',
             province: orderRow.shipping_province ?? '',
             postalCode: orderRow.shipping_postal_code ?? '',
-          },
+          }
+        : null,
       pickupAddress: isPickup ? businessAddress : null,
       paymentId: String(payment.id),
     };
