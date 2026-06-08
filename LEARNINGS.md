@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Deliverability de email: autenticación completa ≠ bandeja de entrada (reputación de dominio nuevo)
+
+**Contexto**: tras configurar Resend con dominio propio, los mails transaccionales (confirmación al cliente + aviso de venta al founder) **llegaban pero a spam**. Diagnóstico con `dig`: SPF ✓ (return-path `send.dominio`→amazonses), DKIM ✓ (`resend._domainkey`), pero **faltaba DMARC** (`_dmarc` vacío). Tras publicar `v=DMARC1; p=none; rua=...` en Vercel DNS, la autenticación quedó completa (SPF+DKIM+DMARC) — y aun así los primeros mails seguían cayendo a spam.
+
+**Aprendizaje**: la autenticación (SPF/DKIM/DMARC) es **condición necesaria pero no suficiente** para llegar a inbox. Un dominio que nunca mandó mails tiene reputación neutra; los filtros (Gmail, y Yahoo más estricto) mandan a spam los primeros envíos hasta construir reputación ("warm-up"). Lo que más acelera a corto plazo es **acción del destinatario**: marcar "No es spam" + agregar el remitente a contactos. Verificar la auth real abriendo el mail → "Mostrar original" (debe decir SPF/DKIM/DMARC = PASS). Desde feb-2024 Gmail/Yahoo exigen DMARC para no penalizar — sin él, spam casi seguro.
+
+**Regla**: al montar email transaccional con dominio propio, configurar las **3** (SPF + DKIM + DMARC) desde el día 1, y avisar al cliente que los primeros días puede haber spam por warm-up (no es un bug). No prometer "no caer en spam" como si fuera un switch técnico. Conecta con MISTAKES (verificar env vars del flujo) — `BUSINESS_ADMIN_EMAIL` faltaba y el aviso de venta se salteaba en silencio.
+
 ## 2026-06-08 — Pago e2e validado: verificar el estado en la BASE, no confiar en la página de éxito
 
 **Contexto**: el pago de prueba de MP aprobó (orden OC-2026-00005, página "¡Gracias por tu compra!" con `status=approved` en la URL). En vez de declarar "anda" con la captura, consulté la base vía MCP: `orders.status='paid'`, `payment_status='approved'`, `paid_at` seteado, y el timeline (`order_status_events`) mostró `pending` → `paid` 57s después. **Eso es lo que realmente prueba la integración**: la página de éxito es solo el `back_url` (el redirect del browser), que MP arma con los query params del retorno — un atacante o un error podría mostrarla sin que el pago se haya procesado. El que la orden pase a `paid` en la DB confirma que el **webhook** recibió la notificación server-to-server, **validó la firma HMAC** y ejecutó la lógica de negocio.
