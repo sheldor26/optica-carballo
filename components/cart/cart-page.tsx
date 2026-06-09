@@ -12,9 +12,14 @@ import type { ResolvedCart } from '@/lib/cart/types';
 export function CartPage({
   cart,
   checkoutEnabled,
+  defaultProvince,
+  defaultPostalCode,
 }: {
   cart: ResolvedCart;
   checkoutEnabled: boolean;
+  /** Dirección registrada del usuario (si está logueado) para pre-cargar el estimador. */
+  defaultProvince?: string | null;
+  defaultPostalCode?: string | null;
 }) {
   if (cart.items.length === 0) {
     return <EmptyCart />;
@@ -146,7 +151,12 @@ export function CartPage({
             )}
           </div>
 
-          <ShippingCalculator subtotalCents={cart.subtotalCents} />
+          <ShippingCalculator
+            subtotalCents={cart.subtotalCents}
+            itemCount={cart.items.reduce((n, it) => n + it.quantity, 0)}
+            initialProvince={defaultProvince}
+            initialPostalCode={defaultPostalCode}
+          />
 
           <TrustSignals />
 
