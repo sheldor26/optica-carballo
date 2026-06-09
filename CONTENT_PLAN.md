@@ -359,3 +359,73 @@ Plan recibido del agente `content-writer-medical` (2026-05-30). 5 guías SEO fir
 - **Frecuencia objetivo**: 2-3 artículos por semana en pre-launch, 1-2 por semana post-launch.
 - **Calidad sobre cantidad**: mejor 1 pillar bien hecho que 5 mediocres.
 - **Una vez publicado**: no tocar por 3-4 semanas (dejar que Google lo indexe y rankee).
+
+---
+
+# 🎯 PLAN DE EJECUCIÓN — Cluster PRESBICIA (óptico-first) — 2026-06-09
+
+> Estrategia acordada con el founder (Juan, Técnico Óptico). **Posicionamiento
+> clave: nos quedamos en la cancha de la óptica** (corrección con lentes,
+> armazones, adaptación, medición) y NO en la del oftalmólogo (gotas con
+> pilocarpina, cirugía, diagnóstico). Eso es más auténtico, defendible
+> legalmente (Defensa del Consumidor) y construye autoridad de óptico.
+> **Validación**: Juan revisa cada artículo; todo deriva al oftalmólogo en
+> lo que es decisión médica. Research de keywords: Ubersuggest AR, 2026-06-09.
+
+## Por qué un cluster (y no una guía suelta)
+Google premia la **autoridad temática**. Cubrir TODO el tema con un pillar +
+satélites **linkeados entre sí** dice "soy el experto en presbicia". Una guía
+aislada compite sola; un cluster se potencia entre piezas.
+
+## Mapa del cluster
+
+| # | Pieza | Slug | Keyword principal | Vol/Dif AR | Rol | Estado |
+|---|-------|------|-------------------|-----------|-----|--------|
+| 0 | PILLAR | `/guias/presbicia` | presbicia + "presbicia que es" | 12.100/21 + 4.400/15 | Autoridad del tema | ⬜ a escribir |
+| 1 | Satélite (comercial) | `/guias/multifocales-vs-bifocales` | lentes multifocales | 1.300/9 | Diseño de lente para presbicia | ⬜ |
+| 2 | Satélite (comercial) | `/guias/lentes-para-presbicia` | lentes/anteojos para presbicia | 140/11 + 110/11 | "qué lente comprar" → venta | ⬜ |
+| 3 | Satélite (comercial) | `/guias/anteojos-para-leer-pregraduados` | anteojos para leer | 260/12 | Lupas/pregraduados vs receta | ⬜ |
+| 4 | Satélite (informacional) | `/guias/a-que-edad-empieza-la-presbicia` | edad presbicia / cómo darse cuenta | long-tail | Captura "recién me pasa" | ⬜ |
+
+**Fuera de alcance (competencia del oftalmólogo — NO escribir como óptica):**
+gotas para la presbicia (pilocarpina), cirugía/operación de presbicia. Si
+aparece la duda en una FAQ, respuesta corta + "esto lo evalúa tu oftalmólogo".
+
+## Arquitectura de links internos (lo que hace que rankee)
+- Cada **satélite → linkea a la pillar** en los 2 primeros párrafos.
+- La **pillar → linkea a TODOS los satélites** (pillar 8-15 links; satélite 4-8).
+- **Todos → funnel a venta**: `/anteojos-de-receta`, `/lector-de-receta`,
+  `/medidor-de-dnp`.
+- **Cross-link** con `miopia`, `hipermetropia`, `astigmatismo`,
+  `como-leer-receta-anteojos` (mismo cluster temático "salud visual").
+
+## Checklist por artículo (de ARTICLE_SEO_STANDARD.md)
+- [ ] Title 50-60 chars, keyword al inicio, "| Óptica Carballo" al final.
+- [ ] Meta description 150-160 chars, keyword en primeros 120 + CTA suave.
+- [ ] Slug sin acentos/ñ, con la keyword exacta.
+- [ ] **Answer-first**: 1er párrafo bajo el 1er H2 = definición de 40-55 palabras
+      (lo que Google levanta como respuesta destacada).
+- [ ] H1 + 1-2 H2 con la keyword (sin stuffing — campo semántico).
+- [ ] 3-6 **FAQs** reales (de PAA) → bloque visible + `FAQPage` JSON-LD idéntico.
+- [ ] Imágenes: alt descriptivo + keyword, width/height, hero no-lazy.
+- [ ] Links internos según la cantidad de arriba + funnel a producto/herramienta.
+- [ ] "vista cansada" usado como sinónimo en title/H2/cuerpo (término coloquial AR).
+- [ ] Revisión de Juan + derivar a oftalmólogo en lo médico.
+
+## Secuencia de ejecución
+1. **Quick win (ya):** publicar **miopía + astigmatismo** (drafts ya escritos).
+   ⚠️ Ya NO esperan "firma de la regente" — esa decisión se revirtió (sacamos a
+   la regente del sitio, 2026-06-09). Quitar `draft` → entran al sitemap.
+2. **Pillar Presbicia** (la más importante; tirá del resto).
+3. **Satélites** en orden: multifocales-vs-bifocales → lentes-para-presbicia →
+   anteojos-para-leer → a-qué-edad. Cubrir TODO el cluster antes de empezar otro.
+4. **Medir** en Google Search Console a las 4-8 semanas (SEO tarda 1-3 meses;
+   no esperar tráfico inmediato). No tocar un artículo por 3-4 semanas tras publicar.
+
+## Gaps técnicos a resolver (one-time, sirven para todas las guías)
+- [ ] **`FAQPage` JSON-LD no cableado** en guías → cuando el frontmatter traiga
+      `faqs[]`, conectar `faq-jsonld` (mejora CTR con rich snippets).
+- [ ] **Answer-first** (párrafo de 40-55 palabras) — aplicarlo también, de paso,
+      a la guía de receta ya publicada.
+- [ ] Confirmar volumen real de "vista cansada" y "lentes progresivos"
+      (Ubersuggest tiró errores/0 por rate-limit en esta sesión).
