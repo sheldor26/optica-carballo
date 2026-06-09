@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Endpoint público que proxea una API externa con cuota, sin protección
+
+**Estado**: 🟡 Mitigado (validación de inputs + deuda registrada en BACKLOG; decisión consciente V1)
+
+**Qué pasó**: para el estimador por CP del carrito creé `app/api/shipping/quote` (público, sin login) que en cada llamada cotiza contra la API de Correo Argentino (cap ~1000 req/h por cuenta). Lo dejé sin rate-limit ni cache "por simplicidad V1". Un endpoint público que reenvía a una API externa con cuota es una **superficie de abuso**: scraping o un loop del lado cliente podría agotar el rate-limit de Correo y romper la cotización para clientes reales.
+
+**Causa raíz**: aplicar "simple sobre clever" sin antes evaluar que el endpoint es **público + proxea una API con cuota limitada**. "Simple" no debe saltear el análisis de abuso en superficies públicas.
+
+**Regla preventiva**: todo endpoint PÚBLICO que llame a una API externa con rate-limit/costo necesita, desde el diseño: (a) validación estricta de inputs (hecho acá), y (b) un plan de throttle/cache —aunque sea mínimo— o, si se difiere, documentarlo como deuda con disparador claro de cuándo activarlo (hecho: BACKLOG, cache por CP + throttle por IP). No dejarlo implícito.
+
 ## 2026-06-08 — `fetch` (undici) NO permite body en GET — copié el `curl -X GET -d` del manual
 
 **Estado**: ✅ Cerrado (corregido al detectarlo en test)

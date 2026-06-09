@@ -30,6 +30,8 @@ Sirve para:
 
 **Regla**: ante un pedido de "feature X", SIEMPRE `ls` + leer lo existente antes de estimar/construir. El codebase tiene >1 mes; muchas features están 70-90% hechas. Refuerza la regla 14 de CLAUDE.md.
 
+**Confirmado 2× el mismo día (2026-06-08)**: pasó igual con el pedido de "cotizar el envío con el CP en el checkout / considerar la dirección del usuario". El audit reveló que el **checkout YA** usaba las direcciones registradas del user y **cotizaba con el CP real** (`resolveShippingQuotes` por dirección) — solo faltaba traer ese cálculo al **carrito** (que estimaba por provincia/tabla). Dos pedidos "construí X" que estaban hechos/casi hechos, en una sola sesión → el audit-antes-de-construir no es solo regla nominal: hay que hacerlo como reflejo. Patrón a internalizar.
+
 ## 2026-06-08 — Limpiar datos de prueba de checkout: el stock se descuenta al CREAR la orden y ML es la fuente de verdad
 
 **Contexto**: probar el checkout e2e dejó 6 órdenes de prueba que descontaron stock REAL. El descuento ocurre en `reserve_stock` al **crear** la orden (status `pending`), NO al pagar — así que hasta las órdenes pendientes/abandonadas bajaron stock. Cada descuento además hace push outbound a ML. Al limpiar, reintegrar solo en la DB **no alcanza**: un cron (`ml-reconcile-stock`) corre cada 6h y trae stock **de ML → DB**, así que si ML quedó con el valor descontado, pisa el reintegro en ≤6h.
