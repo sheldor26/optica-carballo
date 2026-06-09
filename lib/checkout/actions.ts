@@ -11,8 +11,12 @@ import { pickupQuote } from '@/lib/shipping';
 import { resolveShippingQuotes } from '@/lib/shipping-server';
 import { isCheckoutEnabled } from '@/lib/features';
 import { createOrderFromCart, updateOrderMpPreference } from './orders';
-import { createCheckoutPreference } from '@/lib/mp/preferences';
+import {
+  createCheckoutPreference,
+  createCheckoutPreferenceFromOrder,
+} from '@/lib/mp/preferences';
 import { isMpTestMode } from '@/lib/mp/client';
+import { fetchOrderById } from '@/lib/orders/queries';
 
 export type CheckoutFormState = {
   ok: boolean;
@@ -197,6 +201,62 @@ export async function submitCheckout(
   revalidatePath('/mi-cuenta', 'layout');
 
   // Redirect a MP. En modo test usamos sandbox_init_point; en prod, init_point.
+  const checkoutUrl = isMpTestMode()
+    ? preferenceResult.sandboxInitPoint
+    : preferenceResult.initPoint;
+  redirect(checkoutUrl);
+}
+
+/**
+ * "Retomar pago" de un pedido `pending` (form action desde el detalle del
+ * pedido). Recrea la preferencia MP a partir de la orden y redirige a Mercado
+ * Pago. Ownership enforced por RLS (`fetchOrderById` solo devuelve órdenes del
+ * user actual). Mismo `order_number` como external_reference → el webhook
+ * matchea igual cuando el pago entra.
+ */
+export async function resumeOrderPaymentAction(
+  formData: FormData,
+): Promise<void> {
+  if (!isCheckoutEnabled()) redirect('/mi-cuenta/pedidos');
+
+  const orderId = String(formData.get('orderId') ?? '').trim();
+  if (!orderId) redirect('/mi-cuenta/pedidos');
+
+  const profileData = await getCurrentProfile();
+  if (!profileData) redirect('/ingresar?redirect=/mi-cuenta/pedidos');
+
+  // RLS: fetchOrderById solo devuelve la orden si es del user logueado.
+  const order = await fetchOrderById(orderId);
+  if (!order) redirect('/mi-cuenta/pedidos');
+
+  // Solo se re-paga un pedido pendiente con email de pagador.
+  if (order.status !== 'pending' || !order.customerEmail) {
+    redirect(`/mi-cuenta/pedidos/${orderId}`);
+  }
+
+  const preferenceResult = await createCheckoutPreferenceFromOrder({
+    orderNumber: order.orderNumber,
+    payerEmail: order.customerEmail,
+    items: order.items.map((it) => ({
+      sku: it.variantSku,
+      title: `${it.brandName ? `${it.brandName} ` : ''}${it.productName}`,
+      quantity: it.quantity,
+      unitPriceCents: it.unitPriceCents,
+    })),
+    shippingCents: order.shippingCents,
+  });
+
+  if (!preferenceResult.ok) {
+    redirect(
+      `/checkout/pendiente?order=${encodeURIComponent(order.orderNumber)}&mp_error=1`,
+    );
+  }
+
+  await updateOrderMpPreference({
+    orderId: order.id,
+    preferenceId: preferenceResult.preferenceId,
+  });
+
   const checkoutUrl = isMpTestMode()
     ? preferenceResult.sandboxInitPoint
     : preferenceResult.initPoint;

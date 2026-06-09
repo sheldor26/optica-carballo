@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
-import { AR_PROVINCES } from '@/lib/addresses/constants';
-import { calculateShipping, type ShippingQuote } from '@/lib/shipping';
+import { type ShippingQuote } from '@/lib/shipping';
 
 type Props = {
   subtotalCents: number;
@@ -35,19 +34,16 @@ export function ShippingCalculator({
   initialProvince,
   initialPostalCode,
 }: Props) {
-  const [province, setProvince] = useState<string>(initialProvince ?? '');
+  // La provincia (si el user logueado la tiene en su dirección guardada) solo
+  // afina el fallback por zonas; NO es requerida — Correo cotiza con el CP solo.
+  const province = initialProvince ?? '';
   const [cp, setCp] = useState<string>(cp4(initialPostalCode ?? ''));
   const [apiQuotes, setApiQuotes] = useState<ApiQuotes | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Estimación por zona (tabla) — instantánea, sin CP.
-  const tableQuote = province
-    ? calculateShipping({ subtotalCents, provinceName: province })
-    : null;
-
   async function calculateExact() {
-    if (!province || cp4(cp).length !== 4) return;
+    if (cp4(cp).length !== 4) return;
     setLoading(true);
     setError(null);
     try {
@@ -55,7 +51,7 @@ export function ShippingCalculator({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          provinceName: province,
+          provinceName: province || undefined,
           postalCode: cp4(cp),
           subtotalCents,
           itemCount: itemCount ?? 1,
@@ -80,7 +76,7 @@ export function ShippingCalculator({
   const autoDone = useRef(false);
   useEffect(() => {
     if (autoDone.current) return;
-    if (province && cp4(cp).length === 4) {
+    if (cp4(cp).length === 4) {
       autoDone.current = true;
       void calculateExact();
     }
@@ -94,31 +90,10 @@ export function ShippingCalculator({
         Calculá tu envío
       </p>
       <p className="text-muted-foreground mt-1 text-xs">
-        Elegí tu provincia y, para el costo exacto, ingresá tu código postal.
+        Ingresá tu código postal (4 dígitos) y te damos el costo exacto de Correo.
       </p>
 
-      <select
-        value={province}
-        onChange={(e) => {
-          setProvince(e.target.value);
-          setApiQuotes(null);
-          setError(null);
-        }}
-        className={cn(
-          'border-border bg-background text-foreground mt-3 w-full rounded-md border px-3 py-2 text-sm',
-          'focus-visible:border-foreground/40 focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
-        )}
-        aria-label="Provincia"
-      >
-        <option value="">Seleccioná tu provincia…</option>
-        {AR_PROVINCES.map((p) => (
-          <option key={p} value={p}>
-            {p}
-          </option>
-        ))}
-      </select>
-
-      <div className="mt-2 flex gap-2">
+      <div className="mt-3 flex gap-2">
         <input
           inputMode="numeric"
           value={cp}
@@ -137,7 +112,7 @@ export function ShippingCalculator({
         <button
           type="button"
           onClick={calculateExact}
-          disabled={!province || cp4(cp).length !== 4 || loading}
+          disabled={cp4(cp).length !== 4 || loading}
           className={cn(
             'bg-foreground text-background shrink-0 rounded-md px-3 py-2 text-sm font-medium',
             'disabled:opacity-40',
@@ -169,32 +144,6 @@ export function ShippingCalculator({
         </div>
       )}
 
-      {/* Estimación por zona (tabla), si todavía no cotizó exacto */}
-      {!apiQuotes && tableQuote && (
-        <div className="mt-3 space-y-1 text-sm">
-          <div className="flex items-baseline justify-between">
-            <span className="text-muted-foreground">{tableQuote.zoneLabel}</span>
-            <span className="text-foreground font-medium tabular-nums">
-              {tableQuote.isFree ? (
-                <span className="text-emerald-700 dark:text-emerald-400">
-                  Gratis
-                </span>
-              ) : (
-                formatPriceCents(tableQuote.cents)
-              )}
-            </span>
-          </div>
-          {!tableQuote.isFree && tableQuote.centsToFreeShipping > 0 && (
-            <p className="text-muted-foreground text-xs">
-              Sumá {formatPriceCents(tableQuote.centsToFreeShipping)} para envío
-              gratis.
-            </p>
-          )}
-          <p className="text-muted-foreground/70 text-[11px]">
-            Estimación por zona. Ingresá tu CP para el costo exacto.
-          </p>
-        </div>
-      )}
     </div>
   );
 }

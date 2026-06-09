@@ -30,9 +30,13 @@ export async function POST(request: Request) {
     itemCount?: unknown;
   };
 
-  if (typeof provinceName !== 'string' || !AR_PROVINCES.includes(provinceName as never)) {
-    return NextResponse.json({ ok: false, error: 'provincia_invalida' }, { status: 400 });
-  }
+  // Provincia OPCIONAL: la cotización real de Correo usa solo el CP. Si viene
+  // y es válida, afina el fallback por zonas (API caída); si no, '' → zona
+  // conservadora. El CP es el único campo requerido.
+  const province =
+    typeof provinceName === 'string' && AR_PROVINCES.includes(provinceName as never)
+      ? provinceName
+      : '';
 
   const cp = typeof postalCode === 'string' ? normalizePostalCode(postalCode) : '';
   if (!cp) {
@@ -54,7 +58,7 @@ export async function POST(request: Request) {
 
   const quotes = await resolveShippingQuotes({
     subtotalCents: subtotal,
-    provinceName,
+    provinceName: province,
     postalCode: cp,
     itemCount: items,
   });

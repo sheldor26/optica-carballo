@@ -24,6 +24,26 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-09 — Reintegrar stock con SQL crudo (RPC no idempotente) en vez del admin action → doble-incremento en prod
+
+**Estado**: 🟡 Mitigado (los pedidos quedaron OK; el stock quedó +1 en 2 variantes, corrección pendiente de OK del founder)
+
+**Qué pasó**: el founder pidió cancelar 2 pedidos de prueba (`OC-2026-00008` pending, `OC-2026-00009` paid) y reintegrar su stock. En vez de usar el admin action `updateOrderStatusAction('cancelled')` (que llama `releaseOrderStock`: claim idempotente sobre `stock_released_at` + `increment_variant_stock` + push a ML, todo testeado), lo repliqué a mano vía MCP — UPDATE de status + `select increment_variant_stock(...)` por variante en una query multi-statement. El increment se aplicó DOS veces (probable re-ejecución/retry de la query MCP) → el stock quedó +2 en vez de +1 (Vulk Arvin 112941: 3→5, debía →4; Vulk Day Light 194185: 2→4, debía →3). `increment_variant_stock` NO es idempotente (suma siempre). El SQL tampoco empujó a ML (el admin action sí). El classifier de prod bloqueó (bien) el SET correctivo.
+
+**Causa raíz**: reimplementé a mano una operación de inventario que YA tenía un camino tested e idempotente, perdiendo (a) la idempotencia del claim, (b) el push a ML, (c) atomicidad. Una query multi-statement con un increment no idempotente vía MCP es peligrosa si se re-ejecuta.
+
+**Regla preventiva**: para mutaciones de stock/órdenes que ya tienen action/RPC tested e idempotente, USAR ese camino — no replicar en SQL crudo. Cancelar pedidos = botón "Cancelar" del panel admin (corre `releaseOrderStock`: idempotente + sync ML). Si hay que tocar prod por fuera de la app, preferir operaciones idempotentes (SET absoluto con guarda en UNA sentencia, nunca increment repetible). Las correcciones de inventario en prod las aprueba el founder.
+
+## 2026-06-09 — Escribir un script en `scripts/` importando módulos `server-only` (rompe al correr con tsx)
+
+**Estado**: ✅ Cerrado (corregido en el mismo turno)
+
+**Qué pasó**: para validar el envío de emails de orden escribí `scripts/email-smoke.ts` importando `lib/emails/send-order-emails` (los senders reales). Al correrlo con `tsx --env-file`, tiró `Error: This module cannot be imported from a Client Component module` — `lib/emails/client.ts` empieza con `import 'server-only'`, y ese paquete tira al importarse fuera del runtime de Next (tsx aplica la condición de export que lo rompe). Reescribí el script self-contained (SDK de Resend directo) y funcionó.
+
+**Causa raíz**: sabía que `mp-smoke` es "self-contained" pero no apliqué el porqué al escribir un script nuevo — asumí que podía reusar los senders reales. La razón de fondo (no se puede importar `server-only` en un script suelto) estaba solo implícita en el diseño de mp-smoke, no como regla explícita.
+
+**Regla preventiva**: los scripts de `scripts/` (corren con tsx, fuera de Next) NO pueden importar nada que arrastre `import 'server-only'` (todo `lib/emails/*`, `lib/mp/client`, etc.) — tiran al importar. Para smokes, replicar la llamada al SDK directo (self-contained) como `mp-smoke`/`correo-smoke`. Si hay que validar el wiring REAL de un módulo server-only, hacerlo vía runtime de Next (una route, o simulando el webhook contra el server corriendo), nunca en un script suelto.
+
 ## 2026-06-09 — Remoción "site-wide" de un claim que dejó leftovers en el cuerpo del contenido y en un componente compartido
 
 **Estado**: ✅ Cerrado (detectado en audit; barrido completo aplicado y verificado el mismo día — 0 self-claims user-facing, confirmado en HTML renderizado)

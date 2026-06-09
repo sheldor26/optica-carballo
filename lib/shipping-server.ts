@@ -48,13 +48,16 @@ function rateToQuote(
  */
 export async function resolveShippingQuotes(args: {
   subtotalCents: number;
-  provinceName: string;
+  /** Opcional: la cotización real de Correo (/rates) usa SOLO el CP. La
+   * provincia solo afina el fallback por zonas si la API falla. Sin provincia
+   * → zona conservadora (no underprice). */
+  provinceName?: string | null;
   postalCode?: string | null;
   itemCount?: number;
 }): Promise<{ delivery: ShippingQuote; branch: ShippingQuote | null }> {
   const fallback = calculateShipping({
     subtotalCents: args.subtotalCents,
-    provinceName: args.provinceName,
+    provinceName: args.provinceName ?? '',
   });
 
   if (!isCorreoConfigured() || !args.postalCode) {
@@ -89,7 +92,7 @@ export async function resolveShippingQuotes(args: {
  */
 export async function resolveDeliveryQuote(args: {
   subtotalCents: number;
-  provinceName: string;
+  provinceName?: string | null;
   postalCode?: string | null;
   itemCount?: number;
 }): Promise<ShippingQuote> {

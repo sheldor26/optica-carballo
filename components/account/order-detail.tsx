@@ -6,6 +6,7 @@ import { OrderTimeline } from '@/components/account/order-timeline';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import { resumeOrderPaymentAction } from '@/lib/checkout/actions';
 import type { OrderDetail, OrderStatusEvent } from '@/lib/orders/types';
 
 export function OrderDetailView({
@@ -48,6 +49,25 @@ export function OrderDetailView({
 
       {/* Tracker de pedido en vivo */}
       <OrderTimeline status={order.status} events={events} />
+
+      {/* Retomar pago — solo si el pedido quedó pendiente de pago */}
+      {order.status === 'pending' && (
+        <section className="border-brand/40 bg-brand/5 rounded-lg border p-5 text-center">
+          <p className="text-foreground text-sm font-medium">
+            Tu pago quedó pendiente
+          </p>
+          <p className="text-muted-foreground mx-auto mt-1 max-w-sm text-xs">
+            Apenas se acredite el pago empezamos a preparar tu pedido. Podés
+            retomar el pago cuando quieras.
+          </p>
+          <form action={resumeOrderPaymentAction} className="mt-4">
+            <input type="hidden" name="orderId" value={order.id} />
+            <Button type="submit" size="lg">
+              Pagar ahora
+            </Button>
+          </form>
+        </section>
+      )}
 
       {/* Tracking destacado si está enviado */}
       {order.trackingNumber && (

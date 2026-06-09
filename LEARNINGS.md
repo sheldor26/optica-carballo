@@ -38,6 +38,30 @@ Sirve para:
 
 **Regla**: cuando una explicación técnica no convence, traducirla a una analogía cotidiana ANTES de aportar más datos. Conecta con el MISTAKE "responder pregunta repetida con más datos".
 
+## 2026-06-09 — El webhook MP se validó sin simular: MP notifica la notification_url de PROD, que comparte la DB cloud
+
+**Contexto**: en el test local di por hecho que el webhook MP habría que simularlo (MP no llega a localhost). Pero `OC-2026-00009` quedó `paid` con `mp_payment_id` real → el webhook corrió DE VERDAD. Por qué: la preference le manda a MP la `notification_url` = la de PRODUCCIÓN (`opticacarballo.com.ar/api/mp/webhook`), no localhost. MP (sandbox) notificó esa URL de prod; el deploy de Vercel procesó el webhook y actualizó la orden en la DB cloud — la misma que usa el localhost. La página `/checkout/exito` es solo informativa (no marca paid).
+
+**Aprendizaje**: cuando una integración con webhook usa una `notification_url` fija de prod, un test "local" en realidad ejercita el webhook de PROD si comparten DB. Es bueno (validó el camino real end-to-end), pero ojo: (a) el deploy de prod ya tiene el webhook vivo aunque el checkout esté OFF (el route no chequea el flag); (b) los efectos del webhook (emails, etc.) corren con la config de PROD — si `BUSINESS_ADMIN_EMAIL` no está en Vercel, el aviso al admin se saltea aunque local lo tenga seteado. Matiza el learning previo "MP no llega a localhost → simular".
+
+**Regla**: al testear una integración con webhook, mirar a qué `notification_url` se apunta — define quién procesa la notificación y con qué env. Si es prod, el efecto cae en prod (DB + emails con env de prod).
+
+## 2026-06-09 — Un campo de formulario "requerido" que el API downstream no necesitaba: auditar el contrato destrabó la simplificación
+
+**Contexto**: el carrito obligaba a elegir provincia ANTES de cotizar el envío (el botón "Calcular" quedaba deshabilitado sin provincia, aunque el CP estuviera cargado). El founder pidió cotizar con solo el CP. Al auditar el contrato de la API de Correo (`/rates`), vi que solo consume `postalCodeDestination` — la provincia NI se le manda; estaba únicamente para el fallback por zonas. O sea: el form exigía un dato que el servicio real no usa. La simplificación (sacar el `<select>`, CP como único campo) salió de leer qué consume el API, no de inventar un mapeo CP→provincia.
+
+**Aprendizaje**: antes de mantener (o agregar) un campo REQUERIDO en un formulario, chequear qué necesita REALMENTE el endpoint/servicio downstream. Los formularios suelen exigir campos por asunción ("para cotizar hace falta la provincia"), no por necesidad técnica. Leer el contrato del API revela campos redundantes que se pueden quitar → menos fricción, sin perder nada.
+
+**Regla**: cuando un campo de UI genera fricción (acá: bloqueaba el CTA), antes de "mejorarlo" preguntarse si es necesario — rastrear el dato hasta el API que lo consume. Si el API no lo usa, el campo se quita. Conecta con la regla 14 (audit antes de actuar) y "preferí simple sobre clever".
+
+## 2026-06-09 — Validar una integración en capas: infra (smoke self-contained) → superficie (curl al app) → wiring (runtime real)
+
+**Contexto**: el founder quiso "habilitar MP". En vez de prender el flag a ciegas, validé en capas, todo con credenciales TEST: (1) infra de MP con `mp:smoke` (¿crea preferencia? live_mode prueba), (2) infra de email con `email:smoke` self-contained (¿Resend entrega a la casilla del founder con el dominio verificado? — la falla previa, cubierta a nivel infra), (3) superficie con curl al app corriendo (`/checkout` pasó de 404 a 307 = flag vivo, `/carrito` con CTA de compra), (4) el wiring completo (templates + orden→paid) queda para el runtime real porque `server-only` no corre en scripts. Además: **MP no puede pegarle a localhost** → el webhook se SIMULA para cerrar el e2e local.
+
+**Aprendizaje**: una integración transaccional no se prueba con un solo test "anda/no anda". Se descompone en capas, y cada capa se valida con la herramienta más barata que la AÍSLA: credencial/infra → script self-contained; flag/superficie → curl al server; wiring de código server-only → runtime real (route o webhook simulado). Aislar capas hace que cuando algo falla sepas EXACTAMENTE qué falló (credencial vs dominio vs flag vs template), en vez de un "el checkout no anda" opaco.
+
+**Regla**: antes de habilitar un flujo transaccional en prod, validar en local por capas y dejar registrado qué capa cubre cada test. Los webhooks de terceros (MP, etc.) no llegan a localhost → simularlos con firma válida contra el server corriendo. Conecta con MISTAKES "activar checkout sin verificar TODAS las env vars" y "server-only no importable en scripts".
+
 ## 2026-06-09 — La mejora de UX más barata fue USAR componentes que ya existían, validados contra archivos hermanos
 
 **Contexto**: el founder pidió un rediseño de las guías (romper muro de texto, CTA del lector destacado, listas visuales, + ideas avanzadas: scrollytelling, audio TTS, bento). El audit (regla 14) mostró que `mdx-components.tsx` YA tenía `ToolCta`, `KeyTakeaway`, `MedicalDisclaimer`, `CategoryCta`, `RevealOnScroll`. La guía `como-leer-receta-anteojos.mdx` simplemente no los usaba (markdown plano). Antes de tocar nada, grepié las guías hermanas (`astigmatismo.mdx`/`miopia.mdx`) y confirmé que YA usaban esos componentes sin import → el patrón estaba probado, la de receta era la outlier. La re-maquetación fue: insertar componentes existentes + UN componente nuevo chico (`<Steps>`). Cero librerías. El 80% de los "fundamentos" pedidos salió de reutilizar.
