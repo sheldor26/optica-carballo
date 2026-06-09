@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Limpiar datos de prueba de checkout: el stock se descuenta al CREAR la orden y ML es la fuente de verdad
+
+**Contexto**: probar el checkout e2e dejó 6 órdenes de prueba que descontaron stock REAL. El descuento ocurre en `reserve_stock` al **crear** la orden (status `pending`), NO al pagar — así que hasta las órdenes pendientes/abandonadas bajaron stock. Cada descuento además hace push outbound a ML. Al limpiar, reintegrar solo en la DB **no alcanza**: un cron (`ml-reconcile-stock`) corre cada 6h y trae stock **de ML → DB**, así que si ML quedó con el valor descontado, pisa el reintegro en ≤6h.
+
+**Aprendizaje**: en este sistema ML es la fuente de verdad del stock en runtime. Cualquier corrección de stock debe terminar reflejada en ML (idealmente ML y DB iguales, para que el reconcile sea no-op). El push outbound (DB→ML) solo se dispara desde el checkout o desde un entorno con `ML_CLIENT_ID/SECRET/REDIRECT_URI` (Vercel) — no se puede correr desde el `.env.local` local (no las tiene). Gap detectado: las órdenes `pending` abandonadas no liberan su reserva de stock (no hay job de expiración) → stock fantasma. Ver BACKLOG.
+
+**Regla**: antes de testear checkout en producción, asumir que **cada intento descuenta stock real y lo replica a ML** (no es inocuo). Planificar la limpieza: cancelar las órdenes + reintegrar en ML (no solo en la DB) + verificar con el inbound (`/api/admin/ml-force-sync/<MLA>`). Conecta con la entrada de la primera venta e2e (verificar estado en la fuente real, no en la pantalla).
+
 ## 2026-06-08 — Deliverability de email: autenticación completa ≠ bandeja de entrada (reputación de dominio nuevo)
 
 **Contexto**: tras configurar Resend con dominio propio, los mails transaccionales (confirmación al cliente + aviso de venta al founder) **llegaban pero a spam**. Diagnóstico con `dig`: SPF ✓ (return-path `send.dominio`→amazonses), DKIM ✓ (`resend._domainkey`), pero **faltaba DMARC** (`_dmarc` vacío). Tras publicar `v=DMARC1; p=none; rua=...` en Vercel DNS, la autenticación quedó completa (SPF+DKIM+DMARC) — y aun así los primeros mails seguían cayendo a spam.
