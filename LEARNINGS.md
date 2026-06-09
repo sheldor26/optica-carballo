@@ -22,6 +22,30 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-09 — Reintegro de stock casi gratis por reusar piezas existentes + claim atómico para idempotencia
+
+**Contexto**: el founder pidió reintegrar stock al cancelar un pedido (DB + ML). En vez de escribir un camino nuevo, ya existía `revertStock`/`increment_variant_stock` + `syncStockOutboundForVariants` (usados como compensación cuando falla `createOrderFromCart`). El reintegro al cancelar (`releaseOrderStock`) salió reusando exactamente eso. El auto-cancelar de abandonados reusó `releaseOrderStock`. Tres features, un solo camino de reintegro.
+
+**Aprendizaje 1 — auditar antes de construir paga (regla 14 en acción)**: el reintegro "parecía" una feature nueva; era 90% reuso. Un `grep` de `increment_variant_stock`/`revert` reveló las piezas. Antes de estimar/construir cualquier cosa de stock o pagos, buscar el camino de compensación que ya existe.
+
+**Aprendizaje 2 — idempotencia con claim atómico, no con flag leído-luego-escrito**: `increment_variant_stock` suma cada vez que se la llama (no es idempotente). La protección correcta NO es "leer `stock_released_at`, si null reintegrar" (race). Es un UPDATE condicional que setea la marca SOLO si está null y devuelve la fila: `UPDATE ... SET stock_released_at=now() WHERE id=$1 AND stock_released_at IS NULL RETURNING id`. Si volvés la fila, ganaste el claim → reintegrás. Patrón reusable para cualquier "hacer X una sola vez" sobre una orden.
+
+## 2026-06-08 — Una analogía concreta cierra una duda conceptual que los datos no
+
+**Contexto**: tras 2 respuestas con datos sobre por qué el tracking de Correo no es automático, el founder seguía preguntando lo mismo. La 3ª respuesta —analogía del "rastreo de paquete" (el endpoint usa el número, no lo entrega) + señalar el propio ejemplo del manual (`shippingId` enviado == `trackingNumber` devuelto)— fue la que comunicó. La evidencia ya estaba completa; faltaba traducirla.
+
+**Aprendizaje**: para un founder no-técnico, una duda conceptual se cierra con una **analogía de su mundo** + la **evidencia señalada dentro de su propio material**, no con más pruebas técnicas. Cuando una explicación no "prende" dos veces, el problema es el registro, no la falta de datos.
+
+**Regla**: cuando una explicación técnica no convence, traducirla a una analogía cotidiana ANTES de aportar más datos. Conecta con el MISTAKE "responder pregunta repetida con más datos".
+
+## 2026-06-08 — Separar "capturar el número" (no/manual) de "actualizar el estado" (sí/automático) destraba la pregunta recurrente del tracking
+
+**Contexto**: el founder repreguntó (4ª vez) si `/shipping/tracking` sirve para tracking automático, pegando de nuevo el ejemplo del manual. La respuesta NO era más evidencia ni repetir "no es automático" — era partir la pregunta en dos: (a) ¿el número de seguimiento aparece solo? → **No**: el alta devuelve solo `{createdAt}` y este endpoint CONSUME el número (en el propio ejemplo, `shippingId` enviado == `trackingNumber` devuelto; la 3ª respuesta del manual `"No existe el cliente o pedido"` es lo que nos dio con NUESTROS ids). El número se copia 1 vez del panel. (b) ¿el estado del envío se actualiza solo? → **Sí**, y para eso SÍ sirve este endpoint: con el número ya cargado, un job lo consulta periódicamente y actualiza el tracker del cliente sin intervención.
+
+**Aprendizaje**: "¿es automático?" sobre una integración casi nunca es binario. La respuesta honesta y útil parte el flujo en sub-pasos y dice cuáles se automatizan y cuáles no. Responder "no es automático" a secas era técnicamente correcto pero ocultaba que el 80% del trabajo repetitivo (actualizar estados) SÍ se puede automatizar — y eso era justo lo que el founder quería.
+
+**Regla**: ante "¿esto es automático?", descomponer el flujo en pasos y marcar cada uno (auto / manual una-vez / manual recurrente) en vez de dar un sí/no global. Validación pendiente y chica: pegarle a `/shipping/tracking` un número REAL del panel (nunca probado — solo con nuestros ids, que dan "No existe") para confirmar que devuelve eventos. Conecta con el MISTAKE "presentar el manual como hecho cerrado".
+
 ## 2026-06-08 — Validar la conclusión en el ambiente que importa (prod), no solo en el cómodo (sandbox)
 
 **Contexto**: la conclusión "el tracking de Correo no se obtiene por API" se había probado SOLO en sandbox (apitest). La insistencia repetida del founder llevó a probarla en **PRODUCCIÓN** con un envío real: mismo resultado inmediato, pero recién ahí la conclusión es sólida, y además apareció el caveat real (un envío en preimposición puede tardar horas en entrar al seguimiento) y el dato que falta (el nº que asigna Correo, visible en el panel).
