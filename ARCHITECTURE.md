@@ -43,9 +43,8 @@ Ver `DECISIONS.md` para el contexto completo de cada decisión.
 - **WhatsApp Business API**: deep links con contexto pre-cargado (V1) → API oficial (V2)
 
 ### Logística
-- **Andreani**: principal (sucursal + domicilio)
-- **Correo Argentino**: fallback
-- Tabla fija de costos por zona en V1 → API en V2
+- **Correo Argentino (MiCorreo)**: operador único (domicilio + sucursal). API `/rates` integrada en `lib/correo/`. (Andreani descartado — ADR-026.)
+- Tabla fija de costos por zona como **fallback** (API caída / estimadores client-side)
 
 ### Analytics y monitoring
 - **Google Search Console**
@@ -167,7 +166,7 @@ Detalle completo del schema en `supabase/migrations/00001_initial_schema.sql` (a
 - **Supabase Storage para imágenes** (ADR-013).
 - **Mercado Pago Checkout Pro V1** (ADR-015).
 - **Tusfacturas para AFIP** (ADR-016).
-- **Andreani principal + Correo Argentino fallback** (ADR-017).
+- **Correo Argentino (MiCorreo) único operador** (ADR-026, revierte ADR-017).
 - **Stack IA** (ADR-021).
 - **Defensa contra prompt injection obligatoria** (ADR-022).
 

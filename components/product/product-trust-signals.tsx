@@ -23,7 +23,7 @@ const SIGNALS: Signal[] = [
   {
     icon: Truck,
     title: 'Envío a todo el país',
-    description: 'Con Andreani con seguimiento',
+    description: 'Con Correo Argentino con seguimiento',
   },
   {
     icon: FileText,
@@ -51,7 +51,7 @@ const SIGNALS: Signal[] = [
  * Las claims son universales del negocio (BUSINESS_POLICIES.md):
  * - 30 años: founder confirmó "empresa familiar 30+ años".
  * - Óptica matriculada: María Carlota es la regente matriculada.
- * - Envío: Andreani principal (sin prometer plazos específicos).
+ * - Envío: Correo Argentino (sin prometer plazos específicos).
  * - Cambios: 30 días para talle/color sin uso (Defensa del Consumidor + política propia).
  */
 export function ProductTrustSignals() {

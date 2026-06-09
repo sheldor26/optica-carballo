@@ -56,7 +56,7 @@ Objetivo: ser **la óptica online más confiable y técnicamente avanzada de Arg
 - **Email**: Resend
 - **IA**: API de modelos LLM (Sonnet 4 default)
 - **Embeddings**: OpenAI text-embedding-3-small + pgvector
-- **Logística**: Andreani (principal) + Correo Argentino (fallback)
+- **Logística**: Correo Argentino (MiCorreo) — único operador, domicilio + sucursal (ADR-026, revierte ADR-017)
 - **Analytics**: Google Search Console + GA4 + Vercel Analytics
 
 ## Sistema de agentes (cuándo invocarlos)

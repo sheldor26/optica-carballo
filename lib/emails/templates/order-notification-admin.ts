@@ -37,7 +37,7 @@ export type AdminEmailData = {
  * Email administrativo al founder cuando una orden recibe pago confirmado.
  * Incluye todos los datos necesarios para:
  *   1. Facturar manualmente con AFIP (regla actual: sin Tusfacturas en V1).
- *   2. Imprimir rótulo de envío en MiCorreo / Correo / Andreani.
+ *   2. Imprimir rótulo de envío en MiCorreo (Correo Argentino).
  *   3. Contactar al cliente si hace falta.
  */
 export function buildAdminOrderEmail(data: AdminEmailData): {
@@ -103,7 +103,7 @@ export function buildAdminOrderEmail(data: AdminEmailData): {
         <td style="padding:14px 16px;color:#713f12;font-size:13px;line-height:1.6;">
           <strong>Acciones a hacer manualmente</strong> (recordatorio V1):<br/>
           1. <strong>Facturar electrónicamente</strong> en AFIP (Tusfacturas pendiente).<br/>
-          2. <strong>Imprimir rótulo</strong> desde MiCorreo / Andreani.<br/>
+          2. <strong>Imprimir rótulo</strong> desde MiCorreo (Correo Argentino).<br/>
           3. <strong>Empaquetar</strong> y entregar al correo.<br/>
           4. <strong>Mandar tracking</strong> al cliente cuando despachás.
         </td>

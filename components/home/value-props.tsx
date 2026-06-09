@@ -37,7 +37,7 @@ export function ValueProps() {
     {
       icon: Truck,
       title: 'Envíos a todo el país',
-      body: 'Andreani como operador principal. Retiro gratis en local de Virasoro.',
+      body: 'Envíos con Correo Argentino a todo el país. Retiro gratis en local de Virasoro.',
     },
     {
       icon: MessageCircle,

@@ -407,16 +407,18 @@ Opciones para facturación electrónica AFIP: Tusfacturas, Afipsdk, Contabilium,
 ## ADR-017 — Andreani principal + Correo Argentino fallback
 
 **Fecha**: 2026-05-27
-**Estado**: 🟢 Vigente
+**Estado**: 🔴 Revertido por ADR-026 (2026-06-08) — nunca se integró Andreani
 **Categoría**: Logística
 
-### Decisión
+### Decisión (original, ya NO vigente)
 - **Andreani**: operador principal (sucursales y domicilio).
 - **Correo Argentino**: fallback para CPs donde Andreani no cubre.
 - **Retiro en local Virasoro**: tercer opción (gratis).
 
 ### V1 simplificación
 Tabla fija de costos por zona, no cotización en tiempo real. Integrar API después.
+
+> **Revertido**: en la práctica se integró SOLO Correo Argentino (MiCorreo, API `/rates` + `/agencies`) y nunca Andreani. El founder ratificó Correo Argentino como único operador. Ver **ADR-026**.
 
 ---
 
@@ -708,6 +710,57 @@ Founder pidió "que cuando se vende en ML baje stock en la página y viceversa".
 - Admin UI `/mi-cuenta/marketplace`.
 - Cron de reconciliación diaria.
 - Tabla `marketplace_sync_errors` para logs.
+
+---
+
+## ADR-025 — HyperFrames para videos de producto (HTML→MP4)
+
+**Fecha**: 2026-06-06
+**Estado**: 🟢 Vigente
+**Categoría**: Contenido | Operación
+
+### Contexto
+Necesitamos videos de producto para redes (Instagram) y para embeber en la web, sin grabar nada y aprovechando que ya tenemos datos de producto + fotos + identidad de marca. El founder propuso HyperFrames (`npx hyperframes`, open-source de HeyGen): se define el video como HTML/CSS/JS y la CLI lo renderiza a MP4 determinístico (Chrome headless + FFmpeg, frame a frame seekeando un timeline GSAP en pausa).
+
+### Decisión
+Adoptar HyperFrames como herramienta de generación de videos de producto. Vive en `marketing/product-video/` (proyecto aislado, **no** es dependencia del app de Next). Template data-driven (`data.js`) reutilizable por modelo. Primer formato: 1:1 (1080×1080). FFmpeg/FFprobe vía `ffmpeg-static`/`ffprobe-static` (sin instalar nada global). Fuentes: nombres mapeados por HyperFrames (Inter + Playfair Display), sin Google Fonts, para render determinístico offline.
+
+### Alternativas consideradas
+- **Editor de video manual (Canva/CapCut/Premiere)**: no versionable, no data-driven, no escala a N productos. HyperFrames templatiza y reusa.
+- **Remotion (React→video)**: más potente pero suma React + más peso; HyperFrames es HTML plano y más simple (regla "simple sobre clever"). Reevaluable si necesitamos lógica compleja.
+- **Instalar FFmpeg vía Homebrew**: cambio global del sistema; preferimos binarios aislados por proyecto.
+
+### Consecuencias
+- Positivas: videos reproducibles, versionados, baratos de generar para cualquier producto; cero dependencia nueva en el app de producción.
+- Negativas: la CLI baja Chrome headless + FFmpeg (varios cientos de MB la primera vez); render ~5-17s por video en esta máquina.
+- Riesgos: tool joven (v0.6.x), API puede cambiar (pin de versión `@0.6.76` en los scripts). Claims de negocio en los videos deben respetar BUSINESS_POLICIES (no inventar cuotas/promos).
+
+### Cómo se valida
+El founder aprueba el primer video (Rusty Esvep). Si sirve, se reusa el template para más modelos y se evalúa una variante vertical 9:16 para reels.
+
+---
+
+## ADR-026 — Correo Argentino (MiCorreo) como único operador de envíos
+
+**Fecha**: 2026-06-08
+**Estado**: 🟢 Vigente (revierte ADR-017)
+**Categoría**: Logística
+
+### Contexto
+El ADR-017 (2026-05-27) definía Andreani como operador principal y Correo Argentino como fallback, con tabla fija de costos. En la práctica, la única integración construida fue **MiCorreo (Correo Argentino)**: API `/rates` (cotización domicilio + sucursal) + `/agencies` (sucursales), en `lib/correo/` + `lib/shipping-server.ts`. Nunca se integró Andreani. El founder ratificó (2026-06-08) que los envíos son **solo por Correo Argentino**.
+
+### Decisión
+- **Correo Argentino (MiCorreo) es el único operador de envíos.** Modos: domicilio (D) y sucursal del Correo (S), más retiro gratis en el local de Virasoro (pickup).
+- **Andreani queda descartado** (no se menciona en UI, emails, copy ni docs).
+- La **tabla por zonas** (`lib/shipping.ts`) queda como **fallback** (API caída / sin configurar) y para los estimadores client-side (carrito + PDP), donde no se puede llamar a la API secreta server-only.
+
+### Consecuencias
+- Positivas: una sola integración que mantener; cotización real a domicilio/sucursal; sucursal ~$3k más barata que domicilio para el cliente.
+- Negativas/pendientes: el alta automática del envío + tracking (Fase 3, `/shipping/import`) NO está hecha → el tracking hoy es manual. Cobertura de Correo: algunos CPs no cotizables caen al fallback de tabla (ver CURRENT_STATE).
+- Limpieza aplicada: se quitó "Andreani" de UI pública, email de venta, chatbot, FAQ, trust signals, seed SEO (Rusty, en DB) y docs (CLAUDE.md, ARCHITECTURE, BUSINESS_POLICIES, README, METRICS).
+
+### Cómo se valida
+Cotización validada contra producción (login + `/rates` + `/agencies`, read-only). El checkout e2e ya creó órdenes con envío a domicilio/sucursal/pickup correctamente.
 
 ---
 

@@ -79,7 +79,7 @@ El "panel de instrumentos" del negocio. KPIs definidos, valores actuales, benchm
 | Métrica | Fuente | Frecuencia | Valor actual | Target |
 |---------|--------|------------|--------------|--------|
 | Tiempo promedio orden → envío | Supabase | Semanal | N/A | <48h hábiles |
-| Tiempo promedio envío → entrega | Andreani/CA | Semanal | N/A | 4-7 días |
+| Tiempo promedio envío → entrega | Correo Argentino | Semanal | N/A | 4-7 días |
 | Tasa de devoluciones | Supabase | Mensual | N/A | <3% |
 | Tasa de incidencias logísticas | Manual | Mensual | N/A | <2% |
 | Tasa de retiro en local | Supabase | Mensual | N/A | 5-10% |

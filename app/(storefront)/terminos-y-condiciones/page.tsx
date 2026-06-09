@@ -141,9 +141,8 @@ export default function Page() {
 
       <h2>7. Envíos</h2>
       <p>
-        Enviamos a todo Argentina. Operador principal: <strong>Andreani</strong>.
-        Operador alternativo (zonas no cubiertas): <strong>Correo Argentino</strong>.
-        Retiro gratis en nuestro local de{' '}
+        Enviamos a todo Argentina con <strong>Correo Argentino</strong> (a
+        domicilio o a sucursal). Retiro gratis en nuestro local de{' '}
         {business.locality ?? '[A CONFIRMAR]'}.
       </p>
       <p>

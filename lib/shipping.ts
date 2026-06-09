@@ -1,21 +1,16 @@
 /**
- * Cálculo de costo de envío para el checkout V1.
+ * Cálculo de costo de envío — tabla por zonas (FALLBACK).
  *
- * V1 — Tabla por zonas hardcoded. Defaults conservadores hasta que el
- * founder pase tarifas reales del operador logístico contratado
- * (Andreani o Correo Argentino vía PAQ.AR). Editar los valores acá +
- * redeploy = nuevos precios al instante.
+ * El operador de envíos es **Correo Argentino** (MiCorreo). La cotización
+ * real corre server-side en `lib/correo/` + `lib/shipping-server.ts`
+ * (API /rates de MiCorreo, a domicilio o sucursal). Esta tabla por zonas
+ * queda como **fallback** cuando la API no está configurada o falla, y
+ * para los estimadores client-side (carrito + PDP), donde no se puede
+ * llamar a la API secreta. Editar los valores acá + redeploy = nuevos
+ * precios al instante.
  *
- * Futuro — Cuando el founder tenga `agreement` + `API-Key` de Correo
- * Argentino (o equivalente), se crea `lib/correo/quote.ts` con un
- * `calculateShippingViaApi()` que reemplace esta función en `checkout/
- * actions.ts`. La interfaz `ShippingQuote` se mantiene igual, así el
+ * La interfaz `ShippingQuote` se mantiene igual entre tabla y API, así el
  * resto del flow no cambia.
- *
- * Importante: PAQ.AR API NO tiene endpoint de cotización (verificado
- * con el manual oficial v2.0). El precio sale del contrato comercial
- * directo. Para mostrar precios dinámicos sin contrato, hace falta
- * scraping o un proveedor con quote API (Andreani sí lo tiene).
  */
 
 import { AR_PROVINCES, type ArProvince } from '@/lib/addresses/constants';

@@ -33,7 +33,7 @@ const STEPS: Step[] = [
   {
     number: '04',
     title: 'Te llega',
-    body: 'Envío Andreani a todo el país con seguimiento. Garantía completa y devolución por arrepentimiento.',
+    body: 'Envío por Correo Argentino a todo el país con seguimiento. Garantía completa y devolución por arrepentimiento.',
   },
 ];
 

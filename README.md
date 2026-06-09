@@ -96,7 +96,7 @@ Ver `CLAUDE.md` sección "Sistema de agentes" para la lista completa.
 - **Hosting**: Vercel
 - **Pagos**: Mercado Pago + Tusfacturas (AFIP)
 - **IA**: API de modelos LLM + OpenAI embeddings
-- **Logística**: Andreani + Correo Argentino
+- **Logística**: Correo Argentino (MiCorreo)
 - **Email**: Resend
 - **Analytics**: GSC + GA4 + Vercel Analytics
 
@@ -152,7 +152,7 @@ Ver `DECISIONS.md` completo. Resumen:
 - **Snapshots en orders** (ADR-007)
 - **WhatsApp complementario, no rival del checkout** (ADR-008)
 - **MP Checkout Pro V1** (ADR-015)
-- **Andreani principal + Correo Argentino fallback** (ADR-017)
+- **Correo Argentino (MiCorreo) único operador** (ADR-026, revierte ADR-017)
 - **Agent Manager Versión A** hasta septiembre 2026 (ADR-014)
 
 ## Métricas objetivo

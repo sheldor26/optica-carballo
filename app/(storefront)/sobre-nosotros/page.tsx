@@ -95,7 +95,7 @@ function Hero() {
 const STATS = [
   { icon: CalendarDays, label: '+30 años', sub: 'En el rubro desde 1994' },
   { icon: Award, label: 'Óptica matriculada', sub: 'Regencia profesional' },
-  { icon: Truck, label: 'Todo el país', sub: 'Envíos con Andreani' },
+  { icon: Truck, label: 'Todo el país', sub: 'Envíos con Correo Argentino' },
   { icon: Heart, label: 'Familiar', sub: 'Atención cercana, no call center' },
 ];
 
@@ -372,7 +372,7 @@ const HOW_WE_WORK = [
     icon: Truck,
     title: 'Envíos a todo el país',
     description:
-      'Trabajamos con Andreani como principal y Correo Argentino como respaldo. Retiro gratis en nuestro local si vivís cerca.',
+      'Enviamos con Correo Argentino a todo el país, a domicilio o a sucursal. Retiro gratis en nuestro local si vivís cerca.',
   },
   {
     icon: Award,

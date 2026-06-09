@@ -148,7 +148,7 @@ export default function Page() {
           Pago — nosotros no la vemos ni guardamos.
         </li>
         <li>
-          <strong>Andreani / Correo Argentino</strong>: gestiona el envío de tu
+          <strong>Correo Argentino</strong>: gestiona el envío de tu
           pedido. Comparten datos de contacto y dirección.
         </li>
         <li>

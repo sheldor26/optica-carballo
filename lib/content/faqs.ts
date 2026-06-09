@@ -79,7 +79,7 @@ export const FAQS: FaqItem[] = [
     featured: true,
     question: '¿Hacen envíos a todo el país?',
     answer:
-      'Sí, enviamos a toda Argentina con Andreani como operador principal y Correo Argentino donde Andreani no llega. También podés retirar gratis en nuestro local de Virasoro, Corrientes.',
+      'Sí, enviamos a toda Argentina con Correo Argentino, a domicilio o a sucursal. También podés retirar gratis en nuestro local de Virasoro, Corrientes.',
   },
   {
     id: 'cuanto-tarda-envio',

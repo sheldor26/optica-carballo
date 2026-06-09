@@ -17,8 +17,8 @@ type Props = {
  * y ayuda a decidir si suma items para llegar al free shipping.
  *
  * `calculateShipping` es 100% pura, no toca DB ni APIs — la cotización es
- * instantánea client-side. Cuando se integre API real (Andreani), este
- * componente puede pasar a fetch + loading state.
+ * instantánea client-side (tabla por zonas como estimación). El precio
+ * final lo cotiza la API de Correo Argentino en el checkout (server-side).
  */
 export function ShippingCalculator({ subtotalCents }: Props) {
   const [province, setProvince] = useState<string>('');

@@ -121,7 +121,7 @@ export function OrderStatusControl({
             disabled={pending}
             rows={2}
             maxLength={500}
-            placeholder="Ej: enviado por Andreani, llega en 3-5 días hábiles."
+            placeholder="Ej: enviado por Correo Argentino, llega en 3-5 días hábiles."
             className="border-input bg-background text-foreground focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
           />
           <p className="text-muted-foreground mt-1 text-xs">

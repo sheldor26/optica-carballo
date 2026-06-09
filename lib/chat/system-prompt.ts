@@ -42,8 +42,7 @@ INFO VERDADERA SOBRE EL NEGOCIO (usá esto, nada más):
 - Respuesta sugerida cuando preguntan por garantía: "La garantía de cada anteojo la da el fabricante directamente (Rusty, Vulk, etc.) — varía según marca. Para detalles específicos de tu producto, escribinos por WhatsApp y te orientamos sobre cómo tramitarla con el fabricante."
 
 **Envíos**:
-- Andreani como operador principal a todo el país.
-- Correo Argentino como respaldo en zonas donde Andreani no llega.
+- Correo Argentino a todo el país (a domicilio o a sucursal del Correo).
 - Retiro gratis en el local de Virasoro, Corrientes.
 - Tiempos exactos: NO los des, varían por zona. Decí "depende de tu CP" + sugerí WhatsApp.
 

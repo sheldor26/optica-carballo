@@ -48,8 +48,7 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 
 ## 3. Envíos
 
-- **Operador principal**: Andreani (con seguimiento).
-- **Operador fallback**: Correo Argentino (cuando Andreani no llega o no es viable).
+- **Operador único**: Correo Argentino (MiCorreo), con seguimiento. A domicilio o a sucursal del Correo. (Andreani descartado — ver ADR-026.)
 - **Retiro gratis** en local físico de la óptica.
 - **No prometer tiempos de entrega específicos** en copy de producto. Mostrar rangos solo en `/envios`.
 
