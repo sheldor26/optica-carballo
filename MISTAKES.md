@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Responder una pregunta REPETIDA con más datos, en vez de cambiar el registro de la explicación
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el founder preguntó 3 veces lo mismo ("¿este endpoint no sirve para el tracking automático?"). Las 2 primeras respondí aportando MÁS evidencia (probé en sandbox, después en prod, 12+9 intentos). Recién la 3ª cambié a una **analogía** ("es la máquina de rastrear: le das el número, no te da el número") + señalé la prueba en SU propio material (el ejemplo del manual donde `shippingId` enviado == `trackingNumber` devuelto). Esa recién comunicó.
+
+**Causa raíz**: interpreté la pregunta repetida como gap de EVIDENCIA (seguí probando) cuando era gap de COMUNICACIÓN. Más datos no cierran una duda conceptual; una analogía sí.
+
+**Regla preventiva**: si el founder repite la MISMA pregunta tras una respuesta YA verificada con datos, NO aportar más datos — cambiar el registro: analogía concreta de su mundo + mostrar la evidencia dentro de su propio material. La repetición ES la señal de que falta traducir, no probar.
+
 ## 2026-06-08 — Declarar "100% confirmado" tras una prueba exhaustiva en el ambiente EQUIVOCADO (sandbox, no prod)
 
 **Estado**: 🟡 Mitigado

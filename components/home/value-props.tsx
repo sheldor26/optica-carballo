@@ -22,12 +22,8 @@ export function ValueProps() {
   const props: Prop[] = [
     {
       icon: GraduationCap,
-      title: business.regenteMatricula
-        ? 'Regente óptica matriculada'
-        : 'Atención profesional',
-      body: business.regenteName
-        ? `Asesoramiento personal de ${business.regenteName}, regente matriculada.`
-        : 'Asesoramiento de técnico óptico matriculado en cada compra.',
+      title: 'Atención personalizada',
+      body: 'Asesoramiento real en cada compra, con experiencia en óptica.',
     },
     {
       icon: Award,

@@ -97,7 +97,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
           </h1>
 
           <p className="hero-reveal hero-reveal-3 mt-8 max-w-xl text-balance text-base text-white/70 md:text-lg">
-            Atención personalizada por técnico óptico matriculado.
+            Atención personalizada con experiencia real en óptica.
             30+ años en Argentina. Envíos a todo el país y pago seguro con Mercado Pago.
           </p>
 

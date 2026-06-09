@@ -23,12 +23,12 @@ const STEPS: Step[] = [
   {
     number: '02',
     title: 'Te asesoramos',
-    body: 'Si tenés dudas técnicas, te contestamos por WhatsApp o teléfono. Atención por técnico óptico matriculado, no bot.',
+    body: 'Si tenés dudas técnicas, te contestamos por WhatsApp o teléfono. Atención personal real, no bot.',
   },
   {
     number: '03',
     title: 'Armamos tu anteojo',
-    body: 'La regente matriculada controla cada pedido antes de armar. Receta validada, lentes específicos para tu uso.',
+    body: 'Controlamos cada pedido antes de armar. Receta validada, lentes específicos para tu uso.',
   },
   {
     number: '04',

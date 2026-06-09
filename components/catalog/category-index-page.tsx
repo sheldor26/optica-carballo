@@ -13,9 +13,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
 const INTRO_COPY: Record<CategoryConfig['slug'], string> = {
   'anteojos-de-sol':
-    'Marcas con presencia argentina y stock real. Anteojos de sol originales, envíos a todo el país y asesoramiento de técnico óptico matriculado.',
+    'Marcas con presencia argentina y stock real. Anteojos de sol originales, envíos a todo el país y asesoramiento personal.',
   'anteojos-de-receta':
-    'Armazones de receta de las marcas que trabajamos en óptica. Cristales graduados según tu prescripción, asesoramiento de técnico óptico matriculado.',
+    'Armazones de receta de las marcas que trabajamos en óptica. Cristales graduados según tu prescripción, asesoramiento personal.',
 };
 
 function buildCollectionJsonLd(

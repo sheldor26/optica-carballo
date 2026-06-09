@@ -17,8 +17,8 @@ const SIGNALS: Signal[] = [
   },
   {
     icon: Stethoscope,
-    title: 'Óptica matriculada',
-    description: 'Profesional regente habilitada',
+    title: 'Asesoramiento personal',
+    description: 'Atención real, no bot',
   },
   {
     icon: Truck,
@@ -50,7 +50,7 @@ const SIGNALS: Signal[] = [
  *
  * Las claims son universales del negocio (BUSINESS_POLICIES.md):
  * - 30 años: founder confirmó "empresa familiar 30+ años".
- * - Óptica matriculada: María Carlota es la regente matriculada.
+ * - Asesoramiento personal: atención real (sin claim de matrícula).
  * - Envío: Correo Argentino (sin prometer plazos específicos).
  * - Cambios: 30 días para talle/color sin uso (Defensa del Consumidor + política propia).
  */

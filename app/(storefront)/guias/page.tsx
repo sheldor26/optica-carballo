@@ -16,14 +16,14 @@ export function generateMetadata(): Metadata {
     // El template del layout raíz agrega " | Óptica Carballo"; no duplicar acá.
     title: 'Guías y artículos',
     description:
-      'Guías y artículos sobre salud visual, anteojos, lentes de contacto, recetas oftalmológicas. Escritos por técnico óptico matriculado.',
+      'Guías y artículos sobre salud visual, anteojos, lentes de contacto, recetas oftalmológicas. Con más de 30 años de experiencia en óptica.',
     alternates: {
       canonical: `${SITE_URL}/guias`,
     },
     openGraph: {
       title: 'Guías y artículos — Óptica Carballo',
       description:
-        'Guías sobre salud visual y anteojos, escritas por profesional matriculado.',
+        'Guías sobre salud visual y anteojos, con experiencia real en óptica.',
       url: `${SITE_URL}/guias`,
       type: 'website',
     },
@@ -85,9 +85,9 @@ export default function GuiasIndexPage() {
           </span>
         </h1>
         <p className="text-muted-foreground mt-6 max-w-2xl text-balance text-base md:text-lg">
-          Artículos escritos por técnico óptico matriculado, validados por la
-          regente. Cómo leer tu receta, cómo elegir armazón, cómo cuidar tus
-          lentes. Sin marketing inflado, sin promesas falsas.
+          Artículos escritos con más de 30 años de experiencia en óptica. Cómo
+          leer tu receta, cómo elegir armazón, cómo cuidar tus lentes. Sin
+          marketing inflado, sin promesas falsas.
         </p>
       </RevealOnScroll>
 

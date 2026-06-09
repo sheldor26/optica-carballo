@@ -35,7 +35,7 @@ export async function buildBrandMetadata(
   }
 
   const title = `${category.name} ${brand.name} Originales | Envío a Todo el País - Óptica Carballo`;
-  const description = `${capitalize(category.metaPhrase)} ${brand.name} originales. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const description = `${capitalize(category.metaPhrase)} ${brand.name} originales. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${category.slug}/${brandSlug}`;
 
   return {
@@ -59,7 +59,7 @@ export function buildCategoryGenderMetadata(args: {
 }): Metadata {
   const targetLabel = args.target === 'hombre' ? 'Hombre' : 'Mujer';
   const title = `${args.category.name} ${targetLabel} | Originales con Envío - Óptica Carballo`;
-  const description = `${capitalize(args.category.metaPhrase)} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const description = `${capitalize(args.category.metaPhrase)} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${args.category.slug}/${args.target}`;
 
   return {
@@ -92,7 +92,7 @@ export function buildCategoryShapeMetadata({
   filterMetaPhrase,
 }: CategoryShapeMetaInput): Metadata {
   const title = `${category.name} ${filterLabel} | Originales con Envío - Óptica Carballo`;
-  const description = `${capitalize(category.metaPhrase)} ${filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const description = `${capitalize(category.metaPhrase)} ${filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${category.slug}/${filterUrlSlug}`;
 
   return {
@@ -129,7 +129,7 @@ export async function buildBrandAboutMetadata(
   }
 
   const title = `Sobre ${brand.name} — Historia, Líneas y Catálogo en Óptica Carballo`;
-  const description = `Conocé ${brand.name}: historia, identidad y propuesta de la marca aplicada al mundo de la óptica. Distribución oficial en Argentina con asesoramiento de técnico óptico matriculado.`;
+  const description = `Conocé ${brand.name}: historia, identidad y propuesta de la marca aplicada al mundo de la óptica. Distribución oficial en Argentina con asesoramiento personal con experiencia en óptica.`;
   const url = `${SITE_URL}/${category.slug}/${brandSlug}/sobre-la-marca`;
 
   return {
@@ -172,7 +172,7 @@ export async function buildBrandGenderMetadata(args: {
 
   const targetLabel = args.target === 'hombre' ? 'Hombre' : 'Mujer';
   const title = `${args.category.name} ${brand.name} ${targetLabel} | Originales con Envío - Óptica Carballo`;
-  const description = `${capitalize(args.category.metaPhrase)} ${brand.name} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado. 30+ años de experiencia.`;
+  const description = `${capitalize(args.category.metaPhrase)} ${brand.name} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${args.category.slug}/${args.brandSlug}/${args.target}`;
 
   return {
@@ -216,7 +216,7 @@ export async function buildBrandFilterMetadata(args: {
   }
 
   const title = `${args.category.name} ${brand.name} ${args.filterLabel} | Originales con Envío - Óptica Carballo`;
-  const description = `${capitalize(args.category.metaPhrase)} ${brand.name} ${args.filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`;
+  const description = `${capitalize(args.category.metaPhrase)} ${brand.name} ${args.filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica.`;
   const url = `${SITE_URL}/${args.category.slug}/${args.brandSlug}/${args.filterUrlSlug}`;
 
   return {
@@ -273,7 +273,7 @@ export async function buildProductMetadata(
   const description =
     product.meta_description ??
     product.short_description ??
-    `${product.name} en Óptica Carballo. Envíos a todo Argentina, pago seguro con Mercado Pago y asesoramiento de técnico óptico matriculado.`;
+    `${product.name} en Óptica Carballo. Envíos a todo Argentina, pago seguro con Mercado Pago y asesoramiento personal con experiencia en óptica.`;
   const url = `${SITE_URL}/${category.slug}/${brandSlug}/${productSlug}`;
 
   return {
@@ -307,13 +307,13 @@ export async function buildProductMetadata(
 
 /**
  * Metadata para la home (`/`). Title con marca + categorías principales +
- * diferenciador. Description con E-E-A-T (matriculados, años, envíos).
+ * diferenciador. Description con E-E-A-T (experiencia, años, envíos).
  */
 export function buildHomeMetadata(): Metadata {
   const title =
     'Óptica Carballo — Anteojos de Sol y Receta | Envíos a Todo el País';
   const description =
-    'Óptica Carballo: anteojos de sol y receta originales. 30+ años de experiencia, regente óptica matriculada, envíos a todo Argentina y cuotas sin interés.';
+    'Óptica Carballo: anteojos de sol y receta originales. 30+ años de experiencia, asesoramiento personal, envíos a todo Argentina y cuotas sin interés.';
   const url = SITE_URL;
   return {
     title: { absolute: title },
@@ -338,8 +338,8 @@ export function buildCategoryIndexMetadata(
   const title = `${category.name} — Marcas Originales con Envío | Óptica Carballo`;
   const brandList = formatBrandList(brandNames);
   const description = brandList
-    ? `${capitalize(category.metaPhrase)} ${brandList}. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`
-    : `${capitalize(category.metaPhrase)} en Óptica Carballo. Envíos a todo Argentina, cuotas sin interés y asesoramiento de técnico óptico matriculado.`;
+    ? `${capitalize(category.metaPhrase)} ${brandList}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica.`
+    : `${capitalize(category.metaPhrase)} en Óptica Carballo. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica.`;
   const url = `${SITE_URL}/${category.slug}`;
 
   return {

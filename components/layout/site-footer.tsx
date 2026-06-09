@@ -30,19 +30,6 @@ export function SiteFooter() {
                 {location} — Argentina
               </p>
             )}
-            {business.regenteName && (
-              <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-                Regente: <span className="text-foreground/80 font-medium">{business.regenteName}</span>
-                {business.regenteMatricula && (
-                  <>
-                    {' '}
-                    <span className="text-muted-foreground/80">
-                      (Mat. {business.regenteMatricula})
-                    </span>
-                  </>
-                )}
-              </p>
-            )}
           </div>
 
           <FooterColumn label="Catálogo" links={PRIMARY_NAV} />

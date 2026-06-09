@@ -1,0 +1,6 @@
+node_modules/
+bin/
+renders/
+*.mp4
+.hyperframes/
+.DS_Store
