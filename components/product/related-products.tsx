@@ -4,6 +4,7 @@ import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { buildProductImageAlt } from '@/lib/catalog/image-alt';
 import type { RelatedProductCard } from '@/lib/catalog/queries';
 
 type Props = {
@@ -57,6 +58,11 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
   const secondaryUrl = product.secondaryImagePath
     ? getProductImageUrl(product.secondaryImagePath)
     : null;
+  const imageAlt = buildProductImageAlt({
+    name: product.name,
+    brandName: product.brandName,
+    categorySlug: product.categorySlug,
+  });
 
   return (
     <Link href={href} className="group block h-full" aria-label={`${product.brandName} ${product.name}`}>
@@ -66,7 +72,7 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
             <>
               <Image
                 src={primaryUrl}
-                alt=""
+                alt={imageAlt}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
                 style={{ transform: `scale(${product.primaryImageScale})` }}
@@ -80,7 +86,7 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
               {secondaryUrl && (
                 <Image
                   src={secondaryUrl}
-                  alt=""
+                  alt={imageAlt}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
                   style={{ transform: `scale(${product.secondaryImageScale})` }}

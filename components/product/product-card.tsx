@@ -11,6 +11,7 @@ import {
   installmentAmountCents,
 } from '@/lib/site/installments';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { buildProductImageAlt } from '@/lib/catalog/image-alt';
 import { QuickView } from '@/components/product/quick-view';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
@@ -183,6 +184,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
     ? `${product.href}?v=${encodeURIComponent(selectedVariant.sku)}`
     : product.href;
 
+  // Alt descriptivo para Google Imágenes. El bloque de imagen está aria-hidden
+  // (el nombre va en el aria-label del link), así que esto es solo para SEO.
+  const imageAlt = buildProductImageAlt({
+    name: product.name,
+    brandName: product.brandName,
+    categorySlug: product.categorySlug,
+  });
+
   return (
     <article className="group/card relative flex h-full flex-col">
       <WishlistButton
@@ -219,7 +228,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               <Image
                 key={`${selectedVariantId ?? 'default'}-primary`}
                 src={primaryUrl}
-                alt=""
+                alt={imageAlt}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
                 style={{ transform: `scale(${currentImages.primaryScale})` }}
@@ -232,7 +241,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 <Image
                   key={`${selectedVariantId ?? 'default'}-secondary`}
                   src={secondaryUrl}
-                  alt=""
+                  alt={imageAlt}
                   fill
                   // Solo desktop (sm+): la swap de hover no existe en mobile.
                   // `hidden` en mobile = display:none → el browser NO descarga

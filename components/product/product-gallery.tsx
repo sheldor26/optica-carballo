@@ -118,7 +118,7 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
         >
           <Image
             src={activeUrl}
-            alt={active.alt_text}
+            alt={productName}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
