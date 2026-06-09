@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Lightbulb, ShieldCheck, Sparkles } from 'lucide-react';
 import { ProductCard } from '@/components/product/product-card';
 import { fetchProductsBySlugs } from '@/lib/catalog/queries';
@@ -20,6 +21,48 @@ type MDXComponentMap = Record<string, unknown>;
  */
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
+
+// ── Imagen de artículo (optimizada con next/image + epígrafe opcional) ────────
+
+/**
+ * Imagen dentro del cuerpo de una guía. `src` = ruta dentro del bucket público
+ * `article-images` (ej. "como-leer-receta-anteojos/esfera.jpg"). Acepta URL
+ * absoluta también. `alt` obligatorio (SEO + accesibilidad). `caption` opcional.
+ * Contenedor 16:9 con object-cover; next/image sirve AVIF/WebP responsivo.
+ */
+function ArticleImage({
+  src,
+  alt,
+  caption,
+}: {
+  src: string;
+  alt: string;
+  caption?: string;
+}) {
+  const url = src.startsWith('http')
+    ? src
+    : `${SUPABASE_URL}/storage/v1/object/public/article-images/${src}`;
+  return (
+    <figure className="not-prose my-8 md:my-10">
+      <div className="bg-zinc-50 relative aspect-[16/9] w-full overflow-hidden rounded-lg">
+        <Image
+          src={url}
+          alt={alt}
+          fill
+          sizes="(max-width: 1024px) 100vw, 80vw"
+          className="object-cover"
+        />
+      </div>
+      {caption ? (
+        <figcaption className="text-muted-foreground mt-2 text-center text-xs sm:text-sm">
+          {caption}
+        </figcaption>
+      ) : null}
+    </figure>
+  );
+}
 
 // ── Callouts / bloques editoriales ──────────────────────────────────────────
 
@@ -280,6 +323,7 @@ export function useMDXComponents(
     table: MdxTable,
     KeyTakeaway,
     MedicalDisclaimer,
+    ArticleImage,
     Steps,
     Step,
     CategoryCta,
