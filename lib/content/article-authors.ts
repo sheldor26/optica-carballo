@@ -12,7 +12,7 @@ import type { Author, AuthorKey } from '@/lib/content/article-types';
 const AUTHORS: Record<AuthorKey, Author> = {
   juan: {
     key: 'juan',
-    displayName: 'Juan Carballo',
+    displayName: 'Juan Mirande',
     role: 'Técnico Superior en Óptica y Contactología',
     matricula: null,
     bio: 'Técnico óptico de Óptica Carballo, hijo del fundador. Maneja la atención online y la integración digital de la óptica. 30+ años de historia familiar en la región del NEA argentino.',
