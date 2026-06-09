@@ -121,3 +121,47 @@ export async function sendOrderNotificationToAdmin(args: {
     };
   }
 }
+
+/**
+ * Avisa al cliente que la factura de su pedido está disponible (link al PDF).
+ * Disparado desde el panel admin al cargar la factura, si el admin tilda
+ * "avisar por mail". Best-effort (no tira si Resend falla).
+ */
+export async function sendInvoiceToCustomer(args: {
+  to: string;
+  customerName: string;
+  orderNumber: string;
+  invoiceUrl: string;
+  orderUrl?: string | null;
+}): Promise<SendResult> {
+  const subject = `Tu factura del pedido ${args.orderNumber} — Óptica Carballo`;
+  const text =
+    `Hola ${args.customerName},\n\n` +
+    `Ya está disponible la factura de tu pedido ${args.orderNumber}.\n\n` +
+    `Verla o descargarla: ${args.invoiceUrl}\n\n` +
+    `Gracias por tu compra.\nÓptica Carballo`;
+  const html =
+    `<p>Hola ${args.customerName},</p>` +
+    `<p>Ya está disponible la <strong>factura</strong> de tu pedido <strong>${args.orderNumber}</strong>.</p>` +
+    `<p><a href="${args.invoiceUrl}">Ver o descargar la factura</a></p>` +
+    (args.orderUrl ? `<p><a href="${args.orderUrl}">Ver el pedido en tu cuenta</a></p>` : '') +
+    `<p>Gracias por tu compra.<br/>Óptica Carballo</p>`;
+
+  try {
+    const resend = getResendClient();
+    const result = await resend.emails.send({
+      from: getFromAddress(),
+      to: args.to,
+      subject,
+      html,
+      text,
+    });
+    if (result.error) return { ok: false, error: result.error.message };
+    return { ok: true, id: result.data?.id ?? 'unknown' };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}

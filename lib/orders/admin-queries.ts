@@ -26,6 +26,10 @@ export type AdminOrderListItem = {
   customerEmail: string;
   createdAt: string; // ISO
   paidAt: string | null;
+  /** 'delivery' | 'branch' | 'pickup' | null — pickup no genera envío. */
+  shippingMethod: string | null;
+  /** Alta del envío en MiCorreo. null = todavía no se generó. */
+  shipmentImportedAt: string | null;
 };
 
 /** Lista de TODOS los pedidos (más recientes primero). */
@@ -35,7 +39,7 @@ export async function fetchAllOrders(): Promise<AdminOrderListItem[]> {
   const { data: ordersRows } = await supabase
     .from('orders')
     .select(
-      'id, order_number, status, total_cents, customer_name, customer_email, created_at, paid_at',
+      'id, order_number, status, total_cents, customer_name, customer_email, created_at, paid_at, shipping_method, shipment_imported_at',
     )
     .order('created_at', { ascending: false });
 
@@ -65,6 +69,8 @@ export async function fetchAllOrders(): Promise<AdminOrderListItem[]> {
     customerEmail: row.customer_email,
     createdAt: row.created_at,
     paidAt: row.paid_at,
+    shippingMethod: row.shipping_method,
+    shipmentImportedAt: row.shipment_imported_at,
   }));
 }
 
@@ -85,7 +91,7 @@ export async function fetchOrderByIdAdmin(
        shipping_postal_code, shipping_phone, shipping_method,
        shipping_delivery_type, shipping_agency_code, shipping_agency_name,
        tracking_number, mp_payment_id, invoice_url, notes,
-       created_at, paid_at, shipped_at, delivered_at`,
+       created_at, paid_at, shipped_at, delivered_at, shipment_imported_at`,
     )
     .eq('id', id)
     .maybeSingle();
@@ -144,6 +150,7 @@ export async function fetchOrderByIdAdmin(
     paidAt: orderRow.paid_at,
     shippedAt: orderRow.shipped_at,
     deliveredAt: orderRow.delivered_at,
+    shipmentImportedAt: orderRow.shipment_imported_at,
     items,
   };
 }

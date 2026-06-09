@@ -69,7 +69,7 @@ export async function fetchOrderById(
        shipping_postal_code, shipping_phone, shipping_method,
        shipping_delivery_type, shipping_agency_code, shipping_agency_name,
        tracking_number, mp_payment_id, invoice_url, notes,
-       created_at, paid_at, shipped_at, delivered_at`,
+       created_at, paid_at, shipped_at, delivered_at, shipment_imported_at`,
     )
     .eq('id', id)
     .maybeSingle();
@@ -128,6 +128,7 @@ export async function fetchOrderById(
     paidAt: orderRow.paid_at,
     shippedAt: orderRow.shipped_at,
     deliveredAt: orderRow.delivered_at,
+    shipmentImportedAt: orderRow.shipment_imported_at,
     items,
   };
 }

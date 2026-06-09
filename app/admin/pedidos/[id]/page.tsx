@@ -10,6 +10,7 @@ import { OrderStatusBadge } from '@/components/account/order-status-badge';
 import { OrderTimeline } from '@/components/account/order-timeline';
 import { OrderStatusControl } from '@/components/admin/order-status-control';
 import { ShipmentControl } from '@/components/admin/shipment-control';
+import { InvoiceControl } from '@/components/admin/invoice-control';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 
@@ -252,10 +253,16 @@ export default async function Page({
               </p>
             )}
             {order.shippingMethod !== 'pickup' && (
-              <ShipmentControl orderId={order.id} />
+              <ShipmentControl
+                orderId={order.id}
+                alreadyGenerated={Boolean(order.shipmentImportedAt)}
+              />
             )}
           </section>
         </div>
+
+        {/* Factura (link) */}
+        <InvoiceControl orderId={order.id} currentInvoiceUrl={order.invoiceUrl} />
       </div>
     </main>
   );

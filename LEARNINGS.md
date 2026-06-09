@@ -38,6 +38,14 @@ Sirve para:
 
 **Regla**: cuando una explicación técnica no convence, traducirla a una analogía cotidiana ANTES de aportar más datos. Conecta con el MISTAKE "responder pregunta repetida con más datos".
 
+## 2026-06-09 — Extraer el "core por-ítem" para que la acción single y la de lote/variante compartan la misma lógica tested
+
+**Contexto**: dos features de esta sesión necesitaban una VARIANTE de una acción que ya funcionaba. (a) "Retomar pago" tenía que crear una preferencia MP desde una orden (no desde el cart) → extraje `createPreferenceFromItems` (core) y dejé `createCheckoutPreference` (cart) + `createCheckoutPreferenceFromOrder` (orden) llamándolo; la firma del checkout quedó INTACTA. (b) "Envíos en lote" tenía que generar N envíos → extraje `generateShipmentForOrder` (core sin `requireAdmin`/`revalidate`, idempotente vía claim sobre `shipment_imported_at`) y dejé `generateShipmentAction` (single) + `generateShipmentsBulkAction` (lote) llamándolo.
+
+**Aprendizaje**: cuando hace falta una versión bulk/variante de una acción que ya anda, NO duplicar la lógica NI refactorizar la firma pública existente (riesgo de regresión en un camino tested, peor si es pago/inventario). Extraer el "core por-ítem" puro (sin auth/revalidate, idempotente) y que tanto la entrada vieja como la nueva lo llamen. Resultado: lógica de una sola fuente, camino original sin tocar (cero regresión), y la versión bulk procesa SECUENCIAL para no saturar APIs externas (Correo).
+
+**Regla**: para sumar bulk/variante a una acción existente → core por-ítem idempotente + entradas finas (auth/revalidate en las entradas, no en el core). Conecta con "preferí simple sobre clever".
+
 ## 2026-06-09 — El webhook MP se validó sin simular: MP notifica la notification_url de PROD, que comparte la DB cloud
 
 **Contexto**: en el test local di por hecho que el webhook MP habría que simularlo (MP no llega a localhost). Pero `OC-2026-00009` quedó `paid` con `mp_payment_id` real → el webhook corrió DE VERDAD. Por qué: la preference le manda a MP la `notification_url` = la de PRODUCCIÓN (`opticacarballo.com.ar/api/mp/webhook`), no localhost. MP (sandbox) notificó esa URL de prod; el deploy de Vercel procesó el webhook y actualizó la orden en la DB cloud — la misma que usa el localhost. La página `/checkout/exito` es solo informativa (no marca paid).

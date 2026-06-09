@@ -69,6 +69,8 @@ export type OrderDetail = {
   paidAt: string | null;
   shippedAt: string | null;
   deliveredAt: string | null;
+  /** Alta del envío en MiCorreo. null = todavía no se generó. */
+  shipmentImportedAt: string | null;
   items: OrderItem[];
 };
 

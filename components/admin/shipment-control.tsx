@@ -11,7 +11,13 @@ import { generateShipmentAction } from '@/app/admin/pedidos/actions';
  * (Correo rechaza el mismo extOrderId). El nº de tracking NO lo devuelve la
  * API — se copia del panel MiCorreo y se carga en "Cambiar estado".
  */
-export function ShipmentControl({ orderId }: { orderId: string }) {
+export function ShipmentControl({
+  orderId,
+  alreadyGenerated = false,
+}: {
+  orderId: string;
+  alreadyGenerated?: boolean;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{
@@ -39,9 +45,20 @@ export function ShipmentControl({ orderId }: { orderId: string }) {
 
   return (
     <div className="border-border mt-4 border-t pt-4">
-      <Button variant="outline" onClick={onGenerate} disabled={pending}>
-        {pending ? 'Generando…' : 'Generar envío en Correo'}
-      </Button>
+      {alreadyGenerated && (
+        <p className="mb-2 inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+          Envío ya generado en Correo
+        </p>
+      )}
+      <div>
+        <Button variant="outline" onClick={onGenerate} disabled={pending}>
+          {pending
+            ? 'Generando…'
+            : alreadyGenerated
+              ? 'Re-generar envío en Correo'
+              : 'Generar envío en Correo'}
+        </Button>
+      </div>
       <p className="text-muted-foreground mt-2 text-xs">
         Da de alta el envío en MiCorreo con los datos del pedido. Después copiá
         el nº de seguimiento del panel de Correo y cargalo en “Cambiar estado”.

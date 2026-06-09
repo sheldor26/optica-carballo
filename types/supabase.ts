@@ -281,6 +281,7 @@ export type Database = {
           payment_status: string | null
           prescription_id: string | null
           prescription_snapshot: Json | null
+          shipment_imported_at: string | null
           shipped_at: string | null
           shipping_address_id: string | null
           shipping_agency_code: string | null
@@ -327,6 +328,7 @@ export type Database = {
           payment_status?: string | null
           prescription_id?: string | null
           prescription_snapshot?: Json | null
+          shipment_imported_at?: string | null
           shipped_at?: string | null
           shipping_address_id?: string | null
           shipping_agency_code?: string | null
@@ -373,6 +375,7 @@ export type Database = {
           payment_status?: string | null
           prescription_id?: string | null
           prescription_snapshot?: Json | null
+          shipment_imported_at?: string | null
           shipped_at?: string | null
           shipping_address_id?: string | null
           shipping_agency_code?: string | null
