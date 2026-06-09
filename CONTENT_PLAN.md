@@ -371,6 +371,15 @@ Plan recibido del agente `content-writer-medical` (2026-05-30). 5 guías SEO fir
 > legalmente (Defensa del Consumidor) y construye autoridad de óptico.
 > **Validación**: Juan revisa cada artículo; todo deriva al oftalmólogo en
 > lo que es decisión médica. Research de keywords: Ubersuggest AR, 2026-06-09.
+>
+> 📂 **FUENTE DE KEYWORDS (chequear SIEMPRE acá primero):** la carpeta
+> `KEYWORDS OPTICA/` (raíz del proyecto) tiene los exports reales de Ubersuggest
+> AR — archivos `related_`, `questions_`, `suggestions_`, `prepositions_`,
+> `comparisons_` por tema (presbicia, miopía/astigmatismo/hipermetropía, anteojos
+> de sol, bluecut, armazones, etc.). Columnas CSV: `Keyword, Search Intent,
+> Search Volume, CPC, Paid Difficulty, SEO Difficulty`. Usar ESTA data (no la
+> API de Ubersuggest, que tiene rate-limit) para elegir keywords, FAQs y el
+> párrafo answer-first de cada artículo.
 
 ## Por qué un cluster (y no una guía suelta)
 Google premia la **autoridad temática**. Cubrir TODO el tema con un pillar +
