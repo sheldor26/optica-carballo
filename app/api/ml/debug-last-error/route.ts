@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { getAdminUserOrNull } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,9 @@ export const dynamic = 'force-dynamic';
  * error payloads que ya están sanitizados al guardar.
  */
 export async function GET() {
+  if (!(await getAdminUserOrNull())) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase

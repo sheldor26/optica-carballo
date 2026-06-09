@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { releaseOrderStock } from '@/lib/checkout/orders';
 import {
   fetchPaymentById,
   mpStatusToOrderStatus,
@@ -123,6 +124,33 @@ export async function POST(request: NextRequest) {
   const wasUnpaid = orderRow.status !== 'paid';
   const isNowPaid = newOrderStatus === 'paid';
 
+  // Anti-subpago: no marcar `paid` si el monto aprobado es menor al total de la
+  // orden (bug de precio, preferencia manipulada, etc.). Dejamos rastro del pago
+  // pero la orden queda sin pagar para revisión manual en el panel.
+  if (isNowPaid && payment.transaction_amount != null) {
+    const paidCents = Math.round(payment.transaction_amount * 100);
+    const TOLERANCE_CENTS = 100; // 1 peso de margen por redondeos
+    if (paidCents < orderRow.total_cents - TOLERANCE_CENTS) {
+      console.error(
+        `[mp-webhook] SUBPAGO order ${orderNumber}: pagó ${paidCents}c, total ${orderRow.total_cents}c — NO se marca paid`,
+      );
+      await supabase
+        .from('orders')
+        .update({
+          mp_payment_id: String(payment.id),
+          payment_status: `underpaid:${payment.status}`,
+        })
+        .eq('id', orderRow.id);
+      return NextResponse.json({
+        ok: true,
+        flagged: 'amount_mismatch',
+        order_number: orderNumber,
+        paid_cents: paidCents,
+        total_cents: orderRow.total_cents,
+      });
+    }
+  }
+
   const update: Record<string, unknown> = {
     status: newOrderStatus,
     mp_payment_id: String(payment.id),
@@ -143,6 +171,13 @@ export async function POST(request: NextRequest) {
       { ok: false, error: updateErr.message },
       { status: 500 },
     );
+  }
+
+  // Si el pago se rechazó/canceló/reembolsó → devolver el stock (base + ML).
+  // Idempotente (claim sobre stock_released_at); cubre la 3ra puerta de
+  // cancelación además del panel admin y el cron de abandonados.
+  if (newOrderStatus === 'cancelled' || newOrderStatus === 'refunded') {
+    await releaseOrderStock(orderRow.id);
   }
 
   // Emails — solo en la transición a `paid` (no en re-procesamientos).

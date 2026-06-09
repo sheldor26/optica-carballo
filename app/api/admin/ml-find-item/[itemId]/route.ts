@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getValidAccessToken } from '@/lib/integrations/mercadolibre/oauth';
 import { getActiveMLIntegration } from '@/lib/integrations/mercadolibre/integrations-repo';
+import { getAdminUserOrNull } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,9 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
+  if (!(await getAdminUserOrNull())) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
   const { itemId } = await params;
 
   if (!itemId || !/^MLA\d+$/.test(itemId)) {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getValidAccessToken } from '@/lib/integrations/mercadolibre/oauth';
 import { getActiveMLIntegration } from '@/lib/integrations/mercadolibre/integrations-repo';
+import { getAdminUserOrNull } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,9 @@ export const dynamic = 'force-dynamic';
  * Sin auth iter 1 — temporal de admin.
  */
 export async function GET() {
+  if (!(await getAdminUserOrNull())) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
   // 1. Estado de la integración guardada
   const integration = await getActiveMLIntegration();
   if (!integration) {

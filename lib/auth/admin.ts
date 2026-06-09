@@ -24,6 +24,22 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 }
 
 /**
+ * Gate para route handlers de API (`app/api/admin/*`). A diferencia de
+ * `requireAdmin`/`requireAdminEmail` (que hacen `notFound()`/`redirect()`, pensados
+ * para páginas RSC), acá devolvemos el user o `null` para que el handler responda
+ * un 401 JSON. Chequea el email logueado contra la allowlist `ADMIN_EMAILS`.
+ *
+ * Uso:
+ *   if (!(await getAdminUserOrNull())) {
+ *     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+ *   }
+ */
+export async function getAdminUserOrNull() {
+  const user = await getCurrentUser();
+  return isAdminEmail(user?.email) ? user : null;
+}
+
+/**
  * Gate de SOLO email (primer factor). Si no hay sesión o el email NO está en la
  * allowlist → `notFound()` (404).
  *

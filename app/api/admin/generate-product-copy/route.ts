@@ -7,6 +7,7 @@ import {
   productCopyInputSchema,
   productCopyOutputSchema,
 } from '@/lib/product-copy/types';
+import { getAdminUserOrNull } from '@/lib/auth/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -53,6 +54,9 @@ type AnthropicMessageResponse = {
 };
 
 export async function POST(request: Request) {
+  if (!(await getAdminUserOrNull())) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { mlFetch } from '@/lib/integrations/mercadolibre/api-client';
+import { getAdminUserOrNull } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,9 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
+  if (!(await getAdminUserOrNull())) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
   const { itemId } = await params;
 
   if (!itemId || !/^MLA\d+$/.test(itemId)) {

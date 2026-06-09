@@ -16,9 +16,9 @@ import { getMpClient } from './client';
  * Se firma con `MP_WEBHOOK_SECRET` (configurado en Panel MP → Webhooks).
  * El resultado se compara con `v1` del header `x-signature`.
  *
- * Si `MP_WEBHOOK_SECRET` no está en env, devolvemos `{ok:true, verified:false}`
- * — significa que el webhook funciona pero sin validación de origen.
- * Aceptable en dev / pre-launch; obligatorio configurar antes de prod.
+ * Si `MP_WEBHOOK_SECRET` no está en env: en producción RECHAZAMOS (no se debe
+ * fallar abierto — sin secret cualquiera podría postear pagos falsos). En dev se
+ * permite sin verificar para poder testear con curl/tunnel.
  */
 export type SignatureValidation =
   | { ok: true; verified: boolean }
@@ -31,6 +31,12 @@ export function validateMpSignature(args: {
 }): SignatureValidation {
   const secret = process.env.MP_WEBHOOK_SECRET;
   if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      return {
+        ok: false,
+        error: 'MP_WEBHOOK_SECRET no configurado (requerido en producción).',
+      };
+    }
     return { ok: true, verified: false };
   }
 

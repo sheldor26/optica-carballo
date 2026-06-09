@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { syncStockFromMLItem } from '@/lib/integrations/mercadolibre/sync-stock';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { getAdminUserOrNull } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,9 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ mlItemId: string }> },
 ) {
+  if (!(await getAdminUserOrNull())) {
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
   const { mlItemId } = await params;
 
   if (!mlItemId || !/^MLA\d+$/.test(mlItemId)) {

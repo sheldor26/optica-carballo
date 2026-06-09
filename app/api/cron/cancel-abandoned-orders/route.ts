@@ -93,12 +93,31 @@ export async function GET(request: Request) {
     }
   }
 
+  // Red de seguridad: cualquier orden cancelled/refunded a la que no se le haya
+  // liberado el stock (ej. un fallo puntual en otra ruta) → liberarla ahora.
+  // Idempotente vía stock_released_at; no toca las que ya se liberaron.
+  let safetyReleased = 0;
+  const { data: leaked } = await supabase
+    .from('orders')
+    .select('id')
+    .in('status', ['cancelled', 'refunded'])
+    .is('stock_released_at', null);
+  for (const order of leaked ?? []) {
+    try {
+      const result = await releaseOrderStock(order.id);
+      if (result.released) safetyReleased++;
+    } catch {
+      // best-effort; el próximo run reintenta
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     abandon_hours: ABANDON_HOURS,
     found: orders.length,
     cancelled,
     stock_released: stockReleased,
+    safety_net_released: safetyReleased,
     failed,
     errors: errors.slice(0, 10),
   });
