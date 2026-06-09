@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { BRAND_FILTERS } from '@/lib/catalog/brand-filters';
 import { createStaticClient } from '@/lib/supabase/static';
+import { listArticles } from '@/lib/content/articles';
 
 const NOW_LAST_MODIFIED = new Date();
 
@@ -228,11 +229,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
+  // Guías: índice + cada artículo publicado (los draft no entran — listArticles
+  // ya los excluye). Antes faltaban por completo en el sitemap.
+  const articles = listArticles();
+  const guidesUrls: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/guias`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    ...articles.map((a) => ({
+      url: `${SITE_URL}/guias/${a.slug}`,
+      lastModified: new Date(a.updatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  ];
+
   return [
     ...staticUrls,
     ...brandUrls,
     ...shapeUrls,
     ...genderUrls,
     ...productUrls,
+    ...guidesUrls,
   ];
 }

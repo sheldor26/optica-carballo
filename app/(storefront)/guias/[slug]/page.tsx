@@ -41,7 +41,8 @@ export async function generateMetadata({
   const pageUrl = `${SITE_URL}/guias/${frontmatter.slug}`;
 
   return {
-    title: `${frontmatter.title} — Óptica Carballo`,
+    // El template del layout raíz agrega " | Óptica Carballo"; no duplicar acá.
+    title: frontmatter.title,
     description: frontmatter.description,
     keywords: frontmatter.keywords,
     alternates: { canonical: pageUrl },

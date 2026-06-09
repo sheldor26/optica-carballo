@@ -18,6 +18,26 @@ const nextConfig = {
       { protocol: 'http', hostname: 'localhost', port: '54321' },
     ],
   },
+  // Headers de seguridad estándar (subset seguro — NO incluye Content-Security-
+  // Policy, que requiere testear contra MP/Supabase/AFIP antes de activar). HSTS
+  // ya lo setea la plataforma. `camera=(self)` porque las features de Vision
+  // (lectura de receta / forma de rostro) usan la cámara del propio sitio.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(), geolocation=()',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX({

@@ -10,6 +10,7 @@ import {
 } from '@/lib/storage/brand-asset-url';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { ProductJsonLd } from '@/components/seo/product-jsonld';
+import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { RelatedItemListJsonLd } from '@/components/seo/related-itemlist-jsonld';
 import { NewArrivalBadge } from '@/components/product/new-arrival-badge';
 import { deriveSizeFit } from '@/lib/catalog/size-fit';
@@ -292,7 +293,15 @@ export async function ProductDetailPage({
           brandName={product.brand.name}
           brandUrl={brandUrl}
           pageUrl={pageUrl}
-          imageUrl={null}
+          imageUrl={(() => {
+            const imgs = product.images ?? [];
+            const path =
+              imgs.find((img) => img.is_primary)?.storage_path ??
+              [...imgs].sort((a, b) => a.sort_order - b.sort_order)[0]
+                ?.storage_path ??
+              null;
+            return path ? getProductImageUrl(path) : null;
+          })()}
           offers={activeVariants.map((v) => ({
             priceCents: v.price_cents,
             stockQty: v.stock_qty,

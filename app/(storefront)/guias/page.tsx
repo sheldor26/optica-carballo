@@ -13,7 +13,8 @@ export const revalidate = 300;
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'Guías y artículos — Óptica Carballo',
+    // El template del layout raíz agrega " | Óptica Carballo"; no duplicar acá.
+    title: 'Guías y artículos',
     description:
       'Guías y artículos sobre salud visual, anteojos, lentes de contacto, recetas oftalmológicas. Escritos por técnico óptico matriculado.',
     alternates: {

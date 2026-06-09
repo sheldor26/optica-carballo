@@ -29,6 +29,9 @@ export function ProductJsonLd({
   const minPrice = prices.length > 0 ? Math.min(...prices) : null;
   const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
 
+  // Vendedor — Google lo usa para los rich results de producto.
+  const seller = { '@type': 'Organization', name: 'Óptica Carballo' };
+
   let offerData: Record<string, unknown>;
   if (!hasInStock) {
     offerData = {
@@ -38,6 +41,7 @@ export function ProductJsonLd({
         availability: 'https://schema.org/OutOfStock',
         itemCondition: 'https://schema.org/NewCondition',
         url: pageUrl,
+        seller,
       },
     };
   } else if (minPrice === maxPrice) {
@@ -49,6 +53,7 @@ export function ProductJsonLd({
         availability: 'https://schema.org/InStock',
         itemCondition: 'https://schema.org/NewCondition',
         url: pageUrl,
+        seller,
       },
     };
   } else {
@@ -61,6 +66,8 @@ export function ProductJsonLd({
         offerCount: inStockOffers.length,
         availability: 'https://schema.org/InStock',
         itemCondition: 'https://schema.org/NewCondition',
+        url: pageUrl,
+        seller,
       },
     };
   }

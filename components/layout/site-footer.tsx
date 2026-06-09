@@ -130,6 +130,9 @@ export function SiteFooter() {
               alt="Data Fiscal — ARCA (AFIP)"
               width={60}
               height={90}
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
               className="h-auto w-[60px]"
             />
           </a>
