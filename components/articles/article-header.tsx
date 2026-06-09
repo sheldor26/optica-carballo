@@ -53,7 +53,7 @@ export function ArticleHeader({
         {frontmatter.title}
       </h1>
 
-      <p className="text-muted-foreground mt-6 max-w-2xl text-balance text-lg leading-relaxed md:text-xl">
+      <p className="text-muted-foreground mt-6 text-pretty text-lg leading-relaxed md:text-xl">
         {frontmatter.description}
       </p>
 
