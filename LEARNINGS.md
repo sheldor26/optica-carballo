@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Audit antes de estimar: el "dashboard de admin" que pidió el founder ya existía al 80%
+
+**Contexto**: el founder pidió "un dashboard de admin para ver pedidos, datos de clientes, editar y comentar". En vez de estimar o construir de cero, audité `app/admin/` primero (regla 14). Ya existía `/admin/pedidos`: listado (cliente/estado/total/fecha) + detalle con PII del cliente, productos, totales, ID de pago MP, envío (domicilio/sucursal/pickup), cambio de estado y notas que el cliente ve en su tracker. Lo único que faltaba era puntual: cargar tracking, comentarios internos, filtros.
+
+**Aprendizaje**: la regla "audit antes de estimar" pagó de nuevo. Sin el audit habría propuesto construir desde cero algo casi completo → sobre-estimación + trabajo redundante. Y el founder no sabía que el panel ya existía: mostrarle lo que YA tiene (con la URL) fue más valioso que construir.
+
+**Regla**: ante un pedido de "feature X", SIEMPRE `ls` + leer lo existente antes de estimar/construir. El codebase tiene >1 mes; muchas features están 70-90% hechas. Refuerza la regla 14 de CLAUDE.md.
+
 ## 2026-06-08 — Limpiar datos de prueba de checkout: el stock se descuenta al CREAR la orden y ML es la fuente de verdad
 
 **Contexto**: probar el checkout e2e dejó 6 órdenes de prueba que descontaron stock REAL. El descuento ocurre en `reserve_stock` al **crear** la orden (status `pending`), NO al pagar — así que hasta las órdenes pendientes/abandonadas bajaron stock. Cada descuento además hace push outbound a ML. Al limpiar, reintegrar solo en la DB **no alcanza**: un cron (`ml-reconcile-stock`) corre cada 6h y trae stock **de ML → DB**, así que si ML quedó con el valor descontado, pisa el reintegro en ≤6h.

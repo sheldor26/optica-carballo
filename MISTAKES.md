@@ -24,6 +24,26 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Presentar una limitación leída del manual de una API como hecho cerrado (era hipótesis a validar)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: leyendo el manual de MiCorreo concluí y le comuniqué al founder que "el tracking NO es automático" (el endpoint de alta `/shipping/import` devuelve solo `{createdAt}`, sin número). El founder lo cuestionó ("me llama la atención que no sea automático") — con razón: el endpoint `/shipping/tracking` dice aceptar "el identificador del envío **del cliente**", que podría ser nuestro `extOrderId` → haría el tracking automático. El manual es ambiguo y eso solo se confirma con una llamada real en el ambiente de test.
+
+**Causa raíz**: salté de "el manual no muestra X" a "X no se puede". Los manuales de API suelen estar incompletos respecto al response real, y presenté una lectura como conclusión definitiva en vez de como hipótesis.
+
+**Regla preventiva**: distinguir SIEMPRE "el manual dice/no dice X" de "X es así". Para integraciones, toda afirmación sobre lo que la API hace o no hace es **hipótesis hasta validarla con una llamada real**. Comunicarla como hipótesis + plan de verificación (no como hecho), especialmente cuando contradice una expectativa razonable del founder. (El founder cuestionándolo fue lo que evitó cerrar el diseño sobre una premisa sin confirmar.)
+
+## 2026-06-08 — Referenciar un número de ADR sin verificar la numeración (ADR-029 inexistente)
+
+**Estado**: ✅ Cerrado (corregido en el mismo turno)
+
+**Qué pasó**: al revertir ADR-017 (Andreani) escribí "ADR-029" en 4 docs (CLAUDE.md, ARCHITECTURE.md, BUSINESS_POLICIES.md, README.md) antes de chequear cuál era el último ADR. El último era ADR-025 → el correcto era **ADR-026**. Tuve que corregir los 4 con `replace_all`.
+
+**Causa raíz**: asigné el número del ADR de memoria/al voleo antes de verificarlo en `DECISIONS.md`.
+
+**Regla preventiva**: antes de referenciar un ADR nuevo en cualquier doc, `grep -oE "ADR-[0-9]+" DECISIONS.md | sort` para obtener el siguiente número, y recién ahí escribirlo. Nunca asignar el número de memoria.
+
 ## 2026-06-08 — Activar el checkout en prod sin verificar TODAS las env vars del flujo (la 1ra venta no avisó al founder)
 
 **Estado**: 🟡 Mitigado
