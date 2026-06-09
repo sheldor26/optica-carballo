@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — Validar la conclusión en el ambiente que importa (prod), no solo en el cómodo (sandbox)
+
+**Contexto**: la conclusión "el tracking de Correo no se obtiene por API" se había probado SOLO en sandbox (apitest). La insistencia repetida del founder llevó a probarla en **PRODUCCIÓN** con un envío real: mismo resultado inmediato, pero recién ahí la conclusión es sólida, y además apareció el caveat real (un envío en preimposición puede tardar horas en entrar al seguimiento) y el dato que falta (el nº que asigna Correo, visible en el panel).
+
+**Aprendizaje**: el sandbox responde "¿el código corre / el request es válido?"; **producción** responde "¿esto es realmente así para el negocio?". Son preguntas distintas. Una integración puede comportarse distinto en cada ambiente (el sandbox puede no alimentar subsistemas como el tracking). Cuando la respuesta define una feature (acá: tracking automático vs manual), el sandbox no alcanza.
+
+**Regla**: para integraciones cuyo resultado define una decisión de producto, incluir una prueba en **producción acotada** (1 caso, reversible, con OK del founder) antes de cerrar la conclusión. Conecta con el MISTAKE "exhaustividad en sandbox = falsa certeza".
+
 ## 2026-06-08 — La insistencia del founder = señal de re-verificar exhaustivamente, no de defender la conclusión
 
 **Contexto**: concluí que el tracking de Correo no se obtiene por API (lo había probado con nuestros ids). El founder insistió ("¿esto no servirá para obtenerlo automático?"). En vez de repetir la conclusión, re-verifiqué las **hipótesis que aún no había probado**: (a) el número en los HEADERS del response del alta (no solo el body); (b) timing (el envío podría tardar en estar disponible); (c) más variantes de identificador. Resultado: 12 intentos (3 tiempos × 4 ids) + headers → todos negativos. La conclusión quedó cerrada **con datos duros**, no con una afirmación.

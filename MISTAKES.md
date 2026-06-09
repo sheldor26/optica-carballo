@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — Declarar "100% confirmado" tras una prueba exhaustiva en el ambiente EQUIVOCADO (sandbox, no prod)
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: probé `/shipping/tracking` con 12 combinaciones (3 timings × 4 ids) + headers en el ambiente de TEST y escribí "100% confirmado: el nº sale del panel". El founder insistió 2 veces, y al revisar caí en que TODA la exhaustividad fue en **sandbox** — que probablemente ni alimenta el sistema de seguimiento real (de ahí el "No existe" constante). La cantidad de intentos me dio falsa confianza: era exhaustivo DENTRO del ambiente, pero el ambiente que importa (producción) no lo había tocado. Al probar en prod, el resultado inmediato fue el mismo, pero recién ahí la conclusión es defendible (y quedó un caveat real: timing de preimposición).
+
+**Causa raíz**: confundir "probé muchísimas variantes" con "probé donde importa". La exhaustividad en una dimensión (combinaciones de input) tapó un agujero en otra (el ambiente). Reforcé el sesgo escribiendo "100% confirmado".
+
+**Regla preventiva**: antes de declarar algo "confirmado", chequear que la prueba cubra el **ambiente/condición que realmente importa**, no solo que sea voluminosa. Para integraciones cuyo resultado guía una decisión de producto: validar en **producción** (caso acotado y reversible), no solo en sandbox. No escribir "100% confirmado" si falta el ambiente real — usar "confirmado en test; falta prod".
+
 ## 2026-06-08 — Endpoint público que proxea una API externa con cuota, sin protección
 
 **Estado**: 🟡 Mitigado (validación de inputs + deuda registrada en BACKLOG; decisión consciente V1)
