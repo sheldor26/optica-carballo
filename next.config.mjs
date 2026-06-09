@@ -19,11 +19,30 @@ const nextConfig = {
       { protocol: 'http', hostname: 'localhost', port: '54321' },
     ],
   },
-  // Headers de seguridad estándar (subset seguro — NO incluye Content-Security-
-  // Policy, que requiere testear contra MP/Supabase/AFIP antes de activar). HSTS
-  // ya lo setea la plataforma. `camera=(self)` porque las features de Vision
-  // (lectura de receta / forma de rostro) usan la cámara del propio sitio.
+  // Headers de seguridad estándar. HSTS ya lo setea la plataforma. `camera=(self)`
+  // porque las features de Vision (lectura de receta / forma de rostro) usan la
+  // cámara del propio sitio.
+  //
+  // CSP arranca en modo **Report-Only**: NO bloquea, solo reporta violaciones
+  // (a la consola del browser). Así afinamos los orígenes contra el uso real
+  // (MP, Supabase, GA4, Vercel, cámara/canvas) antes de pasarlo a enforcing
+  // (`Content-Security-Policy` a secas) en una sesión dedicada. 'unsafe-inline'/
+  // 'unsafe-eval' en scripts son pragmáticos para Next 15 en V1.
   async headers() {
+    const csp = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+      "img-src 'self' data: blob: https://*.supabase.co",
+      "font-src 'self' data:",
+      "style-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com",
+      "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.vercel-insights.com https://*.mercadopago.com https://*.mercadopago.com.ar",
+      "frame-src 'self' https://*.mercadopago.com https://*.mercadopago.com.ar",
+      "form-action 'self' https://*.mercadopago.com https://*.mercadopago.com.ar",
+    ].join('; ');
+
     return [
       {
         source: '/:path*',
@@ -35,6 +54,7 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(self), microphone=(), geolocation=()',
           },
+          { key: 'Content-Security-Policy-Report-Only', value: csp },
         ],
       },
     ];

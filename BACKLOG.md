@@ -99,8 +99,6 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   devolución, garantía, días de reintegro. Editar `politica-de-devolucion`
   y `boton-de-arrepentimiento`.
 - [ ] **Completar env vars del negocio**:
-  - `NEXT_PUBLIC_REGENTE_MATRICULA`
-  - `NEXT_PUBLIC_TECNICO_MATRICULA`
   - `NEXT_PUBLIC_BUSINESS_PHONE`
   - `NEXT_PUBLIC_BUSINESS_ADDRESS_STREET`
   - `NEXT_PUBLIC_BUSINESS_ADDRESS_POSTAL`
@@ -116,7 +114,7 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 - [ ] **Content-Security-Policy (CSP)** (auditoría 2026-06-09). Los demás headers de seguridad ya están (commit `c93a101`: X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy). Falta CSP, que es la riesgosa: hay que listar orígenes de MP, Supabase, AFIP, fonts, etc. y testear que no rompa nada. Hacer con `Content-Security-Policy-Report-Only` primero.
 - [ ] **Alt text de imágenes de producto** (auditoría 2026-06-09). En grids muchas imágenes salen con `alt="Variante"` (viene de la data `alt_text` en la DB) o `alt=""` (cards con `aria-hidden` a propósito, el nombre va como texto). Para Google Imágenes conviene alt descriptivo ("Rusty Xold negro mate — lentes polarizadas"). Requiere: (a) generar alt programático desde producto+variante en los componentes de imagen, respetando la intención de a11y actual, y/o (b) corregir `alt_text` en la DB. Pasada dedicada (toca varios componentes + data).
 - [ ] **PDP mobile: barra fija de compra (sticky add-to-cart)** (auditoría 2026-06-09). En mobile la galería empuja el precio/compra abajo del fold. La página ya tuvo iteraciones de CRO (el precio se subió a propósito). Mejora: barra fija inferior con precio + CTA que aparezca al scrollear (con selección de variante, ya que hay multi-variante). Feature mediana, hacer con cuidado y revisión visual del founder. Coordinar z-index con el banner de cookies.
-- [ ] **Datos del negocio para confianza/SEO (founder)**: (a) **número de matrícula** de la regente (María Carlota Carballo) → footer + `/sobre-nosotros` + `public/llms.txt`; (b) **dirección física, ciudad/provincia y horario** del local → `/sobre-nosotros` (confianza + SEO local). El `llms.txt` ya quedó creado con la info general; falta sumar estos datos cuando el founder los pase.
+- [ ] **Datos del negocio para confianza/SEO (founder)**: **dirección física, ciudad/provincia y horario** del local → `/sobre-nosotros` (confianza + SEO local). El `llms.txt` ya quedó creado con la info general; falta sumar estos datos cuando el founder los pase. _(Nota: los claims de matrícula/regente se sacaron a propósito el 2026-06-09 — NO re-agregar matrícula al footer/llms.txt.)_
 - [ ] **www → no-www con 301 (no 307)** (auditoría 2026-06-09). El redirect de `www.opticacarballo.com.ar` es 307 (temporal) → no transfiere link-equity. Se setea en el dashboard de Vercel (Domains), no en código, para no duplicar redirect. Acción del founder en Vercel.
 
 - [ ] **Rate-limit / cache del endpoint público `app/api/shipping/quote`** (agregado 2026-06-08 con el estimador por CP del carrito). Hoy es público y sin throttle; cada cotización llama a la API de Correo (cap 1000/h por cuenta). Bajo tráfico no es problema, pero si hubiera abuso/scraping podría agotar el rate-limit de Correo. Mitigación futura: cache por (CP, itemCount) unos minutos + throttle por IP.
