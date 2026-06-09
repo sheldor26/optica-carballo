@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-08 — La insistencia del founder = señal de re-verificar exhaustivamente, no de defender la conclusión
+
+**Contexto**: concluí que el tracking de Correo no se obtiene por API (lo había probado con nuestros ids). El founder insistió ("¿esto no servirá para obtenerlo automático?"). En vez de repetir la conclusión, re-verifiqué las **hipótesis que aún no había probado**: (a) el número en los HEADERS del response del alta (no solo el body); (b) timing (el envío podría tardar en estar disponible); (c) más variantes de identificador. Resultado: 12 intentos (3 tiempos × 4 ids) + headers → todos negativos. La conclusión quedó cerrada **con datos duros**, no con una afirmación.
+
+**Aprendizaje**: cuando el founder cuestiona una conclusión técnica, casi siempre hay una hipótesis que no probé. Su insistencia es información: señala "verificá mejor", no "defendé tu respuesta". Re-verificar exhaustivamente o (a) destapa que tenía razón, o (b) cierra el tema con evidencia que ya nadie discute. Ambos resultados son mejores que defender.
+
+**Regla**: ante una duda repetida del founder sobre algo técnico, enumerar las hipótesis NO probadas y testearlas todas antes de responder. Conecta con el MISTAKE "presentar el manual como hecho cerrado" — la diferencia entre suponer y saber es una prueba.
+
 ## 2026-06-08 — Audit antes de estimar: el "dashboard de admin" que pidió el founder ya existía al 80%
 
 **Contexto**: el founder pidió "un dashboard de admin para ver pedidos, datos de clientes, editar y comentar". En vez de estimar o construir de cero, audité `app/admin/` primero (regla 14). Ya existía `/admin/pedidos`: listado (cliente/estado/total/fecha) + detalle con PII del cliente, productos, totales, ID de pago MP, envío (domicilio/sucursal/pickup), cambio de estado y notas que el cliente ve en su tracker. Lo único que faltaba era puntual: cargar tracking, comentarios internos, filtros.
