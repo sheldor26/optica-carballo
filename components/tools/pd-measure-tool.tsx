@@ -503,8 +503,8 @@ function PrivacyNote() {
     <div className="text-muted-foreground flex items-start gap-2 text-xs">
       <ShieldCheck className="text-brand size-4 shrink-0" />
       <p>
-        Tu foto se procesa y se descarta inmediatamente. No la guardamos. La
-        regente Carballo verifica cada DNP antes de armar tus anteojos.
+        Tu foto se procesa y se descarta inmediatamente. No la guardamos. En
+        Óptica Carballo verificamos cada DNP antes de armar tus anteojos.
       </p>
     </div>
   );

@@ -119,13 +119,13 @@ export function calculatePD(
 
   if (dnp_total_mm < DNP_RANGES.SOFT_MIN || dnp_total_mm > DNP_RANGES.SOFT_MAX) {
     softWarnings.push(
-      `Tu DNP ${dnp_total_mm.toFixed(1)}mm está fuera del rango típico (54-74mm). La regente verificará al armar.`,
+      `Tu DNP ${dnp_total_mm.toFixed(1)}mm está fuera del rango típico (54-74mm). La óptica verificará al armar.`,
     );
     confidence = confidence === 'high' ? 'medium' : confidence;
   }
   if (asymmetry_mm > 2) {
     softWarnings.push(
-      `Asimetría detectada (${asymmetry_mm.toFixed(1)}mm). Es normal pero la regente puede confirmar presencialmente.`,
+      `Asimetría detectada (${asymmetry_mm.toFixed(1)}mm). Es normal pero la óptica puede confirmar presencialmente.`,
     );
     confidence = confidence === 'high' ? 'medium' : confidence;
   }

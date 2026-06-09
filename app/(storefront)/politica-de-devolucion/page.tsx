@@ -32,7 +32,7 @@ export default function Page() {
       <PlaceholderNote>
         <p>
           Los plazos exactos, productos exceptuados y condiciones específicas
-          deben ser confirmadas por la regente óptica antes de habilitar el
+          deben ser confirmadas por la óptica antes de habilitar el
           checkout. Lo que sigue es un esqueleto estándar; reemplazá los{' '}
           <code>[PENDIENTE]</code> con la política definitiva del negocio.
         </p>

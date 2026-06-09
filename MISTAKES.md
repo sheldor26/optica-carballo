@@ -24,6 +24,26 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-09 — Remoción "site-wide" de un claim que dejó leftovers en el cuerpo del contenido y en un componente compartido
+
+**Estado**: ✅ Cerrado (detectado en audit; barrido completo aplicado y verificado el mismo día — 0 self-claims user-facing, confirmado en HTML renderizado)
+
+**Qué pasó**: la decisión de sacar los claims de matrícula/regente (commits `9eca7c0`/`d07b843`) tocó frontmatter, JSON-LD, páginas y copys, pero dejó referencias VIVAS en (a) el cuerpo de `content/guias/como-leer-receta-anteojos.mdx` ("la regente", "María Carlota valida cada pedido" — líneas 72/169/221) y (b) el componente compartido `mdx-components.tsx:44` (MedicalDisclaimer: "revisada por una óptica matriculada") que afecta a TODAS las guías. La guía está publicada (sin `draft`). Lo destapó un audit de diseño una sesión después, no la sesión de remoción.
+
+**Causa raíz**: al remover un claim "de todo el sitio" fui por los lugares obvios/estructurados (frontmatter, JSON-LD, páginas) sin hacer un grep de los TÉRMINOS LITERALES sobre todo el árbol. El cuerpo en prosa de los `.mdx` y un componente compartido quedaron fuera del radar.
+
+**Regla preventiva**: al remover/cambiar un claim "en todo el sitio", cerrar SIEMPRE con un grep de los términos literales (acá: "regente", "maría carlota", "matriculad") sobre `content/`, `components/`, `app/`, `lib/` — no solo los archivos obvios — y revisar uno por uno distinguiendo self-claim de ref legítima (ej. "oftalmólogo matriculado" = el médico, válido). Recién marcar HECHO cuando el grep da 0 self-claims.
+
+## 2026-06-09 — Intentar `Edit` tras un reset de contexto sin un `Read` en la ventana actual (y confiar en `sed`/persisted-output como si fuera Read)
+
+**Estado**: ✅ Cerrado (corregido en el mismo turno)
+
+**Qué pasó**: tras un summary de contexto ("Continue from where you left off"), intenté `Edit` sobre `CURRENT_STATE.md` y falló 2 veces con `"File has not been read yet"`. Yo "había leído" el archivo antes — pero (a) ese `Read` quedó del otro lado del reset de contexto, y (b) parte de lo que creí "leer" venía de `Bash sed`/persisted-output, que **no cuentan** como Read para la precondición de `Edit`. Encima el archivo había cambiado en el ínterin (la decisión de matrícula se prependió al top: el bloque que buscaba pasó de la línea 8 a la 18), así que editar a ciegas habría apuntado mal igual.
+
+**Causa raíz**: asumí que el tracking de "archivo leído" del harness persiste a través de un reset de contexto. No persiste: después de un summary, el estado de Read se reinicia. Y confundí "vi el contenido por Bash" con "el harness lo registró como leído".
+
+**Regla preventiva**: antes de cualquier `Edit`, garantizar un `Read` (tool) del archivo **en la ventana de contexto actual** — sobre todo después de un "Continue from where you left off" o cualquier señal de summary. `cat`/`sed`/`grep`/persisted-output NO satisfacen la precondición de `Edit` ni garantizan que el archivo no cambió. Si el árbol pudo moverse (founder commiteó, otra sesión), re-`grep` el anchor para confirmar que sigue existiendo y es único antes de editar.
+
 ## 2026-06-08 — Responder una pregunta REPETIDA con más datos, en vez de cambiar el registro de la explicación
 
 **Estado**: 🟡 Mitigado

@@ -5,7 +5,7 @@ import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 const SLUG = 'medidor-de-dnp';
 const TITLE = 'Medidor de DNP con IA';
 const DESCRIPTION =
-  'Medí tu Distancia Naso-Pupilar desde tu celular con una foto y una tarjeta de crédito como referencia. La regente verifica al armar tus anteojos. Gratis y sin guardar tu foto.';
+  'Medí tu Distancia Naso-Pupilar desde tu celular con una foto y una tarjeta de crédito como referencia. Verificamos la medida al armar tus anteojos. Gratis y sin guardar tu foto.';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,7 +58,7 @@ function FaqBlock() {
     },
     {
       q: '¿Para qué tipos de lentes sirve esta DNP?',
-      a: 'Para monofocales (lejos o cerca). Para lentes multifocales o progresivos necesitamos también la altura pupilar, que solo se mide con el armazón puesto. La regente Carballo igual valida y ajusta cada DNP al armar tus lentes.',
+      a: 'Para monofocales (lejos o cerca). Para lentes multifocales o progresivos necesitamos también la altura pupilar, que solo se mide con el armazón puesto. En la óptica igual validamos y ajustamos cada DNP al armar tus lentes.',
     },
     {
       q: '¿Por qué piden confirmar que no tengo estrabismo, prismas o progresivos?',

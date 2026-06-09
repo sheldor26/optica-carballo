@@ -167,7 +167,7 @@ export const PD_MODE_LABELS: Record<
   simple: {
     name: 'Modo simple',
     tagline: 'Tarjeta en la frente, fácil de hacer',
-    precision: 'Precisión ±1.5mm — orientativa, la regente ajusta al armar',
+    precision: 'Precisión ±1.5mm — orientativa, la óptica ajusta al armar',
   },
   precise: {
     name: 'Modo preciso',

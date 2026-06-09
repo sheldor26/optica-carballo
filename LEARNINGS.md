@@ -38,6 +38,14 @@ Sirve para:
 
 **Regla**: cuando una explicación técnica no convence, traducirla a una analogía cotidiana ANTES de aportar más datos. Conecta con el MISTAKE "responder pregunta repetida con más datos".
 
+## 2026-06-09 — La mejora de UX más barata fue USAR componentes que ya existían, validados contra archivos hermanos
+
+**Contexto**: el founder pidió un rediseño de las guías (romper muro de texto, CTA del lector destacado, listas visuales, + ideas avanzadas: scrollytelling, audio TTS, bento). El audit (regla 14) mostró que `mdx-components.tsx` YA tenía `ToolCta`, `KeyTakeaway`, `MedicalDisclaimer`, `CategoryCta`, `RevealOnScroll`. La guía `como-leer-receta-anteojos.mdx` simplemente no los usaba (markdown plano). Antes de tocar nada, grepié las guías hermanas (`astigmatismo.mdx`/`miopia.mdx`) y confirmé que YA usaban esos componentes sin import → el patrón estaba probado, la de receta era la outlier. La re-maquetación fue: insertar componentes existentes + UN componente nuevo chico (`<Steps>`). Cero librerías. El 80% de los "fundamentos" pedidos salió de reutilizar.
+
+**Aprendizaje**: ante un pedido de "rediseño/mejora visual", el primer paso no es diseñar infra nueva — es (a) inventariar qué componentes ya existen y (b) mirar archivos HERMANOS del mismo tipo para ver el patrón de uso correcto. Muchas veces el gap no es de sistema sino de "este archivo no aplicó el patrón que el resto sí". Validar contra hermanos elimina el riesgo de inventar una convención que ya estaba resuelta.
+
+**Regla**: antes de re-maquetar/rediseñar un archivo de un conjunto (guías, páginas de categoría, emails), grepear 1-2 hermanos por uso de componentes/patrones y replicar esa convención, en vez de introducir una nueva. Conecta con la regla 14 (audit antes de estimar) y con "preferí simple sobre clever".
+
 ## 2026-06-08 — Separar "capturar el número" (no/manual) de "actualizar el estado" (sí/automático) destraba la pregunta recurrente del tracking
 
 **Contexto**: el founder repreguntó (4ª vez) si `/shipping/tracking` sirve para tracking automático, pegando de nuevo el ejemplo del manual. La respuesta NO era más evidencia ni repetir "no es automático" — era partir la pregunta en dos: (a) ¿el número de seguimiento aparece solo? → **No**: el alta devuelve solo `{createdAt}` y este endpoint CONSUME el número (en el propio ejemplo, `shippingId` enviado == `trackingNumber` devuelto; la 3ª respuesta del manual `"No existe el cliente o pedido"` es lo que nos dio con NUESTROS ids). El número se copia 1 vez del panel. (b) ¿el estado del envío se actualiza solo? → **Sí**, y para eso SÍ sirve este endpoint: con el número ya cargado, un job lo consulta periódicamente y actualiza el tracker del cliente sin intervención.

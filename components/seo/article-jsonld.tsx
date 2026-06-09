@@ -54,7 +54,7 @@ export function ArticleJsonLd({
             '@type': 'MedicalCondition',
             name: frontmatter.medicalCondition,
           },
-          // Revisado por la regente matriculada — E-E-A-T YMYL.
+          // lastReviewed: señal de frescura de revisión para guías de salud (E-E-A-T YMYL).
           lastReviewed: frontmatter.updatedAt,
         }
       : {}),

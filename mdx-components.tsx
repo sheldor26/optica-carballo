@@ -41,12 +41,51 @@ function MedicalDisclaimer() {
     <aside className="not-prose border-border bg-muted/30 text-muted-foreground my-8 flex gap-3 rounded-lg border p-4 text-xs leading-relaxed sm:text-sm">
       <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
       <p>
-        Esta guía es informativa y fue revisada por una óptica matriculada. No
+        Esta guía es informativa y fue revisada por nuestro equipo de óptica. No
         reemplaza la consulta con un médico oftalmólogo. Ante síntomas o dudas,
         consultá a un profesional. No vendemos anteojos recetados ni lentes de
         contacto sin receta válida.
       </p>
     </aside>
+  );
+}
+
+// ── Listas visuales ───────────────────────────────────────────────────────────
+
+/** Lista de pasos/partes en formato visual con número — escaneable, "con aire".
+ * Reemplaza párrafos en negrita enumerados por tarjetas claras. */
+function Steps({ children }: { children: React.ReactNode }) {
+  return <ol className="not-prose my-6 list-none space-y-3 pl-0">{children}</ol>;
+}
+
+/** Un ítem de `<Steps>`. `n` = etiqueta del badge (número o símbolo); `title` =
+ * encabezado del ítem; los children llevan la descripción (admite markdown). */
+function Step({
+  n,
+  title,
+  children,
+}: {
+  n: number | string;
+  title: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <li className="border-border bg-muted/30 flex gap-4 rounded-xl border p-4">
+      <span
+        className="bg-brand/10 text-brand flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
+        aria-hidden="true"
+      >
+        {n}
+      </span>
+      <div className="min-w-0">
+        <p className="text-foreground m-0 font-medium">{title}</p>
+        {children && (
+          <div className="text-muted-foreground mt-1 text-sm leading-relaxed [&>p]:m-0">
+            {children}
+          </div>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -241,6 +280,8 @@ export function useMDXComponents(
     table: MdxTable,
     KeyTakeaway,
     MedicalDisclaimer,
+    Steps,
+    Step,
     CategoryCta,
     ToolCta,
     ProductCta,
