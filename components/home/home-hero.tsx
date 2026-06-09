@@ -79,7 +79,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
             texto recupera su padding propio acá. */}
         <motion.div
           style={{ y: textY }}
-          className="relative order-2 md:order-1 md:py-28 lg:py-36"
+          className="relative order-1 md:py-28 lg:py-36"
         >
           <p className="hero-reveal hero-reveal-1 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em] text-white/70">
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
@@ -148,7 +148,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
             + `self-stretch` para que llegue hasta el bottom edge del hero. */}
         <motion.div
           style={{ y: textY }}
-          className="relative order-1 mx-auto w-full max-w-md md:order-2 md:max-w-none md:self-stretch"
+          className="relative order-2 mx-auto w-full max-w-md md:max-w-none md:self-stretch"
         >
           {/* Wrapper interno con float animation infinito — la foto "respira"
               sutil (10px arriba/abajo en 6s). Respeta prefers-reduced-motion:

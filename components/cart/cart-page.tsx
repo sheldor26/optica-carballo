@@ -189,6 +189,9 @@ function EmptyCart() {
             Explorá nuestras marcas y agregá los anteojos que te van a
             acompañar en los próximos años.
           </p>
+          <p className="text-muted-foreground/90 mx-auto mt-3 max-w-md text-balance text-xs md:text-sm">
+            Envío a todo el país · Garantía 1 año · Pago seguro con Mercado Pago
+          </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">
               <Link href="/anteojos-de-sol">Ver anteojos de sol</Link>

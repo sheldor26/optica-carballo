@@ -118,15 +118,14 @@ export function CookiesBanner() {
                 <p className="text-foreground text-sm font-semibold leading-tight sm:text-base">
                   Usamos cookies
                 </p>
-                <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed sm:text-sm">
-                  Las cookies necesarias (carrito, wishlist, comparador) siempre
-                  están activas porque sin ellas el sitio no funciona. Las
-                  opcionales (analítica) solo si las aceptás. Más info en{' '}
+                <p className="text-muted-foreground mt-1 text-xs leading-relaxed sm:text-sm">
+                  Las necesarias siempre activas; las opcionales (analítica) solo
+                  si aceptás.{' '}
                   <Link
                     href="/politica-de-privacidad"
                     className="text-foreground underline-offset-2 hover:underline"
                   >
-                    nuestra política de privacidad
+                    Más info
                   </Link>
                   .
                 </p>

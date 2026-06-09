@@ -1,4 +1,5 @@
 import createMDX from '@next/mdx';
+import remarkFrontmatter from 'remark-frontmatter';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -42,6 +43,12 @@ const nextConfig = {
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
+  options: {
+    // Saca el bloque YAML (---\n...\n---) del contenido renderizado de los .mdx.
+    // El frontmatter lo lee gray-matter por separado (lib/content/articles);
+    // sin este plugin, @next/mdx lo mostraba como texto visible en la guía.
+    remarkPlugins: [remarkFrontmatter],
+  },
 });
 
 export default withMDX(nextConfig);
