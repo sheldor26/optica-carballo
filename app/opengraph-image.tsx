@@ -153,7 +153,7 @@ export default async function OpengraphImage() {
         >
           <span>30+ años en Argentina</span>
           <span style={{ color: 'rgba(255,255,255,0.3)' }}>·</span>
-          <span>Regente matriculada</span>
+          <span>Asesoramiento personal</span>
           <span style={{ color: 'rgba(255,255,255,0.3)' }}>·</span>
           <span>Envíos a todo el país</span>
         </div>

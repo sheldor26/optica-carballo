@@ -432,7 +432,7 @@ function ConfirmationCheckboxes({
           />
           <span>
             Los valores que cargué corresponden a una receta válida (no
-            vencida) emitida por un oftalmólogo matriculado.
+            vencida) emitida por un oftalmólogo.
           </span>
         </label>
       </div>

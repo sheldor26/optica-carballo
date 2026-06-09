@@ -8,9 +8,8 @@ import type { OrderStatus, OrderStatusEvent } from './types';
  * estados terminales fuera de camino (`cancelled`, `refunded`) no son pasos
  * del stepper — se manejan aparte.
  *
- * El paso "Revisado por óptica" es nuestro diferencial: comunica que una
- * óptica matriculada controló el armado antes de despachar. No es marketing
- * vacío — María Carlota es la regente matriculada real (regla de negocio).
+ * El paso "Revisado por óptica" es nuestro diferencial: comunica que
+ * controlamos el armado antes de despachar (control de calidad real).
  */
 export const TRACKER_STEPS = [
   'paid',
@@ -25,7 +24,7 @@ export type TrackerStep = (typeof TRACKER_STEPS)[number];
 export const TRACKER_STEP_LABELS: Record<TrackerStep, string> = {
   paid: 'Pago confirmado',
   preparing: 'En preparación',
-  reviewed: 'Revisado por óptica matriculada',
+  reviewed: 'Revisado por óptica',
   shipped: 'Enviado',
   delivered: 'Entregado',
 };
@@ -34,7 +33,7 @@ export const TRACKER_STEP_LABELS: Record<TrackerStep, string> = {
 export const TRACKER_STEP_DESCRIPTIONS: Record<TrackerStep, string> = {
   paid: 'Recibimos tu pago y tu pedido entró en cola.',
   preparing: 'Estamos armando tu pedido con tus productos.',
-  reviewed: 'Una óptica matriculada controló y aprobó tu pedido.',
+  reviewed: 'Controlamos y aprobamos el armado de tu pedido.',
   shipped: 'Tu pedido salió en camino a destino.',
   delivered: 'Tu pedido llegó. ¡Que lo disfrutes!',
 };

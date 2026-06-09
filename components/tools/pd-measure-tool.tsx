@@ -653,9 +653,8 @@ function ResultBlock({
 
       <p className="text-muted-foreground border-border/40 border-t pt-4 text-xs leading-relaxed">
         Esta medición es una estimación orientativa basada en análisis de
-        imagen. La distancia interpupilar definitiva la valida y ajusta
-        nuestra óptica regente matriculada (María Carlota Carballo) al armar
-        tus lentes. Para lentes multifocales, progresivos, recetas con
+        imagen. La distancia interpupilar definitiva la validamos y ajustamos
+        al armar tus lentes. Para lentes multifocales, progresivos, recetas con
         prismas o graduaciones altas, recomendamos medición presencial.
       </p>
     </div>

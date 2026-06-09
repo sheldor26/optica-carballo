@@ -7,7 +7,7 @@ import type { InPersonReason, WarningFlag } from '@/lib/prescription/types';
  * → checkbox obligatorio en el componente.
  */
 export const UPLOAD_DISCLAIMER =
-  'Vamos a leer tu receta con un asistente automático para autocompletar el formulario. Los datos extraídos son una transcripción, no un diagnóstico. Antes de armar tus anteojos, nuestra óptica regente matriculada revisa cada pedido. Tu receta se procesa de forma efímera y no se guarda en nuestros servidores.';
+  'Vamos a leer tu receta con un asistente automático para autocompletar el formulario. Los datos extraídos son una transcripción, no un diagnóstico. Antes de armar tus anteojos, revisamos cada pedido. Tu receta se procesa de forma efímera y no se guarda en nuestros servidores.';
 
 export const CONSENT_LABEL =
   'Acepto que se procese mi receta de forma automatizada para autocompletar el formulario.';
@@ -18,7 +18,7 @@ export const RESULT_SUBTITLE =
   'Revisá que los valores coincidan con tu receta original. Si algo no cuadra, editalo antes de continuar — la transcripción automática puede tener errores.';
 
 export const FORM_DISCLAIMER =
-  'Los valores son una transcripción automática y deben coincidir con tu receta original. La óptica regente matriculada validará tu pedido antes de armar las lentes.';
+  'Los valores son una transcripción automática y deben coincidir con tu receta original. Validamos tu pedido antes de armar las lentes.';
 
 /** Texto cuando el modelo NO detectó receta válida. */
 export const NOT_A_PRESCRIPTION_MESSAGE =

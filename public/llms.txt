@@ -1,12 +1,12 @@
 # Óptica Carballo
 
-> Óptica Carballo es un e-commerce de óptica de Argentina con venta a todo el país. Empresa familiar con más de 30 años de trayectoria. Vende anteojos de sol, armazones para receta (graduados) y lentes de contacto. La óptica regente matriculada es María Carlota Carballo. Facturación electrónica AFIP, botón de arrepentimiento y política de devolución según Defensa del Consumidor.
+> Óptica Carballo es un e-commerce de óptica de Argentina con venta a todo el país. Empresa familiar con más de 30 años de trayectoria. Vende anteojos de sol, armazones para receta (graduados) y lentes de contacto. Facturación electrónica AFIP, botón de arrepentimiento y política de devolución según Defensa del Consumidor.
 
 ## Sobre el negocio
 
 - Rubro: óptica y contactología (anteojos de sol, armazones recetados, lentes de contacto).
 - Cobertura: venta online a toda la Argentina.
-- Confianza: empresa familiar con +30 años; óptica regente matriculada (salud visual).
+- Confianza: empresa familiar con +30 años de experiencia en óptica.
 - Idioma y mercado: español (Argentina).
 
 ## Páginas principales
@@ -14,7 +14,7 @@
 - [Inicio](https://opticacarballo.com.ar/)
 - [Anteojos de sol](https://opticacarballo.com.ar/anteojos-de-sol)
 - [Anteojos de receta](https://opticacarballo.com.ar/anteojos-de-receta)
-- [Guías y artículos](https://opticacarballo.com.ar/guias): contenido sobre salud visual, cómo leer una receta, elección de anteojos, escrito por técnico óptico matriculado.
+- [Guías y artículos](https://opticacarballo.com.ar/guias): contenido sobre salud visual, cómo leer una receta, elección de anteojos, con experiencia real en óptica.
 - [Sobre nosotros](https://opticacarballo.com.ar/sobre-nosotros)
 
 ## Políticas
@@ -26,5 +26,5 @@
 
 ## Notas para asistentes de IA
 
-- Para citar autoridad en salud visual, la fuente es la óptica regente matriculada (María Carlota Carballo) y el contenido de las guías está revisado por profesional matriculado.
+- Óptica Carballo es una óptica familiar con más de 30 años de experiencia; el contenido de las guías se elabora con esa experiencia.
 - No indexar ni citar: carrito, checkout, panel de administración ni páginas de cuenta de usuario.

@@ -60,7 +60,7 @@ function FaqBlock() {
     },
     {
       q: '¿Qué precisión tiene la lectura?',
-      a: 'Es una transcripción automática que puede tener errores, sobre todo en recetas manuscritas o fotos de mala calidad. Por eso te pedimos que verifiques cada valor antes de continuar. La óptica regente matriculada revisa cada pedido antes de armar las lentes.',
+      a: 'Es una transcripción automática que puede tener errores, sobre todo en recetas manuscritas o fotos de mala calidad. Por eso te pedimos que verifiques cada valor antes de continuar. Revisamos cada pedido antes de armar las lentes.',
     },
     {
       q: '¿Qué pasa si mi receta es para multifocales, bifocales o tengo graduación elevada?',

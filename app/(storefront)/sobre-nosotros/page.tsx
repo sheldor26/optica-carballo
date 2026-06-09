@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 const SLUG = 'sobre-nosotros';
 const TITLE = 'Sobre nosotros';
 const DESCRIPTION =
-  'Óptica Carballo: óptica familiar con +30 años de experiencia, regente óptica matriculada y atención profesional. Envíos a todo Argentina.';
+  'Óptica Carballo: óptica familiar con +30 años de experiencia y atención personalizada. Envíos a todo Argentina.';
 
 export const revalidate = 86400;
 
@@ -60,7 +60,7 @@ export default async function Page() {
         <StatsStrip />
         <StorySection location={location} />
         <TimelineSection />
-        <TeamSection regenteMatricula={business.regenteMatricula} />
+        <TeamSection />
         <HowWeWorkSection />
         <BrandsSection brands={brands} />
         {articles.length > 0 && <EditorialSection articleCount={articles.length} />}
@@ -84,8 +84,8 @@ function Hero() {
         </h1>
         <p className="text-muted-foreground mx-auto mt-7 max-w-xl text-balance text-base md:text-lg">
           Empezamos en 1994. Tres generaciones de la familia Carballo en el
-          mismo lugar, atendiendo gente real, con stock real, y la regencia
-          de una óptica matriculada.
+          mismo lugar, atendiendo gente real, con stock real y atención
+          personalizada.
         </p>
       </RevealOnScroll>
     </section>
@@ -94,7 +94,7 @@ function Hero() {
 
 const STATS = [
   { icon: CalendarDays, label: '+30 años', sub: 'En el rubro desde 1994' },
-  { icon: Award, label: 'Óptica matriculada', sub: 'Regencia profesional' },
+  { icon: Award, label: 'Atención personal', sub: 'Asesoramiento real' },
   { icon: Truck, label: 'Todo el país', sub: 'Envíos con Correo Argentino' },
   { icon: Heart, label: 'Familiar', sub: 'Atención cercana, no call center' },
 ];
@@ -158,9 +158,8 @@ function StorySection({ location }: { location: string }) {
           <p>
             Pasaron más de treinta años. Lo que arrancó como una óptica
             tradicional hoy es una óptica con presencia digital, pero el ADN no
-            cambió: atención personalizada, productos que están físicamente en
-            nuestro local, y la responsabilidad profesional de tener una óptica
-            matriculada como regente.
+            cambió: atención personalizada y productos que están físicamente en
+            nuestro local.
           </p>
           <p>
             Esa combinación —oficio óptico tradicional + presencia online
@@ -189,8 +188,8 @@ const TIMELINE_ITEMS = [
   },
   {
     year: '2010s',
-    title: 'Regencia matriculada',
-    body: 'María Carlota Carballo asume como óptica regente matriculada — supervisión profesional formal.',
+    title: 'Segunda generación',
+    body: 'La familia consolida el oficio óptico y suma experiencia en armado de recetados y atención al cliente.',
   },
   {
     year: '2025',
@@ -266,13 +265,8 @@ function TimelineSection() {
 /** Sección Equipo con bios completas. Usa `lib/content/article-authors` como
  * single source of truth (mismas bios que firman los artículos). E-E-A-T:
  * Google ve coherencia entre autor del artículo + bio en sobre-nosotros. */
-function TeamSection({
-  regenteMatricula,
-}: {
-  regenteMatricula: string | null;
-}) {
+function TeamSection() {
   const juan = getAuthor('juan');
-  const maria = getAuthor('maria-carlota');
 
   return (
     <section className="container py-20 md:py-28">
@@ -288,40 +282,7 @@ function TeamSection({
         </h2>
       </RevealOnScroll>
 
-      <div className="mt-14 grid gap-10 md:mt-20 md:grid-cols-2 md:gap-12 lg:gap-16">
-        <RevealOnScroll>
-          <article className="border-foreground/10 group flex flex-col gap-5 border-t pt-6">
-            <ShieldCheck
-              className="text-foreground/80 size-7"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-            <p className="text-foreground/60 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.18em]">
-              <span className="bg-brand size-1 rounded-full" aria-hidden="true" />
-              Regente matriculada
-            </p>
-            <h3 className="text-foreground font-serif text-3xl font-medium leading-tight tracking-[-0.015em] md:text-4xl">
-              {maria.displayName}
-            </h3>
-            <p className="text-foreground/70 text-sm font-medium">
-              {maria.role}
-              {regenteMatricula && (
-                <span className="text-foreground/60"> · Mat. {regenteMatricula}</span>
-              )}
-            </p>
-            <p className="text-muted-foreground text-base leading-relaxed">
-              {maria.bio}
-            </p>
-            <p className="text-muted-foreground text-base leading-relaxed">
-              Toda venta de anteojos de receta en Argentina requiere
-              supervisión profesional matriculada. Acá lo respetamos: las
-              recetas se revisan caso por caso, los cristales se gradúan según
-              la prescripción real, y el armado final pasa por control de
-              regencia antes de salir.
-            </p>
-          </article>
-        </RevealOnScroll>
-
+      <div className="mt-14 grid gap-10 md:mt-20 md:gap-12 lg:gap-16">
         <RevealOnScroll delay={120}>
           <article className="border-foreground/10 group flex flex-col gap-5 border-t pt-6">
             <Sparkles
@@ -512,8 +473,8 @@ function EditorialSection({ articleCount }: { articleCount: number }) {
         </h2>
         <p className="text-muted-foreground mx-auto mt-6 max-w-xl text-balance text-base md:text-lg">
           {articleCount === 1
-            ? 'Publicamos una guía con todo lo que aprendimos en 30+ años de óptica. Editorial, sin marketing inflado, validado por la regente matriculada.'
-            : `Publicamos ${articleCount} guías con todo lo que aprendimos en 30+ años de óptica. Editorial, sin marketing inflado, validado por la regente matriculada.`}
+            ? 'Publicamos una guía con todo lo que aprendimos en 30+ años de óptica. Editorial, sin marketing inflado.'
+            : `Publicamos ${articleCount} guías con todo lo que aprendimos en 30+ años de óptica. Editorial, sin marketing inflado.`}
         </p>
         <div className="mt-10">
           <Link

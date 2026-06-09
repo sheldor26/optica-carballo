@@ -119,7 +119,7 @@ export const STANDARD_CLOSING =
  *    inconsistente solo acá.
  */
 export const ANALYSIS_DISCLAIMER =
-  'Esta sugerencia es una orientación estética general basada en análisis automatizado de tu foto. No reemplaza la prueba física del armazón ni la consulta con un óptico matriculado. El calce final depende de medidas faciales precisas (DNP, ancho de puente, ancho temporal) que solo se confirman presencialmente o con tu receta.';
+  'Esta sugerencia es una orientación estética general basada en análisis automatizado de tu foto. No reemplaza la prueba física del armazón ni la consulta con un profesional de la óptica. El calce final depende de medidas faciales precisas (DNP, ancho de puente, ancho temporal) que solo se confirman presencialmente o con tu receta.';
 
 /**
  * Texto cuando el modelo no pudo determinar la forma con confianza

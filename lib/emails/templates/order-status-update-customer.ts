@@ -22,7 +22,7 @@ type Copy = { subject: string; heading: string; intro: string };
 /**
  * Copy por estado. Tono cálido, español argentino, honesto (sin prometer
  * tiempos que no controlamos). El paso "Revisado por óptica" comunica el
- * diferencial real: María Carlota es la regente matriculada.
+ * diferencial real: controlamos el armado en cada compra.
  */
 function copyFor(
   status: StatusUpdateEmailData['status'],
@@ -38,10 +38,10 @@ function copyFor(
       };
     case 'reviewed':
       return {
-        subject: `Tu pedido ${orderNumber} fue revisado por óptica matriculada`,
-        heading: 'Tu pedido fue revisado por óptica matriculada',
+        subject: `Tu pedido ${orderNumber} fue revisado por nuestra óptica`,
+        heading: 'Tu pedido fue revisado por nuestra óptica',
         intro:
-          'Una óptica matriculada controló y aprobó el armado de tu pedido antes de despacharlo. Es un control que hacemos en cada compra.',
+          'Controlamos y aprobamos el armado de tu pedido antes de despacharlo. Es un control que hacemos en cada compra.',
       };
     case 'shipped':
       return {

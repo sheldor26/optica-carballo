@@ -3,8 +3,8 @@ import type { Author, AuthorKey } from '@/lib/content/article-types';
 /**
  * Bios de autores referenciados desde frontmatter (`author: "juan"`).
  *
- * Source of truth para E-E-A-T: cada artículo YMYL debe firmarse con
- * autor profesional matriculado, su matrícula visible, role claro.
+ * Source of truth para E-E-A-T: cada artículo se firma con un autor con
+ * experiencia real en óptica y role claro (sin claims de matrícula).
  *
  * Si sumás un autor nuevo, agregalo acá Y al type `AuthorKey` en
  * `article-types.ts` para que TypeScript valide referencias.
@@ -20,10 +20,10 @@ const AUTHORS: Record<AuthorKey, Author> = {
   },
   'maria-carlota': {
     key: 'maria-carlota',
-    displayName: 'María Carlota Carballo',
-    role: 'Óptica Regente Matriculada',
+    displayName: 'Equipo Óptica Carballo',
+    role: 'Óptica Carballo',
     matricula: null,
-    bio: 'Óptica regente matriculada de Óptica Carballo. Más de tres décadas de experiencia en armado de anteojos recetados, asesoramiento clínico y validación de prescripciones oftalmológicas.',
+    bio: 'Más de tres décadas de experiencia en armado de anteojos recetados, asesoramiento y validación de recetas en Óptica Carballo.',
     avatarPath: null,
   },
 };

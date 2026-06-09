@@ -98,8 +98,8 @@ export function ArticleFooter({
               ¿Te quedó alguna duda?
             </p>
             <p className="text-muted-foreground mt-1 max-w-xl text-sm md:text-base">
-              Escribinos por WhatsApp y te respondemos por técnico óptico
-              matriculado. Sin bots, sin esperas largas.
+              Escribinos por WhatsApp y te respondemos con experiencia real en
+              óptica. Sin bots, sin esperas largas.
             </p>
           </div>
           <Link

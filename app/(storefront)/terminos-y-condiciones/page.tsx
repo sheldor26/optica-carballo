@@ -63,14 +63,6 @@ export default function Page() {
           )}
           .
         </li>
-        <li>
-          <strong>Regente óptica matriculada</strong>:{' '}
-          {business.regenteName ?? '[A CONFIRMAR]'}
-          {business.regenteMatricula && (
-            <> (Matrícula {business.regenteMatricula})</>
-          )}
-          .
-        </li>
       </ul>
 
       <h2>2. Aceptación de los términos</h2>
@@ -179,7 +171,7 @@ export default function Page() {
         <strong>
           Por ley, ningún anteojo recetado se vende sin receta válida
         </strong>{' '}
-        de oftalmólogo o técnico óptico matriculado. La receta se valida antes
+        de oftalmólogo. La receta se valida antes
         del armado. Multifocales, bifocales y graduaciones elevadas requieren
         atención presencial en nuestro local.
       </p>

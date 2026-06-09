@@ -179,7 +179,7 @@ export const FAQS: FaqItem[] = [
     category: 'receta',
     question: '¿Qué receta necesito enviar?',
     answer:
-      'Necesitamos una receta de oftalmólogo o técnico óptico matriculado con OD (ojo derecho) y OI (ojo izquierdo), valores de esférico, cilindro, eje, distancia naso-pupilar (DNP), y adición si corresponde. La foto o scan tiene que estar clara y completa, idealmente con fecha menor a 1 año.',
+      'Necesitamos una receta de oftalmólogo con OD (ojo derecho) y OI (ojo izquierdo), valores de esférico, cilindro, eje, distancia naso-pupilar (DNP), y adición si corresponde. La foto o scan tiene que estar clara y completa, idealmente con fecha menor a 1 año.',
   },
   {
     id: 'traspaso-de-lentes',
@@ -219,7 +219,7 @@ export const FAQS: FaqItem[] = [
     category: 'nosotros',
     question: '¿Tienen local físico?',
     answer:
-      'Sí, estamos en Virasoro, Corrientes. María Carlota Carballo, técnica óptica matriculada, es la regente de la óptica desde hace más de 30 años. [A CONFIRMAR: dirección exacta + horarios de atención].',
+      'Sí, estamos en Virasoro, Corrientes. Somos una óptica familiar con más de 30 años de experiencia. [A CONFIRMAR: dirección exacta + horarios de atención].',
   },
 
   // ===========================================================================
@@ -290,7 +290,7 @@ export const FAQS: FaqItem[] = [
     category: 'receta',
     question: '¿Puedo comprar anteojos de receta sin tener receta?',
     answer:
-      'No. Por ley, ningún anteojo recetado se vende sin receta válida de oftalmólogo o técnico óptico matriculado. Es por tu salud visual: una graduación incorrecta puede causar fatiga, mareos o empeorar tu visión. Si no tenés receta vigente, te recomendamos hacerte un control antes.',
+      'No. Por ley, ningún anteojo recetado se vende sin receta válida de oftalmólogo. Es por tu salud visual: una graduación incorrecta puede causar fatiga, mareos o empeorar tu visión. Si no tenés receta vigente, te recomendamos hacerte un control antes.',
   },
 
   // ===========================================================================
@@ -308,11 +308,11 @@ export const FAQS: FaqItem[] = [
   // Nosotros — adicionales
   // ===========================================================================
   {
-    id: 'regente-matriculada',
+    id: 'control-de-calidad',
     category: 'nosotros',
-    question: '¿Quién es la regente óptica?',
+    question: '¿Cómo controlan la calidad de los pedidos?',
     answer:
-      'María Carlota Carballo es la regente óptica matriculada de la óptica. Toda venta de anteojos de receta y lentes de contacto en Argentina requiere supervisión profesional matriculada — en Óptica Carballo lo respetamos a rajatabla: las recetas se revisan, los cristales se gradúan según prescripción real, y el armado final lo hace personal capacitado.',
+      'Revisamos cada receta y controlamos el armado de cada pedido antes de despacharlo: los cristales se gradúan según tu prescripción y verificamos el armado final. Somos una óptica familiar con más de 30 años de experiencia.',
   },
 ];
 

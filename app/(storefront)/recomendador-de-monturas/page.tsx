@@ -60,7 +60,7 @@ function FaqBlock() {
     },
     {
       q: '¿Qué precisión tiene esta herramienta?',
-      a: 'Es una sugerencia estética orientativa basada en análisis automatizado. La prueba física del armazón sigue siendo lo más confiable. Para una recomendación profesional definitiva, contactá a una óptica matriculada.',
+      a: 'Es una sugerencia estética orientativa basada en análisis automatizado. La prueba física del armazón sigue siendo lo más confiable. Para una recomendación profesional definitiva, contactá a una óptica.',
     },
     {
       q: '¿Puedo usar la sugerencia para elegir mi receta?',

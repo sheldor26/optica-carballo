@@ -60,19 +60,6 @@ export function OrganizationJsonLd() {
 
   if (business.phone) jsonLd.telephone = business.phone;
 
-  // Regente matriculada como `employee`/`founder` aporta E-E-A-T.
-  if (business.regenteName) {
-    const employee: Record<string, unknown> = {
-      '@type': 'Person',
-      name: business.regenteName,
-      jobTitle: 'Óptica matriculada (regente)',
-    };
-    if (business.regenteMatricula) {
-      employee.identifier = `Matrícula ${business.regenteMatricula}`;
-    }
-    jsonLd.employee = employee;
-  }
-
   const sameAs: string[] = [];
   if (business.whatsappNumber) {
     sameAs.push(`https://wa.me/${business.whatsappNumber}`);

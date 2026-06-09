@@ -69,7 +69,7 @@ export default function NotFound() {
         <ShortcutCard
           href="/guias"
           title="Guías"
-          description="Artículos de salud visual escritos por óptica matriculada."
+          description="Artículos de salud visual con experiencia real en óptica."
         />
         <ShortcutCard
           href="/preguntas-frecuentes"
@@ -84,8 +84,8 @@ export default function NotFound() {
             ¿Buscabas algo específico?
           </p>
           <p className="text-muted-foreground mx-auto max-w-md text-balance text-sm md:text-base">
-            Escribinos por WhatsApp y te ayudamos a encontrarlo. Atención por
-            técnico óptico matriculado.
+            Escribinos por WhatsApp y te ayudamos a encontrarlo. Atención
+            personal real.
           </p>
           <div className="mt-2">
             <Button
