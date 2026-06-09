@@ -299,6 +299,7 @@ export type Database = {
           shipping_recipient_name: string | null
           shipping_street: string | null
           status: string
+          stock_released_at: string | null
           subtotal_cents: number
           total_cents: number
           tracking_number: string | null
@@ -344,6 +345,7 @@ export type Database = {
           shipping_recipient_name?: string | null
           shipping_street?: string | null
           status?: string
+          stock_released_at?: string | null
           subtotal_cents: number
           total_cents: number
           tracking_number?: string | null
@@ -389,6 +391,7 @@ export type Database = {
           shipping_recipient_name?: string | null
           shipping_street?: string | null
           status?: string
+          stock_released_at?: string | null
           subtotal_cents?: number
           total_cents?: number
           tracking_number?: string | null

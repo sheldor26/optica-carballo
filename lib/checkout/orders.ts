@@ -246,3 +246,69 @@ async function syncStockOutboundForVariants(variantIds: string[]): Promise<void>
     console.error('[checkout] sync outbound ML falló', err);
   }
 }
+
+/**
+ * Reintegra el stock de un pedido (en la base Y empujándolo a ML) cuando se
+ * cancela. Reusa `increment_variant_stock` (el mismo camino que la compensación
+ * de `createOrderFromCart`).
+ *
+ * **Idempotente**: hace un claim atómico sobre `orders.stock_released_at` —
+ * setea la marca solo si estaba en NULL, y solo reintegra si ganó el claim. Así
+ * cancelar/tocar el mismo pedido dos veces no infla el stock (clave porque
+ * `increment_variant_stock` suma cada vez que se la llama).
+ *
+ * El caller debe llamar esto SOLO en la transición a 'cancelled' (no en
+ * cualquier cambio de estado). Devuelve `{ released: false }` si ya estaba
+ * liberado (o si el claim falló) — no es un error.
+ */
+export async function releaseOrderStock(
+  orderId: string,
+): Promise<{ released: boolean }> {
+  const supabase = createAdminClient();
+
+  // Claim atómico: solo libera si nunca se liberó.
+  const { data: claimed, error: claimErr } = await supabase
+    .from('orders')
+    .update({ stock_released_at: new Date().toISOString() })
+    .eq('id', orderId)
+    .is('stock_released_at', null)
+    .select('id')
+    .maybeSingle();
+
+  if (claimErr || !claimed) {
+    return { released: false };
+  }
+
+  const { data: items, error: itemsErr } = await supabase
+    .from('order_items')
+    .select('variant_id, quantity')
+    .eq('order_id', orderId);
+
+  if (itemsErr) {
+    console.error('[checkout] releaseOrderStock: no se pudieron leer items', itemsErr);
+    return { released: false };
+  }
+
+  const valid = (items ?? []).filter(
+    (it): it is { variant_id: string; quantity: number } =>
+      Boolean(it.variant_id) && it.quantity > 0,
+  );
+
+  for (const it of valid) {
+    const { error } = await supabase.rpc('increment_variant_stock', {
+      p_variant_id: it.variant_id,
+      p_amount: it.quantity,
+    });
+    if (error) {
+      console.error(
+        `[checkout] releaseOrderStock: increment falló (variant ${it.variant_id})`,
+        error,
+      );
+    }
+  }
+
+  // Devolver el stock a ML también (best-effort; el reconcile corrige drift).
+  void syncStockOutboundForVariants(valid.map((it) => it.variant_id));
+
+  return { released: true };
+}

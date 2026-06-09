@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/ml-reconcile-stock",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/cancel-abandoned-orders",
+      "schedule": "0 * * * *"
     }
   ]
 }

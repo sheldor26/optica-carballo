@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { sendOrderStatusUpdateToCustomer } from '@/lib/emails/send-order-emails';
 import { shouldNotifyCustomer } from '@/lib/orders/email-policy';
 import { fetchOrderByIdAdmin } from '@/lib/orders/admin-queries';
+import { releaseOrderStock } from '@/lib/checkout/orders';
 import { importShipment, type ImportShipmentInput } from '@/lib/correo/import';
 import { DEFAULT_PACKAGE, EXTRA_ITEM_WEIGHT } from '@/lib/correo/constants';
 import type { OrderStatus } from '@/lib/orders/types';
@@ -80,6 +81,13 @@ export async function updateOrderStatusAction(input: {
 
   if (updateErr) {
     return { ok: false, error: `No se pudo actualizar: ${updateErr.message}` };
+  }
+
+  // Reintegro de stock al CANCELAR (solo en la transición a 'cancelled', no si
+  // ya estaba cancelado). Idempotente vía stock_released_at — devuelve la base
+  // y empuja a ML. Best-effort: si fallara, no revertimos el cambio de estado.
+  if (newStatus === 'cancelled' && current.status !== 'cancelled') {
+    await releaseOrderStock(orderId);
   }
 
   // Adjuntar la nota al evento recién creado por el trigger (si la hay). El
