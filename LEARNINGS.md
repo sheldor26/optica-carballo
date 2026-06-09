@@ -38,6 +38,14 @@ Sirve para:
 
 **Regla**: cuando una explicación técnica no convence, traducirla a una analogía cotidiana ANTES de aportar más datos. Conecta con el MISTAKE "responder pregunta repetida con más datos".
 
+## 2026-06-09 — `aria-hidden` en la imagen permite alt descriptivo solo-para-SEO sin tocar la a11y
+
+**Contexto**: los cards de producto tenían `alt=""` y el bloque de imagen con `aria-hidden="true"` + el nombre en el `aria-label` del link (patrón a11y correcto: el lector anuncia el link por su nombre y se saltea la imagen, sin redundancia). Para Google Imágenes eso es pobre (sin contexto). Insight: **`aria-hidden` saca el subtree del árbol de accesibilidad, pero NO afecta a los crawlers** → se puede poner un `alt` descriptivo en la imagen y (a) Google lo lee para indexar, (b) el lector de pantalla lo sigue ignorando (por el `aria-hidden` del contenedor). Cero conflicto a11y/SEO. Apliqué un helper `buildProductImageAlt` (marca + nombre + categoría) en grid + relacionados + galería.
+
+**Aprendizaje**: `alt=""` "porque el nombre está al lado" es un trade-off innecesario cuando el contenedor ya está `aria-hidden` con el nombre en un `aria-label`. En ese caso el `alt` es territorio EXCLUSIVO de SEO — ponelo descriptivo. La regla "alt vacío para decorativas" aplica a imágenes realmente decorativas, no a fotos de producto que Google quiere indexar.
+
+**Regla**: antes de dejar `alt=""` en una foto de producto, ver si el contenedor está `aria-hidden` / el nombre va en un `aria-label`. Si sí → poner `alt` descriptivo (gana SEO, no toca a11y). Si la imagen NO está aislada del árbol a11y, balancear redundancia vs SEO (descriptivo suele ganar igual para producto).
+
 ## 2026-06-09 — Extraer el "core por-ítem" para que la acción single y la de lote/variante compartan la misma lógica tested
 
 **Contexto**: dos features de esta sesión necesitaban una VARIANTE de una acción que ya funcionaba. (a) "Retomar pago" tenía que crear una preferencia MP desde una orden (no desde el cart) → extraje `createPreferenceFromItems` (core) y dejé `createCheckoutPreference` (cart) + `createCheckoutPreferenceFromOrder` (orden) llamándolo; la firma del checkout quedó INTACTA. (b) "Envíos en lote" tenía que generar N envíos → extraje `generateShipmentForOrder` (core sin `requireAdmin`/`revalidate`, idempotente vía claim sobre `shipment_imported_at`) y dejé `generateShipmentAction` (single) + `generateShipmentsBulkAction` (lote) llamándolo.
