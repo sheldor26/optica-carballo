@@ -83,9 +83,17 @@ export async function createOrderFromCart(args: {
     p_items: reserveItems,
   });
   if (reserveError) {
+    // No filtrar el mensaje crudo de Postgres al cliente. El caso típico es que
+    // un producto se quedó sin stock entre que se armó el carrito y se confirmó
+    // (carrera con otra compra / ML). Mensaje claro y accionable.
+    const insufficient = /insuficiente|stock|existe|inactiv/i.test(
+      reserveError.message,
+    );
     return {
       ok: false,
-      error: `No pudimos reservar el stock. ${reserveError.message}`,
+      error: insufficient
+        ? 'Uno de los productos se quedó sin stock mientras comprabas. Revisá tu carrito e intentá de nuevo.'
+        : 'No pudimos confirmar el stock en este momento. Intentá de nuevo en unos segundos.',
     };
   }
 
