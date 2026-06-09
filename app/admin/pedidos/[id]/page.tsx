@@ -9,6 +9,7 @@ import {
 import { OrderStatusBadge } from '@/components/account/order-status-badge';
 import { OrderTimeline } from '@/components/account/order-timeline';
 import { OrderStatusControl } from '@/components/admin/order-status-control';
+import { ShipmentControl } from '@/components/admin/shipment-control';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 
@@ -67,7 +68,11 @@ export default async function Page({
 
       <div className="space-y-6">
         {/* Control de estado (lo primero — es la acción principal del admin) */}
-        <OrderStatusControl orderId={order.id} currentStatus={order.status} />
+        <OrderStatusControl
+          orderId={order.id}
+          currentStatus={order.status}
+          currentTracking={order.trackingNumber}
+        />
 
         {/* Timeline */}
         <OrderTimeline status={order.status} events={events} />
@@ -245,6 +250,9 @@ export default async function Page({
                   {order.trackingNumber}
                 </span>
               </p>
+            )}
+            {order.shippingMethod !== 'pickup' && (
+              <ShipmentControl orderId={order.id} />
             )}
           </section>
         </div>

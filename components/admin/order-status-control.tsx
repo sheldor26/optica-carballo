@@ -29,13 +29,16 @@ const NOTIFY_SET = new Set<OrderStatus>(CUSTOMER_NOTIFY_STATUSES);
 export function OrderStatusControl({
   orderId,
   currentStatus,
+  currentTracking,
 }: {
   orderId: string;
   currentStatus: OrderStatus;
+  currentTracking: string | null;
 }) {
   const router = useRouter();
   const [status, setStatus] = useState<OrderStatus>(currentStatus);
   const [note, setNote] = useState('');
+  const [tracking, setTracking] = useState(currentTracking ?? '');
   const [pending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
@@ -43,7 +46,9 @@ export function OrderStatusControl({
   } | null>(null);
 
   const willNotify = NOTIFY_SET.has(status) && status !== currentStatus;
-  const dirty = status !== currentStatus || note.trim().length > 0;
+  const trackingChanged = tracking.trim() !== (currentTracking ?? '');
+  const dirty =
+    status !== currentStatus || note.trim().length > 0 || trackingChanged;
 
   function onSubmit() {
     setFeedback(null);
@@ -52,6 +57,7 @@ export function OrderStatusControl({
         orderId,
         newStatus: status,
         note: note.trim() || undefined,
+        trackingNumber: trackingChanged ? tracking.trim() : undefined,
       });
       if (res.ok) {
         const emailNote = res.emailed
@@ -127,6 +133,29 @@ export function OrderStatusControl({
           <p className="text-muted-foreground mt-1 text-xs">
             Si la cargás, aparece en el tracker del cliente
             {willNotify ? ' y en el email' : ''}.
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="order-tracking"
+            className="text-foreground mb-1.5 block text-sm font-medium"
+          >
+            Nº de seguimiento{' '}
+            <span className="text-muted-foreground">(Correo Argentino)</span>
+          </label>
+          <input
+            id="order-tracking"
+            type="text"
+            value={tracking}
+            onChange={(e) => setTracking(e.target.value)}
+            disabled={pending}
+            placeholder="Ej: 000500076393019A3G0C701"
+            className="border-input bg-background text-foreground focus-visible:ring-ring w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
+          />
+          <p className="text-muted-foreground mt-1 text-xs">
+            Copialo del panel de MiCorreo. Se incluye en el email cuando marcás
+            el pedido como “Enviado”.
           </p>
         </div>
 
