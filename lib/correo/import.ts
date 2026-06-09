@@ -223,15 +223,18 @@ export async function fetchCorreoTracking(
   const { baseUrl } = getCorreoConfig();
   if (!baseUrl) return { ok: false, error: 'MiCorreo no configurado.' };
 
+  // ⚠️ El manual muestra `GET /shipping/tracking` con BODY (`curl -X GET -d`),
+  // pero `fetch`/undici PROHÍBE body en GET ("Request with GET/HEAD method
+  // cannot have body" — verificado en test). Mandamos `shippingId` como query
+  // param. Si el server exigiera body, habría que usar el http nativo de Node;
+  // se valida cuando tengamos un customerId de test (ver CURRENT_STATE).
   const doFetch = async () => {
     const token = await getCorreoToken();
-    return fetch(`${baseUrl}/shipping/tracking`, {
+    const url = new URL(`${baseUrl}/shipping/tracking`);
+    url.searchParams.set('shippingId', shippingId);
+    return fetch(url, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ shippingId }),
+      headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
     });
   };

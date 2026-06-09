@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-08 — `fetch` (undici) NO permite body en GET — copié el `curl -X GET -d` del manual
+
+**Estado**: ✅ Cerrado (corregido al detectarlo en test)
+
+**Qué pasó**: implementé `fetchCorreoTracking` (`lib/correo/import.ts`) replicando el ejemplo del manual de MiCorreo, que hace `GET /shipping/tracking` con **body JSON** (`curl -X GET ... -d '{"shippingId":...}'`). Al probarlo, `fetch`/undici tiró `"Request with GET/HEAD method cannot have body"`. Pasa igual en Node y en Vercel (ambos usan undici).
+
+**Causa raíz**: traduje un ejemplo de `curl` (que sí permite body en GET) a `fetch` sin recordar que el estándar fetch/undici prohíbe body en GET/HEAD.
+
+**Regla preventiva**: al portar un endpoint desde `curl` a `fetch`, si es GET con datos → mandarlos como **query params** (`URL.searchParams`), nunca como body. Si el server REALMENTE exige body en GET (no estándar), usar el módulo `http`/`https` nativo de Node, no `fetch`. (Acá se cambió a query param; queda validar en test cuál acepta el server de Correo.)
+
 ## 2026-06-08 — Presentar una limitación leída del manual de una API como hecho cerrado (era hipótesis a validar)
 
 **Estado**: 🟡 Mitigado
