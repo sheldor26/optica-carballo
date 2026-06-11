@@ -203,3 +203,94 @@
     animation: none !important;
   }
 }
+
+/* ============================================================
+   Parallax "A través del lente" + "Ventanas con vida" (2026-06-11)
+   Scroll-driven CSS puro (animation-timeline: view()) — 0 bytes de JS.
+   - Sin soporte (Firefox) → estático; RevealOnScroll cubre la entrada.
+   - prefers-reduced-motion → estático.
+   - Solo clip-path / transform / opacity (compositor-friendly, CLS 0).
+   Diseño: ui-motion-designer · GO de conversion-optimizer con condiciones
+   (transform puro, overscan separado del hover-scale, rollback si INP>200ms
+   o cae el CTR home→categorías).
+   ============================================================ */
+
+/* Base: el aro de la lente solo existe donde hay scroll-driven animations. */
+.lens-rim {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* La sección entra al viewport clipeada a un círculo que crece con el
+       scroll — entrás mirando por la lente de un anteojo. */
+    @keyframes lens-open {
+      from {
+        clip-path: circle(13% at 50% 38%);
+      }
+      to {
+        clip-path: circle(135% at 50% 38%);
+      }
+    }
+    /* Aro: círculo apenas mayor detrás del contenido → rim brand de ~1.2%.
+       Se desvanece al final para no quedar como overlay al terminar. */
+    @keyframes lens-open-rim {
+      0% {
+        clip-path: circle(14.2% at 50% 38%);
+        opacity: 1;
+      }
+      80% {
+        clip-path: circle(136.2% at 50% 38%);
+        opacity: 0.5;
+      }
+      100% {
+        clip-path: circle(137% at 50% 38%);
+        opacity: 0;
+      }
+    }
+    /* El contenido "enfoca": de 1.05 a escala natural mientras abre. */
+    @keyframes lens-focus {
+      from {
+        transform: scale(1.05);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .lens-reveal {
+      animation: lens-open linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 30%;
+    }
+    .lens-rim {
+      display: block;
+      animation: lens-open-rim linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 30%;
+    }
+    .lens-zoom {
+      animation: lens-focus linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 30%;
+    }
+
+    /* Ventanas con vida: la imagen deriva dentro de su marco fijo mientras
+       cruza el viewport. El overscan (±7%) vive en el wrapper
+       .parallax-drift, SEPARADO del group-hover:scale del <Image> para que
+       los transforms no se pisen (condición de conversion-optimizer). */
+    @keyframes frame-drift {
+      from {
+        transform: translateY(-3.5%);
+      }
+      to {
+        transform: translateY(3.5%);
+      }
+    }
+    .parallax-drift {
+      animation: frame-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}

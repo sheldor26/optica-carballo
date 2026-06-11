@@ -104,11 +104,11 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 ## conversion-optimizer
 
 - **Versión**: 1.1
-- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Estado**: 🟢 Invocado con buen resultado
 - **Creado**: 2026-05-27
 - **Última revisión**: 2026-06-11
-- **Invocaciones estimadas (último período)**: 0
-- **Casos de éxito**: -
+- **Invocaciones estimadas (último período)**: 1 (2026-06-11 — check de CRO del parallax en CategoriesSection, disparado por el trigger automático "superficie de venta")
+- **Casos de éxito**: GO con condiciones precisas y accionables (transform puro fuera del main thread, overscan en wrapper separado del hover-scale para no pisar transforms, reduced-motion off, CLS 0) + métrica de rollback concreta (CTR home→categorías en GA4 + INP <200ms mobile). Todas las condiciones se aplicaron en la implementación.
 - **Casos donde requirió corrección**: -
 - **Notas**: Sin datos reales de conversión todavía. Útil desde diseño inicial de páginas críticas.
 
@@ -193,10 +193,12 @@ Una vez que el sistema esté operando:
 ## ui-motion-designer
 
 - **Versión**: 1.0
-- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Estado**: 🟢 Invocado con buen resultado
 - **Creado**: 2026-06-11
 - **Última revisión**: 2026-06-11
-- **Notas**: Pedido directo del founder ("diseños de vanguardia / animaciones / cosas espectaculares"). Nace con el presupuesto de performance grabado (CSS-first, framer solo en chunks de ruta, prefers-reduced-motion) y mapa de calor de audacia por superficie. Veto técnico de nextjs-performance; en superficies de venta manda conversion-optimizer.
+- **Invocaciones**: 1 (2026-06-11, parallax para la home — mismo día de su creación, disparado por el trigger automático nuevo)
+- **Casos de éxito**: leyó la home real con sus tools de lectura (detectó el parallax framer existente del hero), devolvió 4 direcciones con wow honesto 5-10, técnica exacta, costo en bytes y trade-offs mobile; recomendó la combinación que el founder eligió ("A través del lente" + "Ventanas con vida"). Implementación resultó 100% CSS, 0 JS, dentro del presupuesto.
+- **Notas**: Pedido directo del founder ("diseños de vanguardia / animaciones / cosas espectaculares"). Presupuesto de performance grabado (CSS-first, framer solo en chunks de ruta, prefers-reduced-motion) y mapa de calor de audacia por superficie. Veto técnico de nextjs-performance; en superficies de venta manda conversion-optimizer. Su proceso "3-4 direcciones antes de codear" funcionó perfecto en el estreno.
 
 # Historial de cambios al sistema de agentes
 

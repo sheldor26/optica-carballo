@@ -22,6 +22,19 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Parallax "espectacular" con costo CERO de JS: scroll-driven CSS + fallback estático invisible
+
+**Contexto**: el founder pidió "parallax que vuele cabezas". El reflejo de la industria es GSAP/Lenis (+30-60kB y scroll-jacking). Se implementó con CSS scroll-driven animations (`animation-timeline: view()`): el "lens reveal" (la sección dark entra clipeada a un círculo que crece — la metáfora de mirar por una lente) + "ventanas con vida" (imágenes derivando dentro de marcos fijos). 0 bytes de JS, home sigue ISR a 174kB.
+
+**Aprendizaje técnico (patrones reusables)**:
+1. **`@media (prefers-reduced-motion: no-preference) { @supports (animation-timeline: view()) { ... } }`** como doble gate: Firefox y reduced-motion ven la página estática SIN saber que se pierden algo (el fallback invisible es el mejor fallback). Soporte ~80-85% del tráfico (Chrome/Edge/Samsung 115+, Safari 26+).
+2. **El aro de la lente** = segunda capa clipeada a un círculo apenas mayor (+1.2%) DETRÁS del contenido, con opacity→0 al final del range (si no, queda como overlay al terminar). No se puede hacer con border/box-shadow sobre clip-path.
+3. **Animaciones scroll-linked: solo clip-path/transform/opacity**. Se DESCARTÓ el detalle de animar `letter-spacing` (el título que "enfoca") porque dispara layout en cada frame de scroll — lindo en el spec del diseñador, veto de performance en la implementación.
+4. **Overscan separado del hover**: la imagen con parallax vive en un wrapper `-inset-y-[7%]` con el translateY; el hover-scale queda en el `<Image>` — dos elementos, dos transforms, cero conflicto (condición del CRO).
+5. **`animation-range`**: para secciones más altas que el viewport, `entry 0% entry 100%` tarda demasiado — usar `cover 0% cover N%` calibrado (acá 30%) para que el efecto complete en ~una pantalla de scroll.
+
+**Regla**: ante cualquier pedido de motion/parallax, agotar scroll-driven CSS antes de considerar JS — y si una propiedad animada no es compositor-friendly (layout/paint), se rediseña el efecto, no se acepta el jank.
+
 ## 2026-06-11 — Invocación automática de subagentes: el campo `description` es el router — escribirlo como trigger, no como currículum
 
 **Contexto**: el founder preguntó si los agentes podían invocarse solos. Resultó que Claude Code YA auto-delega — decide invocar un subagente cuando la tarea matchea su campo `description` del frontmatter. Nuestros 11 agentes tenían descripciones tipo currículum ("Especialista en X. Se invoca para Y...") que casi nunca matcheaban proactivamente: 6 de 8 tenían CERO invocaciones en 2 semanas.

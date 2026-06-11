@@ -39,21 +39,31 @@ const STEPS: Step[] = [
 
 export function HowWeWork() {
   return (
-    <section className="relative isolate overflow-hidden bg-zinc-950 py-20 text-white md:py-28">
-      {/* Mesh glow sutil — consistente con HomeHero. */}
+    /* Parallax "A través del lente" (2026-06-11): la sección dark entra al
+       viewport a través de una máscara circular que crece con el scroll
+       (scroll-driven CSS, 0 JS — ver globals.css). El <section> exterior NO
+       lleva bg: fuera del círculo se ve el fondo claro de la página. El aro
+       brand (.lens-rim) es un hermano clipeado a un círculo apenas mayor. */
+    <section className="relative overflow-hidden">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-zinc-950 via-black to-zinc-900"
+        className="lens-rim bg-brand/50 pointer-events-none absolute inset-0"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="animate-mesh-a absolute -top-32 left-[12%] size-[480px] rounded-full bg-white/[0.025] blur-3xl" />
-        <div className="animate-mesh-c absolute -bottom-32 right-[10%] size-[520px] rounded-full bg-white/[0.03] blur-3xl" />
-      </div>
+      <div className="lens-reveal relative isolate overflow-hidden bg-zinc-950 py-20 text-white md:py-28">
+        {/* Mesh glow sutil — consistente con HomeHero. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-zinc-950 via-black to-zinc-900"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10"
+        >
+          <div className="animate-mesh-a absolute -top-32 left-[12%] size-[480px] rounded-full bg-white/[0.025] blur-3xl" />
+          <div className="animate-mesh-c absolute -bottom-32 right-[10%] size-[520px] rounded-full bg-white/[0.03] blur-3xl" />
+        </div>
 
-      <div className="container relative">
+        <div className="lens-zoom container relative">
         <RevealOnScroll>
           <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em] text-white/60">
             <span className="bg-brand size-1.5 rounded-full" aria-hidden="true" />
@@ -108,6 +118,7 @@ export function HowWeWork() {
             <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </RevealOnScroll>
+        </div>
       </div>
     </section>
   );

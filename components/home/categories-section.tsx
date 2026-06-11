@@ -47,13 +47,20 @@ function CategoryCard({
           <CardHeader>
             {imagePath ? (
               <div className="bg-muted relative aspect-[16/9] w-full overflow-hidden rounded-md">
-                <Image
-                  src={categoryImageUrl(imagePath)}
-                  alt={name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                />
+                {/* "Ventanas con vida" (2026-06-11): la imagen deriva ±3.5%
+                    dentro del marco al scrollear (scroll-driven CSS, 0 JS).
+                    El overscan (-inset-y-[7%]) vive en este wrapper, SEPARADO
+                    del hover-scale del Image — los transforms no se pisan
+                    (condición de conversion-optimizer). */}
+                <div className="parallax-drift absolute inset-x-0 -inset-y-[7%]">
+                  <Image
+                    src={categoryImageUrl(imagePath)}
+                    alt={name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
               </div>
             ) : (
               <div
