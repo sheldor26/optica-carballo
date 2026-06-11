@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Audit de gaps con evidencia (greps + curls + referencia de API actual) en vez de lista genérica de mejoras
+
+**Contexto**: founder pidió "auditá y decime qué mejorar / qué agregar". La tentación era responder con una lista genérica de features de e-commerce. En cambio: (a) grep de modelos/parámetros en los endpoints de IA, (b) curl a producción (schema de PDP, sitemap, canonical), (c) agente Explore sobre el repo (TODOs, features a medias, BACKLOG/DECISIONS para no re-proponer lo decidido), (d) carga de la referencia ACTUAL de la API de Claude antes de opinar sobre modelos.
+
+**Aprendizaje**: cada pata de evidencia encontró algo que una lista genérica jamás hubiera visto: el grep encontró `budget_tokens` deprecado en el lector de recetas; el curl confirmó que el schema de PDP está bien (evitó recomendar algo ya hecho); el Explore encontró el `[PENDIENTE]` legal en /politica-de-devolucion (riesgo Defensa del Consumidor) y que la búsqueda no tiene ranking; la referencia de API corrigió el supuesto del doc ("Sonnet 4") y dio pricing real para la recomendación de upgrade. Bonus: revisar DECISIONS.md (ADR-017 revertido) evitó re-proponer Andreani.
+
+**Regla**: "¿qué puedo mejorar?" se responde con un audit barato primero (30-40 min: grep dirigido + 3-4 curls + 1 agente Explore + docs de decisiones), después la lista — cada recomendación con archivo:línea o medición que la respalde. Y cualquier recomendación sobre modelos/APIs externas arranca cargando la referencia vigente, no desde memoria.
+
 ## 2026-06-11 — Sacar una librería de animaciones del camino crítico: convertir los componentes COMPARTIDOS, no toda la app
 
 **Contexto**: framer-motion (~34kB gz) viajaba en el JS inicial de todas las páginas. La opción "global" (LazyMotion + convertir 21 archivos a `m.`) arriesgaba flashes en el hero (contenido invisible hasta que carga el chunk de features). La opción elegida: convertir SOLO los 12 componentes que cargan en todas las páginas (layout/header/footer/PDP) a CSS, dejando framer en componentes de rutas puntuales (home hero, tools, descubrir) donde el code-splitting de Next ya lo aísla.

@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — Doc drift en el stack de IA + parámetro deprecado en producción sin que nadie lo trackee
+
+**Estado**: 🟡 Mitigado (drift corregido en ARCHITECTURE.md; la migración del parámetro deprecado espera OK del founder)
+
+**Qué pasó**: el audit de gaps encontró DOS síntomas del mismo problema: (1) `ARCHITECTURE.md` decía "Modelo Sonnet 4 (default)" cuando el código real usa `claude-sonnet-4-6` en 4 endpoints y `claude-haiku-4-5` en el chat — en algún upgrade pasado se actualizó el código pero no el doc; (2) `app/api/prescription/route.ts:269` usa `thinking: {budget_tokens: 2000}`, parámetro **deprecado** en Sonnet 4.6 (funciona como escape hatch transitorio pero será removido) — el endpoint más sensible del sitio (lectura de recetas) corre sobre un parámetro con fecha de vencimiento y nadie lo sabía.
+
+**Causa raíz**: no hay hábito de (a) actualizar ARCHITECTURE.md cuando se cambia un modelo en código, ni (b) re-verificar los endpoints de IA contra la referencia ACTUAL de la API — los providers deprecan parámetros entre versiones de modelos y el código que "funciona" hoy puede romperse en el próximo upgrade forzado.
+
+**Regla preventiva**: al tocar cualquier endpoint de IA (o al hacer audit), cargar primero la referencia actualizada de la API (skill `claude-api`) y verificar parámetros deprecados — no asumir desde memoria. Todo cambio de modelo en código actualiza ARCHITECTURE.md en el mismo commit. Nota agregada en ARCHITECTURE.md § IA.
+
 ## 2026-06-11 — El audit de performance (2026-05-29) concluyó "todo bien" sin medir headers en producción; el sitio servía TODO dinámico
 
 **Estado**: 🟡 Mitigado (causas raíz arregladas en esta sesión; método de audit corregido abajo)

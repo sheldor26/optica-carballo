@@ -30,10 +30,11 @@ Ver `DECISIONS.md` para el contexto completo de cada decisión.
 - **Tusfacturas.app**: facturación electrónica AFIP
 
 ### IA
-- **API de modelos LLM**:
-  - Modelo Sonnet 4 (default)
-  - Modelo Haiku 4.5 (tareas simples / alto volumen)
-  - Modelo Opus 4.7 (tareas críticas)
+- **API de modelos LLM** (estado real en código, audit 2026-06-11):
+  - `claude-sonnet-4-6` — lector de receta, face-shape, medidor DNP, generador de copy (default)
+  - `claude-haiku-4-5` — chat del asistente (alto volumen / bajo costo)
+  - Upgrade candidato: lector de receta → `claude-opus-4-8` (visión high-res, mejor OCR de recetas borrosas) — pendiente de decisión del founder
+  - ⚠️ Al tocar cualquier endpoint de IA, verificar deprecaciones contra la referencia actual de la API (ver MISTAKES 2026-06-11: `budget_tokens` deprecado en prescription)
 - **OpenAI**: text-embedding-3-small (para embeddings RAG)
 - **Vercel AI SDK**: para streaming en chat
 - **Futuro**: NeuralRouting como gateway (cuando esté estable)
