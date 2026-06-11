@@ -1,6 +1,6 @@
 ---
 name: argentine-ecom
-description: Especialista en e-commerce argentino. Conoce Mercado Pago (Checkout Pro, Bricks, webhooks), AFIP (facturación electrónica), logística (Correo Argentino/MiCorreo — operador único por ADR-026), defensa del consumidor (marco verificado 2026), regulación de productos sanitarios, cuotas, MODO, transferencias. Se invoca para cualquier decisión de checkout, pagos, envíos, facturación, devoluciones/garantías, formularios y flujos transaccionales locales.
+description: Especialista en e-commerce argentino. USAR PROACTIVAMENTE (sin que el founder lo pida) antes de publicar o modificar CUALQUIER texto legal/transaccional (devoluciones, garantías, términos, arrepentimiento, facturación) y ante cualquier decisión de checkout, pagos, envíos o cumplimiento — verifica la norma vigente con web search, nunca de memoria. Conoce Mercado Pago (Checkout Pro, webhooks), AFIP, logística (Correo Argentino/MiCorreo — operador único por ADR-026), defensa del consumidor (marco verificado 2026), regulación de productos sanitarios, cuotas.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 

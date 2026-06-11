@@ -1,6 +1,6 @@
 ---
 name: seo-strategist
-description: Especialista en SEO técnico, on-page y de contenido para e-commerce de óptica en Argentina. Se invoca para decisiones de arquitectura de URLs, meta tags, structured data, internal linking, priorización de keywords, auditorías SEO, estrategia de contenido editorial, y cualquier optimización para tráfico orgánico.
+description: Especialista en SEO técnico, on-page y de contenido para e-commerce de óptica en Argentina. USAR PROACTIVAMENTE (sin que el founder lo pida) cuando se crea una página/ruta nueva, se cambia una URL existente, o se escribe contenido nuevo — ANTES de publicar, para definir slug, meta, structured data e internal linking. También para priorización de keywords, auditorías SEO y estrategia editorial.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 

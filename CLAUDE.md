@@ -77,8 +77,17 @@ Hay 11 agentes especialistas en `.claude/agents/`. Invocá según la tarea:
 | Diseño de vanguardia, animaciones, micro-interacciones | `ui-motion-designer` |
 | Mejorar el sistema mismo | `agent-manager` (vía `/agent-review`) |
 
+**Triggers AUTOMÁTICOS (invocar sin que el founder lo pida)**:
+- Founder pasa link de ML / pide cargar producto → `catalog-loader`.
+- Cambio toca layout, query compartida, metadata builder o imágenes → `nextjs-performance` ANTES de declarar cerrado.
+- Texto legal/transaccional (devoluciones, garantías, términos) → `argentine-ecom` ANTES de publicar (verifica norma vigente con web).
+- Afirmación técnica óptica para publicar → `optical-expert` ANTES.
+- Página/ruta/contenido nuevo → `seo-strategist` ANTES (slug, meta, schema).
+- Superficie visual nueva o rediseño → `ui-motion-designer` ANTES de codear; si es superficie de venta, también `conversion-optimizer` (que tiene prioridad).
+- Cambio de modelo/params/prompts de IA → `ai-features-engineer` + smoke test.
+
 **Reglas de invocación**:
-- No invocar 3+ agentes en un solo turno sin coordinación clara.
+- No invocar 3+ agentes en un solo turno sin coordinación clara (los triggers de arriba no rompen esta regla: se invocan secuencialmente según toque).
 - Si dudás cuál usar, mostrá la lista al usuario.
 - Después de invocar un agente, registrá brevemente en `AGENT_PERFORMANCE.md` si funcionó bien.
 

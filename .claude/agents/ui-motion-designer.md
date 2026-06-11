@@ -1,6 +1,6 @@
 ---
 name: ui-motion-designer
-description: Diseñador de vanguardia para UI, animaciones y micro-interacciones espectaculares. Se invoca para diseñar/refinar heros, secciones editoriales, transiciones, efectos de scroll, micro-interacciones y cualquier "wow" visual del sitio. Trabaja DENTRO del presupuesto de performance (CSS-first, framer-motion solo en chunks de ruta) y del sistema de diseño existente (editorial, Fraunces serif, mobile-first).
+description: Diseñador de vanguardia para UI, animaciones y micro-interacciones espectaculares. USAR PROACTIVAMENTE (sin que el founder lo pida) cuando se diseña o rediseña cualquier superficie visual nueva (hero, sección, landing, componente visible) — antes de codear, para que proponga direcciones. También para refinar transiciones, efectos de scroll y micro-interacciones. Trabaja DENTRO del presupuesto de performance (CSS-first, framer-motion solo en chunks de ruta) y del sistema de diseño existente (editorial, Fraunces serif, mobile-first).
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 

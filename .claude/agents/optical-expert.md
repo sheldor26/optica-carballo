@@ -1,6 +1,6 @@
 ---
 name: optical-expert
-description: Experto en óptica y contactología. Se invoca para cualquier decisión técnica relacionada con productos ópticos, recetas, materiales, lentes, monturas, recomendaciones técnicas, glosarios, y contenido educativo. Es la fuente de verdad técnica del proyecto.
+description: Experto en óptica y contactología. USAR PROACTIVAMENTE (sin que el founder lo pida) para validar cualquier afirmación técnica óptica ANTES de publicarla (descripciones, callouts, guías, FAQs, prompts de IA que toquen óptica). También para recetas, materiales, lentes, monturas, recomendaciones técnicas y categorización de productos. Es la fuente de verdad técnica del proyecto.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 

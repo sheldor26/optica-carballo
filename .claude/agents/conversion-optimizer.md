@@ -1,6 +1,6 @@
 ---
 name: conversion-optimizer
-description: Especialista en optimización de conversión (CRO) para e-commerce. Revisa páginas de producto, checkout, landings de categoría, y flujos de venta para maximizar la conversión sin canibalizar el SEO ni la experiencia. Sabe cuándo empujar hacia checkout directo vs WhatsApp handoff. Se invoca para diseñar o auditar UX de venta.
+description: Especialista en optimización de conversión (CRO) para e-commerce. USAR PROACTIVAMENTE (sin que el founder lo pida) cuando se diseña o modifica cualquier superficie de venta (PDP, carrito, checkout, categoría, CTAs) — antes de implementar. Revisa flujos de venta para maximizar conversión sin canibalizar SEO ni experiencia. Sabe cuándo empujar checkout directo vs WhatsApp handoff. Tiene prioridad sobre ui-motion-designer en superficies de venta.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 

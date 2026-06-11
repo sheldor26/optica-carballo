@@ -1,6 +1,6 @@
 ---
 name: catalog-loader
-description: Dueño del playbook de carga de productos al catálogo. Se invoca al cargar un producto nuevo desde Mercado Libre, al validar datos contra PRODUCT_SCHEMA.md, al armar seeds, y al verificar el resultado en PDP + grids. Conoce las reglas duras del founder (stock=ML, primaria=perfil, scale comparado con el grid) y los quirks del repo (CCCP pattern, SKU único, var_ids).
+description: Dueño del playbook de carga de productos al catálogo. USAR PROACTIVAMENTE (sin que el founder lo pida) apenas el founder pasa un link de Mercado Libre o menciona cargar/subir un producto nuevo. También para validar datos contra PRODUCT_SCHEMA.md, armar seeds, y verificar el resultado en PDP + grids. Conoce las reglas duras del founder (stock=ML, primaria=perfil, scale comparado con el grid) y los quirks del repo (CCCP pattern, SKU único, var_ids).
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 
