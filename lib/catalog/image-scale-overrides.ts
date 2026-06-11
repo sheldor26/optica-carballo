@@ -459,13 +459,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 2026-06-05 reportó que CRY y SBLK se veían más chicas (sus fotos tienen el
   // anteojo más chico en el frame) → CRY/SBLK perfil 1.25 / frente 1.10 para emparejar.
   // Casing: CRY/SBLK en .jpg, MBLK en .webp.
-  // founder 2026-06-11: -0.005 (ajuste milimétrico) a las 6 entries.
-  'vulk-clems/CLEMS CRY P.jpg': 1.245,
-  'vulk-clems/CLEMS CRY F.jpg': 1.095,
-  'vulk-clems/CLEMS MBLK P.webp': 1.145,
-  'vulk-clems/CLEMS MBLK F.webp': 0.995,
-  'vulk-clems/CLEMS SBLK P.jpg': 1.245,
-  'vulk-clems/CLEMS SBLK F.jpg': 1.095,
+  // founder 2026-06-11: -0.005 milimétrico → luego -0.05 (paso visible) a las 6.
+  // Nota: la foto PRIMARIA del card del Clems es la MBLK (no CRY/SBLK) → para que
+  // cambie lo que se ve en la grilla hay que mover la MBLK también.
+  'vulk-clems/CLEMS CRY P.jpg': 1.195,
+  'vulk-clems/CLEMS CRY F.jpg': 1.045,
+  'vulk-clems/CLEMS MBLK P.webp': 1.095,
+  'vulk-clems/CLEMS MBLK F.webp': 0.945,
+  'vulk-clems/CLEMS SBLK P.jpg': 1.195,
+  'vulk-clems/CLEMS SBLK F.jpg': 1.045,
 
   // Rusty Esvep — envolvente deportivo. Foto MUY ancha (1000×491, 2:1) con el anteojo
   // chico en el frame → necesita más scale que Sotion/Eslav (1.6) aunque sea el mismo
@@ -482,17 +484,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Vulk My Crew Receta — redondo/ovalado unisex G-Flex. Fotos 2:1 (1200×589 y
   // 900×442) con el anteojo más chico en el frame que el baseline receta → comparado
   // visualmente contra Opposit@1.15 (que llena el card), My Crew se ve ~15% más chico
-  // → perfil 1.29 / frente 1.14 para emparejar ~85% del card. Naming inconsistente:
-  // SBLK frente = MYCREW-SBLK.jpg, MBLK = GALERIA. medidas.webp queda en 1.0 (no grid).
-  // (iteraciones founder: 1.3/1.15 → +0.02 → 1.32/1.17 → -0.01 → 1.31/1.16 → -0.01 → 1.30/1.15 → -0.01 → 1.29/1.14, 2026-06-11.)
-  'vulk-my-crew/MY CREW SBLK PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.29,
-  'vulk-my-crew/MYCREW-SBLK.jpg': 1.14,
-  'vulk-my-crew/MY CREW 669K OPTICS PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.29,
-  'vulk-my-crew/MY CREW 669K OPTICS FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.14,
-  'vulk-my-crew/MY CREW MBLK P GALERIA.jpg': 1.29,
-  'vulk-my-crew/MY CREW MBLK F GALERIA.jpg': 1.14,
-  'vulk-my-crew/MY CREW 388 PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.29,
-  'vulk-my-crew/MY CREW 388 FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.14,
+  // → perfil 1.19 / frente 1.05. Naming inconsistente: SBLK frente = MYCREW-SBLK.jpg,
+  // MBLK = GALERIA. medidas.webp queda en 1.0 (no grid).
+  // (iteraciones founder: 1.3/1.15 → +0.02 → 1.32 → varios -0.01 → 1.29 → -0.10 (paso
+  //  VISIBLE para calibrar; los -0.01 eran sub-perceptibles) → 1.19/1.05, 2026-06-11.)
+  'vulk-my-crew/MY CREW SBLK PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.19,
+  'vulk-my-crew/MYCREW-SBLK.jpg': 1.05,
+  'vulk-my-crew/MY CREW 669K OPTICS PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.19,
+  'vulk-my-crew/MY CREW 669K OPTICS FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.05,
+  'vulk-my-crew/MY CREW MBLK P GALERIA.jpg': 1.19,
+  'vulk-my-crew/MY CREW MBLK F GALERIA.jpg': 1.05,
+  'vulk-my-crew/MY CREW 388 PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.19,
+  'vulk-my-crew/MY CREW 388 FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.05,
 
   // Vulk Tour 81 Receta — cuadrado unisex G-Flex. Fotos GALERIA (mismo formato que la
   // MBLK de My Crew, verificada a 1.3) → perfil 1.3 / frente 1.15 PROVISIONAL. ⚠️
