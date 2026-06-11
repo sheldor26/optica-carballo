@@ -44,9 +44,9 @@ export default function Page() {
           prácticas abusivas.
         </li>
         <li>
-          <strong>Garantía legal mínima</strong> de 6 meses para productos
-          nuevos (3 para usados) por defectos no aparentes al momento de la
-          compra.
+          <strong>Garantía legal mínima</strong> de 1 año para productos
+          nuevos (6 meses para usados) por defectos no aparentes al momento de
+          la compra (art. 11, Ley 24.240, texto según Ley 27.701).
         </li>
         <li>
           <strong>Botón de arrepentimiento</strong> de 10 días corridos para

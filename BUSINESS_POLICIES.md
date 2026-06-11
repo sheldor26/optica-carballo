@@ -56,10 +56,15 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 
 ## 4. Devoluciones y cambios
 
-- Cumple con Defensa del Consumidor argentina (botón de arrepentimiento + política visible).
-- Plazo: **10 días corridos** desde recepción para arrepentirse (ley 24.240).
-- Cambios por talle/color: hasta **30 días** del producto sin uso, conservando estuche y etiquetas.
-- Detalles operativos en `/cambios-y-devoluciones` (página legal).
+Política DEFINITIVA (confirmada por founder 2026-06-11 + verificación legal del agente argentine-ecom — los `[PENDIENTE]` de las páginas legales quedaron eliminados):
+
+- **Arrepentimiento**: **10 días corridos desde la entrega** (art. 34 Ley 24.240 + arts. 1110-1116 CCyC). Producto sin uso (probárselos = inspección normal, está permitido), completo, con etiquetas y accesorios. **El envío de devolución lo paga la ÓPTICA** — irrenunciable por ley (art. 1115 CCyC); el founder quería cargarlo al comprador pero NO es legal para este trámite. Reintegro total por el mismo medio de pago dentro de los **10 días hábiles** de recibido el producto.
+- **Cambios voluntarios** (otro modelo/color): hasta **30 días corridos** desde la entrega. Sin uso, etiquetas intactas, estuche + franela + embalaje, con factura. **Envío a cargo del COMPRADOR** (acá sí es legal: política comercial libre desde que la Res. 139/2025 derogó la Res. 915-E/2017). Sujeto a stock; diferencia de precio se abona/acredita.
+- **Recetados con lentes a medida**: SIN arrepentimiento ni cambio — productos personalizados, exceptuados por **art. 1116 inc. a) CCyC**. Tienen garantía completa por defectos de fabricación/elaboración (tallado, montaje).
+- **Lentes de contacto**: sin cambio ni devolución con blister/caja abiertos (sanitario).
+- **Garantía legal: 1 AÑO** para productos nuevos (art. 11 Ley 24.240, texto según Ley 27.701 — ya NO son 6 meses). Flete de garantía a cargo de la óptica (art. 11 in fine).
+- **Botón de arrepentimiento**: la Res. 424/2020 que lo hacía obligatorio fue DEROGADA (Res. 139/2025), pero mantenemos la página `/boton-de-arrepentimiento` como trust signal y para cumplir el deber de información (art. 1111 CCyC — si no informamos bien, el plazo de 10 días no corre).
+- Detalles operativos en `/politica-de-devolucion` (página legal).
 
 ---
 
@@ -206,3 +211,4 @@ Si el founder no quiere callouts para un producto puntual, los omite del JSONB y
 | 2026-05-28 | Versión inicial. Política universal de inclusión (estuche + franela + garantía 1 año), confirmada por founder al cargar 1er producto Vulk Day Light. | founder |
 | 2026-05-28 | Agregada política #9: callouts en página de producto (4 tipos: info/tip/recommendation/warning). Patrón propuesto por founder con ejemplos visuales de otros proyectos. Validación técnica obligatoria via `optical-expert` para callouts sobre óptica/materiales. | founder |
 | 2026-05-28 | Agregada política #8: descripción genérica del MODELO, no de variantes. Detectado al cargar 2da variante (Rosa Pálido) del Vulk Day Light — la descripción original mencionaba "carey brillo con lentes verdes" lo cual queda mal cuando hay otras variantes. Solución sistemática: descripción nunca menciona colores específicos de variantes. | founder |
+| 2026-06-11 | §4 Devoluciones DEFINITIVA: founder confirmó plazos/condiciones; verificación legal (argentine-ecom) corrigió 3 supuestos — (a) envío de devolución en arrepentimiento lo paga el VENDEDOR (irrenunciable, el founder quería cargarlo al comprador → solo legal en cambios voluntarios), (b) garantía legal es 1 AÑO no 6 meses (Ley 27.701), (c) botón de arrepentimiento ya no es obligatorio (Res. 139/2025 derogó 424/2020) pero se mantiene como trust signal. Páginas `/politica-de-devolucion`, `/boton-de-arrepentimiento` y `/defensa-del-consumidor` actualizadas sin `[PENDIENTE]`. | founder + verificación legal |

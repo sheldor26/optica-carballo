@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { InfoPageShell } from '@/components/legal/info-page-shell';
-import { PlaceholderNote } from '@/components/legal/placeholder-note';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 import { getBusinessInfo, getWhatsappLinkWithContext } from '@/lib/site/business';
 
@@ -60,62 +59,55 @@ export default function Page() {
       <ol className="list-decimal space-y-2 pl-6">
         <li>Te confirmamos la recepción de tu solicitud por escrito.</li>
         <li>
-          Coordinamos el retiro o reenvío del producto. Para que aplique el
-          arrepentimiento, el producto debe devolverse sin uso, con todos sus
-          accesorios y en embalaje original.
+          Coordinamos el retiro o reenvío del producto.{' '}
+          <strong>El envío de la devolución lo pagamos nosotros</strong> — por
+          ley, el arrepentimiento no puede implicarte ningún costo (art. 34 Ley
+          24.240 y art. 1115 del Código Civil y Comercial). El producto debe
+          devolverse sin uso (probártelos está bien), con todos sus accesorios
+          y en embalaje original.
         </li>
         <li>
           Una vez recibido y verificado el estado del producto, procesamos el
-          reintegro total del precio pagado, por el mismo medio de pago, en un
-          plazo máximo de <strong>[PENDIENTE: días hábiles]</strong>.
+          reintegro total del precio pagado, por el mismo medio de pago, dentro
+          de los <strong>10 días hábiles</strong>.
         </li>
       </ol>
 
-      <PlaceholderNote>
-        <p>
-          Confirmar el plazo exacto de reintegro y si hay algún cargo
-          adicional (por ejemplo, costo del envío de retorno cuando aplique).
-          Editar el archivo{' '}
-          <code>app/(storefront)/boton-de-arrepentimiento/page.tsx</code>.
-        </p>
-      </PlaceholderNote>
-
       <h2>Canales de contacto</h2>
-      <p>Podés ejercer tu derecho por cualquiera de estos canales:</p>
+      <p>
+        Podés ejercer tu derecho por cualquier medio que deje constancia
+        escrita. El más rápido:
+      </p>
       <ul>
-        {whatsappLink && (
+        {whatsappLink ? (
           <li>
             <strong>WhatsApp:</strong>{' '}
             <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               Iniciar conversación
             </a>
           </li>
-        )}
-        {!whatsappLink && (
+        ) : (
           <li>
-            <strong>WhatsApp:</strong>{' '}
-            <em>[PENDIENTE: número de WhatsApp en env]</em>
+            <strong>WhatsApp</strong>: el número figura en el pie de página del
+            sitio.
           </li>
         )}
-        <li>
-          <strong>Email:</strong>{' '}
-          {business.whatsappLink ? (
-            <em>[PENDIENTE: email oficial de contacto]</em>
-          ) : (
-            <em>[PENDIENTE: email oficial de contacto]</em>
-          )}
-        </li>
+        {business.phone && (
+          <li>
+            <strong>Teléfono:</strong> {business.phone}
+          </li>
+        )}
       </ul>
 
       <h2>Excepciones</h2>
       <p>
         El derecho de arrepentimiento <strong>no se aplica</strong> a productos
-        personalizados según especificaciones del consumidor o claramente
-        personales. En nuestro caso, esto incluye:
+        personalizados según especificaciones del consumidor (art. 1116 inc. a
+        del Código Civil y Comercial). En nuestro caso, esto incluye:
       </p>
       <ul>
         <li>
-          Anteojos de receta con cristales graduados a medida según tu
+          Anteojos de receta con lentes graduadas a medida según tu
           prescripción oftalmológica.
         </li>
       </ul>

@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Texto legal: verificar el marco vigente con agente + web ANTES de redactar — corrigió 3 supuestos en una sola página
+
+**Contexto**: el founder pasó los datos para la política de devolución (plazo, condiciones, "el envío lo paga el comprador", recetados solo garantía). En vez de redactar directo con esos datos + mi memoria del marco legal, invoqué `argentine-ecom` con web search para verificar cada punto contra la norma vigente 2026.
+
+**Aprendizaje**: la verificación corrigió TRES supuestos que hubieran quedado publicados mal: (1) el founder quería que el comprador pague el envío del arrepentimiento — es ilegal e irrenunciable (art. 34 LDC + art. 1115 CCyC; cláusula nula art. 37) — solo es legal en cambios voluntarios; (2) mi dato de "garantía legal 6 meses" estaba desactualizado — es 1 AÑO para nuevos desde la Ley 27.701, y una página del sitio (`/defensa-del-consumidor`) ya lo tenía mal; (3) el botón de arrepentimiento ya NO es obligatorio (Res. 139/2025 derogó la 424/2020 en mayo 2025 — posterior a cualquier memoria entrenada). Bonus: el instinto del founder con recetados a medida tenía respaldo exacto (CCyC art. 1116 inc. a), citado en la página = más defendible.
+
+**Regla**: contenido legal/regulatorio (devoluciones, garantías, datos personales, facturación) NUNCA se redacta de memoria ni solo con los datos del founder: (a) verificar el marco vigente vía `argentine-ecom` + web search, (b) si lo que pide el founder contradice una norma de orden público, explicárselo y aplicar la versión legal (las reglas duras del negocio incluyen cumplir la ley), (c) citar artículo y ley en la página — protege y es trust signal. El derecho de consumo argentino cambió 3 veces en 2022-2025 (Ley 27.701, DNU 70/2023, Res. 139/2025): la memoria del modelo siempre corre riesgo de estar vieja acá.
+
 ## 2026-06-11 — Cambio de modelo/params de IA: smoke test PERMANENTE contra la API real, no verificación descartable
 
 **Contexto**: migrar el lector de receta a Opus 4.8 + adaptive thinking tenía un riesgo concreto: la combinación de parámetros (modelo nuevo + thinking + tools + tool_choice auto + historia few-shot con bloques tool_use/tool_result) podía dar 400 en producción aunque el typecheck pasara — el typecheck valida TypeScript, no el contrato de la API. Y el endpoint no se puede probar a mano fácil (necesita multipart + imagen + API key).
