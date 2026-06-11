@@ -356,6 +356,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-r-cy-02/R-CY 02 L GREY  P GALERIA.jpg': 1.15,
   'rusty-r-cy-02/R-CY 02 L GREY  F GALERIA.jpg': 1.0,
 
+  // Rusty Opposit receta (wayfarer femenino). Baseline receta 1.15/1.0;
+  // pendiente verificación visual del founder.
+  'rusty-opposit/OPPOSIT_MDEMI-068_P.jpg': 1.15,
+  'rusty-opposit/OPPOSIT_MDEMI-068_F.jpg': 1.0,
+  'rusty-opposit/OPPOSIT_SBLK-068_-_PERFIL.jpg': 1.15,
+  'rusty-opposit/OPPOSIT_SBLK-068_-_FRENTE.jpg': 1.0,
+  'rusty-opposit/OPPOSIT 385-202 - PERFIL.jpg': 1.15,
+  'rusty-opposit/OPPOSIT 385-202 - FRENTE.jpg': 1.0,
+
   // Rusty Gresent — aviador doble puente. Founder 2026-06-02: perfil (lateral)
   // 1.20 (iteración: 1.35 mucho → 1.25 todavía grande → -0.05 → 1.20); frente 1.0.
   'rusty-gresent/GRESENT_SDEMI_GG47_-_p.jpg': 1.2,
