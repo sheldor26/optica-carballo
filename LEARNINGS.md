@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Cuando el founder dice "no surte efecto", curlear el HTML de producción y buscar el valor exacto ANTES de tocar nada
+
+**Contexto**: el founder reportó que los cambios de scale de My Crew/Clems "no surten efecto" ni en incógnito + cache vaciado. En vez de asumir bug de build/cache (y empezar a tocar a ciegas), `curl`eé la página exacta (`/anteojos-de-receta/vulk`) y grepié `scale\([0-9.]+\)` + el `x-vercel-cache`/`age`. Resultado: el HTML de producción YA tenía `scale(1.29)`, `scale(1.145)`, etc. (`x-vercel-cache: HIT`, build fresco) → los cambios SÍ estaban aplicados. Eso reencuadró el problema de "está roto" a "el delta es sub-perceptible + se tocó la variante equivocada" (ver MISTAKES), que es la causa real.
+
+**Aprendizaje**: el HTML SSR de producción es la fuente de verdad para "¿se aplicó el cambio o no?". Un `curl` + grep del valor concreto (transform, meta, precio, lo que sea) distingue en 10s entre 3 hipótesis que de otro modo se confunden: (a) no rebuildeó, (b) rebuildeó pero el override no matchea el path → valor default, (c) el valor está pero el efecto visual es nulo/imperceptible. Sin esa verificación, (c) se confunde con (a)/(b) y se pierden iteraciones tocando lo que no es.
+
+**Regla**: ante "no se ve el cambio" en una prop derivada de data/config (scale, meta, precio, flags), PRIMERO `curl` a la URL de prod + grep del valor esperado + revisar `x-vercel-cache`/`age`. Solo si el valor NO está en el HTML, investigar build/cache/match de path. Si está, el problema es percepción o el elemento equivocado.
+
 ## 2026-06-11 — Setear el scale de un producto BAJANDO las fotos y comparándolas contra una referencia ya verificada, en vez de adivinar
 
 **Contexto**: al cargar Vulk My Crew tenía que elegir el `primaryImageScale`. La regla 15 sub-regla exige comparar contra el grid (target: anteojo ~85% del card), y MISTAKES tiene 2 reincidencias (Yau, Vrast) de scales iniciales desproporcionados por NO comparar. En vez de copiar el baseline receta 1.15/1.0 a ciegas, **bajé las fotos reales del bucket con `curl`** (`storage/v1/object/public/...`) + **una foto de referencia de un producto que el founder YA aprobó** (Opposit perfil @1.15) y las abrí con Read. Comparación visual directa: las fotos de My Crew son 2:1 con el anteojo ~15% más chico que Opposit → setié 1.3/1.15 en la primera, sin iteración. (El founder después pidió solo +0.02 de ajuste fino, no una corrección de "se ve chico".)

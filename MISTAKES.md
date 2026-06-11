@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — Afinar el scale en pasos de 0.01 (sub-perceptibles) + sobre la variante que NO es la primaria del card → 6 commits, "no surten efecto"
+
+**Estado**: ✅ Cerrado (diagnosticado + corregido con pasos visibles ≥0.05)
+
+**Qué pasó**: el founder pidió afinar el tamaño visual de My Crew y Clems en la grilla. Hice 5-6 iteraciones de **±0.01 / ±0.005** (1.30→1.32→1.31→1.30→1.29). El founder reportó "es como que no surten efecto los cambios" incluso en incógnito + cache vaciado. Dos causas: **(a)** 0.01 ≈ 0,8% de tamaño = 1-2px en un card → invisible; el ojo no registra el paso. **(b)** En el Clems toqué las entries **CRY/SBLK**, pero la foto PRIMARIA que el card muestra por defecto es la **MBLK** → mis ajustes no movían nada de lo que él veía.
+
+**Causa raíz**: (a) no tener una noción de "delta mínimo perceptible" para el scale (cualquier cosa <0.03-0.05 es ruido); (b) asumir que "ajustar el scale del producto X" = tocar cualquier variante, sin verificar **cuál** `storage_path` es el primario que renderiza el card (el override es por-path, no por-producto). El primario del card lo decide `is_primary`/sort, no el orden del archivo en el override.
+
+**Regla preventiva**: (1) afinar scale en pasos de **≥0.05** salvo pulido final; nunca encadenar 0.01 (no se ven y queman commits/redeploys). (2) ANTES de tocar el scale de un producto multi-variante, identificar qué `storage_path` es el primario del card (curl al grid en vivo + ver qué imagen tiene el `transform`, o chequear `is_primary` en DB) y mover ESE; si se quiere consistencia, mover las demás variantes en paralelo. (3) Si el founder dice "no cambia", primero **verificar en el HTML de producción** que el valor esté aplicado (ver LEARNINGS) antes de asumir bug de cache/build.
+
 ## 2026-06-11 — Query de verificación con JOIN cartesiano (variantes × imágenes) infló `sum(stock)` a 99 en vez de 11
 
 **Estado**: ✅ Cerrado (era artefacto de la query, no de la data; verificado por separado)
