@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — Query de verificación con JOIN cartesiano (variantes × imágenes) infló `sum(stock)` a 99 en vez de 11
+
+**Estado**: ✅ Cerrado (era artefacto de la query, no de la data; verificado por separado)
+
+**Qué pasó**: al verificar la carga de Vulk My Crew corrí un `SELECT ... count(distinct v.id), sum(v.stock_qty) ... FROM products p LEFT JOIN variants v LEFT JOIN images i GROUP BY ...`. El `sum(v.stock_qty)` dio **99** en vez de 11. Susto momentáneo (¿se duplicó el stock como el doble-incremento de [[no-mutar-stock-ordenes-sql-crudo]]?). No: el JOIN de variantes (4) × imágenes (9) produce 36 filas, y `sum` cuenta el stock de cada variante una vez por imagen → 11 × 9 = 99. La data estaba bien; lo verifiqué con una query limpia (solo variantes) que dio 3+4+3+1 = 11.
+
+**Causa raíz**: mezclar dos JOINs one-to-many (variantes e imágenes) en una sola query agregada → producto cartesiano que multiplica los `sum()`/`count()` no-distinct. `count(distinct id)` se salva, pero `sum()` no.
+
+**Regla preventiva**: para verificar una carga, NO juntar variantes e imágenes en una query con agregados. Hacer queries separadas (una para variantes+stock, otra para imágenes) — como terminé haciendo. Si se juntan, todo agregado sobre la tabla "multiplicada" tiene que ser `sum(DISTINCT)` o sub-select, nunca `sum()` plano. Sospechar SIEMPRE de un total redondo-múltiplo (99 = 11×9) antes de asumir corrupción de data.
+
 ## 2026-06-11 — FAQ publicado afirmaba "necesitás receta para comprar (sin excepción)" — sobre-aplicar la regla dura al armazón
 
 **Estado**: ✅ Cerrado (corregido)

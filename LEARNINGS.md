@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Setear el scale de un producto BAJANDO las fotos y comparándolas contra una referencia ya verificada, en vez de adivinar
+
+**Contexto**: al cargar Vulk My Crew tenía que elegir el `primaryImageScale`. La regla 15 sub-regla exige comparar contra el grid (target: anteojo ~85% del card), y MISTAKES tiene 2 reincidencias (Yau, Vrast) de scales iniciales desproporcionados por NO comparar. En vez de copiar el baseline receta 1.15/1.0 a ciegas, **bajé las fotos reales del bucket con `curl`** (`storage/v1/object/public/...`) + **una foto de referencia de un producto que el founder YA aprobó** (Opposit perfil @1.15) y las abrí con Read. Comparación visual directa: las fotos de My Crew son 2:1 con el anteojo ~15% más chico que Opposit → setié 1.3/1.15 en la primera, sin iteración. (El founder después pidió solo +0.02 de ajuste fino, no una corrección de "se ve chico".)
+
+**Aprendizaje**: cuando las fotos YA están en el bucket, el scale no se adivina ni se copia del baseline — se **mide visualmente** bajando la imagen nueva + una de referencia aprobada y comparando el % que ocupa el anteojo. Es ~30s de `curl` + Read y elimina la ronda de iteración "se ve chico/grande" que el founder reportó 2 veces. Corolario inverso (Tour 81): si las fotos NO están subidas aún, NO se puede medir → el scale queda PROVISIONAL anclado al precedente del mismo formato de foto (GALERIA → 1.3), explícitamente marcado para confirmar, y la carga queda ABIERTA hasta la verificación visual.
+
+**Regla**: para `primaryImageScale` de un producto con fotos ya en el bucket, bajar la foto nueva + una de referencia aprobada y comparar visualmente ANTES de fijar el valor. Si las fotos no están, scale provisional + carga marcada ABIERTA (no declarar cerrado). Candidato a sumar a la sub-regla 15 de CLAUDE.md si se confirma 1-2 veces más.
+
 ## 2026-06-11 — La data de keywords (CSV) tiró abajo un supuesto: "armazón de receta" no se busca; sí "anteojos rusty/recetados/mujer"
 
 **Contexto**: veníamos poniendo "Armazón de Receta" en los meta de los productos de receta (intuición + nombre de categoría). Los CSV de Ubersuggest (carpeta `KEYWORDS OPTICA/`, [[keywords-optica-csv-folder]]) mostraron data dura: "armazones con receta" = **0 vol**; en cambio "anteojos rusty" **3.600** (dif 8), "anteojos recetados" **720** (dif 9), "anteojos/armazones mujer" 480-880, "lentes wayfarer" 590.
