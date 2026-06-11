@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Validar el modelo de dominio con el agente experto ANTES de codear evita bugs que el typecheck jamás vería
+
+**Contexto**: para el simulador de visión propuse mi modelo físico (blur ∝ error refractivo por meridiano) y lo mandé a `optical-expert` ANTES de escribir una línea de código, como pregunta concreta punto por punto ("validá o corregí: 1...7") y no como "revisá esto". Devolvió 3 correcciones que el código habría absorbido silenciosamente: (a) mi asignación de σ estaba TRANSPUESTA → el astigmatismo se habría renderizado girado 90° (visualmente plausible, indetectable por tests, y un óptico cliente lo vería mal); (b) faltaba la zona muerta de 0.25D → un emétrope habría visto borroso (falso y dañino en YMYL); (c) mis fórmulas ad-hoc de cerca/hipermetropía eran reemplazables por UN modelo unificado de acomodación (A\*=clamp(SE+D,0,U)) más simple Y más correcto. También evitó un descubrimiento tardío costoso: el gaussian blur directo APAGA las luces nocturnas (hay que separarlas en blend screen) — eso lo habría descubierto recién mirando el render.
+
+**Aprendizaje**: en features cuyo núcleo es un MODELO de dominio (física, legal, fiscal), el bug peor no es el que rompe el build sino el que produce un resultado plausible-pero-falso. El experto agrega valor máximo en la fase de DISEÑO del modelo, no revisando código terminado (ahí el modelo transpuesto ya está enterrado en transforms CSS donde nadie lo ve). El formato importa: preguntas numeradas con MI propuesta explícita ("propongo X, ¿correcto?") fuerza al agente a confirmar/refutar punto por punto en vez de devolver generalidades.
+
+**Regla**: feature con modelo de dominio no-trivial → consultar al agente experto con el modelo PROPUESTO en formato "validá/corregí punto por punto" ANTES de codear. El trigger automático de optical-expert ("validar afirmación técnica ANTES de publicarla") aplica también a fórmulas/algoritmos, no solo a texto.
+
 ## 2026-06-11 — Cuando el founder dice "no surte efecto", curlear el HTML de producción y buscar el valor exacto ANTES de tocar nada
 
 **Contexto**: el founder reportó que los cambios de scale de My Crew/Clems "no surten efecto" ni en incógnito + cache vaciado. En vez de asumir bug de build/cache (y empezar a tocar a ciegas), `curl`eé la página exacta (`/anteojos-de-receta/vulk`) y grepié `scale\([0-9.]+\)` + el `x-vercel-cache`/`age`. Resultado: el HTML de producción YA tenía `scale(1.29)`, `scale(1.145)`, etc. (`x-vercel-cache: HIT`, build fresco) → los cambios SÍ estaban aplicados. Eso reencuadró el problema de "está roto" a "el delta es sub-perceptible + se tocó la variante equivocada" (ver MISTAKES), que es la causa real.
