@@ -74,19 +74,19 @@ ON CONFLICT (slug) DO UPDATE SET
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-r-cy-02-receta'), '960186-MBLK',
-   '{"frame_color":"negro-mate","model_code":"MBLK"}'::jsonb,
+   '{"frame_color":"negro-mate","model_code":"MBLK OPTICS"}'::jsonb,
    8459227, 2, true, 1, 'MLA1388464699', '188766461829'),
   ((SELECT id FROM public.products WHERE slug='rusty-r-cy-02-receta'), '960186-SBLK',
-   '{"frame_color":"negro-brillo","model_code":"SBLK"}'::jsonb,
+   '{"frame_color":"negro-brillo","model_code":"SBLK OPTICS"}'::jsonb,
    8459227, 2, true, 2, 'MLA1388464699', '188766461831'),
   ((SELECT id FROM public.products WHERE slug='rusty-r-cy-02-receta'), '960186-STEELBLUE',
-   '{"frame_color":"azul-acero","model_code":"STEEL BLUE"}'::jsonb,
+   '{"frame_color":"azul-acero","model_code":"STEEL BLUE OPTICS"}'::jsonb,
    8459227, 1, true, 3, 'MLA1388464699', '178752745788'),
   ((SELECT id FROM public.products WHERE slug='rusty-r-cy-02-receta'), '960187',
-   '{"frame_color":"azul","model_code":"SBLUE"}'::jsonb,
+   '{"frame_color":"azul","model_code":"SBLUE OPTICS"}'::jsonb,
    8459227, 0, true, 4, 'MLA1388464699', '178752745790'),
   ((SELECT id FROM public.products WHERE slug='rusty-r-cy-02-receta'), '960188',
-   '{"frame_color":"gris-claro","model_code":"L GREY"}'::jsonb,
+   '{"frame_color":"gris-claro","model_code":"L GREY OPTICS"}'::jsonb,
    8459227, 0, true, 5, 'MLA1388464699', '178752745792')
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
