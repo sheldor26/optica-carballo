@@ -459,12 +459,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 2026-06-05 reportó que CRY y SBLK se veían más chicas (sus fotos tienen el
   // anteojo más chico en el frame) → CRY/SBLK perfil 1.25 / frente 1.10 para emparejar.
   // Casing: CRY/SBLK en .jpg, MBLK en .webp.
-  'vulk-clems/CLEMS CRY P.jpg': 1.25,
-  'vulk-clems/CLEMS CRY F.jpg': 1.1,
-  'vulk-clems/CLEMS MBLK P.webp': 1.15,
-  'vulk-clems/CLEMS MBLK F.webp': 1.0,
-  'vulk-clems/CLEMS SBLK P.jpg': 1.25,
-  'vulk-clems/CLEMS SBLK F.jpg': 1.1,
+  // founder 2026-06-11: -0.005 (ajuste milimétrico) a las 6 entries.
+  'vulk-clems/CLEMS CRY P.jpg': 1.245,
+  'vulk-clems/CLEMS CRY F.jpg': 1.095,
+  'vulk-clems/CLEMS MBLK P.webp': 1.145,
+  'vulk-clems/CLEMS MBLK F.webp': 0.995,
+  'vulk-clems/CLEMS SBLK P.jpg': 1.245,
+  'vulk-clems/CLEMS SBLK F.jpg': 1.095,
 
   // Rusty Esvep — envolvente deportivo. Foto MUY ancha (1000×491, 2:1) con el anteojo
   // chico en el frame → necesita más scale que Sotion/Eslav (1.6) aunque sea el mismo
