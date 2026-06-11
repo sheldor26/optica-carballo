@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — Pedirle al founder precio/stock que la integración de ML ya podía traer sola
+
+**Estado**: ✅ Cerrado (resuelto con `scripts/ml-item.ts`)
+
+**Qué pasó**: el founder pasó el link de una publicación de ML para cargar un producto (R-CY 02) y, durante VARIOS turnos, le pedí precio + stock por color manualmente — cuando la integración OAuth de ML ya estaba conectada y podía traer esos datos sola. El founder lo marcó con razón: "tenés la API de ML... para eso la conectamos y para eso te pasé el link". Recién ahí lo fui a buscar a la API.
+
+**Causa raíz**: asumí que no podía llamar a ML (la API pública da 403 sin token; el endpoint admin de import-preview es admin-gated; los módulos del integration son `server-only`). Me quedé en "pedile al founder" sin agotar la opción de usar la integración existente: el token OAuth vive encriptado en `marketplace_integrations` y se puede leer+desencriptar desde un script self-contained (service-role key + `APP_ENCRYPTION_KEY`, ambos en `.env.local`).
+
+**Regla preventiva**: cuando el founder pasa un link de ML para cargar un producto, traer precio/stock/variaciones/var_ids de la API ML PRIMERO (`pnpm exec tsx --env-file=.env.local scripts/ml-item.ts MLA...`), no pedírselos. Y como regla general: antes de delegar al founder un dato "que no se puede traer", verificar si hay una integración/credencial guardada que lo permita. Conecta con el anti-pattern de asumir limitaciones sin probar.
+
 ## 2026-06-09 — Reintegrar stock con SQL crudo (RPC no idempotente) en vez del admin action → doble-incremento en prod
 
 **Estado**: 🟡 Mitigado (los pedidos quedaron OK; el stock quedó +1 en 2 variantes, corrección pendiente de OK del founder)

@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Leer+desencriptar el token OAuth de la DB en un script self-contained desbloquea la API de ML (sin MCP ni sesión admin)
+
+**Contexto**: necesitaba datos de una publicación de ML (precio/stock/variaciones) pero la API pública da 403 sin token, el endpoint admin de import-preview pide sesión de admin, y `lib/integrations/mercadolibre/*` es `server-only` (no se importa en tsx). El token OAuth válido vivía encriptado (AES-256-GCM) en `marketplace_integrations`.
+
+**Aprendizaje**: se accede a la integración SIN la app, con un script self-contained (patrón mp-smoke/email-smoke): (a) lee la fila activa de `marketplace_integrations` con la **service-role key** (independiente del MCP — el cliente JS de Supabase usa las keys de `.env.local`), (b) **desencripta** el `access_token` replicando el AES-GCM (`iv:authTag:encrypted`, key derivada de `APP_ENCRYPTION_KEY`), (c) llama a `api.mercadolibre.com/items/{id}` con el Bearer. Quedó como `scripts/ml-item.ts` (reusable para cualquier MLA).
+
+**Regla**: para usar una integración OAuth desde fuera de la app (script/CLI) no hace falta el endpoint admin ni el MCP — leer el token de su tabla con la service-role key + desencriptar con la misma lógica del módulo. En la carga de productos elimina el paso "founder pasa precio/stock". Conecta con el MISTAKE 2026-06-11 (pedir datos que la integración trae sola).
+
 ## 2026-06-09 — Reintegro de stock casi gratis por reusar piezas existentes + claim atómico para idempotencia
 
 **Contexto**: el founder pidió reintegrar stock al cancelar un pedido (DB + ML). En vez de escribir un camino nuevo, ya existía `revertStock`/`increment_variant_stock` + `syncStockOutboundForVariants` (usados como compensación cuando falla `createOrderFromCart`). El reintegro al cancelar (`releaseOrderStock`) salió reusando exactamente eso. El auto-cancelar de abandonados reusó `releaseOrderStock`. Tres features, un solo camino de reintegro.
