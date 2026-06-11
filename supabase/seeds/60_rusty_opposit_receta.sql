@@ -33,7 +33,7 @@ WITH
   receta  AS (SELECT id FROM public.categories WHERE slug = 'anteojos-de-receta' AND parent_id IS NULL)
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
-  (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-opposit-receta', 'Rusty Opposit Receta',
+  (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-opposit-receta', 'Rusty Opposit Optics',
   'Armazón de receta Rusty Opposit: wayfarer femenino liviano (24,3 g) con frente de G-Flex y patillas de metal con terminales de acetato hechas a mano. Apto para lentes monofocales, bifocales y progresivos. Se vende sin cristales graduados: los cotizamos según tu receta.',
   E'El Rusty Opposit es un armazón de receta **wayfarer femenino**, liviano (24,3 g) y con una terminación cuidada. El **frente es de G-Flex** —flexible y resistente— y las **patillas son de metal con terminales de acetato hechas a mano**, un detalle artesanal que le da carácter y un calce cómodo.\n\nMedidas: frente 147 mm · lente 53 mm de ancho × 47 mm de alto · puente 17 mm · varilla 140 mm. El alto de 47 mm es holgado, cómodo para lentes progresivos.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• MDEMI-068 — carey mate con patillas doradas mate.\n• SBLK-068 — negro brillo con patillas doradas mate.\n• 385-202 — frente violeta transparente con patillas violeta mate.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{

@@ -25,7 +25,7 @@ WITH
   rx    AS (SELECT id FROM public.categories WHERE slug = 'anteojos-de-receta' AND parent_id IS NULL)
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
-  (SELECT id FROM rusty), (SELECT id FROM rx), 'rusty-misty-receta', 'Rusty Misty (receta)',
+  (SELECT id FROM rusty), (SELECT id FROM rx), 'rusty-misty-receta', 'Rusty Misty Optics',
   'Armazón de receta Rusty Misty: redondo unisex de TALLE CHICO (para rostros pequeños). G-Flex con bisagras metálicas Flex, muy liviano (17,8 g). Apto para lentes monofocales, bifocales y progresivos.',
   E'Es un armazón de receta REDONDO unisex. Frente y patillas de G-Flex con **bisagras metálicas Flex**, y con solo 17,8 gramos es de los más livianos del catálogo — ideal para usar todo el día sin que marque.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• MBLK (SKU 125734): negro mate.\n• 373K (SKU 125731): marrón.\n• 0292 (SKU 125730): caramelo.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{

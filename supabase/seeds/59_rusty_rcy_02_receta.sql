@@ -41,7 +41,7 @@ WITH
   receta  AS (SELECT id FROM public.categories WHERE slug = 'anteojos-de-receta' AND parent_id IS NULL)
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
-  (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-r-cy-02-receta', 'Rusty R-CY 02 Receta',
+  (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-r-cy-02-receta', 'Rusty R-CY 02 Optics',
   'Armazón de receta Rusty R-CY 02: rectangular, ecológico (materiales reciclados) y ultra liviano (11,3g), con bisagras metálicas. Diseño unisex. Apto monofocal, bifocal y progresivo.',
   E'El Rusty R-CY 02 es un armazón de receta **rectangular**, sobrio y unisex, con una impronta consciente: está hecho con **materiales reciclados**. Es **ultra liviano** (solo 11,3 g), así que te olvidás de que lo tenés puesto, y suma **bisagras metálicas** que le dan durabilidad y aguante en el uso diario.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 5 colores:\n\n• MBLK — negro mate.\n• SBLK — negro brillo.\n• STEEL BLUE — azul acero.\n• SBLUE — azul.\n• L GREY — gris claro.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
