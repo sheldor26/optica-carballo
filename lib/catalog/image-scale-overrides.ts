@@ -492,6 +492,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-my-crew/MY CREW MBLK F GALERIA.jpg': 1.17,
   'vulk-my-crew/MY CREW 388 PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.32,
   'vulk-my-crew/MY CREW 388 FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.17,
+
+  // Vulk Tour 81 Receta — cuadrado unisex G-Flex. Fotos GALERIA (mismo formato que la
+  // MBLK de My Crew, verificada a 1.3) → perfil 1.3 / frente 1.15 PROVISIONAL. ⚠️
+  // CONFIRMAR visual cuando el founder suba las fotos a vulk-tour-81/: cuadrado llena
+  // distinto que redondo, puede necesitar ajuste. medidas.jpeg queda en 1.0 (no grid).
+  'vulk-tour-81/TOUR 81-MBLK PERFIL GALERIA.jpg': 1.3,
+  'vulk-tour-81/TOUR 81-MBLK FRENTE GALERIA.jpg': 1.15,
+  'vulk-tour-81/TOUR 81 CRY PERFIL GALERIA.jpg': 1.3,
+  'vulk-tour-81/TOUR 81 CRY FRENTE GALERIA.jpg': 1.15,
+  'vulk-tour-81/TOUR 81- 315 OPTICS PERFIL GALERIA.jpg': 1.3,
+  'vulk-tour-81/TOUR 81- 315 OPTICS FRENTE GALERIA.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
