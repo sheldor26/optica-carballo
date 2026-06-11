@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ScanLine } from 'lucide-react';
 import {
   binocularView,
@@ -32,7 +32,12 @@ const SCENES: { id: SceneId; label: string; demand: number; nightFactor: number 
   { id: 'noche', label: 'De noche', demand: 0, nightFactor: 1.7 },
 ];
 
-const DEFAULT_K_PX_PER_D = 1.6;
+/**
+ * Intensidad del blur como % del ANCHO del viewport por dioptría — en px fijos
+ * el efecto desaparecía en pantallas grandes (bug reportado por el founder
+ * 2026-06-11: "se ve igual con y sin anteojos").
+ */
+const DEFAULT_K_PCT_PER_D = 0.6;
 
 const EXAMPLE_OD: EyeRx = { sphere: -1.5, cylinder: -0.75, axis: 20 };
 const EXAMPLE_OI: EyeRx = { sphere: -2, cylinder: -0.5, axis: 160 };
@@ -58,7 +63,20 @@ export function VisionSimulator() {
   const [sceneId, setSceneId] = useState<SceneId>('lejos');
   const [eyeView, setEyeView] = useState<EyeView>('ambos');
   const [corrected, setCorrected] = useState(false);
-  const [kPxPerD, setKPxPerD] = useState(DEFAULT_K_PX_PER_D);
+  const [kPctPerD, setKPctPerD] = useState(DEFAULT_K_PCT_PER_D);
+
+  // El blur escala con el ancho real del viewport (px fijos = invisible en desktop).
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [viewportWidth, setViewportWidth] = useState(700);
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const update = () => setViewportWidth(el.clientWidth || 700);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const scene = SCENES.find((s) => s.id === sceneId)!;
   const usable = usableAccommodation(add, ageBand);
@@ -81,7 +99,7 @@ export function VisionSimulator() {
     activeBlur = best.blur;
   }
 
-  const kEff = kPxPerD * scene.nightFactor;
+  const kEff = (kPctPerD / 100) * viewportWidth * scene.nightFactor;
   const sigmaAxis = corrected ? 0 : kEff * activeBlur.e1;
   const sigmaPerp = corrected ? 0 : kEff * activeBlur.e2;
   const diff = Math.abs(activeBlur.e1 - activeBlur.e2);
@@ -116,7 +134,7 @@ export function VisionSimulator() {
       </div>
 
       {/* Viewport */}
-      <div className="mt-4">
+      <div className="mt-4" ref={viewportRef}>
         <BlurredViewport
           axisDeg={activeRx.axis}
           sigmaAxisPx={sigmaAxis}
@@ -178,7 +196,15 @@ export function VisionSimulator() {
               de cabeza al final del día.
             </p>
           )}
-          {sharp && !compensating && !corrected && (
+          {sharp && !compensating && !corrected && sceneId === 'cerca' && activeRx.sphere < 0 && (
+            <p className="text-foreground">
+              Nítido de cerca <strong>sin anteojos</strong> — no es un error: es la
+              &ldquo;ventaja&rdquo; del miope, tu ojo ya enfoca a esta distancia.
+              Cambiá a <strong>De lejos</strong> o <strong>De noche</strong> para ver
+              tu dificultad real.
+            </p>
+          )}
+          {sharp && !compensating && !corrected && !(sceneId === 'cerca' && activeRx.sphere < 0) && (
             <p>Con estos valores y a esta distancia, verías nítido sin corrección.</p>
           )}
         </div>
@@ -289,15 +315,15 @@ export function VisionSimulator() {
           </summary>
           <label className="mt-3 block">
             <span className="text-muted-foreground text-xs">
-              Intensidad del desenfoque: {kPxPerD.toFixed(1)} px/D
+              Intensidad del desenfoque: {(kPctPerD / DEFAULT_K_PCT_PER_D).toFixed(1)}×
             </span>
             <input
               type="range"
-              min={0.4}
-              max={4}
-              step={0.1}
-              value={kPxPerD}
-              onChange={(e) => setKPxPerD(Number(e.target.value))}
+              min={0.15}
+              max={2}
+              step={0.05}
+              value={kPctPerD}
+              onChange={(e) => setKPctPerD(Number(e.target.value))}
               className="mt-1 w-full"
             />
           </label>
@@ -512,7 +538,7 @@ function SceneNear() {
       {[
         ['Café con leche', '$3.500', 395],
         ['Medialunas (x3)', '$2.800', 440],
-        ['Tostado de jamón y queso', '$6.200', 485],
+        ['Tostado mixto', '$6.200', 485],
         ['Jugo de naranja', '$3.900', 530],
       ].map(([item, price, y]) => (
         <g key={item as string}>
