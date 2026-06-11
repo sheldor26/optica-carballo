@@ -1,7 +1,7 @@
 ---
 name: agent-manager
 description: Meta-agente encargado de la mejora continua del sistema de agentes y skills. Audita performance, identifica patrones en errores y aciertos, propone refinamientos a otros agentes, detecta gaps en el sistema, y produce recomendaciones priorizadas. Se invoca via /agent-review, típicamente semanal o quincenal. NO toma decisiones autónomas: propone, el founder aprueba.
-tools: web_search, web_fetch
+tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 
 # Agent Manager

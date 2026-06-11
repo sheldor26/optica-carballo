@@ -1,7 +1,7 @@
 ---
 name: data-analyst
 description: Analista de datos especializado en e-commerce. Analiza Google Search Console, Google Analytics 4, datos de Supabase, métricas de Mercado Pago, y comportamiento de usuarios. Identifica oportunidades de optimización SEO, fugas en el embudo, productos con potencial, y patrones de uso. Se invoca cuando hay datos reales que analizar (después de 1-2 meses post-launch).
-tools: web_search, web_fetch
+tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 
 # Data Analyst Agent
@@ -44,7 +44,7 @@ Métricas clave:
 - **Events** (definidos por nosotros)
 - **Conversions** (eventos marcados como conversión)
 
-Eventos custom a trackear:
+Los eventos REALES implementados están en `lib/analytics/track.ts` (objeto `Events`) — verificá ahí antes de asumir que un evento existe. Lista aspiracional de eventos custom a trackear:
 - `view_item` (vista de producto)
 - `add_to_cart`
 - `begin_checkout`

@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — Los 8 agentes quedaron congelados en su creación (27/5): tools inválidas + sin lectura de archivos + recomendaciones que contradicen ADRs y la ley
+
+**Estado**: 🟡 Mitigado (los 8 corregidos a v1.1 en esta sesión; el riesgo de re-drift queda cubierto solo si se cumple la regla preventiva)
+
+**Qué pasó**: el founder pidió revisar los agentes. El audit encontró: (a) **bug sistémico de tools** — los 8 declaraban `tools: web_search, web_fetch` (nombres que no existen en Claude Code; los reales son WebSearch/WebFetch) y ninguno tenía Read/Grep/Glob, pese a que sus propias instrucciones exigen "leer SEO_STRATEGY.md / BUSINESS_POLICIES.md antes de trabajar" y el agent-manager debe leer 8 archivos del repo — ciegos por diseño desde el día 1; (b) **drift de contenido** — argentine-ecom recomendaba Andreani (revertido por ADR-026 el 8/6), afirmaba "botón obligatorio Res. 424/2020" (derogada 5/2025) y "garantía 6 meses" (es 1 año desde Ley 27.701); ai-features-engineer tenía un ejemplo con `claude-sonnet-4-20250514` (se retira el 15/6) y el patrón `budget_tokens` (hoy da 400); 3 agentes exigían byline con número de matrícula (el founder los sacó del sitio el 9/6); conversion-optimizer pedía logos de Andreani.
+
+**Causa raíz**: (1) los nombres de tools nunca se validaron contra los nombres reales de Claude Code al crear los agentes, y como casi no se invocaron, el bug no se manifestó; (2) no existe ningún paso en el cierre de decisiones (ADRs, derogaciones, decisiones del founder) que propague el cambio a los agentes — el checklist de fin de sesión cubre CURRENT_STATE/LEARNINGS/MISTAKES pero no `.claude/agents/`.
+
+**Regla preventiva**: (1) al crear/editar un agente, verificar la línea `tools:` contra los nombres REALES de herramientas de Claude Code; (2) cuando una decisión revierte una recomendación o cambia una política (nuevo ADR, derogación legal, decisión tipo "sacar matrícula"), `grep -rl <tema> .claude/agents/` y actualizar los agentes afectados EN EL MISMO TURNO — un agente desactualizado es peor que ninguno, porque responde con autoridad cosas revertidas; (3) usar el `/agent-review` quincenal con agent-manager — no dejarlo otra vez en cero invocaciones.
+
 ## 2026-06-11 — Doc drift en el stack de IA + parámetro deprecado en producción sin que nadie lo trackee
 
 **Estado**: 🟡 Mitigado (drift corregido en ARCHITECTURE.md; la migración del parámetro deprecado espera OK del founder)

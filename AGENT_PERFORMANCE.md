@@ -27,10 +27,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## optical-expert
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: ⚪ Definido, sin invocaciones aún
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -38,10 +38,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## seo-strategist
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: ⚪ Definido, sin invocaciones aún
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -49,10 +49,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## content-writer-medical
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: ⚪ Definido, sin invocaciones aún
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -60,9 +60,9 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## optical-expert
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: 🟢 Invocado con buen resultado
-- **Última revisión**: 2026-06-01
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 1+
 - **Casos de éxito**: 2026-06-01 — brief técnico de los 4 defectos refractivos (miopía/hipermetropía/astigmatismo/presbicia) para validar antes de redactar. Output excelente: mecanismo óptico correcto, signos de graduación, latente vs manifiesta, regular vs irregular, mitos a desmentir, terminología AR ("vista cansada" para SEO), banderas rojas YMYL, y la sección pedida "lo más importante para ratificar" (12 puntos, 7 marcados 🩺 para firma de regente). Honestidad sobre limitaciones (multifocales, láser). Flag honesto: marcó "−6.00 / 40-45 años" como rangos de consenso a confirmar, no cifras rígidas.
 - **Casos donde requirió corrección**: -
@@ -70,9 +70,9 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## seo-strategist
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: 🟢 Invocado con buen resultado
-- **Última revisión**: 2026-06-01
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 1+
 - **Casos de éxito**: 2026-06-01 — diseño de roadmap de 4 clusters técnicos de lente (diseño/materiales/tratamientos/sol). Output excelente: arquitectura pillar+satélites con slugs y títulos AR, 7 puentes cross-cluster anti-canibalización, secuencia priorizada justificada (D primero por volumen+catálogo+keyword validada), y un hallazgo técnico valioso no pedido explícito: el prerequisito de agregar los clusters al `type ArticleCluster` antes de escribir (si no, breadcrumb/schema rotos). Marcó explícito qué volúmenes son estimación vs research real, y respetó regla 14 (no estimó horas sin audit).
 - **Casos donde requirió corrección**: -
@@ -81,10 +81,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## argentine-ecom
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: 🟢 Invocado con buen resultado
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-06-08
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 3
 - **Casos de éxito**: (3) 2026-06-08 — investigación del endpoint de alta de envío MiCorreo (`/shipping/import`) para la Fase 3. **Muy buena disciplina de confianza**: marcó explícitamente qué sabía con alta/media/baja confianza y qué había que verificar contra el manual real, en vez de inventar nombres de campos (respetó la regla "no inventar"). Recomendación de flujo (alta MANUAL desde panel, no auto al pago, por armado post-pago + cancelación incierta) acertada y bien argumentada. No tocó código (como se le pidió). El contrato exacto lo cerré yo después leyendo el PDF del manual — el agente acertó la estructura conceptual. (1) 2026-06-01 — consulta sobre extracción de cuotas de MP. Respuesta excelente: endpoint correcto (`/v1/payment_methods/installments`), distinción honesta entre lo que sabe con certeza vs lo que pidió verificar con llamada real, flagueó el riesgo legal del hardcode "3 cuotas sin interés" (Ley 24.240), recomendación de arquitectura escalonada. Cero alucinación de endpoints. (2) 2026-06-08 — paso a paso para conseguir/configurar credenciales MP Checkout Pro (crear app, TEST vs PROD, usuarios+tarjetas de prueba, webhook + signature secret, checklist de prod, gotchas argentinos cuotas/MODO/fiscal). El procedimiento de credenciales fue muy bueno y útil.
 - **Casos donde requirió corrección**: 2026-06-08 — el agente intentó "auditar el código MP" pero su shell se reinició a mitad de ejecución y **alucinó el estado del codebase**: reportó rutas inexistentes (`lib/mercadopago/`, `app/api/checkout/route.ts`) y afirmó que el webhook era un "stub con `void payload` que no confirma pagos". FALSO — el código real está en `lib/mp/` y el webhook procesa pagos completos (verificado por mí con grep antes de pasarle nada al founder). Si no lo verificaba, le pasaba al founder un "heads-up" alarmante y falso. Lección: el agente NO debería afirmar estado de código tras un fallo de entorno; y el orquestador debe verificar afirmaciones de subagente sobre el código que contradicen conocimiento directo.
@@ -92,10 +92,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## ai-features-engineer
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: ⚪ Definido, sin invocaciones aún
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -103,10 +103,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## conversion-optimizer
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: ⚪ Definido, sin invocaciones aún
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -114,10 +114,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## data-analyst
 
-- **Versión**: 1.0
+- **Versión**: 1.1
 - **Estado**: ⚪ Definido, sin invocaciones aún (esperado en pre-launch)
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -125,10 +125,10 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 
 ## agent-manager
 
-- **Versión**: 1.0 (Versión A — Auditor Sistemático)
+- **Versión**: 1.1 (Versión A — Auditor Sistemático)
 - **Estado**: ⚪ Definido, sin invocaciones aún
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-05-27
+- **Última revisión**: 2026-06-11
 - **Invocaciones estimadas (último período)**: 0
 - **Casos de éxito**: -
 - **Casos donde requirió corrección**: -
@@ -179,5 +179,6 @@ Una vez que el sistema esté operando:
 | Fecha | Cambio | ADR / Justificación |
 |-------|--------|---------------------|
 | 2026-05-27 | Creación de 7 agentes core + agent-manager | Setup inicial del proyecto |
+| 2026-06-11 | **Review completo de los 8 agentes → todos a v1.1** (pedido directo del founder). (1) **Fix sistémico de tools**: los 8 declaraban `web_search, web_fetch` (nombres inválidos) y NINGUNO podía leer archivos del repo pese a que sus instrucciones lo exigen → `Read, Grep, Glob, WebFetch, WebSearch` (solo lectura + web; sin Edit/Bash) — aprobado explícitamente por el founder. (2) **argentine-ecom**: logística Andreani→Correo único (ADR-026), marco legal de consumo verificado 2026 (garantía 1 año, Res. 424/2020 derogada, gastos devolución=vendedor, CCyC 1116.a), estado real del checkout (flag + Fase 2), regla dura de verificar normas con WebSearch. (3) **ai-features-engineer**: stack real de modelos por endpoint (Opus 4.8/Sonnet 4.6/Haiku 4.5), adaptive thinking obligatorio (budget_tokens deprecado/400), patrón fetch+tool use+Zod, features marcadas como YA implementadas, rx:smoke obligatorio. (4) **content-writer + seo-strategist + conversion-optimizer**: SIN número de matrícula (decisión founder 2026-06-09), logo logística solo Correo, flag de checkout, aclaración /marcas hub, lección ISR/cookies, ejemplos con marcas reales. (5) **optical-expert**: puntero a BRANDS.md. (6) **data-analyst**: puntero a lib/analytics/track.ts. Causa raíz del drift en MISTAKES.md 2026-06-11. |
 
 (Cada futuro cambio aprobado por el founder se loguea acá con referencia al ADR correspondiente)
