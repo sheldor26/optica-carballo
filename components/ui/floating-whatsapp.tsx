@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { readCompareClientSide } from '@/lib/compare/client';
@@ -52,30 +51,26 @@ export function FloatingWhatsapp({
     ? `${whatsappLink}${whatsappLink.includes('?') ? '&' : '?'}text=${encodeURIComponent(defaultMessage)}`
     : whatsappLink;
 
+  // Entrada con tailwindcss-animate (antes framer-motion; sin animación de
+  // salida — desaparición instantánea, imperceptible). Perf 2026-06-11.
+  if (!mounted || shouldHide) return null;
+
   return (
-    <AnimatePresence>
-      {mounted && !shouldHide && (
-        <motion.a
-          key="floating-wa"
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Escribinos por WhatsApp"
-          onClick={() => track(Events.WHATSAPP_CLICK, { source: 'floating' })}
-          initial={{ opacity: 0, scale: 0.6, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.6, y: 12 }}
-          transition={{ type: 'spring', stiffness: 360, damping: 24 }}
-          className={cn(
-            'fixed bottom-4 right-4 z-30 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200',
-            'bg-[#25D366] text-white hover:scale-110 hover:bg-[#1ebe5d]',
-            'sm:bottom-6 sm:right-6 sm:size-12',
-          )}
-        >
-          <MessageCircle className="size-7 sm:size-6" strokeWidth={2} />
-          <span className="bg-[#25D366] absolute inset-0 -z-10 animate-ping rounded-full opacity-30" />
-        </motion.a>
+    <a
+      key="floating-wa"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Escribinos por WhatsApp"
+      onClick={() => track(Events.WHATSAPP_CLICK, { source: 'floating' })}
+      className={cn(
+        'animate-in fade-in zoom-in-75 slide-in-from-bottom-3 fixed bottom-4 right-4 z-30 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200',
+        'bg-[#25D366] text-white hover:scale-110 hover:bg-[#1ebe5d]',
+        'sm:bottom-6 sm:right-6 sm:size-12',
       )}
-    </AnimatePresence>
+    >
+      <MessageCircle className="size-7 sm:size-6" strokeWidth={2} />
+      <span className="bg-[#25D366] absolute inset-0 -z-10 animate-ping rounded-full opacity-30" />
+    </a>
   );
 }

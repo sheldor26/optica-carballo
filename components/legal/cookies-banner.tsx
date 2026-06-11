@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -86,19 +85,17 @@ export function CookiesBanner() {
     setVisible(false);
   };
 
+  // Entrada con tailwindcss-animate (antes framer-motion; sin animación de
+  // salida — al elegir, el banner desaparece al instante). Perf 2026-06-11.
+  if (!visible) return null;
+
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          key="cookies-banner"
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-          className="fixed inset-x-0 bottom-0 z-40 px-3 pb-3 sm:px-4 sm:pb-4"
-          role="region"
-          aria-label="Aviso de cookies"
-        >
+    <div
+      key="cookies-banner"
+      className="animate-in fade-in slide-in-from-bottom-8 fixed inset-x-0 bottom-0 z-40 px-3 pb-3 duration-300 sm:px-4 sm:pb-4"
+      role="region"
+      aria-label="Aviso de cookies"
+    >
           <div
             className={cn(
               'border-border/60 bg-background/95 mx-auto max-w-3xl rounded-2xl border p-4 shadow-lg backdrop-blur-md sm:p-5',
@@ -157,8 +154,6 @@ export function CookiesBanner() {
               </button>
             </div>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }

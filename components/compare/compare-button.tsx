@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { motion } from 'framer-motion';
 import { Scale } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toggleCompareAction } from '@/lib/compare/actions';
@@ -103,10 +102,7 @@ export function CompareButton({ entry, variant = 'title', className }: Props) {
           className,
         )}
       >
-        <motion.span
-          animate={isInList ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+        <span className={cn('inline-flex', isInList && 'animate-pop')}>
           <Scale
             className={cn(
               'size-5 transition-colors',
@@ -114,7 +110,7 @@ export function CompareButton({ entry, variant = 'title', className }: Props) {
             )}
             strokeWidth={1.75}
           />
-        </motion.span>
+        </span>
       </button>
     );
   }
@@ -134,13 +130,9 @@ export function CompareButton({ entry, variant = 'title', className }: Props) {
         className,
       )}
     >
-      <motion.span
-        animate={isInList ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="inline-flex"
-      >
+      <span className={cn('inline-flex', isInList && 'animate-pop')}>
         <Scale className="size-4" strokeWidth={1.75} />
-      </motion.span>
+      </span>
       {isInList ? 'En comparador' : 'Comparar'}
     </button>
   );

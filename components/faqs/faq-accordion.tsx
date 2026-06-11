@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { FaqEntry } from '@/lib/content/faqs';
@@ -42,28 +41,25 @@ export function FaqAccordion({ items, defaultOpenId }: Props) {
                 aria-hidden="true"
               />
             </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  key="content"
-                  id={`faq-answer-${item.id}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{
-                    height: { duration: 0.3, ease: [0.2, 0.6, 0.2, 1] },
-                    opacity: { duration: 0.2 },
-                  }}
-                  className="overflow-hidden"
-                  role="region"
-                  aria-labelledby={item.id}
-                >
-                  <div className="text-muted-foreground px-5 pb-5 text-sm leading-relaxed sm:px-6 sm:text-base">
-                    <FaqAnswerText text={item.answer} />
-                  </div>
-                </motion.div>
+            {/* Colapso con CSS grid-rows 0fr→1fr (antes framer-motion animaba
+                height — perf 2026-06-11). Bonus SEO: la respuesta queda SIEMPRE
+                en el HTML (antes solo montada al abrir). */}
+            <div
+              id={`faq-answer-${item.id}`}
+              role="region"
+              aria-labelledby={item.id}
+              aria-hidden={!isOpen}
+              className={cn(
+                'grid transition-[grid-template-rows,opacity] duration-300 ease-out',
+                isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
               )}
-            </AnimatePresence>
+            >
+              <div className="overflow-hidden">
+                <div className="text-muted-foreground px-5 pb-5 text-sm leading-relaxed sm:px-6 sm:text-base">
+                  <FaqAnswerText text={item.answer} />
+                </div>
+              </div>
+            </div>
           </li>
         );
       })}

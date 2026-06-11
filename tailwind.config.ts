@@ -76,6 +76,18 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      // Reemplazo CSS del pop `scale [1,1.3,1]` que hacía framer-motion en
+      // wishlist/compare buttons (framer se sacó del camino crítico de JS —
+      // sesión perf 2026-06-11).
+      keyframes: {
+        pop: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.3)' },
+        },
+      },
+      animation: {
+        pop: 'pop 0.3s ease-in-out',
+      },
     },
   },
   plugins: [animate, typography],

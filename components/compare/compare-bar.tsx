@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Scale, X } from 'lucide-react';
 import {
   clearCompareAction,
@@ -124,17 +123,14 @@ export function CompareBar() {
   };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        key="compare-bar"
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-        className="fixed inset-x-0 bottom-0 z-40 px-3 pb-3 sm:px-4 sm:pb-4"
-        role="region"
-        aria-label="Productos en comparador"
-      >
+    // Entrada con tailwindcss-animate (antes framer-motion; sin animación de
+    // salida — la barra desaparece al instante al vaciar). Perf 2026-06-11.
+    <div
+      key="compare-bar"
+      className="animate-in fade-in slide-in-from-bottom-8 fixed inset-x-0 bottom-0 z-40 px-3 pb-3 duration-300 sm:px-4 sm:pb-4"
+      role="region"
+      aria-label="Productos en comparador"
+    >
         <div className="border-border/60 bg-background/95 mx-auto flex max-w-5xl items-center gap-3 rounded-2xl border px-3 py-2.5 shadow-lg backdrop-blur-md sm:gap-4 sm:px-4 sm:py-3">
           <div className="flex shrink-0 items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground sm:text-sm">
             <Scale className="size-4" strokeWidth={1.75} aria-hidden />
@@ -208,7 +204,6 @@ export function CompareBar() {
             </button>
           </div>
         </div>
-      </motion.div>
-    </AnimatePresence>
+    </div>
   );
 }

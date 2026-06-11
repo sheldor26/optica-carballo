@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUp,
   Loader2,
@@ -164,30 +163,22 @@ export function FloatingChat() {
           el X del header del panel (sin botón duplicado + sin overlap
           z-index que rompía el click del X header en mobile). */}
       {!isOpen && (
-        <motion.button
+        <button
           type="button"
           onClick={() => setIsOpen(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          className="bg-foreground text-background hover:bg-foreground/90 fixed bottom-6 right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-colors md:bottom-8 md:right-24"
+          className="bg-foreground text-background hover:bg-foreground/90 animate-in fade-in zoom-in-90 fixed bottom-6 right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 md:bottom-8 md:right-24"
           aria-label="Abrir asistente"
         >
           <Sparkles className="size-6" strokeWidth={1.5} />
-        </motion.button>
+        </button>
       )}
 
-      {/* Panel deslizante — sidebar editorial dark, fixed right. */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ x: '100%', opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 280 }}
-            className="fixed bottom-0 right-0 top-0 z-50 flex w-full flex-col bg-zinc-950 text-white shadow-2xl md:w-[440px]"
+      {/* Panel deslizante — sidebar editorial dark, fixed right. Entrada con
+          tailwindcss-animate (antes framer-motion; cierre instantáneo).
+          Perf 2026-06-11: framer fuera del bundle global. */}
+      {isOpen && (
+          <div
+            className="animate-in slide-in-from-right fade-in fixed bottom-0 right-0 top-0 z-50 flex w-full flex-col bg-zinc-950 text-white shadow-2xl duration-300 md:w-[440px]"
           >
             {/* Header */}
             <div className="border-white/10 flex items-center justify-between border-b px-6 py-5">
@@ -267,9 +258,8 @@ export function FloatingChat() {
                 consultas técnicas, escribinos por WhatsApp.
               </p>
             </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+      )}
     </>
   );
 }

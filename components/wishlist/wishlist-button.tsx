@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toggleWishlistAction } from '@/lib/wishlist/actions';
@@ -97,10 +96,7 @@ export function WishlistButton({
           className,
         )}
       >
-        <motion.span
-          animate={isSaved ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+        <span className={cn('inline-flex', isSaved && 'animate-pop')}>
           <Heart
             className={cn(
               'size-6 transition-colors',
@@ -110,7 +106,7 @@ export function WishlistButton({
             )}
             strokeWidth={1.75}
           />
-        </motion.span>
+        </span>
       </button>
     );
   }
@@ -130,18 +126,14 @@ export function WishlistButton({
           className,
         )}
       >
-        <motion.span
-          animate={isSaved ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="inline-flex"
-        >
+        <span className={cn('inline-flex', isSaved && 'animate-pop')}>
           <Heart
             className={cn(
               'size-4 transition-colors',
               isSaved ? 'fill-red-500 text-red-500' : 'fill-none',
             )}
           />
-        </motion.span>
+        </span>
         {isSaved ? 'Guardado' : 'Guardar'}
       </button>
     );
@@ -159,17 +151,14 @@ export function WishlistButton({
         className,
       )}
     >
-      <motion.span
-        animate={isSaved ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
+      <span className={cn('inline-flex', isSaved && 'animate-pop')}>
         <Heart
           className={cn(
             'size-4 transition-colors',
             isSaved ? 'fill-red-500 text-red-500' : 'text-foreground/60 fill-none',
           )}
         />
-      </motion.span>
+      </span>
     </button>
   );
 }

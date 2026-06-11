@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MagneticButton } from '@/components/ui/magnetic-button';
@@ -131,20 +130,18 @@ export function DesktopNav({ links }: { links: NavLink[] }) {
         );
       })}
 
-      <AnimatePresence>
-        {activeMega && activeMenu && (
-          <motion.div
-            key={activeMega}
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-            onMouseEnter={cancelClose}
-            onMouseLeave={scheduleClose}
-            className="border-border/60 bg-background/95 fixed inset-x-0 top-14 z-30 border-t shadow-lg backdrop-blur-md md:top-16"
-            role="region"
-            aria-label="Submenú de navegación"
-          >
+      {/* Entrada con tailwindcss-animate (antes framer-motion; la animación
+          de salida se omitió a propósito — cierre instantáneo, estándar en
+          mega-menús). Perf 2026-06-11: framer fuera del bundle del header. */}
+      {activeMega && activeMenu && (
+        <div
+          key={activeMega}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+          className="border-border/60 bg-background/95 animate-in fade-in slide-in-from-top-2 fixed inset-x-0 top-14 z-30 border-t shadow-lg backdrop-blur-md duration-200 md:top-16"
+          role="region"
+          aria-label="Submenú de navegación"
+        >
             <div className="container py-8 md:py-10">
               <div
                 className={cn(
@@ -178,9 +175,8 @@ export function DesktopNav({ links }: { links: NavLink[] }) {
                 })}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </nav>
   );
 }

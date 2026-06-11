@@ -22,6 +22,12 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Sacar una librería de animaciones del camino crítico: convertir los componentes COMPARTIDOS, no toda la app
+
+**Contexto**: framer-motion (~34kB gz) viajaba en el JS inicial de todas las páginas. La opción "global" (LazyMotion + convertir 21 archivos a `m.`) arriesgaba flashes en el hero (contenido invisible hasta que carga el chunk de features). La opción elegida: convertir SOLO los 12 componentes que cargan en todas las páginas (layout/header/footer/PDP) a CSS, dejando framer en componentes de rutas puntuales (home hero, tools, descubrir) donde el code-splitting de Next ya lo aísla.
+
+**Aprendizaje**: el costo de una librería no es "está instalada" sino "qué rutas la cargan". El grep clave es `grep -rln "from 'libreria'"` cruzado con "¿quién importa a ese componente?" — footer y header son los multiplicadores (NewsletterForm en el footer metía framer en TODAS las páginas). Conversiones que cubrieron todo: `tailwindcss-animate` (entradas), keyframe custom (`pop`), `grid-rows 0fr→1fr` (collapse de accordion, height-auto sin JS), rAF + transform directo (scroll progress), mousemove + cubic-bezier con overshoot (efecto magnético ≈ spring). Animaciones de SALIDA (AnimatePresence exit): omitirlas es aceptable en flotantes/banners — nadie nota la desaparición instantánea. Resultado: −40 kB (−21%) de First Load JS en categorías/PDPs/guías, cero pérdida funcional. Bonus inesperado: el accordion CSS deja las respuestas de FAQ siempre en el HTML (SEO).
+
 ## 2026-06-11 — Reconectar un MCP a mitad de sesión NO refresca mi lista de tools — necesita sesión nueva
 
 **Contexto**: el MCP de Supabase se desconectó a mitad de la carga del producto R-CY 02. El founder lo reconectó **3 veces** y cada vez las tools seguían sin aparecerme (lo verifiqué con ToolSearch). Recién aparecieron cuando reinició/reconectó de una forma que sí inyectó las tools en una "sesión nueva" (llegó el system-reminder "tools nuevas disponibles"). Mientras tanto perdí varios turnos diciéndole "reintentá".

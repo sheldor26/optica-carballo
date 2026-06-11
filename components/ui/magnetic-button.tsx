@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 type Props = {
   children: React.ReactNode;
@@ -9,20 +8,21 @@ type Props = {
   strength?: number;
 };
 
-const SPRING = { stiffness: 220, damping: 18, mass: 0.4 };
-
+/**
+ * Efecto magnético en hover (el contenido "sigue" al cursor). Vanilla JS:
+ * transform directo en mousemove + transition CSS para el follow suave y el
+ * snap-back con leve rebote. Era framer-motion (useMotionValue + useSpring) —
+ * se reescribió porque el header lo usa en TODAS las páginas y mantenía
+ * framer (~34kB gz) en el bundle inicial (sesión perf 2026-06-11).
+ */
 export function MagneticButton({
   children,
   className,
   strength = 0.28,
 }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, SPRING);
-  const springY = useSpring(y, SPRING);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -40,17 +40,22 @@ export function MagneticButton({
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = wrapperRef.current;
-    if (!el) return;
+    const inner = innerRef.current;
+    if (!el || !inner) return;
     const rect = el.getBoundingClientRect();
     const dx = e.clientX - (rect.left + rect.width / 2);
     const dy = e.clientY - (rect.top + rect.height / 2);
-    x.set(dx * strength);
-    y.set(dy * strength);
+    // Transition corta mientras sigue al cursor (suaviza como el spring).
+    inner.style.transition = 'transform 150ms ease-out';
+    inner.style.transform = `translate(${dx * strength}px, ${dy * strength}px)`;
   };
 
   const handleLeave = () => {
-    x.set(0);
-    y.set(0);
+    const inner = innerRef.current;
+    if (!inner) return;
+    // Snap-back con overshoot (aproxima el rebote del spring original).
+    inner.style.transition = 'transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1)';
+    inner.style.transform = 'translate(0px, 0px)';
   };
 
   return (
@@ -60,7 +65,7 @@ export function MagneticButton({
       onMouseLeave={handleLeave}
       className={className}
     >
-      <motion.div style={{ x: springX, y: springY }}>{children}</motion.div>
+      <div ref={innerRef}>{children}</div>
     </div>
   );
 }

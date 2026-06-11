@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Mail, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { subscribeNewsletterAction } from '@/lib/newsletter/actions';
@@ -108,17 +107,17 @@ function NewsletterFormBody({
   const isSuccess = state.kind === 'success';
   const isError = state.kind === 'error';
 
+  // Transiciones entre estados con tailwindcss-animate (antes framer-motion
+  // con AnimatePresence mode="wait"; el crossfade de salida se omitió — el
+  // estado nuevo entra animado). Perf 2026-06-11: el footer carga este form
+  // en TODAS las páginas y mantenía framer en el bundle global.
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <>
       {isSuccess ? (
-        <motion.div
+        <div
           key="success"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
           className={cn(
-            'flex items-start gap-3 rounded-xl border p-4',
+            'animate-in fade-in slide-in-from-bottom-2 flex items-start gap-3 rounded-xl border p-4 duration-300',
             'border-green-200 bg-green-50 text-green-900',
             'dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-200',
             variant === 'footer' && 'p-3 text-sm',
@@ -140,14 +139,10 @@ function NewsletterFormBody({
                 : 'Te vamos a avisar cuando llegue algo que valga la pena.'}
             </p>
           </div>
-        </motion.div>
+        </div>
       ) : (
-        <motion.form
+        <form
           key="form"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
           onSubmit={onSubmit}
           className={cn(
             'flex w-full flex-col gap-2',
@@ -199,22 +194,19 @@ function NewsletterFormBody({
               'Suscribirme'
             )}
           </button>
-        </motion.form>
+        </form>
       )}
 
       {isError && (
-        <motion.p
+        <p
           key="error"
-          initial={{ opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          className="mt-2 inline-flex items-start gap-1.5 text-xs text-red-700 dark:text-red-400"
+          className="animate-in fade-in slide-in-from-top-1 mt-2 inline-flex items-start gap-1.5 text-xs text-red-700 duration-200 dark:text-red-400"
           role="alert"
         >
           <AlertCircle className="mt-0.5 size-3.5 shrink-0" strokeWidth={2} />
           {state.message}
-        </motion.p>
+        </p>
       )}
-    </AnimatePresence>
+    </>
   );
 }
