@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — La data de keywords (CSV) tiró abajo un supuesto: "armazón de receta" no se busca; sí "anteojos rusty/recetados/mujer"
+
+**Contexto**: veníamos poniendo "Armazón de Receta" en los meta de los productos de receta (intuición + nombre de categoría). Los CSV de Ubersuggest (carpeta `KEYWORDS OPTICA/`, [[keywords-optica-csv-folder]]) mostraron data dura: "armazones con receta" = **0 vol**; en cambio "anteojos rusty" **3.600** (dif 8), "anteojos recetados" **720** (dif 9), "anteojos/armazones mujer" 480-880, "lentes wayfarer" 590.
+
+**Aprendizaje**: la intuición sobre qué término poner en el meta puede estar 180° equivocada — la gente busca por **marca + tipo + género** ("anteojos rusty", "anteojos recetados", "anteojos mujer"), NO por el nombre técnico interno de la categoría ("armazón de receta"). Sin data, sesgás hacia el vocabulario del negocio, no del comprador.
+
+**Regla**: para el meta de un producto, priorizar términos con volumen REAL verificado (Ubersuggest / CSV de `KEYWORDS OPTICA/`) por sobre el nombre interno de la categoría. Cuando el MCP de Ubersuggest no responda, leer los CSV con `head`/`grep`.
+
 ## 2026-06-11 — Delegar el SEO de una página de producto al `seo-strategist` devuelve assets listos + honestidad data-dura vs inferencia
 
 **Contexto**: al cargar Rusty Opposit (página de producto nueva) invoqué `seo-strategist` (trigger CLAUDE.md "página/ruta nueva → seo-strategist ANTES" + pedido del founder). Devolvió **listo para pegar**: slug confirmado, meta_title (59 chars, marca+forma+género), meta_description, short_description (con el disclaimer "sin cristales graduados"), array de 7 keywords + recomendaciones de internal linking y structured data (AggregateOffer con hasVariant; NO AggregateRating sin reviews). Lo más valioso: **marcó explícitamente** que los long-tails eran INFERENCIA (no hay volumen medido en SEO_STRATEGY.md para el cluster armazón-receta-wayfarer) y los ancló a volúmenes que SÍ existen (Rusty 6.000, wayfarer 1.400, mujer 3.200); además detectó un gap (no existe cluster Rusty pese a 7 productos receta cargados).

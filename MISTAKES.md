@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — FAQ publicado afirmaba "necesitás receta para comprar (sin excepción)" — sobre-aplicar la regla dura al armazón
+
+**Estado**: ✅ Cerrado (corregido)
+
+**Qué pasó**: el FAQ de los productos de receta (`components/product/product-faqs.tsx`) y el FAQ global (`lib/content/faqs.ts`) afirmaban que para COMPRAR hacía falta receta "sí, sin excepción". Es **falso**: un armazón viene con lentes demo y se compra **sin** receta — la receta solo hace falta para armar los **cristales graduados**. El founder (óptico) lo marcó. Estaba LIVE.
+
+**Causa raíz**: sobre-aplicar la regla dura de negocio "no vendemos anteojos recetados ni LC sin receta válida" (que es sobre cristales graduados / anteojo armado) al ACTO de comprar el armazón. Se confundió "categoría anteojos-de-receta" (que vende armazones/frames) con "necesita receta".
+
+**Regla preventiva**: en cualquier copy de la categoría receta, distinguir SIEMPRE el ARMAZÓN (frame → se compra sin receta) de los CRISTALES GRADUADOS / anteojo armado (→ sí requiere receta). La regla "no sin receta" aplica a lentes graduadas y LC, NO a la compra del armazón. Claims óptico-legales para publicar → validar con founder/`optical-expert` ANTES.
+
 ## 2026-06-11 — Los 8 agentes quedaron congelados en su creación (27/5): tools inválidas + sin lectura de archivos + recomendaciones que contradicen ADRs y la ley
 
 **Estado**: 🟡 Mitigado (los 8 corregidos a v1.1 en esta sesión; el riesgo de re-drift queda cubierto solo si se cumple la regla preventiva)
