@@ -343,6 +343,19 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-misty-receta/MISTY_0292_perfil.jpg': 1.15,
   'rusty-misty-receta/MISTY_0292_frente.jpg': 1.0,
 
+  // Rusty R-CY 02 receta (rectangular eco). Baseline receta 1.15/1.0; pendiente
+  // verificación visual del founder. SBLK reusa fotos de MBLK (copia en bucket).
+  'rusty-r-cy-02/R-CY 02 MBLK P GALERIA.jpg': 1.15,
+  'rusty-r-cy-02/R-CY 02 MBLK F GALERIA.jpg': 1.0,
+  'rusty-r-cy-02/R-CY 02 SBLK P GALERIA.jpg': 1.15,
+  'rusty-r-cy-02/R-CY 02 SBLK F GALERIA.jpg': 1.0,
+  'rusty-r-cy-02/R-CY 02 STEEL BLUE P GALERIA.jpg': 1.15,
+  'rusty-r-cy-02/R-CY 02 STEEL BLUE F GALERIA.jpg': 1.0,
+  'rusty-r-cy-02/R-CY 02 SBLUE P GALERIA.jpg': 1.15,
+  'rusty-r-cy-02/R-CY 02 SBLUE F GALERIA.jpg': 1.0,
+  'rusty-r-cy-02/R-CY 02 L GREY  P GALERIA.jpg': 1.15,
+  'rusty-r-cy-02/R-CY 02 L GREY  F GALERIA.jpg': 1.0,
+
   // Rusty Gresent — aviador doble puente. Founder 2026-06-02: perfil (lateral)
   // 1.20 (iteración: 1.35 mucho → 1.25 todavía grande → -0.05 → 1.20); frente 1.0.
   'rusty-gresent/GRESENT_SDEMI_GG47_-_p.jpg': 1.2,

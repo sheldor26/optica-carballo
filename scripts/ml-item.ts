@@ -15,7 +15,9 @@ function deriveKey(k: string): Buffer {
 }
 
 function decrypt(ciphertext: string, key: string): string {
-  const [ivHex, tagHex, encHex] = ciphertext.split(':');
+  const parts = ciphertext.split(':');
+  if (parts.length !== 3) throw new Error('Ciphertext inválido (esperado iv:authTag:encrypted).');
+  const [ivHex, tagHex, encHex] = parts as [string, string, string];
   const d = crypto.createDecipheriv('aes-256-gcm', deriveKey(key), Buffer.from(ivHex, 'hex'));
   d.setAuthTag(Buffer.from(tagHex, 'hex'));
   return Buffer.concat([d.update(Buffer.from(encHex, 'hex')), d.final()]).toString('utf8');

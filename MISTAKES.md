@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — Commitear un script que corre con tsx pero falla `tsc --noEmit`
+
+**Estado**: ✅ Cerrado (corregido al detectarlo)
+
+**Qué pasó**: creé `scripts/ml-item.ts`, lo probé con `tsx` (corrió OK) y lo commiteé (da2eb7c) **sin correr `pnpm typecheck`**. Después, al typechear por otro cambio, saltó: `Buffer.from(ivHex, 'hex')` con `ivHex: string | undefined` (el destructuring de `ciphertext.split(':')` es `string|undefined` bajo `noUncheckedIndexedAccess`). tsx NO hace type-check estricto; tsc sí.
+
+**Causa raíz**: asumí que "corre con tsx" = "typechequea". Son cosas distintas — tsx transpila sin chequear tipos.
+
+**Regla preventiva**: correr `pnpm typecheck` antes de commitear CUALQUIER `.ts` nuevo (incluidos scripts), aunque ya haya corrido con tsx. Para destructuring de `.split()` bajo strict, guardar el length + castear (`as [string,string,string]`) o validar cada parte.
+
 ## 2026-06-11 — Pedirle al founder precio/stock que la integración de ML ya podía traer sola
 
 **Estado**: ✅ Cerrado (resuelto con `scripts/ml-item.ts`)
