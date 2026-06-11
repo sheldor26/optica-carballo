@@ -182,10 +182,82 @@ Sitemap: https://opticacarballo.com.ar/sitemap.xml
 **No usar** (irrelevantes para este producto):
 - `lentes de sol vulk niños`, `lentes de sol vulk redondos`, `lentes de sol vulk aviador` (otras formas/segmentos).
 
+### Cluster: RUSTY (junio 2026 — Ubersuggest CSV real)
+
+**Keyword head crítica**: `anteojos rusty` — **3.600 vol/mes, difficulty 8** (head de marca más fuerte del nicho; atacar agresivamente desde el hub `/marcas/rusty` y `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty`).
+
+**Insight crítico**: en Rusty conviven dos cabeceras casi iguales en volumen pero distinta dificultad: `anteojos rusty` (3.600/8) y `rusty anteojos` (3.600/13). Usar el orden natural `anteojos rusty` en meta/H1. ⚠️ `lentes rusty` tiene volumen alto (2.400) pero **difficulty 49** — NO usar como primaria; en cambio `rusty lentes` (2.400/10) sí es atacable. A diferencia de Vulk (donde "lentes de sol" gana), en Rusty la familia "anteojos rusty" es la dominante. "Armazón/armazones rusty" confirmado marginal (`armazones rusty` 50/49) — NO encabezar nunca con "armazón".
+
+**Keywords primarias (marca — hub + categorías marca)**:
+| Keyword | Vol/mes | Difficulty | Intent | Donde usar |
+|---|---|---|---|---|
+| anteojos rusty | 3.600 | 8 | commercial, navigational | meta_title hub, H1 `/marcas/rusty`, primer párrafo |
+| rusty anteojos | 3.600 | 13 | commercial, navigational | copy (variante natural), alt text |
+| rusty lentes | 2.400 | 10 | informational, transactional | copy (NO "lentes rusty" 2.400/49) |
+| anteojos rusty hombre | 390 | 9 | commercial, navigational | `/anteojos-de-receta/rusty` (o /sol) split hombre |
+| anteojos rusty mujer | 260 | 9 | commercial, navigational | split mujer + copy |
+| anteojos rusty originales | 210 | 10 | transactional | copy (trust: óptica autorizada) |
+
+**Keywords por producto cargado**:
+
+*Rusty Opposit Optics (receta, wayfarer, mujer) — slug `rusty-opposit-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos rusty mujer | 260 | 9 | producto femenino de receta |
+| lentes wayfarer | 590 | 14 | forma del modelo |
+| anteojos wayfarer | 260 | 9 | forma (variante "anteojos") |
+| anteojos recetados mujer | 260 | 7 | intención receta + género |
+| rusty opposit (branded) | 0 medido | ~4 | long-tail exacto, alta conversión |
+
+*Rusty R-CY 02 Optics (receta, rectangular) — slug `rusty-r-cy-02-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos rectangulares | 480 | 15 | forma del modelo |
+| lentes rectangulares | 880 | 10 | forma (variante "lentes") |
+| anteojos recetados | 720 | 9 | categoría receta |
+| lentes recetados | 390 | 9 | variante receta |
+| rusty r-cy 02 (branded) | 0 medido | ~4 | long-tail exacto |
+
+*Rusty de sol (Esvep, Sotion, Eslav, Gresent) — slugs en `/anteojos-de-sol/rusty/[modelo]`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol rusty | 1.300 | 9 | head de sol (variante "lentes", la más alta) |
+| anteojos de sol rusty | 880 | 10 | head de sol de la marca |
+| lentes de sol hombre rusty | 480 | 9 | modelos masculinos |
+| anteojos de sol rusty hombre | 390 | 9 | modelos masculinos |
+| rusty lentes de sol mujer | 390 | 9 | modelos femeninos |
+| anteojos de sol rusty mujer | 260 | 10 | modelos femeninos |
+
+**Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
+
+**No usar**:
+- `lentes rusty` (2.400 pero dif 49), `armazones rusty` (50/49), `armazones rusty mujer` (20/44) — difficulty prohibitiva y/o término muerto.
+- `anteojos rusty` como primaria de un PRODUCTO individual (es del hub `/marcas/rusty` y de las categorías marca; los productos targetean modelo + forma + género para no canibalizar).
+
+**Internal linking del cluster**:
+- Hub `/marcas/rusty` → `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty` + top productos Rusty + guía de forma. Mantenerlo navegacional (no compite la SERP transaccional de las categorías).
+- `/anteojos-de-sol/rusty` ↔ `/anteojos-de-receta/rusty` (cross-link sol↔receta de la misma marca).
+- Cada producto Rusty → su categoría marca + `/marcas/rusty` + 4-8 Rusty similares + guía relacionada (forma: `/guias/anteojos-segun-forma-de-cara`; sol: pillar `/guias/anteojos-de-sol-guia-completa`).
+- Split por género `/anteojos-de-sol/rusty/hombre` y `/mujer` cuando haya ≥4 productos por género (capturan `...rusty hombre/mujer` 260-480, dif 9-10).
+
+### Cluster: VULK MY CREW (receta — junio 2026)
+
+Vulk My Crew es RECETA, no canibaliza el cluster Vulk-sol de arriba (intención distinta). Head de marca para receta = `anteojos vulk` (4.400/11) y `lentes vulk` (6.600/10) → pertenecen al hub `/marcas/vulk`, NO al producto. El producto targetea modelo + forma redonda + unisex.
+
+| Keyword | Vol/mes | Difficulty | Rol | Dónde |
+|---|---|---|---|---|
+| anteojos vulk | 4.400 | 11 | head de marca (receta) | H1 secundario / primer párrafo (NO primaria del producto) |
+| anteojos vulk mujer | 320 | 8 | atributo (unisex cubre mujer) | copy + alt |
+| anteojos vulk hombre | 260 | 8 | atributo (unisex cubre hombre) | copy + alt |
+| anteojos redondos / redondos mujer | 880 / 320 | 12 / 16 | forma | copy, ficha |
+| vulk my crew (branded) | 0 medido | ~4 | long-tail exacto, alta conversión | title, H1, slug |
+
+Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 — único "armazón" con algo de volumen, usable 1 vez en cuerpo). **No usar**: "armazón de receta" como cabecera; "lentes vulk" (6.600 pero ambiguo sol/receta → va al hub). Linking: ↑ `/anteojos-de-receta` + `/anteojos-de-receta/vulk`; → `/marcas/vulk`; ↔ `vulk-clems` + redondos/unisex de otras marcas; → guías de elección y forma de cara.
+
 ### Reglas para futuros productos
 
 Cuando se cargue un producto nuevo, ANTES de escribir copy:
-1. Pedir al founder keyword research de Ubersuggest para `<marca>` + `<modelo>` si aplica.
+1. **NORMA (founder 2026-06-11)**: invocar SIEMPRE los agentes que correspondan (mínimo `seo-strategist` + `catalog-loader`) y usar el MCP de Ubersuggest. Si Ubersuggest no funciona (solo expone auth a mitad de sesión), leer los CSV de la carpeta `KEYWORDS OPTICA/`. NO escribir meta/copy a ojo.
 2. Agregar sub-sección acá con el patrón "Cluster: MARCA" + tabla de keywords primarias/secundarias/long-tails.
 3. `content-writer-medical` debe leer la sección de la marca correspondiente antes de escribir.
 4. `seo-strategist` debe leer la sección antes de auditar slug/meta/internal linking.

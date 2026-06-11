@@ -477,6 +477,20 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.25,
   'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.5,
   'rusty-esvep/ESVEP-SBLK--S10---perfil.jpg': 1.25,
+
+  // Vulk My Crew Receta — redondo/ovalado unisex G-Flex. Fotos 2:1 (1200×589 y
+  // 900×442) con el anteojo más chico en el frame que el baseline receta → comparado
+  // visualmente contra Opposit@1.15 (que llena el card), My Crew se ve ~15% más chico
+  // → perfil 1.3 / frente 1.15 para emparejar ~85% del card. Naming inconsistente:
+  // SBLK frente = MYCREW-SBLK.jpg, MBLK = GALERIA. medidas.webp queda en 1.0 (no grid).
+  'vulk-my-crew/MY CREW SBLK PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.3,
+  'vulk-my-crew/MYCREW-SBLK.jpg': 1.15,
+  'vulk-my-crew/MY CREW 669K OPTICS PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.3,
+  'vulk-my-crew/MY CREW 669K OPTICS FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.15,
+  'vulk-my-crew/MY CREW MBLK P GALERIA.jpg': 1.3,
+  'vulk-my-crew/MY CREW MBLK F GALERIA.jpg': 1.15,
+  'vulk-my-crew/MY CREW 388 PERFIL IMAGEN PRINCIPAL1200X589.jpg': 1.3,
+  'vulk-my-crew/MY CREW 388 FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.15,
 };
 
 export function getImageScale(path: string | null | undefined): number {
