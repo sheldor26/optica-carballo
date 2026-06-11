@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Invocación automática de subagentes: el campo `description` es el router — escribirlo como trigger, no como currículum
+
+**Contexto**: el founder preguntó si los agentes podían invocarse solos. Resultó que Claude Code YA auto-delega — decide invocar un subagente cuando la tarea matchea su campo `description` del frontmatter. Nuestros 11 agentes tenían descripciones tipo currículum ("Especialista en X. Se invoca para Y...") que casi nunca matcheaban proactivamente: 6 de 8 tenían CERO invocaciones en 2 semanas.
+
+**Aprendizaje**: la auto-invocación se activa con DOS capas complementarias: (1) **la `description` escrita como disparador** — "USAR PROACTIVAMENTE (sin que el founder lo pida) cuando [evento concreto]" — porque ese campo es literalmente lo que el asistente principal lee para decidir delegar; cuanto más concreto el evento ("apenas pasa un link de ML", "antes de publicar texto legal"), más se dispara; (2) **triggers obligatorios en CLAUDE.md** como refuerzo de proceso — la description es sugerencia fuerte, la regla en CLAUDE.md es mandato que se lee en cada sesión. Tercera capa para lo periódico (reviews quincenales): tareas programadas (cron) — las dos primeras no cubren "cada 2 semanas" porque dependen de que haya una sesión activa con el tema sobre la mesa.
+
+**Regla**: al crear un agente, la `description` se escribe como trigger (evento → agente), no como bio. Si un agente lleva semanas sin invocaciones, lo primero a revisar es su description (¿describe QUÉ SABE en vez de CUÁNDO ENTRA?). Dejar pasivos a propósito los que no tienen disparador natural todavía (data-analyst hasta post-launch).
+
 ## 2026-06-11 — Texto legal: verificar el marco vigente con agente + web ANTES de redactar — corrigió 3 supuestos en una sola página
 
 **Contexto**: el founder pasó los datos para la política de devolución (plazo, condiciones, "el envío lo paga el comprador", recetados solo garantía). En vez de redactar directo con esos datos + mi memoria del marco legal, invoqué `argentine-ecom` con web search para verificar cada punto contra la norma vigente 2026.
