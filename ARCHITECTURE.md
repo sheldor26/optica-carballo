@@ -31,9 +31,9 @@ Ver `DECISIONS.md` para el contexto completo de cada decisión.
 
 ### IA
 - **API de modelos LLM** (estado real en código, audit 2026-06-11):
-  - `claude-sonnet-4-6` — lector de receta, face-shape, medidor DNP, generador de copy (default)
+  - `claude-opus-4-8` — lector de receta (extracción; visión high-res + adaptive thinking — upgrade 2026-06-11)
+  - `claude-sonnet-4-6` — verificador adversarial del lector, face-shape, medidor DNP, generador de copy
   - `claude-haiku-4-5` — chat del asistente (alto volumen / bajo costo)
-  - Upgrade candidato: lector de receta → `claude-opus-4-8` (visión high-res, mejor OCR de recetas borrosas) — pendiente de decisión del founder
   - ⚠️ Al tocar cualquier endpoint de IA, verificar deprecaciones contra la referencia actual de la API (ver MISTAKES 2026-06-11: `budget_tokens` deprecado en prescription)
 - **OpenAI**: text-embedding-3-small (para embeddings RAG)
 - **Vercel AI SDK**: para streaming en chat

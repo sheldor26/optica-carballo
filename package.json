@@ -20,6 +20,7 @@
     "db:types": "supabase gen types typescript --local > types/supabase.ts",
     "normalize-photos": "tsx scripts/normalize-product-photos.ts",
     "correo:smoke": "tsx --env-file=.env.local scripts/correo-smoke.ts",
+    "rx:smoke": "tsx --env-file=.env.local scripts/prescription-smoke.ts",
     "mp:smoke": "tsx --env-file=.env.local scripts/mp-smoke.ts"
   },
   "dependencies": {

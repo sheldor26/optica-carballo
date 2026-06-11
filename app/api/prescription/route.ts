@@ -30,26 +30,36 @@ const ALLOWED_MIMES = new Set([
   'image/webp',
   'application/pdf',
 ]);
-const MODEL_ID = 'claude-sonnet-4-6';
+/**
+ * Modelos (Tier 3 upgrade, 2026-06-11):
+ * - Extracción: Opus 4.8 — visión high-res (hasta 2576px vs 1568px) y mejor
+ *   OCR en fotos borrosas/torcidas de recetas. Es el paso más sensible del
+ *   sitio (receta mal leída = anteojos mal hechos); el costo extra por
+ *   lectura es centavos a nuestro volumen.
+ * - Verificación: Sonnet 4.6 — más rápido, y usar un modelo DISTINTO para
+ *   dudar de la extracción diversifica los modos de falla.
+ */
+const EXTRACT_MODEL_ID = 'claude-opus-4-8';
+const VERIFY_MODEL_ID = 'claude-sonnet-4-6';
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
 /**
  * Tier 1 upgrade lector inteligente (2026-05-30):
  * - A. Tool use (`extract_prescription`) — elimina parsing regex frágil.
  * - B. Few-shot examples descriptivos (sin imágenes todavía) en `few-shot.ts`.
- * - C. Extended thinking habilitado (`budget_tokens: 2000`) — el modelo razona
- *   antes de extraer.
+ * - C. Thinking: ADAPTIVE (Tier 3, 2026-06-11) — antes `budget_tokens: 2000`,
+ *   que está DEPRECADO en Sonnet 4.6 y devuelve 400 en Opus 4.8 (ver
+ *   MISTAKES 2026-06-11). El modelo decide solo cuánto razonar.
  *
  * Restricción crítica de la API: `tool_choice: { type: "tool", name: ... }`
- * (forzado) NO es compatible con extended thinking. Usamos `tool_choice: "auto"`
+ * (forzado) NO es compatible con thinking. Usamos `tool_choice: "auto"`
  * + system prompt fuerte que fuerza el uso de la tool. Fallback si modelo
  * devuelve texto en vez de llamar la tool.
  *
- * `max_tokens` debe ser > thinking budget + output esperado del tool. 4096
- * deja margen para receta compleja con tablas largas.
+ * `max_tokens` incluye el thinking adaptivo + output del tool. 8192 deja
+ * margen para que Opus razone una receta compleja con tablas largas.
  */
-const THINKING_BUDGET_TOKENS = 2000;
-const MAX_TOKENS = 4096;
+const MAX_TOKENS = 8192;
 
 /**
  * Rate limiting in-memory simple (sin Upstash).
@@ -264,14 +274,11 @@ export async function POST(request: Request) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: MODEL_ID,
+        model: EXTRACT_MODEL_ID,
         max_tokens: MAX_TOKENS,
-        thinking: {
-          type: 'enabled',
-          budget_tokens: THINKING_BUDGET_TOKENS,
-        },
+        thinking: { type: 'adaptive' },
         tools: [EXTRACT_PRESCRIPTION_TOOL],
-        // ⚠️ tool_choice: "auto" obligatorio con extended thinking habilitado.
+        // ⚠️ tool_choice: "auto" obligatorio con thinking habilitado.
         // Forzado ({ type: "tool", name: ... }) NO es compatible con thinking.
         // El system prompt fuerza el uso de la tool via texto.
         tool_choice: { type: 'auto' },
@@ -440,7 +447,7 @@ async function runAdversarialVerification(
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: MODEL_ID,
+        model: VERIFY_MODEL_ID,
         max_tokens: 1000,
         system: VERIFY_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userContent }],
