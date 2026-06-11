@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Reconectar un MCP a mitad de sesión NO refresca mi lista de tools — necesita sesión nueva
+
+**Contexto**: el MCP de Supabase se desconectó a mitad de la carga del producto R-CY 02. El founder lo reconectó **3 veces** y cada vez las tools seguían sin aparecerme (lo verifiqué con ToolSearch). Recién aparecieron cuando reinició/reconectó de una forma que sí inyectó las tools en una "sesión nueva" (llegó el system-reminder "tools nuevas disponibles"). Mientras tanto perdí varios turnos diciéndole "reintentá".
+
+**Aprendizaje**: cuando un MCP se cae a mitad de sesión, las tools se remueven de mi registro y **reconectar el server NO las re-inyecta en la sesión en curso** — hace falta que el cliente recargue/reinicie para que lleguen como deferred-tools nuevas (lo confirma el system-reminder de "tools disponibles de nuevo"). No basta con que el founder "lo conecte".
+
+**Regla**: si un MCP no aparece tras reconectar, NO mandar al founder a reintentar en loop. Decirle directo: "reconectar a mitad de sesión no alcanza, hace falta reiniciar el cliente" + ofrecer el camino alternativo (para Supabase: storage/REST con la service-role key sí funciona sin MCP; para SQL crudo, el SQL Editor del dashboard). Verificar con ToolSearch una vez; si no está, cambiar de estrategia en vez de repetir.
+
 ## 2026-06-11 — Un solo `cookies()` en el árbol compartido mata el ISR de TODO el sitio (y cómo des-dinamizar sin perder features)
 
 **Contexto**: founder reportó sitio lento ("mejorá las imágenes y la respuesta general"). Medición en prod: TTFB 0,6-2,1s y `no-store` en TODAS las páginas públicas, con `revalidate = 300` declarado. El ISR estaba 100% anulado.
