@@ -174,11 +174,36 @@ Una vez que el sistema esté operando:
 
 ---
 
+## nextjs-performance
+
+- **Versión**: 1.0
+- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Creado**: 2026-06-11
+- **Última revisión**: 2026-06-11
+- **Notas**: Nace del bug de los 13 días sin cache (MISTAKES 2026-06-11). Codifica los learnings de ISR/cookies, bundle y cache de imágenes. Único agente con líneas base numéricas (TTFB, First Load JS) — exigir que las defienda.
+
+## catalog-loader
+
+- **Versión**: 1.0
+- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Creado**: 2026-06-11
+- **Última revisión**: 2026-06-11
+- **Notas**: Codifica el playbook de carga (50+ productos de historia): stock=ML, primaria=perfil, scale vs grid (regla 15), ml-item.ts, CCCP, SKU único. Cuando exista el admin UI de carga (item 3 del plan), su rol pasa a validar que el admin aplique estas reglas.
+
+## ui-motion-designer
+
+- **Versión**: 1.0
+- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Creado**: 2026-06-11
+- **Última revisión**: 2026-06-11
+- **Notas**: Pedido directo del founder ("diseños de vanguardia / animaciones / cosas espectaculares"). Nace con el presupuesto de performance grabado (CSS-first, framer solo en chunks de ruta, prefers-reduced-motion) y mapa de calor de audacia por superficie. Veto técnico de nextjs-performance; en superficies de venta manda conversion-optimizer.
+
 # Historial de cambios al sistema de agentes
 
 | Fecha | Cambio | ADR / Justificación |
 |-------|--------|---------------------|
 | 2026-05-27 | Creación de 7 agentes core + agent-manager | Setup inicial del proyecto |
+| 2026-06-11 | **Creación de 3 agentes nuevos** (aprobados por el founder: "vamos con todos" + pedido propio del tercero): `nextjs-performance` (hueco con evidencia — el bug de cache de 13 días no tenía agente dueño), `catalog-loader` (playbook de carga codificado; se vuelve validador cuando exista el admin UI), `ui-motion-designer` (pedido del founder: diseños de vanguardia/animaciones — nace con presupuesto de perf innegociable y jerarquía: veto de nextjs-performance, prioridad de conversion-optimizer en superficies de venta). Total: 11 agentes. | Founder 2026-06-11 |
 | 2026-06-11 | **Review completo de los 8 agentes → todos a v1.1** (pedido directo del founder). (1) **Fix sistémico de tools**: los 8 declaraban `web_search, web_fetch` (nombres inválidos) y NINGUNO podía leer archivos del repo pese a que sus instrucciones lo exigen → `Read, Grep, Glob, WebFetch, WebSearch` (solo lectura + web; sin Edit/Bash) — aprobado explícitamente por el founder. (2) **argentine-ecom**: logística Andreani→Correo único (ADR-026), marco legal de consumo verificado 2026 (garantía 1 año, Res. 424/2020 derogada, gastos devolución=vendedor, CCyC 1116.a), estado real del checkout (flag + Fase 2), regla dura de verificar normas con WebSearch. (3) **ai-features-engineer**: stack real de modelos por endpoint (Opus 4.8/Sonnet 4.6/Haiku 4.5), adaptive thinking obligatorio (budget_tokens deprecado/400), patrón fetch+tool use+Zod, features marcadas como YA implementadas, rx:smoke obligatorio. (4) **content-writer + seo-strategist + conversion-optimizer**: SIN número de matrícula (decisión founder 2026-06-09), logo logística solo Correo, flag de checkout, aclaración /marcas hub, lección ISR/cookies, ejemplos con marcas reales. (5) **optical-expert**: puntero a BRANDS.md. (6) **data-analyst**: puntero a lib/analytics/track.ts. Causa raíz del drift en MISTAKES.md 2026-06-11. |
 
 (Cada futuro cambio aprobado por el founder se loguea acá con referencia al ADR correspondiente)

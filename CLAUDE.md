@@ -61,7 +61,7 @@ Objetivo: ser **la óptica online más confiable y técnicamente avanzada de Arg
 
 ## Sistema de agentes (cuándo invocarlos)
 
-Hay 8 agentes especialistas en `.claude/agents/`. Invocá según la tarea:
+Hay 11 agentes especialistas en `.claude/agents/`. Invocá según la tarea:
 
 | Tarea | Agente |
 |-------|--------|
@@ -72,6 +72,9 @@ Hay 8 agentes especialistas en `.claude/agents/`. Invocá según la tarea:
 | Features con IA (Vision, RAG, chat) | `ai-features-engineer` |
 | UX de venta, CTA, conversión | `conversion-optimizer` |
 | Análisis de datos (post-launch) | `data-analyst` |
+| Performance Next.js (ISR/cache, bundle, imágenes, TTFB) | `nextjs-performance` |
+| Carga de productos al catálogo (playbook ML→seed→verificación) | `catalog-loader` |
+| Diseño de vanguardia, animaciones, micro-interacciones | `ui-motion-designer` |
 | Mejorar el sistema mismo | `agent-manager` (vía `/agent-review`) |
 
 **Reglas de invocación**:
