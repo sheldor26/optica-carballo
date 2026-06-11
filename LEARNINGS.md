@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Cambio de modelo/params de IA: smoke test PERMANENTE contra la API real, no verificación descartable
+
+**Contexto**: migrar el lector de receta a Opus 4.8 + adaptive thinking tenía un riesgo concreto: la combinación de parámetros (modelo nuevo + thinking + tools + tool_choice auto + historia few-shot con bloques tool_use/tool_result) podía dar 400 en producción aunque el typecheck pasara — el typecheck valida TypeScript, no el contrato de la API. Y el endpoint no se puede probar a mano fácil (necesita multipart + imagen + API key).
+
+**Aprendizaje**: en vez de verificar una vez y tirar, el chequeo quedó como script permanente (`scripts/prescription-smoke.ts`, comando `pnpm rx:smoke`, patrón ya probado de `mp:smoke`/`correo:smoke`): importa los MISMOS módulos de prompt/tool-schema/few-shot que usa el route (cero drift entre test y código real) y manda una imagen 1×1 a la API — valida el contrato completo en 10 segundos sin levantar el server. El resultado además confirmó un comportamiento valioso: adaptive thinking se autorregula (25 tokens de razonamiento para una imagen trivial — no paga costo fijo como el budget viejo). Verificación en capas: smoke (contrato de API) → deploy → POST real al endpoint de prod (plumbing) → founder con receta real (calidad de OCR) — cada capa atrapa una clase distinta de falla.
+
+**Regla**: todo endpoint que llama una API externa con combinación no trivial de parámetros merece su `*-smoke.ts` con comando en package.json, importando los módulos reales del endpoint. Correrlo ANTES de cada deploy que toque modelo/params. Costo: centavos y 2 minutos; alternativa: descubrir el 400 en producción con un usuario real.
+
 ## 2026-06-11 — Audit de gaps con evidencia (greps + curls + referencia de API actual) en vez de lista genérica de mejoras
 
 **Contexto**: founder pidió "auditá y decime qué mejorar / qué agregar". La tentación era responder con una lista genérica de features de e-commerce. En cambio: (a) grep de modelos/parámetros en los endpoints de IA, (b) curl a producción (schema de PDP, sitemap, canonical), (c) agente Explore sobre el repo (TODOs, features a medias, BACKLOG/DECISIONS para no re-proponer lo decidido), (d) carga de la referencia ACTUAL de la API de Claude antes de opinar sobre modelos.
