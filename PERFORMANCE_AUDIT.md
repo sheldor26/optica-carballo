@@ -1,4 +1,46 @@
-# Óptica Carballo — Performance Audit (2026-05-29)
+# Óptica Carballo — Performance Audit
+
+# Audit 2026-06-11 — el sitio servía TODO dinámico (corrige al audit 2026-05-29)
+
+## Resumen ejecutivo
+
+El audit anterior (abajo) concluyó "no hay bugs evidentes" mirando código + tabla del build. **Midiendo producción con curl la realidad era otra**: TODAS las páginas públicas se servían con `cache-control: no-store` y `x-vercel-cache: MISS` (TTFB home 2,1s / categoría 1,1s) — el ISR de `revalidate = 300` estaba 100% anulado. Las imágenes eran livianas (5-7KB AVIF) pero el optimizador de Vercel las re-optimizaba cada hora (origen Supabase con `max-age=3600`) → 0,4-0,8s por imagen, ×174 imágenes en una categoría.
+
+## Causas raíz encontradas (todas arregladas 2026-06-11)
+
+| # | Causa | Efecto | Fix |
+|---|-------|--------|-----|
+| 1 | `CompareBarWrapper` (server) en el layout leía cookie con `cookies()` | TODAS las páginas dinámicas | CompareBar 100% client + `/api/compare/thumbs` |
+| 2 | 5 queries + 5 metadata builders usaban el cliente Supabase con cookies | Marca/PDP/related dinámicas | `createStaticClient` (data pública) |
+| 3 | `RecentlyViewed` (server) leía cookie `oc_recent` | Home + PDPs dinámicas | Client-side + `/api/recently-viewed/cards` |
+| 4 | PDP llamaba `getCurrentUser()`+`getMyAlertFor()` para el botón de alerta | Cada PDP dinámica | `CreateAlertButton` autoresuelve (cookie `sb-*` + action) |
+| 5 | Categorías sol/receta leían `searchParams` (filtros) | Categorías dinámicas | Filtrado client-side, URL como fuente de verdad, fallback estático con grid completo (SEO) |
+| 6 | Sin `minimumCacheTTL` (origen Supabase `max-age=3600`) | Imágenes re-optimizando cada hora | `images.minimumCacheTTL = 31 días` |
+| 7 | Middleware llamaba `supabase.auth.getUser()` para TODOS | Latencia en cada request anónimo | Early-return si no hay cookies `sb-*` |
+
+## Resultado (verificado en build + smoke test local de prod)
+
+- Rutas prerenderizadas: 147 → **187** (home ○ 5m, categorías ○ 5m, PDPs ● 5m, marcas ● 5m).
+- TTFB local del build de prod: home 52ms, categoría 8ms, PDP 6ms (antes en prod: 600-2100ms).
+- Grid completo presente en el HTML estático (SEO intacto); filtros instantáneos client-side.
+- Siguen dinámicas (correcto, personalizadas): favoritos, comparar, carrito, checkout, mi-cuenta, admin.
+
+## Regla de oro nueva (ver MISTAKES 2026-06-11)
+
+Todo audit de perf EMPIEZA midiendo producción: `curl -sI` a home/categoría/PDP + 1 imagen, mirando `cache-control` y `x-vercel-cache`. Página con `revalidate` que devuelve `no-store` = hay `cookies()`/`headers()`/`searchParams` escondido en el árbol. **Post-deploy de esta sesión: verificar `x-vercel-cache: HIT` en la segunda request.**
+
+## ⚠️ Regla operativa de imágenes (por minimumCacheTTL 31d)
+
+Si se REEMPLAZA la foto de un producto, subirla con OTRO nombre de archivo (el path es la cache key del optimizador — el mismo path puede servir la versión vieja hasta 31 días).
+
+## Pendientes que quedaron en BACKLOG
+
+- Dinamizar framer-motion (~60kB en el bundle inicial de todas las páginas).
+- Backfill de `cacheControl: 31536000` en objetos viejos del bucket (mitigado por minimumCacheTTL — prioridad baja).
+
+---
+
+# Audit 2026-05-29 (histórico — conclusión INCORRECTA, ver arriba)
 
 ## Resumen ejecutivo
 

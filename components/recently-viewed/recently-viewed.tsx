@@ -1,10 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Eye } from 'lucide-react';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
-import { fetchProductsBySlugs } from '@/lib/catalog/queries';
 import { formatPriceCents } from '@/lib/format/currency';
-import { readRecentCookie } from '@/lib/recently-viewed/cookie';
+import { readRecentClientSide } from '@/lib/recently-viewed/client';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 
 type Props = {
@@ -18,35 +20,72 @@ type Props = {
   minToRender?: number;
 };
 
+type RecentCardData = {
+  slug: string;
+  name: string;
+  brandName: string;
+  brandSlug: string;
+  categorySlug: string;
+  primaryImagePath: string | null;
+  primaryImageScale: number;
+  minPriceCents: number | null;
+};
+
 /**
- * Server component que renderiza la sección "Vistos recientemente".
- * Lee el cookie + fetch de productos + grid horizontal scroll mobile.
+ * Sección "Vistos recientemente". Lee el cookie en el browser y pide las
+ * cards a `/api/recently-viewed/cards`.
+ *
+ * Era un server component que leía el cookie con `cookies()` — eso volvía
+ * DINÁMICAS la home y las PDP (toda página que la renderiza) y anulaba el
+ * ISR (audit perf 2026-06-11). Al ser contenido 100% personalizado, no
+ * aporta SEO: no perdemos nada sacándola del HTML estático.
  *
  * NO renderiza nada si:
  * - No hay items en el cookie.
  * - Items < minToRender (después de excludeSlugs).
  */
-export async function RecentlyViewed({
+export function RecentlyViewed({
   excludeSlugs = [],
   limit = 6,
   heading = 'Estuviste mirando',
   minToRender = 2,
 }: Props) {
-  const entries = await readRecentCookie();
-  const filteredEntries = entries.filter((e) => !excludeSlugs.includes(e.slug));
+  const [cards, setCards] = useState<RecentCardData[] | null>(null);
 
-  if (filteredEntries.length < minToRender) return null;
+  // String estable para no re-disparar el effect por identidad del array.
+  const excludeKey = excludeSlugs.join(',');
 
-  const slugs = filteredEntries.slice(0, limit).map((e) => e.slug);
-  const products = await fetchProductsBySlugs(slugs);
+  useEffect(() => {
+    const exclude = excludeKey.split(',').filter((s) => s.length > 0);
+    const entries = readRecentClientSide().filter(
+      (e) => !exclude.includes(e.slug),
+    );
+    if (entries.length < minToRender) {
+      setCards(null);
+      return;
+    }
+    const slugs = entries.slice(0, limit).map((e) => e.slug);
 
-  // Mantener orden del cookie (más reciente primero).
-  const ordered = filteredEntries
-    .slice(0, limit)
-    .map((e) => products.find((p) => p.slug === e.slug))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p));
+    let cancelled = false;
+    fetch(`/api/recently-viewed/cards?slugs=${encodeURIComponent(slugs.join(','))}`)
+      .then((res) => (res.ok ? res.json() : { cards: [] }))
+      .then((data: { cards: RecentCardData[] }) => {
+        if (cancelled || !Array.isArray(data.cards)) return;
+        // Mantener orden del cookie (más reciente primero).
+        const ordered = slugs
+          .map((slug) => data.cards.find((c) => c.slug === slug))
+          .filter((c): c is RecentCardData => Boolean(c));
+        setCards(ordered.length >= minToRender ? ordered : null);
+      })
+      .catch(() => {
+        if (!cancelled) setCards(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [excludeKey, limit, minToRender]);
 
-  if (ordered.length < minToRender) return null;
+  if (!cards) return null;
 
   return (
     <section
@@ -68,7 +107,7 @@ export async function RecentlyViewed({
         </RevealOnScroll>
 
         <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 md:gap-y-10 lg:grid-cols-6">
-          {ordered.map((p, idx) => (
+          {cards.map((p, idx) => (
             <RevealOnScroll
               as="li"
               key={p.slug}

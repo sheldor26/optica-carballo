@@ -13,6 +13,13 @@ const nextConfig = {
     // browsers viejos. Next negocia según Accept header del browser.
     // Audit 2026-06-01: el sitio servía solo WebP (default). Gratis.
     formats: ['image/avif', 'image/webp'],
+    // Vercel cachea cada imagen optimizada el máximo entre este TTL y el
+    // max-age del origen. Supabase Storage sirve max-age=3600 (los seeds no
+    // setearon cacheControl), así que sin esto cada imagen re-optimiza cada
+    // hora → TTFB de 0.4-0.8s por imagen (audit 2026-06-11, x-vercel-cache
+    // MISS constante). 31 días: si se reemplaza una foto, hay que subirla
+    // con OTRO nombre de archivo (el path es la cache key).
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
       { protocol: 'http', hostname: '127.0.0.1', port: '54321' },

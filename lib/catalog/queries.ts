@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server';
+// SOLO cliente estático (sin cookies): el catálogo es data pública (RLS de
+// lectura anon). Usar el cliente con cookies acá volvía DINÁMICAS las páginas
+// de marca/producto y anulaba el ISR (audit perf 2026-06-11).
 import { createStaticClient } from '@/lib/supabase/static';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
@@ -135,7 +137,7 @@ export async function fetchBrandPage(
   brandSlug: string,
   category: CategoryConfig,
 ): Promise<{ brand: BrandPageData; products: ProductCardSource[] } | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: brand } = await supabase
     .from('brands')
@@ -195,7 +197,7 @@ export async function fetchBrandPageByGender(args: {
   category: CategoryConfig;
   target: BrandGenderTarget;
 }): Promise<{ brand: BrandPageData; products: ProductCardSource[] } | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: brand } = await supabase
     .from('brands')
@@ -257,7 +259,7 @@ export async function fetchBrandPageByFilter(args: {
     | { type: 'frame_material'; value: string }
     | { type: 'lens_treatment_includes'; value: string };
 }): Promise<{ brand: BrandPageData; products: ProductCardSource[] } | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: brand } = await supabase
     .from('brands')
@@ -322,7 +324,7 @@ export async function fetchProductPage(
   productSlug: string,
   category: CategoryConfig,
 ): Promise<ProductDetailData | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data } = await supabase
     .from('products')
@@ -427,7 +429,7 @@ export async function fetchRelatedProducts(args: {
   priceCents: number | null;
   frameShape: string | null;
 }): Promise<RelatedProductCard[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const baseSelect = `
     slug,
@@ -831,6 +833,11 @@ export type FilteredCatalogCard = {
   secondaryImageScale: number;
   /** Talle del armazón (`attributes.size_fit`) para el badge sobre la foto. */
   sizeFit: string | null;
+  /** Forma del armazón (`attributes.frame_shape`). Opcional: solo lo popula
+   * `fetchProductsByCategoryAndShapes`, que alimenta el filtrado client-side
+   * de `/anteojos-de-sol` y `/anteojos-de-receta` (las pages dejaron de leer
+   * searchParams para poder ser ISR — audit perf 2026-06-11). */
+  frameShape?: string | null;
   /** Variantes para los thumbnails clickeables del card. Sin esto, en este
    * catálogo el producto NO muestra mini-thumbs de variantes (mientras
    * que /marcas/<slug> sí los muestra). Founder reportó 2026-05-31 que
@@ -937,6 +944,10 @@ export async function fetchProductsByCategoryAndShapes(args: {
         primaryImageScale: getImageScale(primaryImagePath),
         secondaryImageScale: getImageScale(secondaryImagePath),
         sizeFit: deriveSizeFit(row.attributes),
+        frameShape:
+          typeof row.attributes?.frame_shape === 'string'
+            ? row.attributes.frame_shape
+            : null,
         variants: buildCardVariants(row.variants, row.images),
       };
     });

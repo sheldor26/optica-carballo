@@ -32,8 +32,6 @@ import { VariantList } from '@/components/product/variant-list';
 import { ShareButtons } from '@/components/share/share-buttons';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 import { CreateAlertButton } from '@/components/alerts/create-alert-button';
-import { getCurrentUser } from '@/lib/auth/server';
-import { getMyAlertFor } from '@/lib/alerts/actions';
 import { CompareButton } from '@/components/compare/compare-button';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
@@ -248,14 +246,9 @@ export async function ProductDetailPage({
     frameShape: extractFrameShape(product.attributes),
   });
 
-  // Alertas: paralelizamos user + existing alert (a nivel producto, no variante,
-  // para mantener UX simple en iter 1).
-  const [user, existingAlert] = await Promise.all([
-    getCurrentUser(),
-    getMyAlertFor({ productId: product.id, variantId: null, alertType: 'both' }),
-  ]);
-  const isAuthenticated = user !== null;
-  const hasExistingAlert = existingAlert !== null;
+  // Alertas: el estado de sesión + alerta existente lo resuelve
+  // <CreateAlertButton /> client-side. Hacerlo acá con getCurrentUser()
+  // (cookies) volvía DINÁMICA cada PDP y anulaba el ISR (audit 2026-06-11).
 
   // Default seleccionado: primera variante en stock activa, sino la
   // primera activa, sino null.
@@ -439,8 +432,6 @@ export async function ProductDetailPage({
               variantId={null}
               productName={product.name}
               inStock={isInStock}
-              isAuthenticated={isAuthenticated}
-              hasExistingAlert={hasExistingAlert}
             />
           </div>
 

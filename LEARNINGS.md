@@ -22,6 +22,20 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Un solo `cookies()` en el árbol compartido mata el ISR de TODO el sitio (y cómo des-dinamizar sin perder features)
+
+**Contexto**: founder reportó sitio lento ("mejorá las imágenes y la respuesta general"). Medición en prod: TTFB 0,6-2,1s y `no-store` en TODAS las páginas públicas, con `revalidate = 300` declarado. El ISR estaba 100% anulado.
+
+**Aprendizaje 1 — la dinamización es viral y silenciosa**: UN componente server que llama `cookies()` (o una query que usa el cliente Supabase con cookies) vuelve dinámica la ruta entera; si está en el LAYOUT, vuelve dinámico TODO el sitio. Acá había 4 fuentes apiladas: CompareBarWrapper (layout), queries/metadata con cliente cookie, RecentlyViewed, y getCurrentUser() en la PDP para un solo botón. Next no avisa — solo se ve midiendo headers en prod.
+
+**Aprendizaje 2 — patrón para des-dinamizar personalización liviana**: todo lo personalizado-por-cookie (comparador, vistos recientes, estado de alerta) se movió a client-side: leer el cookie en el browser (son `httpOnly: false`) + pedir data pública a una API route cacheable (`s-maxage=300`). Para "¿está logueado?" alcanza con chequear la EXISTENCIA del cookie `sb-*-auth-token` desde `document.cookie` — sin importar supabase-js al bundle (+64kB evitados; el server valida igual).
+
+**Aprendizaje 3 — `searchParams` de filtros también dinamiza**: las categorías filtrables se resolvieron con page ISR que sirve el catálogo completo + filtrado client-side leyendo la URL (`useSearchParams` detrás de un Suspense cuyo fallback ES el grid completo → el HTML estático conserva todo para SEO). Bonus UX: chips de filtro instantáneos.
+
+**Aprendizaje 4 — imágenes**: los archivos eran livianos (5-7KB AVIF); lo lento era la RE-OPTIMIZACIÓN constante de Vercel porque Supabase Storage sirve `max-age=3600`. `images.minimumCacheTTL = 31 días` lo arregla con una línea. Contrapartida: una foto reemplazada en el MISMO path tarda hasta 31 días en refrescar → reemplazos van con nombre de archivo nuevo.
+
+**Regla**: en páginas públicas, data de catálogo SIEMPRE con `createStaticClient`; `cookies()`/`headers()`/`searchParams` jamás en layout ni en componentes compartidos por páginas ISR. Verificar con `curl -sI` el `cache-control` real en prod, no confiar en la tabla del build (ver MISTAKES 2026-06-11).
+
 ## 2026-06-11 — Leer+desencriptar el token OAuth de la DB en un script self-contained desbloquea la API de ML (sin MCP ni sesión admin)
 
 **Contexto**: necesitaba datos de una publicación de ML (precio/stock/variaciones) pero la API pública da 403 sin token, el endpoint admin de import-preview pide sesión de admin, y `lib/integrations/mercadolibre/*` es `server-only` (no se importa en tsx). El token OAuth válido vivía encriptado (AES-256-GCM) en `marketplace_integrations`.

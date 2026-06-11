@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Scale, X } from 'lucide-react';
 import {
@@ -21,11 +21,6 @@ type ThumbData = {
   primaryImagePath: string | null;
 };
 
-type Props = {
-  /** Resolver de imagen + nombre por slug, pasado por el server layout. */
-  thumbsBySlug: Record<string, { name: string; primaryImagePath: string | null }>;
-};
-
 /**
  * Barra sticky inferior que aparece cuando hay 1+ productos en el comparador.
  * - 1 producto: muestra thumb + "Agregá otro para comparar".
@@ -34,10 +29,22 @@ type Props = {
  *
  * Polling cada 1.5s + focus listener para captar cambios en otros tabs
  * (mismo patrón que WishlistBadge).
+ *
+ * 100% client-side: lee el cookie en el browser y pide nombre + imagen a
+ * `/api/compare/thumbs`. Antes un wrapper de servidor en el layout leía el
+ * cookie con `cookies()` — eso volvía DINÁMICAS todas las páginas del
+ * storefront y anulaba el ISR (audit perf 2026-06-11). El costo: el thumb
+ * tarda un instante en aparecer la primera vez (mientras responde la API).
  */
-export function CompareBar({ thumbsBySlug }: Props) {
+export function CompareBar() {
   const [items, setItems] = useState<CompareEntry[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [thumbsBySlug, setThumbsBySlug] = useState<
+    Record<string, { name: string; primaryImagePath: string | null }>
+  >({});
+  // Slugs ya pedidos a la API (resueltos o en vuelo) — evita re-fetches en
+  // cada tick del polling.
+  const requestedSlugs = useRef<Set<string>>(new Set());
   const [, startTransition] = useTransition();
 
   useEffect(() => {
@@ -51,6 +58,38 @@ export function CompareBar({ thumbsBySlug }: Props) {
       window.removeEventListener('focus', tick);
     };
   }, []);
+
+  useEffect(() => {
+    const missing = items
+      .map((i) => i.slug)
+      .filter((slug) => !requestedSlugs.current.has(slug));
+    if (missing.length === 0) return;
+    missing.forEach((slug) => requestedSlugs.current.add(slug));
+
+    let cancelled = false;
+    fetch(`/api/compare/thumbs?slugs=${encodeURIComponent(missing.join(','))}`)
+      .then((res) => (res.ok ? res.json() : { thumbs: [] }))
+      .then((data: { thumbs: ThumbData[] }) => {
+        if (cancelled || !Array.isArray(data.thumbs)) return;
+        setThumbsBySlug((curr) => {
+          const next = { ...curr };
+          for (const t of data.thumbs) {
+            next[t.slug] = {
+              name: t.name,
+              primaryImagePath: t.primaryImagePath,
+            };
+          }
+          return next;
+        });
+      })
+      .catch(() => {
+        // Permite reintentar en el próximo cambio de items.
+        missing.forEach((slug) => requestedSlugs.current.delete(slug));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [items]);
 
   if (!mounted || items.length === 0) return null;
 

@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
-import { CategoryFilteredPage } from '@/components/catalog/category-filtered-page';
-import { normalizeSort, sortCatalog } from '@/lib/catalog/sort';
+import { Suspense } from 'react';
 import {
-  filterByPriceBucket,
-  normalizePriceBucket,
-  parseCsvParam,
-} from '@/lib/catalog/filters';
+  CategoryCatalogView,
+  CategoryFilteredPage,
+} from '@/components/catalog/category-filtered-page';
 import { CATEGORIES } from '@/lib/catalog/categories';
 import { buildCategoryIndexMetadata } from '@/lib/catalog/metadata';
 import {
@@ -26,51 +24,49 @@ export async function generateMetadata(): Promise<Metadata> {
   );
 }
 
-type SearchParams = Promise<{
-  forma?: string;
-  marca?: string;
-  precio?: string;
-  orden?: string;
-}>;
-
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const params = await searchParams;
-  const selectedShapes = parseCsvParam(params.forma);
-  const selectedBrands = parseCsvParam(params.marca);
-  const selectedPrice = normalizePriceBucket(params.precio);
-  const sort = normalizeSort(params.orden);
-
+/**
+ * Page ISR: NO lee `searchParams` (eso la volvía dinámica → render server en
+ * cada visita, TTFB 1-2s). Sirve el catálogo COMPLETO cacheado y los filtros
+ * (`?forma=&marca=&precio=&orden=`) se aplican client-side en
+ * CategoryFilteredPage. El fallback de Suspense renderiza el grid completo en
+ * el HTML estático (SEO) hasta que hidrata el árbol con `useSearchParams`.
+ * Audit perf 2026-06-11.
+ */
+export default async function Page() {
   // Vista única de catálogo: SIEMPRE muestra los productos de la categoría
   // (founder 2026-06-02: "Ver todos" debe mostrar todos los modelos sin importar
   // marca ni forma). Sin filtros → catálogo completo; con filtros → refinado.
-  const [rawProducts, availableShapes, brands] = await Promise.all([
+  const [products, availableShapes, brands] = await Promise.all([
     fetchProductsByCategoryAndShapes({
       categorySlug: CATEGORY.slug,
-      frameShapes: selectedShapes,
-      brandSlugs: selectedBrands,
+      frameShapes: [],
     }),
     fetchAvailableFrameShapes(CATEGORY.slug),
     fetchCategoryIndex(CATEGORY),
   ]);
-  const products = sortCatalog(
-    filterByPriceBucket(rawProducts, selectedPrice),
-    sort,
-  );
+  const availableBrands = brands.map((b) => ({ slug: b.slug, name: b.name }));
 
   return (
-    <CategoryFilteredPage
-      category={CATEGORY}
-      products={products}
-      availableShapes={availableShapes}
-      selectedShapes={selectedShapes}
-      availableBrands={brands.map((b) => ({ slug: b.slug, name: b.name }))}
-      selectedBrands={selectedBrands}
-      selectedPrice={selectedPrice}
-      sort={sort}
-    />
+    <Suspense
+      fallback={
+        <CategoryCatalogView
+          category={CATEGORY}
+          products={products}
+          availableShapes={availableShapes}
+          availableBrands={availableBrands}
+          selectedShapes={[]}
+          selectedBrands={[]}
+          selectedPrice={null}
+          sort="relevancia"
+        />
+      }
+    >
+      <CategoryFilteredPage
+        category={CATEGORY}
+        products={products}
+        availableShapes={availableShapes}
+        availableBrands={availableBrands}
+      />
+    </Suspense>
   );
 }

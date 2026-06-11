@@ -1,44 +1,119 @@
+'use client';
+
 import Link from 'next/link';
+import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { CatalogFilterBar } from '@/components/catalog/catalog-filter-bar';
 import { CatalogSort } from '@/components/catalog/catalog-sort';
-import type { SortValue } from '@/lib/catalog/sort';
-import type { PriceBucketValue } from '@/lib/catalog/filters';
+import { normalizeSort, sortCatalog, type SortValue } from '@/lib/catalog/sort';
+import {
+  filterByPriceBucket,
+  normalizePriceBucket,
+  parseCsvParam,
+  type PriceBucketValue,
+} from '@/lib/catalog/filters';
 import { ProductCard } from '@/components/product/product-card';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 
-type Props = {
+type BaseProps = {
   category: CategoryConfig;
+  /** Catálogo COMPLETO de la categoría (sin filtrar). El filtrado por
+   * forma/marca/precio/orden se hace client-side leyendo la URL. */
   products: FilteredCatalogCard[];
   availableShapes: string[];
-  selectedShapes: string[];
   availableBrands: { slug: string; name: string }[];
+};
+
+/**
+ * Vista del catálogo de una categoría con filtros client-side.
+ *
+ * Antes el filtrado era server-side (la page leía `searchParams`), lo que
+ * volvía la ruta DINÁMICA: cada visita renderizaba en el server (TTFB 1-2s)
+ * y el ISR de `revalidate = 300` no aplicaba. Ahora la page es ISR (sirve
+ * HTML cacheado del catálogo completo) y los filtros se aplican acá, leyendo
+ * la URL con `useSearchParams` — además los chips responden al instante, sin
+ * round-trip al server (audit perf 2026-06-11).
+ *
+ * SEO: el HTML estático contiene el catálogo completo sin filtrar (el
+ * fallback de Suspense en la page renderiza `CategoryCatalogView` sin hooks
+ * de URL). Las URLs filtradas (`?forma=`) canonicalizan a la base; las
+ * formas con página SEO propia siguen en rutas dedicadas (ej `/cat-eye`).
+ *
+ * Usado por:
+ * - Filtros manuales del usuario en `/anteojos-de-sol` y `/anteojos-de-receta`.
+ * - Iter 2 del recomendador de monturas: el CTA al final del análisis linkea acá.
+ */
+export function CategoryFilteredPage(props: BaseProps) {
+  const searchParams = useSearchParams();
+
+  const formaParam = searchParams.get('forma') ?? undefined;
+  const marcaParam = searchParams.get('marca') ?? undefined;
+  const precioParam = searchParams.get('precio') ?? undefined;
+  const ordenParam = searchParams.get('orden') ?? undefined;
+
+  const selectedShapes = parseCsvParam(formaParam);
+  const selectedBrands = parseCsvParam(marcaParam);
+  const selectedPrice = normalizePriceBucket(precioParam);
+  const sort = normalizeSort(ordenParam);
+
+  const filtered = useMemo(() => {
+    const shapes = parseCsvParam(formaParam);
+    const brands = parseCsvParam(marcaParam);
+    let list = props.products;
+    if (shapes.length > 0) {
+      list = list.filter(
+        (p) => p.frameShape != null && shapes.includes(p.frameShape),
+      );
+    }
+    if (brands.length > 0) {
+      list = list.filter((p) => brands.includes(p.brandSlug));
+    }
+    return sortCatalog(
+      filterByPriceBucket(list, normalizePriceBucket(precioParam)),
+      normalizeSort(ordenParam),
+    );
+  }, [props.products, formaParam, marcaParam, precioParam, ordenParam]);
+
+  return (
+    <CategoryCatalogView
+      category={props.category}
+      products={filtered}
+      availableShapes={props.availableShapes}
+      availableBrands={props.availableBrands}
+      selectedShapes={selectedShapes}
+      selectedBrands={selectedBrands}
+      selectedPrice={selectedPrice}
+      sort={sort}
+    />
+  );
+}
+
+type ViewProps = BaseProps & {
+  selectedShapes: string[];
   selectedBrands: string[];
   selectedPrice: PriceBucketValue | null;
   sort: SortValue;
 };
 
 /**
- * Vista filtrada del catálogo de una categoría (ej `/anteojos-de-sol?forma=X`).
- * Sustituye al CategoryIndexPage (vista de marcas) cuando hay filtros activos.
- * Muestra productos de TODAS las marcas que matchean la forma seleccionada.
- *
- * Usado por:
- * - Filtros manuales del usuario en `/anteojos-de-sol`.
- * - Iter 2 del recomendador de monturas: el CTA al final del análisis linkea acá.
+ * Vista pura (sin `useSearchParams`): recibe la selección ya resuelta.
+ * Sirve también como fallback de Suspense en la page — ahí se renderiza en
+ * el HTML estático con el catálogo completo y sin filtros, para que el grid
+ * entero quede indexable.
  */
-export function CategoryFilteredPage({
+export function CategoryCatalogView({
   category,
   products,
   availableShapes,
-  selectedShapes,
   availableBrands,
+  selectedShapes,
   selectedBrands,
   selectedPrice,
   sort,
-}: Props) {
+}: ViewProps) {
   // ¿Hay algún filtro activo? Sin filtros, esta vista es el catálogo COMPLETO
   // de la categoría (founder 2026-06-02: "Ver todos" debe mostrar todos los
   // modelos sin importar marca ni forma, no una grilla de marcas).
@@ -55,6 +130,7 @@ export function CategoryFilteredPage({
         availableBrands={availableBrands}
         selectedBrands={selectedBrands}
         selectedPrice={selectedPrice}
+        currentSort={sort}
       />
       <main className="container py-8 md:py-12">
         <RevealOnScroll className="mb-8 max-w-3xl">
@@ -85,7 +161,14 @@ export function CategoryFilteredPage({
                 ? 'No encontramos productos con estos filtros. Probá con otra combinación o limpialos.'
                 : `${products.length} ${products.length === 1 ? 'modelo' : 'modelos'}.`}
             </p>
-            {products.length > 1 && <CatalogSort selected={sort} />}
+            {products.length > 1 && (
+              <CatalogSort
+                selected={sort}
+                selectedShapes={selectedShapes}
+                selectedBrands={selectedBrands}
+                selectedPrice={selectedPrice}
+              />
+            )}
           </div>
         </RevealOnScroll>
 

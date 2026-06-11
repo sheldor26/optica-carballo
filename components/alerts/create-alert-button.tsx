@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { Bell, BellRing, Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createAlert } from '@/lib/alerts/actions';
+import { createAlert, getMyAlertFor } from '@/lib/alerts/actions';
 import { ALERT_TYPE_LABEL, type AlertType } from '@/lib/alerts/types';
 import { useRouter } from 'next/navigation';
 
@@ -22,28 +22,58 @@ type Props = {
   productName: string;
   /** Si el producto/variante está sin stock, pre-seleccionamos stock_back. */
   inStock: boolean;
-  /** Si el usuario NO está logueado, mostrar CTA de login en vez de modal. */
-  isAuthenticated: boolean;
-  /** Si ya tiene alerta, deshabilitar y mostrar feedback. */
-  hasExistingAlert?: boolean;
 };
 
+/**
+ * Resuelve sesión + alerta existente CLIENT-SIDE (antes la PDP lo hacía
+ * server-side con `getCurrentUser()` — eso volvía DINÁMICA cada página de
+ * producto y anulaba el ISR; audit perf 2026-06-11). Para anónimos no hay
+ * round-trip: la sesión se lee del cookie local. Solo logueados disparan la
+ * action que consulta la alerta existente.
+ */
 export function CreateAlertButton({
   productId,
   variantId,
   productName,
   inStock,
-  isAuthenticated,
-  hasExistingAlert = false,
 }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  // null = resolviendo: se trata como anónimo (botón lleva a /ingresar — en
+  // la práctica resuelve en ms, antes de cualquier click).
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [hasExistingAlert, setHasExistingAlert] = useState(false);
   const [alertType, setAlertType] = useState<AlertType>(
     inStock ? 'price_drop' : 'stock_back',
   );
   const [targetPrice, setTargetPrice] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    // Heurística sin bundle: si existe el cookie de auth de Supabase
+    // (`sb-<ref>-auth-token[.N]`) lo tratamos como logueado. Importar
+    // supabase-js acá solo para esto sumaba ~64kB al bundle de la PDP.
+    // Si el token está vencido/inválido, las actions igual devuelven
+    // unauthenticated y el flujo lo maneja.
+    const authed = document.cookie
+      .split('; ')
+      .some((c) => c.startsWith('sb-') && c.includes('-auth-token'));
+    setIsAuthenticated(authed);
+    if (!authed) return;
+
+    getMyAlertFor({ productId, variantId, alertType: 'both' })
+      .then((existing) => {
+        if (!cancelled) setHasExistingAlert(existing !== null);
+      })
+      .catch(() => {
+        // Sin info de alerta: el server igual rechaza duplicados.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [productId, variantId]);
 
   if (hasExistingAlert) {
     return (
@@ -54,7 +84,7 @@ export function CreateAlertButton({
     );
   }
 
-  if (!isAuthenticated) {
+  if (isAuthenticated !== true) {
     const nextPath = typeof window !== 'undefined' ? window.location.pathname : '/';
     return (
       <Button

@@ -1,26 +1,41 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ArrowUpDown } from 'lucide-react';
 import { SORT_OPTIONS, type SortValue } from '@/lib/catalog/sort';
+import type { PriceBucketValue } from '@/lib/catalog/filters';
+
+type Props = {
+  selected: SortValue;
+  /** Filtros actuales — para preservarlos en la URL al cambiar el orden.
+   * Llegan por props (no `useSearchParams`): este componente se renderiza
+   * también en el fallback estático de la page ISR, y `useSearchParams` ahí
+   * forzaría client-side rendering de todo el árbol (audit perf 2026-06-11). */
+  selectedShapes: string[];
+  selectedBrands: string[];
+  selectedPrice: PriceBucketValue | null;
+};
 
 /**
  * Selector de orden del catálogo filtrado. Actualiza `?orden=` preservando
- * el resto de los params (ej `forma`). El sort efectivo se aplica server-side
- * en la page (ver `app/(storefront)/anteojos-de-sol/page.tsx`).
+ * el resto de los params (ej `forma`). El sort efectivo se aplica client-side
+ * en CategoryFilteredPage (la URL es la fuente de verdad).
  */
-export function CatalogSort({ selected }: { selected: SortValue }) {
+export function CatalogSort({
+  selected,
+  selectedShapes,
+  selectedBrands,
+  selectedPrice,
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const onChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value === 'relevancia') {
-      params.delete('orden');
-    } else {
-      params.set('orden', value);
-    }
+    const params = new URLSearchParams();
+    if (selectedShapes.length > 0) params.set('forma', selectedShapes.join(','));
+    if (selectedBrands.length > 0) params.set('marca', selectedBrands.join(','));
+    if (selectedPrice !== null) params.set('precio', selectedPrice);
+    if (value !== 'relevancia') params.set('orden', value);
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };

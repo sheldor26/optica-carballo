@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-11 — El audit de performance (2026-05-29) concluyó "todo bien" sin medir headers en producción; el sitio servía TODO dinámico
+
+**Estado**: 🟡 Mitigado (causas raíz arregladas en esta sesión; método de audit corregido abajo)
+
+**Qué pasó**: `PERFORMANCE_AUDIT.md` (2026-05-29) concluyó "no hay bugs evidentes de performance" y "85+ páginas mayormente static (●) o ISR" mirando code review + la tabla del build. En la realidad, producción servía TODAS las páginas públicas con `cache-control: no-store` y `x-vercel-cache: MISS` (TTFB 0,6-2,1s): el ISR estaba completamente anulado por `cookies()` en el layout (CompareBarWrapper), en queries/metadata del catálogo, en RecentlyViewed y en la PDP. Pasó ~2 semanas sirviendo cada page view renderizado de cero hasta que el founder reportó lentitud.
+
+**Causa raíz**: el audit validó el ESTADO DECLARADO (revalidate exportado, tabla del build) en vez del COMPORTAMIENTO OBSERVADO (headers reales en prod). Además la tabla del build puede mentir por omisión: una ruta con `generateStaticParams` figura ● aunque sus paths reales hayan bailado a dinámico en el prerender (se detecta solo en `prerender-manifest.json` o con curl a prod — pasó con las PDP en esta misma sesión).
+
+**Regla preventiva**: todo audit de performance EMPIEZA con medición externa de producción: `curl -sI` a home/categoría/PDP mirando `cache-control` + `x-vercel-cache` (+ 1 imagen `/_next/image`). Si una página con `revalidate` devuelve `no-store`, hay un `cookies()`/`headers()`/`searchParams` escondido en su árbol — buscarlo hasta encontrarlo. Verificación post-deploy de esta sesión: las páginas públicas deben dar `x-vercel-cache: HIT` en la segunda request — si no, reabrir.
+
 ## 2026-06-11 — Commitear un script que corre con tsx pero falla `tsc --noEmit`
 
 **Estado**: ✅ Cerrado (corregido al detectarlo)

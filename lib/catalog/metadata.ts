@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+// Cliente estático (sin cookies): la metadata de páginas públicas no depende
+// de sesión, y leer cookies acá volvía DINÁMICAS todas las rutas que usan
+// estos builders — anulaba el ISR (audit perf 2026-06-11).
+import { createStaticClient } from '@/lib/supabase/static';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 
@@ -21,7 +24,7 @@ export async function buildBrandMetadata(
   category: CategoryConfig,
   brandSlug: string,
 ): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data: brand } = await supabase
     .from('brands')
     .select('name')
@@ -115,7 +118,7 @@ export async function buildBrandAboutMetadata(
   category: CategoryConfig,
   brandSlug: string,
 ): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data: brand } = await supabase
     .from('brands')
     .select('name')
@@ -157,7 +160,7 @@ export async function buildBrandGenderMetadata(args: {
   brandSlug: string;
   target: 'hombre' | 'mujer';
 }): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data: brand } = await supabase
     .from('brands')
     .select('name')
@@ -202,7 +205,7 @@ export async function buildBrandFilterMetadata(args: {
   filterUrlSlug: string;
   filterMetaPhrase: string;
 }): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data: brand } = await supabase
     .from('brands')
     .select('name')
@@ -239,7 +242,7 @@ export async function buildProductMetadata(
   brandSlug: string,
   productSlug: string,
 ): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data: product } = await supabase
     .from('products')
     .select('id, name, short_description, meta_description')

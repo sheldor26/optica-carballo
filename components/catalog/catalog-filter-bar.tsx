@@ -1,9 +1,10 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PRICE_BUCKETS, type PriceBucketValue } from '@/lib/catalog/filters';
+import type { SortValue } from '@/lib/catalog/sort';
 
 type BrandOption = { slug: string; name: string };
 
@@ -13,6 +14,11 @@ type Props = {
   availableBrands: BrandOption[];
   selectedBrands: string[];
   selectedPrice: PriceBucketValue | null;
+  /** Orden actual — para preservar `?orden=` al cambiar filtros. Llega por
+   * props (no `useSearchParams`): este componente se renderiza también en el
+   * fallback estático de la page ISR, y `useSearchParams` ahí forzaría
+   * client-side rendering de todo el árbol (audit perf 2026-06-11). */
+  currentSort: SortValue;
 };
 
 const SHAPE_LABELS: Record<string, string> = {
@@ -46,7 +52,8 @@ function shapeLabel(shape: string): string {
 /**
  * Barra de filtros del catálogo filtrado: forma (multi) + marca (multi) +
  * precio (single). Persiste en URL (`?forma=&marca=&precio=`) preservando
- * `orden`. El filtrado efectivo se aplica server-side en la page.
+ * `orden`. El filtrado efectivo se aplica client-side en CategoryFilteredPage
+ * (la URL es la fuente de verdad).
  *
  * Reemplaza a <FrameShapeFilters /> SOLO en la vista filtrada (CategoryFilteredPage).
  * Las páginas de forma dedicadas (`/anteojos-de-sol/cat-eye`) siguen con el
@@ -58,13 +65,18 @@ export function CatalogFilterBar({
   availableBrands,
   selectedBrands,
   selectedPrice,
+  currentSort,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
+  // Reconstruye el query actual desde props (estado completo de filtros).
   const push = (mutate: (params: URLSearchParams) => void) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
+    if (selectedShapes.length > 0) params.set('forma', selectedShapes.join(','));
+    if (selectedBrands.length > 0) params.set('marca', selectedBrands.join(','));
+    if (selectedPrice !== null) params.set('precio', selectedPrice);
+    if (currentSort !== 'relevancia') params.set('orden', currentSort);
     mutate(params);
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
