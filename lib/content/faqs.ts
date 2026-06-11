@@ -288,9 +288,9 @@ export const FAQS: FaqItem[] = [
   {
     id: 'sin-receta',
     category: 'receta',
-    question: '¿Puedo comprar anteojos de receta sin tener receta?',
+    question: '¿Puedo comprar el armazón sin tener receta?',
     answer:
-      'No. Por ley, ningún anteojo recetado se vende sin receta válida de oftalmólogo. Es por tu salud visual: una graduación incorrecta puede causar fatiga, mareos o empeorar tu visión. Si no tenés receta vigente, te recomendamos hacerte un control antes.',
+      'Sí. El armazón lo comprás sin receta: viene con lentes demo, no estás comprando cristales graduados. La receta solo hace falta cuando le armás tus cristales con tu graduación — por ley y por tu salud visual, ningún anteojo recetado (armado con tu graduación) se vende sin receta válida de oftalmólogo. Si querés ponerle tus cristales y no tenés receta vigente, hacete un control antes.',
   },
 
   // ===========================================================================

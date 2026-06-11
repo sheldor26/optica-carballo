@@ -26,8 +26,8 @@ const SOL_FAQS: Faq[] = [
 
 const RECETA_FAQS: Faq[] = [
   {
-    q: '¿Necesito receta médica para comprar?',
-    a: 'Sí, sin excepción. Es legal, ético y para tu salud visual. Podés subirla al checkout o enviárnosla por WhatsApp. La verificamos antes de armar el anteojo.',
+    q: '¿Necesito receta para comprar el armazón?',
+    a: 'No. El armazón viene con lentes demo (sin graduación), así que lo comprás sin receta. La receta solo se necesita cuando le ponés tus cristales graduados: en ese caso la subís al checkout o nos la mandás por WhatsApp y la verificamos antes de armar. Es legal y cuida tu salud visual.',
   },
   {
     q: '¿Hacen multifocales o bifocales?',
