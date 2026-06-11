@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-11 — Delegar el SEO de una página de producto al `seo-strategist` devuelve assets listos + honestidad data-dura vs inferencia
+
+**Contexto**: al cargar Rusty Opposit (página de producto nueva) invoqué `seo-strategist` (trigger CLAUDE.md "página/ruta nueva → seo-strategist ANTES" + pedido del founder). Devolvió **listo para pegar**: slug confirmado, meta_title (59 chars, marca+forma+género), meta_description, short_description (con el disclaimer "sin cristales graduados"), array de 7 keywords + recomendaciones de internal linking y structured data (AggregateOffer con hasVariant; NO AggregateRating sin reviews). Lo más valioso: **marcó explícitamente** que los long-tails eran INFERENCIA (no hay volumen medido en SEO_STRATEGY.md para el cluster armazón-receta-wayfarer) y los ancló a volúmenes que SÍ existen (Rusty 6.000, wayfarer 1.400, mujer 3.200); además detectó un gap (no existe cluster Rusty pese a 7 productos receta cargados).
+
+**Aprendizaje**: para una página/producto nuevo, delegar al `seo-strategist` es alto-leverage — devuelve meta paste-ready, distingue lo medido de lo inferido (no presenta adivinanzas como data) y surface gaps de estrategia. Mejor que craftear meta ad-hoc en el main loop; respeta las reglas duras (sin reviews falsas, "sin cristales graduados", español argentino).
+
+**Regla**: al cargar un producto/página nueva, invocar `seo-strategist` para los assets SEO ANTES de escribir el seed/meta, pasándole TODO el contexto del producto. Si flaggea inferencia sin data dura, avisarle al founder y cerrar con keyword research real cuando se pueda.
+
 ## 2026-06-11 — Parallax "espectacular" con costo CERO de JS: scroll-driven CSS + fallback estático invisible
 
 **Contexto**: el founder pidió "parallax que vuele cabezas". El reflejo de la industria es GSAP/Lenis (+30-60kB y scroll-jacking). Se implementó con CSS scroll-driven animations (`animation-timeline: view()`): el "lens reveal" (la sección dark entra clipeada a un círculo que crece — la metáfora de mirar por una lente) + "ventanas con vida" (imágenes derivando dentro de marcos fijos). 0 bytes de JS, home sigue ISR a 174kB.
