@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-13 — El token OAuth de ML vence a mitad de sesión y `ml-item.ts` no lo refresca → HTTP 401 que frena la carga
+
+**Estado**: ⏳ Abierto (workaround: founder re-autentica; mejora real en BACKLOG)
+
+**Qué pasó**: tras cargar 6 productos seguidos con `scripts/ml-item.ts` (que desencripta el access token de `marketplace_integrations`), al iniciar la 7ª carga (Vulk The Sil) el script devolvió `HTTP 401: invalid access token`. El token de ML había vencido/rotado durante la sesión. El script usa el token almacenado tal cual, sin usar el refresh_token → quedó inservible y bloqueó traer precio/stock/var_id.
+
+**Causa raíz**: `ml-item.ts` lee el access token guardado pero NO implementa el refresh (los access token de ML duran ~6h). En sesiones largas de carga, el token expira y el script no se auto-recupera.
+
+**Regla preventiva / workaround**: (1) si `ml-item.ts` da 401, NO es un bug de datos ni del producto — es token vencido → pedirle al founder que **reconecte ML** (flujo `?ml_oauth=success&user_id=81654493`) y reintentar. (2) NO inventar precio/stock para avanzar (regla dura). (3) Mejora de fondo en BACKLOG: que `ml-item.ts` use el `refresh_token` de `marketplace_integrations` para renovar el access token automáticamente antes de fallar.
+
 ## 2026-06-13 — Mutar un campo en DB (UPDATE vía MCP) sin reflejarlo en el seed → el seed idempotente lo revierte al re-correr
 
 **Estado**: ✅ Cerrado (cacé el drift y agregué el campo al seed antes de cerrar)
