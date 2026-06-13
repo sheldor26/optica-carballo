@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-13 — Mutar un campo en DB (UPDATE vía MCP) sin reflejarlo en el seed → el seed idempotente lo revierte al re-correr
+
+**Estado**: ✅ Cerrado (cacé el drift y agregué el campo al seed antes de cerrar)
+
+**Qué pasó**: el founder pasó el peso 23,6 g y pidió aplicarlo también al Rusty Patien de SOL (seed 65, que se había cargado sin peso). Lo apliqué con un `UPDATE products SET attributes = jsonb_set(...,'{weight_grams}','23.6')` vía MCP. Pero el seed 65 en disco seguía SIN `weight_grams`, y su INSERT tiene `ON CONFLICT (slug) DO UPDATE SET attributes=EXCLUDED.attributes` → si alguien re-corre el seed 65, **pisa** el `attributes` entero con la versión sin peso y borra el 23,6 del DB. Lo detecté antes de cerrar y agregué `weight_grams: 23.6` al seed 65 (commit aparte).
+
+**Causa raíz**: los seeds usan `ON CONFLICT DO UPDATE SET attributes=EXCLUDED.attributes` (reemplazo del JSONB completo, no merge). Cualquier mutación puntual del `attributes` hecha SOLO en DB queda "huérfana": la próxima corrida del seed la revierte. El seed es la fuente de verdad reproducible, no el estado vivo del DB.
+
+**Regla preventiva**: cuando se modifica un campo de `attributes`/columna de un producto YA cargado vía seed, actualizar SIEMPRE el archivo del seed en el mismo turno (no solo el DB). Si el cambio aplica a un producto cuyo seed no estás tocando (caso peso al Patien sol mientras cargás el receta), editar ESE seed también. Mental check al cerrar una carga que tocó productos viejos: "¿el/los seed(s) reflejan lo que quedó en DB?". Aplica especialmente a updates de peso/scale/precio sobre productos previos.
+
 ## 2026-06-13 — `execute_sql` (Supabase MCP) envuelve el batch en transacción: un SELECT con error al final revirtió los INSERT que sí estaban bien
 
 **Estado**: ✅ Cerrado (re-aplicado los INSERT solos)
