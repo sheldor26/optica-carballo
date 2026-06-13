@@ -9,9 +9,10 @@
 --   SBLK/S15        SKU 126092 MLA1430081541 $73.661,17 stock 17 (PRIMARY, +stock; negro brillo, lente gris oscuro ANTIRREFLEJO interno, no pol)
 --   MBLK/REVO BLUE  SKU 126091 MLA1388056869 $79.373,23 stock 13 (negro mate, espejada azul, no pol)
 --   MBLK/S10 POL    SKU 126099 MLA1456406247 $85.924,92 stock 6  (negro mate, gris oscuro, POLARIZADO → /polarizados)
---   669K/SBLK       SKU 126093 MLA1430185017 $86.011,19 stock 0  (frente gris transparente + patillas negro brillo, SIN POLARIZAR;
---                   ⚠️ ML title dice "polarizado" y está paused/stock 0, pero el founder dice sin polarizar → polarized:false.
---                   Se carga stock 0 + is_active=true por la regla "cargar todas las variantes aunque estén en 0, se sincronizan solas".)
+--   669K-SBLK/SG91 POL SKU 126093 MLA1430185017 $86.011,19 stock 0 (frente gris transparente + patillas negro brillo,
+--                   lente gris DEGRADÉ POLARIZADA → /polarizados. Founder corrigió 2026-06-13 el nombre/atributo (antes
+--                   se había puesto "669K/SBLK sin polarizar" por error). Se carga stock 0 + is_active=true por la regla
+--                   "cargar todas las variantes aunque estén en 0, se sincronizan solas". → ahora 2 de 4 polarizadas.)
 --
 -- Default global SOL (founder 2026-06-13): TODO modelo de sol = cat 3 + policarbonato
 -- + 100% UV (UVA/UVB), salvo que el founder aclare lo contrario.
@@ -37,7 +38,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-patien', 'Rusty Patien',
   'Anteojos de sol Rusty unisex modelo Patien: armazón wayfarer en policarbonato con filtro UV400 categoría 3 y varillas flexibles G-Flex. Disponible en variantes antirreflex, espejada y polarizada (la versión MBLK/S10 suma lente polarizado que reduce el reflejo en agua, asfalto y nieve).',
-  E'Los **Rusty Patien** son anteojos de sol **wayfarer unisex**, con frente de **G-Flex** —flexible y resistente— **bisagras metálicas flex** y **lentes de policarbonato con protección UV400 (categoría 3)**.\n\nMedidas: frente 140 mm · lente 49 mm de ancho × 40 mm de alto · puente 21 mm · varilla 145 mm.\n\nDisponible en 4 versiones:\n\n• SBLK/S15 — negro brillo, lente gris oscuro con antirreflejo en la cara interna.\n• MBLK/Revo Blue — negro mate, lente espejada azul.\n• MBLK/S10 POL — negro mate, lente gris **polarizada**.\n• 669K/SBLK — frente gris transparente con patillas negro brillo.\n\nLa versión polarizada (MBLK/S10) reduce el reflejo del agua, la nieve y el asfalto. Incluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Patien** son anteojos de sol **wayfarer unisex**, con frente de **G-Flex** —flexible y resistente— **bisagras metálicas flex** y **lentes de policarbonato con protección UV400 (categoría 3)**.\n\nMedidas: frente 140 mm · lente 49 mm de ancho × 40 mm de alto · puente 21 mm · varilla 145 mm.\n\nDisponible en 4 versiones:\n\n• SBLK/S15 — negro brillo, lente gris oscuro con antirreflejo en la cara interna.\n• MBLK/Revo Blue — negro mate, lente espejada azul.\n• MBLK/S10 POL — negro mate, lente gris **polarizada**.\n• 669K-SBLK/SG91 POL — frente gris transparente con patillas negro brillo, lente gris degradé **polarizada**.\n\nLas versiones polarizadas (MBLK/S10 y 669K-SBLK) reducen el reflejo del agua, la nieve y el asfalto. Incluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "wayfarer",
@@ -78,7 +79,7 @@ VALUES
    '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10 POL","polarized":true}'::jsonb,
    8592492, 6, true, 3, 'MLA1456406247', NULL),
   ((SELECT id FROM public.products WHERE slug='rusty-patien'), '126093',
-   '{"frame_color":"gris-transparente-negro","lens_color":"gris","model_code":"669K/SBLK","polarized":false}'::jsonb,
+   '{"frame_color":"gris-transparente-negro","lens_color":"gris-degrade","model_code":"669K-SBLK/SG91 POL","polarized":true}'::jsonb,
    8601119, 0, true, 4, 'MLA1430185017', NULL)
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
