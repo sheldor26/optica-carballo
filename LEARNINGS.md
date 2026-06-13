@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-13 — `catalog-loader` cazó un material fuera del enum (grilamid→tr-90) antes de romper el comparador — 2da intercepción de la norma
+
+**Contexto**: cargando Vulk The Sil, el founder dio el material "Grilamid". Yo iba a poner `frame_material:"grilamid"` como valor libre. El `catalog-loader` (norma) lo frenó: el enum del schema es `acetate|metal|injected|titanium|g-flex|tr-90` — "grilamid" NO está. Como Grilamid (en óptica) ES TR-90 (nombre comercial de EMS-Grivory para esa poliamida), la jugada correcta es `frame_material:"tr-90"` + nombrar "Grilamid" en copy/callout. Un valor libre fuera del enum habría caído a "—" o sin label en el comparador/filtros.
+
+**Aprendizaje**: es la 2da vez en el día (después del scale del Patien) que `catalog-loader` evita un bug que el typecheck NO ve — porque el `attributes` es JSONB libre: TypeScript no valida que `frame_material` esté en el enum del comparador. El agente tiene el contrato (PRODUCT_SCHEMA.md) en contexto al momento de decidir; el main loop, clonando un patrón, asume que cualquier string entra. Patrón recurrente: **cuando el founder pasa un material/forma/atributo con un nombre comercial o coloquial, mapearlo al enum del schema, no meterlo crudo.**
+
+**Regla**: para campos del `attributes` que el comparador/filtros consumen como enum (`frame_material`, `frame_shape`, `gender`, `lens_category`), validar SIEMPRE el valor contra PRODUCT_SCHEMA.md antes del seed; si el dato del founder es un nombre comercial (Grilamid→tr-90) o coloquial (cuadrado→square, ovalado→round), traducirlo al valor canónico. El JSONB no te protege; el agente sí.
+
 ## 2026-06-13 — La norma de invocar `catalog-loader` en cada carga interceptó un error de scale recurrente ANTES de que saliera
 
 **Contexto**: cargando Rusty Patien (sol, fotos 1200×589) yo había decidido scale **1.3/1.15** por analogía con My Crew (mismas dims). El `catalog-loader` (invocado por la norma) lo frenó: citó el counter-learning del propio `image-scale-overrides.ts` — el 1.3/1.15 es EXACTAMENTE el valor que el founder reportó como "grande/te pasaste" en My Crew, Tour 81 y Booping, y esos 1200×589 aterrizaron en ~1.2/1.05. Cambié a 1.2/1.05 antes de aplicar. Sin el agente, habría disparado otra ronda de "está grande" → -0.05 × N que el founder ya vivió 3 veces.
