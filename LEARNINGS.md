@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-13 — La norma de invocar `catalog-loader` en cada carga interceptó un error de scale recurrente ANTES de que saliera
+
+**Contexto**: cargando Rusty Patien (sol, fotos 1200×589) yo había decidido scale **1.3/1.15** por analogía con My Crew (mismas dims). El `catalog-loader` (invocado por la norma) lo frenó: citó el counter-learning del propio `image-scale-overrides.ts` — el 1.3/1.15 es EXACTAMENTE el valor que el founder reportó como "grande/te pasaste" en My Crew, Tour 81 y Booping, y esos 1200×589 aterrizaron en ~1.2/1.05. Cambié a 1.2/1.05 antes de aplicar. Sin el agente, habría disparado otra ronda de "está grande" → -0.05 × N que el founder ya vivió 3 veces.
+
+**Aprendizaje**: la norma "invocar agentes en cada carga" no es burocracia — el agente de validación tiene en contexto los counter-learnings acumulados (comentarios del propio archivo de overrides, MISTAKES) que el main loop, mid-carga, no re-lee. El ROI concreto: evitó una iteración de tuning que el founder reportó como molesta 3 veces. Vale especialmente cuando "clono" un patrón conocido y asumo que un parámetro se copia igual (acá: misma resolución ≠ mismo encuadre ≠ mismo scale).
+
+**Regla**: mantener la invocación de `catalog-loader` en TODA carga (no saltearla "porque ya sé el patrón"); su valor es traer los counter-learnings históricos al momento de decidir. Cuando el agente contradice un valor que ibas a copiar por analogía, escuchalo y verificá, no lo pises.
+
 ## 2026-06-13 — Duplicar un asset en Storage (patrón CCCP) con el endpoint /object/copy + leer el .env con Node `--env-file`, no `source`
 
 **Contexto**: cargando Rusty Play (sol), la variante MBLK/S10 C1 no tenía perfil propio (comparte el frame con MBLK/S10) y `UNIQUE(product_id, storage_path)` impide atar el mismo path a dos variantes → hay que COPIAR el archivo en el bucket con otro nombre (patrón CCCP, como R-CY 02). Primer intento: `set -a; . ./.env.local` para tomar las claves y `curl` el copy → **falló** (`parse error near '\n'`: una línea del .env tiene caracteres que rompen el parser de zsh; las vars quedaron vacías → el POST salió sin auth → HTTP 400, copia no hecha). Solución: `node --env-file=.env.local -e "fetch(URL+'/storage/v1/object/copy', {method:'POST', headers:{Authorization:'Bearer '+SERVICE_ROLE}, body: JSON.stringify({bucketId:'products', sourceKey, destinationKey})})"` → copió bien (verificado HTTP 200 del nuevo path).
