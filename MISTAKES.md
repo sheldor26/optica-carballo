@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-13 — Se shippearon valores fuera del enum en `lens_treatment` de variantes (espejado/antirreflejo-interno) porque el JSONB no se valida y un run de agente los sugirió
+
+**Estado**: ⏳ Abierto (auditoría en BACKLOG; no rompe funcional pero ensucia comparador/filtros)
+
+**Qué pasó**: en las cargas de Rusty Play (seed 63) y Patien (seed 65) puse, a nivel variante, `lens_treatment:["espejado"]` (revo) y `lens_treatment:["antirreflejo-interno"]` (AR interno) — siguiendo lo que el `catalog-loader` de ESOS turnos recomendó. Al cargar Blinded, otro run del mismo agente marcó que el enum del schema para `lens_treatment` es `polarized|uv400|gradient|mirrored|photochromic` → `espejado`/`antirreflejo-interno` NO existen ahí. Quedaron datos no canónicos en producción.
+
+**Causa raíz**: doble. (1) El `attributes` es JSONB libre: ni TypeScript ni la DB validan que los valores estén en el enum del comparador → cualquier string entra y "parece" correcto. (2) La guía del agente varió entre runs (un turno sugirió `espejado`, otro marcó que no es válido) y yo seguí la sugerencia sin chequear contra PRODUCT_SCHEMA.md, que es la fuente de verdad fija.
+
+**Regla preventiva**: (1) los valores de campos enumerados del `attributes` (`frame_shape`, `frame_material`, `lens_treatment`, `gender`, `lens_category`) se validan SIEMPRE contra el enum de PRODUCT_SCHEMA.md ANTES del seed — el enum manda sobre la sugerencia de cualquier agente. (2) Tratamientos sin valor en el enum (antirreflejo interno, etc.) van al callout/descripción, NO al array. (3) Revo/espejado → `mirrored` (valor canónico). (4) Auditar y normalizar los seeds ya cargados (item en BACKLOG: Play/Patien lens_treatment + 5 seeds con frame_shape "redondo"→"round").
+
 ## 2026-06-13 — El token OAuth de ML vence a mitad de sesión y `ml-item.ts` no lo refresca → HTTP 401 que frena la carga
 
 **Estado**: ⏳ Abierto (workaround: founder re-autentica; mejora real en BACKLOG)
