@@ -22,9 +22,11 @@
 -- frente (verificado visualmente); Revo Red usa -p/-f explícito). Primaria = perfil
 -- SBLK. Cada variante tiene perfil+frente propios → NO hay CCCP. Scale perfil 1.15/
 -- frente 1.0 (encuadre GALERIA-WEB estándar). medidas.png en 1.0 (no grid).
--- ⚠️ Hay 2 fotos EXTRA de un color MBLUE/REVO BLUE en el bucket SIN SKU/MLA del
--- founder → NO se carga esa variante (no inventamos stock/precio). Pendiente: si el
--- founder pasa el MLA, se agrega como 4ª variante.
+-- 4ª variante MBLUE/REVO BLUE (SKU 128824, MLA1518722044, $82.711, ML stock 6, ML
+-- paused) agregada 2026-06-13 PERO is_active=FALSE: el founder tiene que corroborar
+-- stock (avisa el martes para activar). Founder indicó "(no polarizados)" para esta
+-- → polarized:false (⚠️ el título de ML dice "polarizados"; se respeta al founder).
+-- Frame azul mate, lente espejada azul. Fotos GALERIA/AGALERIA-WEB-MBLUE-REVOBLUE.
 -- ============================================
 
 BEGIN;
@@ -75,7 +77,11 @@ VALUES
    7737525, 16, true, 2, 'MLA1679617223', NULL),
   ((SELECT id FROM public.products WHERE slug='rusty-terdey'), '128823',
    '{"frame_color":"negro-mate","lens_color":"espejado-rojo","model_code":"MBLK/REVO RED POL","polarized":true,"lens_treatment":["espejado"]}'::jsonb,
-   8238015, 1, true, 3, 'MLA1499129431', NULL)
+   8238015, 1, true, 3, 'MLA1499129431', NULL),
+  -- 4ª variante DESACTIVADA (founder corrobora stock el martes). polarized:false (founder).
+  ((SELECT id FROM public.products WHERE slug='rusty-terdey'), '128824',
+   '{"frame_color":"azul-mate","lens_color":"espejado-azul","model_code":"MBLUE/REVO BLUE","polarized":false,"lens_treatment":["espejado"]}'::jsonb,
+   8271100, 6, false, 4, 'MLA1518722044', NULL)
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
@@ -96,6 +102,10 @@ VALUES
    'rusty-terdey/TERDEY MBLKREVO RED POL.-p.jpg', 'Anteojos de sol Rusty Terdey wayfarer unisex vista lateral, negro mate lente espejada roja polarizada', 900, 442, 4, false),
   ((SELECT id FROM public.products WHERE slug='rusty-terdey'), (SELECT id FROM public.product_variants WHERE sku='128823'),
    'rusty-terdey/TERDEY MBLKREVO RED POL.-f.jpg', 'Anteojos de sol Rusty Terdey wayfarer unisex vista frontal, negro mate lente espejada roja polarizada', 900, 442, 5, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-terdey'), (SELECT id FROM public.product_variants WHERE sku='128824'),
+   'rusty-terdey/TERDEY GALERIA-WEB-MBLUE-REVOBLUE.jpg', 'Anteojos de sol Rusty Terdey wayfarer unisex vista lateral, azul mate lente espejada azul', 900, 442, 6, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-terdey'), (SELECT id FROM public.product_variants WHERE sku='128824'),
+   'rusty-terdey/TERDEY AGALERIA-WEB-MBLUE-REVOBLUE.jpg', 'Anteojos de sol Rusty Terdey wayfarer unisex vista frontal, azul mate lente espejada azul', 900, 442, 7, false),
   ((SELECT id FROM public.products WHERE slug='rusty-terdey'), NULL,
    'rusty-terdey/medidas.png', 'Esquema técnico de medidas Rusty Terdey: frente 145mm, lente 54x47mm, puente 16mm, varilla 140mm', 1500, 1500, 9, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

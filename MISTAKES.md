@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-13 — `execute_sql` (Supabase MCP) envuelve el batch en transacción: un SELECT con error al final revirtió los INSERT que sí estaban bien
+
+**Estado**: ✅ Cerrado (re-aplicado los INSERT solos)
+
+**Qué pasó**: agregué la 4ª variante de Rusty Terdey con un batch `INSERT variante; INSERT imágenes; SELECT verificación`. El SELECT falló por `column reference "attributes" is ambiguous` (join products+variants, ambas tienen `attributes`). Asumí que los INSERT (que van antes) ya habían commiteado y solo falló la lectura → consulté y la variante **NO estaba**: el batch entero se revirtió. Tuve que correr los INSERT solos.
+
+**Causa raíz**: `mcp__claude_ai_Supabase__execute_sql` ejecuta el string multi-statement como UNA transacción implícita → si CUALQUIER statement falla (incluido un SELECT de verificación trivial al final), hace ROLLBACK de todo, no commit parcial. Combinado con: SELECT sobre un join sin cualificar la columna repetida (`v.attributes` vs `p.attributes`).
+
+**Regla preventiva**: (1) NO meter el SELECT de verificación en el mismo batch que los INSERT — correr la verificación en una llamada separada (si el SELECT falla, no arrastra los INSERT). (2) En SELECT con join, cualificar SIEMPRE las columnas que existen en más de una tabla (`v.attributes`, no `attributes`). (3) Tras un error de batch, NO asumir commit parcial: verificar el estado real antes de re-aplicar (los INSERT idempotentes con ON CONFLICT hacen seguro re-correr).
+
 ## 2026-06-13 — `source .env.local` en shell falló silencioso → curl sin auth → copia de Storage con HTTP 400 (parecía éxito en el flujo)
 
 **Estado**: ✅ Cerrado (rehecho con Node `--env-file`, ver LEARNINGS)

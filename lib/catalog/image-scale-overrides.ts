@@ -531,6 +531,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-terdey/TERDEY AGALERIA-WEB-MBLK-S10-POL.jpg': 1.0,
   'rusty-terdey/TERDEY MBLKREVO RED POL.-p.jpg': 1.15,
   'rusty-terdey/TERDEY MBLKREVO RED POL.-f.jpg': 1.0,
+  // 4ª variante MBLUE/Revo Blue (desactivada hasta confirmar stock). GALERIA=perfil.
+  'rusty-terdey/TERDEY GALERIA-WEB-MBLUE-REVOBLUE.jpg': 1.15,
+  'rusty-terdey/TERDEY AGALERIA-WEB-MBLUE-REVOBLUE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
