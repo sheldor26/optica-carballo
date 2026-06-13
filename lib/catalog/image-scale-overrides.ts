@@ -562,8 +562,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-sil/THE SIL-SBLK-S10-POL.jpg': 1.0,
   'vulk-the-sil/THESIL-MBLK-S10-POL-.jpg': 1.15,
   'vulk-the-sil/THE SIL-MBLK-S10-POL.jpg': 1.0,
-  'vulk-the-sil/THESIL-MBLK-G15-POL.jpg': 1.15,
-  'vulk-the-sil/THE SIL-MBLK-G15-POL.jpg': 1.0,
+  'vulk-the-sil/THE SIL-MBLK-G15-POL P.jpg': 1.15,
+  'vulk-the-sil/THESIL-MBLK-G15-POL.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

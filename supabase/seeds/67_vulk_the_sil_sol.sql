@@ -18,8 +18,9 @@
 --
 -- 📸 FOTOS (bucket products/vulk-the-sil/, 7 en storage, 900×442; ⚠️ DOS sets por color:
 -- "THESIL-...-" = PERFIL, "THE SIL-..." (con espacio) = FRENTE, verificado visualmente.
--- OJO: el perfil de G15 es "THESIL-MBLK-G15-POL.jpg" SIN guion final; los S10 sí tienen
--- "-POL-.jpg" con guion final). Primaria = perfil SBLK. Cada variante con fotos propias
+-- OJO G15 (founder renombró 2026-06-13, verificado visual): perfil = "THE SIL-MBLK-G15-POL P.jpg"
+-- (con espacio y " P"); frente = "THESIL-MBLK-G15-POL.jpg". Los S10 sí siguen THESIL-=perfil /
+-- THE SIL-=frente con "-POL-" final). Primaria = perfil SBLK. Cada variante con fotos propias
 -- → NO CCCP. Scale perfil 1.15 / frente 1.0 (encuadre 900×442 como Terdey/Play).
 -- medidas.png en 1.0 (no grid).
 -- ============================================
@@ -91,9 +92,9 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-the-sil'), (SELECT id FROM public.product_variants WHERE sku='128301'),
    'vulk-the-sil/THE SIL-MBLK-S10-POL.jpg', 'Anteojos de sol Vulk The Sil cuadrados unisex vista frontal, negro mate lente polarizada gris', 900, 442, 3, false),
   ((SELECT id FROM public.products WHERE slug='vulk-the-sil'), (SELECT id FROM public.product_variants WHERE sku='128302'),
-   'vulk-the-sil/THESIL-MBLK-G15-POL.jpg', 'Anteojos de sol Vulk The Sil cuadrados unisex vista lateral, negro mate lente polarizada verde G15', 900, 442, 4, false),
+   'vulk-the-sil/THE SIL-MBLK-G15-POL P.jpg', 'Anteojos de sol Vulk The Sil cuadrados unisex vista lateral, negro mate lente polarizada verde G15', 900, 442, 4, false),
   ((SELECT id FROM public.products WHERE slug='vulk-the-sil'), (SELECT id FROM public.product_variants WHERE sku='128302'),
-   'vulk-the-sil/THE SIL-MBLK-G15-POL.jpg', 'Anteojos de sol Vulk The Sil cuadrados unisex vista frontal, negro mate lente polarizada verde G15', 900, 442, 5, false),
+   'vulk-the-sil/THESIL-MBLK-G15-POL.jpg', 'Anteojos de sol Vulk The Sil cuadrados unisex vista frontal, negro mate lente polarizada verde G15', 900, 442, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-the-sil'), NULL,
    'vulk-the-sil/medidas.png', 'Esquema técnico de medidas Vulk The Sil: frente 144mm, lente 55x51mm, puente 20mm, varilla 145mm', 1500, 1500, 9, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
