@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-13 — `source .env.local` en shell falló silencioso → curl sin auth → copia de Storage con HTTP 400 (parecía éxito en el flujo)
+
+**Estado**: ✅ Cerrado (rehecho con Node `--env-file`, ver LEARNINGS)
+
+**Qué pasó**: para copiar un asset en Storage (CCCP del perfil C1 de Rusty Play) usé `set -a; . ./.env.local; set +a` y `curl` el endpoint copy. El sourcing tiró `parse error near '\n'` (una línea del .env tiene caracteres especiales que rompen zsh) → las vars `NEXT_PUBLIC_SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` quedaron VACÍAS → el `curl` salió sin Authorization → HTTP **400**, la copia NO se hizo. Lo detecté porque verifiqué el path destino (dio 400, no 200) en el mismo comando.
+
+**Causa raíz**: asumir que `.env.local` es sourceable en shell. No lo es de forma confiable: el formato dotenv admite valores (claves largas, base64, JSON) con caracteres que el shell interpreta o que rompen el parser. El error de sourcing no aborta el resto del comando → se ejecuta con vars vacías y "parece" que corrió.
+
+**Regla preventiva**: (1) para leer secretos del `.env.local` en un comando, usar `node --env-file=.env.local -e ...` o `tsx --env-file=`, NUNCA `source`/`.`. (2) Toda operación remota (copy/upload/POST) se verifica con el resultado real (HTTP 200 del destino) en el mismo paso — no asumir éxito porque "el comando no tiró error". (3) Si un comando depende de env vars, confirmar que NO estén vacías antes de usarlas.
+
 ## 2026-06-11 — Afinar el scale en pasos de 0.01 (sub-perceptibles) + sobre la variante que NO es la primaria del card → 6 commits, "no surten efecto"
 
 **Estado**: ✅ Cerrado (diagnosticado + corregido con pasos visibles ≥0.05)

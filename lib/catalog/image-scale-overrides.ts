@@ -498,14 +498,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-my-crew/MY CREW 388 FRENTE IMAGEN PRINCIPAL1200X589.jpg': 1.05,
 
   // Vulk Tour 81 Receta — cuadrado unisex G-Flex. Fotos GALERIA. Inicial 1.3/1.15
-  // (precedente My Crew); founder confirmó visual que quedaba GRANDE → -0.05 →
-  // perfil 1.25 / frente 1.10 (2026-06-11). medidas.jpeg queda en 1.0 (no grid).
-  'vulk-tour-81/TOUR 81-MBLK PERFIL GALERIA.jpg': 1.25,
-  'vulk-tour-81/TOUR 81-MBLK FRENTE GALERIA.jpg': 1.1,
-  'vulk-tour-81/TOUR 81 CRY PERFIL GALERIA.jpg': 1.25,
-  'vulk-tour-81/TOUR 81 CRY FRENTE GALERIA.jpg': 1.1,
-  'vulk-tour-81/TOUR 81- 315 OPTICS PERFIL GALERIA.jpg': 1.25,
-  'vulk-tour-81/TOUR 81- 315 OPTICS FRENTE GALERIA.jpg': 1.1,
+  // (precedente My Crew); founder confirmó visual GRANDE → -0.05 → 1.25/1.10 → otro
+  // -0.05 "un poco más" → perfil 1.20 / frente 1.05 (2026-06-13). medidas.jpeg en 1.0.
+  'vulk-tour-81/TOUR 81-MBLK PERFIL GALERIA.jpg': 1.2,
+  'vulk-tour-81/TOUR 81-MBLK FRENTE GALERIA.jpg': 1.05,
+  'vulk-tour-81/TOUR 81 CRY PERFIL GALERIA.jpg': 1.2,
+  'vulk-tour-81/TOUR 81 CRY FRENTE GALERIA.jpg': 1.05,
+  'vulk-tour-81/TOUR 81- 315 OPTICS PERFIL GALERIA.jpg': 1.2,
+  'vulk-tour-81/TOUR 81- 315 OPTICS FRENTE GALERIA.jpg': 1.05,
 
   // Rusty Play SOL — wayfarer hombre. Fotos 900×442 con el anteojo GRANDE (ocupa ~95%
   // del frame, más lleno que My Crew/Opposit) → perfil 1.1 / frente 1.0 (scale bajo,

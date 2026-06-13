@@ -22,6 +22,14 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-13 — Duplicar un asset en Storage (patrón CCCP) con el endpoint /object/copy + leer el .env con Node `--env-file`, no `source`
+
+**Contexto**: cargando Rusty Play (sol), la variante MBLK/S10 C1 no tenía perfil propio (comparte el frame con MBLK/S10) y `UNIQUE(product_id, storage_path)` impide atar el mismo path a dos variantes → hay que COPIAR el archivo en el bucket con otro nombre (patrón CCCP, como R-CY 02). Primer intento: `set -a; . ./.env.local` para tomar las claves y `curl` el copy → **falló** (`parse error near '\n'`: una línea del .env tiene caracteres que rompen el parser de zsh; las vars quedaron vacías → el POST salió sin auth → HTTP 400, copia no hecha). Solución: `node --env-file=.env.local -e "fetch(URL+'/storage/v1/object/copy', {method:'POST', headers:{Authorization:'Bearer '+SERVICE_ROLE}, body: JSON.stringify({bucketId:'products', sourceKey, destinationKey})})"` → copió bien (verificado HTTP 200 del nuevo path).
+
+**Aprendizaje**: (1) para duplicar un asset en Supabase Storage server-side, el endpoint es `POST /storage/v1/object/copy` con `{bucketId, sourceKey, destinationKey}` + service-role; no hace falta bajar/re-subir. (2) **Nunca** `source`/`.` el `.env.local` en shell para sacar secretos — un valor con caracteres especiales lo rompe en silencio y el comando sigue con la var vacía. Usar `node --env-file=` (Node parsea el formato dotenv correctamente), igual que `tsx --env-file=` para los scripts. (3) Toda operación de copy/upload se verifica con un HTTP 200 al path nuevo ANTES de referenciarlo en el seed.
+
+**Regla**: CCCP / cualquier op de Storage que dependa de secretos → Node `--env-file=.env.local`, nunca `source`. Verificar el resultado (HTTP 200 del destino) antes de seguir.
+
 ## 2026-06-11 — Validar el modelo de dominio con el agente experto ANTES de codear evita bugs que el typecheck jamás vería
 
 **Contexto**: para el simulador de visión propuse mi modelo físico (blur ∝ error refractivo por meridiano) y lo mandé a `optical-expert` ANTES de escribir una línea de código, como pregunta concreta punto por punto ("validá o corregí: 1...7") y no como "revisá esto". Devolvió 3 correcciones que el código habría absorbido silenciosamente: (a) mi asignación de σ estaba TRANSPUESTA → el astigmatismo se habría renderizado girado 90° (visualmente plausible, indetectable por tests, y un óptico cliente lo vería mal); (b) faltaba la zona muerta de 0.25D → un emétrope habría visto borroso (falso y dañino en YMYL); (c) mis fórmulas ad-hoc de cerca/hipermetropía eran reemplazables por UN modelo unificado de acomodación (A\*=clamp(SE+D,0,U)) más simple Y más correcto. También evitó un descubrimiento tardío costoso: el gaussian blur directo APAGA las luces nocturnas (hay que separarlas en blend screen) — eso lo habría descubierto recién mirando el render.
