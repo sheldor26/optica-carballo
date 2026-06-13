@@ -250,7 +250,18 @@ Atributo de respaldo (copy/alt, NO primaria por dificultad): `anteojos de sol ho
 
 Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes de sol` (260/36), `anteojos de sol polarizados mujer` (50/36); único polarizado atacable de la familia: `lentes de sol polarizados y antireflejo` (90/12). **Diferencia con Rusty Play**: Terdey es UNISEX y sus 3/3 variantes son polarizadas → acá SÍ se afirma "polarizados" para todo el modelo (Play 2/4 → "en variantes seleccionadas"). **Anti-canibalización**: Terdey targetea unisex + forma + branded + polarizado; NO pelea `...rusty hombre` (eso es de Play).
 
-**Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Play / Terdey / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
+*Rusty Patien (sol, wayfarer/cuadrado, UNISEX, 1/4 variante polarizada — MBLK/S10 POL; resto antirreflex/espejada/sin polarizar; bisagras metálicas flex, G-Flex, policarbonato UV400 cat 3) — slug `rusty-patien` en `/anteojos-de-sol/rusty/rusty-patien`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol rusty | 1.300 | 9 | head de sol de la marca (variante "lentes", la más alta) |
+| anteojos de sol rusty | 880 | 10 | head de sol de la marca (variante "anteojos") |
+| lentes wayfarer | 590 | 14 | forma del modelo |
+| anteojos wayfarer | 260 | 9 | forma (variante "anteojos") |
+| anteojos de sol rusty patien | 0 medido | ~4 | branded exacto → title + H1 + slug |
+
+**Honestidad (como Play)**: solo 1 de 4 variantes es polarizada (MBLK/S10 POL) → NUNCA afirmar "polarizados" en el H1/primera línea del modelo; el atributo se acota a la variante. **Anti-canibalización (3 wayfarer Rusty)**: Patien = unisex + branded + forma (NO afirma polarizado, NO pelea `...rusty hombre`); Terdey = unisex + polarizado de modelo (3/3, dueño de `anteojos de sol polarizados rusty`); Play = hombre (dueño de `...rusty hombre` / `lentes de sol hombre rusty` 480/9). Title: `Anteojos de Sol Rusty Patien Unisex | Óptica Carballo`.
+
+**Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Play / Terdey / Patien / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
 
 **No usar**:
 - `lentes rusty` (2.400 pero dif 49), `armazones rusty` (50/49), `armazones rusty mujer` (20/44) — difficulty prohibitiva y/o término muerto.

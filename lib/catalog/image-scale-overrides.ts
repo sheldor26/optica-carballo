@@ -534,6 +534,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 4ª variante MBLUE/Revo Blue (desactivada hasta confirmar stock). GALERIA=perfil.
   'rusty-terdey/TERDEY GALERIA-WEB-MBLUE-REVOBLUE.jpg': 1.15,
   'rusty-terdey/TERDEY AGALERIA-WEB-MBLUE-REVOBLUE.jpg': 1.0,
+
+  // Rusty Patien SOL — wayfarer unisex, bisagras metálicas flex. Fotos 1200×589 con el
+  // anteojo ~70% del frame (más chico que Play/Terdey 900×442) → perfil 1.2 / frente
+  // 1.05 (zona donde aterrizaron My Crew/Tour 81 en 1200×589; NO 1.3/1.15 = "grande").
+  'rusty-patien/PATIEN-SBLK---S15-perfil.jpg': 1.2,
+  'rusty-patien/PATIEN-SBLK---S15-frente.jpg': 1.05,
+  'rusty-patien/PATIEN-MBLK---R-BLUE-perfil.jpg': 1.2,
+  'rusty-patien/PATIEN-MBLK---R-BLUE-frente.jpg': 1.05,
+  'rusty-patien/PATIEN MBLK S10 POL.-p.jpg': 1.2,
+  'rusty-patien/PATIEN MBLK S10 POL.-f.jpg': 1.05,
+  'rusty-patien/PATIEN-669K-SBLK---G91-POL-perfil.jpg': 1.2,
+  'rusty-patien/PATIEN-669K-SBLK---G91-POL-frente.jpg': 1.05,
 };
 
 export function getImageScale(path: string | null | undefined): number {
