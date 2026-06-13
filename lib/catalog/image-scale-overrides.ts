@@ -520,6 +520,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-play/PLAY MBLK REVO BLUE FRENTE.jpg': 1.0,
   'rusty-play/PLAY-MBLK-S10-PERFIL.jpg': 1.1,
   'rusty-play/MBLK S10 Frente.webp': 1.0,
+
+  // Rusty Terdey SOL — wayfarer unisex, todas polarizadas. Fotos GALERIA-WEB 900×442
+  // (GALERIA=perfil, AGALERIA=frente). Encuadre estándar GALERIA-WEB → perfil 1.15 /
+  // frente 1.0. Revo Red usa -p/-f. medidas.png en 1.0 (no grid). (MBLUE/Revo Blue del
+  // bucket NO se carga: sin SKU/MLA.)
+  'rusty-terdey/TERDEY GALERIA-WEB-SBLK-S10-POL.jpg': 1.15,
+  'rusty-terdey/TERDEY AGALERIA-WEB-SBLK-S10-POL.jpg': 1.0,
+  'rusty-terdey/TERDEY GALERIA-WEB-MBLK-S10-POL.jpg': 1.15,
+  'rusty-terdey/TERDEY AGALERIA-WEB-MBLK-S10-POL.jpg': 1.0,
+  'rusty-terdey/TERDEY MBLKREVO RED POL.-p.jpg': 1.15,
+  'rusty-terdey/TERDEY MBLKREVO RED POL.-f.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
