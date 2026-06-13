@@ -182,6 +182,17 @@ Sitemap: https://opticacarballo.com.ar/sitemap.xml
 **No usar** (irrelevantes para este producto):
 - `lentes de sol vulk niños`, `lentes de sol vulk redondos`, `lentes de sol vulk aviador` (otras formas/segmentos).
 
+*Vulk The Sil (sol, cuadrado, UNISEX, 3/3 variantes polarizadas, Grilamid/TR-90, policarbonato UV400 cat 3, talle large) — slug `vulk-the-sil` en `/anteojos-de-sol/vulk/vulk-the-sil`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol vulk | 1.300 | 8 | head de sol de la marca (variante "lentes", la más alta) |
+| anteojos de sol vulk | 880 | 10 | head de sol de la marca (variante "anteojos") |
+| lentes de sol cuadrados | 390 | 11 | forma del modelo (variante "lentes") |
+| anteojos de sol cuadrados | 170 | 14 | forma (variante "anteojos") → H1 |
+| anteojos de sol polarizados vulk the sil | 0 medido | ~4 | branded exacto (existe en CSV) → title + H1 + slug |
+
+Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes de sol` (260/36). Branded long-tails (CSV): `lentes de sol vulk the sil` (203), `anteojos de sol vulk the sil` (71), `anteojos de sol polarizados vulk the sil` (62), `...lentes polarizados blue` (131) → alt de variantes. **Honestidad**: 3/3 polarizadas → SÍ se afirma "polarizados" para todo el modelo. **Anti-canibalización (sol Vulk)**: The Sil = cuadrado + polarizado de modelo + branded; Day Light = rectangular/carey; My Crew = receta. Sin keyword primaria compartida. Unisex → NO pelea `lentes/anteojos de sol vulk hombre`. Title: `Lentes de Sol Vulk The Sil Polarizados | Óptica Carballo`.
+
 ### Cluster: RUSTY (junio 2026 — Ubersuggest CSV real)
 
 **Keyword head crítica**: `anteojos rusty` — **3.600 vol/mes, difficulty 8** (head de marca más fuerte del nicho; atacar agresivamente desde el hub `/marcas/rusty` y `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty`).

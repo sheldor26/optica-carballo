@@ -535,17 +535,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-terdey/TERDEY GALERIA-WEB-MBLUE-REVOBLUE.jpg': 1.15,
   'rusty-terdey/TERDEY AGALERIA-WEB-MBLUE-REVOBLUE.jpg': 1.0,
 
-  // Rusty Patien SOL — wayfarer unisex, bisagras metálicas flex. Fotos 1200×589 con el
-  // anteojo ~70% del frame (más chico que Play/Terdey 900×442) → perfil 1.2 / frente
-  // 1.05 (zona donde aterrizaron My Crew/Tour 81 en 1200×589; NO 1.3/1.15 = "grande").
-  'rusty-patien/PATIEN-SBLK---S15-perfil.jpg': 1.2,
-  'rusty-patien/PATIEN-SBLK---S15-frente.jpg': 1.05,
-  'rusty-patien/PATIEN-MBLK---R-BLUE-perfil.jpg': 1.2,
-  'rusty-patien/PATIEN-MBLK---R-BLUE-frente.jpg': 1.05,
+  // Rusty Patien SOL — wayfarer unisex, bisagras metálicas flex. Fotos 1200×589.
+  // founder 2026-06-13: +0.05 a todas (1.2/1.05 → 1.25/1.10) MENOS MBLK/S10 POL que
+  // quedó bien en 1.2/1.05 (esa variante tiene la foto con el anteojo un toque más grande).
+  'rusty-patien/PATIEN-SBLK---S15-perfil.jpg': 1.25,
+  'rusty-patien/PATIEN-SBLK---S15-frente.jpg': 1.1,
+  'rusty-patien/PATIEN-MBLK---R-BLUE-perfil.jpg': 1.25,
+  'rusty-patien/PATIEN-MBLK---R-BLUE-frente.jpg': 1.1,
   'rusty-patien/PATIEN MBLK S10 POL.-p.jpg': 1.2,
   'rusty-patien/PATIEN MBLK S10 POL.-f.jpg': 1.05,
-  'rusty-patien/PATIEN-669K-SBLK---G91-POL-perfil.jpg': 1.2,
-  'rusty-patien/PATIEN-669K-SBLK---G91-POL-frente.jpg': 1.05,
+  'rusty-patien/PATIEN-669K-SBLK---G91-POL-perfil.jpg': 1.25,
+  'rusty-patien/PATIEN-669K-SBLK---G91-POL-frente.jpg': 1.1,
 
   // Rusty Patien Optics RECETA — wayfarer unisex (versión receta del Patien de sol).
   // Fotos 900×442 con el anteojo ~90% del frame (lleno, como Play/Terdey) → perfil 1.1
@@ -554,6 +554,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-patien-receta/PATIEN_669K-SBLK_F_GALERIA.jpg': 1.0,
   'rusty-patien-receta/PATIEN_MBLK_perfil.jpg': 1.1,
   'rusty-patien-receta/PATIEN_MBLK_OPTICAL_frente.jpg': 1.0,
+
+  // Vulk The Sil SOL — cuadrado unisex Grilamid (TR-90), todas polarizadas. Fotos
+  // 900×442 ("THESIL-...-"=perfil, "THE SIL-..."=frente). perfil 1.15 / frente 1.0
+  // (encuadre como Terdey/Play). OJO: perfil G15 sin guion final; S10 con "-POL-".
+  'vulk-the-sil/THESIL-SBLK-S10-POL-.jpg': 1.15,
+  'vulk-the-sil/THE SIL-SBLK-S10-POL.jpg': 1.0,
+  'vulk-the-sil/THESIL-MBLK-S10-POL-.jpg': 1.15,
+  'vulk-the-sil/THE SIL-MBLK-S10-POL.jpg': 1.0,
+  'vulk-the-sil/THESIL-MBLK-G15-POL.jpg': 1.15,
+  'vulk-the-sil/THE SIL-MBLK-G15-POL.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
