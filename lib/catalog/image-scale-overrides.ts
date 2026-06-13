@@ -506,6 +506,20 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-tour-81/TOUR 81 CRY FRENTE GALERIA.jpg': 1.1,
   'vulk-tour-81/TOUR 81- 315 OPTICS PERFIL GALERIA.jpg': 1.25,
   'vulk-tour-81/TOUR 81- 315 OPTICS FRENTE GALERIA.jpg': 1.1,
+
+  // Rusty Play SOL — wayfarer hombre. Fotos 900×442 con el anteojo GRANDE (ocupa ~95%
+  // del frame, más lleno que My Crew/Opposit) → perfil 1.1 / frente 1.0 (scale bajo,
+  // comparación visual). Naming inconsistente (.webp/.jpg). C1 perfil = copia CCCP de
+  // PLAY-MBLK-S10-PERFIL.jpg. medidas.png en 1.0 (no grid).
+  'rusty-play/PLAY-MBLK-S10-C1-PERFIL.jpg': 1.1,
+  'rusty-play/PLAY MBLK C1 Frente.webp': 1.0,
+  'rusty-play/PLAY-SBLK-S10-POL-perfil.jpg': 1.1,
+  'rusty-play/rusty play sblk s10 frente.webp': 1.0,
+  'rusty-play/PLAY-SBLK-PERFIL.jpg': 1.1,
+  'rusty-play/PLAY-MBLK-REVO-BLUE---PERFIL.jpg': 1.1,
+  'rusty-play/PLAY MBLK REVO BLUE FRENTE.jpg': 1.0,
+  'rusty-play/PLAY-MBLK-S10-PERFIL.jpg': 1.1,
+  'rusty-play/MBLK S10 Frente.webp': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

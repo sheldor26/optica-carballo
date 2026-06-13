@@ -228,7 +228,18 @@ Sitemap: https://opticacarballo.com.ar/sitemap.xml
 | rusty lentes de sol mujer | 390 | 9 | modelos femeninos |
 | anteojos de sol rusty mujer | 260 | 10 | modelos femeninos |
 
-**Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
+*Rusty Play (sol, wayfarer, hombre, polarizado en 2/4 variantes) — slug `rusty-play` en `/anteojos-de-sol/rusty/rusty-play`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol hombre rusty | 480 | 9 | head de sol masculino (variante "lentes") |
+| anteojos de sol rusty hombre | 320 | 9 | head de sol masculino (variante "anteojos") |
+| lentes wayfarer | 590 | 14 | forma del modelo |
+| anteojos wayfarer | 260 | 9 | forma (variante "anteojos") |
+| anteojos de sol rusty play | 10 | 9 | branded exacto → title + H1 + slug |
+
+Atributo de respaldo (copy/alt, NO primaria por dificultad): `anteojos de sol hombre polarizados`, `anteojos de sol hombre rusty polarizados` (10/36). **Honestidad**: solo 2 de 4 variantes son polarizadas → en copy "polarizados en variantes seleccionadas", nunca afirmar el atributo para todo el modelo. Title: `Anteojos de Sol Rusty Play Polarizados | Óptica Carballo` (55). _(Corrección de consistencia pendiente: la tabla "Rusty de sol" de arriba dice `anteojos de sol rusty hombre = 390/9`, pero el CSV related mide 320/9; el 390 es `anteojos rusty hombre` sin "de sol".)_
+
+**Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Play / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
 
 **No usar**:
 - `lentes rusty` (2.400 pero dif 49), `armazones rusty` (50/49), `armazones rusty mujer` (20/44) — difficulty prohibitiva y/o término muerto.
