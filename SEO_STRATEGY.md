@@ -218,6 +218,17 @@ Sitemap: https://opticacarballo.com.ar/sitemap.xml
 | lentes recetados | 390 | 9 | variante receta |
 | rusty r-cy 02 (branded) | 0 medido | ~4 | long-tail exacto |
 
+*Rusty Patien Optics (receta, wayfarer, UNISEX, G-Flex, lentes demo, 23,6 g — versión de receta del Patien de sol) — slug `rusty-patien-receta` en `/anteojos-de-receta/rusty/rusty-patien-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos recetados | 720 | 9 | categoría receta (head de la intención) |
+| lentes wayfarer | 590 | 14 | forma del modelo (variante "lentes") |
+| anteojos wayfarer | 260 | 9 | forma (variante "anteojos") → H1 |
+| lentes recetados | 390 | 9 | variante receta |
+| rusty patien receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug |
+
+> **Anti-canibalización Patien sol vs receta**: mismo frame, dos URLs, dos intenciones. El Patien de SOL (`/anteojos-de-sol/rusty/rusty-patien`) targetea `lentes/anteojos de sol rusty` (1.300/880); el de RECETA targetea `anteojos recetados` (720) + wayfarer. Sin keyword primaria compartida. Cross-link obligatorio entre ambas fichas ("versión de sol/receta del Patien").
+
 *Rusty de sol (Esvep, Sotion, Eslav, Gresent) — slugs en `/anteojos-de-sol/rusty/[modelo]`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

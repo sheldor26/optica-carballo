@@ -546,6 +546,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-patien/PATIEN MBLK S10 POL.-f.jpg': 1.05,
   'rusty-patien/PATIEN-669K-SBLK---G91-POL-perfil.jpg': 1.2,
   'rusty-patien/PATIEN-669K-SBLK---G91-POL-frente.jpg': 1.05,
+
+  // Rusty Patien Optics RECETA — wayfarer unisex (versión receta del Patien de sol).
+  // Fotos 900×442 con el anteojo ~90% del frame (lleno, como Play/Terdey) → perfil 1.1
+  // / frente 1.0 (NO 1.2 como el sol que era 1200×589). medidas.webp en 1.0 (no grid).
+  'rusty-patien-receta/PATIEN_669K-SBLK_P_GALERIA.jpg': 1.1,
+  'rusty-patien-receta/PATIEN_669K-SBLK_F_GALERIA.jpg': 1.0,
+  'rusty-patien-receta/PATIEN_MBLK_perfil.jpg': 1.1,
+  'rusty-patien-receta/PATIEN_MBLK_OPTICAL_frente.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
