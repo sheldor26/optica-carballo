@@ -240,6 +240,17 @@ Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes 
 
 > **Anti-canibalización Patien sol vs receta**: mismo frame, dos URLs, dos intenciones. El Patien de SOL (`/anteojos-de-sol/rusty/rusty-patien`) targetea `lentes/anteojos de sol rusty` (1.300/880); el de RECETA targetea `anteojos recetados` (720) + wayfarer. Sin keyword primaria compartida. Cross-link obligatorio entre ambas fichas ("versión de sol/receta del Patien").
 
+*Rusty Blinded (sol, REDONDO, UNISEX, 2 variantes — carey/marrón + negro mate; NINGUNA polarizada; antirreflejo interior, G-Flex, policarbonato UV400 cat 3, 22,7 g) — slug `rusty-blinded` en `/anteojos-de-sol/rusty/rusty-blinded`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos de sol redondos | 210 | 18 | forma del modelo (su carril único en el cluster) → H1 |
+| lentes de sol redondos | 320 | 14 | forma (variante "lentes", la más alta) |
+| anteojos de sol carey | 40 | 34 | variante carey → copy/alt text |
+| anteojos de sol rusty blinded | 0 medido | ~4 | branded exacto → title + H1 + slug |
+| anteojos de sol rusty | 880 | 10 | head de marca (soporte, NO primaria) |
+
+> **Anti-canibalización Blinded vs resto del cluster Rusty sol**: TODOS los demás Rusty de sol (Play, Terdey, Patien, Esvep, Sotion, Eslav, Gresent) son wayfarer/cuadrados y pelean `lentes/anteojos de sol rusty` + `wayfarer`. Blinded es el ÚNICO REDONDO → su primaria es la FORMA (`anteojos/lentes de sol redondos`, 210-320), no la marca-head. Sin keyword primaria compartida. NUNCA "polarizado" (ninguna variante lo es).
+
 *Rusty de sol (Esvep, Sotion, Eslav, Gresent) — slugs en `/anteojos-de-sol/rusty/[modelo]`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

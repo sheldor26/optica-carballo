@@ -564,6 +564,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-sil/THE SIL-MBLK-S10-POL.jpg': 1.0,
   'vulk-the-sil/THE SIL-MBLK-G15-POL P.jpg': 1.15,
   'vulk-the-sil/THESIL-MBLK-G15-POL.jpg': 1.0,
+
+  // Rusty Blinded SOL — redondo unisex, lente chico (48mm). perfil 1.15 / frente 1.0
+  // PROVISIONAL — ⚠️ fotos NO subidas al cargar; el redondo chico puede necesitar más
+  // scale → CONFIRMAR visual cuando el founder suba a rusty-blinded/. medidas.webp 1.0.
+  'rusty-blinded/BLINDED_MBLK-S10_P_GALERIA.jpg': 1.15,
+  'rusty-blinded/BLINDED_MBLK-S10_F_GALERIA.jpg': 1.0,
+  'rusty-blinded/BLINDED_MDEMI-MBLK_BROWN_-_P.jpg': 1.15,
+  'rusty-blinded/BLINDED_MDEMI-MBLK_BROWN_-_F.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
