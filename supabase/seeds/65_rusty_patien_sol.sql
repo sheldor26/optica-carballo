@@ -49,6 +49,7 @@ VALUES (
     "gender": "unisex",
     "line": "urbana",
     "measurements": {"frame_width_mm": 140, "lens_width_mm": 49, "lens_height_mm": 40, "bridge_mm": 21, "temple_length_mm": 145},
+    "weight_grams": 23.6,
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "callouts": [
