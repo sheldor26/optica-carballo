@@ -38,6 +38,7 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   pendiente" en `product-card.tsx` y `product-gallery.tsx`. Requiere
   fotos físicas de los productos + decidir bucket (Supabase Storage cuando
   haya más de 50 productos; `public/products/` mientras tanto).
+- [x] ~~**Subir fotos Vulk Raven** (seed 70, carga abierta 2026-06-14)~~ — **Hecho 2026-06-14**: founder subió las 7, todas HTTP 200, los 2 nombres con espacios/typo coinciden exacto con el seed. Scale confirmado visual = **1.0 en las 6** (fotos 900×442 más anchas que el card 3:2 → ya llenan ~90-95%; el 1.15 provisional cropeaba patillas).
 
 ## 🔴 Pendiente bloqueante para emails en producción (acción del founder)
 

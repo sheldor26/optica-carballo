@@ -248,13 +248,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 10 entries (2 por variante × 5). medidas.jpg y estuche-ramones.jpg sin scale.
   'vulk-53-3/53-3 S-G15 POL- PERFIL.jpg': 1.15,
   'vulk-53-3/53-3 S-G15 POL- FRENTE.jpg': 1.0,
-  'vulk-53-3/53-3 LG02 POL- PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 LG02 POL- PERFIL.jpg': 1.12,
   'vulk-53-3/53-3 LG02 POL- FRENTE.jpg': 1.0,
-  'vulk-53-3/53-3 MG20 POL - PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 MG20 POL - PERFIL.jpg': 1.10,
   'vulk-53-3/53-3 MG20 POL - FRENTE.jpg': 1.0,
   'vulk-53-3/53-3 S-25POL- PERFIL.jpg': 1.15,
   'vulk-53-3/53-3 S-25POL- FRENTE.jpg': 1.0,
-  'vulk-53-3/53-3 MBLK 03 POL - PERFIL.jpg': 1.15,
+  'vulk-53-3/53-3 MBLK 03 POL - PERFIL.jpg': 1.12,
   'vulk-53-3/53-3 MBLK 03 POL - FRENTE.jpg': 1.0,
 
   // Rusty Bruk — solo fotos de perfil (1 por variante, son las primarias del
@@ -579,6 +579,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-and-now/and-now-sblk-s10.jpg': 1.1,
   'rusty-and-now/and-now-mblk-s10-pol-frente.jpg': 1.1,
   'rusty-and-now/and-now-revo-blue-perfil.jpg': 1.1,
+
+  // Vulk Raven SOL — wayfarer/cuadrado unisex. CONFIRMADO visual (fotos subidas, vistas
+  // 2026-06-14): las 6 son 900×442 (2.04:1) = MÁS ANCHAS que el card 3:2 → object-contain
+  // ajusta por ancho y el anteojo ya llena ~90-95% → scale 1.0 en TODAS (subir cropearía las
+  // patillas, ≠ The Sil que venía con más margen y usaba 1.15). ⚠️ paths con espacios/typo del founder.
+  'vulk-raven/RAVEN-SBLK-PERFIL.jpg': 1.0,
+  'vulk-raven/RAVEN-SBLK-FRENTE.jpg': 1.0,
+  'vulk-raven/RAVEN-MBLK-PERFIL.jpg': 1.0,
+  'vulk-raven/RAVEN-MBLK-F-PRINCIPAL-WEB.jpg': 1.0,
+  'vulk-raven/RAVEN-MBLK-R blue PERFIL GALERIA.jpg': 1.0,
+  'vulk-raven/RAVEN-MBLK-R blue FRENTE GALERIA .jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

@@ -193,6 +193,17 @@ Sitemap: https://opticacarballo.com.ar/sitemap.xml
 
 Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes de sol` (260/36). Branded long-tails (CSV): `lentes de sol vulk the sil` (203), `anteojos de sol vulk the sil` (71), `anteojos de sol polarizados vulk the sil` (62), `...lentes polarizados blue` (131) → alt de variantes. **Honestidad**: 3/3 polarizadas → SÍ se afirma "polarizados" para todo el modelo. **Anti-canibalización (sol Vulk)**: The Sil = cuadrado + polarizado de modelo + branded; Day Light = rectangular/carey; My Crew = receta. Sin keyword primaria compartida. Unisex → NO pelea `lentes/anteojos de sol vulk hombre`. Title: `Lentes de Sol Vulk The Sil Polarizados | Óptica Carballo`.
 
+*Vulk Raven (sol, WAYFARER, UNISEX, 2/3 variantes polarizadas + 1 revo espejada, G-Flex, policarbonato UV400 cat 3, talle medium 26g) — slug `vulk-raven` en `/anteojos-de-sol/vulk/vulk-raven`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol vulk | 1.300 | 8 | head de sol de la marca (variante "lentes", la más alta) → meta_title + 1er párrafo |
+| anteojos de sol vulk | 880 | 10 | head de sol de la marca (variante "anteojos") → copy/H1 alt |
+| lentes wayfarer | 590 | 14 | forma del modelo → H1, copy |
+| anteojos wayfarer | 260 | 9 | forma (variante "anteojos") → copy, alt text |
+| anteojos/lentes de sol vulk raven | 0 medido | ~4 | branded exacto → title + H1 + slug + alt |
+
+Atributo de respaldo (copy/alt, NO primaria por dificultad): `anteojos de sol polarizados` (170/10), `lentes de sol polarizados` (260/12), `anteojos de sol unisex`. **Honestidad**: solo **2/3 polarizadas** → NO se afirma "polarizados" del modelo entero en title/H1 (mismo criterio Rusty Play/Patien 2/4); el title destaca **Unisex** (100% verdadero). **Anti-canibalización (sol Vulk)**: Raven = wayfarer + unisex + branded (carril de forma libre — ningún Vulk-sol pelea "wayfarer"); The Sil = cuadrado; Day Light = rectangular/carey; My Crew = receta. Unisex → NO pelea `lentes/anteojos de sol vulk hombre`. Title: `Lentes de Sol Vulk Raven Unisex | Óptica Carballo`.
+
 ### Cluster: RUSTY (junio 2026 — Ubersuggest CSV real)
 
 **Keyword head crítica**: `anteojos rusty` — **3.600 vol/mes, difficulty 8** (head de marca más fuerte del nicho; atacar agresivamente desde el hub `/marcas/rusty` y `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty`).
