@@ -600,7 +600,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // perfil +0.08 → 1.08; las otras 3 perfiles +0.03 → 1.03. Frentes quedan en 1.0.
   'vulk-the-trial/THE TRIAL-SBLK S10 POL - p.jpg': 1.03,
   'vulk-the-trial/THE TRIAL-SBLK S10 POL - F.jpg': 1.0,
-  'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG PERFIL.jpg': 1.08,
+  'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG PERFIL.jpg': 1.13,
   'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG FRENTE.jpg': 1.0,
   'vulk-the-trial/THE TRIAL-SBLK_ORANGE - p.jpg': 1.03,
   'vulk-the-trial/THE TRIAL-SBLK_ORANGE - f.jpg': 1.0,
