@@ -25,7 +25,9 @@ const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
  * - A. Tool use (`recommend_frames`) — elimina parsing JSON regex frágil.
  * - B. Few-shot examples descriptivos (4 ejemplos: oval / redondo medio /
  *   con anteojos / sin cara).
- * - C. Extended thinking habilitado (`budget_tokens: 1500`).
+ * - C. Extended thinking ADAPTIVE — el modelo decide cuánto razonar. Antes
+ *   `budget_tokens: 1500` (deprecado); alineado con el lector de receta
+ *   (prescription/route.ts, migrado 2026-06-11 / MISTAKES).
  * - D. Modelo Haiku 4.5 → Sonnet 4.6 (mejor accuracy en clasificación
  *   geométrica facial).
  *
@@ -37,8 +39,9 @@ const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
  * Aceptable porque el resultado es de mejor calidad (más decisiones de
  * compra dependen de esto).
  */
-const THINKING_BUDGET_TOKENS = 1500;
-const MAX_TOKENS = 3000;
+// Adaptive thinking: max_tokens incluye el razonamiento + el output del tool,
+// así que dejamos aire suficiente (antes 3000 con budget fijo de 1500).
+const MAX_TOKENS = 4096;
 
 /**
  * Verifica magic bytes — confiar en el MIME type del header es
@@ -186,10 +189,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: MODEL_ID,
         max_tokens: MAX_TOKENS,
-        thinking: {
-          type: 'enabled',
-          budget_tokens: THINKING_BUDGET_TOKENS,
-        },
+        thinking: { type: 'adaptive' },
         tools: [RECOMMEND_FRAMES_TOOL],
         // ⚠️ tool_choice: "auto" obligatorio con extended thinking habilitado.
         // Forzado ({ type: "tool", ... }) NO es compatible con thinking.
