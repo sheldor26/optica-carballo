@@ -22,7 +22,7 @@ const STEP_2_OPTIONS: Option<QuizCara>[] = [
   { value: 'ovalada', label: 'Ovalada', emoji: '🥚', description: 'Frente más ancha, mandíbula suave' },
   { value: 'redonda', label: 'Redonda', emoji: '🌕', description: 'Mejillas llenas, frente y mandíbula similares' },
   { value: 'cuadrada', label: 'Cuadrada', emoji: '⬜', description: 'Mandíbula definida, frente amplia' },
-  { value: 'corazon', label: 'Corazón', emoji: '🫀', description: 'Frente amplia, mentón más angosto' },
+  { value: 'corazon', label: 'Corazón', emoji: '❤️', description: 'Frente amplia, mentón más angosto' },
 ];
 
 const STEP_3_OPTIONS: Option<QuizPrecio>[] = [

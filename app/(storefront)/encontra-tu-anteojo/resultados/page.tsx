@@ -70,7 +70,7 @@ export default async function ResultadosPage({ searchParams }: { searchParams: S
                   className="group border-border bg-background flex flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md"
                 >
                   {/* Rank badge */}
-                  <div className="relative aspect-[4/3] bg-muted overflow-hidden">
+                  <div className="relative aspect-[4/3] bg-background overflow-hidden">
                     <span className="absolute left-3 top-3 z-10 bg-foreground text-background text-xs font-bold rounded-full size-7 flex items-center justify-center">
                       {i + 1}
                     </span>
