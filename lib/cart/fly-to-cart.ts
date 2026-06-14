@@ -26,10 +26,15 @@ export function flyToCart(originEl: HTMLElement | null): void {
   const target = document.getElementById(CART_TARGET_ID);
   if (target === null) return;
 
+  // La primera imagen VISIBLE dentro del origen. Importa cuando el origen
+  // contiene layouts mobile+desktop (ej la galería: carrusel mobile oculto en
+  // desktop) — así no clonamos una imagen con display:none (rect 0x0).
   const sourceImg =
     originEl instanceof HTMLImageElement
       ? originEl
-      : originEl.querySelector('img');
+      : (Array.from(originEl.querySelectorAll('img')).find(
+          (img) => img.getBoundingClientRect().width > 0,
+        ) ?? originEl.querySelector('img'));
   const src = sourceImg?.currentSrc || sourceImg?.src;
   if (!src) return;
 
