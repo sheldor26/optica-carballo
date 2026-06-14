@@ -60,30 +60,11 @@ export function WishlistButton({
     });
   };
 
-  // Evitar hydration mismatch — render nada en SSR, fade in al montar
-  if (!mounted) {
-    if (variant === 'card') {
-      return (
-        <div
-          aria-hidden="true"
-          className={cn(
-            'absolute right-2 top-2 z-10 size-9 rounded-full',
-            className,
-          )}
-        />
-      );
-    }
-    if (variant === 'title') {
-      return (
-        <div
-          aria-hidden="true"
-          className={cn('size-11 shrink-0 rounded-full', className)}
-        />
-      );
-    }
-    return null;
-  }
-
+  // El botón se renderiza SIEMPRE (también en SSR) para que sea interactivo
+  // desde el primer pixel — sin placeholder "muerto" que, antes de hidratar,
+  // dejaba un hueco donde el tap mobile no agregaba y caía en el Link (abría
+  // la publicación). No hay hydration mismatch: `isSaved` arranca false en
+  // server y cliente, y se actualiza recién en el useEffect post-mount.
   if (variant === 'title') {
     return (
       <button
@@ -96,7 +77,7 @@ export function WishlistButton({
           className,
         )}
       >
-        <span className={cn('inline-flex', isSaved && 'animate-pop')}>
+        <span className={cn('inline-flex', mounted && isSaved && 'animate-pop')}>
           <Heart
             className={cn(
               'size-6 transition-colors',
@@ -126,7 +107,7 @@ export function WishlistButton({
           className,
         )}
       >
-        <span className={cn('inline-flex', isSaved && 'animate-pop')}>
+        <span className={cn('inline-flex', mounted && isSaved && 'animate-pop')}>
           <Heart
             className={cn(
               'size-4 transition-colors',
@@ -147,11 +128,11 @@ export function WishlistButton({
       aria-label={isSaved ? 'Quitar de favoritos' : 'Agregar a favoritos'}
       aria-pressed={isSaved}
       className={cn(
-        'group/wish bg-background/85 hover:bg-background absolute right-2 top-2 z-10 flex size-9 items-center justify-center rounded-full backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110',
+        'group/wish bg-background/85 hover:bg-background absolute right-2 top-2 z-10 flex size-11 items-center justify-center rounded-full backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110',
         className,
       )}
     >
-      <span className={cn('inline-flex', isSaved && 'animate-pop')}>
+      <span className={cn('inline-flex', mounted && isSaved && 'animate-pop')}>
         <Heart
           className={cn(
             'size-4 transition-colors',
