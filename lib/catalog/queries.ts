@@ -517,6 +517,72 @@ export async function fetchRelatedProducts(args: {
 }
 
 /**
+ * Datos del producto "hermano" en la otra modalidad (sol ↔ receta) del MISMO
+ * modelo, para el cross-link de la PDP. El vínculo se deriva por convención de
+ * naming del slug: el armazón de receta lleva sufijo `-receta`, el de sol no.
+ * (Validado en DB 2026-06-14: los 6 pares sol↔receta cumplen exactamente
+ * slug ± "-receta" — rusty-misty/patien/spell/xold, vulk-katleen, vulk-the-trial.)
+ * Devuelve null si el modelo no tiene par en la otra modalidad.
+ */
+export type CompanionModality = {
+  href: string;
+  /** category slug del producto DESTINO ('anteojos-de-sol' | 'anteojos-de-receta') */
+  targetCategorySlug: string;
+  name: string;
+  imagePath: string | null;
+  imageScale: number;
+};
+
+type CompanionRow = {
+  slug: string;
+  name: string;
+  brand: { slug: string; is_active: boolean };
+  category: { slug: string };
+  images: { storage_path: string; is_primary: boolean; sort_order: number }[] | null;
+};
+
+export async function fetchCompanionModality(args: {
+  slug: string;
+  categorySlug: string;
+}): Promise<CompanionModality | null> {
+  const isReceta = args.categorySlug === 'anteojos-de-receta';
+  const companionSlug = isReceta
+    ? args.slug.replace(/-receta$/, '')
+    : `${args.slug}-receta`;
+  if (companionSlug === args.slug) return null;
+
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from('products')
+    .select(
+      `slug, name,
+       brand:brands!inner(slug, is_active),
+       category:categories!inner(slug),
+       images:product_images(storage_path, is_primary, sort_order)`,
+    )
+    .eq('is_active', true)
+    .eq('slug', companionSlug)
+    .maybeSingle()
+    .returns<CompanionRow>();
+
+  if (!data || !data.brand.is_active) return null;
+
+  const imgs = data.images ?? [];
+  const primaryPath =
+    imgs.find((i) => i.is_primary)?.storage_path ??
+    [...imgs].sort((a, b) => a.sort_order - b.sort_order)[0]?.storage_path ??
+    null;
+
+  return {
+    href: `/${data.category.slug}/${data.brand.slug}/${data.slug}`,
+    targetCategorySlug: data.category.slug,
+    name: data.name,
+    imagePath: primaryPath,
+    imageScale: getImageScale(primaryPath),
+  };
+}
+
+/**
  * Devuelve todas las marcas activas ordenadas por sort_order. Reusada
  * por la home (sección "marcas que trabajamos") y otras vistas que listan
  * marcas independientemente de si tienen productos cargados.

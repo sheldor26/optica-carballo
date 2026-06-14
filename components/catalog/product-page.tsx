@@ -26,6 +26,7 @@ import { ProductTrustSignals } from '@/components/product/product-trust-signals'
 import { ProductFaqs } from '@/components/product/product-faqs';
 import { RelatedProducts } from '@/components/product/related-products';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
+import { CrossModalityLink } from '@/components/product/cross-modality-link';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
 import { VariantList } from '@/components/product/variant-list';
@@ -37,7 +38,7 @@ import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { isCheckoutEnabled } from '@/lib/features';
-import { fetchRelatedProducts } from '@/lib/catalog/queries';
+import { fetchRelatedProducts, fetchCompanionModality } from '@/lib/catalog/queries';
 import {
   VariantSelectionProvider,
   VariantUrlSync,
@@ -241,13 +242,17 @@ export async function ProductDetailPage({
   const categoryUrl = `${SITE_URL}/${category.slug}`;
   const subtitle = categorySubtitle(category, product.attributes);
 
-  const relatedProducts = await fetchRelatedProducts({
-    excludeSlug: product.slug,
-    categorySlug: category.slug,
-    brandSlug: product.brand.slug,
-    priceCents: minPrice !== null ? minPrice : null,
-    frameShape: extractFrameShape(product.attributes),
-  });
+  // En paralelo para no sumar latencia (el companion es 1 query liviana).
+  const [relatedProducts, companion] = await Promise.all([
+    fetchRelatedProducts({
+      excludeSlug: product.slug,
+      categorySlug: category.slug,
+      brandSlug: product.brand.slug,
+      priceCents: minPrice !== null ? minPrice : null,
+      frameShape: extractFrameShape(product.attributes),
+    }),
+    fetchCompanionModality({ slug: product.slug, categorySlug: category.slug }),
+  ]);
 
   // Alertas: el estado de sesión + alerta existente lo resuelve
   // <CreateAlertButton /> client-side. Hacerlo acá con getCurrentUser()
@@ -457,6 +462,11 @@ export async function ProductDetailPage({
               ),
             }))}
           />
+
+          {/* Cross-link sol↔receta: si este modelo existe en la otra modalidad,
+              ofrecer el salto en la zona de decisión (debajo de variantes).
+              CRO: captura "lo quiero con mi graduación" / "lo quiero de sol". */}
+          {companion && <CrossModalityLink companion={companion} />}
 
           {/* Centinela: cuando scrolleás pasado el área de compra, aparece la
               barra sticky mobile con precio + Agregar (la PDP es larga). */}

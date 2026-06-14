@@ -10405,6 +10405,26 @@ A la 2ª iteración de scale del mismo producto (cuando ya rebotó entre chico y
 - Ajuste de `image-scale-overrides.ts` que ya tuvo ≥2 rondas sin converger.
 - NO aplica a la primera propuesta de scale (ahí va el valor único comparado contra el grid, regla 15 sub-regla).
 
+## 2026-06-14 — AFIP se disolvió → ahora es ARCA; no nombrar al organismo en copy de cara al cliente
+
+**Categoría**: Copy legal/fiscal / argentine-ecom
+**Confianza**: 🟢 Alta (verificado con web por argentine-ecom: Decreto 953/2024 + RG ARCA 5803/2025)
+
+### Qué pasó
+
+El trust signal de factura decía "Electrónica, cumple AFIP". El founder marcó que era confuso. Al verificar: **la AFIP se disolvió por Decreto 953/2024 (oct-2024) y la sucesora es ARCA** (Agencia de Recaudación y Control Aduanero). "Cumple AFIP" estaba además desactualizado.
+
+### El learning
+
+1. **AFIP ya no existe como organismo → es ARCA.** Cualquier referencia nueva a "AFIP" en copy/legal está desactualizada. (Las páginas legales viejas que dicen "AFIP" son deuda a revisar.)
+2. **En copy de cara al cliente, mejor NO nombrar al organismo recaudador.** No agrega confianza ("cumple ARCA" suena raro, el rebrand no permeó al consumidor); comunicar el beneficio ("factura electrónica oficial"), no la jerga.
+3. **No hay obligación legal de mostrar texto sobre la factura en la PDP.** La obligación es emitir la factura electrónica con CAE (ya se hace vía Tusfacturas) y entregarla. Quitar el texto del trust signal no incumple nada.
+
+### Regla preventiva / cuándo aplicar
+
+- Al escribir/editar copy fiscal: nunca escribir "AFIP" de nuevo; usar "ARCA" si hay que nombrar el organismo, o (mejor) no nombrarlo.
+- Trust signals de factura → comunicar "electrónica y oficial", no el ente.
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
