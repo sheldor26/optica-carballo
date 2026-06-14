@@ -5,6 +5,7 @@ import { Check, Loader2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { addToCart } from '@/lib/cart/actions';
+import { flyToCart } from '@/lib/cart/fly-to-cart';
 
 /**
  * Botón "Agregar" inline en cada variante. Usa transition para feedback
@@ -18,6 +19,7 @@ export function AddToCartButton({
   variantLabel,
   size = 'sm',
   fullWidth = false,
+  flyOriginId,
 }: {
   variantId: string;
   disabled?: boolean;
@@ -25,6 +27,9 @@ export function AddToCartButton({
   /** `lg` + `fullWidth` para el CTA primario de la PDP. Default `sm` inline. */
   size?: 'sm' | 'lg';
   fullWidth?: boolean;
+  /** Id del elemento desde donde "vuela" la foto al carrito al agregar (ej la
+   * galería de la PDP). Si no se pasa, no hay animación de vuelo. */
+  flyOriginId?: string;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +41,9 @@ export function AddToCartButton({
       const res = await addToCart({ variantId, quantity: 1 });
       if (res.ok) {
         setJustAdded(true);
+        if (flyOriginId) {
+          flyToCart(document.getElementById(flyOriginId));
+        }
         window.dispatchEvent(new CustomEvent('oc:cart-changed'));
         setTimeout(() => setJustAdded(false), 1500);
       } else {

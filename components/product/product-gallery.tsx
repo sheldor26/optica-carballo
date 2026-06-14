@@ -103,6 +103,7 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
     // top-20 ≈ alto del header sticky (16) + margin.
     <div className="flex flex-col gap-3 md:sticky md:top-20">
       <button
+        id="oc-fly-origin"
         type="button"
         onClick={() => setLightboxOpen(true)}
         aria-label={`Ampliar imagen: ${active.alt_text}`}

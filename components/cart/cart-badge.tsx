@@ -40,7 +40,11 @@ export function CartBadge() {
 
   return (
     <Button asChild variant="ghost" size="icon" className="relative">
-      <Link href="/carrito" aria-label={`Carrito${count ? ` (${count})` : ''}`}>
+      <Link
+        id="oc-cart-target"
+        href="/carrito"
+        aria-label={`Carrito${count ? ` (${count})` : ''}`}
+      >
         <ShoppingBag className="size-5" />
         {showBadge && (
           <span

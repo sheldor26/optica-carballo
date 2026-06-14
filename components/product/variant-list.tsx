@@ -142,6 +142,7 @@ export function VariantList({
               disabled={!selectedInStock}
               size="lg"
               fullWidth
+              flyOriginId="oc-fly-origin"
             />
           ) : (
             <VariantWhatsappCta

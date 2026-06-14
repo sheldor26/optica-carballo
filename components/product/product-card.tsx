@@ -14,6 +14,7 @@ import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { buildProductImageAlt } from '@/lib/catalog/image-alt';
 import { QuickView } from '@/components/product/quick-view';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
+import { TiltCard } from '@/components/ui/tilt-card';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
 export type ProductCardVariant = {
@@ -193,6 +194,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   });
 
   return (
+    <TiltCard className="h-full">
     <article className="group/card relative flex h-full flex-col">
       <WishlistButton
         entry={{
@@ -305,6 +307,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         />
       )}
     </article>
+    </TiltCard>
   );
 }
 
