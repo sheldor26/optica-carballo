@@ -22,6 +22,19 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-13 — El scale de imagen se define por el ENCUADRE (cuánto ocupa el anteojo en el frame), NO por la resolución; bajar la foto y mirarla antes de setear
+
+**Contexto**: cargando ~8 productos de sol Rusty/Vulk de la misma familia, el scale correcto varió mucho aunque el producto fuera casi idéntico, porque el fotógrafo encuadró distinto. Setear por "resolución igual → scale igual" falla; hay que mirar qué porcentaje del ancho ocupa el anteojo.
+
+**Datos concretos (perfil) de esta tanda**:
+- Foto **900×442** con anteojo lleno (~90% del ancho) → **1.1–1.15** (Play, Terdey, Patien receta).
+- Foto **1200×589** con anteojo chico (~70%) → **1.2** (Patien sol; My Crew/Tour 81 receta aterrizaron 1.19–1.20).
+- Foto **667×442** wraparound con anteojo grande (~90%) → **1.1** (And Now).
+- Foto **1000×491** (2:1) con anteojo chico → **1.5** (Esvep).
+→ Misma "familia" y hasta mismo frame (Patien sol 1200×589=1.2 vs Patien receta 900×442=1.1) necesitaron scale distinto SOLO por el encuadre.
+
+**Cómo aplicarlo**: antes de setear el override, `curl` la foto del perfil + `file` para ver dims, y leerla con la tool de imagen para juzgar el % que ocupa el anteojo; comparar contra una referencia ya aprobada (ej. Opposit@1.15 llena el card). Regla práctica: `scale ≈ (% objetivo ~100) / (% que ocupa el anteojo)`. Pasos de ajuste fino del founder: ≥0.05 (0.01 es imperceptible — ver entrada de scale-tuning). Evita la iteración "se ve grande/chico".
+
 ## 2026-06-13 — `catalog-loader` cazó un material fuera del enum (grilamid→tr-90) antes de romper el comparador — 2da intercepción de la norma
 
 **Contexto**: cargando Vulk The Sil, el founder dio el material "Grilamid". Yo iba a poner `frame_material:"grilamid"` como valor libre. El `catalog-loader` (norma) lo frenó: el enum del schema es `acetate|metal|injected|titanium|g-flex|tr-90` — "grilamid" NO está. Como Grilamid (en óptica) ES TR-90 (nombre comercial de EMS-Grivory para esa poliamida), la jugada correcta es `frame_material:"tr-90"` + nombrar "Grilamid" en copy/callout. Un valor libre fuera del enum habría caído a "—" o sin label en el comparador/filtros.
