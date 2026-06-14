@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { MapPin } from 'lucide-react';
 import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { NewsletterForm } from '@/components/newsletter/newsletter-form';
 import { SocialLinks } from '@/components/layout/social-links';
 import { FOOTER_INFO_LINKS, PRIMARY_NAV, TOOLS_LINKS } from '@/lib/site/nav';
-import { getBusinessInfo } from '@/lib/site/business';
+import { getBusinessInfo, GOOGLE_BUSINESS_URL } from '@/lib/site/business';
 
 export function SiteFooter() {
   const business = getBusinessInfo();
@@ -31,6 +32,15 @@ export function SiteFooter() {
                 {location} — Argentina
               </p>
             )}
+            <a
+              href={GOOGLE_BUSINESS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground/80 hover:text-foreground mt-2 inline-flex items-center gap-1.5 text-sm font-medium underline-offset-2 hover:underline"
+            >
+              <MapPin className="size-3.5" aria-hidden="true" />
+              Cómo llegar / ver en Google Maps
+            </a>
             <SocialLinks className="mt-5" />
           </div>
 

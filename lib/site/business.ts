@@ -27,6 +27,10 @@ export type SocialLink = {
  * (le dice a Google que estos perfiles son del negocio — ayuda al panel de
  * conocimiento y al E-E-A-T).
  */
+/** Ficha de Google Business Profile (Maps). Link público compartible.
+ * Se usa para "Cómo llegar" en el footer/contacto y en el `sameAs` del schema. */
+export const GOOGLE_BUSINESS_URL = 'https://share.google/ElT63uDCJnHP04yDk';
+
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     platform: 'instagram',
@@ -77,11 +81,20 @@ export function getBusinessInfo(): BusinessInfo {
     : null;
 
   return {
+    // Dirección real del local (confirmada por el founder 2026-06). Hardcodeada
+    // como fallback para que aparezca en producción sin depender de env vars en
+    // Vercel; si algún día se setea la env, esa gana.
     siteName: nonEmpty(process.env.NEXT_PUBLIC_SITE_NAME) ?? 'Óptica Carballo',
-    locality: nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_LOCALITY),
-    region: nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_REGION),
-    street: nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_STREET),
-    postal: nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_POSTAL),
+    locality:
+      nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_LOCALITY) ??
+      'Gob. Virasoro',
+    region:
+      nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_REGION) ?? 'Corrientes',
+    street:
+      nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_STREET) ??
+      'Av. Lavalle 2686',
+    postal:
+      nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_ADDRESS_POSTAL) ?? '3342',
     phone: nonEmpty(process.env.NEXT_PUBLIC_BUSINESS_PHONE),
     whatsappNumber,
     whatsappLink,
