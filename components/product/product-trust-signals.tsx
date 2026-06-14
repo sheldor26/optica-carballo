@@ -42,7 +42,7 @@ const SIGNALS: Signal[] = [
   {
     icon: FileText,
     title: 'Factura A o B',
-    description: 'Electrónica, cumple AFIP',
+    description: 'Electrónica y oficial',
   },
   {
     icon: RotateCcw,
