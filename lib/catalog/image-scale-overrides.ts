@@ -598,13 +598,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // habría recortado las patillas — Gresent debía tener foto con más margen).
   // Founder 2026-06-14 (2do pase, vistas en el grid): V2 (MBLK 053/S15 antifog)
   // perfil +0.08 → 1.08; las otras 3 perfiles +0.03 → 1.03. Frentes quedan en 1.0.
-  'vulk-the-trial/THE TRIAL-SBLK S10 POL - p.jpg': 1.03,
+  'vulk-the-trial/THE TRIAL-SBLK S10 POL - p.jpg': 1.08,
   'vulk-the-trial/THE TRIAL-SBLK S10 POL - F.jpg': 1.0,
-  'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG PERFIL.jpg': 1.13,
+  'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG PERFIL.jpg': 1.18,
   'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG FRENTE.jpg': 1.0,
-  'vulk-the-trial/THE TRIAL-SBLK_ORANGE - p.jpg': 1.03,
+  'vulk-the-trial/THE TRIAL-SBLK_ORANGE - p.jpg': 1.08,
   'vulk-the-trial/THE TRIAL-SBLK_ORANGE - f.jpg': 1.0,
-  'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  p.jpg': 1.03,
+  'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  p.jpg': 1.08,
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  f.jpg': 1.0,
 
   // Vulk The Trial Optics RECETA — mismo frame aviador doble puente que el sol, mismas
