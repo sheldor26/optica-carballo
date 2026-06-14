@@ -572,6 +572,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-blinded/BLINDED_MBLK-S10_F_GALERIA.jpg': 1.0,
   'rusty-blinded/BLINDED_MDEMI-MBLK_BROWN_-_P.jpg': 1.15,
   'rusty-blinded/BLINDED_MDEMI-MBLK_BROWN_-_F.jpg': 1.0,
+
+  // Rusty And Now SOL — envolvente deportivo. Fotos 667×442 (1.5:1) con el anteojo GRANDE
+  // (~90% del frame) → perfil 1.1 (NO el 1.5 de Esvep, cuya foto tenía el anteojo chico).
+  // Solo perfiles (no hay frente). medidas.webp en 1.0 (no grid).
+  'rusty-and-now/and-now-sblk-s10.jpg': 1.1,
+  'rusty-and-now/and-now-mblk-s10-pol-frente.jpg': 1.1,
+  'rusty-and-now/and-now-revo-blue-perfil.jpg': 1.1,
 };
 
 export function getImageScale(path: string | null | undefined): number {

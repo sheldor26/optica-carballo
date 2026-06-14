@@ -119,6 +119,8 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   - [ ] Vulk Tour 81 receta (seed 62) — tiene unidad física (315).
   - [ ] Rusty Play sol (seed 63).
   - [ ] Rusty Terdey sol (seed 64).
+  - [ ] Rusty Blinded sol (seed 68).
+  - [ ] Rusty And Now sol (seed 69).
   - [x] ~~Rusty Patien sol (seed 65) + receta (seed 66)~~ — **23,6 g** (founder pasó el peso 2026-06-13, aplicado a ambos, mismo frame).
 
 - [ ] **Backfill de `cacheControl: 31536000` en objetos viejos del bucket `products`** (audit perf 2026-06-11). Los seeds subieron fotos con el default de Supabase (`max-age=3600`). Mitigado por `images.minimumCacheTTL = 31d` en next.config → prioridad baja. Si se hace: script que re-sube cada objeto con el cacheControl correcto (storage `update` necesita el archivo).

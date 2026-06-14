@@ -251,6 +251,17 @@ Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes 
 
 > **Anti-canibalización Blinded vs resto del cluster Rusty sol**: TODOS los demás Rusty de sol (Play, Terdey, Patien, Esvep, Sotion, Eslav, Gresent) son wayfarer/cuadrados y pelean `lentes/anteojos de sol rusty` + `wayfarer`. Blinded es el ÚNICO REDONDO → su primaria es la FORMA (`anteojos/lentes de sol redondos`, 210-320), no la marca-head. Sin keyword primaria compartida. NUNCA "polarizado" (ninguna variante lo es).
 
+*Rusty And Now (sol, ENVOLVENTE/deportivo wraparound, UNISEX, 3 variantes — 2 polarizadas SBLK/S10 + MBLK/S10; 1 espejada azul revo NO polarizada con antirreflejo; G-Flex, policarbonato UV400 cat 3) — slug `rusty-and-now` en `/anteojos-de-sol/rusty/rusty-and-now`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos de sol deportivos | 110 | 10 | uso/forma del modelo (su carril único) → H1 |
+| lentes de sol deportivos | 210 | 17 | variante "lentes" de la primaria |
+| lentes de sol polarizados | 260 | 12 | soporte SOLO para las 2 variantes pol. (no atributo del producto entero) |
+| anteojos de sol rusty | 320-880 | 9-10 | head de marca (soporte, NO primaria) |
+| anteojos de sol rusty and now | 0 medido | ~4 | branded exacto → title + H1 + slug |
+
+> **Anti-canibalización And Now vs resto del cluster**: And Now es ENVOLVENTE/deportivo → primaria = USO (`anteojos/lentes de sol deportivos`, 110-210), carril que ningún otro Rusty ataca. Se diferencia de **Esvep** (también envolvente, pero pelea el head `lentes de sol rusty`): And Now toma el ángulo DEPORTIVO en title/H1, Esvep el head de marca. Distinto de wayfarer (Play/Terdey/Patien) y redondo (Blinded). "Polarizado" solo en el copy de las 2 variantes que lo son. Cross-link Esvep↔And Now.
+
 *Rusty de sol (Esvep, Sotion, Eslav, Gresent) — slugs en `/anteojos-de-sol/rusty/[modelo]`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
