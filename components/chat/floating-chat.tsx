@@ -52,8 +52,18 @@ export function FloatingChat() {
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
+  const [buyBarVisible, setBuyBarVisible] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  // La barra de compra sticky (PDP mobile) ocupa el fondo — corremos el botón
+  // del chat hacia arriba para no solaparnos.
+  useEffect(() => {
+    const onBuyBar = (e: Event) =>
+      setBuyBarVisible(Boolean((e as CustomEvent).detail?.visible));
+    window.addEventListener('oc:buybar', onBuyBar);
+    return () => window.removeEventListener('oc:buybar', onBuyBar);
+  }, []);
 
   // Auto-scroll al final cuando llega nuevo mensaje o streaming chunk.
   useEffect(() => {
@@ -185,7 +195,10 @@ export function FloatingChat() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="bg-foreground text-background hover:bg-foreground/90 animate-in fade-in zoom-in-90 fixed bottom-6 right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 md:bottom-8 md:right-24"
+          className={cn(
+            'bg-foreground text-background hover:bg-foreground/90 animate-in fade-in zoom-in-90 fixed right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 md:right-24 md:bottom-8',
+            buyBarVisible ? 'bottom-24' : 'bottom-6',
+          )}
           aria-label="Abrir asistente"
         >
           <Sparkles className="size-6" strokeWidth={1.5} />

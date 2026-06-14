@@ -42,6 +42,7 @@ import {
   VariantSelectionProvider,
   VariantUrlSync,
 } from '@/lib/product/variant-selection';
+import { StickyBuyBar } from '@/components/product/sticky-buy-bar';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { ProductDetailData } from '@/lib/catalog/queries';
 
@@ -454,6 +455,24 @@ export async function ProductDetailPage({
               ),
             }))}
           />
+
+          {/* Centinela: cuando scrolleás pasado el área de compra, aparece la
+              barra sticky mobile con precio + Agregar (la PDP es larga). */}
+          <div id="oc-pdp-cta-sentinel" aria-hidden="true" />
+          {!isPlaceholder(product.name) && (
+            <StickyBuyBar
+              sentinelId="oc-pdp-cta-sentinel"
+              productName={product.name}
+              brandName={product.brand.name}
+              checkoutEnabled={isCheckoutEnabled()}
+              variants={activeVariants.map((v) => ({
+                id: v.id,
+                sku: v.sku,
+                priceCents: v.price_cents,
+                stockQty: v.stock_qty,
+              }))}
+            />
+          )}
 
           <ProductAttributes attributes={product.attributes} />
 

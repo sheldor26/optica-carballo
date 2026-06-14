@@ -28,6 +28,7 @@ export function FloatingWhatsapp({
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [compareCount, setCompareCount] = useState(0);
+  const [buyBarVisible, setBuyBarVisible] = useState(false);
 
   useEffect(() => {
     // Delay para no competir con LCP/CLS.
@@ -38,14 +39,21 @@ export function FloatingWhatsapp({
     const interval = window.setInterval(tick, 1500);
     window.addEventListener('focus', tick);
 
+    // La barra de compra sticky (PDP mobile) ocupa la esquina inferior — nos
+    // ocultamos mientras esté visible para no solaparnos.
+    const onBuyBar = (e: Event) =>
+      setBuyBarVisible(Boolean((e as CustomEvent).detail?.visible));
+    window.addEventListener('oc:buybar', onBuyBar);
+
     return () => {
       window.clearTimeout(t);
       window.clearInterval(interval);
       window.removeEventListener('focus', tick);
+      window.removeEventListener('oc:buybar', onBuyBar);
     };
   }, []);
 
-  const shouldHide = hidden || compareCount > 0;
+  const shouldHide = hidden || compareCount > 0 || buyBarVisible;
 
   const href = defaultMessage
     ? `${whatsappLink}${whatsappLink.includes('?') ? '&' : '?'}text=${encodeURIComponent(defaultMessage)}`
