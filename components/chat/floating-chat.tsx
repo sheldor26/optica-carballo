@@ -253,8 +253,11 @@ export function FloatingChat() {
           type="button"
           onClick={() => setIsOpen(true)}
           className={cn(
-            'bg-foreground text-background hover:bg-foreground/90 animate-in fade-in zoom-in-90 fixed right-6 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 md:right-24 md:bottom-8',
-            buyBarVisible ? 'bottom-24' : 'bottom-6',
+            // En mobile va ARRIBA del botón de WhatsApp (que vive en la esquina
+            // bottom-4/sm:bottom-6) para no superponerse. En desktop tiene su
+            // propia columna (md:right-24 md:bottom-8).
+            'bg-foreground text-background hover:bg-foreground/90 animate-in fade-in zoom-in-90 fixed right-4 z-40 flex size-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 sm:right-6 md:right-24 md:bottom-8',
+            buyBarVisible ? 'bottom-28' : 'bottom-20',
           )}
           aria-label="Abrir asistente"
         >

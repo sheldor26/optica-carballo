@@ -29,7 +29,7 @@ export const CATEGORIES = {
     name: 'Anteojos de receta',
     shortLabel: 'receta',
     metaPhrase: 'armazones de receta',
-    imagePath: null,
+    imagePath: 'category-receta.jpg',
   } satisfies CategoryConfig,
 } as const;
 
