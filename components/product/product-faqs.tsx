@@ -61,7 +61,7 @@ export function ProductFaqs({ categorySlug }: { categorySlug: string }) {
   const faqs = categorySlug === 'anteojos-de-receta' ? RECETA_FAQS : SOL_FAQS;
 
   return (
-    <section className="mt-16 max-w-3xl" aria-label="Preguntas frecuentes del producto">
+    <section className="mt-16 max-w-3xl mx-auto" aria-label="Preguntas frecuentes del producto">
       <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
         Dudas frecuentes
       </p>

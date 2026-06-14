@@ -20,7 +20,7 @@ export function WhatsappAdvisorCard({ productName, brandName }: Props) {
   if (!href) return null;
 
   return (
-    <section className="mt-20 max-w-3xl">
+    <section className="mt-20 max-w-3xl mx-auto">
       <div className="relative overflow-hidden rounded-2xl border border-emerald-600/20 bg-gradient-to-br from-emerald-500/[0.06] via-background to-background p-6 sm:p-8">
         <div
           aria-hidden="true"
