@@ -190,7 +190,7 @@ export function CategoryCatalogView({
             className="grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20"
           >
             {products.map((p, idx) => (
-              <RevealOnScroll key={p.slug} delay={60 * idx} className="h-full">
+              <RevealOnScroll key={p.slug} delay={(idx % 3) * 70} className="h-full">
                 <ProductCard
                   product={{
                     slug: p.slug,

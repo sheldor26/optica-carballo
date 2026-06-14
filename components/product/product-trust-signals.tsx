@@ -1,5 +1,13 @@
 import Link from 'next/link';
-import { Award, Truck, RotateCcw, Stethoscope, FileText, Undo2 } from 'lucide-react';
+import {
+  Award,
+  Truck,
+  RotateCcw,
+  Stethoscope,
+  FileText,
+  Store,
+  Undo2,
+} from 'lucide-react';
 
 type Signal = {
   icon: typeof Award;
@@ -10,6 +18,12 @@ type Signal = {
 };
 
 const SIGNALS: Signal[] = [
+  {
+    icon: Store,
+    title: 'Retiro gratis en local',
+    description: 'Lo retirás y probás en persona, en Virasoro',
+    href: '/sobre-nosotros',
+  },
   {
     icon: Award,
     title: '+30 años',

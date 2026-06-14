@@ -135,7 +135,7 @@ export function BrandFilterCatalogPage({
           className="grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20"
         >
           {items.map((item, idx) => (
-            <RevealOnScroll key={item.slug} delay={60 * idx} className="h-full">
+            <RevealOnScroll key={item.slug} delay={(idx % 3) * 70} className="h-full">
               <ProductCard product={item} />
             </RevealOnScroll>
           ))}
