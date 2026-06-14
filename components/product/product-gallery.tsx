@@ -133,7 +133,8 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
             src={activeUrl}
             scale={activeScale}
             alt={productName}
-            sizes="50vw"
+            sizes="(min-width: 1024px) 560px, 50vw"
+            priority
             durationMs={350}
             className="relative h-full w-full"
             imageClassName="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
