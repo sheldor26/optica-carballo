@@ -607,6 +607,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  p.jpg': 1.08,
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  f.jpg': 1.0,
 
+  // Vulk Bennie 51 SOL — redondo unisex talle small. CONFIRMADO visual (fotos subidas
+  // 2026-06-14, 7/7 HTTP 200, nombres = seed exacto): 900×442 más anchas que el card 3:2 →
+  // object-contain llena por ancho y el anteojo ocupa ~95% → 1.0 en las 6 (subir cropearía
+  // las patillas; el "redondo small → 1.15" NO aplicó porque el encuadre ya llena).
+  'vulk-bennie-51/BENNIE 51 MBLK-BLK perfil.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK-BLK FRENTE.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK-GUN G.GREY - p.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK-GUN G.GREY - F.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK GREEN P.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK GREEN F.jpg': 1.0,
+
   // Vulk The Trial Optics RECETA — mismo frame aviador doble puente que el sol, mismas
   // fotos 900×442 (más anchas que el card 3:2 → object-contain llena por ancho) → scale 1.0
   // en las 4 (mismo criterio que el sol The Trial y Raven; NO el 1.15 receta que cropearía).

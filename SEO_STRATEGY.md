@@ -215,6 +215,17 @@ Atributo de respaldo (copy/alt, NO primaria por dificultad): `anteojos de sol po
 
 Atributo de respaldo (copy/alt, NO primaria): `lentes de sol polarizados` (260), `anteojos de sol polarizados` (170) — SOLO referidos a las 2 variantes que sí lo son. **Honestidad**: solo **2/4 polarizadas** → NO se afirma "polarizados" del modelo entero en title/H1 (criterio Raven/Play/Patien); title destaca **Unisex**. NO targetear `aviador hombre` (90) — el producto es unisex. **Anti-canibalización (sol Vulk)**: The Trial = **aviador doble puente** + unisex + branded → carril de forma LIBRE (ningún Vulk-sol pelea "aviador"; The Sil = cuadrado, Raven = wayfarer, Day Light = rectangular/carey, My Crew = receta). Title: `Lentes de Sol Vulk The Trial Unisex | Óptica Carballo`. H1: `Lentes de Sol Vulk The Trial Aviador Unisex`.
 
+*Vulk Bennie 51 (sol, REDONDO, UNISEX, 1/3 polarizada + 1 gris degradé + 1 verde AR interno, G-Flex + patillas metal flex, policarbonato UV400 cat 3, small 18,9g) — slug `vulk-bennie-51` en `/anteojos-de-sol/vulk/vulk-bennie-51`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol vulk | 1.300 | 8 | **primaria de MARCA** (Bennie lidera por marca, no por forma) → meta_title, 1er párrafo |
+| anteojos de sol vulk | 880 | 10 | head de marca variante "anteojos" → copy/H2 |
+| lentes de sol redondos | 320 | 14 | forma, secundaria (NO primaria — la lidera Blinded) → H1, copy |
+| anteojos de sol redondos | 210 | 18 | forma variante "anteojos" → copy, alt |
+| lentes/anteojos de sol vulk bennie 51 | 0 medido | ~4 | branded exacto → title, H1, slug, alt |
+
+**Honestidad**: solo **1/3 polarizada** → NO afirmar "polarizados" del modelo en title/H1 (el claim pol va SOLO en la variante S10). NO targetear género (unisex). **ANTI-CANIBALIZACIÓN vs Rusty Blinded (también redondo sol)**: clave — NO comparten primaria. **Blinded = forma-first** (su marca-head Rusty-sol está saturada → la forma redonda es su único diferenciador). **Bennie = marca-first** (`lentes de sol vulk` 1.300, y es el ÚNICO redondo del cluster Vulk-sol). El query genérico `lentes de sol redondos` lo consolida la CATEGORÍA `/anteojos-de-sol/redondos`, no los productos. **Cross-link obligatorio Bennie↔Blinded** ("otros anteojos de sol redondos") + ambos → `/anteojos-de-sol/redondos`. Title: `Lentes de Sol Vulk Bennie 51 Redondos | Óptica Carballo`. H1: `Lentes de Sol Vulk Bennie 51 — Redondos Unisex`.
+
 *Vulk The Trial Optics — RECETA (armazón, aviador doble puente, UNISEX, lentes demo, G-Flex + patillas Monel/acetato hecho a mano, 19,5g, large) — slug `vulk-the-trial-receta` en `/anteojos-de-receta/vulk/vulk-the-trial-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
