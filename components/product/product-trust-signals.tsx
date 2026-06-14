@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {
-  Award,
   Truck,
   RotateCcw,
   Stethoscope,
@@ -10,7 +9,7 @@ import {
 } from 'lucide-react';
 
 type Signal = {
-  icon: typeof Award;
+  icon: typeof Store;
   title: string;
   description: string;
   /** Si está presente, el signal es clickeable (link a la política). */
@@ -23,11 +22,6 @@ const SIGNALS: Signal[] = [
     title: 'Retiro gratis en local',
     description: 'Lo retirás y probás en persona, en Virasoro',
     href: '/sobre-nosotros',
-  },
-  {
-    icon: Award,
-    title: '+30 años',
-    description: 'Empresa familiar con trayectoria',
   },
   {
     icon: Stethoscope,
