@@ -9,6 +9,9 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
+import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import { track, Events } from '@/lib/analytics/track';
 import type { ChatMessage } from '@/lib/chat/types';
 
 const SUGGESTED_PROMPTS = [
@@ -17,6 +20,20 @@ const SUGGESTED_PROMPTS = [
   '¿Cuánto tarda el envío al interior?',
   '¿Cómo funciona la garantía?',
 ];
+
+/**
+ * Arma el mensaje de WhatsApp para el handoff a una persona, llevando el
+ * contexto de la conversación (la última consulta del usuario). El cliente
+ * desconfiado de comprar óptica online quiere hablar con alguien — este es
+ * el antídoto directo, y llega con la duda ya escrita.
+ */
+function buildHandoffMessage(messages: ChatMessage[]): string {
+  const lastUser = [...messages].reverse().find((m) => m.role === 'user');
+  if (lastUser) {
+    return `Hola! Estuve usando el asistente de la web y quiero hablar con una persona. Mi consulta: "${lastUser.content}"`;
+  }
+  return 'Hola! Quiero hacer una consulta con una persona del equipo.';
+}
 
 /**
  * Floating chat sidebar — botón en esquina inferior derecha que despliega
@@ -156,6 +173,8 @@ export function FloatingChat() {
     sendMessage(input);
   };
 
+  const handoffHref = getWhatsappLinkWithContext(buildHandoffMessage(messages));
+
   return (
     <>
       {/* Floating button — esquina inferior derecha. Solo se muestra cuando
@@ -223,6 +242,22 @@ export function FloatingChat() {
               )}
               <div ref={messagesEndRef} />
             </div>
+
+            {/* Handoff a una persona — siempre visible. El cliente desconfiado
+                quiere hablar con alguien; abre WhatsApp con su consulta ya
+                escrita. */}
+            {handoffHref && (
+              <a
+                href={handoffHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track(Events.WHATSAPP_CLICK, { source: 'chat' })}
+                className="border-white/10 flex items-center justify-center gap-2 border-t bg-white/[0.04] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/[0.08]"
+              >
+                <WhatsappIcon className="size-4" />
+                Hablar con una persona
+              </a>
+            )}
 
             {/* Input */}
             <form
