@@ -91,13 +91,13 @@ ON CONFLICT (sku) DO UPDATE SET
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-raven'), (SELECT id FROM public.product_variants WHERE sku='109142'),
-   'vulk-raven/RAVEN-SBLK-PERFIL.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista lateral, negro brillo lente polarizada gris', 900, 442, 0, true),
+   'vulk-raven/RAVEN SBLK P.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista lateral, negro brillo lente polarizada gris', 900, 442, 0, true),
   ((SELECT id FROM public.products WHERE slug='vulk-raven'), (SELECT id FROM public.product_variants WHERE sku='109142'),
-   'vulk-raven/RAVEN-SBLK-FRENTE.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista frontal, negro brillo lente polarizada gris', 900, 442, 1, false),
+   'vulk-raven/RAVEN SBLK F.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista frontal, negro brillo lente polarizada gris', 900, 442, 1, false),
   ((SELECT id FROM public.products WHERE slug='vulk-raven'), (SELECT id FROM public.product_variants WHERE sku='109148'),
-   'vulk-raven/RAVEN-MBLK-PERFIL.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista lateral, negro mate lente polarizada gris', 900, 442, 2, false),
+   'vulk-raven/RAVEN MBLK P.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista lateral, negro mate lente polarizada gris', 900, 442, 2, false),
   ((SELECT id FROM public.products WHERE slug='vulk-raven'), (SELECT id FROM public.product_variants WHERE sku='109148'),
-   'vulk-raven/RAVEN-MBLK-F-PRINCIPAL-WEB.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista frontal, negro mate lente polarizada gris', 900, 442, 3, false),
+   'vulk-raven/RAVEN MBLK F.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista frontal, negro mate lente polarizada gris', 900, 442, 3, false),
   ((SELECT id FROM public.products WHERE slug='vulk-raven'), (SELECT id FROM public.product_variants WHERE sku='109149'),
    'vulk-raven/RAVEN-MBLK-R blue PERFIL GALERIA.jpg', 'Lentes de sol Vulk Raven wayfarer unisex vista lateral, negro mate lente espejada azul revo', 900, 442, 4, false),
   ((SELECT id FROM public.products WHERE slug='vulk-raven'), (SELECT id FROM public.product_variants WHERE sku='109149'),

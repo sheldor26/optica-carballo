@@ -45,8 +45,13 @@ const SIGNALS: Signal[] = [
 ];
 
 /**
- * Strip compacta de 4 trust signals para PDP. Grid 2x2 en mobile,
- * 4 columnas en desktop. Diseño minimal: icono outline + título + sub.
+ * Strip compacta de 6 trust signals para PDP. Grid 2 columnas en mobile,
+ * 3 en desktop. Layout horizontal de 1 línea por ítem (icono + título, sin
+ * descripción) para minimizar el alto manteniendo las 6 garantías VISIBLES
+ * — decisión CRO 2026-06-14: los trust signals funcionan por presencia
+ * simultánea; no se ocultan/rotan (devolución y arrepentimiento son links
+ * legales de Defensa del Consumidor). Las descripciones se conservan en las
+ * páginas linkeadas.
  *
  * Las claims son universales del negocio (BUSINESS_POLICIES.md):
  * - 30 años: founder confirmó "empresa familiar 30+ años".
@@ -56,37 +61,32 @@ const SIGNALS: Signal[] = [
  */
 export function ProductTrustSignals() {
   return (
-    <div className="border-border/60 bg-muted/20 rounded-xl border p-4">
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="border-border/60 bg-muted/20 rounded-xl border px-4 py-3">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3">
         {SIGNALS.map((signal) => {
           const Icon = signal.icon;
           const body = (
             <>
               <span
                 aria-hidden="true"
-                className="border-border/60 bg-background flex size-9 items-center justify-center rounded-full border"
+                className="border-border/60 bg-background flex size-8 shrink-0 items-center justify-center rounded-full border"
               >
                 <Icon
                   className="text-foreground/80 size-4"
                   strokeWidth={1.75}
                 />
               </span>
-              <div className="min-w-0">
-                <p className="text-foreground text-xs font-semibold leading-tight sm:text-sm">
-                  {signal.title}
-                </p>
-                <p className="text-muted-foreground mt-0.5 text-[11px] leading-snug sm:text-xs">
-                  {signal.description}
-                </p>
-              </div>
+              <span className="text-foreground min-w-0 text-xs font-medium leading-tight sm:text-sm">
+                {signal.title}
+              </span>
             </>
           );
           return (
-            <li key={signal.title} className="flex flex-col items-start gap-2">
+            <li key={signal.title} className="flex items-center gap-2.5">
               {signal.href ? (
                 <Link
                   href={signal.href}
-                  className="group/sig flex flex-col items-start gap-2 rounded-md outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
+                  className="group/sig flex min-w-0 items-center gap-2.5 rounded-md outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {body}
                 </Link>
