@@ -43,6 +43,8 @@ import {
   VariantUrlSync,
 } from '@/lib/product/variant-selection';
 import { StickyBuyBar } from '@/components/product/sticky-buy-bar';
+import { RelatedGuides } from '@/components/articles/related-guides';
+import { listArticles } from '@/lib/content/articles';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 import type { ProductDetailData } from '@/lib/catalog/queries';
 
@@ -525,6 +527,21 @@ export async function ProductDetailPage({
           brandName={product.brand.name}
         />
       </RevealOnScroll>
+
+      {/* Linking interno producto -> guías. En receta: patologías + cómo leer
+          la receta (educan y bajan la incertidumbre de comprar online). En sol
+          todavía no hay guías relevantes, así que no se muestra. */}
+      {category.slug === 'anteojos-de-receta' && (
+        <RelatedGuides
+          articles={listArticles()
+            .filter(
+              (a) =>
+                a.cluster === 'patologias-visuales' ||
+                a.cluster === 'como-leer-receta',
+            )
+            .slice(0, 3)}
+        />
+      )}
 
       <RelatedProducts products={relatedProducts} />
 
