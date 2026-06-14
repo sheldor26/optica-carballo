@@ -590,6 +590,31 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-raven/RAVEN MBLK F.jpg': 1.0,
   'vulk-raven/RAVEN-MBLK-R blue PERFIL GALERIA.jpg': 1.0,
   'vulk-raven/RAVEN-MBLK-R blue FRENTE GALERIA .jpg': 1.0,
+
+  // Vulk The Trial SOL — aviador DOBLE PUENTE. CONFIRMADO visual (fotos subidas
+  // 2026-06-14, 9/9 HTTP 200, nombres = seed exacto): las fotos son 900×442 (2.04:1)
+  // MÁS ANCHAS que el card 3:2 → object-contain ajusta por ancho y el anteojo ya
+  // llena ~90% → scale 1.0 en TODAS (igual que Raven; el 1.20 del precedente Gresent
+  // habría recortado las patillas — Gresent debía tener foto con más margen).
+  // Founder 2026-06-14 (2do pase, vistas en el grid): V2 (MBLK 053/S15 antifog)
+  // perfil +0.08 → 1.08; las otras 3 perfiles +0.03 → 1.03. Frentes quedan en 1.0.
+  'vulk-the-trial/THE TRIAL-SBLK S10 POL - p.jpg': 1.03,
+  'vulk-the-trial/THE TRIAL-SBLK S10 POL - F.jpg': 1.0,
+  'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG PERFIL.jpg': 1.08,
+  'vulk-the-trial/THE TRIAL MBLK 053-S15 ANTIFOG FRENTE.jpg': 1.0,
+  'vulk-the-trial/THE TRIAL-SBLK_ORANGE - p.jpg': 1.03,
+  'vulk-the-trial/THE TRIAL-SBLK_ORANGE - f.jpg': 1.0,
+  'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  p.jpg': 1.03,
+  'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  f.jpg': 1.0,
+
+  // Vulk The Trial Optics RECETA — mismo frame aviador doble puente que el sol, mismas
+  // fotos 900×442 (más anchas que el card 3:2 → object-contain llena por ancho) → scale 1.0
+  // en las 4 (mismo criterio que el sol The Trial y Raven; NO el 1.15 receta que cropearía).
+  // Founder 2026-06-14: ambas variantes +0.03 → perfil 1.03 (frentes en 1.0).
+  'vulk-the-trial-receta/THE TRIAL 670-056 PERFIL.jpg': 1.03,
+  'vulk-the-trial-receta/THE TRIAL 670-056 FRENTE.jpg': 1.0,
+  'vulk-the-trial-receta/THE TRIAL MBLK-046 PERFIL.jpg': 1.03,
+  'vulk-the-trial-receta/THE TRIAL MBLK-046 FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

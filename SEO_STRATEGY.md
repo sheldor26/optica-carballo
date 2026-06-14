@@ -204,6 +204,29 @@ Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes 
 
 Atributo de respaldo (copy/alt, NO primaria por dificultad): `anteojos de sol polarizados` (170/10), `lentes de sol polarizados` (260/12), `anteojos de sol unisex`. **Honestidad**: solo **2/3 polarizadas** → NO se afirma "polarizados" del modelo entero en title/H1 (mismo criterio Rusty Play/Patien 2/4); el title destaca **Unisex** (100% verdadero). **Anti-canibalización (sol Vulk)**: Raven = wayfarer + unisex + branded (carril de forma libre — ningún Vulk-sol pelea "wayfarer"); The Sil = cuadrado; Day Light = rectangular/carey; My Crew = receta. Unisex → NO pelea `lentes/anteojos de sol vulk hombre`. Title: `Lentes de Sol Vulk Raven Unisex | Óptica Carballo`.
 
+*Vulk The Trial (sol, AVIADOR doble puente, UNISEX, 2/4 variantes polarizadas + 1 antifog + 1 naranja, G-Flex + patillas Monel/acetato hecho a mano, policarbonato UV400 cat 3, ultraliviano 19,5g, large) — slug `vulk-the-trial` en `/anteojos-de-sol/vulk/vulk-the-trial`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol vulk | 1.300 | 8 | head de sol de la marca (variante "lentes") → meta_title + 1er párrafo |
+| anteojos de sol vulk | 880 | 10 | head de sol de la marca (variante "anteojos") → H1, copy |
+| lentes de sol aviador | 170 | — | forma del modelo, **carril LIBRE** en el cluster → H1/H2, copy, alt |
+| lentes/anteojos de sol tipo/estilo aviador | 30-40 | — | variantes de forma → copy |
+| anteojos/lentes de sol vulk the trial | 0 medido | ~4 | branded exacto → H1, slug, alt |
+
+Atributo de respaldo (copy/alt, NO primaria): `lentes de sol polarizados` (260), `anteojos de sol polarizados` (170) — SOLO referidos a las 2 variantes que sí lo son. **Honestidad**: solo **2/4 polarizadas** → NO se afirma "polarizados" del modelo entero en title/H1 (criterio Raven/Play/Patien); title destaca **Unisex**. NO targetear `aviador hombre` (90) — el producto es unisex. **Anti-canibalización (sol Vulk)**: The Trial = **aviador doble puente** + unisex + branded → carril de forma LIBRE (ningún Vulk-sol pelea "aviador"; The Sil = cuadrado, Raven = wayfarer, Day Light = rectangular/carey, My Crew = receta). Title: `Lentes de Sol Vulk The Trial Unisex | Óptica Carballo`. H1: `Lentes de Sol Vulk The Trial Aviador Unisex`.
+
+*Vulk The Trial Optics — RECETA (armazón, aviador doble puente, UNISEX, lentes demo, G-Flex + patillas Monel/acetato hecho a mano, 19,5g, large) — slug `vulk-the-trial-receta` en `/anteojos-de-receta/vulk/vulk-the-trial-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos recetados | 720 | 9 | **primaria** — head de intención receta (el head de marca `anteojos vulk` 4.400 / `lentes vulk` 6.600 va al hub /marcas/vulk, NO al producto) → H1, 1er párrafo |
+| lentes recetados | 390 | 9 | variante "lentes" → copy |
+| anteojos aviador | 590 | 20 | forma (carril diferenciador del cluster receta) → H1, copy, alt |
+| lentes/anteojos estilo/tipo aviador | 50-110 | 20-41 | variantes de forma → copy |
+| armazones vulk | 110 | 8 | único "armazón" con volumen usable → body 1 vez |
+| anteojos vulk the trial receta | 0 medido | ~4 | branded → title, H1, slug, alt |
+
+Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260/8) — el unisex cubre ambos, copy NO primaria. **NO usar** "armazón de receta" como target (0 vol) — se usa solo como cabecera del title para señalizar intención. **Honestidad** (BUSINESS_POLICIES §5): precio = armazón sin cristales; "sumale tus cristales con receta". **Anti-canibalización**: sol (`lentes/anteojos de sol vulk`) vs receta (`anteojos recetados`) = intención distinta; vs My Crew receta = aviador vs redondo. **Cross-link obligatorio sol↔receta** (como Patien). Title: `Armazón de Receta Vulk The Trial Aviador | Óptica Carballo`. H1: `Anteojos de Receta Vulk The Trial Aviador Unisex`.
+
 ### Cluster: RUSTY (junio 2026 — Ubersuggest CSV real)
 
 **Keyword head crítica**: `anteojos rusty` — **3.600 vol/mes, difficulty 8** (head de marca más fuerte del nicho; atacar agresivamente desde el hub `/marcas/rusty` y `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty`).
