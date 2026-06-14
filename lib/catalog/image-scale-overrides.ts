@@ -611,11 +611,12 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 2026-06-14, 7/7 HTTP 200, nombres = seed exacto): 900×442 más anchas que el card 3:2 →
   // object-contain llena por ancho y el anteojo ocupa ~95% → 1.0 en las 6 (subir cropearía
   // las patillas; el "redondo small → 1.15" NO aplicó porque el encuadre ya llena).
-  'vulk-bennie-51/BENNIE 51 MBLK-BLK perfil.jpg': 1.0,
-  'vulk-bennie-51/BENNIE 51 MBLK-BLK FRENTE.jpg': 1.0,
-  'vulk-bennie-51/BENNIE 51 MBLK-GUN G.GREY - p.jpg': 1.0,
+  // Founder 2026-06-14: +0.03 en los 3 perfiles (foto del card). Frentes en 1.0.
+  'vulk-bennie-51/BENNIE 51 MBLK-BLK P.jpg': 1.03,
+  'vulk-bennie-51/BENNIE 51 MBLK-BLK frente.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK-GUN G.GREY - p.jpg': 1.03,
   'vulk-bennie-51/BENNIE 51 MBLK-GUN G.GREY - F.jpg': 1.0,
-  'vulk-bennie-51/BENNIE 51 MBLK GREEN P.jpg': 1.0,
+  'vulk-bennie-51/BENNIE 51 MBLK GREEN P.jpg': 1.03,
   'vulk-bennie-51/BENNIE 51 MBLK GREEN F.jpg': 1.0,
 
   // Vulk The Trial Optics RECETA — mismo frame aviador doble puente que el sol, mismas

@@ -92,9 +92,9 @@ ON CONFLICT (sku) DO UPDATE SET
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-bennie-51'), (SELECT id FROM public.product_variants WHERE sku='123600'),
-   'vulk-bennie-51/BENNIE 51 MBLK-BLK perfil.jpg', 'Lentes de sol Vulk Bennie 51 redondos unisex vista lateral, negro mate patillas peltre lente polarizada gris', 900, 442, 0, true),
+   'vulk-bennie-51/BENNIE 51 MBLK-BLK P.jpg', 'Lentes de sol Vulk Bennie 51 redondos unisex vista lateral, negro mate patillas peltre lente polarizada gris', 900, 442, 0, true),
   ((SELECT id FROM public.products WHERE slug='vulk-bennie-51'), (SELECT id FROM public.product_variants WHERE sku='123600'),
-   'vulk-bennie-51/BENNIE 51 MBLK-BLK FRENTE.jpg', 'Lentes de sol Vulk Bennie 51 redondos unisex vista frontal, negro mate patillas peltre lente polarizada gris', 900, 442, 1, false),
+   'vulk-bennie-51/BENNIE 51 MBLK-BLK frente.jpg', 'Lentes de sol Vulk Bennie 51 redondos unisex vista frontal, negro mate patillas peltre lente polarizada gris', 900, 442, 1, false),
   ((SELECT id FROM public.products WHERE slug='vulk-bennie-51'), (SELECT id FROM public.product_variants WHERE sku='123609'),
    'vulk-bennie-51/BENNIE 51 MBLK-GUN G.GREY - p.jpg', 'Lentes de sol Vulk Bennie 51 redondos unisex vista lateral, negro mate patillas peltre lente gris degradé', 900, 442, 2, false),
   ((SELECT id FROM public.products WHERE slug='vulk-bennie-51'), (SELECT id FROM public.product_variants WHERE sku='123609'),

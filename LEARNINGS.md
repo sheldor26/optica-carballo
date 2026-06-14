@@ -10425,6 +10425,30 @@ El trust signal de factura decía "Electrónica, cumple AFIP". El founder marcó
 - Al escribir/editar copy fiscal: nunca escribir "AFIP" de nuevo; usar "ARCA" si hay que nombrar el organismo, o (mejor) no nombrarlo.
 - Trust signals de factura → comunicar "electrónica y oficial", no el ente.
 
+## 2026-06-14 — Supabase Storage: sobreescribir un objeto con el MISMO nombre puede servir contenido viejo → renombrar
+
+**Categoría**: Carga de productos / Supabase Storage / debugging de imágenes
+**Confianza**: 🟢 Alta (caso real Bennie 51 S10, resuelto por el founder renombrando)
+
+### Qué pasó
+
+La foto S10 perfil del Bennie 51 se veía con la lente **clara/lavada** (parecía receta) en vez de negra. El founder la borró y resubió varias veces CON EL MISMO NOMBRE (`...perfil.jpg`) y seguía mal. Al **renombrarla** a `...P.jpg`, cargó perfecto al instante.
+
+### El learning
+
+Sobreescribir un objeto de Supabase Storage manteniendo el mismo path puede seguir sirviendo la **versión vieja** (capa de caché/objeto stale), incluso cuando los headers HTTP dicen `cf-cache-status: EXPIRED` y `cache-control: no-cache` (esos headers despistan: el cache-buster por query devolvía el mismo md5). El fix confiable y rápido es **subir con un nombre de archivo NUEVO** y actualizar las referencias.
+
+### Cómo debuggear (orden que funcionó)
+
+1. Descargar el objeto **CRUDO** (`/object/public/...`), NO la versión optimizada por Next/Image → aísla si el problema es el archivo o el render.
+2. `sips`/PIL: formato, `hasAlpha`, perfil ICC, y **muestrear el píxel** de la zona en cuestión (acá la lente daba gris ~107, confirmando "aclarada" no "borrada").
+3. Cache-buster (`?cb=...`) + comparar md5: si vuelve idéntico, el origen ya está mal (no es CDN intermedio).
+
+### Regla preventiva / cuándo aplicar
+
+- Si el founder reporta que una imagen "no se actualiza" tras resubir → NO perder tiempo con cache-busting: pedir/usar un **nombre de archivo nuevo** y actualizar DB + seed + `image-scale-overrides.ts`.
+- ⚠️ La 1ra hipótesis (PNG semi-transparente aplanado a blanco) era plausible por el gris ~107 pero ERRÓNEA — no anclarse a una teoría antes de la prueba decisiva (renombrar).
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
