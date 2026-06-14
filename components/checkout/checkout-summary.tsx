@@ -1,4 +1,5 @@
 import { formatPriceCents } from '@/lib/format/currency';
+import { CouponInput } from '@/components/cart/coupon-input';
 import type { ResolvedCart } from '@/lib/cart/types';
 import type { ShippingQuote } from '@/lib/shipping';
 
@@ -94,6 +95,15 @@ export function CheckoutSummary({
           </p>
         )}
       </dl>
+
+      {/* Cupón: reutiliza el mismo input del carrito. Antes solo se podía
+          ingresar en /carrito; si el usuario llegaba directo al checkout (lo
+          recibió por WhatsApp/email) no tenía dónde canjearlo. El checkout es
+          dynamic, así que el router.refresh() del input re-resuelve el total. */}
+      <CouponInput
+        appliedCoupon={cart.coupon}
+        couponError={cart.couponError}
+      />
 
       <div className="border-border mt-4 flex items-baseline justify-between border-t pt-4">
         <span className="text-foreground text-base font-semibold">Total</span>
