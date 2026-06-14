@@ -12,6 +12,12 @@ type Props = {
   /** Pre-cargados de la dirección registrada del usuario (si está logueado). */
   initialProvince?: string | null;
   initialPostalCode?: string | null;
+  /** Subtotal ya con el descuento del cupón aplicado. Si se pasa, mostramos el
+   * "Total con envío a domicilio" para que el cliente vea el número REAL antes
+   * de pasar al checkout (no como sorpresa del último paso). */
+  totalBeforeShippingCents?: number;
+  /** Si un cupón quita el envío, el total con envío no suma el costo. */
+  couponRemovesShipping?: boolean;
 };
 
 type ApiQuotes = { delivery: ShippingQuote; branch: ShippingQuote | null };
@@ -33,6 +39,8 @@ export function ShippingCalculator({
   itemCount,
   initialProvince,
   initialPostalCode,
+  totalBeforeShippingCents,
+  couponRemovesShipping = false,
 }: Props) {
   // La provincia (si el user logueado la tiene en su dirección guardada) solo
   // afina el fallback por zonas; NO es requerida — Correo cotiza con el CP solo.
@@ -138,6 +146,21 @@ export function ShippingCalculator({
                 para envío gratis.
               </p>
             )}
+          {totalBeforeShippingCents != null && (
+            <div className="border-border/60 flex items-baseline justify-between border-t pt-2">
+              <span className="text-foreground font-semibold">
+                Total con envío a domicilio
+              </span>
+              <span className="text-foreground font-semibold tabular-nums">
+                {formatPriceCents(
+                  totalBeforeShippingCents +
+                    (couponRemovesShipping || apiQuotes.delivery.isFree
+                      ? 0
+                      : apiQuotes.delivery.cents),
+                )}
+              </span>
+            </div>
+          )}
           <p className="text-muted-foreground/70 text-[11px]">
             Costo real de Correo Argentino para tu CP.
           </p>

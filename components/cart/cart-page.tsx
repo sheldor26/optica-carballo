@@ -144,6 +144,11 @@ export function CartPage({
             itemCount={cart.items.reduce((n, it) => n + it.quantity, 0)}
             initialProvince={defaultProvince}
             initialPostalCode={defaultPostalCode}
+            totalBeforeShippingCents={Math.max(
+              0,
+              cart.subtotalCents - (cart.coupon?.discountCents ?? 0),
+            )}
+            couponRemovesShipping={cart.coupon?.removeShipping ?? false}
           />
 
           <TrustSignals />
