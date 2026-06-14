@@ -14,8 +14,10 @@ import {
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { buildProductImageAlt } from '@/lib/catalog/image-alt';
 import { QuickAddButton } from '@/components/cart/quick-add-button';
+import { AnimatedPrice } from '@/components/product/animated-price';
 import { QuickView } from '@/components/product/quick-view';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
+import { CrossfadeImage } from '@/components/ui/crossfade-image';
 import { TiltCard } from '@/components/ui/tilt-card';
 import { WishlistButton } from '@/components/wishlist/wishlist-button';
 
@@ -260,17 +262,18 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         >
           {primaryUrl ? (
             <>
-              <Image
-                key={`${selectedVariantId ?? 'default'}-primary`}
+              <CrossfadeImage
                 src={primaryUrl}
+                scale={currentImages.primaryScale}
                 alt={imageAlt}
-                fill
                 sizes="(max-width: 768px) 50vw, 33vw"
-                style={{ transform: `scale(${currentImages.primaryScale})` }}
+                durationMs={350}
                 className={cn(
-                  'object-contain transition-all duration-700 ease-out group-hover/image:scale-[1.04]',
-                  secondaryUrl && 'group-hover/image:opacity-0',
+                  'absolute inset-0',
+                  secondaryUrl &&
+                    'transition-opacity duration-700 ease-out group-hover/image:opacity-0',
                 )}
+                imageClassName="object-contain transition-transform duration-700 ease-out group-hover/image:scale-[1.04]"
               />
               {secondaryUrl && (
                 <Image
@@ -311,7 +314,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           {displayPriceCents !== null ? (
             <>
               <p className="text-muted-foreground text-sm tabular-nums">
-                {formatPriceCents(displayPriceCents)}
+                <AnimatedPrice valueCents={displayPriceCents} />
               </p>
               {INSTALLMENTS_ENABLED && (
                 <p className="text-foreground/80 text-xs tabular-nums">

@@ -3,6 +3,7 @@
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
+import { AnimatedPrice } from '@/components/product/animated-price';
 import { ShippingEstimator } from '@/components/product/shipping-estimator';
 import {
   INSTALLMENTS_ENABLED,
@@ -74,8 +75,12 @@ export function ProductPriceBlock({
           <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
             Precio
           </p>
-          <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight md:text-4xl">
-            {priceText}
+          <p className="text-foreground mt-1 text-3xl font-semibold tracking-tight tabular-nums md:text-4xl">
+            {selected ? (
+              <AnimatedPrice valueCents={selected.priceCents} animateOnMount />
+            ) : (
+              priceText
+            )}
           </p>
           {INSTALLMENTS_ENABLED && selected ? (
             <>

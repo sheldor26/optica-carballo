@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { useVariantSelection } from '@/lib/product/variant-selection';
+import { CrossfadeImage } from '@/components/ui/crossfade-image';
 import { ImageLightbox } from '@/components/product/image-lightbox';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
 import type { ProductImage } from '@/lib/catalog/queries';
@@ -113,19 +114,16 @@ export function ProductGallery({ productName, images, sizeFit }: Props) {
             vienen con buen margen propio. Iter previo (p-8) seguía dando
             sensación de foto chica vs contenedor. Ahora la foto ocupa
             ~90% del cuadrado disponible. */}
-        <div
+        <CrossfadeImage
+          src={activeUrl}
+          scale={activeScale}
+          alt={productName}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          priority
+          durationMs={350}
           className="relative h-full w-full"
-          style={{ transform: `scale(${activeScale})` }}
-        >
-          <Image
-            src={activeUrl}
-            alt={productName}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-            priority={activeIdx === 0}
-          />
-        </div>
+          imageClassName="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        />
         {sizeFit && (
           <span className="pointer-events-none absolute left-3 top-3 z-10">
             <SizeFitBadge sizeFit={sizeFit} />
