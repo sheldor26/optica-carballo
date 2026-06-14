@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { isCheckoutEnabled } from '@/lib/features';
 import { formatPriceCents } from '@/lib/format/currency';
 import {
   INSTALLMENTS_ENABLED,
@@ -12,6 +13,7 @@ import {
 } from '@/lib/site/installments';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { buildProductImageAlt } from '@/lib/catalog/image-alt';
+import { QuickAddButton } from '@/components/cart/quick-add-button';
 import { QuickView } from '@/components/product/quick-view';
 import { SizeFitBadge } from '@/components/product/size-fit-badge';
 import { TiltCard } from '@/components/ui/tilt-card';
@@ -98,6 +100,8 @@ const MAX_VISIBLE_THUMBS = 5;
 export function ProductCard({ product }: { product: ProductCardData }) {
   const outOfStock = product.inStockCount === 0;
   const variants = product.variants ?? [];
+  // Ref al contenedor de la imagen: origen del "vuelo al carrito" del quick-add.
+  const imageRef = useRef<HTMLDivElement>(null);
   // Mostrar thumbnails si hay al menos 1 variante con foto. Antes era >1
   // (solo si había múltiples para elegir), pero founder 2026-05-31 pidió
   // que aparezca al menos 1 thumb incluso con variante única — da
@@ -185,6 +189,15 @@ export function ProductCard({ product }: { product: ProductCardData }) {
     ? `${product.href}?v=${encodeURIComponent(selectedVariant.sku)}`
     : product.href;
 
+  // Quick-add desde la grilla: agrega la variante mostrada (si tiene stock),
+  // sino la primera con stock. Solo si el checkout está activo y hay alguna
+  // variante comprable. Sin variantes / todo agotado → sin botón.
+  const quickAddVariant =
+    selectedVariant?.inStock === true
+      ? selectedVariant
+      : variants.find((v) => v.inStock);
+  const showQuickAdd = isCheckoutEnabled() && quickAddVariant !== undefined;
+
   // Alt descriptivo para Google Imágenes. El bloque de imagen está aria-hidden
   // (el nombre va en el aria-label del link), así que esto es solo para SEO.
   const imageAlt = buildProductImageAlt({
@@ -210,6 +223,25 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           <SizeFitBadge sizeFit={product.sizeFit} size="sm" />
         </div>
       )}
+      {/* Quick-add: overlay que espeja la geometría de la imagen (aspect-[3/2]
+          w-full) para apoyar el botón en su esquina inferior derecha. Sibling
+          del Link (no adentro) para no anidar <button> en <a>. Visible siempre
+          en mobile, reveal en hover en desktop. */}
+      {showQuickAdd && quickAddVariant && (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-10"
+          aria-hidden="false"
+        >
+          <div className="relative aspect-[3/2] w-full">
+            <QuickAddButton
+              variantId={quickAddVariant.id}
+              productName={product.name}
+              getOrigin={() => imageRef.current}
+              className="pointer-events-auto absolute bottom-2 right-2 opacity-100 transition-opacity duration-200 md:opacity-0 md:group-hover/card:opacity-100"
+            />
+          </div>
+        </div>
+      )}
       <Link
         href={href}
         className="flex h-full flex-col"
@@ -222,6 +254,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             Founder reportó issue 2026-05-31. Rollback a white — el "premium
             feel" del hover (shadow + scale 1.04) compensa la perdida sutil. */}
         <div
+          ref={imageRef}
           className="group/image bg-background relative aspect-[3/2] w-full overflow-hidden rounded-md transition-shadow duration-500 ease-out group-hover/card:shadow-lg group-hover/card:shadow-zinc-900/[0.08]"
           aria-hidden="true"
         >

@@ -8,6 +8,7 @@ import { BackToTop } from '@/components/ui/back-to-top';
 import { FloatingChat } from '@/components/chat/floating-chat';
 import { FloatingWhatsapp } from '@/components/ui/floating-whatsapp';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
+import { ToastHost } from '@/components/ui/toast-host';
 import { getBusinessInfo } from '@/lib/site/business';
 
 export default function StorefrontLayout({
@@ -32,6 +33,7 @@ export default function StorefrontLayout({
         />
       )}
       <CookiesBanner />
+      <ToastHost />
     </div>
   );
 }
