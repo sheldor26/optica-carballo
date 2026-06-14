@@ -10,6 +10,41 @@ function nonEmpty(value: string | undefined): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+export type SocialPlatform = 'instagram' | 'facebook' | 'tiktok';
+
+export type SocialLink = {
+  platform: SocialPlatform;
+  label: string;
+  url: string;
+};
+
+/**
+ * Redes sociales de la óptica. Hardcodeadas a propósito: son URLs públicas y
+ * estables, y así el founder NO tiene que configurar nada en Vercel. Para
+ * agregar, sacar o cambiar una red, editar esta lista.
+ *
+ * Se consumen en el footer (íconos) y en el `sameAs` de Organization JSON-LD
+ * (le dice a Google que estos perfiles son del negocio — ayuda al panel de
+ * conocimiento y al E-E-A-T).
+ */
+export const SOCIAL_LINKS: SocialLink[] = [
+  {
+    platform: 'instagram',
+    label: 'Instagram',
+    url: 'https://www.instagram.com/optica.carballo',
+  },
+  {
+    platform: 'facebook',
+    label: 'Facebook',
+    url: 'https://www.facebook.com/optica.carballo1',
+  },
+  {
+    platform: 'tiktok',
+    label: 'TikTok',
+    url: 'https://www.tiktok.com/@opticacarballo',
+  },
+];
+
 export type BusinessInfo = {
   siteName: string;
   locality: string | null;

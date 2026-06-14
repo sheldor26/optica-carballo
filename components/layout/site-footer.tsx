@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { NewsletterForm } from '@/components/newsletter/newsletter-form';
+import { SocialLinks } from '@/components/layout/social-links';
 import { FOOTER_INFO_LINKS, PRIMARY_NAV, TOOLS_LINKS } from '@/lib/site/nav';
 import { getBusinessInfo } from '@/lib/site/business';
 
@@ -30,6 +31,7 @@ export function SiteFooter() {
                 {location} — Argentina
               </p>
             )}
+            <SocialLinks className="mt-5" />
           </div>
 
           <FooterColumn label="Catálogo" links={PRIMARY_NAV} />

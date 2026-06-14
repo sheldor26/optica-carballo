@@ -1,4 +1,4 @@
-import { getBusinessInfo } from '@/lib/site/business';
+import { getBusinessInfo, SOCIAL_LINKS } from '@/lib/site/business';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -60,7 +60,7 @@ export function OrganizationJsonLd() {
 
   if (business.phone) jsonLd.telephone = business.phone;
 
-  const sameAs: string[] = [];
+  const sameAs: string[] = [...SOCIAL_LINKS.map((s) => s.url)];
   if (business.whatsappNumber) {
     sameAs.push(`https://wa.me/${business.whatsappNumber}`);
   }
