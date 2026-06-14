@@ -11,8 +11,38 @@ import {
 import { cn } from '@/lib/utils';
 import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { formatPriceCents } from '@/lib/format/currency';
 import { track, Events } from '@/lib/analytics/track';
 import type { ChatMessage } from '@/lib/chat/types';
+
+/** Card liviana de producto que devuelve /api/recently-viewed/cards. */
+type ChatCard = {
+  slug: string;
+  name: string;
+  brandName: string;
+  brandSlug: string;
+  categorySlug: string;
+  primaryImagePath: string | null;
+  primaryImageScale: number;
+  minPriceCents: number | null;
+};
+
+/**
+ * Extrae slugs de productos de los links que el modelo pone en la respuesta
+ * (`/anteojos-de-{sol,receta}/<marca>/<slug>`). Los links de filtro (ej
+ * `/anteojos-de-sol/vulk/cat-eye`) también matchean, pero el endpoint de cards
+ * filtra solo los slugs que son productos reales — así que no hace ruido.
+ */
+function extractProductSlugs(text: string): string[] {
+  const re = /\/anteojos-de-(?:sol|receta)\/[a-z0-9-]+\/([a-z0-9-]+)/g;
+  const slugs = new Set<string>();
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text)) !== null) {
+    if (match[1]) slugs.add(match[1]);
+  }
+  return [...slugs].slice(0, 4);
+}
 
 const SUGGESTED_PROMPTS = [
   '¿Qué anteojos de sol polarizados tenés?',
@@ -53,6 +83,9 @@ export function FloatingChat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
   const [buyBarVisible, setBuyBarVisible] = useState(false);
+  const [messageCards, setMessageCards] = useState<Record<number, ChatCard[]>>(
+    {},
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -158,6 +191,30 @@ export function FloatingChat() {
         ...prev,
         { role: 'assistant', content: accumulated || 'Sin respuesta.' },
       ]);
+
+      // Si la respuesta linkeó productos, traer sus cards y mostrarlas debajo
+      // del mensaje (en mobile una card con foto+precio convierte mucho más
+      // que un link de texto). El índice del mensaje del asistente recién
+      // agregado es `updatedMessages.length` (user ya estaba al final).
+      const productSlugs = extractProductSlugs(accumulated);
+      if (productSlugs.length > 0) {
+        const assistantIndex = updatedMessages.length;
+        fetch(
+          `/api/recently-viewed/cards?slugs=${encodeURIComponent(productSlugs.join(','))}`,
+        )
+          .then((r) => (r.ok ? r.json() : null))
+          .then((data: { cards?: ChatCard[] } | null) => {
+            if (data?.cards && data.cards.length > 0) {
+              setMessageCards((prev) => ({
+                ...prev,
+                [assistantIndex]: data.cards!,
+              }));
+            }
+          })
+          .catch(() => {
+            // silencioso — las cards son un extra, el texto ya tiene los links
+          });
+      }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
         // Usuario cerró el panel — silencio normal.
@@ -239,7 +296,18 @@ export function FloatingChat() {
                 <SuggestedPrompts onSelect={sendMessage} />
               )}
               {messages.map((msg, idx) => (
-                <MessageBubble key={idx} message={msg} />
+                <div key={idx}>
+                  <MessageBubble message={msg} />
+                  {msg.role === 'assistant' &&
+                    messageCards[idx] &&
+                    messageCards[idx].length > 0 && (
+                      <div className="mt-2 space-y-2">
+                        {messageCards[idx].map((card) => (
+                          <ChatProductCardLink key={card.slug} card={card} />
+                        ))}
+                      </div>
+                    )}
+                </div>
               ))}
               {isStreaming && streamingContent && (
                 <MessageBubble
@@ -371,6 +439,51 @@ function MessageBubble({
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * Card de producto dentro del chat: foto + marca + nombre + precio, linkeable
+ * a la PDP. En mobile (70% del tráfico) convierte mucho más que un link de
+ * texto perdido en el párrafo.
+ */
+function ChatProductCardLink({ card }: { card: ChatCard }) {
+  const href = `/${card.categorySlug}/${card.brandSlug}/${card.slug}`;
+  const imageUrl = card.primaryImagePath
+    ? getProductImageUrl(card.primaryImagePath)
+    : null;
+  return (
+    <a
+      href={href}
+      className="border-white/10 bg-white/[0.04] hover:bg-white/[0.08] flex items-center gap-3 rounded-xl border p-2 transition-colors"
+    >
+      <span className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt=""
+            className="size-full object-contain p-1"
+            style={{ transform: `scale(${card.primaryImageScale})` }}
+          />
+        ) : (
+          <span className="text-xs text-zinc-400">—</span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[11px] uppercase tracking-wide text-white/50">
+          {card.brandName}
+        </span>
+        <span className="block truncate text-sm font-medium text-white">
+          {card.name}
+        </span>
+        {card.minPriceCents != null && (
+          <span className="block text-sm tabular-nums text-white/80">
+            {formatPriceCents(card.minPriceCents)}
+          </span>
+        )}
+      </span>
+    </a>
   );
 }
 
