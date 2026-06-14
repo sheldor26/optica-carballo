@@ -4,7 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, MessageCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { LetterReveal } from '@/components/ui/letter-reveal';
 import { MagneticButton } from '@/components/ui/magnetic-button';
@@ -132,7 +133,7 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
                 className="w-full text-white/80 hover:bg-white/10 hover:text-white sm:w-auto"
               >
                 <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="size-4" />
+                  <WhatsappIcon className="size-4" />
                   WhatsApp
                 </a>
               </Button>

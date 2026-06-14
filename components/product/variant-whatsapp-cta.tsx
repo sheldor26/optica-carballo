@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
@@ -53,7 +53,7 @@ export function VariantWhatsappCta({
         rel="noopener noreferrer"
         aria-label={`Consultar por WhatsApp sobre ${productName} ${variantLabel}`}
       >
-        <MessageCircle className="size-4" />
+        <WhatsappIcon className="size-4" />
         {label}
       </a>
     </Button>

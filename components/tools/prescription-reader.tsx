@@ -9,13 +9,13 @@ import {
   CheckCircle2,
   FileText,
   Loader2,
-  MessageCircle,
   RefreshCw,
   ShieldCheck,
   Upload,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { cn } from '@/lib/utils';
 import {
   CONSENT_LABEL,
@@ -884,7 +884,7 @@ function InPersonHandoff({
           className="w-full bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
         >
           <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-            <MessageCircle className="size-4" />
+            <WhatsappIcon className="size-4" />
             Escribinos por WhatsApp
           </a>
         </Button>

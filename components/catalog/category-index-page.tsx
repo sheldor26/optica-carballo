@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HelpCircle } from 'lucide-react';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { BrandGridCard } from '@/components/catalog/brand-grid-card';
 import { FrameShapeFilters } from '@/components/catalog/frame-shape-filters';
@@ -120,6 +121,22 @@ export function CategoryIndexPage({
           />
         </div>
       )}
+
+      <Link
+        href="/encontra-tu-anteojo"
+        className="border-border/60 bg-muted/40 hover:border-foreground/40 mb-8 flex items-center gap-4 rounded-xl border p-4 transition-colors md:p-5"
+      >
+        <div className="bg-foreground/10 flex size-10 shrink-0 items-center justify-center rounded-full">
+          <HelpCircle className="text-foreground size-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-foreground text-sm font-semibold">¿No sabés cuál elegir?</p>
+          <p className="text-muted-foreground text-xs mt-0.5">
+            Hacé el quiz de 5 preguntas y te recomendamos el modelo ideal para vos.
+          </p>
+        </div>
+        <span className="text-muted-foreground text-xs font-medium shrink-0">Empezar →</span>
+      </Link>
 
       {brands.length === 0 ? (
         <p className="text-muted-foreground">

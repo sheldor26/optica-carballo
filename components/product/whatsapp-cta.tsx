@@ -1,5 +1,5 @@
-import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
 
 export function WhatsappCta({
@@ -19,7 +19,7 @@ export function WhatsappCta({
   return (
     <Button asChild size="lg" className="w-full sm:w-auto">
       <a href={href} target="_blank" rel="noopener noreferrer">
-        <MessageCircle className="size-5" />
+        <WhatsappIcon className="size-5" />
         {inStock ? 'Consultar por WhatsApp' : 'Consultar disponibilidad'}
       </a>
     </Button>

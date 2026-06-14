@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ArrowRight, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { getAuthor } from '@/lib/content/article-authors';
 import { ShareButtons } from '@/components/share/share-buttons';
 import type { ArticleFrontmatter } from '@/lib/content/article-types';
@@ -108,7 +109,7 @@ export function ArticleFooter({
             rel="noopener noreferrer"
             className="bg-foreground text-background hover:bg-foreground/90 inline-flex shrink-0 items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-medium transition-colors"
           >
-            <MessageCircle className="size-4" />
+            <WhatsappIcon className="size-4" />
             Consultar por WhatsApp
             <ArrowRight className="size-4" />
           </Link>

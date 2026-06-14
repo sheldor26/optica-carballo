@@ -3,6 +3,7 @@ import {
   ArrowRight,
   FileText,
   Heart,
+  HelpCircle,
   Ruler,
   ScanFace,
   Sparkles,
@@ -18,6 +19,14 @@ type Tool = {
 };
 
 const TOOLS: Tool[] = [
+  {
+    href: '/encontra-tu-anteojo',
+    label: '¿Qué anteojo es para vos?',
+    description:
+      'Respondé 5 preguntas y te recomendamos 3 modelos ideales según tu cara, presupuesto y uso.',
+    icon: HelpCircle,
+    cta: 'Empezar el quiz',
+  },
   {
     href: '/descubrir',
     label: 'Descubrir con swipe',

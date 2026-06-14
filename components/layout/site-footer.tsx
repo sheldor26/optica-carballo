@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { NewsletterForm } from '@/components/newsletter/newsletter-form';
 import { FOOTER_INFO_LINKS, PRIMARY_NAV, TOOLS_LINKS } from '@/lib/site/nav';
 import { getBusinessInfo } from '@/lib/site/business';
@@ -54,7 +54,7 @@ export function SiteFooter() {
                       rel="noopener noreferrer"
                       className="text-foreground/80 hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition-colors"
                     >
-                      <MessageCircle className="size-4" strokeWidth={1.75} />
+                      <WhatsappIcon className="size-4" />
                       WhatsApp
                     </a>
                   </li>

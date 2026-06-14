@@ -72,7 +72,7 @@ export function OrderDetailView({
       {/* Tracking destacado si está enviado */}
       {order.trackingNumber && (
         <section className="border-border bg-muted/30 flex items-start gap-3 rounded-lg border p-4">
-          <Truck className="text-foreground mt-0.5 size-5" aria-hidden="true" />
+          <Truck className="text-foreground mt-0.5 size-5 shrink-0" aria-hidden="true" />
           <div className="flex-1">
             <p className="text-foreground text-sm font-medium">
               Tu pedido está en camino
@@ -83,6 +83,15 @@ export function OrderDetailView({
                 {order.trackingNumber}
               </span>
             </p>
+            <a
+              href={`https://www.correoargentino.com.ar/formularios/e-commerce?id=${order.trackingNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground mt-2 inline-flex items-center gap-1 text-xs font-medium underline underline-offset-2"
+            >
+              Rastrear en Correo Argentino
+              <ExternalLink className="size-3" aria-hidden="true" />
+            </a>
           </div>
         </section>
       )}

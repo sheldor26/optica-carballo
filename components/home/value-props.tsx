@@ -1,9 +1,10 @@
-import { GraduationCap, MessageCircle, Truck, Award } from 'lucide-react';
+import { GraduationCap, Truck, Award } from 'lucide-react';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { getBusinessInfo } from '@/lib/site/business';
 
 type Prop = {
-  icon: typeof GraduationCap;
+  icon: typeof GraduationCap | null;
   title: string;
   body: string;
 };
@@ -36,7 +37,7 @@ export function ValueProps() {
       body: 'Envíos con Correo Argentino a todo el país. Retiro gratis en local de Virasoro.',
     },
     {
-      icon: MessageCircle,
+      icon: null,
       title: business.whatsappLink ? 'Asesoramiento por WhatsApp' : 'Atención personalizada',
       body: business.whatsappLink
         ? 'Resolvemos dudas antes y después de comprar. Respuesta real, no bot.'
@@ -68,7 +69,6 @@ export function ValueProps() {
 
         <ul className="mt-14 grid grid-cols-1 gap-x-8 gap-y-12 md:mt-20 md:grid-cols-2 lg:grid-cols-4 lg:gap-x-10">
           {props.map((p, idx) => {
-            const Icon = p.icon;
             return (
               <RevealOnScroll
                 as="li"
@@ -76,11 +76,15 @@ export function ValueProps() {
                 delay={120 * idx}
                 className="border-foreground/10 group relative flex flex-col gap-4 border-t pt-6 transition-colors duration-300 hover:border-foreground/30"
               >
-                <Icon
-                  className="text-foreground/80 size-7 transition-transform duration-500 group-hover:-translate-y-0.5"
-                  aria-hidden="true"
-                  strokeWidth={1.5}
-                />
+                {p.icon ? (
+                  <p.icon
+                    className="text-foreground/80 size-7 transition-transform duration-500 group-hover:-translate-y-0.5"
+                    aria-hidden="true"
+                    strokeWidth={1.5}
+                  />
+                ) : (
+                  <WhatsappIcon className="size-7 transition-transform duration-500 group-hover:-translate-y-0.5" />
+                )}
                 <p className="text-foreground font-serif text-xl font-medium leading-tight tracking-[-0.015em] md:text-2xl">
                   {p.title}
                 </p>

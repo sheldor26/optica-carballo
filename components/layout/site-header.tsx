@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { AuthMenu } from '@/components/auth/auth-menu';
 import { CartBadge } from '@/components/cart/cart-badge';
 import { Button } from '@/components/ui/button';
@@ -57,7 +57,7 @@ export function SiteHeader() {
                 rel="noopener noreferrer"
                 aria-label="Contactar por WhatsApp"
               >
-                <MessageCircle className="size-4" />
+                <WhatsappIcon className="size-4" />
                 WhatsApp
               </a>
             </Button>
@@ -75,7 +75,7 @@ export function SiteHeader() {
                 rel="noopener noreferrer"
                 aria-label="Contactar por WhatsApp"
               >
-                <MessageCircle className="size-5" />
+                <WhatsappIcon className="size-5" />
               </a>
             </Button>
           )}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CreditCard, ShieldCheck, ShoppingBag, Truck } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { CartItemRow } from '@/components/cart/cart-item-row';
 import { CouponInput } from '@/components/cart/coupon-input';
@@ -7,6 +8,7 @@ import { ShippingCalculator } from '@/components/cart/shipping-calculator';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { formatPriceCents } from '@/lib/format/currency';
 import { FREE_SHIPPING_THRESHOLD_CENTS } from '@/lib/shipping';
+import { getWhatsappLinkWithContext } from '@/lib/site/business';
 import type { ResolvedCart } from '@/lib/cart/types';
 
 export function CartPage({
@@ -133,21 +135,7 @@ export function CartPage({
                 <Link href="/checkout">Iniciar compra</Link>
               </Button>
             ) : (
-              <>
-                <Button
-                  type="button"
-                  className="mt-5 w-full"
-                  size="lg"
-                  disabled
-                  title="Próximamente"
-                >
-                  Iniciar compra
-                </Button>
-                <p className="text-muted-foreground mt-2 text-center text-xs">
-                  Checkout próximamente. Mientras tanto, consultanos por
-                  WhatsApp.
-                </p>
-              </>
+              <CartWhatsappCta items={cart.items} />
             )}
           </div>
 
@@ -209,6 +197,34 @@ function EmptyCart() {
         minToRender={2}
       />
     </main>
+  );
+}
+
+function CartWhatsappCta({ items }: { items: ResolvedCart['items'] }) {
+  const productList = items
+    .map((it) => `${it.brand.name} ${it.product.name} (x${it.quantity})`)
+    .join(', ');
+  const message = `Hola! Quiero hacer este pedido: ${productList}. ¿Pueden ayudarme?`;
+  const href = getWhatsappLinkWithContext(message);
+
+  return (
+    <div className="mt-5 space-y-2">
+      {href ? (
+        <Button asChild size="lg" className="w-full bg-emerald-600 text-white hover:bg-emerald-700">
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            <WhatsappIcon className="size-4" />
+            Consultar por WhatsApp
+          </a>
+        </Button>
+      ) : (
+        <Button className="w-full" size="lg" disabled>
+          Iniciar compra
+        </Button>
+      )}
+      <p className="text-muted-foreground text-center text-xs">
+        Hablá con un experto y te ayudamos a completar tu pedido.
+      </p>
+    </div>
   );
 }
 

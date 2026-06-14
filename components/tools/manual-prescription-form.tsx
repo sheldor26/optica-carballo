@@ -8,9 +8,9 @@ import {
   ArrowRight,
   CheckCircle2,
   Loader2,
-  MessageCircle,
   Ruler,
 } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PDMeasureModal } from '@/components/tools/pd-measure-modal';
@@ -499,7 +499,7 @@ function RoutingBlock({
             'bg-emerald-600 text-white hover:bg-emerald-700',
           )}
         >
-          <MessageCircle className="size-4" />
+          <WhatsappIcon className="size-4" />
           Escribinos por WhatsApp
         </a>
       )}

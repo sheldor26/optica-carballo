@@ -1,4 +1,5 @@
-import { MessageCircle, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
 
@@ -27,7 +28,7 @@ export function WhatsappAdvisorCard({ productName, brandName }: Props) {
         />
         <div className="relative grid gap-6 sm:grid-cols-[auto_1fr_auto] sm:items-center">
           <div className="flex size-14 items-center justify-center rounded-full bg-emerald-600/10 sm:size-16">
-            <MessageCircle className="size-7 text-emerald-700 dark:text-emerald-400 sm:size-8" />
+            <WhatsappIcon className="size-7 sm:size-8" />
           </div>
           <div>
             <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">
@@ -48,7 +49,7 @@ export function WhatsappAdvisorCard({ productName, brandName }: Props) {
             className="bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
           >
             <a href={href} target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="size-4" />
+              <WhatsappIcon className="size-4" />
               Consultar
             </a>
           </Button>

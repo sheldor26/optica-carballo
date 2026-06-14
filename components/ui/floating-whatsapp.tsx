@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { readCompareClientSide } from '@/lib/compare/client';
 import { track, Events } from '@/lib/analytics/track';
 
@@ -69,7 +69,7 @@ export function FloatingWhatsapp({
         'sm:bottom-6 sm:right-6 sm:size-12',
       )}
     >
-      <MessageCircle className="size-7 sm:size-6" strokeWidth={2} />
+      <WhatsappIcon className="size-7 sm:size-6" />
       <span className="bg-[#25D366] absolute inset-0 -z-10 animate-ping rounded-full opacity-30" />
     </a>
   );
