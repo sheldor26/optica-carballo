@@ -4,6 +4,7 @@ import { CategoriesSection } from '@/components/home/categories-section';
 import { HomeFaqs } from '@/components/home/home-faqs';
 import { HomeHero } from '@/components/home/home-hero';
 import { HomeTools } from '@/components/home/home-tools';
+import { ParaVosRail } from '@/components/quiz/para-vos-rail';
 import { HowWeWork } from '@/components/home/how-we-work';
 import { TrustMarquee } from '@/components/home/trust-marquee';
 import { ValueProps } from '@/components/home/value-props';
@@ -47,6 +48,10 @@ export default async function HomePage() {
           a producto. Antes Categorías caía tras ~2 pantallas de contenido
           editorial (audit CRO). */}
       <CategoriesSection solBrands={solBrands} rxBrands={rxBrands} />
+      {/* Personalización: si el usuario hizo el quiz, riel "Pensado para vos".
+          Client-side (lee cookie oc_quiz) — no rompe el ISR del home; si no hizo
+          el quiz, no renderiza nada. */}
+      <ParaVosRail />
       <ValueProps />
       <HowWeWork />
       <HomeTools />

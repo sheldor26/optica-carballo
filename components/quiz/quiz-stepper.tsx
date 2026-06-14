@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { saveQuizAnswers } from '@/lib/quiz/client';
 import type { QuizAnswers, QuizCara, QuizCorreccion, QuizGenero, QuizPrecio, QuizUso } from '@/lib/quiz/types';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -118,6 +119,8 @@ export function QuizStepper() {
       setStep((s) => (s + 1) as Step);
     } else {
       const a = answers as QuizAnswers;
+      // Guardar en cookie para alimentar el riel "Pensado para vos".
+      saveQuizAnswers(a);
       const params = new URLSearchParams({
         uso: a.uso,
         cara: a.cara,
