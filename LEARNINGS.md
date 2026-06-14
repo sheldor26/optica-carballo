@@ -22,6 +22,16 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-13 — Carga de producto en 2 fases cuando faltan fotos: aplicar datos YA (el token ML es lo perecedero), cerrar visual después
+
+**Contexto**: en varias cargas de hoy las fotos no estaban en el bucket al momento de cargar (The Sil llegó a bloquearse; Blinded/And Now se cargaron con fotos parciales/ausentes). Además el token OAuth de ML vence a mitad de sesión (pasó hoy con The Sil → 401). Lo que funcionó: separar la carga en dos fases.
+
+**Fase 1 (apenas tengo los datos)**: traer precio/stock/var_id de ML con `ml-item.ts` mientras el token sirve, escribir el seed y aplicar producto + variantes + filas de `product_images` con los paths ESPERADOS. Las filas de imagen apuntando a archivos que aún no existen NO rompen nada (404 inocuo; no hay FK a storage). La PDP da 200 sin imágenes. Marcar la carga 🟡 ABIERTA en CLOUD_APPLIED/INVENTORY/CURRENT_STATE.
+
+**Fase 2 (cuando el founder sube las fotos)**: verificar HTTP 200 de cada path, bajar el perfil y fijar el scale por encuadre (ver [[scale por encuadre]]), confirmar que la PDP renderiza, y pasar la carga a ✅ CERRADA.
+
+**Por qué importa**: el dato de ML es lo perecedero (token expira, listing puede pausarse) → capturarlo cuando se puede. Las fotos son asincrónicas y dependen del founder → no bloquean el resto. Evita perder una ventana de token y deja el producto "listo para verse" apenas suben las imágenes. Excepción: si el founder pide explícito DESACTIVAR una variante hasta confirmar algo (ej. stock incierto del Terdey azul), va `is_active=false`; distinto de stock 0 confirmado que va activo.
+
 ## 2026-06-13 — El scale de imagen se define por el ENCUADRE (cuánto ocupa el anteojo en el frame), NO por la resolución; bajar la foto y mirarla antes de setear
 
 **Contexto**: cargando ~8 productos de sol Rusty/Vulk de la misma familia, el scale correcto varió mucho aunque el producto fuera casi idéntico, porque el fotógrafo encuadró distinto. Setear por "resolución igual → scale igual" falla; hay que mirar qué porcentaje del ancho ocupa el anteojo.
