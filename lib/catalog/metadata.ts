@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 // de sesión, y leer cookies acá volvía DINÁMICAS todas las rutas que usan
 // estos builders — anulaba el ISR (audit perf 2026-06-11).
 import { createStaticClient } from '@/lib/supabase/static';
+import { fetchCategoryByFilter } from '@/lib/catalog/queries';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import type { CategoryConfig } from '@/lib/catalog/categories';
 
@@ -81,6 +82,10 @@ type CategoryShapeMetaInput = {
   filterLabel: string;
   filterUrlSlug: string;
   filterMetaPhrase: string;
+  /** Predicado del filtro. Si se pasa, se cuenta el catálogo y la página se
+   * marca `noindex, follow` cuando da 0 productos (thin content: ej "aviador"
+   * o "acetato" todavía sin stock). Sin esto, comportamiento previo (indexable). */
+  filter?: Parameters<typeof fetchCategoryByFilter>[0]['filter'];
 };
 
 /**
@@ -88,15 +93,28 @@ type CategoryShapeMetaInput = {
  * `/anteojos-de-{sol,receta}/[shape]`. Captura queries genéricas tipo
  * "anteojos aviador", "lentes wayfarer", "anteojos polarizados".
  */
-export function buildCategoryShapeMetadata({
+export async function buildCategoryShapeMetadata({
   category,
   filterLabel,
   filterUrlSlug,
   filterMetaPhrase,
-}: CategoryShapeMetaInput): Metadata {
+  filter,
+}: CategoryShapeMetaInput): Promise<Metadata> {
   const title = `${category.name} ${filterLabel} | Originales con Envío - Óptica Carballo`;
   const description = `${capitalize(category.metaPhrase)} ${filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${category.slug}/${filterUrlSlug}`;
+
+  // Si se pasó el predicado, contamos el catálogo: las páginas sin productos
+  // (ej "aviador"/"acetato" todavía vacías con 2 marcas) salen `noindex` para
+  // no meter thin content en Google. Se reindexan solas al cargar catálogo.
+  let noindex = false;
+  if (filter) {
+    const products = await fetchCategoryByFilter({
+      categorySlug: category.slug,
+      filter,
+    });
+    noindex = products.length === 0;
+  }
 
   return {
     title: { absolute: title },
@@ -106,6 +124,7 @@ export function buildCategoryShapeMetadata({
       languages: { 'es-AR': url, 'x-default': url },
     },
     openGraph: { title, description, url, type: 'website' },
+    robots: noindex ? { index: false, follow: true } : undefined,
   };
 }
 
@@ -204,6 +223,9 @@ export async function buildBrandFilterMetadata(args: {
   filterLabel: string;
   filterUrlSlug: string;
   filterMetaPhrase: string;
+  /** `true` → `robots: noindex, follow` (página sin productos: thin content
+   * que no queremos en el índice de Google hasta que se cargue catálogo). */
+  noindex?: boolean;
 }): Promise<Metadata> {
   const supabase = createStaticClient();
   const { data: brand } = await supabase
@@ -230,6 +252,7 @@ export async function buildBrandFilterMetadata(args: {
       languages: { 'es-AR': url, 'x-default': url },
     },
     openGraph: { title, description, url, type: 'website' },
+    robots: args.noindex ? { index: false, follow: true } : undefined,
   };
 }
 

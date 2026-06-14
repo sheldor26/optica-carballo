@@ -48,11 +48,27 @@ export async function resolveBrandFilterMetadata(args: {
   const filter = getBrandFilter(args.filterUrlSlug);
   if (!filter) return { title: 'No encontrado' };
 
+  // Conteo para decidir noindex: combinaciones marca×filtro sin productos
+  // (ej una marca que no tiene cat-eye) son thin content y no deben indexarse
+  // hasta que se cargue catálogo. follow:true para no cortar el crawl interno.
+  const categoryKey =
+    args.category.slug === 'anteojos-de-sol' ? 'sol' : 'receta';
+  const enabledForCategory = filter.categories.includes(categoryKey);
+  const data = enabledForCategory
+    ? await fetchBrandPageByFilter({
+        brandSlug: args.brandSlug,
+        category: args.category,
+        filter: filter.filter,
+      })
+    : null;
+  const isEmpty = data === null || data.products.length === 0;
+
   return buildBrandFilterMetadata({
     category: args.category,
     brandSlug: args.brandSlug,
     filterLabel: filter.label,
     filterUrlSlug: filter.urlSlug,
     filterMetaPhrase: filter.metaPhrase,
+    noindex: isEmpty,
   });
 }

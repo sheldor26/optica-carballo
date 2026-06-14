@@ -12,13 +12,14 @@ const FILTER = getBrandFilter('polarizados');
 
 export const revalidate = 300;
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   if (!FILTER) return { title: 'No encontrado' };
   return buildCategoryShapeMetadata({
     category: CATEGORY,
     filterLabel: FILTER.label,
     filterUrlSlug: FILTER.urlSlug,
     filterMetaPhrase: FILTER.metaPhrase,
+    filter: FILTER.filter,
   });
 }
 
