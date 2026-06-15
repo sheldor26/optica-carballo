@@ -413,10 +413,10 @@ function VariantThumbnails({
             aria-current={isActive ? 'true' : undefined}
             title={stockBadge?.label}
             className={cn(
-              'bg-background relative size-14 shrink-0 overflow-hidden rounded border transition-colors',
+              'relative size-14 shrink-0 overflow-hidden rounded-md border-b-2 transition-colors',
               isActive
                 ? 'border-foreground'
-                : 'border-border/60 hover:border-foreground/40',
+                : 'border-transparent hover:border-foreground/30',
               !v.inStock && 'opacity-50',
               hideOnMobile && 'hidden md:block',
             )}
@@ -453,7 +453,7 @@ function VariantThumbnails({
         <Link
           href={productHref}
           aria-label={`Ver las ${variants.length} variantes`}
-          className="bg-background border-border/60 text-muted-foreground hover:border-foreground/40 flex size-14 shrink-0 items-center justify-center rounded border text-sm font-medium transition-colors md:hidden"
+          className="text-muted-foreground hover:text-foreground flex size-14 shrink-0 items-center justify-center rounded-md text-sm font-medium transition-colors md:hidden"
         >
           +{hiddenCountMobile}
         </Link>
