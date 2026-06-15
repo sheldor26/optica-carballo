@@ -84,7 +84,9 @@ export type ProductCardData = {
   variants?: ProductCardVariant[];
 };
 
-const MAX_VISIBLE_THUMBS = 5;
+// 3 thumbs máx (era 5) — con la grilla a 4 col las cards son angostas (~218px en
+// laptops 1024-1279); 3 thumbs + "+N" entran sin desbordar a la card vecina.
+const MAX_VISIBLE_THUMBS = 3;
 
 /**
  * Card minimalista estilo retail premium. Foto del producto domina,
@@ -347,11 +349,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   );
 }
 
-// Mobile: 3 thumbs visibles, resto cuenta como "+N". Desktop (sm+): hasta 5.
-// Razón: cards mobile son ~150-170px de ancho — 4+ thumbs size-16 (64px)
-// se encimaban o cortaban visualmente. CSS-only responsive sin JS detection.
-const MAX_VISIBLE_THUMBS_MOBILE = 3;
-
 /**
  * Tira horizontal de thumbnails (uno por variante). Cada thumbnail es un
  * Link a la PDP de ESA variante (deep-link `?v=<sku>`) — founder 2026-05-31:
@@ -360,8 +357,9 @@ const MAX_VISIBLE_THUMBS_MOBILE = 3;
  * foto grande del card sin navegar; el click navega. En mobile (sin hover),
  * el tap navega directo a la PDP de la variante.
  *
- * Mobile: solo 3 thumbs visibles. Desktop (sm+): hasta 5. Indicador "+N"
- * dinámico según breakpoint (CSS-only, hidden/sm:flex).
+ * Máx 3 thumbs (size-14=56px, uniforme) + "+N" — con la grilla a 4 col las
+ * cards son angostas (~218px en laptops), 5 thumbs a 80px se desbordaban a la
+ * card vecina (founder 2026-06-15). Indicador "+N" dinámico por breakpoint.
  */
 function VariantThumbnails({
   variants,
@@ -384,7 +382,7 @@ function VariantThumbnails({
   const hiddenCountMobile = showMobileOverflowBox ? variants.length - 2 : 0;
 
   return (
-    <div className="mt-3 flex items-center justify-center gap-2">
+    <div className="mt-3 flex max-w-full items-center justify-center gap-2 overflow-hidden">
       {visible.map((v, idx) => {
         const isActive = v.id === selectedVariantId;
         const url = v.primaryImagePath
@@ -415,7 +413,7 @@ function VariantThumbnails({
             aria-current={isActive ? 'true' : undefined}
             title={stockBadge?.label}
             className={cn(
-              'bg-background relative size-16 shrink-0 overflow-hidden rounded border transition-colors md:size-20',
+              'bg-background relative size-14 shrink-0 overflow-hidden rounded border transition-colors',
               isActive
                 ? 'border-foreground'
                 : 'border-border/60 hover:border-foreground/40',
@@ -455,7 +453,7 @@ function VariantThumbnails({
         <Link
           href={productHref}
           aria-label={`Ver las ${variants.length} variantes`}
-          className="bg-background border-border/60 text-muted-foreground hover:border-foreground/40 flex size-16 shrink-0 items-center justify-center rounded border text-sm font-medium transition-colors md:hidden"
+          className="bg-background border-border/60 text-muted-foreground hover:border-foreground/40 flex size-14 shrink-0 items-center justify-center rounded border text-sm font-medium transition-colors md:hidden"
         >
           +{hiddenCountMobile}
         </Link>
