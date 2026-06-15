@@ -63,7 +63,7 @@ export default async function Page() {
           />
         </>
       ) : (
-        <section className="mx-auto mt-12 grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:mt-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20">
+        <section className="mx-auto mt-12 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-16 md:mt-16 md:gap-x-10 md:gap-y-20 lg:grid-cols-4">
           {ordered.map((p) => (
             <ProductCard
               key={p.slug}

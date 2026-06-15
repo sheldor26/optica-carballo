@@ -135,7 +135,7 @@ export function BrandGenderCatalogPage({
       ) : (
         <section
           aria-label={`Productos ${brand.name} ${targetLabel} en ${category.name.toLowerCase()}`}
-          className="grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20"
+          className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-16 md:gap-x-10 md:gap-y-20 lg:grid-cols-4"
         >
           {items.map((item, idx) => (
             <RevealOnScroll key={item.slug} delay={(idx % 3) * 70} className="h-full">

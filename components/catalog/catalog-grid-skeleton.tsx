@@ -13,7 +13,7 @@ export function CatalogGridSkeleton({ count = 9 }: { count?: number }) {
         <div className="bg-muted h-9 w-64 animate-pulse rounded-md" />
         <div className="bg-muted/70 mt-3 h-4 w-40 animate-pulse rounded" />
       </div>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16 md:grid-cols-3 md:gap-x-10 md:gap-y-20">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-16 md:gap-x-10 md:gap-y-20 lg:grid-cols-4">
         {Array.from({ length: count }).map((_, i) => (
           <div key={i} className="flex flex-col">
             <div className="bg-muted aspect-[3/2] w-full animate-pulse rounded-md" />
