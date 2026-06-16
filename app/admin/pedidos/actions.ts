@@ -9,6 +9,7 @@ import {
 } from '@/lib/emails/send-order-emails';
 import { shouldNotifyCustomer } from '@/lib/orders/email-policy';
 import { fetchOrderByIdAdmin } from '@/lib/orders/admin-queries';
+import { canGenerateShipment } from '@/lib/orders/order-status';
 import { releaseOrderStock } from '@/lib/checkout/orders';
 import { importShipment, type ImportShipmentInput } from '@/lib/correo/import';
 import { DEFAULT_PACKAGE, EXTRA_ITEM_WEIGHT } from '@/lib/correo/constants';
@@ -176,6 +177,16 @@ async function generateShipmentForOrder(
     return {
       ok: false,
       error: 'Retiro en local — no requiere envío por Correo.',
+    };
+  }
+
+  if (!canGenerateShipment(order.status)) {
+    return {
+      ok: false,
+      error:
+        order.status === 'refunded'
+          ? 'Pedido reembolsado — no se genera envío.'
+          : 'Pedido cancelado — no se genera envío.',
     };
   }
 

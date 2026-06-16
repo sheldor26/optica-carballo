@@ -13,6 +13,7 @@ import { ShipmentControl } from '@/components/admin/shipment-control';
 import { InvoiceControl } from '@/components/admin/invoice-control';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
+import { canGenerateShipment } from '@/lib/orders/order-status';
 
 export const dynamic = 'force-dynamic';
 
@@ -252,12 +253,13 @@ export default async function Page({
                 </span>
               </p>
             )}
-            {order.shippingMethod !== 'pickup' && (
-              <ShipmentControl
-                orderId={order.id}
-                alreadyGenerated={Boolean(order.shipmentImportedAt)}
-              />
-            )}
+            {order.shippingMethod !== 'pickup' &&
+              canGenerateShipment(order.status) && (
+                <ShipmentControl
+                  orderId={order.id}
+                  alreadyGenerated={Boolean(order.shipmentImportedAt)}
+                />
+              )}
           </section>
         </div>
 

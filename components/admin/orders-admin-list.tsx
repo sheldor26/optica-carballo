@@ -9,6 +9,7 @@ import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 import { cn } from '@/lib/utils';
 import { generateShipmentsBulkAction } from '@/app/admin/pedidos/actions';
+import { canGenerateShipment } from '@/lib/orders/order-status';
 import type { AdminOrderListItem } from '@/lib/orders/admin-queries';
 
 /**
@@ -25,9 +26,13 @@ export function OrdersAdminList({ orders }: { orders: AdminOrderListItem[] }) {
     text: string;
   } | null>(null);
 
-  // Elegibles para envío: todo lo que no sea retiro en local.
+  // Elegibles para envío: ni retiro en local ni pedidos fuera de curso
+  // (cancelado/reembolsado — no se les genera etiqueta de Correo).
   const shippable = useMemo(
-    () => orders.filter((o) => o.shippingMethod !== 'pickup'),
+    () =>
+      orders.filter(
+        (o) => o.shippingMethod !== 'pickup' && canGenerateShipment(o.status),
+      ),
     [orders],
   );
   // Los que todavía no tienen envío generado (target típico del "seleccionar todos").
@@ -134,7 +139,8 @@ export function OrdersAdminList({ orders }: { orders: AdminOrderListItem[] }) {
 
       <ul className="border-border divide-border divide-y overflow-hidden rounded-lg border">
         {orders.map((o) => {
-          const eligible = o.shippingMethod !== 'pickup';
+          const eligible =
+            o.shippingMethod !== 'pickup' && canGenerateShipment(o.status);
           const generated = Boolean(o.shipmentImportedAt);
           return (
             <li key={o.id} className="flex items-center gap-3 px-4 py-4">
@@ -164,7 +170,7 @@ export function OrdersAdminList({ orders }: { orders: AdminOrderListItem[] }) {
                         Envío generado
                       </span>
                     )}
-                    {!eligible && (
+                    {o.shippingMethod === 'pickup' && (
                       <span className="text-muted-foreground text-[11px]">
                         Retiro en local
                       </span>

@@ -21,6 +21,21 @@ export const TRACKER_STEPS = [
 
 export type TrackerStep = (typeof TRACKER_STEPS)[number];
 
+/**
+ * Estados terminales fuera de curso: el pedido ya no avanza, así que NO tiene
+ * sentido generar un envío de Correo. Generarlo daría de alta una etiqueta real
+ * para un pedido cancelado/reembolsado.
+ */
+export const NON_SHIPPABLE_STATUSES = [
+  'cancelled',
+  'refunded',
+] as const satisfies readonly OrderStatus[];
+
+/** true si el estado del pedido permite generar un envío de Correo. */
+export function canGenerateShipment(status: OrderStatus): boolean {
+  return !(NON_SHIPPABLE_STATUSES as readonly OrderStatus[]).includes(status);
+}
+
 export const TRACKER_STEP_LABELS: Record<TrackerStep, string> = {
   paid: 'Pago confirmado',
   preparing: 'En preparación',
