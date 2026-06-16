@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-15 — El panel admin dejaba generar envíos de pedidos CANCELADOS (elegibilidad chequeada solo por método de envío, no por estado)
+
+**Estado**: ✅ Cerrado (guard en server + UX, commit `74b4156`)
+
+**Qué pasó**: el founder reportó que en `/admin/pedidos` un pedido **Cancelado** se podía seleccionar y entrar en "Generar envíos". El criterio de elegibilidad —tanto en el listado (`OrdersAdminList`) como en el core de la action (`generateShipmentForOrder`) y en el botón del detalle— era únicamente `shippingMethod !== 'pickup'`. NO miraba `order.status`. Un cancelado/reembolsado con método "envío" pasaba el filtro y daba de alta una **etiqueta REAL en Correo** (acción externa con costo/irreversible), no era solo cosmético.
+
+**Causa raíz**: la regla "¿este pedido necesita envío?" se modeló con una sola dimensión (método) cuando en realidad son dos (método **y** estado del pedido). El estado terminal "fuera de curso" (cancelled/refunded) ya existía como concepto en el dominio (`offPathStatus` en order-status.ts) pero NO estaba conectado al flujo de generación de envíos. Además la misma condición `!eligible` se reusaba para pintar el badge "Retiro en local", así que al endurecer `eligible` se habría etiquetado mal a los cancelados con envío (acoplamiento de dos significados en una variable).
+
+**Regla preventiva**: (1) toda acción que dispare un efecto EXTERNO e irreversible sobre un pedido (generar envío, facturar, cobrar) debe chequear el ESTADO del pedido además del método/datos — un pedido fuera de curso (cancelled/refunded, y evaluar pending) no es elegible. (2) La regla de elegibilidad se define UNA vez como helper de dominio (`canGenerateShipment` / `NON_SHIPPABLE_STATUSES` en order-status.ts) y se reusa en server + UI; nunca inline duplicada. (3) El guard real va SIEMPRE en la server action (protege aunque la UI falle o se fuerce el request), la UI es solo conveniencia. (4) No reusar una variable de elegibilidad para significados distintos (un badge de "retiro en local" depende del método, no de "no es elegible para envío").
+
 ## 2026-06-13 — Se shippearon valores fuera del enum en `lens_treatment` de variantes (espejado/antirreflejo-interno) porque el JSONB no se valida y un run de agente los sugirió
 
 **Estado**: ⏳ Abierto (auditoría en BACKLOG; no rompe funcional pero ensucia comparador/filtros)
