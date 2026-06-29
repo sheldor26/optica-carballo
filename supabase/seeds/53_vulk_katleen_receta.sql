@@ -32,7 +32,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM vulk), (SELECT id FROM receta), 'vulk-katleen-receta', 'Vulk Katleen Receta',
   'Armazón de receta Vulk Katleen: cuadrado femenino, G-Flex ultra liviano (26,3g), talle medium. Apto monofocal, bifocal y progresivo. Viene con lentes demo.',
-  E'Es un armazón de receta **cuadrado femenino**, moderno y versátil. El frente y las patillas son de **G-Flex** —flexible y **ultra liviano** (26,3 g)— con bisagras plásticas, para usarlo todo el día sin que marque.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• MBLK (SKU 125901): negro mate.\n• M0292 (SKU 125906): caramelo mate.\n• 0292 (SKU 125902): caramelo brillo transparente.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Es un armazón de receta **cuadrado femenino**, moderno y versátil. El frente y las patillas son de **G-Flex** —flexible y **ultra liviano** (26,3 g)— con bisagras plásticas, para usarlo todo el día sin que marque.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 4 colores:\n\n• MBLK (SKU 125901): negro mate.\n• M0292 (SKU 125906): caramelo mate.\n• 0292 (SKU 125902): caramelo brillo transparente.\n• MDEMI: carey mate.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "cuadrado",
@@ -97,7 +97,7 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), (SELECT id FROM public.product_variants WHERE sku='125902'),
    'vulk-katleen-receta/KATLEEN-0292 FRENTE.jpg', 'Armazón de receta Vulk Katleen cuadrado femenino vista frontal, caramelo brillo transparente', 1500, 1000, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), NULL,
-   'vulk-katleen-receta/medidas.webp', 'Esquema técnico de medidas Vulk Katleen: frente 129mm, lente 53x42mm, puente 18mm, varilla 145mm', 1500, 1500, 6, false),
+   'vulk-katleen-receta/medidas.webp', 'Esquema técnico de medidas Vulk Katleen: frente 129mm, lente 53x42mm, puente 18mm, varilla 145mm', 1500, 1500, 99, false),  -- sort 99 = siempre última (antes 6: con variantes nuevas en sort >6 quedaba ANTES de sus fotos)
   -- +MDEMI carey mate (2026-06-15)
   ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), (SELECT id FROM public.product_variants WHERE sku='KATLEEN-MDEMI'),
    'vulk-katleen-receta/katleen-mdemi-P.jpg', 'Armazón de receta Vulk Katleen cuadrado vista lateral, carey mate', 900, 442, 10, false),

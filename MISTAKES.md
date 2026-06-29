@@ -24,6 +24,24 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-15 — Agregar variante(s) a un producto existente sin completar el checklist: (a) `medidas` quedó antes de las fotos del producto, (b) falta la variante en la `description`
+
+**Estado**: ✅ Cerrado (Spell + Katleen corregidos: medidas→sort 99, description con todas las variantes; seeds sincronizados)
+
+**Qué pasó**: el founder agregó variantes nuevas a 2 armazones de receta ya cargados (Spell +2, Katleen +1). En AMBOS pasó lo mismo, y el founder lo detectó:
+1. **Imagen `medidas` antes que las fotos del producto**: la imagen de medidas es product-level (`variant_id=NULL`, sort_order bajo: 4 en Spell, 6 en Katleen). Las fotos de las variantes nuevas las inserté con sort_order MÁS ALTO (4-7 / 10-11). La galería de cada variante ordena por sort_order → medidas (sort bajo) aparecía PRIMERO.
+2. **Variante faltante en la `description`**: actualicé variantes + imágenes + scale, pero NO la lista "Disponible en N versiones" de la `description` (ni el conteo). Quedó "3 colores"/"2 variantes" desactualizado.
+
+**Causa raíz**: "agregar una variante" se trató como "INSERT de variante + imágenes", cuando en realidad es un cambio que toca MÁS lugares. La `description` tiene una lista de variantes hardcodeada (decisión de copy) que hay que mantener a mano. Y el sort_order de `medidas` quedó como un valor medio (no "siempre última"), frágil ante cualquier imagen nueva con sort mayor.
+
+**Regla preventiva — CHECKLIST al agregar variante(s) a un producto existente**:
+1. INSERT variante(s) + imágenes (perfil+frente).
+2. **`description`**: agregar la nueva variante a la lista "Disponible en N…" + actualizar el conteo (y `short_description` si menciona cantidad).
+3. **`medidas` (y cualquier imagen product-level) → sort_order 99** (siempre última); o asegurar que las fotos nuevas tengan sort < medidas. NO dejar medidas en un sort medio.
+4. Scale overrides de las fotos nuevas (match al resto del modelo).
+5. Sincronizar el SEED (variantes + imágenes + description) — no solo la DB.
+6. Verificar la galería de la variante NUEVA (orden de fotos) además del conteo.
+
 ## 2026-06-15 — El panel admin dejaba generar envíos de pedidos CANCELADOS (elegibilidad chequeada solo por método de envío, no por estado)
 
 **Estado**: ✅ Cerrado (guard en server + UX, commit `74b4156`)
