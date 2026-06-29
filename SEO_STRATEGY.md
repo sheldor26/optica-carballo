@@ -285,6 +285,18 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 
 **Diferenciador en copy (NO en keyword de forma)**: pequeño + liviano + **solo monofocal** (lectura/descanso). **Honestidad**: "lectura/descanso" SOLO como uso en el body — NUNCA como reclamo de anteojo de lectura pre-armado (es armazón para monofocal graduado). Anti-canibalización vs R-CY 02 (también rectangular receta): Woxi lidera por intención receta + branded + tamaño; R-CY 02 mantiene la forma "rectangular" amplia. Title: `Armazón de Receta Rusty Woxi Rectangular | Óptica Carballo`. H1: `Armazón de Receta Rusty Woxi — Rectangular Liviano para Monofocales`.
 
+*Rusty Ther Optics (receta, REDONDO de METAL, UNISEX, liviano 14,5g, lentes demo mono/bi/multifocal) — slug `rusty-ther-receta` en `/anteojos-de-receta/rusty/rusty-ther-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos redondos | 880 | 12 | **primaria** — forma (mejor dif que "lentes redondos" 18) |
+| lentes redondos | 1.000 | 18 | forma variante "lentes" → body/alt |
+| anteojos de metal | 210 | 12 | **carril propio** (material) → distingue del Misty (acetato) |
+| lentes de metal | 260 | 10 | material variante "lentes" |
+| anteojos recetados | 720 | 9 | head receta → copy (NO primaria, la lideran Woxi/Patien) |
+| rusty ther (branded) | 0 medido | ~4 | title/H1/slug |
+
+**ANTI-CANIBALIZACIÓN vs Rusty Misty receta (también redondo unisex)**: clave — Misty = **acetato + talle chico**; Ther = **METAL + liviano 14,5g**. Cada ficha pelea atributo distinto: Misty su talle, Ther el material (`anteojos/lentes de metal`). Ambos soportan `anteojos redondos` pero el diferenciador real es el material. **Cross-link obligatorio Misty↔Ther** ("¿lo querés en acetato? → Misty" / "¿en metal? → Ther"). NO targetear género (unisex). NO usar "armazón de metal" (dif 36-44). Title: `Armazón de Receta Rusty Ther Redondo Metal | Óptica Carballo`. H1: `Armazón de Receta Rusty Ther — Redondo de Metal, Liviano y Unisex`.
+
 *Rusty Patien Optics (receta, wayfarer, UNISEX, G-Flex, lentes demo, 23,6 g — versión de receta del Patien de sol) — slug `rusty-patien-receta` en `/anteojos-de-receta/rusty/rusty-patien-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

@@ -228,6 +228,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg': 1.2,
   'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_frente.jpg': 1.05,
 
+  // Rusty Ther RECETA — redondo de metal. Fotos 900×442 (panorámicas, más anchas que el card 3:2)
+  // → object-contain llena por ancho → scale 1.0 en las 6 (como Raven/Bennie). Reverificar vs grid.
+  'rusty-ther/THER-M020-P.jpg': 1.0,
+  'rusty-ther/THER-M020-F_GALERIA.jpg': 1.0,
+  'rusty-ther/THER-M036-P.jpg': 1.0,
+  'rusty-ther/THER-M036-F_GALERIA.jpg': 1.0,
+  'rusty-ther/THER-M033-P.jpg': 1.0,
+  'rusty-ther/THER-M033-F_GALERIA.jpg': 1.0,
+
   // Rusty Sotion — envolvente deportivo. Iter 2: 1.4/1.15 quedó chico
   // (founder "agrandar") → 1.6/1.3. Las fotos del Sotion tienen el anteojo
   // más chico en el frame que las del Yau. Si recorta, bajar a 1.5/1.25.
