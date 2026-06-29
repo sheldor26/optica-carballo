@@ -70,7 +70,12 @@ VALUES
    8654145, 2, true, 2, 'MLA2014157548', '182897030252'),
   ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), '125902',
    '{"frame_color":"caramelo-brillo","model_code":"0292"}'::jsonb,
-   8654145, 2, true, 3, 'MLA2014157548', '185448544564')
+   8654145, 2, true, 3, 'MLA2014157548', '185448544564'),
+  -- +MDEMI carey mate (2026-06-15, founder la agregó en ML; misma multi-variante).
+  -- ML sin SKU → placeholder descriptivo (sync usa varcode).
+  ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), 'KATLEEN-MDEMI',
+   '{"frame_color":"carey-mate","model_code":"MDEMI"}'::jsonb,
+   8654145, 3, true, 4, 'MLA2014157548', '204547293605')
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
@@ -92,7 +97,12 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), (SELECT id FROM public.product_variants WHERE sku='125902'),
    'vulk-katleen-receta/KATLEEN-0292 FRENTE.jpg', 'Armazón de receta Vulk Katleen cuadrado femenino vista frontal, caramelo brillo transparente', 1500, 1000, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), NULL,
-   'vulk-katleen-receta/medidas.webp', 'Esquema técnico de medidas Vulk Katleen: frente 129mm, lente 53x42mm, puente 18mm, varilla 145mm', 1500, 1500, 6, false)
+   'vulk-katleen-receta/medidas.webp', 'Esquema técnico de medidas Vulk Katleen: frente 129mm, lente 53x42mm, puente 18mm, varilla 145mm', 1500, 1500, 6, false),
+  -- +MDEMI carey mate (2026-06-15)
+  ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), (SELECT id FROM public.product_variants WHERE sku='KATLEEN-MDEMI'),
+   'vulk-katleen-receta/katleen-mdemi-P.jpg', 'Armazón de receta Vulk Katleen cuadrado vista lateral, carey mate', 900, 442, 10, false),
+  ((SELECT id FROM public.products WHERE slug='vulk-katleen-receta'), (SELECT id FROM public.product_variants WHERE sku='KATLEEN-MDEMI'),
+   'vulk-katleen-receta/katleen-mdemi-F.jpg', 'Armazón de receta Vulk Katleen cuadrado vista frontal, carey mate', 900, 442, 11, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 

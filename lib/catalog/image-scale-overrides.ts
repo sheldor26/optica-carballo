@@ -433,6 +433,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-katleen-receta/KATLEEN M0292 - Frente.jpg': 1.0,
   'vulk-katleen-receta/KATLEEN-0292 perfil.jpg': 1.15,
   'vulk-katleen-receta/KATLEEN-0292 FRENTE.jpg': 1.0,
+  // +variante MDEMI carey mate (2026-06-15), mismo scale que el resto del modelo.
+  'vulk-katleen-receta/katleen-mdemi-P.jpg': 1.15,
+  'vulk-katleen-receta/katleen-mdemi-F.jpg': 1.0,
 
   // Rusty CCCP — envolvente deportivo (wraparound), como Eslav/Sotion. Las fotos
   // de envolvente suelen dejar el anteojo chico en el frame → arranco en 1.15/1.0
