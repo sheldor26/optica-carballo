@@ -274,6 +274,17 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 | lentes recetados | 390 | 9 | variante receta |
 | rusty r-cy 02 (branded) | 0 medido | ~4 | long-tail exacto |
 
+*Rusty Woxi Optics (receta, RECTANGULAR pequeño, UNISEX, G-Flex, SOLO monofocal, lentes demo) — slug `rusty-woxi-receta` en `/anteojos-de-receta/rusty/rusty-woxi-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos recetados | 720 | 9 | **primaria** — head receta (NO "rectangulares": esa la lidera R-CY 02; anti-canibalización) |
+| lentes recetados | 390 | 9 | variante receta |
+| anteojos rectangulares | 480 | 15 | forma, **secundaria** (no primaria, para no pisar R-CY 02) |
+| lentes rectangulares | 880 | 10 | forma (variante "lentes"), secundaria |
+| rusty woxi (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug |
+
+**Diferenciador en copy (NO en keyword de forma)**: pequeño + liviano + **solo monofocal** (lectura/descanso). **Honestidad**: "lectura/descanso" SOLO como uso en el body — NUNCA como reclamo de anteojo de lectura pre-armado (es armazón para monofocal graduado). Anti-canibalización vs R-CY 02 (también rectangular receta): Woxi lidera por intención receta + branded + tamaño; R-CY 02 mantiene la forma "rectangular" amplia. Title: `Armazón de Receta Rusty Woxi Rectangular | Óptica Carballo`. H1: `Armazón de Receta Rusty Woxi — Rectangular Liviano para Monofocales`.
+
 *Rusty Patien Optics (receta, wayfarer, UNISEX, G-Flex, lentes demo, 23,6 g — versión de receta del Patien de sol) — slug `rusty-patien-receta` en `/anteojos-de-receta/rusty/rusty-patien-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

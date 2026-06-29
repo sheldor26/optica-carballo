@@ -222,6 +222,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.05,
   'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.2,
   'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.05,
+  // +2 variantes (2026-06-15): LGREY + MDEMI-MBLK, mismo scale que el resto del modelo.
+  'rusty-spell-receta/SPELL_LGREY_OPTICAL_perfil.jpg': 1.2,
+  'rusty-spell-receta/SPELL_LGREY_OPTICAL_frente.jpg': 1.05,
+  'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg': 1.2,
+  'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_frente.jpg': 1.05,
 
   // Rusty Sotion — envolvente deportivo. Iter 2: 1.4/1.15 quedó chico
   // (founder "agrandar") → 1.6/1.3. Las fotos del Sotion tienen el anteojo
@@ -606,6 +611,19 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-trial/THE TRIAL-SBLK_ORANGE - f.jpg': 1.0,
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  p.jpg': 1.08,
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  f.jpg': 1.0,
+
+  // Rusty Woxi Optics RECETA — rectangular pequeño. Fotos full-res 3696×2448 (3:2 = card)
+  // → object-contain casi sin letterbox. Baseline receta perfil 1.15 / frente 1.0 PROVISIONAL
+  // (reverificar vs grid cuando el seed esté aplicado + deployado, regla 15). Nombres del founder
+  // tal cual (inconsistentes "CLSBLK"/"SBLKCL", espacios).
+  // Founder 2026-06-15: agrandar un poco todas MENOS la variante 2 (SBLK) →
+  // perfil v1 (MBLK) y v3 (SBLKCL) 1.15→1.20; SBLK queda en 1.15.
+  'rusty-woxi/WOXI-MBLK-MBLK-PERFIL.jpg': 1.2,
+  'rusty-woxi/WOXI MBLK - FRENTE.jpg': 1.0,
+  'rusty-woxi/WOXI SBLK-PERFIL.jpg': 1.15,
+  'rusty-woxi/WOXI SBLK - FRENTE.jpg': 1.0,
+  'rusty-woxi/WOXI SBLKCL SBLK-PERFIL.jpg': 1.2,
+  'rusty-woxi/WOXI SBLK-CLSBLK - FRENTE.jpg': 1.0,
 
   // Vulk Bennie 51 SOL — redondo unisex talle small. CONFIRMADO visual (fotos subidas
   // 2026-06-14, 7/7 HTTP 200, nombres = seed exacto): 900×442 más anchas que el card 3:2 →

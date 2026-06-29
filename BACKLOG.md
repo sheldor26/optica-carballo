@@ -126,6 +126,7 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   - [ ] Rusty Play sol (seed 63).
   - [ ] Rusty Terdey sol (seed 64).
   - [ ] Rusty Blinded sol (seed 68).
+  - [ ] Rusty Woxi receta (seed 74) — "livianos" sin gramaje.
   - [ ] Rusty And Now sol (seed 69).
   - [x] ~~Rusty Patien sol (seed 65) + receta (seed 66)~~ — **23,6 g** (founder pasó el peso 2026-06-13, aplicado a ambos, mismo frame).
 

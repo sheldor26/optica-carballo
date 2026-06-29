@@ -31,4 +31,17 @@
 --   medidas.jpg
 -- ============================================
 
+-- ============================================
+-- ACTUALIZACIÓN 2026-06-15: +2 variantes (founder las agregó en ML, mismo MLA
+-- multi-variation, mismos detalles técnicos). Ahora 4 variantes, todas $83.078:
+--   SPELL-LGREY        — LGREY OPTICAL (gris transparente)        ML var 204557471801 stock 2
+--   SPELL-MDEMI-MBLK   — MDEMI-MBLK OPTICAL (carey mate, patillas negro mate) ML var 204557471803 stock 2
+-- ⚠️ SKU placeholder descriptivo (ML las trae "sin SKU"; el sync usa var_id) —
+--    reemplazar por el SKU real si el founder lo tiene. Fotos en rusty-spell-receta/:
+--   SPELL_LGREY_OPTICAL_perfil.jpg + _frente.jpg
+--   SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg + _frente.jpg
+-- Scale 1.2/1.05 (igual al resto del modelo). Aplicado vía MCP execute_sql.
+-- Verificación MCP: 4 variants, imgs 2/variante, 4 fotos HTTP 200.
+-- ============================================
+
 -- Seed documental — INSERT real + UPDATE peso sol ya aplicados vía MCP.
