@@ -30,7 +30,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
+        // "serif" = display tipográfico del sitio. Ahora Bricolage Grotesque
+        // (grotesco, NO serif) → fallback a sans, no a Georgia.
+        serif: ['var(--font-serif)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',

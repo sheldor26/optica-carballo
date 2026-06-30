@@ -1,20 +1,23 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Inter } from 'next/font/google';
+import { Bricolage_Grotesque, Manrope } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
 import './globals.css';
 
-const inter = Inter({
+// Tipografía alineada a ShotPilot (founder 2026-06-29): Manrope (cuerpo) +
+// Bricolage Grotesque (títulos). Se mantienen los nombres de variable
+// (--font-sans / --font-serif) para no tocar las clases font-sans/font-serif
+// de todo el sitio — "serif" ahora es el display grotesco, no Fraunces.
+const manrope = Manrope({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
 });
 
-const fraunces = Fraunces({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--font-serif',
   display: 'swap',
-  axes: ['opsz'],
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -50,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es-AR" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="es-AR" className={`${manrope.variable} ${bricolage.variable}`}>
       <body className="font-sans antialiased">
         {children}
         <GoogleAnalytics />
