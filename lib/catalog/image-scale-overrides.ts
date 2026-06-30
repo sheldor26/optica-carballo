@@ -231,11 +231,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Ther RECETA — redondo de metal. Fotos 900×442 (panorámicas, más anchas que el card 3:2)
   // → object-contain llena por ancho → scale 1.0 en las 6 (como Raven/Bennie). Reverificar vs grid.
-  'rusty-ther/THER-M020-P.jpg': 1.0,
+  'rusty-ther/THER-M020-P.jpg': 1.1,
   'rusty-ther/THER-M020-F_GALERIA.jpg': 1.0,
-  'rusty-ther/THER-M036-P.jpg': 1.0,
+  'rusty-ther/THER-M036-P.jpg': 1.1,
   'rusty-ther/THER-M036-F_GALERIA.jpg': 1.0,
-  'rusty-ther/THER-M033-P.jpg': 1.0,
+  'rusty-ther/THER-M033-P.jpg': 1.1,
   'rusty-ther/THER-M033-F_GALERIA.jpg': 1.0,
 
   // Rusty Sotion — envolvente deportivo. Iter 2: 1.4/1.15 quedó chico
@@ -634,9 +634,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty The Take Optics RECETA — aviador. Fotos 900×442 (2.04:1) más anchas que el card 3:2
   // → object-contain llena por ancho → 1.0 en las 4 (como Raven/Trial; 1.15 cropearía patillas).
-  'rusty-the-take-receta/THE_TAKE_MDEMI_PERFIL.jpg': 1.0,
+  'rusty-the-take-receta/THE_TAKE_MDEMI_PERFIL.jpg': 1.1,
   'rusty-the-take-receta/THE_TAKE_MDEMI_frente.jpg': 1.0,
-  'rusty-the-take-receta/THE_TAKE_L.ROSE_-_p.jpg': 1.0,
+  'rusty-the-take-receta/THE_TAKE_L.ROSE_-_p.jpg': 1.1,
   'rusty-the-take-receta/THE_TAKE_L.ROSE_-_F.jpg': 1.0,
 
   // Rusty Woxi Optics RECETA — rectangular pequeño. Fotos full-res 3696×2448 (3:2 = card)
