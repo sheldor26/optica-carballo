@@ -43,7 +43,7 @@ VALUES (
   E'El **Vulk The Trial Optics** es un **armazón de receta aviador de doble puente, unisex**, con una construcción cuidada: **frente de G-Flex** y **patillas de Monel con terminal de acetato laminado hecho a mano** y bisagra integrada. Es **ultraliviano (19,5 g)** y de talle large.\n\nViene con **lentes demo (sin graduación)**: el armazón lo comprás sin receta, y cuando le ponés tus cristales graduados nos pasás la receta para armarlo. Es compatible con cristales **monofocales, bifocales y progresivos/multifocales**.\n\nMedidas: frente 147 mm · lente 50 mm de ancho × 49 mm de alto · puente 15 mm · varilla 150 mm.\n\nDisponible en 2 versiones:\n\n• 670-056 — frente celeste translúcido, patillas de metal.\n• MBLK-046 — negro mate.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante. El precio es del armazón; los cristales graduados se cotizan según tu receta.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "aviator",
+    "frame_shape": "aviador",
     "temple_material": "monel",
     "lens_compatibility": ["monofocal", "bifocal", "progresivo", "multifocal"],
     "gender": "unisex",

@@ -41,7 +41,7 @@ VALUES (
   E'El **Rusty Ther Optics** es un **armazón de receta redondo unisex de metal**, **liviano (14,5 g)**. Frente de metal y **patillas de metal con terminales de acetato** y **bisagra de acero inoxidable con sistema flex** para mejor ajuste.\n\nViene con **lentes demo (sin graduación)**: el armazón lo comprás sin receta, y cuando le ponés tus cristales graduados nos pasás la receta para armarlo. Es **apto para cristales monofocales, bifocales y multifocales/progresivos**.\n\nMedidas: frente 135 mm · lente 49 mm de ancho × 47 mm de alto · puente 23 mm · varilla 145 mm.\n\nDisponible en 3 versiones:\n\n• M020 — cobre mate.\n• M036 — violeta mate.\n• M033 — bordó mate.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante. El precio es del armazón; los cristales graduados se cotizan según tu receta.',
   '{
     "frame_material": "metal",
-    "frame_shape": "round",
+    "frame_shape": "redondo",
     "temple_material": "metal",
     "lens_compatibility": ["monofocal", "bifocal", "progresivo", "multifocal"],
     "gender": "unisex",

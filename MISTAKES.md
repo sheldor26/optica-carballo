@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-06-29 — `frame_shape` enum-drift: cargué productos en INGLÉS (round/square/aviator) mientras la convención real del proyecto es ESPAÑOL (redondo/cuadrado/aviador) → chips de filtro DUPLICADOS + ruta /aviador no matchea
+
+**Estado**: 🟡 Diagnosticado, fix esperando OK del founder (normalizar a español 8 productos; el clasificador frenó el UPDATE masivo por contradecir el enum documentado)
+
+**Qué pasó**: el founder reportó que en las categorías (sol y receta) aparecían las formas **redondo, cuadrado y aviador DUPLICADAS** en el filtro. Causa: el filtro (`frame-shape-filters.tsx`) pinta un chip por cada valor crudo distinto de `frame_shape`. La DB tiene DOS valores para la misma forma porque las cargas recientes (mías) usaron inglés y los productos viejos español: `round`(4)+`redondo`(8), `square`(2)+`cuadrado`(12), `aviator`(2)+`aviador`(4). Ambos mapean al mismo label → chip repetido. **Bonus**: la ruta `/aviador` (brand-filters) filtra por `aviador` español → The Trial (`aviator`) no aparecía.
+
+**Causa raíz**: seguí la recomendación del agente `catalog-loader` (que cita el enum INGLÉS de PRODUCT_SCHEMA: round/square/aviator) sin verificar el valor que YA usaban los productos de esa forma en la DB ni el que usan las rutas de filtro (`brand-filters.ts` → `aviador` español). PRODUCT_SCHEMA (inglés) y la data+rutas reales (español) están en conflicto, y nadie lo reconcilió — venía flagueado como deuda en BACKLOG ("5 seeds con redondo") pero lo empeoré agregando más inglés.
+
+**Regla preventiva**: (1) el canónico REAL de `frame_shape` para redondo/cuadrado/aviador es **ESPAÑOL** (lo que usan brand-filters + la mayoría de la data). Al cargar, usar el MISMO valor que ya tienen los productos de esa forma — verificar con `SELECT DISTINCT attributes->>'frame_shape'` antes, no copiar el enum inglés del doc a ciegas. (2) Actualizar PRODUCT_SCHEMA + el system-prompt de catalog-loader para que el canónico documentado sea español (redondo/cuadrado/aviador/ovalado) y deje de contradecir la realidad. (3) wayfarer/rectangular/cat_eye/envolvente/hexagonal ya son consistentes (un solo valor) — no tocar.
+
 ## 2026-06-15 — Agregar variante(s) a un producto existente sin completar el checklist: (a) `medidas` quedó antes de las fotos del producto, (b) falta la variante en la `description`
 
 **Estado**: ✅ Cerrado (Spell + Katleen corregidos: medidas→sort 99, description con todas las variantes; seeds sincronizados)

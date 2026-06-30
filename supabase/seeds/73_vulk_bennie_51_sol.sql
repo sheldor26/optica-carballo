@@ -45,7 +45,7 @@ VALUES (
   E'Los **Vulk Bennie 51** son **lentes de sol redondos unisex**, de talle small y muy livianos (**18,9 g**). Frente de **G-Flex** y **patillas de metal** con barra metálica, sistema flex y terminales de goma para mejor agarre. **Lentes de policarbonato con 100% protección UV (UV400, categoría 3)**.\n\nMedidas: frente 135 mm · lente 51 mm de ancho × 37 mm de alto · puente 18 mm · varilla 140 mm.\n\nDisponible en 3 versiones:\n\n• MBLK-BLK-GUN/S10 — negro mate con patillas peltre, lente gris **polarizada**.\n• MBLK-GUN/G.Grey — negro mate con patillas peltre, lente gris degradé.\n• MBLK-BLK/Green — negro mate con varillas negras, lente verde con antirreflejo en la cara interna.\n\nLa versión polarizada corta el reflejo del agua, la nieve y el asfalto. Incluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "round",
+    "frame_shape": "redondo",
     "temple_material": "metal",
     "lens_material": "policarbonato",
     "lens_treatment": ["uv400"],

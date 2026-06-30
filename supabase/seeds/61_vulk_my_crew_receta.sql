@@ -47,7 +47,7 @@ VALUES (
   E'El Vulk My Crew es un armazón de receta **redondo/ovalado unisex**, liviano (16 g) y versátil, pensado tanto para hombre como para mujer. El **frente y las patillas son de G-Flex** —flexible y resistente— con **bisagras metálicas de sistema flex** que dan un calce cómodo y aguantan el uso diario.\n\nMedidas: frente 137 mm · lente 49 mm de ancho × 40 mm de alto · puente 21 mm · varilla 140 mm. Talle medium, equilibrado para la mayoría de los rostros.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 4 colores:\n\n• SBLK — negro brillo.\n• 669K — gris transparente.\n• MBLK — negro mate.\n• 388 — marrón transparente.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "round",
+    "frame_shape": "redondo",
     "temple_material": "g-flex",
     "lens_compatibility": ["monofocal", "bifocal", "progresivo", "multifocal"],
     "gender": "unisex",

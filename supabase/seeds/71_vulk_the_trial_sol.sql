@@ -49,7 +49,7 @@ VALUES (
   E'Los **Vulk The Trial** son **lentes de sol aviador de doble puente, unisex**, con una construcción cuidada: **frente de G-Flex** y **patillas de Monel con terminal de acetato laminado hecho a mano** y bisagra integrada. Son **ultralivianos (19,5 g)**, talle large, con **lentes de policarbonato y 100% protección UV (UV400, categoría 3)**.\n\nMedidas: frente 147 mm · lente 50 mm de ancho × 49 mm de alto · puente 15 mm · varilla 150 mm.\n\nDisponible en 4 versiones:\n\n• SBLK/S10 — negro brillo, lente gris **polarizada**.\n• MBLK 053/S15 — negro mate, lente gris con tratamiento **antiempañante (antifog)**.\n• SBLK/Orange — negro brillo, lente naranja.\n• MDEMI/UPG15 — carey, lente verde G15 **polarizada**.\n\nLas versiones polarizadas cortan el reflejo del agua, la nieve y el asfalto. Incluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "aviator",
+    "frame_shape": "aviador",
     "temple_material": "monel",
     "lens_material": "policarbonato",
     "lens_treatment": ["uv400"],

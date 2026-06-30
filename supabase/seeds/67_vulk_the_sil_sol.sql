@@ -37,7 +37,7 @@ VALUES (
   E'Los **Vulk The Sil** son anteojos de sol **cuadrados unisex**, talle large, con un diseño de carácter. Frente y patillas de **Grilamid (TR-90)** —ultraliviano y resistente— con **bisagras plásticas reforzadas**. **Lentes polarizadas de policarbonato con protección UV400 (categoría 3)**: las 3 versiones son polarizadas, así que cortan el reflejo del agua, la nieve y el asfalto, y descansan la vista al manejar o al aire libre.\n\nMedidas: frente 144 mm · lente 55 mm de ancho × 51 mm de alto · puente 20 mm · varilla 145 mm. Peso 28 g.\n\nDisponible en 3 versiones:\n\n• SBLK/S10 POL — negro brillo, lente gris polarizada.\n• MBLK/S10 POL — negro mate, lente gris polarizada.\n• MBLK/G15 POL — negro mate, lente verde G15 polarizada.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "tr-90",
-    "frame_shape": "square",
+    "frame_shape": "cuadrado",
     "temple_material": "tr-90",
     "lens_material": "policarbonato",
     "lens_treatment": ["uv400"],

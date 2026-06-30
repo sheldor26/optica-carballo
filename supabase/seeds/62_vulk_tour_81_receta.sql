@@ -45,7 +45,7 @@ VALUES (
   E'El Vulk Tour 81 es un armazón de receta **cuadrado unisex**, pensado para quien busca un diseño con carácter sin resignar comodidad. El **frente y las patillas son de G-Flex** —ultraliviano y flexible— con **bisagras metálicas de sistema flex** que dan un calce cómodo y aguantan el uso diario.\n\nMedidas: frente 140 mm · lente 50 mm de ancho × 47 mm de alto · puente 21 mm · varilla 138 mm. Talle medium, equilibrado para la mayoría de los rostros.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• MBLK — negro mate.\n• CRY — transparente.\n• 315 — naranja transparente.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "square",
+    "frame_shape": "cuadrado",
     "temple_material": "g-flex",
     "lens_compatibility": ["monofocal", "bifocal", "progresivo", "multifocal"],
     "gender": "unisex",

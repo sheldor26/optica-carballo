@@ -67,7 +67,7 @@ Estos son los **13 campos exactos** que aparecen como filas en `/comparar`. Si f
 3. Precio → `variants[].price_cents`
 
 #### attributes JSONB del producto
-4. `frame_shape` — enum: `wayfarer | aviator | round | square | rectangular | cat_eye | oversized`
+4. `frame_shape` — enum (⚠️ **canónico ESPAÑOL** — es lo que usan los filtros/rutas reales y la mayoría de la data; verificar con `SELECT DISTINCT attributes->>'frame_shape'` antes de cargar, NO usar inglés): `wayfarer | aviador | redondo | cuadrado | rectangular | cat_eye | ovalado | envolvente | hexagonal | oversized`. ⚠️ NUNCA usar `aviator`/`round`/`square` (inglés) → genera chips de filtro duplicados y rompe la ruta `/aviador` (normalizado a español 2026-06-29, ver MISTAKES). `wayfarer`/`cat_eye`/`rectangular` quedan así (consistentes en un solo valor). `envolvente` mapea a `/deportivos`.
 5. `frame_material` — enum: `acetate | metal | injected | titanium | g-flex | tr-90`
 6. `lens_treatment` — array de strings, ej: `["polarized", "uv400"]`. Valores válidos: `polarized | uv400 | gradient | mirrored | photochromic`
 7. `gender` — enum: `unisex | male | female`

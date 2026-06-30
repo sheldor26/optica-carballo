@@ -37,7 +37,7 @@ VALUES (
   E'Los **Rusty Blinded** son anteojos de sol **redondos unisex**, ultralivianos (22,7 g). Frente y patillas de **G-Flex** —flexible y resistente— con **bisagras metálicas de sistema flex**. **Lentes de policarbonato con protección UV400 (categoría 3)** y **capa antirreflejo en la cara interna** en las dos versiones (reduce los reflejos molestos que entran por detrás de la lente).\n\nMedidas: frente 130 mm · lente 48 mm de ancho × 43 mm de alto · puente 22 mm · varilla 145 mm. Peso 22,7 g.\n\nDisponible en 2 versiones:\n\n• MBLK/S10 — negro mate, lente gris oscuro.\n• MDEMI-MBLK/Brown — frente carey mate con patillas negro mate, lente marrón.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
-    "frame_shape": "round",
+    "frame_shape": "redondo",
     "temple_material": "g-flex",
     "lens_material": "policarbonato",
     "lens_treatment": ["uv400"],
