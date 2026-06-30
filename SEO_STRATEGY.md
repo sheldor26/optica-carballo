@@ -285,6 +285,28 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 
 **Diferenciador en copy (NO en keyword de forma)**: pequeño + liviano + **solo monofocal** (lectura/descanso). **Honestidad**: "lectura/descanso" SOLO como uso en el body — NUNCA como reclamo de anteojo de lectura pre-armado (es armazón para monofocal graduado). Anti-canibalización vs R-CY 02 (también rectangular receta): Woxi lidera por intención receta + branded + tamaño; R-CY 02 mantiene la forma "rectangular" amplia. Title: `Armazón de Receta Rusty Woxi Rectangular | Óptica Carballo`. H1: `Armazón de Receta Rusty Woxi — Rectangular Liviano para Monofocales`.
 
+*Rusty The Take Optics (receta, AVIADOR, UNISEX, G-Flex, lentes demo mono/bi/progresivo, 18g) — slug `rusty-the-take-receta` en `/anteojos-de-receta/rusty/rusty-the-take-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos recetados | 720 | 9 | **primaria** — head receta → H1/1er párrafo |
+| lentes recetados | 390 | 9 | variante receta |
+| anteojos aviador | 590 | 20 | forma — carril diferenciador → title/H1/copy/alt |
+| anteojos rusty originales | 210 | 10 | body 1 vez |
+| rusty the take (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug |
+
+**Anti-canibalización**: hay DOS aviadores de receta, **ambos doble puente** — The Take (Rusty) y Vulk The Trial. Comparten primaria `anteojos recetados` + forma `anteojos aviador` pero NO canibalizan: **marcas distintas + branded distinto** (`rusty the take` vs `vulk the trial`) → titles/H1/slug separados; las SERP de marca-head las resuelven los hubs respectivos. **Cross-link** "otros aviadores de receta" entre ambas. The Take es el ÚNICO aviador de receta dentro del cluster Rusty (Opposit/Patien=wayfarer, R-CY 02/Woxi=rectangular, Ther=redondo). Title: `Armazón de Receta Rusty The Take Aviador | Óptica Carballo`. H1: `Armazón de receta Rusty The Take — aviador unisex`. Hermano de sol: `rusty-the-take` (cross-link sol↔receta).
+
+*Rusty The Take (SOL, AVIADOR doble puente, UNISEX, 1/1 polarizado, G-Flex + patillas acetato, policarbonato UV400 cat3, 18g) — slug `rusty-the-take` en `/anteojos-de-sol/rusty/rusty-the-take`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol aviador | 170 | — | **primaria forma** — carril ÚNICO del cluster Rusty-sol |
+| lentes de sol rusty | 1.300 | 9 | head de marca, soporte (1er párrafo/H2, no primaria — saturada) |
+| anteojos de sol rusty | 880 | 10 | variante "anteojos" → copy |
+| lentes/anteojos de sol polarizados | 260/170 | 12/10 | atributo (1/1 → afirmable) → H1/copy |
+| rusty the take (branded) | 0 medido | ~4 | title/H1/slug |
+
+**Honestidad**: 1/1 polarizado → SÍ se afirma "Polarizado" en title/H1 (criterio Terdey/The Sil 3/3). Unisex → NO targetear `aviador hombre`. **Anti-canibalización**: (A) vs Vulk The Trial sol (también aviador doble puente): marca distinta + The Trial 2/4 pol (destaca "Unisex") vs The Take 1/1 pol (afirma "Polarizado") + cross-link "otros aviadores de sol" + ambos → `/anteojos-de-sol/aviador`. (B) vs The Take receta: intención sol vs receta + cross-link sol↔receta. Único aviador del cluster Rusty-sol. Title: `Lentes de Sol Rusty The Take Aviador | Óptica Carballo`. H1: `Lentes de Sol Rusty The Take — Aviador Polarizado Unisex`.
+
 *Rusty Ther Optics (receta, REDONDO de METAL, UNISEX, liviano 14,5g, lentes demo mono/bi/multifocal) — slug `rusty-ther-receta` en `/anteojos-de-receta/rusty/rusty-ther-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

@@ -624,6 +624,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  p.jpg': 1.08,
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  f.jpg': 1.0,
 
+  // Rusty The Take SOL — aviador doble puente polarizado. 900×442 → 1.0 (como receta/Raven/Trial).
+  'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_p.jpg': 1.0,
+  'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_f.jpg': 1.0,
+
+  // Rusty The Take Optics RECETA — aviador. Fotos 900×442 (2.04:1) más anchas que el card 3:2
+  // → object-contain llena por ancho → 1.0 en las 4 (como Raven/Trial; 1.15 cropearía patillas).
+  'rusty-the-take-receta/THE_TAKE_MDEMI_PERFIL.jpg': 1.0,
+  'rusty-the-take-receta/THE_TAKE_MDEMI_frente.jpg': 1.0,
+  'rusty-the-take-receta/THE_TAKE_L.ROSE_-_p.jpg': 1.0,
+  'rusty-the-take-receta/THE_TAKE_L.ROSE_-_F.jpg': 1.0,
+
   // Rusty Woxi Optics RECETA — rectangular pequeño. Fotos full-res 3696×2448 (3:2 = card)
   // → object-contain casi sin letterbox. Baseline receta perfil 1.15 / frente 1.0 PROVISIONAL
   // (reverificar vs grid cuando el seed esté aplicado + deployado, regla 15). Nombres del founder
