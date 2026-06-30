@@ -330,6 +330,31 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 
 > **Anti-canibalización Patien sol vs receta**: mismo frame, dos URLs, dos intenciones. El Patien de SOL (`/anteojos-de-sol/rusty/rusty-patien`) targetea `lentes/anteojos de sol rusty` (1.300/880); el de RECETA targetea `anteojos recetados` (720) + wayfarer. Sin keyword primaria compartida. Cross-link obligatorio entre ambas fichas ("versión de sol/receta del Patien").
 
+*Rusty Zinz Optics (receta, CUADRADO, UNISEX, G-Flex, bisagras metálicas flex, lentes demo mono/bi/progresivo/multifocal, 25,7 g) — slug `rusty-zinz-receta` en `/anteojos-de-receta/rusty/rusty-zinz-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes cuadrados | 880 | 10 | forma del modelo (variante "lentes", la más alta) → 1er párrafo, H2 |
+| anteojos cuadrados | 480 | 10 | forma (variante "anteojos") → primaria + H1 |
+| anteojos recetados | 720 | 9 | head de intención receta → copy |
+| lentes recetados | 390 | 9 | variante receta → copy |
+| rusty zinz receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug + alt |
+
+De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `anteojos/lentes cuadrados mujer` (320/18) — el unisex los cubre en copy, sin pelear género. Title: `Armazón de Receta Rusty Zinz Cuadrado | Óptica Carballo` (54). H1: `Anteojos de Receta Rusty Zinz — Cuadrados Unisex`. **Cross-link sol↔receta obligatorio**: existe la versión de SOL (`/anteojos-de-sol/rusty/rusty-zinz`, polarizada) — el receta toma `anteojos/lentes cuadrados` (sin "de sol"), el sol toma `...de sol cuadrados`; sin primaria compartida.
+
+> **Anti-canibalización 3 cuadrados de receta (Spell / Katleen / Zinz)**: misma forma, se diferencian por **género + marca + carril**, no por la forma sola (la forma genérica la consolida la futura categoría por forma, no los productos):
+> - **Rusty Spell** receta (Rusty, **masculino**) → forma + branded, ángulo **hombre** (`anteojos cuadrados hombre` 210/14).
+> - **Vulk Katleen** receta (Vulk, **femenino**) → forma + branded, ángulo **mujer** (`anteojos/lentes cuadrados mujer` 320/18) + "ultra liviano".
+> - **Rusty Zinz** receta (Rusty, **unisex**) → **forma neutra** (`anteojos cuadrados` 480 / `lentes cuadrados` 880), el único que NO escora a género.
+> - Reglas duras: Zinz NO usa `...cuadrados hombre/mujer` como primaria (son de Spell/Katleen). Spell vs Zinz (ambos Rusty cuadrados receta): Spell escora masculino en title/H1/copy, Zinz dice "unisex" explícito → misma marca, dos URLs, sin primaria compartida. Cross-link obligatorio entre los 3 + cada uno → `/anteojos-de-receta/rusty` (Spell, Zinz) / `/anteojos-de-receta/vulk` (Katleen) + guía `/guias/anteojos-segun-forma-de-cara`.
+
+*Rusty Spell Optics (receta, CUADRADO, MASCULINO, lentes demo) — slug `rusty-spell-receta` en `/anteojos-de-receta/rusty/rusty-spell-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos cuadrados hombre | 210 | 14 | forma + género (su carril único en los 3 cuadrados) → H1 |
+| anteojos cuadrados | 480 | 10 | forma (soporte; primaria es de Zinz) |
+| anteojos recetados | 720 | 9 | head de intención receta → copy |
+| rusty spell receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug |
+
 *Rusty Blinded (sol, REDONDO, UNISEX, 2 variantes — carey/marrón + negro mate; NINGUNA polarizada; antirreflejo interior, G-Flex, policarbonato UV400 cat 3, 22,7 g) — slug `rusty-blinded` en `/anteojos-de-sol/rusty/rusty-blinded`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
@@ -395,6 +420,21 @@ Atributo de respaldo (copy/alt, NO primaria por dificultad): `polarizado lentes 
 
 **Honestidad (como Play)**: 2 de 4 variantes son polarizadas (MBLK/S10 POL + 669K-SBLK/SG91 POL) → NO afirmar "polarizados" como atributo de TODO el modelo en el H1; el atributo se acota a la variante. **Anti-canibalización (3 wayfarer Rusty)**: Patien = unisex + branded + forma (NO afirma polarizado, NO pelea `...rusty hombre`); Terdey = unisex + polarizado de modelo (3/3, dueño de `anteojos de sol polarizados rusty`); Play = hombre (dueño de `...rusty hombre` / `lentes de sol hombre rusty` 480/9). Title: `Anteojos de Sol Rusty Patien Unisex | Óptica Carballo`.
 
+*Rusty Zinz (sol, CUADRADO, UNISEX, 2/2 variantes polarizadas — MBLK/S10 POL negro brillo + 669K-SBLK/DRT23 POL gris transparente; G-Flex, bisagras flex customizadas, policarbonato UV400 cat 3, 25,7 g — versión de sol del Zinz Optics de receta) — slug `rusty-zinz` en `/anteojos-de-sol/rusty/rusty-zinz`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol cuadrados | 390 | 11 | forma del modelo (variante "lentes", la más alta) → 1er párrafo, H2 |
+| anteojos de sol cuadrados | 170 | 14 | forma (variante "anteojos") → primaria + H1 |
+| anteojos de sol rusty | 880 | 10 | head de marca (soporte, NO primaria) |
+| lentes de sol polarizados | 260 | 12 | soporte (2/2 → se afirma para todo el modelo, ver abajo) |
+| anteojos de sol rusty zinz | 0 medido | ~4 | branded exacto → title + H1 + slug + alt |
+
+De respaldo (copy/alt, NO primaria): `anteojos de sol cuadrados mujer` (110/14), `anteojos/lentes de sol cuadrados hombre` (70/35, 90/18) — el unisex los cubre en copy, sin pelear género. **Polarizado**: 2 de 2 variantes son polarizadas → SÍ se afirma "polarizado" para todo el modelo en H1/title (como Terdey 3/3, NO como Play/Patien 2/4 que lo acotan a variante). Pero la primaria es la FORMA, no el polarizado (ese carril de modelo es de Terdey; el branded `...rusty polarizados` mide dif 36). Title: `Anteojos de Sol Rusty Zinz Cuadrados Polarizados | Carballo` (58). H1: `Anteojos de Sol Rusty Zinz — Cuadrados Polarizados Unisex`.
+
+> **Anti-canibalización Zinz sol vs cluster Rusty sol**: cada Rusty de sol toma una FORMA/uso distinto, no el head genérico repetido. Zinz es el ÚNICO CUADRADO → su primaria es la forma (`lentes/anteojos de sol cuadrados`, 390/170), carril que ningún otro Rusty de sol ataca. Mapa de carriles: Blinded = redondo · And Now = deportivo/envolvente · Play = wayfarer hombre · Terdey = wayfarer unisex + polarizado de modelo · Patien = wayfarer unisex branded · Zinz = **cuadrado** · Esvep/Sotion/Eslav/Gresent = head genérico de marca. Zinz NO pelea `...rusty hombre/mujer` (unisex explícito) ni el "polarizado de modelo" como primaria (es de Terdey). Cross-link obligatorio Zinz↔Terdey↔Patien (los polarizados) + Zinz → `/anteojos-de-sol/rusty` + guía `/guias/anteojos-segun-forma-de-cara`.
+
+> **Anti-canibalización Zinz sol vs Zinz receta**: mismo frame, dos URLs, dos intenciones. El Zinz de SOL targetea `lentes/anteojos de sol cuadrados` (390/170, con "de sol"); el de RECETA (`/anteojos-de-receta/rusty/rusty-zinz-receta`) targetea `anteojos/lentes cuadrados` (480/880, SIN "de sol"). Sin keyword primaria compartida. Cross-link sol↔receta OBLIGATORIO en ambas fichas ("versión de receta/sol del Zinz").
+
 **Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Play / Terdey / Patien / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
 
 **No usar**:
@@ -420,6 +460,17 @@ Vulk My Crew es RECETA, no canibaliza el cluster Vulk-sol de arriba (intención 
 | vulk my crew (branded) | 0 medido | ~4 | long-tail exacto, alta conversión | title, H1, slug |
 
 Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 — único "armazón" con algo de volumen, usable 1 vez en cuerpo). **No usar**: "armazón de receta" como cabecera; "lentes vulk" (6.600 pero ambiguo sol/receta → va al hub). Linking: ↑ `/anteojos-de-receta` + `/anteojos-de-receta/vulk`; → `/marcas/vulk`; ↔ `vulk-clems` + redondos/unisex de otras marcas; → guías de elección y forma de cara.
+
+*Vulk Katleen Optics (receta, CUADRADO, FEMENINO, ultra liviano, lentes demo) — slug `vulk-katleen-receta` en `/anteojos-de-receta/vulk/vulk-katleen-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos cuadrados mujer | 320 | 18 | forma + género (su carril único en los 3 cuadrados de receta) → H1 |
+| lentes cuadrados mujer | 320 | 18 | forma + género (variante "lentes") |
+| anteojos cuadrados | 480 | 10 | forma (soporte; primaria neutra es de Zinz) |
+| anteojos recetados mujer / anteojos para mujer | 480 | 7 | intención receta femenina → copy |
+| vulk katleen receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug |
+
+> Ver **anti-canibalización 3 cuadrados de receta (Spell / Katleen / Zinz)** en el cluster RUSTY: Katleen es el carril **femenino** (`...cuadrados mujer`), distinto del masculino (Spell) y el neutro unisex (Zinz). Cross-link obligatorio entre los 3.
 
 ### Reglas para futuros productos
 

@@ -22,6 +22,16 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-06-30 — Verificar la resolución REAL de las fotos antes de declarar `width`/`height` en `product_images`
+
+**Contexto**: cargando Rusty Zinz receta, las 6 fotos de producto en el bucket pesaban ~28KB salvo una (SBLK-PERFIL, 212KB). Iba a declarar `900×442` a ojo (como los últimos Rusty receta, que sí eran 900×442). El peso disparejo era la señal de que NO todas tenían el mismo tamaño.
+
+**Qué funcionó**: bajar las 7 fotos con `curl` desde la URL pública del bucket y leer dimensiones con `sips -g pixelWidth -g pixelHeight` antes de escribir el seed. Resultado: TODAS eran 1200×589 (ratio 2.04:1), no 900×442. Declarar 900×442 a ojo habría puesto un aspect ratio incorrecto en `product_images` → `next/image` calcula mal el intrínseco → letterbox/distorsión + CLS.
+
+**El learning**: el `width`/`height` de `product_images` debe ser el real del archivo, no heredado del modelo anterior "parecido". Cuesta ~10 segundos verificarlo y evita un bug de layout silencioso. El ratio además confirma el scale por encuadre (2.04:1 más ancho que el card 3:2 → object-contain llena por ancho → baseline 1.1/1.0, ver [[scale por encuadre]]).
+
+**Regla preventiva**: en cada carga, antes de escribir las filas de `product_images`, correr `curl` + `sips` sobre las fotos del bucket para fijar `width`/`height` exactos. Señal de alerta: tamaños de archivo muy disparejos entre fotos de la misma tanda = probablemente distinta resolución.
+
 ## 2026-06-13 — Carga de producto en 2 fases cuando faltan fotos: aplicar datos YA (el token ML es lo perecedero), cerrar visual después
 
 **Contexto**: en varias cargas de hoy las fotos no estaban en el bucket al momento de cargar (The Sil llegó a bloquearse; Blinded/And Now se cargaron con fotos parciales/ausentes). Además el token OAuth de ML vence a mitad de sesión (pasó hoy con The Sil → 401). Lo que funcionó: separar la carga en dos fases.

@@ -639,6 +639,24 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-the-take-receta/THE_TAKE_L.ROSE_-_p.jpg': 1.1,
   'rusty-the-take-receta/THE_TAKE_L.ROSE_-_F.jpg': 1.0,
 
+  // Rusty Zinz Optics RECETA — cuadrado unisex. Fotos 1200×589 (ratio 2.04:1 panorámico,
+  // más ancho que el card 3:2) → object-contain llena por ancho. Baseline receta perfil 1.1 /
+  // frente 1.0 (mismo encuadre que Patien/The Take receta; reverificar grid post-deploy, regla 15).
+  'rusty-zinz-receta/ZINZ-SBLK-PERFIL.jpg': 1.1,
+  'rusty-zinz-receta/ZINZ-SBLK-FRENTE.jpg': 1.0,
+  'rusty-zinz-receta/ZINZ-669K-SBLK-PERFIL.jpg': 1.1,
+  'rusty-zinz-receta/ZINZ-669K-SBLK-FRENTE.jpg': 1.0,
+  'rusty-zinz-receta/ZINZ-MBLK-PERFIL.jpg': 1.1,
+  'rusty-zinz-receta/ZINZ-MBLK-FRENTE.jpg': 1.0,
+
+  // Rusty Zinz SOL — cuadrado unisex polarizado (hermano del receta). 669K 900×442 + MBLK
+  // 1200×589, ambas ratio 2.04:1 → baseline 1.1/1.0 (= receta). PROVISIONAL: reverificar grid
+  // /anteojos-de-sol post-deploy (regla 15; vecinos sol 900×442 usan 1.0 → la 669K podría bajar).
+  'rusty-zinz/ZINZ_669K-SBLKDRT23_POL.perfil.jpg': 1.1,
+  'rusty-zinz/ZINZ_669K-SBLKDRT23_POL.-frente.jpg': 1.0,
+  'rusty-zinz/ZINZ-MBLK-S10-POL-PERFIL.jpg': 1.1,
+  'rusty-zinz/ZINZ-MBLK-S10-POL-FRENTE.jpg': 1.0,
+
   // Rusty Woxi Optics RECETA — rectangular pequeño. Fotos full-res 3696×2448 (3:2 = card)
   // → object-contain casi sin letterbox. Baseline receta perfil 1.15 / frente 1.0 PROVISIONAL
   // (reverificar vs grid cuando el seed esté aplicado + deployado, regla 15). Nombres del founder
