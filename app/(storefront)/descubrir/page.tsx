@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SwipeDeck } from '@/components/swipe/swipe-deck';
+import { ToolAuthGate } from '@/components/auth/tool-auth-gate';
 import { fetchSwipeProducts } from '@/lib/swipe/queries';
 import { listMyMatches } from '@/lib/swipe/actions';
 import { getCurrentUser } from '@/lib/auth/server';
@@ -26,14 +27,26 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function DescubrirPage() {
-  const [products, user] = await Promise.all([
-    fetchSwipeProducts(),
-    getCurrentUser(),
-  ]);
+  const user = await getCurrentUser();
 
-  // Si el usuario está logueado, cargamos sus matches previos desde DB.
-  // Si no está logueado, el SwipeDeck usa localStorage (igual que antes).
-  const initialMatches = user ? await listMyMatches() : [];
+  // Gate DURO (founder 2026-06-29): hay que estar logueado para swipear, así los
+  // modelos con los que matcheás quedan guardados en la cuenta.
+  if (!user) {
+    return (
+      <ToolAuthGate
+        eyebrow="Descubrir"
+        title="Creá tu cuenta para descubrir tus anteojos"
+        description="Deslizá entre los modelos y guardá los que te gusten: con tu cuenta, los anteojos con los que hacés match quedan guardados y los volvés a ver desde el celular o la compu."
+        next="/descubrir"
+        ctaLabel="Crear cuenta y empezar"
+      />
+    );
+  }
+
+  const [products, initialMatches] = await Promise.all([
+    fetchSwipeProducts(),
+    listMyMatches(),
+  ]);
 
   if (products.length === 0) {
     return (
@@ -62,7 +75,7 @@ export default async function DescubrirPage() {
   return (
     <SwipeDeck
       initialProducts={products}
-      isAuthenticated={user !== null}
+      isAuthenticated
       initialMatches={initialMatches}
     />
   );

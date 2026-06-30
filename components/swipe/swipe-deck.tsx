@@ -520,39 +520,9 @@ function SwipeResults({
         </div>
       </header>
 
-      {/* Gate BLANDO de captura (conversion-optimizer 2026-06-29): banda compacta
-          arriba de la grilla, SOLO si anónimo y ≥2 matches (con 0-1 la propuesta
-          es débil). Nunca bloquea: el usuario ve sus matches igual. El sync
-          localStorage→DB ya existente persiste los matches al registrarse. */}
-      {matched.length >= 2 && !isAuthenticated && (
-        <div className="mx-auto mt-12 max-w-2xl">
-          <div className="border-brand/30 bg-brand/[0.06] flex flex-col items-center gap-4 rounded-xl border px-5 py-4 text-center sm:flex-row sm:justify-between sm:text-left">
-            <div className="min-w-0">
-              <p className="text-foreground font-serif text-xl font-medium tracking-tight">
-                Guardá tus {matched.length} matches
-              </p>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Creá tu cuenta y volvé a ver los modelos que te gustaron desde el
-                celular o la compu, cuando quieras.
-              </p>
-            </div>
-            <div className="shrink-0 text-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90"
-              >
-                <Link href="/registro?next=/descubrir">Guardar mis matches</Link>
-              </Button>
-              <p className="text-muted-foreground mt-1.5 text-xs">
-                Es gratis y toma 30 segundos.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Usuario logueado: confirmación + hábito de volver a Mi cuenta. */}
+      {/* /descubrir tiene gate DURO de login (founder 2026-06-29): el deck solo
+          se monta autenticado, así que los matches ya se guardan en la cuenta.
+          Confirmación + hábito de volver a Mi cuenta. */}
       {matched.length > 0 && isAuthenticated && (
         <div className="mx-auto mt-12 max-w-2xl text-center">
           <Link
