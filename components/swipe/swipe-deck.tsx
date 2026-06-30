@@ -104,6 +104,9 @@ export function SwipeDeck({
                   } catch {
                     // ignore
                   }
+                  // Recién registrado vía /registro?next=/descubrir: mostrarle
+                  // sus matches guardados (no arrancar el mazo de cero).
+                  setShowResults(true);
                 }
               },
             );
@@ -207,6 +210,7 @@ export function SwipeDeck({
         onReset={handleReset}
         canResume={!isFinished}
         onResume={() => setShowResults(false)}
+        isAuthenticated={isAuthenticated}
       />
     );
   }
@@ -445,12 +449,14 @@ function SwipeResults({
   onReset,
   canResume,
   onResume,
+  isAuthenticated,
 }: {
   products: SwipeProduct[];
   matchedSlugs: string[];
   onReset: () => void;
   canResume: boolean;
   onResume: () => void;
+  isAuthenticated: boolean;
 }) {
   const matched = matchedSlugs
     .map((slug) => products.find((p) => p.slug === slug))
@@ -514,10 +520,56 @@ function SwipeResults({
         </div>
       </header>
 
+      {/* Gate BLANDO de captura (conversion-optimizer 2026-06-29): banda compacta
+          arriba de la grilla, SOLO si anónimo y ≥2 matches (con 0-1 la propuesta
+          es débil). Nunca bloquea: el usuario ve sus matches igual. El sync
+          localStorage→DB ya existente persiste los matches al registrarse. */}
+      {matched.length >= 2 && !isAuthenticated && (
+        <div className="mx-auto mt-12 max-w-2xl">
+          <div className="border-brand/30 bg-brand/[0.06] flex flex-col items-center gap-4 rounded-xl border px-5 py-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="min-w-0">
+              <p className="text-foreground font-serif text-xl font-medium tracking-tight">
+                Guardá tus {matched.length} matches
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Creá tu cuenta y volvé a ver los modelos que te gustaron desde el
+                celular o la compu, cuando quieras.
+              </p>
+            </div>
+            <div className="shrink-0 text-center">
+              <Button
+                asChild
+                size="lg"
+                className="bg-foreground text-background hover:bg-foreground/90"
+              >
+                <Link href="/registro?next=/descubrir">Guardar mis matches</Link>
+              </Button>
+              <p className="text-muted-foreground mt-1.5 text-xs">
+                Es gratis y toma 30 segundos.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Usuario logueado: confirmación + hábito de volver a Mi cuenta. */}
+      {matched.length > 0 && isAuthenticated && (
+        <div className="mx-auto mt-12 max-w-2xl text-center">
+          <Link
+            href="/mi-cuenta/matches"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+          >
+            <Check className="text-brand size-4" strokeWidth={2.5} />
+            Tus matches están guardados en Mi cuenta
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
+      )}
+
       {matched.length > 0 && (
         <section
           aria-label="Tus matches"
-          className="mt-16 grid grid-cols-2 gap-6 md:mt-24 md:grid-cols-3 md:gap-x-8 md:gap-y-12 lg:gap-x-10"
+          className="mt-12 grid grid-cols-2 gap-6 md:mt-16 md:grid-cols-3 md:gap-x-8 md:gap-y-12 lg:gap-x-10"
         >
           {matched.map((product) => (
             <Link
