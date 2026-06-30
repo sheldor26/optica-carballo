@@ -220,13 +220,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 1.2/1.05. Sweet spot entre 1.15 (chico) y 1.3 (grande).
   // Founder 2026-06-29: quedaba muy grande vs el resto del grid de receta →
   // perfiles 1.2 → 1.1 (frentes en 1.05).
-  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.1,
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 0.9,
   'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.05,
-  'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.1,
+  'rusty-spell-receta/SPELL_MBLK_p.jpg': 0.9,
   'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.05,
-  'rusty-spell-receta/SPELL_LGREY_OPTICAL_perfil.jpg': 1.1,
+  'rusty-spell-receta/SPELL_LGREY_OPTICAL_perfil.jpg': 0.9,
   'rusty-spell-receta/SPELL_LGREY_OPTICAL_frente.jpg': 1.05,
-  'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg': 1.1,
+  'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg': 0.9,
   'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_frente.jpg': 1.05,
 
   // Rusty Ther RECETA — redondo de metal. Fotos 900×442 (panorámicas, más anchas que el card 3:2)
