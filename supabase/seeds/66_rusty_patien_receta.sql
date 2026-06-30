@@ -34,7 +34,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-patien-receta', 'Rusty Patien Optics',
   'Anteojos recetados Rusty Patien: armazón wayfarer unisex, liviano (23,6 g) con varillas G-Flex flexibles. Comprás el armazón (viene con lentes demo, sin aumento) y le cargamos los cristales según tu receta; el precio publicado es del armazón, los cristales se cotizan aparte.',
-  E'El **Rusty Patien Optics** es un armazón de receta **wayfarer unisex**, liviano (23,6 g), con **frente y patillas de G-Flex** —flexible y resistente— y **bisagras flexo metálicas** para un calce cómodo. Es la versión de receta del modelo Patien.\n\nMedidas: frente 140 mm · lente 49 mm de ancho × 40 mm de alto · puente 21 mm · varilla 145 mm. Talle medium.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 2 colores:\n\n• 669K-SBLK — translúcido con patillas negras.\n• MBLK — negro mate.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'El **Rusty Patien Optics** es un armazón de receta **wayfarer unisex**, liviano (23,6 g), con **frente y patillas de G-Flex** —flexible y resistente— y **bisagras flexo metálicas** para un calce cómodo. Es la versión de receta del modelo Patien.\n\nMedidas: frente 140 mm · lente 49 mm de ancho × 40 mm de alto · puente 21 mm · varilla 145 mm. Talle medium.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 3 colores:\n\n• 669K-SBLK — translúcido con patillas negras.\n• MBLK — negro mate.\n• SBLK — negro brillo.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "wayfarer",
@@ -69,7 +69,11 @@ VALUES
    8307800, 1, true, 1, 'MLA1388467447', '179922233291'),
   ((SELECT id FROM public.products WHERE slug='rusty-patien-receta'), '126090',
    '{"frame_color":"negro-mate","model_code":"MBLK OPTICAL"}'::jsonb,
-   8307800, 0, true, 2, 'MLA1388467447', '179922233289')
+   8307800, 0, true, 2, 'MLA1388467447', '179922233289'),
+  -- +SBLK negro brillo (2026-06-29, founder la agregó en ML; misma multi-variante)
+  ((SELECT id FROM public.products WHERE slug='rusty-patien-receta'), '126098',
+   '{"frame_color":"negro-brillo","model_code":"SBLK OPTICAL"}'::jsonb,
+   8307800, 3, true, 3, 'MLA1388467447', '204692788223')
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
@@ -86,6 +90,10 @@ VALUES
    'rusty-patien-receta/PATIEN_MBLK_perfil.jpg', 'Anteojos de receta Rusty Patien wayfarer unisex vista lateral, negro mate', 900, 442, 2, false),
   ((SELECT id FROM public.products WHERE slug='rusty-patien-receta'), (SELECT id FROM public.product_variants WHERE sku='126090'),
    'rusty-patien-receta/PATIEN_MBLK_OPTICAL_frente.jpg', 'Anteojos de receta Rusty Patien wayfarer unisex vista frontal, negro mate', 900, 442, 3, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-patien-receta'), (SELECT id FROM public.product_variants WHERE sku='126098'),
+   'rusty-patien-receta/PATIEN_SBLK-perfil.jpg', 'Anteojos de receta Rusty Patien wayfarer unisex vista lateral, negro brillo', 900, 442, 4, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-patien-receta'), (SELECT id FROM public.product_variants WHERE sku='126098'),
+   'rusty-patien-receta/PATIEN_SBLK-frente.jpg', 'Anteojos de receta Rusty Patien wayfarer unisex vista frontal, negro brillo', 900, 442, 5, false),
   ((SELECT id FROM public.products WHERE slug='rusty-patien-receta'), NULL,
    'rusty-patien-receta/medidas.webp', 'Esquema técnico de medidas Rusty Patien: frente 140mm, lente 49x40mm, puente 21mm, varilla 145mm', 1500, 1500, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

@@ -218,14 +218,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Spell Receta — iter 3: 1.3 se pasó de ancho (founder), bajado a
   // 1.2/1.05. Sweet spot entre 1.15 (chico) y 1.3 (grande).
-  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.2,
+  // Founder 2026-06-29: quedaba muy grande vs el resto del grid de receta →
+  // perfiles 1.2 → 1.1 (frentes en 1.05).
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.1,
   'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.05,
-  'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.2,
+  'rusty-spell-receta/SPELL_MBLK_p.jpg': 1.1,
   'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.05,
-  // +2 variantes (2026-06-15): LGREY + MDEMI-MBLK, mismo scale que el resto del modelo.
-  'rusty-spell-receta/SPELL_LGREY_OPTICAL_perfil.jpg': 1.2,
+  'rusty-spell-receta/SPELL_LGREY_OPTICAL_perfil.jpg': 1.1,
   'rusty-spell-receta/SPELL_LGREY_OPTICAL_frente.jpg': 1.05,
-  'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg': 1.2,
+  'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_perfil.jpg': 1.1,
   'rusty-spell-receta/SPELL_MDEMI-MBLK_OPTICAL_frente.jpg': 1.05,
 
   // Rusty Ther RECETA — redondo de metal. Fotos 900×442 (panorámicas, más anchas que el card 3:2)
@@ -571,6 +572,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-patien-receta/PATIEN_669K-SBLK_F_GALERIA.jpg': 1.0,
   'rusty-patien-receta/PATIEN_MBLK_perfil.jpg': 1.1,
   'rusty-patien-receta/PATIEN_MBLK_OPTICAL_frente.jpg': 1.0,
+  // +variante SBLK negro brillo (2026-06-29), mismo scale.
+  'rusty-patien-receta/PATIEN_SBLK-perfil.jpg': 1.1,
+  'rusty-patien-receta/PATIEN_SBLK-frente.jpg': 1.0,
 
   // Vulk The Sil SOL — cuadrado unisex Grilamid (TR-90), todas polarizadas. Fotos
   // 900×442 ("THESIL-...-"=perfil, "THE SIL-..."=frente). perfil 1.15 / frente 1.0
