@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { FaqAccordion } from '@/components/faqs/faq-accordion';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
 import { CatalogJsonLd } from '@/components/seo/catalog-jsonld';
@@ -43,6 +44,28 @@ export function BrandCatalogPage({
     categorySlug: category.slug,
     brandSlug: brand.slug,
   });
+
+  // Links a las facetas marca+género propias (/[brand]/hombre, /[brand]/mujer).
+  // Sin esto las facetas quedan huérfanas (solo en el sitemap) y Google rankea
+  // la categoría genérica en vez de la página específica para "anteojos <marca>
+  // hombre". Se derivan del stock real para no enlazar a una faceta vacía:
+  // la faceta hombre muestra gender male|unisex, la de mujer female|unisex
+  // (misma regla que fetchBrandPageByGender).
+  const genders = new Set(
+    products
+      .map((p) =>
+        typeof p.attributes?.gender === 'string' ? p.attributes.gender : null,
+      )
+      .filter((g): g is string => g !== null),
+  );
+  const genderFacetLinks = [
+    genders.has('male') || genders.has('unisex')
+      ? { label: `${brand.name} hombre`, href: `${hrefPrefix}/hombre` }
+      : null,
+    genders.has('female') || genders.has('unisex')
+      ? { label: `${brand.name} mujer`, href: `${hrefPrefix}/mujer` }
+      : null,
+  ].filter((l): l is { label: string; href: string } => l !== null);
 
   return (
     <main className="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
@@ -125,6 +148,34 @@ export function BrandCatalogPage({
             </RevealOnScroll>
           ))}
         </section>
+      )}
+
+      {genderFacetLinks.length > 0 && (
+        <RevealOnScroll
+          as="section"
+          aria-labelledby="brand-gender-heading"
+          className="mt-16 md:mt-20"
+        >
+          <h2
+            id="brand-gender-heading"
+            className="text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.18em]"
+          >
+            Explorá {brand.name} por género
+          </h2>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {genderFacetLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="border-border/60 bg-background hover:bg-accent hover:border-foreground/30 inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
+                >
+                  {link.label}
+                  <ArrowUpRight className="size-3" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </RevealOnScroll>
       )}
 
       {brandFaqs.length > 0 && (
