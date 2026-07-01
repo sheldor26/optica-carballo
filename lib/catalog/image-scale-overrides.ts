@@ -629,7 +629,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-trial/THE TRIAL-MDEMI-068_UPG15 POL -  f.jpg': 1.0,
 
   // Rusty The Take SOL — aviador doble puente polarizado. 900×442 → 1.15 (founder pidió agrandar 2026-07-01).
-  'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_p.jpg': 1.15,
+  'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_p.jpg': 1.20,
   'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_f.jpg': 1.0,
 
   // Rusty The Take Optics RECETA — aviador. Fotos 900×442 (2.04:1) más anchas que el card 3:2
