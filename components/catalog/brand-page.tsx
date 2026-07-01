@@ -45,12 +45,9 @@ export function BrandCatalogPage({
     brandSlug: brand.slug,
   });
 
-  // Links a las facetas marca+género propias (/[brand]/hombre, /[brand]/mujer).
-  // Sin esto las facetas quedan huérfanas (solo en el sitemap) y Google rankea
-  // la categoría genérica en vez de la página específica para "anteojos <marca>
-  // hombre". Se derivan del stock real para no enlazar a una faceta vacía:
-  // la faceta hombre muestra gender male|unisex, la de mujer female|unisex
-  // (misma regla que fetchBrandPageByGender).
+  // Links a las facetas marca+género. Solo se generan si hay al menos un
+  // producto explícitamente male o female — una marca todo-unisex no produce
+  // links porque ambas facetas mostrarían el mismo catálogo (duplicate content).
   const genders = new Set(
     products
       .map((p) =>
@@ -59,10 +56,10 @@ export function BrandCatalogPage({
       .filter((g): g is string => g !== null),
   );
   const genderFacetLinks = [
-    genders.has('male') || genders.has('unisex')
+    genders.has('male')
       ? { label: `${brand.name} hombre`, href: `${hrefPrefix}/hombre` }
       : null,
-    genders.has('female') || genders.has('unisex')
+    genders.has('female')
       ? { label: `${brand.name} mujer`, href: `${hrefPrefix}/mujer` }
       : null,
   ].filter((l): l is { label: string; href: string } => l !== null);

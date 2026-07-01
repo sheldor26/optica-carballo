@@ -15,14 +15,7 @@ type Props = {
   ctaLabel?: string;
 };
 
-/**
- * Muro de autenticación para herramientas con "gate duro": el usuario debe
- * estar logueado para usarlas. Se renderiza en lugar de la herramienta cuando
- * no hay sesión. Explica el beneficio (por qué crear cuenta) — no es un bloqueo
- * a secas. Server component, 0 JS.
- *
- * Reusado por /descubrir (swipe) y /lector-de-receta (scanner).
- */
+/** Muro de auth para herramientas con gate duro. Server component, 0 JS. */
 export function ToolAuthGate({
   eyebrow,
   title,

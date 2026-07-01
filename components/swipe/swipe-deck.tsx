@@ -40,31 +40,12 @@ const SWIPE_EXIT_DISTANCE = 600;
 
 type Props = {
   initialProducts: SwipeProduct[];
-  /** Si el visitante está autenticado, los matches se persisten en DB
-   * (server actions). Si no, fallback a localStorage. */
-  isAuthenticated?: boolean;
-  /** Pre-cargados desde DB para usuarios autenticados. Para anónimos,
-   * el componente lee localStorage en el mount. */
+  /** Pre-cargados desde DB (el componente siempre persiste a DB). */
   initialMatches?: string[];
 };
 
-/**
- * Tinder de monturas — swipe interface para descubrimiento del catálogo.
- *
- * UX:
- * - Stack vertical de cards con la próxima visible detrás (depth + scale).
- * - Drag horizontal: derecha = "me gusta" (heart), izquierda = "skip".
- * - Botones explícitos abajo para usuarios que no descubren el drag.
- * - Botón undo (ícono ↺) para deshacer última decisión.
- * - Al terminar el stack: vista de matches con los productos seleccionados.
- *
- * Persistencia: matches se guardan en localStorage (versionados v1) para
- * que sobrevivan reload. NO se sincronizan al server (privacidad + lower
- * infra). Si el usuario quiere guardar en cuenta: futuro feature.
- */
 export function SwipeDeck({
   initialProducts,
-  isAuthenticated = false,
   initialMatches = [],
 }: Props) {
   const [products] = useState(initialProducts);
@@ -75,73 +56,37 @@ export function SwipeDeck({
   >([]);
   const [showResults, setShowResults] = useState(false);
 
-  // Cargar matches al montar:
-  // - Si el user está LOGUEADO: los `initialMatches` ya vienen desde server (DB).
-  //   Adicionalmente, si hay matches en localStorage (de cuando estaba anónimo),
-  //   los sincronizamos a DB y limpiamos localStorage.
-  // - Si está ANÓNIMO: leemos solo localStorage.
+  // Sync de localStorage anterior (usuario que era anónimo y se logueó).
+  // Los initialMatches ya vienen desde DB; esto solo migra sesiones previas.
   useEffect(() => {
-    if (isAuthenticated) {
-      // Sync de localStorage anterior (visitante anónimo que ahora se logueó)
-      try {
-        const raw = localStorage.getItem(SWIPE_MATCHES_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as StoredMatches;
-          const localSlugs = Array.isArray(parsed.liked) ? parsed.liked : [];
-          if (localSlugs.length > 0) {
-            void syncMatchesFromLocalStorage({ slugs: localSlugs }).then(
-              (result) => {
-                if (result.ok && result.synced > 0) {
-                  // Merge en state local (sin duplicados)
-                  setMatches((current) => {
-                    const set = new Set(current);
-                    localSlugs.forEach((s) => set.add(s));
-                    return Array.from(set);
-                  });
-                  // Limpiar localStorage tras sync exitoso
-                  try {
-                    localStorage.removeItem(SWIPE_MATCHES_STORAGE_KEY);
-                  } catch {
-                    // ignore
-                  }
-                  // Recién registrado vía /registro?next=/descubrir: mostrarle
-                  // sus matches guardados (no arrancar el mazo de cero).
-                  setShowResults(true);
-                }
-              },
-            );
-          }
-        }
-      } catch {
-        // localStorage corrupto, ignoramos.
-      }
-      return;
-    }
-
-    // Modo anónimo: leer matches previos de localStorage.
     try {
       const raw = localStorage.getItem(SWIPE_MATCHES_STORAGE_KEY);
       if (!raw) return;
       const parsed = JSON.parse(raw) as StoredMatches;
-      if (Array.isArray(parsed.liked)) {
-        setMatches(parsed.liked);
+      const localSlugs = Array.isArray(parsed.liked) ? parsed.liked : [];
+      if (localSlugs.length > 0) {
+        void syncMatchesFromLocalStorage({ slugs: localSlugs }).then(
+          (result) => {
+            if (result.ok && result.synced > 0) {
+              setMatches((current) => {
+                const set = new Set(current);
+                localSlugs.forEach((s) => set.add(s));
+                return Array.from(set);
+              });
+              try {
+                localStorage.removeItem(SWIPE_MATCHES_STORAGE_KEY);
+              } catch {
+                // ignore
+              }
+              setShowResults(true);
+            }
+          },
+        );
       }
     } catch {
-      // ignore
+      // localStorage corrupto, ignoramos.
     }
-  }, [isAuthenticated]);
-
-  // Persistir matches en localStorage SOLO si no está autenticado
-  // (autenticados → DB via server actions).
-  useEffect(() => {
-    if (isAuthenticated) return;
-    try {
-      const payload: StoredMatches = { liked: matches, savedAt: Date.now() };
-      localStorage.setItem(SWIPE_MATCHES_STORAGE_KEY, JSON.stringify(payload));
-    } catch {
-      // ignore
-    }
-  }, [matches, isAuthenticated]);
+  }, []);
 
   const currentProduct = products[currentIndex];
   const nextProduct = products[currentIndex + 1];
@@ -155,14 +100,11 @@ export function SwipeDeck({
         setMatches((m) =>
           m.includes(currentProduct.slug) ? m : [...m, currentProduct.slug],
         );
-        // Fire-and-forget: persistir en DB si está autenticado.
-        if (isAuthenticated) {
-          void addMatch(currentProduct.slug);
-        }
+        void addMatch(currentProduct.slug);
       }
       setCurrentIndex((i) => i + 1);
     },
-    [currentIndex, currentProduct, isAuthenticated],
+    [currentIndex, currentProduct],
   );
 
   const handleUndo = useCallback(() => {
@@ -174,12 +116,10 @@ export function SwipeDeck({
       const undoneProductSlug = products[last.index]?.slug;
       if (undoneProductSlug) {
         setMatches((m) => m.filter((s) => s !== undoneProductSlug));
-        if (isAuthenticated) {
-          void removeMatch(undoneProductSlug);
-        }
+        void removeMatch(undoneProductSlug);
       }
     }
-  }, [history, products, isAuthenticated]);
+  }, [history, products]);
 
   const handleViewResults = () => setShowResults(true);
 
@@ -189,16 +129,7 @@ export function SwipeDeck({
     setHistory([]);
     setCurrentIndex(0);
     setShowResults(false);
-    if (isAuthenticated) {
-      // Fire-and-forget: borrar uno por uno en DB (no hay deleteAll en action).
-      previous.forEach((slug) => void removeMatch(slug));
-    } else {
-      try {
-        localStorage.removeItem(SWIPE_MATCHES_STORAGE_KEY);
-      } catch {
-        // ignore
-      }
-    }
+    previous.forEach((slug) => void removeMatch(slug));
   };
 
   // Si ya terminó o el usuario clickeó "Ver mis matches", mostrar resultados.
@@ -210,7 +141,6 @@ export function SwipeDeck({
         onReset={handleReset}
         canResume={!isFinished}
         onResume={() => setShowResults(false)}
-        isAuthenticated={isAuthenticated}
       />
     );
   }
@@ -449,14 +379,12 @@ function SwipeResults({
   onReset,
   canResume,
   onResume,
-  isAuthenticated,
 }: {
   products: SwipeProduct[];
   matchedSlugs: string[];
   onReset: () => void;
   canResume: boolean;
   onResume: () => void;
-  isAuthenticated: boolean;
 }) {
   const matched = matchedSlugs
     .map((slug) => products.find((p) => p.slug === slug))
@@ -520,10 +448,7 @@ function SwipeResults({
         </div>
       </header>
 
-      {/* /descubrir tiene gate DURO de login (founder 2026-06-29): el deck solo
-          se monta autenticado, así que los matches ya se guardan en la cuenta.
-          Confirmación + hábito de volver a Mi cuenta. */}
-      {matched.length > 0 && isAuthenticated && (
+      {matched.length > 0 && (
         <div className="mx-auto mt-12 max-w-2xl text-center">
           <Link
             href="/mi-cuenta/matches"

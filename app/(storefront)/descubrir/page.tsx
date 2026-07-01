@@ -75,7 +75,6 @@ export default async function DescubrirPage() {
   return (
     <SwipeDeck
       initialProducts={products}
-      isAuthenticated
       initialMatches={initialMatches}
     />
   );
