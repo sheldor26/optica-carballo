@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Manrope } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
+import { MicrosoftClarity } from '@/components/analytics/microsoft-clarity';
 import './globals.css';
 
 // Tipografía alineada a ShotPilot (founder 2026-06-29): Manrope (cuerpo) +
@@ -57,6 +59,8 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {children}
         <GoogleAnalytics />
+        <MicrosoftClarity />
+        <Analytics />
         <SpeedInsights />
       </body>
     </html>
