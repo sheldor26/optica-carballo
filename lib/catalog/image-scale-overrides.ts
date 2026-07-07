@@ -179,6 +179,18 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-xold-receta/XOLD_MDEMI-MBLK_OPTICAL_perfil.jpg': 1.15,
   'rusty-xold-receta/XOLD_MDEMI-MBLK_OPTICAL_frente.jpg': 1.0,
 
+  // Vulk Strewn RECETA — cuadrado femenino transparente. DOS familias de foto con
+  // ratio distinto (regla 15, PROVISIONAL, reverificar en grid):
+  //  - MBLK/MROSE 900×442 (2.04:1) → baseline receta GALERIA 1.1/1.0.
+  //  - CRY 5365×3577 (3:2 full-res, más margen) → 1.2/1.05. Que CRY no quede
+  //    notoriamente más chica/grande que las 2:1 al lado en el grid.
+  'vulk-strewn-receta/STREWN-MBLK - PERFIL-GALERIA.jpg': 1.1,
+  'vulk-strewn-receta/STREWN-MBLK - FRENTE-GALERIA.jpg': 1.0,
+  'vulk-strewn-receta/STREWN CRY perfil.jpg': 1.2,
+  'vulk-strewn-receta/STREWN CRY frente.jpg': 1.05,
+  'vulk-strewn-receta/STREWN-MROSE -PERFIL-GALERIA.jpg': 1.1,
+  'vulk-strewn-receta/STREWN-MROSE - FRENTE.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

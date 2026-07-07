@@ -472,6 +472,18 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 
 > Ver **anti-canibalización 3 cuadrados de receta (Spell / Katleen / Zinz)** en el cluster RUSTY: Katleen es el carril **femenino** (`...cuadrados mujer`), distinto del masculino (Spell) y el neutro unisex (Zinz). Cross-link obligatorio entre los 3.
 
+*Vulk Strewn Receta (receta, CUADRADO, FEMENINO, small, marco liviano 17,8g, colores transparentes/cristal, lentes demo) — slug `vulk-strewn-receta` en `/anteojos-de-receta/vulk/vulk-strewn-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos transparentes mujer | 390 | 15 | **primaria** — carril transparente (2/3 colores: CRY cristal, M.ROSE rosa) → 1er párrafo, alt |
+| anteojos transparentes | 720 | 16 | soporte del carril → copy 1 vez |
+| anteojos mujer / anteojos para mujer | 880 / 480 | 12 / 7 | cabecera género → copy |
+| anteojos vulk mujer | 320 | 8 | atributo marca+género → copy, alt |
+| lentes transparentes mujer / anteojos marco transparente | 260 / 170 | 21 / 18 | variantes long-tail → copy, callout |
+| vulk strewn receta (branded) | 0 medido | ~4 | branded exacto → name, slug, alt |
+
+> **ANTI-CANIBALIZACIÓN vs Vulk Katleen (también cuadrado femenino receta)**: NO comparten primaria. Katleen = carril **forma** (`anteojos/lentes cuadrados mujer` 320/18). Strewn = carril **transparente** (`anteojos transparentes mujer` 390/15), diferenciado por colores cristal/rosa transparente + small 17,8g (aún más liviano que Katleen 26,3g). Strewn nombra "cuadrado" en copy pero NO lo targetea como primaria. **Cross-link obligatorio Strewn↔Katleen**. No usar `anteojos vulk` (4.400 → hub) ni "armazón de receta" (0 vol) como target. Title (auto): `Vulk Strewn Receta | Anteojos de Receta - Óptica Carballo`.
+
 ### Reglas para futuros productos
 
 Cuando se cargue un producto nuevo, ANTES de escribir copy:
