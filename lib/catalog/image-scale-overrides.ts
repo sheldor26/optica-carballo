@@ -200,6 +200,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-invig-receta/INVIG_C3-PLATEADO-perfil.jpg': 1.1,
   'rusty-invig-receta/INVIG_C3-PLATEADO-frente.jpg': 1.0,
 
+  // Vulk Kirt RECETA — redondo unisex metal, fotos 900×442 (2:1, idéntico a Ther) →
+  // 1.1 perfil / 1.0 frente. PROVISIONAL, reverificar grid vs My Crew/Ther/Xold (regla 15).
+  'vulk-kirt-receta/KIRT-LG-PERFIL.jpg': 1.1,
+  'vulk-kirt-receta/KIRT-LG-FRENTE.jpg': 1.0,
+  'vulk-kirt-receta/KIRT-MDB-PERFIL.jpg': 1.1,
+  'vulk-kirt-receta/KIRT-MDB-FRENTE.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

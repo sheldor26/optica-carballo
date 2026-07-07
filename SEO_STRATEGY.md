@@ -238,6 +238,19 @@ Atributo de respaldo (copy/alt, NO primaria): `lentes de sol polarizados` (260),
 
 Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260/8) — el unisex cubre ambos, copy NO primaria. **NO usar** "armazón de receta" como target (0 vol) — se usa solo como cabecera del title para señalizar intención. **Honestidad** (BUSINESS_POLICIES §5): precio = armazón sin cristales; "sumale tus cristales con receta". **Anti-canibalización**: sol (`lentes/anteojos de sol vulk`) vs receta (`anteojos recetados`) = intención distinta; vs My Crew receta = aviador vs redondo. **Cross-link obligatorio sol↔receta** (como Patien). Title: `Armazón de Receta Vulk The Trial Aviador | Óptica Carballo`. H1: `Anteojos de Receta Vulk The Trial Aviador Unisex`.
 
+*Vulk Kirt Optics (receta, REDONDO de METAL, UNISEX, liviano 17,5g, medium, frente metal + patilla Monel/acetato + bisagras integradas, lentes demo, 2 colores — LG dorado / MDB cobre) — slug `vulk-kirt-receta` en `/anteojos-de-receta/vulk/vulk-kirt-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos de metal | 210 | 12 | **primaria material** — diferencia de My Crew (G-Flex) → title/H1/1er párrafo |
+| lentes de metal | 260 | 10 | primaria material variante "lentes" → copy |
+| anteojos redondos | 880 | 12 | forma, **secundaria** (la lidera Ther cross-brand) → H1, copy |
+| lentes redondos | 1.000 | 18 | forma variante "lentes" → body/alt |
+| anteojos recetados | 720 | 9 | head receta → copy (lo lideran Woxi/Patien) |
+| armazones vulk | 110 | 8 | único "armazón" con volumen → body 1 vez |
+| vulk kirt (branded) | 0 medido | ~4 | title/H1/slug/alt |
+
+> Respaldo (copy/alt, NO primaria): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260/8) — el unisex los cubre. **NO usar**: `anteojos vulk` (4.400 → hub), "armazón de receta" (0 vol). **ANTI-CANIBALIZACIÓN**: (A) vs **My Crew** (Vulk redondo G-Flex) → se separan por MATERIAL: Kirt lidera metal, My Crew la forma; Kirt NO usa `anteojos redondos` como primaria. (B) vs **Rusty Ther** (redondo metal unisex) → leads invertidos: Ther=FORMA (`anteojos redondos`) en Rusty, Kirt=MATERIAL (`anteojos de metal`) en Vulk; se resuelve por marca + branded + categoría `/anteojos-de-receta/metal` + **cross-link obligatorio Kirt↔Ther**. Único Vulk redondo de metal. Title: `Armazón de Receta Vulk Kirt Redondo Metal | Óptica Carballo`. H1: `Vulk Kirt Optics`. Linking: `/anteojos-de-receta/vulk` + `/anteojos-de-receta/metal` + `/anteojos-de-receta/vulk/metal` + related redondos receta (My Crew, Ther, Misty, Xold). Cross-link sol↔receta NO (Kirt sol no cargado).
+
 ### Cluster: RUSTY (junio 2026 — Ubersuggest CSV real)
 
 **Keyword head crítica**: `anteojos rusty` — **3.600 vol/mes, difficulty 8** (head de marca más fuerte del nicho; atacar agresivamente desde el hub `/marcas/rusty` y `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty`).
