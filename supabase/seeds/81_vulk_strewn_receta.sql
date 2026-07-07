@@ -10,13 +10,12 @@
 --
 -- 3 MLAs SEPARADOS (items simples, NO multi-variación pese al catálogo MLAU4253331944).
 -- Todos $80.190 → 8019000c, stock 2 (total 6):
---   MBLK  negro mate.            MLA1878507183 (PRIMARY). SKU placeholder STREWN-MBLK.
---   CRY   transparente cristal.  MLA1878518671. SKU placeholder STREWN-CRY.
---   M.ROSE rosa transparente.    MLA1878507185. SKU placeholder STREWN-MROSE.
--- ⚠️ ML no trae SKU y el founder no los pasó → placeholders descriptivos (patrón
--- Katleen KATLEEN-MDEMI). El sync de stock usa mercadolibre_item_id (var_code NULL),
--- NO el SKU → placeholders no bloquean. Al pasar los SKU reales: UPDATE por item_id
--- (NO re-insert, el ON CONFLICT(sku) crearía filas nuevas).
+--   MBLK  negro mate.            MLA1878507183 (PRIMARY). SKU 113140.
+--   CRY   transparente cristal.  MLA1878518671. SKU 113145.
+--   M.ROSE rosa transparente.    MLA1878507185. SKU 113143.
+-- Nota: ML no traía SKU al cargar → se usaron placeholders y el founder pasó los
+-- SKU reales (2026-07-07); actualizados en DB vía UPDATE por mercadolibre_item_id
+-- y sincronizados en este seed. El sync de stock usa item_id (var_code NULL).
 --
 -- Medidas (medidas.png): frente 134 / lente 50×45 / puente 18 / patilla 145. Peso 17,8g.
 --
@@ -35,9 +34,9 @@
 -- Scale: MBLK/MROSE 1.1/1.0 (900×442 baseline receta); CRY 1.2/1.05 (full-res 3:2, más
 -- margen → más scale). PROVISIONAL — reverificar CRY vs 2:1 en el grid (regla 15).
 --
--- ⬜ Defaults del asistente a confirmar por founder: (a) 3 SKUs reales; (b) temple_material
+-- Defaults del asistente: (a) 3 SKUs reales ✅ pasados por el founder (2026-07-07); (b) temple_material
 -- g-flex (asumido, la ficha solo aclaró la bisagra); (c) hero = MBLK; (d) recommended_face_shapes
--- omitido (como Katleen).
+-- omitido (como Katleen). (b)(c)(d) sin objeción del founder.
 -- ============================================
 
 BEGIN;
@@ -77,16 +76,16 @@ ON CONFLICT (slug) DO UPDATE SET
   name=EXCLUDED.name, short_description=EXCLUDED.short_description, description=EXCLUDED.description,
   attributes=EXCLUDED.attributes, meta_title=EXCLUDED.meta_title, meta_description=EXCLUDED.meta_description, updated_at=now();
 
--- Variantes. sort 1 = MBLK (primary). 3 MLAs simples → var_code NULL. SKU placeholder.
+-- Variantes. sort 1 = MBLK (primary). 3 MLAs simples → var_code NULL. SKU reales del founder.
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), 'STREWN-MBLK',
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), '113140',
    '{"frame_color":"negro-mate","model_code":"MBLK OPTICAL"}'::jsonb,
    8019000, 2, true, 1, 'MLA1878507183', NULL),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), 'STREWN-CRY',
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), '113145',
    '{"frame_color":"transparente-cristal","model_code":"CRY OPTICAL"}'::jsonb,
    8019000, 2, true, 2, 'MLA1878518671', NULL),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), 'STREWN-MROSE',
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), '113143',
    '{"frame_color":"rosa-transparente","model_code":"M.ROSE OPTICAL"}'::jsonb,
    8019000, 2, true, 3, 'MLA1878507185', NULL)
 ON CONFLICT (sku) DO UPDATE SET
@@ -98,17 +97,17 @@ ON CONFLICT (sku) DO UPDATE SET
 -- ⚠️ nombres EXACTOS del bucket (ojo espacios de MROSE). medidas.png sort 99.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='STREWN-MBLK'),
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='113140'),
    'vulk-strewn-receta/STREWN-MBLK - PERFIL-GALERIA.jpg', 'Armazón de receta Vulk Strewn cuadrado femenino vista lateral, negro mate', 900, 442, 0, true),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='STREWN-MBLK'),
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='113140'),
    'vulk-strewn-receta/STREWN-MBLK - FRENTE-GALERIA.jpg', 'Armazón de receta Vulk Strewn cuadrado femenino vista frontal, negro mate', 900, 442, 1, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='STREWN-CRY'),
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='113145'),
    'vulk-strewn-receta/STREWN CRY perfil.jpg', 'Armazón de receta Vulk Strewn cuadrado femenino vista lateral, transparente cristal', 5365, 3577, 2, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='STREWN-CRY'),
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='113145'),
    'vulk-strewn-receta/STREWN CRY frente.jpg', 'Armazón de receta Vulk Strewn cuadrado femenino vista frontal, transparente cristal', 5365, 3577, 3, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='STREWN-MROSE'),
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='113143'),
    'vulk-strewn-receta/STREWN-MROSE -PERFIL-GALERIA.jpg', 'Armazón de receta Vulk Strewn cuadrado femenino vista lateral, rosa transparente', 900, 442, 4, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='STREWN-MROSE'),
+  ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), (SELECT id FROM public.product_variants WHERE sku='113143'),
    'vulk-strewn-receta/STREWN-MROSE - FRENTE.jpg', 'Armazón de receta Vulk Strewn cuadrado femenino vista frontal, rosa transparente', 900, 442, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-strewn-receta'), NULL,
    'vulk-strewn-receta/medidas.png', 'Esquema técnico de medidas Vulk Strewn: frente 134mm, lente 50x45mm, puente 18mm, patilla 145mm', 1500, 1500, 99, false)
