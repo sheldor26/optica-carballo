@@ -34,3 +34,11 @@
 -- ============================================
 
 -- Seed documental — INSERT real + UPDATE peso sol ya aplicados vía MCP.
+--
+-- ADICIÓN 2026-07-07 (vía MCP execute_sql): 5ª variante MDEMI-MBLK OPTICS
+--   SKU 125719 — frente carey mate / patillas negro mate, stock 2, $83.078
+--   (8307800c), MLA2152487922 var 204937786143, sort 5. Solo model_code +
+--   frame_color "carey-mate" (convención receta; SIN bluecut — founder). 2 fotos
+--   XOLD_MDEMI-MBLK_perfil/frente.jpg (sort 8/9, scale 1.15/1.0; medidas→sort 10).
+--   ⬜ Fotos a subir al bucket con esos nombres exactos (founder). Verificación MCP:
+--   variantes=5 activas, stock_total=9, imagenes=11.

@@ -175,6 +175,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-xold-receta/XOLD_0292-frente.jpg': 1.0,
   'rusty-xold-receta/XOLD_CRY-PERFIL.jpg': 1.15,
   'rusty-xold-receta/XOLD_CRY-frente.jpg': 1.0,
+  // Variante MDEMI-MBLK agregada 2026-07-07 (mismo modelo/encuadre 900×442 → mismo scale).
+  'rusty-xold-receta/XOLD_MDEMI-MBLK_perfil.jpg': 1.15,
+  'rusty-xold-receta/XOLD_MDEMI-MBLK_frente.jpg': 1.0,
 
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
