@@ -690,6 +690,17 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-trial-receta/THE TRIAL 670-056 FRENTE.jpg': 1.0,
   'vulk-the-trial-receta/THE TRIAL MBLK-046 PERFIL.jpg': 1.03,
   'vulk-the-trial-receta/THE TRIAL MBLK-046 FRENTE.jpg': 1.0,
+
+  // Vulk Nova SOL — ovalado mujer metal, 3 var polarizadas, fotos 900×442 (igual que
+  // Bennie/Raven). PROVISIONAL 1.1 perfil / 1.0 frente (punto medio Raven 1.0 / Terdey 1.15)
+  // → reverificar vs grid /anteojos-de-sol junto a Bennie 51 y Raven (regla 15).
+  // Nombres CRUDOS del founder (ya subidos al bucket con espacios/puntos/plural — verificados 200).
+  'vulk-nova/NOVA C1 POL.-perfiles.jpg': 1.1,
+  'vulk-nova/NOVA C1 POL.-frente.jpg': 1.0,
+  'vulk-nova/NOVA C2 POL._PERFIL.jpg': 1.1,
+  'vulk-nova/NOVA C2 POL._FRENTE.jpg': 1.0,
+  'vulk-nova/NOVA_C3_PERFIL.jpg': 1.1,
+  'vulk-nova/NOVA_C3_FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {

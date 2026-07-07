@@ -135,6 +135,7 @@ function frameShapeToSpanish(shape: string | null): string | null {
   if (!shape) return null;
   const map: Record<string, string> = {
     oval: 'ovalados',
+    ovalado: 'ovalados',
     aviator: 'aviador',
     aviador: 'aviador',
     round: 'redondos',

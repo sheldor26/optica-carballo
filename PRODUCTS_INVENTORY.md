@@ -48,6 +48,7 @@ Por cada marca/categoría, trackeamos:
 
 | Marca | Productos cargados | Con stock | Con imágenes | Con SEO | Estado |
 |-------|-------------------|-----------|--------------|---------|--------|
+| Vulk: Nova (ovalado sol mujer, 3 var) | 1 | 3 (stock 15) | 7 (HTTP 200) | 1 | ✅ Aplicado MCP + PDP live (seed 80, 2026-07-07). **SOL OVALADO MUJER** talle large, metal dorado + patillas metal/terminal acetato, policarbonato **POLARIZADA** UV400 cat 3, 35,8g. **1 MLA multivariante** (MLA2197866182, var_id poblado). **3/3 POL** → afirma "Polarizados" + /polarizados. C1 POL 968320 var 189163990683 (primary, dorado/carey lente marrón); C2 POL 968321 var 189163990685 (dorado verde); C3 POL 968322 var 204932326043 (dorado marrón degradé). **$128.299 igual las 3, stock 5 c/u**. SKU del founder (no en ML). `frame_shape="ovalado"` — **1er ovalado del grid SOL**; fix `frameShapeToSpanish` (faltaba key `ovalado`, arregla también Clems). Medidas 144/55×41/19/145 (medidas.png). **SEO+catalog-loader** (norma; primaria marca `lentes de sol vulk` 1.300 + mujer/polarizados/metal; NO hay faceta ovalados). Fotos nombres CRUDOS verbatim (HTTP 200). Scale **1.1/1.0 PROVISIONAL** (900×442, punto medio Raven/Terdey). ⬜ Founder reverifica scale en grid tras deploy (regla 15). |
 | Rusty | 3 | 3 | 1 | 3 | 🟡 |
 | Rusty: Yau (deportivo 2-en-1) | 1 | 1 | 1 | 1 | ✅ Live (seed 10/13/15) |
 | Rusty: Feeled MBLK TENNIS | 1 | 1 | pendiente founder | 1 | 🟡 Seed 23 listo, esperando fotos en bucket |
