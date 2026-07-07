@@ -355,6 +355,18 @@ De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `ant
 | anteojos recetados | 720 | 9 | head de intención receta → copy |
 | rusty spell receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug |
 
+*Rusty Invig Optics (receta, RECTANGULAR de METAL, HOMBRE, ultra liviano 14,7g, frente metal + patillas metal/acetato + bisagra acero inox, lentes demo, 3 colores mate — negro/marrón/gris oscuro) — slug `rusty-invig-receta` en `/anteojos-de-receta/rusty/rusty-invig-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos rusty hombre | 390 | 9 | **primaria** — branded + género, carril ÚNICO (único rectangular masculino Rusty receta) → title/H1/1er párrafo |
+| anteojos hombre | 1.000 | 7 | head amplio → H2/copy (no primaria: la consolida la faceta) |
+| anteojos recetados | 720 | 9 | head receta → copy (lo lideran Woxi/Patien) |
+| anteojos rectangulares | 480 | 15 | forma, **secundaria** (primaria es R-CY 02) |
+| anteojos de metal | 210 | 12 | material → copy (lo lidera Ther) — diferenciador rectangular+hombre |
+| rusty invig (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug/alt |
+
+> **Anti-canibalización 3 rectangulares Rusty receta + metal**: R-CY 02 lidera la FORMA (`anteojos/lentes rectangulares`), Woxi el HEAD receta (`anteojos recetados`), Invig el GÉNERO+branded (`anteojos rusty hombre`, único rectangular masculino). Invig NO usa rectangulares ni metal como primaria (son de R-CY 02 y Ther) — solo copy. Diferencia vs Ther (redondo metal unisex): Invig = rectangular + hombre. Cross-link obligatorio Invig↔Ther + Invig↔R-CY 02/Woxi. NO existe Invig de SOL todavía. Title (col): `Armazón de Receta Rusty Invig Hombre Metal | Óptica Carballo`.
+
 *Rusty Blinded (sol, REDONDO, UNISEX, 2 variantes — carey/marrón + negro mate; NINGUNA polarizada; antirreflejo interior, G-Flex, policarbonato UV400 cat 3, 22,7 g) — slug `rusty-blinded` en `/anteojos-de-sol/rusty/rusty-blinded`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
