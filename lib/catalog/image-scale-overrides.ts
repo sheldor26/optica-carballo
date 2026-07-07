@@ -191,6 +191,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-strewn-receta/STREWN-MROSE -PERFIL-GALERIA.jpg': 1.1,
   'vulk-strewn-receta/STREWN-MROSE - FRENTE.jpg': 1.0,
 
+  // Rusty Invig RECETA — rectangular hombre metal, fotos ~900×442..461 (2:1) →
+  // baseline receta 1.1/1.0 (como Zinz/Strewn/Patien). PROVISIONAL, reverificar grid (regla 15).
+  'rusty-invig-receta/INVIG_C2-perfil.jpg': 1.1,
+  'rusty-invig-receta/INVIG_C2-frente.jpg': 1.0,
+  'rusty-invig-receta/INVIG_C1-perfil.jpg': 1.1,
+  'rusty-invig-receta/INVIG_C1_BLUE-_frente.jpg': 1.0,
+  'rusty-invig-receta/INVIG_C3-PLATEADO-perfil.jpg': 1.1,
+  'rusty-invig-receta/INVIG_C3-PLATEADO-frente.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

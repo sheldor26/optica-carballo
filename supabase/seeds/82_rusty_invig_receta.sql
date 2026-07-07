@@ -31,14 +31,15 @@
 -- `de metal` (es de Ther) como primaria — solo copy. Cross-link Invig↔Ther (redondo vs
 -- rectangular metal) + Invig↔R-CY 02/Woxi. NO existe Invig de SOL → sin cross-link modalidad.
 --
--- 📸 FOTOS: ⚠️ CARGA ABIERTA — bucket products/rusty-invig-receta/ VACÍO al escribir el seed
--- (founder sube después). Nombres crudos de la captura (C3 truncado → confirmar al subir):
+-- 📸 FOTOS: ✅ SUBIDAS + bloque aplicado (2026-07-07). Bucket products/rusty-invig-receta/ (7):
 --   INVIG_C2-perfil.jpg / INVIG_C2-frente.jpg              (PRIMARY, negro mate)
---   INVIG_C1-perfil.jpg / INVIG_C1_BLUE-_frente.jpg        (marrón mate; "BLUE"=reflejo lente)
---   INVIG_C3-PLATEADO-perfil.jpg / INVIG_C3-PLATEADO-frente.jpg  (gris oscuro; nombre a confirmar)
+--   INVIG_C1-perfil.jpg / INVIG_C1_BLUE-_frente.jpg        (marrón mate; "BLUE"=reflejo lente bluecut)
+--   INVIG_C3-PLATEADO-perfil.jpg / INVIG_C3-PLATEADO-frente.jpg  (gris oscuro mate — verificado por foto:
+--     el archivo dice PLATEADO pero el color real es gunmetal/gris oscuro, coincide con ML, NO plateado)
 --   medidas.png (sort 99)
--- ~2:1 (900×442..461) → scale 1.1 perfil / 1.0 frente PROVISIONAL (como Zinz/Strewn). El bloque
--- de imágenes NO se aplica hasta que el founder suba las 7 fotos y se confirmen nombres + HTTP 200.
+-- ~2:1 (900×442..461) → scale 1.1 perfil / 1.0 frente PROVISIONAL (como Zinz/Strewn; reverificar grid, regla 15).
+-- Colores C1/C3 RESUELTOS mirando las fotos: C1 marrón oscuro + reflejo azul del lente en el frente;
+-- C3 gris oscuro gunmetal (no plateado). Se mantienen los nombres de ML.
 -- ============================================
 
 BEGIN;
