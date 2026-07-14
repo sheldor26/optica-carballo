@@ -225,12 +225,22 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Vulk Dieven RECETA — rectangular unisex bordes anchos, G-Flex. Fotos 900×442 (2:1,
   // baseline receta idéntico a Strewn/Kirt/Invig/Peating) → 1.1 perfil / 1.0 frente.
   // PROVISIONAL, reverificar grid /anteojos-de-receta + /anteojos-de-receta/vulk (regla 15).
-  'vulk-dieven/DIEVEN MBLK-116080-perfil.jpg': 1.1,
-  'vulk-dieven/DIEVEN MBLK-116080-frente.jpg': 1.0,
-  'vulk-dieven/DIEVEN SBLK-116083-perfil.jpg': 1.1,
-  'vulk-dieven/DIEVEN SBLK-116083-frente.jpg': 1.0,
-  'vulk-dieven/DIEVEN L.ROSE perfil.jpg': 1.1,
-  'vulk-dieven/DIEVEN L.ROSE_frente.jpg': 1.0,
+  'vulk-dieven-receta/DIEVEN MBLK-116080-perfil.jpg': 1.1,
+  'vulk-dieven-receta/DIEVEN MBLK-116080-frente.jpg': 1.0,
+  'vulk-dieven-receta/DIEVEN SBLK-116083-perfil.jpg': 1.1,
+  'vulk-dieven-receta/DIEVEN SBLK-116083-frente.jpg': 1.0,
+  'vulk-dieven-receta/DIEVEN L.ROSE perfil.jpg': 1.1,
+  'vulk-dieven-receta/DIEVEN L.ROSE_frente.jpg': 1.0,
+
+  // Vulk Dieven SOL — rectangular unisex G-Flex, hermano de vulk-dieven-receta. Fotos
+  // 900×442 (2:1, idéntico al receta) → 1.1 perfil / 1.0 frente. PROVISIONAL, reverificar
+  // grid /anteojos-de-sol (regla 15).
+  'vulk-dieven/DIEVEN-MBLK-S10-GREY-POL-perfil.jpg': 1.1,
+  'vulk-dieven/DIEVEN-MBLK-S10-GREY-POL-frente.jpg': 1.0,
+  'vulk-dieven/DIEVEN-SBLK-SG91-POL-perfil.jpg': 1.1,
+  'vulk-dieven/DIEVEN-SBLK-SG91-POL-frente.jpg': 1.0,
+  'vulk-dieven/DIEVEN-ROSE-BROWN-GREEN-PERFIL.jpg': 1.1,
+  'vulk-dieven/DIEVEN-ROSE-BROWN-GREEN-FRENTE.jpg': 1.0,
 
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.

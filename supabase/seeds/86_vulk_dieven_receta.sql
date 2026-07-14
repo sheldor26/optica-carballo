@@ -35,7 +35,7 @@
 -- en ML — gris polarizado, rosa translúcido — pero grep en supabase/seeds confirma que no
 -- están en el catálogo). Si se carga el sol como slug `vulk-dieven`, engancha solo.
 --
--- 📸 FOTOS (bucket products/vulk-dieven/ — SIN sufijo -receta, 7, verificadas 900×442 =
+-- 📸 FOTOS (bucket products/vulk-dieven-receta/, 7, verificadas 900×442 =
 -- 2:1, naming inconsistente respetado tal cual — ojo espacio vs guion bajo en L.ROSE):
 --   DIEVEN MBLK-116080-perfil.jpg / DIEVEN MBLK-116080-frente.jpg (negro mate, PRIMARY)
 --   DIEVEN SBLK-116083-perfil.jpg / DIEVEN SBLK-116083-frente.jpg (negro brillo)
@@ -104,19 +104,19 @@ ON CONFLICT (sku) DO UPDATE SET
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), (SELECT id FROM public.product_variants WHERE sku='116080'),
-   'vulk-dieven/DIEVEN MBLK-116080-perfil.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista lateral, negro mate', 900, 442, 0, true),
+   'vulk-dieven-receta/DIEVEN MBLK-116080-perfil.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista lateral, negro mate', 900, 442, 0, true),
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), (SELECT id FROM public.product_variants WHERE sku='116080'),
-   'vulk-dieven/DIEVEN MBLK-116080-frente.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista frontal, negro mate', 900, 442, 1, false),
+   'vulk-dieven-receta/DIEVEN MBLK-116080-frente.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista frontal, negro mate', 900, 442, 1, false),
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), (SELECT id FROM public.product_variants WHERE sku='116083'),
-   'vulk-dieven/DIEVEN SBLK-116083-perfil.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista lateral, negro brillo', 900, 442, 2, false),
+   'vulk-dieven-receta/DIEVEN SBLK-116083-perfil.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista lateral, negro brillo', 900, 442, 2, false),
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), (SELECT id FROM public.product_variants WHERE sku='116083'),
-   'vulk-dieven/DIEVEN SBLK-116083-frente.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista frontal, negro brillo', 900, 442, 3, false),
+   'vulk-dieven-receta/DIEVEN SBLK-116083-frente.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista frontal, negro brillo', 900, 442, 3, false),
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), (SELECT id FROM public.product_variants WHERE sku='116090'),
-   'vulk-dieven/DIEVEN L.ROSE perfil.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista lateral, rosa pálido', 900, 442, 4, false),
+   'vulk-dieven-receta/DIEVEN L.ROSE perfil.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista lateral, rosa pálido', 900, 442, 4, false),
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), (SELECT id FROM public.product_variants WHERE sku='116090'),
-   'vulk-dieven/DIEVEN L.ROSE_frente.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista frontal, rosa pálido', 900, 442, 5, false),
+   'vulk-dieven-receta/DIEVEN L.ROSE_frente.jpg', 'Armazón de receta Vulk Dieven rectangular unisex vista frontal, rosa pálido', 900, 442, 5, false),
   ((SELECT id FROM public.products WHERE slug='vulk-dieven-receta'), NULL,
-   'vulk-dieven/medidas.png', 'Esquema técnico de medidas Vulk Dieven: frente 142mm, lente 55x48mm, puente 17mm, varilla 145mm', 1500, 1500, 99, false)
+   'vulk-dieven-receta/medidas.png', 'Esquema técnico de medidas Vulk Dieven: frente 142mm, lente 55x48mm, puente 17mm, varilla 145mm', 1500, 1500, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
