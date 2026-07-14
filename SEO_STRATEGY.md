@@ -368,6 +368,19 @@ De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `ant
 | anteojos recetados | 720 | 9 | head de intención receta → copy |
 | rusty spell receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug |
 
+*Rusty Peating Carey (receta, CUADRADO, UNISEX, G-Flex, bisagras metálicas, liviano 18,9g, lentes demo mono/bi/progresivo, 2 colores carey — SDEMI carey brillo / MDEMI carey mate) — slug `rusty-peating-receta` en `/anteojos-de-receta/rusty/rusty-peating-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos carey | 390 | 8 | **PRIMARIA** — carril color/material, LIBRE en el cluster (2/2 variantes carey) → name/H1/1er párrafo |
+| lentes carey | 260 | 10 | variante "lentes" de la primaria → copy |
+| anteojos de carey | 260 | 14 | soporte del carril carey → copy/alt |
+| anteojos recetados | 720 | 9 | head receta → copy (lo lideran Woxi/Patien, NO primaria) |
+| anteojos cuadrados | 480 | 10 | forma, **SOPORTE — NO primaria** (es de Zinz) → H2/copy |
+| lentes cuadrados | 880 | 10 | forma variante "lentes", soporte → copy |
+| rusty peating (branded) | 0 medido | ~4 | name/H1/slug/alt |
+
+> **Anti-canibalización 4 cuadrados de receta (Zinz/Spell/Katleen/Strewn) + Peating**: la forma cuadrada NO es la primaria de Peating — la lidera Zinz (`anteojos cuadrados` unisex 480/10). Peating toma el carril CAREY (`anteojos carey` 390/8), color que ningún otro ataca (Strewn=transparente, Zinz=forma neutra, Spell=hombre, Katleen=mujer). Peating dice "cuadrado/unisex" en copy pero su primaria es el color → cero solapamiento con Zinz. `anteojos de sol carey` (Blinded, 40/34) es otra intención (sol). NO usar: `anteojos carey mujer` (110, unisex lo cubre), `armazones carey` (20/49), `anteojos cuadrados unisex` (0 medido). **Cross-link obligatorio** Peating↔Zinz↔Spell (Rusty cuadrados) + `/anteojos-de-receta/rusty` + `/marcas/rusty` + `/guias/como-leer-receta-anteojos`. Cross-link sol↔receta NO (Peating sol no cargado). Title (auto): `Rusty Peating Carey | Anteojos de Receta - Óptica Carballo` (58). H1/name: `Rusty Peating Carey`.
+
 *Rusty Invig Optics (receta, RECTANGULAR de METAL, HOMBRE, ultra liviano 14,7g, frente metal + patillas metal/acetato + bisagra acero inox, lentes demo, 3 colores mate — negro/marrón/gris oscuro) — slug `rusty-invig-receta` en `/anteojos-de-receta/rusty/rusty-invig-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

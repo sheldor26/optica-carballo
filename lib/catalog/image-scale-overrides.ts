@@ -207,6 +207,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-kirt-receta/KIRT-MDB-PERFIL.jpg': 1.1,
   'vulk-kirt-receta/KIRT-MDB-FRENTE.jpg': 1.0,
 
+  // Rusty Peating RECETA — cuadrado unisex carey G-Flex, fotos 900×442 (2:1, idéntico
+  // a Zinz receta) → 1.1 perfil / 1.0 frente. PROVISIONAL, reverificar grid (regla 15).
+  'rusty-peating-receta/PEATING_SDEMI_p.jpg': 1.1,
+  'rusty-peating-receta/PEATING_SDEMI_frente.jpg': 1.0,
+  'rusty-peating-receta/PEATING_MDEMI_OPTICAL_perfil.jpg': 1.1,
+  'rusty-peating-receta/PEATING_MDEMI_OPTICAL_frente.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".
