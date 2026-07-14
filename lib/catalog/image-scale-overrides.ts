@@ -214,6 +214,14 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-peating-receta/PEATING_MDEMI_OPTICAL_perfil.jpg': 1.1,
   'rusty-peating-receta/PEATING_MDEMI_OPTICAL_frente.jpg': 1.0,
 
+  // Rusty Peating SOL — cuadrado unisex polarizado (hermano de rusty-peating-receta,
+  // molde 79_rusty_zinz_sol). Fotos 900×442 (2:1, idéntico a receta) → 1.1 perfil / 1.0
+  // frente. PROVISIONAL, reverificar grid /anteojos-de-sol post-deploy (regla 15).
+  'rusty-peating/PEATING_MBLKS10_POL.-P.jpg': 1.1,
+  'rusty-peating/PEATING_MBLKS10_POL.-F.jpg': 1.0,
+  'rusty-peating/PEATING_SBLKDRT03_POL.-p.jpg': 1.1,
+  'rusty-peating/PEATING_SBLKDRT03_POL.-f.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

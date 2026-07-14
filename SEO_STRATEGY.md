@@ -473,6 +473,18 @@ De respaldo (copy/alt, NO primaria): `anteojos de sol cuadrados mujer` (110/14),
 
 > **Anti-canibalización Zinz sol vs Zinz receta**: mismo frame, dos URLs, dos intenciones. El Zinz de SOL targetea `lentes/anteojos de sol cuadrados` (390/170, con "de sol"); el de RECETA (`/anteojos-de-receta/rusty/rusty-zinz-receta`) targetea `anteojos/lentes cuadrados` (480/880, SIN "de sol"). Sin keyword primaria compartida. Cross-link sol↔receta OBLIGATORIO en ambas fichas ("versión de receta/sol del Zinz").
 
+*Rusty Peating (sol, CUADRADO, UNISEX, G-Flex ultra liviano, 2/2 variantes polarizadas — MBLK/S10 negro mate + SBLK/DRT03 negro brillo lente degradé gris, policarbonato UV400 cat 3, 100% UVA/UVB — versión de sol del Peating Carey de receta) — slug `rusty-peating` en `/anteojos-de-sol/rusty/rusty-peating`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol negros cuadrados | 20 | 35 | carril COLOR+forma, libre en el cluster (Zinz mezcla colores, Peating es 100% negro) → soporte/copy |
+| anteojos de sol negros cuadrados | 10 | 29 | ídem, variante "anteojos" |
+| anteojos de sol rusty polarizados | 50 | 36 | atributo, 2/2 pol. se afirma en H2/copy, dif. alta = NO primaria |
+| lentes de sol rusty / anteojos de sol rusty | 1.300 / 880 | 9 / 10 | head de marca, soporte compartido con todo el cluster |
+| rusty peating (branded) | 0 medido | ~4 | long-tail exacto → name/H1/slug/alt |
+
+> **Anti-canibalización Peating sol vs Zinz sol** (ambos cuadrados unisex G-Flex polarizados): Zinz es dueño exclusivo de la FORMA (`anteojos/lentes de sol cuadrados`, 170-390/14-11). Peating NO usa "cuadrados" como primaria — su carril es COLOR: 100% negro (mate + brillo) vs los colores mixtos de Zinz. Primaria real: branded (`rusty peating`) + color-forma de soporte (`negros cuadrados`). Ambas variantes polarizadas (2/2) → se afirma "polarizado" en copy/H2, NO como primaria (dif. 36, carril de Terdey). Mismo patrón que Peating RECETA vs Zinz RECETA (carey vs forma neutra). **Cross-link sol↔receta**: automático por convención de slug (`rusty-peating` ↔ `rusty-peating-receta`), sin acción manual. Cross-link obligatorio con Zinz/Terdey/Patien + `/anteojos-de-sol/rusty` + `/marcas/rusty`. Title (auto): `Rusty Peating | Anteojos de sol - Óptica Carballo` (51). H1 = name = `Rusty Peating`.
+> **Gap de infraestructura**: no existe faceta `/anteojos-de-sol/cuadrados` ni `/anteojos-de-sol/[brand]/cuadrados` (confirmado por glob) — a pesar de que Zinz sol ya la targetea como primaria. Anotado en BACKLOG.md.
+
 **Long-tails branded (vol bajo / dif 4-9, alta intención)**: nombre de modelo exacto por SKU (Esvep / Sotion / Eslav / Gresent / Play / Terdey / Patien / Opposit / R-CY 02): vol 0 medido pero conversión alta. Incluir en title + H1 + slug de cada producto. También `modelos de anteojos de sol rusty` (10/8), `anteojos rusty originales` (210/10).
 
 **No usar**:
