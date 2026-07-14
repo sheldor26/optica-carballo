@@ -1,5 +1,3 @@
-'use server';
-
 import { createStaticClient } from '@/lib/supabase/static';
 
 export type SearchProductResult = {
@@ -45,17 +43,23 @@ type BrandRow = {
 };
 
 /**
- * Search global client-callable: matchea productos y marcas por nombre
- * (case-insensitive, substring). Acepta texto vacío → devuelve vacío.
+ * Search global: matchea productos y marcas por nombre (case-insensitive,
+ * substring). Acepta texto vacío → devuelve vacío.
  *
  * Solo trae productos/marcas ACTIVAS. Sin fuzzy matching (iter 1) —
  * usa `ilike` con `%query%` que es suficiente para catálogo chico.
+ *
+ * Se llama desde `app/api/search/route.ts`, no directo desde el cliente:
+ * como Server Action se llamaba en cada tecleo y cada invocación dispara
+ * un refresh de ruta completo de Next.js (recarga el header entero de
+ * fondo), lo que hacía que el dialog de búsqueda se cerrara solo mientras
+ * el usuario escribía.
  *
  * Si en el futuro el catálogo crece a 100+ items y la búsqueda se siente
  * lenta, considerar trigram (`pg_trgm` extension) + index, o full-text
  * search con `tsvector`.
  */
-export async function searchAction(query: string): Promise<SearchResults> {
+export async function searchCatalog(query: string): Promise<SearchResults> {
   const q = query.trim();
   if (q.length === 0) return { products: [], brands: [] };
   if (q.length > 100) return { products: [], brands: [] };

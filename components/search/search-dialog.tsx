@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Clock, Search, X, ArrowRight, Tag } from 'lucide-react';
@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
-import { searchAction } from '@/lib/catalog/search';
 import type { SearchResults } from '@/lib/catalog/search';
 import { track, Events } from '@/lib/analytics/track';
 
@@ -85,26 +84,39 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     brands: [],
   });
   const [recent, setRecent] = useState<string[]>([]);
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const runSearch = useCallback((q: string) => {
-    startTransition(async () => {
-      const data = await searchAction(q);
-      setResults(data);
-      const hasResults =
-        data.products.length > 0 || data.brands.length > 0;
-      // Si la search devolvió resultados, persistir como "recent".
-      if (hasResults) {
-        const next = pushRecent(q);
-        setRecent(next);
-      }
-      track(Events.SEARCH, {
-        query: q,
-        results_count: data.products.length + data.brands.length,
-        has_results: hasResults,
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setIsLoading(true);
+    fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+      .then((res) => res.json() as Promise<SearchResults>)
+      .then((data) => {
+        setResults(data);
+        const hasResults =
+          data.products.length > 0 || data.brands.length > 0;
+        // Si la search devolvió resultados, persistir como "recent".
+        if (hasResults) {
+          const next = pushRecent(q);
+          setRecent(next);
+        }
+        track(Events.SEARCH, {
+          query: q,
+          results_count: data.products.length + data.brands.length,
+          has_results: hasResults,
+        });
+      })
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        setResults({ products: [], brands: [] });
+      })
+      .finally(() => {
+        if (abortRef.current === controller) setIsLoading(false);
       });
-    });
   }, []);
 
   // Debounce query → search
@@ -119,13 +131,15 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     return () => window.clearTimeout(t);
   }, [query, open, runSearch]);
 
-  // Al abrir: cargar recent + auto-focus. Al cerrar: clear input/results.
+  // Al abrir: cargar recent + auto-focus. Al cerrar: clear input/results
+  // y cancelar cualquier búsqueda en vuelo (evita setState tras cerrar).
   useEffect(() => {
     if (open) {
       setRecent(readRecent());
       const t = window.setTimeout(() => inputRef.current?.focus(), 50);
       return () => window.clearTimeout(t);
     }
+    abortRef.current?.abort();
     setQuery('');
     setResults({ products: [], brands: [] });
   }, [open]);
@@ -133,7 +147,7 @@ export function SearchDialog({ open, onOpenChange }: Props) {
   const hasResults =
     results.products.length > 0 || results.brands.length > 0;
   const queryTooShort = query.trim().length < MIN_QUERY_LENGTH;
-  const showEmpty = !queryTooShort && !hasResults && !isPending;
+  const showEmpty = !queryTooShort && !hasResults && !isLoading;
   const showRecent = queryTooShort && recent.length > 0;
 
   return (
@@ -190,7 +204,7 @@ export function SearchDialog({ open, onOpenChange }: Props) {
             <Results
               results={results}
               onClose={() => onOpenChange(false)}
-              loading={isPending}
+              loading={isLoading}
             />
           )}
         </div>

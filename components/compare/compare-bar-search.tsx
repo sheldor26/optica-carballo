@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import Image from 'next/image';
 import { Search, Plus } from 'lucide-react';
-import { searchAction, type SearchProductResult } from '@/lib/catalog/search';
+import type { SearchProductResult, SearchResults } from '@/lib/catalog/search';
 import { toggleCompareAction } from '@/lib/compare/actions';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
@@ -21,7 +21,7 @@ type Props = {
  * al comparador sin navegar al catálogo.
  *
  * Flow:
- * 1. Usuario tipea → debounce 300ms → searchAction(query)
+ * 1. Usuario tipea → debounce 300ms → fetch a /api/search?q=
  * 2. Dropdown muestra top 5 productos (excluyendo los ya en compare)
  * 3. Click "+" → toggleCompareAction(entry) → onAdded(slug)
  *
@@ -44,15 +44,25 @@ export function CompareBarSearch({ existingSlugs, onAdded }: Props) {
       return;
     }
     setIsLoading(true);
+    const controller = new AbortController();
     const t = window.setTimeout(async () => {
       try {
-        const data = await searchAction(query);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+          signal: controller.signal,
+        });
+        const data = (await res.json()) as SearchResults;
         setResults(data.products.slice(0, 5));
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        setResults([]);
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }, 300);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      controller.abort();
+    };
   }, [query]);
 
   // Click outside cierra el dropdown.
