@@ -222,6 +222,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-peating/PEATING_SBLKDRT03_POL.-p.jpg': 1.1,
   'rusty-peating/PEATING_SBLKDRT03_POL.-f.jpg': 1.0,
 
+  // Vulk Dieven RECETA — rectangular unisex bordes anchos, G-Flex. Fotos 900×442 (2:1,
+  // baseline receta idéntico a Strewn/Kirt/Invig/Peating) → 1.1 perfil / 1.0 frente.
+  // PROVISIONAL, reverificar grid /anteojos-de-receta + /anteojos-de-receta/vulk (regla 15).
+  'vulk-dieven/DIEVEN MBLK-116080-perfil.jpg': 1.1,
+  'vulk-dieven/DIEVEN MBLK-116080-frente.jpg': 1.0,
+  'vulk-dieven/DIEVEN SBLK-116083-perfil.jpg': 1.1,
+  'vulk-dieven/DIEVEN SBLK-116083-frente.jpg': 1.0,
+  'vulk-dieven/DIEVEN L.ROSE perfil.jpg': 1.1,
+  'vulk-dieven/DIEVEN L.ROSE_frente.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

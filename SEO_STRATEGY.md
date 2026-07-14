@@ -393,6 +393,17 @@ De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `ant
 
 > **Anti-canibalización 3 rectangulares Rusty receta + metal**: R-CY 02 lidera la FORMA (`anteojos/lentes rectangulares`), Woxi el HEAD receta (`anteojos recetados`), Invig el GÉNERO+branded (`anteojos rusty hombre`, único rectangular masculino). Invig NO usa rectangulares ni metal como primaria (son de R-CY 02 y Ther) — solo copy. Diferencia vs Ther (redondo metal unisex): Invig = rectangular + hombre. Cross-link obligatorio Invig↔Ther + Invig↔R-CY 02/Woxi. NO existe Invig de SOL todavía. Title (col): `Armazón de Receta Rusty Invig Hombre Metal | Óptica Carballo`.
 
+*Vulk Dieven Unisex (receta, RECTANGULAR de bordes anchos, UNISEX, G-Flex, bisagras plásticas reforzadas ultra liviano, 28,5g, medium, 3 colores — MBLK negro mate / SBLK negro brillo / L.ROSE rosa pálido) — slug `vulk-dieven-receta` en `/anteojos-de-receta/vulk/vulk-dieven-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos recetados | 720 | 9 | **primaria** — head de intención receta (compartido con Woxi/Trial/Peating/Kirt/Zinz/Patien, no es canibalización) → H1 alt, 1er párrafo, meta_description |
+| anteojos rectangulares | 480 | 15 | forma, **secundaria** (primaria es Rusty R-CY 02, sitewide) → H2/copy/alt |
+| lentes rectangulares | 880 | 10 | forma variante "lentes", secundaria → copy |
+| anteojos vulk / lentes vulk | 4.400/6.600 | 11/10 | head de marca → **hub-only** (`/marcas/vulk`, `/anteojos-de-receta/vulk`), NO producto |
+| vulk dieven (branded) | 0 medido | ~4 | title/H1/slug/alt |
+
+> Respaldo (copy/alt, NO primaria): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260/8) — el unisex los cubre. **NO usar** "bordes anchos"/"oversized" como keyword (0 vol medido). **PRIMER rectangular Vulk en receta** — comparte `anteojos recetados` (uso estándar, no canibalización) pero NO toma `anteojos rectangulares` como primaria (esa la lidera R-CY 02 sitewide, mismo criterio que Invig). Diferenciador: marca Vulk + unisex explícito + bisagras plásticas 28,5g vs los 3 rectangulares Rusty (R-CY02=forma neutra, Woxi=chico/monofocal, Invig=hombre/metal). Cross-link obligatorio Dieven↔R-CY02↔Woxi↔Invig + `/anteojos-de-receta/vulk`. Cross-link sol↔receta NO (Dieven sol existe en ML, no cargado — BACKLOG). Title (auto): `Vulk Dieven Unisex | Anteojos de receta - Óptica Carballo` (57). H1/name: `Vulk Dieven Unisex`.
+
 *Rusty Blinded (sol, REDONDO, UNISEX, 2 variantes — carey/marrón + negro mate; NINGUNA polarizada; antirreflejo interior, G-Flex, policarbonato UV400 cat 3, 22,7 g) — slug `rusty-blinded` en `/anteojos-de-sol/rusty/rusty-blinded`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
