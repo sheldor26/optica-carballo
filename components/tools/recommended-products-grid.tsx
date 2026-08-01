@@ -52,6 +52,16 @@ export function RecommendedProductsGrid({ products, recommendedShapes }: Props) 
           <ProductCard key={product.slug} product={product} />
         ))}
       </div>
+
+      {recommendedShapes.length > 0 && (
+        <Link
+          href={`/anteojos-de-sol?forma=${encodeURIComponent(recommendedShapes.join(','))}`}
+          className="text-foreground mt-6 inline-flex items-center gap-1.5 text-sm font-medium underline-offset-4 hover:underline"
+        >
+          Ver todos los modelos de esta forma
+          <ArrowRight className="size-4" />
+        </Link>
+      )}
     </section>
   );
 }

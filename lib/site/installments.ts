@@ -30,7 +30,7 @@ export const INTEREST_FREE_INSTALLMENTS = 3;
  * Mientras el founder termina de setear el procesador de pagos y envíos,
  * queda en `false`: la feature está construida pero oculta.
  */
-export const INSTALLMENTS_ENABLED = false;
+export const INSTALLMENTS_ENABLED = true;
 
 /**
  * Monto (en centavos) de cada cuota sin interés para un precio dado.
