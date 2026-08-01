@@ -45,7 +45,10 @@ export async function generateMetadata({
     title: frontmatter.title,
     description: frontmatter.description,
     keywords: frontmatter.keywords,
-    alternates: { canonical: pageUrl },
+    alternates: {
+      canonical: pageUrl,
+      languages: { 'es-AR': pageUrl, 'x-default': pageUrl },
+    },
     // Borrador: accesible por URL (revisión del founder en la nube) pero
     // Google NO lo indexa hasta que se publique (draft: false).
     ...(frontmatter.draft ? { robots: { index: false, follow: false } } : {}),

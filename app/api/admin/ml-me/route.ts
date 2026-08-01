@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getValidAccessToken } from '@/lib/integrations/mercadolibre/oauth';
 import { getActiveMLIntegration } from '@/lib/integrations/mercadolibre/integrations-repo';
-import { getAdminUserOrNull } from '@/lib/auth/admin';
+import { requireAdminApi } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,10 +10,10 @@ export const dynamic = 'force-dynamic';
  * Hace fetch RAW a `/users/me` (bypass mlFetch) para devolver status+body
  * sin mapping. Permite diagnosticar 404 / 401 / etc.
  *
- * Sin auth iter 1 — temporal de admin.
+ * Requiere admin + PIN (`requireAdminApi`).
  */
 export async function GET() {
-  if (!(await getAdminUserOrNull())) {
+  if (!(await requireAdminApi())) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   // 1. Estado de la integración guardada

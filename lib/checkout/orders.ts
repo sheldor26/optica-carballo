@@ -3,30 +3,46 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import type { ResolvedCart } from '@/lib/cart/types';
 import type { Address } from '@/lib/addresses/types';
 import type { ShippingMethod, ShippingQuote } from '@/lib/shipping';
+import type { PrescriptionCookie } from '@/lib/prescription-cookie/types';
+import {
+  cartRequiresPrescription,
+  prescriptionInsertFromCookie,
+} from './prescription';
 
 /**
- * Crea la orden en DB con snapshots inmutables (ADR-007).
+ * Crea la orden en DB con snapshots inmutables (ADR-007) — TODO en una sola
+ * transacción atómica vía la RPC `create_order_from_cart` (migración
+ * `20260801143222`, hallazgo #8 del audit 2026-08-01).
+ *
+ * Antes esto era 4-5 round-trips JS separados (reserve_stock → INSERT
+ * prescriptions → INSERT orders → INSERT order_items → INSERT
+ * coupon_redemptions) con compensación manual (`revertStock`) si algo
+ * fallaba a mitad de camino. Un crash de Node entre pasos podía dejar stock
+ * decrementado sin orden asociada, sin forma de auto-corregirse. Ahora es
+ * UN solo `rpc()`: si cualquier paso falla server-side, Postgres revierte
+ * TODO (no puede quedar un estado a mitad de camino), y `idempotencyKey`
+ * evita duplicar la orden si el cliente reintenta el mismo submit.
  *
  * Pre-requisitos del caller (server action):
  *   1. `cart` ya fue resuelto contra DB y `hasIssues === false`.
  *   2. `address` pertenece al `userId` (validado por RLS al fetcharla).
  *   3. `shipping` fue calculado con `lib/shipping.ts`.
- *   4. **NO** se llamó `reserve_stock` todavía — esta función lo hace.
- *
- * Flow:
- *   1. RPC `reserve_stock(items)` — atómico, falla todo o decrementa todo.
- *   2. INSERT en `orders` con snapshots de address + totales.
- *   3. INSERT en `order_items` por cada item del cart con snapshots.
- *   4. Si cualquier INSERT falla, revertimos stock manualmente sumando
- *      las quantities de vuelta (compensación). NO es transaccional con
- *      el INSERT — V1 acepta este riesgo (volumen 5-20/mes; logs alertan).
+ *   4. Si `cartRequiresPrescription(cart)` es `true`, el caller YA validó
+ *      que `prescription` no es null (hallazgo #6, audit 2026-08-01).
+ *   5. `idempotencyKey` es estable entre reintentos del MISMO submit
+ *      (generado una vez al montar `/checkout`, no en cada request).
  *
  * Devuelve `{ ok: true, orderId, orderNumber }` o `{ ok: false, error }`.
- * El `orderNumber` viene del trigger `set_order_number` (migración 00003).
  */
 export type CreateOrderResult =
   | { ok: true; orderId: string; orderNumber: string }
   | { ok: false; error: string };
+
+type CreateOrderFromCartRpcResult = {
+  id: string;
+  order_number: string;
+  replay: boolean;
+};
 
 export async function createOrderFromCart(args: {
   userId: string;
@@ -45,6 +61,11 @@ export async function createOrderFromCart(args: {
   agencyCode?: string | null;
   /** Snapshot del nombre de la sucursal (ADR-007). */
   agencyName?: string | null;
+  /** Receta de la cookie firmada. Requerida (no-null) si
+   * `cartRequiresPrescription(cart)` — el caller valida eso antes de llamar. */
+  prescription?: PrescriptionCookie | null;
+  /** UUID estable por intento de checkout — ver doc de la función. */
+  idempotencyKey: string;
 }): Promise<CreateOrderResult> {
   const {
     userId,
@@ -58,6 +79,8 @@ export async function createOrderFromCart(args: {
     deliveryType = null,
     agencyCode = null,
     agencyName = null,
+    prescription = null,
+    idempotencyKey,
   } = args;
   const isPickup = shippingMethod === 'pickup';
   const isBranch = shippingMethod === 'branch';
@@ -71,38 +94,20 @@ export async function createOrderFromCart(args: {
       error: 'Hay items con problemas. Resolvélos antes de continuar.',
     };
   }
+  if (cartRequiresPrescription(cart) && !prescription) {
+    return {
+      ok: false,
+      error: 'Necesitás cargar tu receta antes de confirmar el pedido.',
+    };
+  }
 
   const supabase = createAdminClient();
 
-  // ===== 1. Reservar stock atómicamente =====
   const reserveItems = cart.items.map((it) => ({
     variant_id: it.variantId,
     quantity: it.quantity,
   }));
-  const { error: reserveError } = await supabase.rpc('reserve_stock', {
-    p_items: reserveItems,
-  });
-  if (reserveError) {
-    // No filtrar el mensaje crudo de Postgres al cliente. El caso típico es que
-    // un producto se quedó sin stock entre que se armó el carrito y se confirmó
-    // (carrera con otra compra / ML). Mensaje claro y accionable.
-    const insufficient = /insuficiente|stock|existe|inactiv/i.test(
-      reserveError.message,
-    );
-    return {
-      ok: false,
-      error: insufficient
-        ? 'Uno de los productos se quedó sin stock mientras comprabas. Revisá tu carrito e intentá de nuevo.'
-        : 'No pudimos confirmar el stock en este momento. Intentá de nuevo en unos segundos.',
-    };
-  }
 
-  // ===== 1.5. Sync stock outbound a ML (best-effort, no bloquea checkout) =====
-  // Reserva exitosa → bajar stock en ML para no oversell allá.
-  // Errors quedan en marketplace_sync_errors; el cron de reconcile corrige drift.
-  void syncStockOutboundForVariants(reserveItems.map((it) => it.variant_id));
-
-  // ===== 2. INSERT orders =====
   const discountCents = cart.coupon?.discountCents ?? 0;
   const effectiveShippingCents = cart.coupon?.removeShipping ? 0 : shipping.cents;
   const totalCents = Math.max(
@@ -110,54 +115,38 @@ export async function createOrderFromCart(args: {
     cart.subtotalCents - discountCents + effectiveShippingCents,
   );
 
-  const { data: orderRow, error: orderError } = await supabase
-    .from('orders')
-    .insert({
-      user_id: userId,
-      status: 'pending',
-      customer_name: customerName,
-      customer_email: userEmail,
-      customer_phone: address?.phone ?? customerPhone ?? null,
-      shipping_recipient_name: address?.recipient_name ?? null,
-      shipping_street: address?.street ?? null,
-      shipping_number: address?.number ?? null,
-      shipping_apartment: address?.apartment ?? null,
-      shipping_city: address?.city ?? null,
-      shipping_province: address?.province ?? null,
-      shipping_postal_code: address?.postal_code ?? null,
-      shipping_country: address?.country ?? null,
-      shipping_phone: address?.phone ?? null,
-      shipping_address_id: address?.id ?? null,
-      subtotal_cents: cart.subtotalCents,
-      shipping_cents: effectiveShippingCents,
-      discount_cents: discountCents,
-      total_cents: totalCents,
-      shipping_method: shippingMethod,
-      shipping_delivery_type: deliveryType,
-      shipping_agency_code: agencyCode,
-      shipping_agency_name: agencyName,
-      coupon_id: cart.coupon?.id ?? null,
-      coupon_code: cart.coupon?.code ?? null,
-      notes: isPickup
-        ? 'Retiro en local · Coordinar entrega por WhatsApp'
-        : isBranch
-          ? `Sucursal Correo: ${agencyName ?? agencyCode ?? '—'}${shipping.isFree ? ' · Envío gratis' : ''}`
-          : `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
-    })
-    .select('id, order_number')
-    .single();
+  const orderPayload = {
+    customer_name: customerName,
+    customer_email: userEmail,
+    customer_phone: address?.phone ?? customerPhone ?? null,
+    shipping_recipient_name: address?.recipient_name ?? null,
+    shipping_street: address?.street ?? null,
+    shipping_number: address?.number ?? null,
+    shipping_apartment: address?.apartment ?? null,
+    shipping_city: address?.city ?? null,
+    shipping_province: address?.province ?? null,
+    shipping_postal_code: address?.postal_code ?? null,
+    shipping_country: address?.country ?? null,
+    shipping_phone: address?.phone ?? null,
+    shipping_address_id: address?.id ?? null,
+    subtotal_cents: cart.subtotalCents,
+    shipping_cents: effectiveShippingCents,
+    discount_cents: discountCents,
+    total_cents: totalCents,
+    shipping_method: shippingMethod,
+    shipping_delivery_type: deliveryType,
+    shipping_agency_code: agencyCode,
+    shipping_agency_name: agencyName,
+    coupon_id: cart.coupon?.id ?? null,
+    coupon_code: cart.coupon?.code ?? null,
+    notes: isPickup
+      ? 'Retiro en local · Coordinar entrega por WhatsApp'
+      : isBranch
+        ? `Sucursal Correo: ${agencyName ?? agencyCode ?? '—'}${shipping.isFree ? ' · Envío gratis' : ''}`
+        : `Zona: ${shipping.zoneLabel}${shipping.isFree ? ' · Envío gratis' : ''}`,
+  };
 
-  if (orderError || !orderRow) {
-    await revertStock(reserveItems);
-    return {
-      ok: false,
-      error: `No pudimos crear la orden. ${orderError?.message ?? ''}`.trim(),
-    };
-  }
-
-  // ===== 3. INSERT order_items =====
-  const itemsToInsert = cart.items.map((it) => ({
-    order_id: orderRow.id,
+  const itemsPayload = cart.items.map((it) => ({
     product_id: it.product.id || null,
     variant_id: it.variantId,
     product_name: it.product.name,
@@ -170,36 +159,44 @@ export async function createOrderFromCart(args: {
     line_total_cents: it.variant.priceCents * it.quantity,
   }));
 
-  const { error: itemsError } = await supabase
-    .from('order_items')
-    .insert(itemsToInsert);
+  const { data, error } = await supabase.rpc('create_order_from_cart', {
+    p_user_id: userId,
+    p_idempotency_key: idempotencyKey,
+    p_reserve_items: reserveItems,
+    p_order: orderPayload,
+    p_items: itemsPayload,
+    p_prescription: prescription ? prescriptionInsertFromCookie(prescription) : null,
+  });
 
-  if (itemsError) {
-    await supabase.from('orders').delete().eq('id', orderRow.id);
-    await revertStock(reserveItems);
+  if (error || !data) {
+    // No filtrar el mensaje crudo de Postgres al cliente. El caso típico es que
+    // un producto se quedó sin stock entre que se armó el carrito y se confirmó
+    // (carrera con otra compra / ML). Mensaje claro y accionable.
+    const insufficient = /insuficiente|stock|existe|inactiv/i.test(
+      error?.message ?? '',
+    );
     return {
       ok: false,
-      error: `No pudimos guardar los items. ${itemsError.message}`,
+      error: insufficient
+        ? 'Uno de los productos se quedó sin stock mientras comprabas. Revisá tu carrito e intentá de nuevo.'
+        : `No pudimos crear la orden. ${error?.message ?? ''}`.trim(),
     };
   }
 
-  // ===== 4. Registrar redemption del cupón =====
-  // Best-effort: si falla, la order ya está creada y el descuento aplicado.
-  // El cron diario podría reconciliar usage_count si fuera necesario.
-  if (cart.coupon) {
-    await supabase.from('coupon_redemptions').insert({
-      coupon_id: cart.coupon.id,
-      user_id: userId,
-      order_id: orderRow.id,
-      discount_cents: cart.coupon.discountCents,
-    });
-    await supabase.rpc('increment_coupon_usage', { p_coupon_id: cart.coupon.id });
+  const result = data as CreateOrderFromCartRpcResult;
+
+  // Sync stock outbound a ML (best-effort, no bloquea checkout) — solo si
+  // NO es un replay (un replay no tocó stock, ya se hizo en el intento
+  // original). Errors quedan en marketplace_sync_errors; el cron de
+  // reconcile corrige drift.
+  if (!result.replay) {
+    void syncStockOutboundForVariants(reserveItems.map((it) => it.variant_id));
   }
 
   return {
     ok: true,
-    orderId: orderRow.id,
-    orderNumber: orderRow.order_number,
+    orderId: result.id,
+    orderNumber: result.order_number,
   };
 }
 
@@ -217,26 +214,6 @@ export async function updateOrderMpPreference(args: {
     .from('orders')
     .update({ mp_preference_id: args.preferenceId, payment_method: 'mercadopago' })
     .eq('id', args.orderId);
-}
-
-/**
- * Compensación: re-incrementa stock cuando una operación posterior a
- * `reserve_stock` falla. Best-effort — si esta compensación también
- * falla, queda inconsistencia que requiere intervención manual.
- * Aceptable en V1 (volumen bajo + alertas en logs).
- */
-async function revertStock(
-  items: Array<{ variant_id: string; quantity: number }>,
-): Promise<void> {
-  const supabase = createAdminClient();
-  for (const it of items) {
-    await supabase.rpc('increment_variant_stock', {
-      p_variant_id: it.variant_id,
-      p_amount: it.quantity,
-    });
-  }
-  // Sync outbound del revert también (devolver stock a ML).
-  void syncStockOutboundForVariants(items.map((it) => it.variant_id));
 }
 
 /**
@@ -258,7 +235,7 @@ async function syncStockOutboundForVariants(variantIds: string[]): Promise<void>
 /**
  * Reintegra el stock de un pedido (en la base Y empujándolo a ML) cuando se
  * cancela. Reusa `increment_variant_stock` (el mismo camino que la compensación
- * de `createOrderFromCart`).
+ * ante una cancelación — camino independiente de la RPC de creación).
  *
  * **Idempotente**: hace un claim atómico sobre `orders.stock_released_at` —
  * setea la marca solo si estaba en NULL, y solo reintegra si ganó el claim. Así

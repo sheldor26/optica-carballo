@@ -24,6 +24,46 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-08-01 — Primer diseño del fix de soft-404 metía una query a Supabase en `middleware.ts` sin considerar que Edge Middleware corre antes del cache lookup en TODAS las requests
+
+**Estado**: ✅ Cerrado (rediseñado con caché en memoria en la misma sesión, antes de aplicar a producción)
+
+**Qué pasó**: al implementar el fix de soft-404 (marca/producto inválido devolvía HTTP 200 en vez de 404 por un bug conocido de Next.js ISR), diseñé `lib/catalog/existence-check.ts` para consultar Supabase directo en cada invocación del middleware, razonando que "solo corre en URLs de catálogo, y la mayoría son válidas, así que el costo es bajo". Verifiqué correctitud exhaustivamente (~30 casos) y casi lo di por cerrado así.
+
+**Causa raíz**: no tuve en cuenta un detalle de arquitectura de Vercel — el Edge Middleware corre ANTES del cache lookup para TODAS las requests, incluidos los hits de ISR. "Solo corre en rutas de catálogo" no significa "solo corre en las pocas URLs rotas": corre en CADA visita a una página de marca o producto, que son las rutas de mayor tráfico del sitio. Medí la query sola en ~220-270ms — esa latencia se habría sumado a cada visita real, no solo a las URLs inválidas que motivaron el fix.
+
+**Regla preventiva**: cualquier lógica agregada a `middleware.ts` hay que asumirla ejecutándose en el 100% de las requests que matchea (no solo el caso que la motivó), y diseñarla primero pensando "¿esto corre una vez por request, o puede cachearse/amortizarse?" — nunca una consulta a DB directa sin caché en memoria (con TTL) como primer diseño. `nextjs-performance` es el gate correcto para esto (ver `LEARNINGS.md` 2026-08-01, "Pasar un cambio de `middleware.ts` por `nextjs-performance`..."), pero mejor todavía si el diseño inicial ya lo contempla y no depende de que el agente lo atrape después.
+
+## 2026-08-01 — `supabase db reset` local roto desde cero por un `user_id` hardcodeado de cloud en una migración ya aplicada
+
+**Estado**: 🟡 Diagnosticado, no resuelto (documentado para no perder tiempo la próxima vez)
+
+**Qué pasó**: probando la migración del hallazgo #8 (atomicidad de stock+orden), corrí `supabase db reset` para levantar el schema local desde cero y falló en `20260706000000_facturador_staff_rls.sql` con `insert or update on table "staff_users" violates foreign key constraint... Key (user_id)=(9f64cdeb-...) is not present in table "users"`. Esa migración (ya aplicada a cloud, auditada en la sesión del 2026-08-01 hallazgo de seguridad) hace `INSERT INTO staff_users (user_id, ...) VALUES ('9f64cdeb-...')` con el UUID REAL de la cuenta del facturador en cloud — que obviamente no existe en un `auth.users` local recién creado.
+
+**Causa raíz**: la migración mezcla DDL (crear tabla/policies) con un INSERT de dato específico de cloud, sin guardar contra el caso "este `user_id` no existe todavía" (`WHERE EXISTS (...)` o similar). Funciona al aplicar a cloud (donde el user YA existe) pero rompe cualquier `db reset` local desde cero.
+
+**Regla preventiva**: si una migración necesita insertar una fila que depende de un `auth.users.id` específico de producción (altas de staff, cuentas de servicio, etc.), envolver el INSERT en `WHERE EXISTS (SELECT 1 FROM auth.users WHERE id = '...')` o moverlo a `supabase/seed.sql` (que sí se puede condicionar por ambiente) en vez de a la migración misma — para que `db reset` local no se rompa. No se corrigió esta vez (habría significado editar una migración YA aplicada a cloud, que va contra la convención del proyecto de migraciones inmutables) — se parkeó el archivo temporalmente (rename) para poder resetear local, se restauró al terminar. Si hace falta un `db reset` limpio de nuevo, hay que resolver esto antes (nueva migración que reemplace el INSERT problemático, no editar el archivo viejo).
+
+## 2026-08-01 — `BACKLOG.md` decía "dirección física pendiente del founder" cuando ya estaba resuelta y hardcodeada hacía semanas
+
+**Estado**: ✅ Cerrado (BACKLOG.md corregido en la misma sesión)
+
+**Qué pasó**: al resolver el hallazgo #5 del audit (placeholders `[A CONFIRMAR]` en FAQ), iba a dejar la dirección del local sin resolver en `lib/content/faqs.ts` porque `BACKLOG.md:144` decía explícitamente "dirección física, ciudad/provincia y horario... falta sumar estos datos cuando el founder los pase". Antes de asumirlo, grepeé el código por si acaso — y la dirección (`Av. Lavalle 2686, Gob. Virasoro, Corrientes, CP 3342`) ya estaba hardcodeada en `lib/site/business.ts` con un comentario "confirmada por el founder 2026-06". `BACKLOG.md` nunca se actualizó cuando se resolvió.
+
+**Causa raíz**: un dato se resolvió en el código (probablemente al armar el schema de Organization/LocalBusiness) pero el ítem de `BACKLOG.md` que lo trackeaba no se tachó ni se actualizó — doc-rot clásico en un archivo que varias sesiones distintas leen como fuente de "qué falta".
+
+**Regla preventiva**: antes de tratar un dato marcado `[A CONFIRMAR]`/pendiente-del-founder como genuinamente sin resolver, grepear el código (no solo confiar en `BACKLOG.md`/docs) — puede que ya se haya resuelto en otra sesión y el doc de tracking quedó desactualizado. Búsqueda barata (`grep -rn` del dato en `lib/site/`, `.env.local`) antes de bloquear un fix o volver a preguntarle al founder algo que ya contestó.
+
+## 2026-08-01 — Gemini CLI ya no sirve como auditor headless (cuenta free-tier deprecada, empuja a migrar a Antigravity)
+
+**Estado**: ✅ Cerrado (causa raíz externa a nosotros, no accionable más que evitar reintentar)
+
+**Qué pasó**: el founder pidió auditoría con "Codex y Antigravity". Antigravity no tiene CLI invocable, así que se usó `gemini -p "..."` como stand-in (mismo patrón que `trio-auditor`). El comando corrió ~lo mismo que Codex pero falló al autenticar: `IneligibleTierError: This client is no longer supported for Gemini Code Assist for individuals. To continue using Gemini, please migrate to the Antigravity suite of products.` Se perdió el tiempo de un proceso en background completo sin producir output útil.
+
+**Causa raíz**: Google deprecó el free-tier de `gemini` CLI para uso individual y fuerza la migración a la IDE Antigravity, que no tiene modo headless/no-interactivo equivalente. No es un error de nuestro lado — es un cambio del lado del proveedor.
+
+**Regla preventiva**: no volver a invocar `gemini -p`/`gemini --prompt` como auditor headless en este proyecto hasta que el founder confirme que resolvió la cuenta (tier de pago de la API de Gemini) o indique lo contrario. Si el founder pide "Antigravity" o "Gemini" como segunda mirada externa, avisar de entrada que no hay CLI headless disponible hoy y ofrecer alternativas (solo Codex, o que el founder corra Antigravity manualmente desde su IDE y pegue el resultado) — no perder un ciclo de background intentándolo primero.
+
 ## 2026-06-29 — `frame_shape` enum-drift: cargué productos en INGLÉS (round/square/aviator) mientras la convención real del proyecto es ESPAÑOL (redondo/cuadrado/aviador) → chips de filtro DUPLICADOS + ruta /aviador no matchea
 
 **Estado**: 🟡 Diagnosticado, fix esperando OK del founder (normalizar a español 8 productos; el clasificador frenó el UPDATE masivo por contradecir el enum documentado)

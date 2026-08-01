@@ -15,6 +15,9 @@ export function generateMetadata(): Metadata {
     description:
       'Términos y condiciones de uso del sitio y de las compras realizadas en Óptica Carballo. Información del vendedor, pagos, envíos, devoluciones, receta médica y ley aplicable.',
     slug: SLUG,
+    // Razón social, CUIT y domicilio fiscal siguen [A CONFIRMAR] más abajo —
+    // sacar este flag cuando el founder los confirme (ver PlaceholderNote).
+    incomplete: true,
   });
 }
 

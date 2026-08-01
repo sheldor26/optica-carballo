@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react';
+import { isCheckoutEnabled } from '@/lib/features';
 
 type Faq = {
   q: string;
@@ -24,11 +25,24 @@ const SOL_FAQS: Faq[] = [
   },
 ];
 
-const RECETA_FAQS: Faq[] = [
-  {
-    q: '¿Necesito receta para comprar el armazón?',
-    a: 'No. El armazón viene con lentes demo (sin graduación), así que lo comprás sin receta. La receta solo se necesita cuando le ponés tus cristales graduados: en ese caso la subís al checkout o nos la mandás por WhatsApp y la verificamos antes de armar. Es legal y cuida tu salud visual.',
-  },
+/** El paso concreto para cargar la receta depende de si el checkout online
+ * está activo (hallazgo #10, audit 2026-08-01) — con checkout apagado no
+ * hay "subir al checkout", solo WhatsApp. */
+function recetaFaqs(): Faq[] {
+  const recetaStep = isCheckoutEnabled()
+    ? 'en ese caso te la vamos a pedir al confirmar el pedido (cargala antes en /cargar-receta o con el lector IA) o nos la mandás por WhatsApp y la verificamos antes de armar'
+    : 'en ese caso nos la mandás por WhatsApp y la verificamos antes de armar';
+
+  return [
+    {
+      q: '¿Necesito receta para comprar el armazón?',
+      a: `No. El armazón viene con lentes demo (sin graduación), así que lo comprás sin receta. La receta solo se necesita cuando le ponés tus cristales graduados: ${recetaStep}. Es legal y cuida tu salud visual.`,
+    },
+    ...RECETA_FAQS_REST,
+  ];
+}
+
+const RECETA_FAQS_REST: Faq[] = [
   {
     q: '¿Hacen multifocales o bifocales?',
     a: 'Sí, pero el armado de multifocales, bifocales y graduaciones elevadas se realiza únicamente de manera presencial en nuestro local. Necesitamos tomar medidas precisas para que el lente quede correcto. Coordinamos por WhatsApp.',
@@ -58,7 +72,7 @@ const RECETA_FAQS: Faq[] = [
  * a `lib/business/product-faqs.ts` o cargarlo desde DB.
  */
 export function ProductFaqs({ categorySlug }: { categorySlug: string }) {
-  const faqs = categorySlug === 'anteojos-de-receta' ? RECETA_FAQS : SOL_FAQS;
+  const faqs = categorySlug === 'anteojos-de-receta' ? recetaFaqs() : SOL_FAQS;
 
   return (
     <section className="mt-16 max-w-3xl mx-auto" aria-label="Preguntas frecuentes del producto">

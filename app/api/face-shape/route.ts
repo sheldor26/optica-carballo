@@ -44,6 +44,37 @@ const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 const MAX_TOKENS = 4096;
 
 /**
+ * Rate limiting in-memory simple (mismo patrón que prescription/route.ts).
+ * - Decisión iter 1: aceptar el límite de in-memory (NO se comparte entre
+ *   instancias de Vercel). Si vemos abuse real, escalamos a Upstash en iter 2.
+ * - Límite: 10 análisis por IP por hora — este endpoint es anónimo (no pide
+ *   login) y cada llamada le pega a Anthropic Vision, así que sin este freno
+ *   quedaba abierto a abuso de costo.
+ *
+ * Map se limpia automáticamente cada hora — los buckets expiran solos.
+ */
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hora
+const RATE_LIMIT_MAX_PER_IP = 10;
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
+
+function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const bucket = rateLimitMap.get(ip);
+
+  if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(ip, { count: 1, windowStart: now });
+    return { allowed: true, remaining: RATE_LIMIT_MAX_PER_IP - 1 };
+  }
+
+  if (bucket.count >= RATE_LIMIT_MAX_PER_IP) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  bucket.count += 1;
+  return { allowed: true, remaining: RATE_LIMIT_MAX_PER_IP - bucket.count };
+}
+
+/**
  * Verifica magic bytes — confiar en el MIME type del header es
  * inseguro (se puede mentir). Detectamos los primeros bytes del
  * archivo y aceptamos solo JPEG, PNG, WebP reales.
@@ -109,6 +140,23 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: 'Servicio no configurado.' },
       { status: 503 },
+    );
+  }
+
+  // Rate limit por IP (Vercel pasa la real en x-forwarded-for), antes de
+  // leer/procesar el archivo completo.
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  const rl = checkRateLimit(ip);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Demasiados intentos. Probá de nuevo en una hora.' },
+      {
+        status: 429,
+        headers: { 'Cache-Control': 'no-store, private' },
+      },
     );
   }
 
@@ -265,6 +313,9 @@ export async function POST(request: Request) {
   );
 
   return NextResponse.json(validated.data, {
-    headers: { 'Cache-Control': 'no-store, private' },
+    headers: {
+      'Cache-Control': 'no-store, private',
+      'X-RateLimit-Remaining': String(rl.remaining),
+    },
   });
 }

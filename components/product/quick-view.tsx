@@ -76,7 +76,10 @@ export function QuickView({ slug, href, className }: Props) {
         className={cn(
           'group-hover/card:opacity-100 group-hover/card:translate-y-0',
           'sm:opacity-0 sm:translate-y-2 sm:transition-all sm:duration-300',
-          'bg-background/80 text-foreground hover:bg-background absolute left-3 top-3 z-10 inline-flex size-8 items-center justify-center rounded-full shadow-md backdrop-blur-sm disabled:opacity-60',
+          // Mobile: visible permanente, target táctil de 44px (hallazgo #17,
+          // audit 2026-08-01). Desktop: solo on-hover con mouse preciso, se
+          // achica a 32px porque ahí sí es una acción secundaria de bajo riesgo.
+          'bg-background/80 text-foreground hover:bg-background absolute left-3 top-3 z-10 inline-flex size-11 items-center justify-center rounded-full shadow-md backdrop-blur-sm disabled:opacity-60 sm:size-8',
           className,
         )}
       >

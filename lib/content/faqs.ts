@@ -86,7 +86,7 @@ export const FAQS: FaqItem[] = [
     category: 'envios',
     question: '¿Cuánto tarda en llegar mi pedido?',
     answer:
-      'En CABA y GBA suele llegar en 2-4 días hábiles. Al interior, entre 3 y 7 días hábiles según la zona. Te enviamos el código de seguimiento por email apenas despachamos el paquete. [A CONFIRMAR: plazos reales según operador].',
+      'El tiempo de entrega depende de la zona y de Correo Argentino. Te enviamos el código de seguimiento por email apenas despachamos el paquete para que puedas seguir el envío en tiempo real. [A CONFIRMAR: plazos estimados una vez que tengamos historial real de entregas con Correo Argentino].',
   },
   {
     id: 'costo-envio',
@@ -101,7 +101,7 @@ export const FAQS: FaqItem[] = [
     category: 'envios',
     question: '¿Puedo retirar el producto en el local?',
     answer:
-      'Sí, el retiro en local es gratis. Te avisamos por WhatsApp cuando tu pedido esté listo. [A CONFIRMAR: dirección exacta del local + horario de atención].',
+      'Sí, el retiro en local es gratis. Nuestro local está en Av. Lavalle 2686, Gob. Virasoro, Corrientes (CP 3342). Te avisamos por WhatsApp cuando tu pedido esté listo para retirar. [A CONFIRMAR: horario de atención].',
   },
   {
     id: 'paquete-no-llego',
@@ -120,14 +120,14 @@ export const FAQS: FaqItem[] = [
     featured: true,
     question: '¿Qué medios de pago aceptan?',
     answer:
-      'Aceptamos Mercado Pago (tarjetas de crédito en cuotas, débito, transferencia, dinero en cuenta), MODO y transferencia bancaria directa. [A CONFIRMAR: si aceptan efectivo en local físico].',
+      'Por ahora coordinamos cada compra por WhatsApp. Podés pagar con Mercado Pago (tarjeta de crédito, débito, transferencia, dinero en cuenta), MODO o transferencia bancaria directa. [A CONFIRMAR: si aceptan efectivo en el local para retiro en persona]. Apenas esté activo el pago online en el sitio, vas a poder pagar directo ahí.',
   },
   {
     id: 'cuotas-sin-interes',
     category: 'pagos',
     question: '¿Hay cuotas sin interés?',
     answer:
-      'Sí, ofrecemos cuotas sin interés según el banco y promoción vigente. [A CONFIRMAR: cantidad de cuotas habituales + bancos / promo del mes].',
+      'Por ahora las compras se coordinan por WhatsApp, donde te confirmamos el medio de pago y si hay cuotas sin interés disponibles según la promoción vigente en ese momento. Apenas esté activo el pago online en el sitio, vas a ver las cuotas disponibles directamente en cada producto.',
   },
   {
     id: 'factura',
@@ -153,7 +153,7 @@ export const FAQS: FaqItem[] = [
     category: 'garantia',
     question: '¿Puedo devolver el producto si no me gusta?',
     answer:
-      'Sí, tenés 10 días corridos desde la recepción para arrepentirte y devolver el producto sin uso, conservando estuche, franela y etiquetas. Es el botón de arrepentimiento que exige Defensa del Consumidor (ley 24.240). [A CONFIRMAR: si el envío de devolución lo paga el cliente o la óptica].',
+      'Sí, tenés 10 días corridos desde la recepción para arrepentirte y devolver el producto sin uso, conservando estuche, franela y etiquetas. Es tu derecho de arrepentimiento según Defensa del Consumidor (ley 24.240 y Código Civil y Comercial). El envío de devolución lo paga la óptica.',
   },
   {
     id: 'cambio-de-producto',
@@ -200,7 +200,7 @@ export const FAQS: FaqItem[] = [
     category: 'receta',
     question: '¿Y si tengo una graduación elevada?',
     answer:
-      'Las graduaciones elevadas se atienden de forma presencial para asegurar mediciones precisas, materiales correctos (alto índice cuando corresponde) y un calce adaptado. [A CONFIRMAR: umbral técnico exacto — ej esférico > 5D, cilindro > 2D]. Si no estás seguro/a si tu caso entra acá, escribinos la receta por WhatsApp y te orientamos.',
+      'Depende de tu receta puntual: cuanto más alta es la dioptría (esférico y/o cilindro), más grueso se vuelve el cristal y más influye un ajuste preciso del armazón sobre tu cara en el resultado óptico final. Por eso, para graduaciones elevadas armamos siempre en persona, en nuestro local de Virasoro. Si no estás seguro/a si tu receta entra en este caso, escribinos por WhatsApp con tus valores y te confirmamos antes de que compres.',
   },
 
   // ===========================================================================
@@ -219,7 +219,7 @@ export const FAQS: FaqItem[] = [
     category: 'nosotros',
     question: '¿Tienen local físico?',
     answer:
-      'Sí, estamos en Virasoro, Corrientes. Somos una óptica familiar con más de 30 años de experiencia. [A CONFIRMAR: dirección exacta + horarios de atención].',
+      'Sí, estamos en Av. Lavalle 2686, Gob. Virasoro, Corrientes. Somos una óptica familiar con más de 30 años de experiencia. [A CONFIRMAR: horario de atención].',
   },
 
   // ===========================================================================

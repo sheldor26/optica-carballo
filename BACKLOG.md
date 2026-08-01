@@ -14,6 +14,21 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ---
 
+## 🟡 Hallazgos de Google Search Console (2026-08-01, addendum al audit) — decisiones pendientes del founder
+
+- [x] ~~**Canonical duplicado en `/sobre-la-marca` sol vs. receta**~~ — **Hecho 2026-08-01**. Founder eligió (b) canonical cruzado explícito. `buildBrandAboutMetadata` hace que receta apunte su canonical/hreflang a la versión de sol del mismo brand. Ver detalle en `AUDIT_2026-08-01.md` addendum.
+- [x] ~~**Soft-404 en catálogo**~~ — **Hecho 2026-08-01**. Middleware (`middleware.ts` + `lib/catalog/existence-check.ts`) chequea existencia real de marca/producto con caché en memoria (TTL 300s) antes de dejar pasar la request; fuerza 404 real si no existe. Primer intento (query a Supabase por request) fue marcado regresión por `nextjs-performance`, rediseñado con caché y re-verificado OK. Detalle completo en `AUDIT_2026-08-01.md` addendum.
+
+## 🟢 Pulido opcional — soft-404 existence-check (no bloquea nada, sugerido por nextjs-performance 2026-08-01)
+
+- [ ] **Negative-cache en error de `refreshCache()`**: si Supabase está caído, cada request de catálogo reintenta la query sin backoff (el `cache` no se actualiza, así que el próximo request vuelve a disparar `refreshCache`). Cachear el error mismo 15-30s evitaría machacar la DB durante un incidente real. Fail-open ya cubre la parte de "no rompe nada" — esto es solo eficiencia bajo outage.
+- [ ] **Stale-while-revalidate en `getCache()`**: hoy la request que cae justo cuando vence el TTL espera el refresh completo inline. Sería más prolijo servir el Set viejo inmediato y refrescar en background — impacto real hoy es despreciable (~1 request cada 5 min por isolate).
+
+## 🟡 Deuda técnica y contenido del audit 2026-08-01 (medios/bajos, sin urgencia)
+
+- [ ] **Hallazgo #15 — pipeline de imágenes bypasseado en 6 componentes cliente**: `compare-bar.tsx`, `search-dialog.tsx`, `compare-bar-search.tsx`, `quick-view.tsx`, `product-gallery.tsx`, `compare-table.tsx` reimportan la tabla completa de `lib/catalog/image-scale-overrides.ts` (776 líneas, crece con cada producto) en vez de recibir el scale ya resuelto por props, como sí hace `product-card.tsx`. Hoy el costo en bundle es bajo (~90 productos); se vuelve relevante a los 300+. Fix: agregar `primaryImageScale` resuelto server-side a `fetchProductsForCompareBySlugs`, `searchCatalog`, `getProductQuickViewAction` y la query de PDP, y sacar el import directo de esos 6 archivos `'use client'`. No se hizo en esta pasada porque toca 3 API routes + 6 componentes — mejor como pasada dedicada, no mezclada con el resto del audit.
+- [ ] **Hallazgo #16 — solo 4 de 9 clusters de contenido SEO están escritos, cero satélites** (`content/guias/` vs. `SEO_STRATEGY.md` líneas 704-865). No es un bug de código, es trabajo editorial (`/article` o `optimizador-guias-optica`). Prioridad sugerida por `SEO_STRATEGY.md`: satélite `astigmatismo-como-se-ve` → satélite `diferencia-miopia-hipermetropia-astigmatismo` → pillar Hipermetropía → resto. **`/guias/anteojos-segun-forma-de-cara` es la más urgente**: 8+ fichas de producto ya la referencian como cross-link obligatorio y todavía no existe.
+
 ## 🟡 Pendiente — assets visuales (esperan al founder)
 
 - [x] ~~**Pipeline normalización de fotos al cargar productos**~~ — **Hecho
@@ -57,6 +72,15 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
   - Eventos: solo `Pagos` (`payment`).
   - MP genera signing key → agregar a Vercel como `MP_WEBHOOK_SECRET`.
 - [ ] **Setear `BUSINESS_ADMIN_EMAIL`** en `.env.local` y Vercel para recibir notifications administrativas (alta de pagos). Sin esto los emails admin se silencian.
+
+## 🟡 Activar el token del webhook de Mercado Libre (acción del founder — hallazgo #11, audit 2026-08-01)
+
+El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOKEN`), pero el chequeo se OMITE mientras la env var no exista — así el webhook real de ML sigue funcionando sin cambios hasta que actives esto. No es urgente (el endpoint ya tiene rate limit y no permite manipular stock — solo dispara una re-consulta a la API real de ML), pero cierra la exposición de "cualquiera puede pegarle a la URL".
+
+- [ ] Generar un token random: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+- [ ] Agregarlo en Vercel como `ML_WEBHOOK_TOKEN` (Production).
+- [ ] En el panel de Mercado Libre (Configuración de la app → Notificaciones), actualizar la URL del webhook a `https://opticacarballo.com.ar/api/ml/webhook?token=<el-token-que-generaste>`.
+- [ ] Confirmar que sigan llegando eventos (`marketplace_webhook_events` sigue sumando filas `processed`).
 
 ## 🔴 Pendiente bloqueante para sub-feature LOGISTICA (acción del founder)
 

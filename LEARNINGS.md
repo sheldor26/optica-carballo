@@ -22,6 +22,68 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-01 — Pasar un cambio de `middleware.ts` por `nextjs-performance` ANTES de confirmarlo (no después) atrapó una regresión real antes de que llegara a producción
+
+**Contexto**: al implementar el fix de soft-404 (ver entry anterior), la primera versión de `lib/catalog/existence-check.ts` consultaba Supabase en cada request de marca/producto desde el middleware. Funcionalmente estaba perfecta (~30 casos de prueba en vivo, cero falsos positivos/negativos) y por un momento pareció lista para cerrar el hallazgo.
+
+**Qué funcionó**: en vez de darla por cerrada ahí, medí la latencia real (curl directo a la query de Supabase: ~220-270ms) y, con el historial de este proyecto con regresiones de performance en mente, la pasé por el agente `nextjs-performance` ANTES de confirmar el fix — exactamente el trigger automático que ya define `CLAUDE.md` para cambios que tocan middleware. El agente conocía un detalle de arquitectura de Vercel que yo no había considerado: el Edge Middleware corre ANTES del cache lookup para TODAS las requests (hits de ISR incluidos), así que la consulta no solo afectaba URLs rotas — pegaba en cada visita a las rutas de mayor tráfico del sitio. Marcó regresión real y propuso el rediseño (caché en memoria con TTL), que implementé y volvió a verificar antes de cerrar.
+
+**Por qué importa**: sin ese paso, el fix se habría enviado con una regresión de performance real y silenciosa en el camino más visitado del sitio — a cambio de resolver un problema de status code que Google ya compensa por su cuenta. El costo de la verificación fue una invocación de agente (~70s); el costo de no hacerla habría sido un problema de producción detectado tarde, si es que se detectaba.
+
+**Cómo replicar**: cuando un cambio toca `middleware.ts` (o cualquier código que corre en Edge/en cada request), no alcanza con verificar correctitud funcional — medir latencia real y consultarlo con `nextjs-performance` ANTES de declarar el hallazgo cerrado, incluso si la implementación "se ve" simple. Confirma que el trigger automático de `CLAUDE.md` para este tipo de cambio no es burocracia — atrapó algo que la verificación funcional sola no iba a atrapar.
+
+## 2026-08-01 — Descartar candidatos con pruebas directas ANTES de aceptar "es un bug conocido del framework", y buscar el issue exacto antes de proponer un workaround
+
+**Contexto**: el founder pasó 4 exports de GSC con URLs "Not found (404)". Una parte (`/anteojos-de-sol/[marca]/deportivos`) resultó ser un bug nuestro real (página faltante). Pero al investigar encontré algo más grande: CUALQUIER URL de marca/producto inválida del catálogo devuelve HTTP 200 en vez de 404, aunque muestre "no encontrado".
+
+**Qué funcionó**: en vez de asumir la causa más obvia (`not-found.tsx` anidados, ya que hay 4 archivos de ese tipo en el árbol de rutas) y "arreglarla" sin verificar, la probé de forma directa: saqué los 4 archivos `not-found.tsx` (uno por uno primero, después los 4 juntos), reseteé `.next`, reinicié el server, y reproduje el mismo 200 en cada paso. Recién ahí descarté esa hipótesis con evidencia, no con intuición. Comparé además contra `/guias/[slug]` (SÍ da 404 correcto) para acotar qué variable cambiaba. Con el síntoma bien acotado (ISR + `notFound()` + revalidate → status no se cachea), recién ahí busqué en la web y encontré el issue exacto de Next.js ([vercel/next.js#43831](https://github.com/vercel/next.js/issues/43831)) que describe el mismo síntoma palabra por palabra.
+
+**Por qué importa**: si hubiera "arreglado" sacando los `not-found.tsx` sin probar, habría entregado un cambio que no resuelve nada (lo confirmé: no cambia el status) y además pierde la UX de mensajes contextuales por marca/producto — un fix cosmético que empeora el sitio sin tocar el problema real. Y si hubiera intentado el workaround más obvio (`force-dynamic`) sin buscar el issue primero, habría propuesto apagar el ISR (regresión de performance real, ver incidente 2026-06-11) para un problema que Google YA maneja bien por su cuenta (su algoritmo de soft-404 no se deja engañar por el 200).
+
+**Cómo replicar**: cuando algo se ve como "seguro que es tal archivo/patrón conocido del repo" — probarlo primero (sacar/cambiar el candidato, verificar con build limpio, no solo hot-reload) antes de proponerlo como fix. Si la prueba lo descarta, buscar el síntoma exacto en el tracker de la librería/framework antes de inventar un workaround — puede que ya esté documentado con sus propios trade-offs conocidos, y evita reinventar una solución peor que la que ya discutió la comunidad.
+
+## 2026-08-01 — Al arreglar un hallazgo de "copy no condicionado a un flag", grep TODO el componente por el mismo patrón, no solo la línea que nombró el audit
+
+**Contexto**: hallazgo #10 del audit nombraba 3 ubicaciones puntuales donde el copy de home/carrito prometía "pago con Mercado Pago" sin chequear `isCheckoutEnabled()`.
+
+**Qué funcionó**: al abrir `cart-page.tsx` para arreglar la línea nombrada (`EmptyCart`, línea 186), leí el archivo completo en vez de solo esa línea — apareció el mismo problema sin nombrar en 3 lugares más del mismo archivo (subtítulo del carrito lleno, `InstallmentsHint`, `TrustSignals`). El audit automático (agentes + Codex) había encontrado el ejemplo más obvio de cada archivo, no necesariamente todos los casos del mismo patrón dentro de ese archivo.
+
+**Por qué importa**: un fix quirúrgico que solo toca la línea exacta que un hallazgo nombra dejaba el mismo bug vivo 3 veces más en el mismo componente — el usuario iba a seguir viendo promesas de MP en otros puntos del carrito después de "cerrar" el hallazgo.
+
+**Cómo replicar**: cuando un hallazgo describe un patrón (no un typo puntual) — "X no está condicionado a Y", "falta el chequeo Z" — antes de tocar la línea nombrada, grepear el archivo completo (o los archivos hermanos) por el mismo síntoma (ej. `grep -n "Mercado Pago"` en vez de mirar solo la línea del reporte). El costo es un `Read` completo del archivo; el beneficio es no reabrir el mismo hallazgo dos sesiones después.
+
+## 2026-08-01 — Probar una función SQL transaccional nueva con fixtures mínimas + `docker exec -i psql` ANTES de tocar el código TS que la llama
+
+**Contexto**: hallazgo #8 del audit pedía mover reserva de stock + creación de orden a una función SQL atómica (`create_order_from_cart`). Es código de pagos/stock — la regla core #7 exige verificar dos veces, y la skill `/migration` prohíbe aplicar sin probar local primero.
+
+**Qué funcionó**: en vez de escribir la función Y el refactor de `lib/checkout/orders.ts` juntos y recién ahí testear end-to-end (lento, y un bug de cualquiera de los dos lados es difícil de aislar), separé en dos pasos:
+1. Escribí y probé la función SQL SOLA contra Postgres local, con fixtures mínimas hechas a mano (`INSERT` directo de un user/brand/category/product/variant de prueba vía `docker exec -i supabase_db_<proyecto> psql -v ON_ERROR_STOP=1 < archivo.sql`) y 5 llamadas `SELECT public.create_order_from_cart(...)` con jsonb armado a mano cubriendo: caso feliz, replay de idempotencia (misma key dos veces), stock insuficiente (verificar que el rollback deja el stock EXACTO como antes), atomicidad cruzada (2 items, el 2° falla → el 1° también se revierte), y cupón+receta juntos. Cada escenario se verificó con una query de `SELECT` aparte (no confiar en que "no dio error" = "hizo lo correcto").
+2. Recién con la función 100% probada y confiable, escribí el refactor de TS que arma los payloads JSON y llama la RPC una vez — con la garantía de que si algo fallaba en este paso, el bug estaba en el lado TS (mapeo de campos), no en la lógica transaccional.
+
+**Por qué importa**: separar "¿la función SQL hace lo que digo que hace?" de "¿el TS le manda los datos correctos?" aísla dónde buscar si algo falla, y probar el rollback/idempotencia DIRECTO contra Postgres (sin pasar por Next.js/Supabase-js) es más rápido de iterar y más fácil de verificar con precisión (leer `stock_qty` antes/después con una query simple) que armar un carrito real en el navegador para forzar cada escenario de fallo.
+
+**Cómo replicar**: para cualquier función `SECURITY INVOKER/DEFINER` nueva que toque múltiples tablas transaccionalmente — (a) `supabase db reset` local, (b) fixtures mínimas por INSERT directo (no hace falta el seed completo del catálogo), (c) un `.sql` de prueba por escenario con `SELECT function(...)` y jsonb a mano, (d) verificar el estado post-llamada con `SELECT` aparte, no solo mirar si la función devolvió error. Recién después tocar el código de la app que la llama.
+
+## 2026-08-01 — Contenido legal/técnico con placeholders: 2 agentes especialistas en paralelo (argentine-ecom + optical-expert) ANTES de reemplazar el texto, no solo al final
+
+**Contexto**: hallazgo #5 del audit (placeholders `[A CONFIRMAR]` en FAQ) tenía 7 items de naturaleza muy distinta mezclados en un solo hallazgo: legales (devolución, cuotas — riesgo Ley 24.240 art. 8), técnico-óptico (umbral de graduación elevada) y puramente operativos (dirección, horario, efectivo).
+
+**Qué funcionó**: en vez de redactar yo el texto de reemplazo y después pedir revisión, invoqué `argentine-ecom` y `optical-expert` EN PARALELO (mismo mensaje) con preguntas puntuales y ya acotadas (no "revisá este archivo", sino "¿mi redacción X es correcta? dame el texto exacto") ANTES de tocar `lib/content/faqs.ts`. Ambos devolvieron texto final listo para pegar, no solo un veredicto. `argentine-ecom` además encontró un problema que yo no había visto: la FAQ de devolución decía "es el botón que EXIGE Defensa del Consumidor" — afirmación desactualizada (la Res. 424/2020 que lo hacía obligatorio fue derogada, ver `BUSINESS_POLICIES.md`), que se coló porque yo solo iba a tocar la oración del placeholder, no toda la respuesta.
+
+**Por qué importa**: pedir el texto final (no solo "¿está bien?") ahorra una ronda de ida y vuelta, y el agente detecta problemas colindantes que un fix quirúrgico (solo tocar la frase con el placeholder) no iba a atrapar. Además `optical-expert` explícitamente distinguió qué SÍ podía resolver con criterio técnico (dar un criterio cualitativo en vez de inventar un número de dioptrías) de qué seguía siendo dato-solo-del-founder (el umbral operativo real del laboratorio) — evitó que yo inventara un número falso "porque sonaba razonable".
+
+**Cómo replicar**: cuando un hallazgo mezcla varios placeholders de distinta naturaleza (legal + técnico + operativo), no tratarlo como un solo fix — separar por qué tipo de verificación pide cada uno (regla de CLAUDE.md: legal→`argentine-ecom`, técnico-óptico→`optical-expert`, puramente operativo→grep el código primero, ver MISTAKES.md 2026-08-01 "BACKLOG.md decía dirección pendiente...") y pedirle a cada agente el texto final listo para pegar, no solo un check.
+
+## 2026-08-01 — Auditoría integral: 4 agentes internos en paralelo (foreground) + Codex CLI en background a la vez, cross-verificar contradicciones antes de reportar
+
+**Contexto**: el founder pidió una auditoría "profunda, minuciosa, detallada" cubriendo SEO, performance, seguridad/RLS y UX/conversión, con Codex y Antigravity como segunda mirada externa.
+
+**Qué funcionó**: lanzar en un mismo turno (1) los 4 agentes especialistas del repo (`seo-strategist`, `nextjs-performance`, `conversion-optimizer`, uno general-purpose para seguridad/RLS) con `run_in_background: false` — corren concurrentes entre sí pero bloquean hasta tener los 4 resultados — junto con (2) `codex exec --sandbox read-only` corriendo en background vía Bash con el mismo prompt de alcance completo. Los 4 internos devuelven resultado en el mismo turno; Codex sigue procesando y notifica después. Nada quedó esperando en serie. Cuando dos auditores independientes llegaron a conclusiones contradictorias sobre el mismo tema (seo-strategist dijo que el hreflang es-AR era "consistente en todos los metadata builders"; Codex encontró que a las guías de contenido les faltaba), en vez de listar ambas versiones sin resolver, se verificó leyendo el código real (`grep` en los `generateMetadata` de `/guias`) antes de cerrar el reporte — confirmó que Codex tenía razón (las guías usan un metadata builder aparte del que auditó seo-strategist, no es que uno mintiera).
+
+**Por qué importa**: un audit con auditores redundantes gana credibilidad marcando "confirmado doble" en los hallazgos donde coincidieron por caminos independientes, pero solo si las contradicciones se resuelven contra el código real en vez de reportarse tal cual — listar dos versiones opuestas sin verificar rompe la confianza en todo el resto del reporte.
+
+**Técnica reusable para leer logs de `codex exec` en background (pueden superar 250KB)**: el transcript completo no entra en un solo `Read` (límite 256KB). En vez de leer todo o adivinar offsets, correr `grep -n "^codex$"` sobre el log — cada bloque de respuesta final del asistente arranca con una línea que dice exactamente `codex` sola; el ÚLTIMO match antes de la línea `tokens used` (que siempre cierra el archivo) es el inicio de la respuesta final. Con esas dos líneas como offset/limit, `Read` trae solo el reporte real sin la wall de tool-calls intermedios.
+
 ## 2026-06-30 — Verificar la resolución REAL de las fotos antes de declarar `width`/`height` en `product_images`
 
 **Contexto**: cargando Rusty Zinz receta, las 6 fotos de producto en el bucket pesaban ~28KB salvo una (SBLK-PERFIL, 212KB). Iba a declarar `900×442` a ojo (como los últimos Rusty receta, que sí eran 900×442). El peso disparejo era la señal de que NO todas tenían el mismo tamaño.

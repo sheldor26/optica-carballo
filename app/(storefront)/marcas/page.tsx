@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Award, Sparkles } from 'lucide-react';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { cn } from '@/lib/utils';
 import { fetchBrandsIndex } from '@/lib/catalog/queries';
@@ -163,7 +164,7 @@ function BrandsIndexJsonLd({ brands }: { brands: BrandIndexEntry[] }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
     />
   );
 }

@@ -19,6 +19,7 @@ export function generateMetadata(): Metadata {
       'Guías y artículos sobre salud visual, anteojos, lentes de contacto, recetas oftalmológicas. Con más de 30 años de experiencia en óptica.',
     alternates: {
       canonical: `${SITE_URL}/guias`,
+      languages: { 'es-AR': `${SITE_URL}/guias`, 'x-default': `${SITE_URL}/guias` },
     },
     openGraph: {
       title: 'Guías y artículos — Óptica Carballo',

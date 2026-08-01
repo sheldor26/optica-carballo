@@ -7,7 +7,7 @@ import {
   productCopyInputSchema,
   productCopyOutputSchema,
 } from '@/lib/product-copy/types';
-import { getAdminUserOrNull } from '@/lib/auth/admin';
+import { requireAdminApi } from '@/lib/auth/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -18,15 +18,13 @@ const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
 /**
  * Rate limiting in-memory por IP (siguiendo el mismo patrón que face-shape
- * y prescription). Endpoint admin sin auth iter 1 — el rate limit es la
- * única defensa contra abuso de token Anthropic.
+ * y prescription), como segunda capa además del gate admin+PIN
+ * (`requireAdminApi`) — el founder tiene 1 IP estable, así que esto ya no
+ * es la única defensa.
  *
  * Límite: 30 generaciones por IP por hora. Más permisivo que face-shape
  * (10/h) porque el founder lo usa intensivamente al cargar varios productos
  * en serie.
- *
- * TODO Sprint admin: agregar middleware de auth + reemplazar rate limit
- * por límite global, no por IP (admin tiene 1 IP estable).
  */
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX_PER_IP = 30;
@@ -54,7 +52,7 @@ type AnthropicMessageResponse = {
 };
 
 export async function POST(request: Request) {
-  if (!(await getAdminUserOrNull())) {
+  if (!(await requireAdminApi())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   const apiKey = process.env.ANTHROPIC_API_KEY;

@@ -3,6 +3,7 @@ import {
   GOOGLE_BUSINESS_URL,
   SOCIAL_LINKS,
 } from '@/lib/site/business';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -76,7 +77,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
     />
   );
 }

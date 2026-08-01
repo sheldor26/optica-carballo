@@ -1,3 +1,5 @@
+import { safeJsonLd } from '@/lib/seo/json-ld';
+
 type Offer = {
   priceCents: number;
   stockQty: number;
@@ -28,6 +30,12 @@ export function ProductJsonLd({
   const hasInStock = inStockOffers.length > 0;
   const minPrice = prices.length > 0 ? Math.min(...prices) : null;
   const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
+  // Precio de referencia para el caso sin stock (hallazgo bajo, audit
+  // 2026-08-01) — un Offer sin `price` es un campo incompleto para rich
+  // results. La página igual queda `noindex` mientras no tenga stock
+  // (`buildProductMetadata`), esto es completitud del schema, no SEO activo.
+  const allPrices = offers.map((o) => o.priceCents / 100);
+  const lastKnownPrice = allPrices.length > 0 ? Math.min(...allPrices) : null;
 
   // Vendedor — Google lo usa para los rich results de producto.
   const seller = { '@type': 'Organization', name: 'Óptica Carballo' };
@@ -38,6 +46,7 @@ export function ProductJsonLd({
       offers: {
         '@type': 'Offer',
         priceCurrency: 'ARS',
+        ...(lastKnownPrice !== null ? { price: lastKnownPrice } : {}),
         availability: 'https://schema.org/OutOfStock',
         itemCondition: 'https://schema.org/NewCondition',
         url: pageUrl,
@@ -91,7 +100,7 @@ export function ProductJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
     />
   );
 }

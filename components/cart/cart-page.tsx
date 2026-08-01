@@ -24,7 +24,7 @@ export function CartPage({
   defaultPostalCode?: string | null;
 }) {
   if (cart.items.length === 0) {
-    return <EmptyCart />;
+    return <EmptyCart checkoutEnabled={checkoutEnabled} />;
   }
 
   const remainingForFree = Math.max(
@@ -38,8 +38,9 @@ export function CartPage({
         Tu <span className="italic">carrito</span>
       </h1>
       <p className="text-muted-foreground mt-2 text-sm md:text-base">
-        Revisá los items, ajustá cantidades y pasá al checkout cuando estés
-        listo/a.
+        {checkoutEnabled
+          ? 'Revisá los items, ajustá cantidades y pasá al checkout cuando estés listo/a.'
+          : 'Revisá los items y ajustá cantidades. Coordinamos la compra por WhatsApp.'}
       </p>
 
       <div className="mt-8 grid gap-8 md:grid-cols-3 md:gap-12">
@@ -94,12 +95,14 @@ export function CartPage({
 
             <CouponInput appliedCoupon={cart.coupon} couponError={cart.couponError} />
 
-            <InstallmentsHint
-              subtotalCents={Math.max(
-                0,
-                cart.subtotalCents - (cart.coupon?.discountCents ?? 0),
-              )}
-            />
+            {checkoutEnabled && (
+              <InstallmentsHint
+                subtotalCents={Math.max(
+                  0,
+                  cart.subtotalCents - (cart.coupon?.discountCents ?? 0),
+                )}
+              />
+            )}
 
             {remainingForFree > 0 && (
               <div className="bg-brand/10 border-brand/30 mt-4 rounded-lg border p-3">
@@ -151,7 +154,7 @@ export function CartPage({
             couponRemovesShipping={cart.coupon?.removeShipping ?? false}
           />
 
-          <TrustSignals />
+          <TrustSignals checkoutEnabled={checkoutEnabled} />
 
           <p className="text-muted-foreground mt-4 text-xs leading-relaxed">
             Los precios incluyen IVA. El total final se confirma en el siguiente
@@ -163,7 +166,7 @@ export function CartPage({
   );
 }
 
-function EmptyCart() {
+function EmptyCart({ checkoutEnabled }: { checkoutEnabled: boolean }) {
   return (
     <main className="container py-12 md:py-20">
       <div className="from-muted/30 to-background relative isolate mx-auto max-w-xl overflow-hidden rounded-2xl bg-gradient-to-b p-10 text-center md:p-16">
@@ -183,7 +186,10 @@ function EmptyCart() {
             acompañar en los próximos años.
           </p>
           <p className="text-muted-foreground/90 mx-auto mt-3 max-w-md text-balance text-xs md:text-sm">
-            Envío a todo el país · Garantía 1 año · Pago seguro con Mercado Pago
+            Envío a todo el país · Garantía 1 año ·{' '}
+            {checkoutEnabled
+              ? 'Pago seguro con Mercado Pago'
+              : 'Te asesoramos por WhatsApp'}
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -271,7 +277,7 @@ function InstallmentsHint({ subtotalCents }: { subtotalCents: number }) {
   );
 }
 
-function TrustSignals() {
+function TrustSignals({ checkoutEnabled }: { checkoutEnabled: boolean }) {
   return (
     <ul className="mt-5 space-y-2.5 text-xs">
       <li className="text-muted-foreground flex items-start gap-2">
@@ -284,7 +290,11 @@ function TrustSignals() {
       </li>
       <li className="text-muted-foreground flex items-start gap-2">
         <CreditCard className="text-brand mt-0.5 size-3.5 shrink-0" />
-        <span>Mercado Pago, tarjetas y transferencia.</span>
+        <span>
+          {checkoutEnabled
+            ? 'Mercado Pago, tarjetas y transferencia.'
+            : 'Coordinamos el pago por WhatsApp.'}
+        </span>
       </li>
     </ul>
   );

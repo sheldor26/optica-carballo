@@ -106,6 +106,7 @@ export function StickyBuyBar({
               variantLabel={productName}
               disabled={!inStock}
               size="sm"
+              className="h-11"
             />
           ) : (
             <VariantWhatsappCta
@@ -117,6 +118,7 @@ export function StickyBuyBar({
               inStock={inStock}
               size="sm"
               label="WhatsApp"
+              className="h-11"
             />
           )}
         </div>

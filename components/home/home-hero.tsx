@@ -9,6 +9,7 @@ import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { LetterReveal } from '@/components/ui/letter-reveal';
 import { MagneticButton } from '@/components/ui/magnetic-button';
+import { isCheckoutEnabled } from '@/lib/features';
 
 type Props = {
   siteName: string;
@@ -99,7 +100,10 @@ export function HomeHero({ siteName, whatsappLink }: Props) {
 
           <p className="hero-reveal hero-reveal-3 mt-8 max-w-xl text-balance text-base text-white/70 md:text-lg">
             Atención personalizada con experiencia real en óptica.
-            30+ años en Argentina. Envíos a todo el país y pago seguro con Mercado Pago.
+            30+ años en Argentina. Envíos a todo el país
+            {isCheckoutEnabled()
+              ? ' y pago seguro con Mercado Pago.'
+              : ', coordinando cada compra por WhatsApp.'}
           </p>
 
           <div className="hero-reveal hero-reveal-4 mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">

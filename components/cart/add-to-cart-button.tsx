@@ -20,6 +20,7 @@ export function AddToCartButton({
   size = 'sm',
   fullWidth = false,
   flyOriginId,
+  className,
 }: {
   variantId: string;
   disabled?: boolean;
@@ -30,6 +31,9 @@ export function AddToCartButton({
   /** Id del elemento desde donde "vuela" la foto al carrito al agregar (ej la
    * galería de la PDP). Si no se pasa, no hay animación de vuelo. */
   flyOriginId?: string;
+  /** Override puntual (ej. subir la altura táctil en la sticky bar mobile
+   * sin cambiar `size` — hallazgo #17, audit 2026-08-01). */
+  className?: string;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +65,7 @@ export function AddToCartButton({
         disabled={disabled || pending}
         onClick={handleClick}
         aria-label={`Agregar ${variantLabel} al carrito`}
-        className={fullWidth ? 'w-full' : undefined}
+        className={cn(fullWidth && 'w-full', className)}
       >
         {pending ? (
           <>

@@ -1,3 +1,5 @@
+import { safeJsonLd } from '@/lib/seo/json-ld';
+
 type ProductEntry = {
   name: string;
   slug: string;
@@ -79,7 +81,7 @@ export function CatalogJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
     />
   );
 }

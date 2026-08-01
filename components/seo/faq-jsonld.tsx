@@ -1,4 +1,5 @@
 import type { FaqEntry } from '@/lib/content/faqs';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 
 type Props = {
   items: FaqEntry[];
@@ -14,14 +15,22 @@ type Props = {
  * - El contenido visible en la página DEBE matchear el del schema.
  * - No incluir CTAs ni texto promocional en las respuestas.
  * - Mínimo 1 FAQ, recomendado 3+. Sin máximo.
+ *
+ * Respuestas con `[A CONFIRMAR` (dato pendiente del founder, ver
+ * `lib/content/faqs.ts`) se excluyen del schema — siguen visibles en el
+ * accordion de la página, pero no se publican a Google como dato definitivo
+ * (hallazgo #5, audit 2026-08-01).
  */
 export function FaqJsonLd({ items }: Props) {
-  if (items.length === 0) return null;
+  const confirmedItems = items.filter(
+    (item) => !item.answer.includes('[A CONFIRMAR'),
+  );
+  if (confirmedItems.length === 0) return null;
 
   const data = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: items.map((item) => ({
+    mainEntity: confirmedItems.map((item) => ({
       '@type': 'Question',
       name: item.question,
       acceptedAnswer: {
@@ -34,7 +43,7 @@ export function FaqJsonLd({ items }: Props) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }

@@ -1,5 +1,6 @@
 import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
 
@@ -20,6 +21,7 @@ export function VariantWhatsappCta({
   size = 'sm',
   fullWidth = false,
   label = 'Consultar',
+  className,
 }: {
   productName: string;
   brandName: string;
@@ -31,6 +33,9 @@ export function VariantWhatsappCta({
   size?: 'sm' | 'lg';
   fullWidth?: boolean;
   label?: string;
+  /** Override puntual (ej. subir la altura táctil en la sticky bar mobile
+   * sin cambiar `size` — hallazgo #17, audit 2026-08-01). */
+  className?: string;
 }) {
   const priceText = formatPriceCents(priceCents);
   const message =
@@ -45,7 +50,7 @@ export function VariantWhatsappCta({
       size={size}
       variant={inStock ? 'default' : 'outline'}
       disabled={!inStock}
-      className={fullWidth ? 'w-full' : undefined}
+      className={cn(fullWidth && 'w-full', className)}
     >
       <a
         href={link}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 import { ProductCard } from '@/components/product/product-card';
 import { RelatedCategoriesBlock } from '@/components/catalog/related-categories-block';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
@@ -64,7 +65,7 @@ export function ShapeCatalogPage({
       {products.length > 0 && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
       )}
 

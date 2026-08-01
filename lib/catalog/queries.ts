@@ -3,6 +3,7 @@
 // de marca/producto y anulaba el ISR (audit perf 2026-06-11).
 import { createStaticClient } from '@/lib/supabase/static';
 import type { CategoryConfig } from '@/lib/catalog/categories';
+import { hasAvailableStock } from '@/lib/catalog/availability';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { deriveSizeFit } from '@/lib/catalog/size-fit';
 import { buildCardVariants } from '@/lib/catalog/to-product-card-data';
@@ -107,6 +108,7 @@ type StaticProductRow = {
   slug: string;
   brand: { slug: string };
   category: { slug: string };
+  variants: { is_active: boolean; stock_qty: number }[];
 };
 
 export type BrandWithProductCount = {
@@ -1469,6 +1471,12 @@ export async function fetchProductsForCompareBySlugs(
 /**
  * Para `generateStaticParams` de páginas de producto: devuelve las
  * combinaciones {brand, product} para una categoría específica.
+ *
+ * Solo prerenderea productos con stock real (hallazgo #4 del audit
+ * 2026-08-01) — un producto sin stock igual queda accesible por URL directa
+ * (Next renderiza on-demand porque `dynamicParams` no está en `false` en
+ * ninguna page de producto), simplemente no se gasta build/crawl budget en
+ * prerenderearlo ni indexarlo mientras no tenga con qué venderse.
  */
 export async function getStaticProductParamsForCategory(
   category: CategoryConfig,
@@ -1476,12 +1484,16 @@ export async function getStaticProductParamsForCategory(
   const supabase = createStaticClient();
   const { data } = await supabase
     .from('products')
-    .select('slug, brand:brands!inner(slug), category:categories!inner(slug)')
+    .select(
+      'slug, brand:brands!inner(slug), category:categories!inner(slug), variants:product_variants(is_active, stock_qty)',
+    )
     .eq('is_active', true)
     .eq('category.slug', category.slug)
     .returns<StaticProductRow[]>();
-  return (data ?? []).map((p) => ({
-    brand: p.brand.slug,
-    product: p.slug,
-  }));
+  return (data ?? [])
+    .filter((p) => hasAvailableStock(p.variants))
+    .map((p) => ({
+      brand: p.brand.slug,
+      product: p.slug,
+    }));
 }

@@ -3,32 +3,76 @@ import { mlWebhookPayloadSchema } from '@/lib/integrations/mercadolibre/schemas'
 import { createAdminClient } from '@/lib/supabase/admin';
 import { syncStockFromMLItem } from '@/lib/integrations/mercadolibre/sync-stock';
 import { logMLSyncError } from '@/lib/integrations/mercadolibre/integrations-repo';
+import { secretsMatch } from '@/lib/security/timing-safe-equal';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 /**
+ * Rate limiting in-memory simple, mismo patrón que /api/prescription y
+ * /api/face-shape — límite generoso porque ML puede mandar varios eventos
+ * seguidos para productos distintos (hallazgo #11, audit 2026-08-01).
+ */
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX_PER_IP = 120;
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const bucket = rateLimitMap.get(ip);
+  if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(ip, { count: 1, windowStart: now });
+    return true;
+  }
+  if (bucket.count >= RATE_LIMIT_MAX_PER_IP) return false;
+  bucket.count += 1;
+  return true;
+}
+
+/**
  * Webhook receiver para notificaciones de Mercado Libre — Sprint 2b.
  *
  * Flow:
- * 1. Parsear + validar shape con Zod.
- * 2. Idempotencia: si el webhook `_id` ya está en `marketplace_webhook_events`,
+ * 1. Token de origen (`?token=`) + rate limit por IP.
+ * 2. Parsear + validar shape con Zod.
+ * 3. Idempotencia: si el webhook `_id` ya está en `marketplace_webhook_events`,
  *    responder 200 OK sin re-procesar.
- * 3. Procesar según `topic`:
+ * 4. Procesar según `topic`:
  *    - `items`: sync stock con `syncStockFromMLItem(resource_id)` — covers
  *      cambios manuales del seller en panel ML + cambios por ventas.
  *    - `orders_v2`: ignorar por ahora — el sync via items cubre el efecto
  *      en stock. Futuro: tracking de órdenes.
  *    - otros topics: ignorar con status='ignored'.
- * 4. INSERT en `marketplace_webhook_events` con status (processed/failed/ignored).
- * 5. Responder 200 OK siempre (incluso si processing falla, para no triggerear
- *    retries de ML — los errores ya quedaron loggeados).
+ * 5. INSERT en `marketplace_webhook_events` con status (processed/failed/ignored).
+ * 6. Responder 200 OK siempre que pasó la validación de origen (incluso si
+ *    processing falla, para no triggerear retries de ML — los errores ya
+ *    quedaron loggeados).
  *
- * Validation HMAC: ML NO firma webhooks por default. Si en algún momento
- * configurás un secret, agregar header check acá. Por ahora confiamos en que
- * el endpoint está atrás de HTTPS y la URL es semi-secreta.
+ * Validation de origen: ML NO firma webhooks (no hay HMAC nativo). En vez
+ * de eso, la URL registrada en el panel de ML incluye `?token=<ML_WEBHOOK_TOKEN>`
+ * — un secreto propio que solo conoce quien configuró el webhook. Si
+ * `ML_WEBHOOK_TOKEN` todavía no está seteado en el entorno, el chequeo se
+ * OMITE (comportamiento actual sin cambios) para no romper el webhook real
+ * mientras el founder no actualizó la URL en el panel de ML — activa solo
+ * cuando la env var exista.
  */
 export async function POST(request: NextRequest) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ ok: false, error: 'rate_limited' }, { status: 429 });
+  }
+
+  const expectedToken = process.env.ML_WEBHOOK_TOKEN;
+  if (expectedToken) {
+    const receivedToken = request.nextUrl.searchParams.get('token') ?? '';
+    if (!secretsMatch(receivedToken, expectedToken)) {
+      return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+    }
+  }
+
   let body: unknown;
   try {
     body = await request.json();

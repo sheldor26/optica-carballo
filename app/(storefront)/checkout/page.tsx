@@ -10,6 +10,8 @@ import { calculateShipping } from '@/lib/shipping';
 import { listBranches } from '@/lib/correo/agencies';
 import { isCheckoutEnabled } from '@/lib/features';
 import { getBusinessInfo } from '@/lib/site/business';
+import { getPrescriptionFromCookie } from '@/lib/prescription-cookie/actions';
+import { cartRequiresPrescription } from '@/lib/checkout/prescription';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +33,15 @@ export default async function Page() {
   if (resolved.items.length === 0 || resolved.hasIssues) {
     redirect('/carrito');
   }
+
+  // Receta: si el carrito tiene algún producto de la categoría receta, el
+  // checkout no puede confirmar el pedido sin una receta cargada (regla
+  // dura del negocio — hallazgo #6, audit 2026-08-01). La cookie es la
+  // misma que llena el lector IA / form manual (`/cargar-receta`,
+  // `/lector-de-receta`) antes de llegar acá.
+  const prescription = cartRequiresPrescription(resolved)
+    ? await getPrescriptionFromCookie()
+    : null;
 
   const addresses = await fetchUserAddresses();
 
@@ -89,6 +100,7 @@ export default async function Page() {
       defaultAddressId={defaultAddress?.id ?? null}
       fallbackShipping={fallbackShipping}
       pickupAddress={pickupAddress}
+      prescription={prescription}
     />
   );
 }

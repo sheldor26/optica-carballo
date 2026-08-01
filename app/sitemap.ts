@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
+import { hasAvailableStock } from '@/lib/catalog/availability';
 import { BRAND_FILTERS } from '@/lib/catalog/brand-filters';
 import { createStaticClient } from '@/lib/supabase/static';
 import { listArticles } from '@/lib/content/articles';
@@ -15,6 +16,7 @@ type ProductSitemapRow = {
   updated_at: string;
   brand: { slug: string };
   category: { slug: string };
+  variants: { is_active: boolean; stock_qty: number }[];
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -25,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase
       .from('products')
       .select(
-        'slug, name, updated_at, brand:brands!inner(slug), category:categories!inner(slug)',
+        'slug, name, updated_at, brand:brands!inner(slug), category:categories!inner(slug), variants:product_variants(is_active, stock_qty)',
       )
       .eq('is_active', true)
       .returns<ProductSitemapRow[]>(),
@@ -69,6 +71,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,
+    },
+    {
+      // Indexable (sin noindex) pero faltaba acá — hallazgo bajo, audit 2026-08-01.
+      url: `${SITE_URL}/descubrir`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
     },
     {
       url: `${SITE_URL}/lector-de-receta`,
@@ -191,10 +200,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   ]);
 
-  // Excluir productos placeholder [PH] del sitemap: no deben indexarse hasta
-  // que el founder confirme nombres y precios reales.
+  // Excluir productos placeholder [PH] (nombres/precios sin confirmar) y sin
+  // stock real (ninguna variante activa con stock_qty > 0) del sitemap — sin
+  // esto Google indexaba fichas que no se pueden comprar (hallazgo #4,
+  // audit 2026-08-01, mismo criterio que aplica `buildProductMetadata`).
   const productUrls: MetadataRoute.Sitemap = (products ?? [])
-    .filter((p) => !isPlaceholder(p.name))
+    .filter((p) => !isPlaceholder(p.name) && hasAvailableStock(p.variants))
     .map((p) => ({
       url: `${SITE_URL}/${p.category.slug}/${p.brand.slug}/${p.slug}`,
       lastModified: new Date(p.updated_at),

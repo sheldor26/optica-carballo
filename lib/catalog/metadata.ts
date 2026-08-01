@@ -5,7 +5,8 @@ import type { Metadata } from 'next';
 import { createStaticClient } from '@/lib/supabase/static';
 import { fetchCategoryByFilter } from '@/lib/catalog/queries';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
-import type { CategoryConfig } from '@/lib/catalog/categories';
+import { hasAvailableStock } from '@/lib/catalog/availability';
+import { CATEGORIES, type CategoryConfig } from '@/lib/catalog/categories';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
@@ -13,7 +14,9 @@ type BrandMetaRow = { name: string };
 type ProductMetaRow = {
   name: string;
   short_description: string | null;
+  meta_title: string | null;
   meta_description: string | null;
+  variants: { is_active: boolean; stock_qty: number }[];
 };
 
 /**
@@ -38,7 +41,10 @@ export async function buildBrandMetadata(
     return { title: 'Marca no encontrada' };
   }
 
-  const title = `${category.name} ${brand.name} Originales | Envío a Todo el País - Óptica Carballo`;
+  // Título corto (hallazgo #9, audit 2026-08-01): "Envío a Todo el País" se
+  // sacó del title (se trunca en SERP en combos con marcas largas) — el dato
+  // ya está en la description.
+  const title = `${category.name} ${brand.name} | Originales - Óptica Carballo`;
   const description = `${capitalize(category.metaPhrase)} ${brand.name} originales. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${category.slug}/${brandSlug}`;
 
@@ -62,7 +68,7 @@ export function buildCategoryGenderMetadata(args: {
   target: 'hombre' | 'mujer';
 }): Metadata {
   const targetLabel = args.target === 'hombre' ? 'Hombre' : 'Mujer';
-  const title = `${args.category.name} ${targetLabel} | Originales con Envío - Óptica Carballo`;
+  const title = `${args.category.name} ${targetLabel} | Originales - Óptica Carballo`;
   const description = `${capitalize(args.category.metaPhrase)} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${args.category.slug}/${args.target}`;
 
@@ -100,7 +106,7 @@ export async function buildCategoryShapeMetadata({
   filterMetaPhrase,
   filter,
 }: CategoryShapeMetaInput): Promise<Metadata> {
-  const title = `${category.name} ${filterLabel} | Originales con Envío - Óptica Carballo`;
+  const title = `${category.name} ${filterLabel} | Originales - Óptica Carballo`;
   const description = `${capitalize(category.metaPhrase)} ${filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${category.slug}/${filterUrlSlug}`;
 
@@ -153,13 +159,19 @@ export async function buildBrandAboutMetadata(
   const title = `Sobre ${brand.name} — Historia, Líneas y Catálogo en Óptica Carballo`;
   const description = `Conocé ${brand.name}: historia, identidad y propuesta de la marca aplicada al mundo de la óptica. Distribución oficial en Argentina con asesoramiento personal con experiencia en óptica.`;
   const url = `${SITE_URL}/${category.slug}/${brandSlug}/sobre-la-marca`;
+  // Canonical cruzado hacia la versión de sol (adenddum GSC, audit 2026-08-01):
+  // sol y receta muestran el mismo seo_intro/seo_outro (misma fila de `brands`,
+  // sin diferenciación por categoría) — es contenido duplicado real, y Google
+  // ya venía eligiendo sol como canonical por su cuenta. Esto lo hace explícito
+  // en vez de dejar que Google adivine. La versión de sol se autocanonicaliza.
+  const canonicalUrl = `${SITE_URL}/${CATEGORIES.sol.slug}/${brandSlug}/sobre-la-marca`;
 
   return {
     title: { absolute: title },
     description,
     alternates: {
-      canonical: url,
-      languages: { 'es-AR': url, 'x-default': url },
+      canonical: canonicalUrl,
+      languages: { 'es-AR': canonicalUrl, 'x-default': canonicalUrl },
     },
     openGraph: { title, description, url, type: 'article' },
   };
@@ -193,7 +205,7 @@ export async function buildBrandGenderMetadata(args: {
   }
 
   const targetLabel = args.target === 'hombre' ? 'Hombre' : 'Mujer';
-  const title = `${args.category.name} ${brand.name} ${targetLabel} | Originales con Envío - Óptica Carballo`;
+  const title = `${args.category.name} ${brand.name} ${targetLabel} | Originales - Óptica Carballo`;
   const description = `${capitalize(args.category.metaPhrase)} ${brand.name} para ${args.target}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica. 30+ años de experiencia.`;
   const url = `${SITE_URL}/${args.category.slug}/${args.brandSlug}/${args.target}`;
 
@@ -240,7 +252,7 @@ export async function buildBrandFilterMetadata(args: {
     return { title: 'Marca no encontrada' };
   }
 
-  const title = `${args.category.name} ${brand.name} ${args.filterLabel} | Originales con Envío - Óptica Carballo`;
+  const title = `${args.category.name} ${brand.name} ${args.filterLabel} | Originales - Óptica Carballo`;
   const description = `${capitalize(args.category.metaPhrase)} ${brand.name} ${args.filterMetaPhrase}. Envíos a todo Argentina, cuotas sin interés y asesoramiento personal con experiencia en óptica.`;
   const url = `${SITE_URL}/${args.category.slug}/${args.brandSlug}/${args.filterUrlSlug}`;
 
@@ -257,8 +269,10 @@ export async function buildBrandFilterMetadata(args: {
 }
 
 /**
- * Metadata para páginas de producto (sol o receta). Productos `[PH]` reciben
- * `robots: noindex, follow` para no contaminar Google con placeholders.
+ * Metadata para páginas de producto (sol o receta). Reciben `robots:
+ * noindex, follow` los productos `[PH]` (placeholder) y los que no tienen
+ * ninguna variante activa con stock — mandar a Google una ficha que no se
+ * puede comprar contradice `SEO_STRATEGY.md` (hallazgo #4, audit 2026-08-01).
  */
 export async function buildProductMetadata(
   category: CategoryConfig,
@@ -268,7 +282,9 @@ export async function buildProductMetadata(
   const supabase = createStaticClient();
   const { data: product } = await supabase
     .from('products')
-    .select('id, name, short_description, meta_description')
+    .select(
+      'id, name, short_description, meta_title, meta_description, variants:product_variants(is_active, stock_qty)',
+    )
     .eq('slug', productSlug)
     .eq('is_active', true)
     .maybeSingle()
@@ -295,7 +311,14 @@ export async function buildProductMetadata(
     : null;
 
   const isPh = isPlaceholder(product.name);
-  const title = `${product.name} | ${category.name} - Óptica Carballo`;
+  const outOfStock = !hasAvailableStock(product.variants);
+  // `meta_title` es el título craftedo a mano con keyword research por
+  // producto (evita canibalización entre hermanos de marca — ver
+  // SEO_STRATEGY.md). Antes se ignoraba y siempre se armaba el genérico de
+  // acá abajo (hallazgo #7, audit 2026-08-01) — research muerto en la DB.
+  const title =
+    product.meta_title ??
+    `${product.name} | ${category.name} - Óptica Carballo`;
   const description =
     product.meta_description ??
     product.short_description ??
@@ -305,7 +328,7 @@ export async function buildProductMetadata(
   return {
     title: { absolute: title },
     description,
-    robots: isPh ? { index: false, follow: true } : undefined,
+    robots: isPh || outOfStock ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
@@ -382,17 +405,26 @@ export function buildCategoryIndexMetadata(
 /**
  * Metadata para páginas estáticas de información/legales (sobre nosotros,
  * política de devolución, etc.). Title + description + canonical + hreflang.
+ *
+ * `incomplete: true` agrega `noindex` — usar mientras la página tenga datos
+ * legales sin confirmar (`[A CONFIRMAR]` visible en el contenido, ej. razón
+ * social/CUIT en Términos/Privacidad). Indexar una página legal incompleta
+ * es peor trust signal que no indexarla (hallazgo #5, audit 2026-08-01,
+ * verificado con argentine-ecom). Sacar el flag apenas el founder confirme
+ * los datos pendientes.
  */
 export function buildInfoPageMetadata(args: {
   title: string;
   description: string;
   slug: string;
+  incomplete?: boolean;
 }): Metadata {
   const fullTitle = `${args.title} | Óptica Carballo`;
   const url = `${SITE_URL}/${args.slug}`;
   return {
     title: { absolute: fullTitle },
     description: args.description,
+    robots: args.incomplete ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },

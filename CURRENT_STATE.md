@@ -22,7 +22,40 @@ Auditoría integral del sitio (SEO técnico+contenido, performance/CWV, segurida
 
 ### Próximo paso EXACTO
 
-~~#1~~ ✅. ~~#2~~ ✅. ~~#3~~ ✅. ~~#4~~ ✅. ~~#5~~ ✅. ~~#6~~ ✅. ~~#7~~ ✅. ~~#8 (atomicidad orden+stock)~~ ✅ **código + migración aplicada a cloud, hecho en esta misma sesión** (ver abajo). `AUDIT_2026-08-01.md` ya NO tiene hallazgos 🔴/🟠 pendientes — quedan solo medios/bajos. **Próximo paso real**: seguir bajando la lista por esos (ej. #9 títulos de categoría/marca >60 caracteres, #10 home/carrito prometiendo pago con checkout apagado) si el founder quiere seguir, o dar la auditoría por cerrada acá — los hallazgos que más golpeaban negocio/seguridad ya están todos resueltos.
+**Auditoría 2026-08-01 y addendum GSC cerrados por completo** — no quedan hallazgos abiertos del audit ni del addendum. Único pendiente activo: `ML_WEBHOOK_TOKEN` (requiere acción del founder fuera del alcance de Claude — generar el token, cargarlo en Vercel, actualizar la URL en el panel de ML), más #15/#16 como iniciativas dedicadas futuras (pipeline de imágenes, clusters SEO faltantes). Sin próximo paso urgente.
+
+### Fix aplicado: soft-404 resuelto (middleware + caché en memoria, addendum GSC — sesión posterior)
+
+El soft-404 diagnosticado al arreglar `deportivos` (ver entry de abajo) se cerró en esta sesión. Fix: `middleware.ts` + nuevo `lib/catalog/existence-check.ts` chequean si la marca/producto de la URL existe realmente ANTES de dejar pasar la request; si no existe, `NextResponse.rewrite` a un path sin ruta matcheable, lo que activa el 404 nativo de Next.js con status code correcto (opción 2 del análisis original).
+
+Primer intento consultaba Supabase en cada request de marca/producto — lo pasé por `nextjs-performance` (regla del proyecto para cambios en middleware) antes de darlo por cerrado, y lo marcó **regresión real**: el middleware de Vercel corre antes del cache lookup en TODAS las requests, así que esa consulta pegaba en cada visita a marca/PDP (no solo en URLs rotas), midiendo ~220-270ms extra por request. Rediseñé con su recomendación: caché en memoria del proceso con TTL 300s (igual al `revalidate` del catálogo) — la consulta a Supabase corre solo cuando el caché vence, no por request. Segunda pasada del agente sobre el rediseño: **"Resuelto"**, sin bugs de correctitud. Quedaron 2 mejoras de pulido opcional (negative-cache en error, stale-while-revalidate) anotadas en `BACKLOG.md`, no bloqueantes.
+
+Verificado: `pnpm typecheck`/`lint` limpios, ~10 casos en vivo (marca real, marca/producto fake, mismatch de marca, mismatch de categoría, slugs reservados en ambos niveles, rutas no-catálogo intactas, caché compartido entre marcas distintas confirmado en logs). Detalle completo en `AUDIT_2026-08-01.md` addendum.
+
+### Fix aplicado: canonical cruzado en `/sobre-la-marca` receta → sol (addendum GSC)
+
+`buildBrandAboutMetadata` (`lib/catalog/metadata.ts`) ahora hace que la versión de RECETA de `/sobre-la-marca` declare su `canonical`/`hreflang` apuntando a la URL de SOL del mismo brand (sol se sigue auto-canonicalizando). Resuelve el contenido duplicado real (ambas versiones leen el mismo `seo_intro`/`seo_outro` de `brands`, sin diferenciación por categoría). `og:url` de receta se dejó apuntando a su propia URL (correcto para compartir). La página de receta sigue visitable en 200, no se redirige ni se noindexa — solo consolida la señal de indexación hacia sol. Verificado en vivo, `pnpm typecheck` limpio.
+
+### Fix aplicado: página faltante `/anteojos-de-sol/[marca]/deportivos` (hallazgo GSC, sesión posterior al audit)
+
+`app/(storefront)/anteojos-de-sol/[brand]/deportivos/page.tsx` creada (mismo patrón que `aviador`/`wayfarer`/etc — faltaba desde que se agregó el filtro "deportivos" a `BRAND_FILTERS` el 2026-06-04, el sitemap ya prometía la URL pero nadie construyó la página). Diagnostiqué de paso un soft-404 más grande y genérico (afecta CUALQUIER marca/producto inválido del catálogo, no solo deportivos) — confirmé con pruebas directas (sacar los 4 `not-found.tsx` anidados, build limpio) que NO es causado por esos archivos, y que es un bug conocido y documentado de Next.js (ISR cachea el HTML de `notFound()` pero no el status code). Google ya lo maneja bien por su cuenta (por eso aparece como "Not found" en el reporte de GSC pese al 200) — no es urgente, quedó como decisión pendiente en `BACKLOG.md`. Verificado en vivo: las 5 marcas de "deportivos" dan 200 con contenido real, `pnpm typecheck` limpio.
+
+### Fix aplicado: hallazgo #12 cerrado — REVOKE de `match_products` aplicado a cloud
+
+`supabase/migrations/20260801152346_revoke_match_products_public_execute.sql` aplicada vía MCP con confirmación explícita del founder. Verificado: `information_schema.routine_privileges` solo lista `postgres`/`service_role` con EXECUTE — `anon`/`authenticated` ya no pueden llamar la función directo desde el browser. Sin impacto funcional en `/api/chat` (ya usaba `service_role`). Registrado en `supabase/CLOUD_APPLIED.md`.
+
+### Fix aplicado: hallazgos medios/bajos del audit (#9, #10, #11 código, #13, #14, #17, #18 + 3 bajos)
+
+- **#9** (títulos >60 chars): sufijo acortado en 5 funciones de `lib/catalog/metadata.ts`. Páginas de marca sola bajaron a 51-57 chars; combos marca+filtro con brand largo pueden seguir por encima de 60 (inherente a nombrar 3 entidades), mejor que antes de todos modos.
+- **#10** (copy de pago no condicionado al flag): al auditar aparecieron 4 puntos más de los 3 originales (subtítulo carrito, cuotas, trust signals) — los 6 ahora usan `isCheckoutEnabled()`.
+- **#11** (webhook ML sin origen): rate limit (120/h/IP) + chequeo de `?token=` contra `ML_WEBHOOK_TOKEN` nuevo — se omite mientras esa env var no exista, para no romper el webhook real hasta que el founder actualice la URL en el panel de ML (pendiente en `BACKLOG.md`).
+- **#13** (guías sin hreflang): `alternates.languages` agregado a los 2 `generateMetadata` de `/guias`.
+- **#14** (robots.txt incompleto): agregado `/checkout` y `/*?*` al disallow.
+- **#17** (touch targets <44px): sticky bar → `h-11` (nuevo prop `className` en `AddToCartButton`/`VariantWhatsappCta`), select de cantidad del carrito → `h-11`, quick-view → `size-11` en mobile.
+- **#18** (JSON-LD sin escapar): helper `safeJsonLd()` nuevo en `lib/seo/json-ld.ts`, aplicado en los 13 archivos afectados.
+- **Bajos**: `secretsMatch()` (timing-safe) en los 3 crons; `/descubrir` sumado al sitemap; precio de referencia agregado al `Offer` `OutOfStock` en `ProductJsonLd`.
+
+Verificado: `pnpm typecheck` y `pnpm lint` limpios en cada tanda, regresión en vivo (robots.txt, sitemap, títulos, hreflang, HTML de la sticky bar) sin errores de servidor.
 
 ### Fix aplicado: hallazgo #8 completado — migración aplicada a cloud con autorización del founder
 

@@ -40,6 +40,28 @@ export async function getAdminUserOrNull() {
 }
 
 /**
+ * Gate COMPLETO para route handlers de API (`app/api/admin/*`, y cualquier
+ * API que lea/mute/sincronice datos sensibles): email + PIN, igual que
+ * `requireAdmin` en páginas RSC. A diferencia de `getAdminUserOrNull` (solo
+ * primer factor), esta exige también el segundo factor si está habilitado.
+ *
+ * Devuelve el user o `null` — el handler decide el status code (401 típico).
+ * Si una sesión de email queda comprometida sin el PIN, estas rutas siguen
+ * cerradas (defensa en profundidad, mismo criterio que el panel admin).
+ *
+ * Uso:
+ *   if (!(await requireAdminApi())) {
+ *     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+ *   }
+ */
+export async function requireAdminApi() {
+  const user = await getAdminUserOrNull();
+  if (!user) return null;
+  if (isAdminPinEnabled() && !(await hasValidAdminPinCookie())) return null;
+  return user;
+}
+
+/**
  * Gate de SOLO email (primer factor). Si no hay sesión o el email NO está en la
  * allowlist → `notFound()` (404).
  *

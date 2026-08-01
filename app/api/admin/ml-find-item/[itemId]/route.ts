@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getValidAccessToken } from '@/lib/integrations/mercadolibre/oauth';
 import { getActiveMLIntegration } from '@/lib/integrations/mercadolibre/integrations-repo';
-import { getAdminUserOrNull } from '@/lib/auth/admin';
+import { requireAdminApi } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,13 +13,13 @@ export const dynamic = 'force-dynamic';
  * con su status sin importar si está cerrado (el endpoint /items/{id} 404ea
  * items closed/finalized — este los muestra).
  *
- * Sin auth iter 1 — temporal.
+ * Requiere admin + PIN (`requireAdminApi`).
  */
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
-  if (!(await getAdminUserOrNull())) {
+  if (!(await requireAdminApi())) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   const { itemId } = await params;

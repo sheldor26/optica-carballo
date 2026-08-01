@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { exchangeCodeForTokens } from '@/lib/integrations/mercadolibre/oauth';
+import { requireAdminEmail } from '@/lib/auth/admin';
 import { ML_OAUTH_STATE_COOKIE } from '@/lib/integrations/mercadolibre/oauth-state';
 
 export const dynamic = 'force-dynamic';
@@ -11,19 +12,25 @@ export const dynamic = 'force-dynamic';
  *   ?code=...&state=...
  *
  * Flow:
- * 1. Validar state contra cookie (CSRF protection).
- * 2. Validar que vino un code.
- * 3. Intercambiar code por tokens (lib/.../oauth.ts).
- * 4. Tokens se guardan cifrados en `marketplace_integrations`.
- * 5. Redirect a `/mi-cuenta/marketplace?status=success` (page exists en Sprint 3).
+ * 1. Exigir admin logueado (mismo gate que `initiate` — la sesión admin
+ *    sobrevive el redirect cross-origin de ML porque la cookie de auth es
+ *    SameSite=Lax y esta es una navegación top-level).
+ * 2. Validar state contra cookie (CSRF protection).
+ * 3. Validar que vino un code.
+ * 4. Intercambiar code por tokens (lib/.../oauth.ts).
+ * 5. Tokens se guardan cifrados en `marketplace_integrations`.
+ * 6. Redirect a `/mi-cuenta/marketplace?status=success` (page exists en Sprint 3).
  *    Por ahora redirect a `/` con query param para feedback.
  *
  * Error cases:
+ * - Sin sesión admin → 404 (anti-enumeración, ver `requireAdminEmail`).
  * - ML manda `?error=access_denied` si el user canceló → redirect con error.
  * - State mismatch → CSRF detected, abort.
  * - Code exchange falla → log + redirect con error.
  */
 export async function GET(request: NextRequest) {
+  await requireAdminEmail();
+
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');

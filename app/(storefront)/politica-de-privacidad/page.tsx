@@ -15,6 +15,9 @@ export function generateMetadata(): Metadata {
     description:
       'Cómo Óptica Carballo recolecta, usa y protege tus datos personales. Cumplimiento ley 25.326 de Protección de Datos Personales.',
     slug: SLUG,
+    // CUIT, razón social exacta y domicilio fiscal siguen [A CONFIRMAR] más
+    // abajo — sacar este flag cuando el founder los confirme.
+    incomplete: true,
   });
 }
 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { VisionSimulator } from '@/components/tools/vision-simulator';
 import { FaqJsonLd } from '@/components/seo/faq-jsonld';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 import type { FaqEntry } from '@/lib/content/faqs';
 
@@ -237,7 +238,7 @@ function WebApplicationJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }

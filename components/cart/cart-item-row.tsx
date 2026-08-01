@@ -99,7 +99,7 @@ export function CartItemRow({ item }: { item: ResolvedCartItem }) {
             <span className="text-muted-foreground text-xs">Cantidad</span>
             <select
               aria-label="Cantidad"
-              className="border-input bg-background h-8 rounded-md border px-2 text-sm"
+              className="border-input bg-background h-11 rounded-md border px-2 text-sm"
               value={item.quantity}
               onChange={handleChangeQty}
               disabled={pending || maxQty < 1}

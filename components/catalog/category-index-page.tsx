@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HelpCircle } from 'lucide-react';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 import { BrandGridCard } from '@/components/catalog/brand-grid-card';
 import { FrameShapeFilters } from '@/components/catalog/frame-shape-filters';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
@@ -86,7 +87,7 @@ export function CategoryIndexPage({
       {brands.length > 0 && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
       )}
 

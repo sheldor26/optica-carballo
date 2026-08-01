@@ -10,6 +10,8 @@ import { fetchAddressById } from '@/lib/addresses/queries';
 import { pickupQuote } from '@/lib/shipping';
 import { resolveShippingQuotes } from '@/lib/shipping-server';
 import { isCheckoutEnabled } from '@/lib/features';
+import { getPrescriptionFromCookie } from '@/lib/prescription-cookie/actions';
+import { cartRequiresPrescription } from './prescription';
 import { createOrderFromCart, updateOrderMpPreference } from './orders';
 import {
   createCheckoutPreference,
@@ -74,6 +76,17 @@ export async function submitCheckout(
     };
   }
 
+  // Idempotency key: UUID generado por el cliente al montar /checkout
+  // (hidden field, estable entre reintentos del mismo submit — ver
+  // `create_order_from_cart` en la migración 20260801143222, hallazgo #8).
+  const idempotencyKeyParsed = z
+    .uuid()
+    .safeParse(formData.get('idempotency_key'));
+  if (!idempotencyKeyParsed.success) {
+    return { ok: false, error: 'Petición inválida. Recargá la página.' };
+  }
+  const idempotencyKey = idempotencyKeyParsed.data;
+
   // Auth — el form solo se muestra en /checkout que ya requiere auth, pero
   // defendemos en server action por si llegan acá vía otra ruta.
   const profileData = await getCurrentProfile();
@@ -107,6 +120,23 @@ export async function submitCheckout(
     return {
       ok: false,
       error: 'Hay items con problemas en el carrito.',
+    };
+  }
+
+  // Receta obligatoria ANTES de pagar si el carrito tiene algún producto de
+  // la categoría receta (regla dura del negocio — hallazgo #6, audit
+  // 2026-08-01, decisión founder). El checkout-page.tsx ya bloquea el botón
+  // "Confirmar pedido" en este caso, pero se re-valida acá server-side por
+  // defensa en profundidad (nunca confiar solo en el gate del cliente).
+  const needsPrescription = cartRequiresPrescription(resolved);
+  const prescription = needsPrescription
+    ? await getPrescriptionFromCookie()
+    : null;
+  if (needsPrescription && !prescription) {
+    return {
+      ok: false,
+      error:
+        'Necesitás cargar tu receta antes de confirmar el pedido. Podés hacerlo en /cargar-receta o /lector-de-receta.',
     };
   }
 
@@ -165,6 +195,8 @@ export async function submitCheckout(
     deliveryType,
     agencyCode,
     agencyName,
+    prescription,
+    idempotencyKey,
   });
 
   if (!result.ok) {

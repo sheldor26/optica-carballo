@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { mlFetch } from '@/lib/integrations/mercadolibre/api-client';
-import { getAdminUserOrNull } from '@/lib/auth/admin';
+import { requireAdminApi } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
  * guardado en `marketplace_integrations`. Devuelve el JSON crudo del item
  * para que el founder me lo pase y yo genere SQL de import.
  *
- * **Sin auth iter 1** — endpoint temporal de admin. Sprint 3 va a tener
- * admin UI propia con auth en `/mi-cuenta/marketplace`.
+ * Requiere admin + PIN (`requireAdminApi`) — endpoint temporal de admin.
+ * Sprint 3 va a tener admin UI propia en `/mi-cuenta/marketplace`.
  *
  * Uso: `GET /api/admin/ml-import-preview/MLA1234567890`.
  *
@@ -20,7 +20,7 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ itemId: string }> },
 ) {
-  if (!(await getAdminUserOrNull())) {
+  if (!(await requireAdminApi())) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   const { itemId } = await params;

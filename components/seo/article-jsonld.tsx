@@ -1,5 +1,6 @@
 import { getAuthor } from '@/lib/content/article-authors';
 import type { ArticleFrontmatter } from '@/lib/content/article-types';
+import { safeJsonLd } from '@/lib/seo/json-ld';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 const SUPABASE_URL =
@@ -93,7 +94,7 @@ export function ArticleJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }

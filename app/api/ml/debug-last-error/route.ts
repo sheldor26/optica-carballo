@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { getAdminUserOrNull } from '@/lib/auth/admin';
+import { requireAdminApi } from '@/lib/auth/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +11,11 @@ export const dynamic = 'force-dynamic';
  * **Eliminar este endpoint después de que Sprint 2b esté operativo + estable**.
  * Sprint 3 va a tener admin UI propia en `/mi-cuenta/marketplace` para esto.
  *
- * Acceso: por ahora abierto (estamos en setup). No expone tokens — solo
+ * Requiere admin + PIN (`requireAdminApi`). No expone tokens — solo
  * error payloads que ya están sanitizados al guardar.
  */
 export async function GET() {
-  if (!(await getAdminUserOrNull())) {
+  if (!(await requireAdminApi())) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   try {
