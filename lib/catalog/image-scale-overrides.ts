@@ -756,6 +756,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-the-trial-receta/THE TRIAL 670-056 FRENTE.jpg': 1.0,
   'vulk-the-trial-receta/THE TRIAL MBLK-046 PERFIL.jpg': 1.03,
   'vulk-the-trial-receta/THE TRIAL MBLK-046 FRENTE.jpg': 1.0,
+  // Variante CRY-206 agregada 2026-08-01 (mismo modelo/encuadre 900×442 → mismo scale).
+  'vulk-the-trial-receta/Thetrial-CRY-206-PERFIL.jpg': 1.03,
+  'vulk-the-trial-receta/Thetrial-cry-206-frente.jpg': 1.0,
 
   // Vulk Nova SOL — ovalado mujer metal, 3 var polarizadas, fotos 900×442 (igual que
   // Bennie/Raven). PROVISIONAL 1.1 perfil / 1.0 frente (punto medio Raven 1.0 / Terdey 1.15)

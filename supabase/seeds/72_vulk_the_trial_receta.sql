@@ -29,6 +29,14 @@
 -- 📸 FOTOS: ya subidas a vulk-the-trial-receta/ (900×442). 2 var × (perfil+frente) + medidas = 5.
 -- Grid primary = PERFIL de 670-056. Scale 1.0 en las 4 (mismo caso que el sol The Trial y Raven:
 -- 900×442 más ancho que el card 3:2 → object-contain llena por ancho; NO el 1.15 receta que cropea).
+--
+-- ADICIÓN 2026-08-01 (vía MCP execute_sql): 3ª variante CRY-206 Optics
+--   SKU 125723 — frente transparente cristal / patillas azul mate, stock 3, $83.736
+--   (8373600c, mismo precio que MBLK-046), MLA1939459323, sort 3. Fotos ya en bucket
+--   (Thetrial-CRY-206-PERFIL.jpg / Thetrial-cry-206-frente.jpg, 900×442, sort 8/9,
+--   scale 1.0 como el resto; medidas.webp→sort 10). Mismas medidas que el resto del
+--   modelo (147/50×49/15/150, 19,5g). Verificación MCP: variantes=3 activas,
+--   stock_total=6, imagenes=7.
 -- ============================================
 
 BEGIN;
