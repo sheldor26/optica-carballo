@@ -14,6 +14,7 @@ import {
   type PriceBucketValue,
 } from '@/lib/catalog/filters';
 import { ProductCard } from '@/components/product/product-card';
+import { WhatsappPhotoBanner } from '@/components/catalog/whatsapp-photo-banner';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { FilteredCatalogCard } from '@/lib/catalog/queries';
 import type { CategoryConfig } from '@/lib/catalog/categories';
@@ -171,6 +172,12 @@ export function CategoryCatalogView({
             )}
           </div>
         </RevealOnScroll>
+
+        {!anyFilterActive && (
+          <div className="mb-8 max-w-md">
+            <WhatsappPhotoBanner category={category} />
+          </div>
+        )}
 
         {products.length === 0 ? (
           <div className="border-border/60 bg-muted/20 mx-auto mt-12 max-w-md rounded-lg border p-8 text-center">

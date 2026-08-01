@@ -24,6 +24,28 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-08-01 — Casi corrí una prueba de cron contra la base de PRODUCCIÓN sin darme cuenta — `.env.local` apunta a cloud, no a local
+
+**Estado**: ✅ Cerrado (sin daño real — la query falló limpio antes de escribir nada; corregido en el mismo turno)
+
+**Qué pasó**: al implementar el cron `check-prescription-expiry` (recordatorio de receta), levanté el dev server local (`pnpm dev`) para probarlo end-to-end contra fixtures que había insertado en Postgres LOCAL (vía `supabase db reset` + `docker exec psql`). Le pegué al endpoint con curl y me devolvió un error de columna inexistente — recién ahí caí en que `.env.local` tiene `NEXT_PUBLIC_SUPABASE_URL` apuntando al proyecto de **producción** en cloud, no a `http://127.0.0.1:54321`. El dev server nunca tocó mis fixtures locales — estaba consultando la base real, con una migración que en cloud todavía no existe (por eso falló con "column does not exist" en vez de simplemente no encontrar filas).
+
+**Causa raíz**: asumí que `pnpm dev` + `supabase start` corriendo en paralelo significaba que el dev server hablaba con el stack local — no es así en este proyecto, `.env.local` está deliberadamente wireado a cloud (probablemente para que el founder vea datos reales al desarrollar). No verifiqué el valor de `NEXT_PUBLIC_SUPABASE_URL` ANTES de pegarle al endpoint con curl.
+
+**Por qué importa**: si la columna nueva hubiera existido por coincidencia con otro propósito, o si el cron hubiera sido de escritura más agresiva (en vez de un SELECT que falló antes de llegar al UPDATE), esto podía haber mandado emails reales a clientes reales o mutado filas de producción durante una prueba. Sin daño esta vez por suerte de que el error saltó temprano, no por buen proceso.
+
+**Regla preventiva**: antes de pegarle a un endpoint del dev server para probar algo que lee/escribe en Supabase, chequear explícitamente `grep NEXT_PUBLIC_SUPABASE_URL .env.local` — si apunta a `.supabase.co` (cloud) y la prueba usa fixtures locales, hay que arrancar el dev server con overrides explícitos de env vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` apuntando a `127.0.0.1:54321` + las keys demo de `supabase status`) pasados inline en el comando, nunca confiar en que "está corriendo local" porque el puerto 3000 responde.
+
+## 2026-08-01 — Por poco le afirmo al founder que Antigravity seguía sin CLI, basado en memoria vieja sin re-verificar
+
+**Estado**: ✅ Cerrado (corregido en el mismo turno, antes de que el founder tomara una decisión con info incorrecta)
+
+**Qué pasó**: al armarle al founder las opciones de con qué fuentes arrancar el loop de sinergia con IAs, presenté "Antigravity no está disponible" como hecho actual, basado en memoria persistida de la sesión de auditoría anterior (donde Gemini CLI había fallado como sustituto de Antigravity). No lo re-verifiqué antes de usarlo como base de una pregunta de decisión. El founder no aceptó el sustituto propuesto y pidió explícitamente "resolvamos antigravity" — recién ahí lo chequeé de verdad (WebSearch + `agy --print`) y encontré que Antigravity CLI (`agy`) ya existía, reemplazando a Gemini CLI, y ya estaba instalado y autenticado en su máquina.
+
+**Causa raíz**: traté una memoria con fecha (de una sesión anterior, semanas atrás) como hecho permanente en vez de un dato point-in-time a re-verificar antes de usarlo para una decisión del founder — pese a que el propio sistema de memoria ya advierte esto explícitamente ("Before recommending from memory").
+
+**Regla preventiva**: antes de presentarle al founder una limitación técnica como hecho actual —sobre todo si viene de memoria de sesiones pasadas, no de esta sesión— correr una verificación barata primero (comando directo, WebSearch). Este caso confirma la regla general del sistema: sin la insistencia del founder, la limitación falsa habría pasado sin chequear.
+
 ## 2026-08-01 — Primer diseño del fix de soft-404 metía una query a Supabase en `middleware.ts` sin considerar que Edge Middleware corre antes del cache lookup en TODAS las requests
 
 **Estado**: ✅ Cerrado (rediseñado con caché en memoria en la misma sesión, antes de aplicar a producción)

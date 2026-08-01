@@ -128,6 +128,14 @@ export default function Page() {
           baja en cualquier momento. Base legal: consentimiento.
         </li>
         <li>
+          <strong>Recordatorio de receta óptica</strong>: si compraste
+          anteojos recetados, te avisamos por única vez, un año después,
+          que conviene revisar tu graduación. Podés darte de baja de este
+          recordatorio en cualquier momento desde el mismo email. Base
+          legal: ejecución del contrato (art. 5, inc. 2.b, Ley 25.326) — el
+          dato surge de tu propia compra con receta.
+        </li>
+        <li>
           <strong>Cumplimiento de obligaciones legales</strong>: emisión de
           factura electrónica, retención impositiva, conservación de registros
           contables. Base legal: obligación legal (AFIP, ley 11.683).

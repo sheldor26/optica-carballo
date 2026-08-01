@@ -6,6 +6,7 @@ import {
   FileText,
   Store,
   Undo2,
+  Scale,
 } from 'lucide-react';
 
 type Signal = {
@@ -45,6 +46,12 @@ const SIGNALS: Signal[] = [
     href: '/politica-de-devolucion',
   },
   {
+    icon: Scale,
+    title: 'Garantía legal 1 año',
+    description: 'Contra defectos de fabricación, envío a cargo nuestro',
+    href: '/politica-de-devolucion',
+  },
+  {
     icon: Undo2,
     title: 'Botón de arrepentimiento',
     description: 'Cancelás hasta 10 días',
@@ -53,19 +60,22 @@ const SIGNALS: Signal[] = [
 ];
 
 /**
- * Strip compacta de 4 trust signals para PDP. Grid 2x2 en mobile,
- * 4 columnas en desktop. Diseño minimal: icono outline + título + sub.
+ * Strip compacta de 7 trust signals para PDP. Grid 2 col en mobile,
+ * 3 en tablet, 4 en desktop. Diseño minimal: icono outline + título + sub.
  *
  * Las claims son universales del negocio (BUSINESS_POLICIES.md):
  * - 30 años: founder confirmó "empresa familiar 30+ años".
  * - Asesoramiento personal: atención real (sin claim de matrícula).
  * - Envío: Correo Argentino (sin prometer plazos específicos).
  * - Cambios: 30 días para talle/color sin uso (Defensa del Consumidor + política propia).
+ * - Garantía legal: 1 año por ley (art. 11 Ley 24.240, texto Ley 27.701), envío de
+ *   garantía a cargo nuestro — distinta de la garantía del fabricante (ProductIncludes,
+ *   más abajo en la PDP: misma duración pero régimen contractual, no legal).
  */
 export function ProductTrustSignals() {
   return (
     <div className="border-border/60 bg-muted/20 rounded-xl border p-4">
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {SIGNALS.map((signal) => {
           const Icon = signal.icon;
           const body = (

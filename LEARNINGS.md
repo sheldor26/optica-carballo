@@ -22,6 +22,28 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-01 — Verificar en el navegador en vivo ANTES de construir un plan sobre un componente que un Explore agent leyó del código — puede ser código muerto
+
+**Contexto**: al planear el ítem 2 (banner de WhatsApp+foto en categoría), un Explore agent auditó `components/catalog/category-index-page.tsx` (banner del quiz existente, patrón visual, etc.) y armé el plan de implementación sobre esa base — incluí el nuevo banner ahí, al lado del banner del quiz. El founder aprobó el plan.
+
+**Qué pasó**: al implementar y verificar en vivo con el browser (`/anteojos-de-sol`), el banner del quiz nunca apareció en pantalla. Grep confirmó que `CategoryIndexPage` no se importa desde ningún lado — es código muerto, reemplazado hace tiempo por `CategoryFilteredPage`/`CategoryCatalogView` (que muestra el catálogo completo con filtros client-side, sin banner de quiz, per un cambio de diseño de founder documentado en un comentario del código: "Ver todos debe mostrar todos los modelos sin importar marca ni forma"). El Explore agent leyó el archivo correcto que le pedí, pero nadie verificó que ESE archivo fuera el que realmente se renderiza en la ruta real.
+
+**Qué funcioné**: la regla de este proyecto de "verificar en el browser antes de dar por cerrado un cambio de UI" atrapó el problema — si hubiera confiado solo en `pnpm typecheck` (que pasó igual, porque el componente compila aunque nadie lo use) el banner nuevo habría quedado invisible en producción sin ningún error que lo delatara. Corregí sobre la marcha: reverteé el cambio en el archivo muerto (`git checkout`) y lo reimplementé en `category-filtered-page.tsx`, el componente real.
+
+**Por qué importa**: un audit de código (agente o yo mismo) que lee un archivo por nombre/ruta no confirma que ese archivo esté vivo en producción — un componente bien escrito, con comentarios prolijos y tipos correctos, puede ser 100% código muerto. `pnpm typecheck`/`lint` tampoco lo detectan (código sin importar sigue compilando).
+
+**Cómo replicar**: antes de planear un cambio sobre un componente de UI que un Explore agent (o vos mismo) identificó por lectura de código, confirmar que ESE archivo específico está importado por la route/page real (`grep -rn "NombreDelComponente" app/` o similar) — no asumir que el nombre del archivo o su ubicación en la carpeta correcta significa que está vivo. Y siempre verificar en el browser en vivo el resultado final antes de cerrar, no solo confiar en que el código "se ve bien".
+
+## 2026-08-01 — Verificar disponibilidad real de una herramienta externa con un test directo, en vez de repetir el estado guardado en memoria de una sesión anterior
+
+**Contexto**: el founder pidió trabajar en sinergia con Codex y Antigravity. Tenía guardado en memoria (de la sesión de auditoría, semanas atrás) que "Antigravity no tiene CLI headless invocable" — cierto en su momento, cuando Gemini CLI había fallado como sustituto. Al armar las opciones para el founder, repetí esa limitación como hecho actual sin re-verificarla.
+
+**Qué funcionó**: el founder no aceptó el sustituto y pidió explícitamente "resolvamos antigravity" en vez de seguir adelante con la limitación asumida. Eso me llevó a chequear de verdad: un `WebSearch` + un test directo (`agy --print "OK"` por Bash) tardaron menos de un minuto y revelaron que la situación había cambiado por completo — Antigravity CLI (`agy`) reemplazó a Gemini CLI cuando Google le cortó el acceso free/Pro/Ultra a este último (2026-06-18), y ya estaba instalado y autenticado en la máquina del founder.
+
+**Por qué importa**: si hubiera confiado en la memoria sin re-verificar, el founder habría terminado con un sustituto inferior (Codex + research propio) para un problema que ya no existía — una limitación falsa que le habría costado usar una herramienta que ya tenía lista.
+
+**Cómo replicar**: cuando una decisión con el founder depende de si algo "funciona" o "está disponible" y esa afirmación viene de memoria de una sesión anterior (no de esta sesión), correr una verificación barata (comando directo, WebSearch) antes de presentarla como hecho — sobre todo con herramientas externas, que cambian rápido entre sesiones separadas por semanas.
+
 ## 2026-08-01 — Pasar un cambio de `middleware.ts` por `nextjs-performance` ANTES de confirmarlo (no después) atrapó una regresión real antes de que llegara a producción
 
 **Contexto**: al implementar el fix de soft-404 (ver entry anterior), la primera versión de `lib/catalog/existence-check.ts` consultaba Supabase en cada request de marca/producto desde el middleware. Funcionalmente estaba perfecta (~30 casos de prueba en vivo, cero falsos positivos/negativos) y por un momento pareció lista para cerrar el hallazgo.

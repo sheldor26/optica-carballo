@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/cancel-abandoned-orders",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/check-prescription-expiry",
+      "schedule": "0 * * * *"
     }
   ]
 }

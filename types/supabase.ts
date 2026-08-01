@@ -442,6 +442,8 @@ export type Database = {
           patient_name: string | null
           prescribed_at: string | null
           pupillary_distance: number | null
+          reminder_sent_at: string | null
+          reminder_unsubscribe_token: string
           updated_at: string
           user_id: string
         }
@@ -465,6 +467,8 @@ export type Database = {
           patient_name?: string | null
           prescribed_at?: string | null
           pupillary_distance?: number | null
+          reminder_sent_at?: string | null
+          reminder_unsubscribe_token?: string
           updated_at?: string
           user_id: string
         }
@@ -488,6 +492,8 @@ export type Database = {
           patient_name?: string | null
           prescribed_at?: string | null
           pupillary_distance?: number | null
+          reminder_sent_at?: string | null
+          reminder_unsubscribe_token?: string
           updated_at?: string
           user_id?: string
         }
