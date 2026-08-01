@@ -5,6 +5,45 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+## Última actualización
+
+**Fecha**: 2026-08-01
+**Por**: Claude Code (a pedido de Juan)
+
+### Qué se construyó
+
+Auditoría integral del sitio (SEO técnico+contenido, performance/CWV, seguridad/código/RLS, UX/conversión), combinando 4 agentes especialistas del repo (`seo-strategist`, `nextjs-performance`, `conversion-optimizer`, más un agente general-purpose para seguridad/RLS) corridos en paralelo, más Codex CLI como auditor externo independiente en modo solo-lectura sobre todo el repo. Se intentó sumar Gemini CLI como stand-in de Antigravity (pedido explícito del founder, ya que Antigravity no tiene CLI headless invocable) pero falló al autenticar. Resultado consolidado en `AUDIT_2026-08-01.md` (archivo nuevo en la raíz) con 18 hallazgos verificados contra el código real (1 crítico, 7 altos, 8 medios/varios bajos), más una sección explícita de lo que ya está bien resuelto para no reabrir nada innecesariamente. Sesión de auditoría pura — **no se aplicó ningún fix de código**.
+
+### Qué decisiones se tomaron
+
+- Alcance de la auditoría confirmado con el founder vía pregunta explícita: las 4 dimensiones (SEO, performance, seguridad, CRO) todas incluidas, ninguna se descartó.
+- Ante la falta de CLI de Antigravity, se usó Codex CLI + intento de Gemini CLI como los dos auditores externos independientes (mismo patrón que ya usan las skills `trio-auditor`/`optimizador-guias-*` del proyecto). Gemini falló — ver Problemas.
+- Hallazgos con findings contradictorios entre auditores (ej. hreflang es-AR en `/guias`) se verificaron leyendo el código directo antes de incluirlos en el reporte final, en vez de listar ambas versiones sin resolver.
+
+### Próximo paso EXACTO
+
+~~Cerrar el hallazgo #1~~ ✅. ~~Cerrar el hallazgo #2 (APIs admin sin PIN)~~ ✅. ~~Cerrar el hallazgo #3 (face-shape sin rate limit)~~ ✅ **hecho en esta misma sesión** (ver abajo). Próximo paso real: seguir bajando `AUDIT_2026-08-01.md` en orden de severidad — el siguiente 🟠 alto sin resolver es el sitemap/metadata indexando productos sin stock real (hallazgo #4).
+
+### Fix aplicado: hallazgo #3 cerrado — rate limit en `/api/face-shape`
+
+Se agregó el mismo patrón in-memory que ya usan `prescription` y `generate-product-copy` (10 requests/IP/hora, ventana de 1h), chequeado antes de parsear el `formData` para no procesar el archivo si ya está limitado. Verificado en vivo: 11 POSTs consecutivos desde la misma IP — los primeros 10 pasan el rate limit (400 por falta de archivo, esperado en la prueba), el 11° devuelve 429. `pnpm typecheck` limpio.
+
+### Fix aplicado: hallazgo #2 cerrado — `requireAdminApi()` (email + PIN) en las APIs admin
+
+Se agregó `requireAdminApi()` a `lib/auth/admin.ts` (email allowlist + PIN de segundo factor, mismo criterio que ya usan las páginas `/admin` vía `requireAdmin`). Reemplazó al gate de solo-email (`getAdminUserOrNull`) en las 6 rutas que lo tenían: `app/api/admin/generate-product-copy`, `ml-find-item/[itemId]`, `ml-force-sync/[mlItemId]`, `ml-import-preview/[itemId]`, `ml-me`, y `app/api/ml/debug-last-error`. De paso se actualizaron comentarios stale ("Sin auth iter 1", "por ahora abierto") que ya no reflejaban la realidad. Verificado en vivo (3 de las 6 rutas, las otras 3 comparten código): 401 sin sesión admin. `pnpm typecheck` limpio.
+
+### Fix aplicado (mismo día, segunda mitad de la sesión): hallazgo #1 crítico cerrado
+
+`app/api/ml/oauth/initiate/route.ts` y `app/api/ml/oauth/callback/route.ts` ahora llaman `requireAdminEmail()` (mismo gate de allowlist de email + 404 anti-enumeración que usa el resto de `/admin`) antes de procesar el flow OAuth. Verificado en vivo con `pnpm dev` + browser: ambas rutas devuelven 404 a un visitante sin sesión admin. `pnpm typecheck` limpio. **Nota consciente**: no se agregó el segundo factor (PIN) porque `safeAdminNext()` (en `lib/auth/admin-pin.ts`) solo permite redirigir de vuelta a rutas `/admin/*` — sumar PIN acá requeriría extender ese allowlist de redirect, que es zona sensible (open-redirect si se hace mal). Quedó documentado en `AUDIT_2026-08-01.md` como relacionado al hallazgo #2 (APIs admin sin PIN), no resuelto hoy.
+
+### Problemas encontrados
+
+`gemini -p` (Gemini CLI) no pudo autenticar — cuenta free-tier deprecada para uso headless, el error pide migrar a la suite Antigravity (que no expone modo CLI invocable). Registrado en `MISTAKES.md` para no reintentar `gemini` como auditor headless en sesiones futuras sin resolver la cuenta primero (pagar tier de API, o correr Antigravity manualmente desde su IDE).
+
+---
+
+🟡 **CARGA ABIERTA: Vulk Be Again RECETA — producto+variantes APLICADOS, fotos pendientes (2026-07-15, seed 88)**. Founder pasó los 3 SKUs reales (MBLK 125910 / CRY 125911 / M447-MBLK 125914) → aplicado vía MCP. Verificación MCP: `forma=cuadrado, hinge=flex, variantes=3, stock=6, skus 125910/125911/125914`. name "Vulk Be Again" (sin sufijo, sin sol competidor). Flow de norma cumplido (catalog-loader + seo-strategist). **⚠️ `frame_shape="cuadrado"` es HIPÓTESIS no confirmada** (lente 48×46mm ≈1:1, ambiguo cuadrado/redondo en este catálogo — confirmar al ver las fotos reales). **Bloque de imágenes NO aplicado**: founder dijo "fotos están listas" pero el bucket `products/vulk-be-again-receta/` seguía vacío al verificar (chequeado contra el bucket completo + variantes de nombre) → probable que falte confirmar la subida de su lado. Docs: seed 88, CLOUD_APPLIED, SEO_STRATEGY. **⚠️ SIN pushear**. **⬜ PENDIENTE FOUNDER**: confirmar que las fotos llegaron al bucket `products/vulk-be-again-receta/` (nombres tentativos: BE AGAIN MBLK PERFIL/FRENTE, BE AGAIN CRY OPTICS frente/perfil, BE AGAIN -M447-MBLK p/f + medidas.png — a confirmar exactos) → aplicar bloque imágenes + scale 1.1/1.0 + verificar PDP/grid + confirmar forma real del armazón.
+
 ✅ **COMPLETO + LIVE: Rusty Peating RECETA+SOL + Vulk Dieven RECETA+SOL (2026-07-14, seeds 84-87)**. El MCP de Supabase reconectó tras varios intentos fallidos durante la sesión — aplicados los 4 productos en una sola tanda. Verificación MCP: `rusty-peating-receta` (2 var, stock 4, 5 imgs, 1 primaria); `rusty-peating` (2 var, stock 3, 5 imgs, 1 primaria); `vulk-dieven-receta` (3 var, stock 6, 7 imgs, 1 primaria); `vulk-dieven` (3 var, stock 17, 7 imgs, 1 primaria). Los 4 PDPs HTTP 200 en vivo (ISR revalidó solo). **Ambos cross-links sol↔receta confirmados visibles** en las 4 fichas. Cero menciones de bluecut. Badge "Polarizado" visible en Dieven sol.
 
 - **Rusty Peating receta** (`rusty-peating-receta`): "Rusty Peating Carey", cuadrado unisex carey G-Flex 18,9g. SDEMI brillo 129251 (primary) / MDEMI mate 129254, $79.790 c/u.

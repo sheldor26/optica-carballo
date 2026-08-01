@@ -251,6 +251,18 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 
 > Respaldo (copy/alt, NO primaria): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260/8) — el unisex los cubre. **NO usar**: `anteojos vulk` (4.400 → hub), "armazón de receta" (0 vol). **ANTI-CANIBALIZACIÓN**: (A) vs **My Crew** (Vulk redondo G-Flex) → se separan por MATERIAL: Kirt lidera metal, My Crew la forma; Kirt NO usa `anteojos redondos` como primaria. (B) vs **Rusty Ther** (redondo metal unisex) → leads invertidos: Ther=FORMA (`anteojos redondos`) en Rusty, Kirt=MATERIAL (`anteojos de metal`) en Vulk; se resuelve por marca + branded + categoría `/anteojos-de-receta/metal` + **cross-link obligatorio Kirt↔Ther**. Único Vulk redondo de metal. Title: `Armazón de Receta Vulk Kirt Redondo Metal | Óptica Carballo`. H1: `Vulk Kirt Optics`. Linking: `/anteojos-de-receta/vulk` + `/anteojos-de-receta/metal` + `/anteojos-de-receta/vulk/metal` + related redondos receta (My Crew, Ther, Misty, Xold). Cross-link sol↔receta NO (Kirt sol no cargado).
 
+*Vulk Be Again (receta, forma cuadrado ⚠️HIPÓTESIS no concluyente, UNISEX, G-Flex, bisagras metálicas flex, 21,5g, apto mono/bi/progresivo/multifocal, 3 colores — MBLK negro mate / CRY transparente cristal / M447-MBLK marrón claro-negro) — slug `vulk-be-again-receta` en `/anteojos-de-receta/vulk/vulk-be-again-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos recetados | 720 | 9 | **primaria** — head de intención receta compartido (no canibaliza, mismo criterio Dieven/Kirt/Trial/Woxi/Peating/Zinz) → H1 alt, 1er párrafo, meta_description |
+| anteojos vulk / lentes vulk | 4.400/6.600 | 11/10 | head de marca → hub-only (`/marcas/vulk`), NO producto |
+| anteojos vulk mujer / hombre | 320/260 | 8/8 | atributo, unisex los cubre → copy/alt |
+| armazones vulk | 110 | 8 | único "armazón" con volumen → body 1 vez |
+| anteojos multifocales | 1.000 | 8 | soporte — compatibilidad real de armazón (NO venta de lente) → 1 mención copy |
+| vulk be again (branded) | 0 medido | ~4 | title/H1/slug/alt |
+
+> **name = "Vulk Be Again"** (SIN "Unisex" — a diferencia de Dieven que lo necesitó por coexistir con su versión de sol homónima; Be Again no tiene sol cargado, entra en el presupuesto de title limpio). **Anti-canibalización vs Vulk Strewn** (transparente/mujer, primaria `anteojos transparentes mujer` 390/15): Be Again tiene 1/3 colores transparente (CRY) vs 2/3 de Strewn — mismo criterio de honestidad que Dieven sol (regla "2/3 confirmadas"). Be Again NO reclama "anteojos transparentes" como keyword en ningún nivel; el color CRY se menciona solo en alt text de esa variante puntual. Cero solapamiento con Strewn. Diferenciador real: bisagras metálicas flex + compatibilidad explícita mono/bi/progresivo/multifocal + unisex + 21,5g — carril que ningún otro Vulk receta reclama con esa claridad. Cross-link obligatorio Be Again↔My Crew↔Kirt↔Dieven Unisex↔The Trial Optics (Vulk receta unisex) + `/anteojos-de-receta/vulk` + `/guias/como-leer-receta-anteojos`. Cross-link sol↔receta NO (Be Again sol no existe en el catálogo). Title (auto): `Vulk Be Again | Anteojos de Receta - Óptica Carballo` (54). H1/name: `Vulk Be Again`. ⚠️ **frame_shape="cuadrado" es hipótesis no confirmada** (lente 48×46mm ≈1:1, ambiguo entre cuadrado/redondo en este catálogo) — si se define otra forma al revisar las fotos, re-auditar posible overlap de keyword con Kirt (redondo).
+
 ### Cluster: RUSTY (junio 2026 — Ubersuggest CSV real)
 
 **Keyword head crítica**: `anteojos rusty` — **3.600 vol/mes, difficulty 8** (head de marca más fuerte del nicho; atacar agresivamente desde el hub `/marcas/rusty` y `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty`).
