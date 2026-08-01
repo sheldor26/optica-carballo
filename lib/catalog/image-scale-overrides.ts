@@ -260,6 +260,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-vartis-receta/VARTIS MDEMI B.CUT perfil.jpg': 1.1,
   'vulk-vartis-receta/VARTIS MDEMI B.CUT frente.jpg': 1.0,
 
+  // Rusty PRO 30 RECETA — cuadrado hombre, 1 variante. Fotos 900×442 (2:1) →
+  // baseline receta 1.1 perfil / 1.0 frente. PROVISIONAL, reverificar grid (regla 15).
+  'Rusty-PRO30-receta/PRO_30_LIGHT_GREY-perfil.jpg': 1.1,
+  'Rusty-PRO30-receta/PRO_30_LIGHT_GREY-frente.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

@@ -418,6 +418,16 @@ De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `ant
 
 > **Anti-canibalización 3 rectangulares Rusty receta + metal**: R-CY 02 lidera la FORMA (`anteojos/lentes rectangulares`), Woxi el HEAD receta (`anteojos recetados`), Invig el GÉNERO+branded (`anteojos rusty hombre`, único rectangular masculino). Invig NO usa rectangulares ni metal como primaria (son de R-CY 02 y Ther) — solo copy. Diferencia vs Ther (redondo metal unisex): Invig = rectangular + hombre. Cross-link obligatorio Invig↔Ther + Invig↔R-CY 02/Woxi. NO existe Invig de SOL todavía. Title (col): `Armazón de Receta Rusty Invig Hombre Metal | Óptica Carballo`.
 
+*Rusty PRO 30 Optics (receta, CUADRADO, HOMBRE, frente G-Flex + patillas G-Flex con alma de metal + terminales de goma antideslizantes, 22,9g, garantía 1 año, 1 SOLA variante — LIGHT GREY: frente gris transparente / terminales azules) — slug `rusty-pro-30-receta` en `/anteojos-de-receta/rusty/rusty-pro-30-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos transparentes hombre | 260 | 22 | **primaria** — carril color+género, LIBRE en el cluster (único Rusty transparente-hombre) → title/H1/1er párrafo |
+| anteojos transparentes | 720 | 16 | soporte del carril (compartido con Vulk Strewn femenino, sin colisión) → copy |
+| anteojos recetados | 720 | 9 | head de intención receta → copy |
+| rusty pro 30 receta (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug/alt |
+
+> **Anti-canibalización vs Spell (cuadrado masculino) e Invig (rectangular/hombre branded)**: PRO 30 es el 3er Rusty cuadrado-hombre del cluster pero NO pelea `anteojos cuadrados hombre` (210/14, primaria de Spell) ni `anteojos rusty hombre` (390/9, primaria de Invig) — su única variante (LIGHT GREY, frente gris transparente + terminales azules) le da un carril propio: `anteojos transparentes hombre` (260/22), libre en todo el sitio (la femenina la tiene Vulk Strewn). Diferenciador físico de copy (sin volumen medido): patillas con alma de metal + terminales de goma antideslizantes. NO usar "anteojos de metal" como keyword (frame es G-Flex, no metal — sería engañoso; esa keyword es de Kirt/Ther). Cross-link obligatorio PRO 30↔Spell↔Zinz↔Peating (Rusty cuadrados) + `/anteojos-de-receta/rusty` + `/anteojos-de-receta/rusty/hombre`. Sin versión de sol cargada — sin cross-link sol↔receta por ahora. Title (auto): `Rusty PRO 30 Optics | Anteojos de Receta - Óptica Carballo`.
+
 *Vulk Dieven Unisex (receta, RECTANGULAR de bordes anchos, UNISEX, G-Flex, bisagras plásticas reforzadas ultra liviano, 28,5g, medium, 3 colores — MBLK negro mate / SBLK negro brillo / L.ROSE rosa pálido) — slug `vulk-dieven-receta` en `/anteojos-de-receta/vulk/vulk-dieven-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
