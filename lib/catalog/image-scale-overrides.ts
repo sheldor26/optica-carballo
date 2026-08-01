@@ -242,6 +242,24 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-dieven/DIEVEN-ROSE-BROWN-GREEN-PERFIL.jpg': 1.1,
   'vulk-dieven/DIEVEN-ROSE-BROWN-GREEN-FRENTE.jpg': 1.0,
 
+  // Vulk Be Again RECETA — unisex, 2 familias de foto (mismo caso que Strewn CRY):
+  // MBLK/M447-MBLK 900×442 (2:1) → 1.1/1.0. CRY 5365×3577 (3:2 full-res, más
+  // margen) → 1.2/1.05. PROVISIONAL, reverificar grid (regla 15).
+  'vulk-be-again-receta/BE AGAIN MBLK - PERFIL.jpg': 1.1,
+  'vulk-be-again-receta/BE AGAIN MBLK FRENTE GALERIA  900X442.jpg': 1.0,
+  'vulk-be-again-receta/BE AGAIN CRY OPTICS- PERFIL.jpg': 1.2,
+  'vulk-be-again-receta/BE AGAIN CRY OPTICS frente.jpg': 1.05,
+  'vulk-be-again-receta/BE AGAIN -M447-MBLK p.jpg': 1.1,
+  'vulk-be-again-receta/BE AGAIN -M447-MBLK f.jpg': 1.0,
+
+  // Vulk Vartis RECETA — mujer, redondo (hipótesis), G-Flex+acetato. Baseline receta
+  // Vulk 900×442 PROVISIONAL (dimensión no confirmada por nombre de archivo) → 1.1
+  // perfil / 1.0 frente. Reverificar contra grid mujer (Katleen, Strewn), regla 15.
+  'vulk-vartis-receta/VARTIS L.PINK B.CUT perfil.jpg': 1.1,
+  'vulk-vartis-receta/VARTIS L.PINK B.CUT frente.jpg': 1.0,
+  'vulk-vartis-receta/VARTIS MDEMI B.CUT perfil.jpg': 1.1,
+  'vulk-vartis-receta/VARTIS MDEMI B.CUT frente.jpg': 1.0,
+
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".

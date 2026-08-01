@@ -41,17 +41,15 @@
 -- CROSS-LINK sol↔receta: NO existe Vulk Be Again de SOL cargado (grep vacío). Si se carga
 -- el sol como slug `vulk-be-again`, engancha solo por convención de slug.
 --
--- 📸 FOTOS: ⚠️ CARGA ABIERTA — el founder dijo "fotos listas" pero el bucket
--- products/vulk-be-again-receta/ sigue VACÍO (verificado, API funciona bien contra
--- carpetas control). El bloque de imágenes NO se aplica hasta confirmar la subida +
--- nombres exactos + HTTP 200. Nombres tentativos de la captura local del founder
--- (a confirmar carácter por carácter, histórico de inconsistencias tipo Dieven L.ROSE):
---   BE AGAIN MBLK PERFIL.../FRENTE...jpg (negro mate, PRIMARY)
---   BE AGAIN CRY OPTICS frente.jpg / ...RFIL.jpg (transparente)
---   BE AGAIN -M447-MBLK p.jpg / f.jpg (marrón claro/negro)
---   medidas.png
--- Scale 1.1 perfil / 1.0 frente PROVISIONAL (baseline receta Vulk 900×442; no confirmado
--- el tamaño real de estas fotos — reverificar antes de fijar, regla 15).
+-- 📸 FOTOS: ✅ SUBIDAS + bloque aplicado (2026-07-15). Bucket products/vulk-be-again-receta/
+-- (7, nombres reales, verificados HTTP 200):
+--   BE AGAIN MBLK - PERFIL.jpg / BE AGAIN MBLK FRENTE GALERIA  900X442.jpg (negro mate, PRIMARY, 900×442)
+--   BE AGAIN CRY OPTICS- PERFIL.jpg / BE AGAIN CRY OPTICS frente.jpg (transparente, ⚠️ 5365×3577 full-res, mismo caso que Strewn CRY)
+--   BE AGAIN -M447-MBLK p.jpg / BE AGAIN -M447-MBLK f.jpg (marrón claro/negro, 900×442)
+--   medidas.png (sort 99)
+-- Scale: MBLK/M447-MBLK 1.1 perfil / 1.0 frente (900×442 baseline receta); CRY 1.2 perfil /
+-- 1.05 frente (full-res 3:2, más margen → más scale, mismo criterio que Strewn CRY).
+-- PROVISIONAL — reverificar grid /anteojos-de-receta/vulk (regla 15).
 -- ============================================
 
 BEGIN;
