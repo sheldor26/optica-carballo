@@ -111,7 +111,18 @@ Founder pidió el de mayor leverage según el ranking de Codex del ciclo 4. Gate
 
 **Nota de proceso** (ver `MISTAKES.md`): la primera verificación en vivo (`document.body.innerText` + regex) dio falso negativo — perdí ~10 min agregando debug logs pensando que el código tenía un bug, cuando en realidad el link SÍ se renderizaba (confirmado después con `document.querySelector` directo). `innerText` es sensible a animaciones de entrada (`RevealOnScroll`); para confirmar "¿este elemento existe" hay que consultar el DOM directo, no el texto visible.
 
-**Próximo paso EXACTO**: ninguno urgente. Falta commit + push (ver estado del working tree). Quedan 3 propuestas del loop sin elegir: jerarquizar trust signals, conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
+**Próximo paso original**: commit + push, y quedaban 3 propuestas del loop sin elegir. Superado por lo de abajo: se commiteó/pusheó y el founder eligió jerarquizar trust signals a continuación.
+
+### Implementado: jerarquización visual de los 7 trust signals (2 niveles)
+
+Gate rápido con `conversion-optimizer` ANTES de codear (confirma la agrupación exacta que había propuesto Antigravity en un ciclo previo del loop — es rediseño de una superficie cerca de la decisión de compra).
+
+- `components/product/product-trust-signals.tsx` separado en `PILLAR_SIGNALS` (3: Retiro en local, Asesoramiento personal, Envío — mismo tratamiento de tarjeta+ícono que antes, sin cambios de layout) y `LEGAL_SIGNALS` (4: Factura A o B, Garantía legal 1 año, Cambios y devoluciones, Botón de arrepentimiento — bajan a lista compacta de texto plano separada por "·", sin ícono, debajo de un borde superior, subrayado solo on-hover/focus).
+- Decisión de agrupación (conversion-optimizer): "Cambios y devoluciones" va con las legales, no con los pilares — mismo fundamento de Defensa del Consumidor que garantía/arrepentimiento, a diferencia de los 3 pilares que sí son diferenciadores comerciales.
+- Los 4 links de la lista compacta mantienen su `href` (siguen navegables). "Factura A o B" nunca había tenido link — se le agregó uno a `/preguntas-frecuentes` (verificado: existe una FAQ real ahí, "¿Emiten factura?", no es un link inventado).
+- Verificado en vivo: los 3 pilares en grid arriba, los 4 legales en lista fluida abajo con "·", los 4 links navegan a las URLs correctas. Chequeo de overflow horizontal en mobile (375px): `scrollWidth === innerWidth`, sin scroll horizontal real — el corte visual en el screenshot de la herramienta de browser es un artefacto de captura, no un bug de layout. `pnpm typecheck`/`lint` limpios.
+
+**Próximo paso EXACTO**: ninguno urgente. Falta commit + push. Quedan 2 propuestas del loop sin elegir: conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 

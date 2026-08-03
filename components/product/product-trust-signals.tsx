@@ -1,13 +1,5 @@
 import Link from 'next/link';
-import {
-  Truck,
-  RotateCcw,
-  Stethoscope,
-  FileText,
-  Store,
-  Undo2,
-  Scale,
-} from 'lucide-react';
+import { Truck, Stethoscope, Store } from 'lucide-react';
 
 type Signal = {
   icon: typeof Store;
@@ -17,7 +9,8 @@ type Signal = {
   href?: string;
 };
 
-const SIGNALS: Signal[] = [
+/** Pilares de valor — diferenciadores comerciales, tratamiento con tarjeta+ícono. */
+const PILLAR_SIGNALS: Signal[] = [
   {
     icon: Store,
     title: 'Retiro gratis en local',
@@ -34,34 +27,32 @@ const SIGNALS: Signal[] = [
     title: 'Envío a todo el país',
     description: 'Con Correo Argentino con seguimiento',
   },
-  {
-    icon: FileText,
-    title: 'Factura A o B',
-    description: 'Electrónica y oficial',
-  },
-  {
-    icon: RotateCcw,
-    title: 'Cambios y devoluciones',
-    description: 'Hasta 30 días sin uso',
-    href: '/politica-de-devolucion',
-  },
-  {
-    icon: Scale,
-    title: 'Garantía legal 1 año',
-    description: 'Contra defectos de fabricación, envío a cargo nuestro',
-    href: '/politica-de-devolucion',
-  },
-  {
-    icon: Undo2,
-    title: 'Botón de arrepentimiento',
-    description: 'Cancelás hasta 10 días',
-    href: '/boton-de-arrepentimiento',
-  },
 ];
 
 /**
- * Strip compacta de 7 trust signals para PDP. Grid 2 col en mobile,
- * 3 en tablet, 4 en desktop. Diseño minimal: icono outline + título + sub.
+ * Garantías/legales — con base en Defensa del Consumidor (igual que
+ * "cambios y devoluciones", que va acá y no en los pilares: es una política
+ * con el mismo fundamento legal que garantía/arrepentimiento, no un
+ * diferenciador comercial). Lista compacta de texto, sin ícono — bajar
+ * densidad visual es el objetivo, un ícono chico la reintroduce
+ * (conversion-optimizer 2026-08-01).
+ */
+const LEGAL_SIGNALS: { title: string; href: string }[] = [
+  { title: 'Factura A o B', href: '/preguntas-frecuentes' },
+  { title: 'Garantía legal 1 año', href: '/politica-de-devolucion' },
+  { title: 'Cambios y devoluciones', href: '/politica-de-devolucion' },
+  { title: 'Botón de arrepentimiento', href: '/boton-de-arrepentimiento' },
+];
+
+/**
+ * Strip de trust signals para PDP, 2 niveles de jerarquía (rediseño
+ * conversion-optimizer + Antigravity 2026-08-01 — los 7 signals con el mismo
+ * tratamiento visual se veían monótonos/saturados):
+ *
+ * 1. **Pilares** (3): grid con tarjeta+ícono, sin cambios de layout respecto
+ *    a antes. 2 col mobile, 3 en tablet+.
+ * 2. **Legales** (4): lista compacta de texto plano debajo, separada por un
+ *    borde superior, sin ícono, subrayado solo on-hover/focus.
  *
  * Las claims son universales del negocio (BUSINESS_POLICIES.md):
  * - 30 años: founder confirmó "empresa familiar 30+ años".
@@ -75,8 +66,8 @@ const SIGNALS: Signal[] = [
 export function ProductTrustSignals() {
   return (
     <div className="border-border/60 bg-muted/20 rounded-xl border p-4">
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {SIGNALS.map((signal) => {
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {PILLAR_SIGNALS.map((signal) => {
           const Icon = signal.icon;
           const body = (
             <>
@@ -114,6 +105,22 @@ export function ProductTrustSignals() {
             </li>
           );
         })}
+      </ul>
+
+      <ul className="border-border/60 text-muted-foreground mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-3 text-xs">
+        {LEGAL_SIGNALS.map((signal, idx) => (
+          <li key={signal.title} className="flex items-center gap-3">
+            <Link
+              href={signal.href}
+              className="outline-none hover:underline focus-visible:underline underline-offset-2"
+            >
+              {signal.title}
+            </Link>
+            {idx < LEGAL_SIGNALS.length - 1 && (
+              <span aria-hidden="true">·</span>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );
