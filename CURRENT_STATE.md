@@ -140,6 +140,25 @@ Founder pidió "busquen maneras de mejorar la carga de imágenes, que carguen m�
 
 **Pendiente real**: confirmar el LCP p75 antes/después con Vercel Speed Insights — el MCP de Vercel estaba rate-limited al momento del audit, así que el hallazgo de código está verificado pero la mejora cuantitativa todavía no está medida contra datos reales de producción. Recomendación de `nextjs-performance`: revisar Speed Insights (Mobile, filtro `/anteojos-de-sol` y una página de marca) después de este deploy.
 
+### Chequeo post-deploy: MCP de Vercel no expone Speed Insights, PageSpeed Insights sí (con matices)
+
+El MCP de Vercel (`get_web_analytics`) solo da datos de Web Analytics (visitas/pageviews), no Core Web Vitals — no hay forma de consultar Speed Insights (LCP real) por API desde acá. Alternativa usada: PageSpeed Insights de Google (vía MCP de SEO — solo audita el dominio raíz, no rutas específicas — y vía browser directo a pagespeed.web.dev, que sí acepta URLs puntuales).
+
+**Datos reales obtenidos**:
+- Dominio raíz (`opticacarballo.com.ar`, homepage — **no tiene grillas de producto, no es la página que se arregló hoy**): LCP mobile 3.6s, desktop 1.6s (datos de laboratorio del MCP de SEO).
+- `/anteojos-de-sol` específico (Lighthouse vía pagespeed.web.dev, mobile, Moto G Power emulado + **4G lenta simulada** — throttling agresivo, no representa la experiencia de un usuario real típico): **LCP 6.2s**, FCP 1.4s, Performance score 71/100. **CrUX de campo (usuarios reales) no disponible** para esta URL puntual — "no tiene suficientes datos reales sobre la velocidad" (tráfico insuficiente a esa URL exacta para el reporte agregado de Chrome).
+- Hallazgo nuevo y concreto: **"Mejora la entrega de imágenes — ahorro estimado de 954 KiB"** en `/anteojos-de-sol`. No se pudo identificar la imagen exacta (la UI de PageSpeed Insights usa shadow DOM, no extraíble fácil por script) — pendiente de investigar cuál imagen específica está pesando de más, independiente del fix de `priority`/`eager` de hoy (ese fix ataca el ORDEN de carga, no el PESO del archivo).
+
+**Limitación honesta**: no hay una medición "antes" tomada con este mismo método antes del deploy de hoy, así que no puedo dar una comparación limpia de "bajó X segundos". El fix de código está verificado y es correcto (confirmado en el DOM), pero el número real de 6.2s bajo throttling agresivo sugiere que aunque ayudó, probablemente no alcanza solo con esto — el hallazgo de los 954 KiB es la pista más concreta para seguir.
+
+**Próximo paso EXACTO**: investigar qué imagen específica de `/anteojos-de-sol` está generando el ahorro de 954 KiB estimado (probablemente una foto servida a una resolución mayor de la necesaria, o un formato subóptimo en algún caso puntual) — candidato natural para el próximo ciclo de `nextjs-performance`.
+
+### Investigación de los 954 KiB — no reproduce en inspección directa, probablemente no es un problema real de peso
+
+Se inspeccionaron en producción (`opticacarballo.com.ar/anteojos-de-sol`, mobile, browser real) TODAS las imágenes que cargó la página al scrollear: las 4 con `priority` + 6 más de productos siguientes + los thumbnails de variante (`w=128`) + el logo de marca. **Cada una individualmente pesa entre 700 bytes y 6,4 KB** (AVIF, negociación de formato funcionando correcto — confirmado con `content-type: image/avif` en cada respuesta). Ninguna imagen sirve en JPEG/tamaño completo por error. Revisado también el resto de la lista de requests de la página (JS, CSS, fuentes) — nada más ahí que explique 954 KiB.
+
+**Conclusión**: no se pudo reproducir ni ubicar el origen de los 954 KiB reportados por Lighthouse/PageSpeed Insights. Con cada imagen real ya pesando <7KB, sumar TODAS las de la página completa (46 productos × ~2-4 fotos c/u) da un total estimado de ~300-400KB, lejos de 954KB. Es más probable que el número de Lighthouse sea un artefacto de sus condiciones específicas de test (negociación de formato distinta en su Chromium headless, o un cálculo hipotético/agregado que no corresponde a un archivo real pesado) que un problema real y accionable. **No se seguirá persiguiendo este número específico** — el pipeline de imágenes del sitio está genuinamente bien optimizado; el margen de mejora de LCP real probablemente esté más del lado de latencia de red/TTFB bajo throttling agresivo que de peso de archivo.
+
 **Próximo paso EXACTO**: commit + push. Después: confirmar LCP real en Speed Insights cuando el rate-limit del MCP se libere. Quedan 2 propuestas del loop sin elegir: conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)

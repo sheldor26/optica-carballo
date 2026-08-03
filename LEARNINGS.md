@@ -22,6 +22,17 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-01 — Ninguna herramienta de medición de performance da la respuesta completa sola — hay que combinar 3 fuentes según qué falte
+
+**Contexto**: founder pidió confirmar el LCP real de `/anteojos-de-sol` después del fix de `priority`/`eager`. Intenté 3 vías en orden y cada una tenía un límite distinto:
+1. MCP de Vercel (`get_web_analytics`) — solo tiene Web Analytics (visitas/pageviews), NO expone Core Web Vitals/Speed Insights por API. Descartado de entrada.
+2. MCP de SEO (`pagespeed_audit`) — sí da datos reales de PageSpeed, pero el parámetro es `domain`, no URL — solo audita la raíz del dominio, ignora cualquier path que se le agregue (confirmado: pasarle `dominio.com/ruta` devolvió resultados idénticos a solo `dominio.com`).
+3. Browser directo a `pagespeed.web.dev/analysis?url=<url-completa>` — esta SÍ acepta URLs puntuales con path, y corrió Lighthouse real contra `/anteojos-de-sol` específicamente. Tardó ~45-65s en terminar (la UI muestra "Ejecutando análisis" mientras tanto, no hay que asumir que terminó rápido) y usa shadow DOM (no se puede scrapear el detalle expandible de "estadísticas" con `querySelectorAll` plano — necesitaría `shadowRoot` explícito, no vale la pena para un dato puntual).
+
+**Por qué importa**: si hubiera aceptado el resultado del paso 2 sin cuestionarlo (dominio raíz, que además ni siquiera tiene grillas de producto — es la home), le habría reportado al founder un número que no medía lo que él preguntó. Confirmar QUÉ página mide cada herramienta antes de citar el número es tan importante como el número mismo.
+
+**Cómo replicar**: para pedir "el LCP real de la página X" en cualquier proyecto — primero confirmar si la herramienta disponible mide dominio completo o URL puntual (leer la firma del parámetro, no asumir); si no hay opción de URL puntual, ir directo a `pagespeed.web.dev` vía browser con la URL exacta. Y aceptar que a veces no hay datos de campo (CrUX) reales para una URL con poco tráfico rastreado — reportar eso explícitamente en vez de forzar solo el dato de laboratorio como si fuera equivalente.
+
 ## 2026-08-01 — Verificar en el navegador en vivo ANTES de construir un plan sobre un componente que un Explore agent leyó del código — puede ser código muerto
 
 **Contexto**: al planear el ítem 2 (banner de WhatsApp+foto en categoría), un Explore agent auditó `components/catalog/category-index-page.tsx` (banner del quiz existente, patrón visual, etc.) y armé el plan de implementación sobre esa base — incluí el nuevo banner ahí, al lado del banner del quiz. El founder aprobó el plan.
