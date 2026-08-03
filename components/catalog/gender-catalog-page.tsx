@@ -119,8 +119,14 @@ export function GenderCatalogPage({
           className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-16 md:gap-x-10 md:gap-y-20 lg:grid-cols-4"
         >
           {products.map((p, idx) => (
-            <RevealOnScroll key={p.slug} delay={(idx % 3) * 70} className="h-full">
+            <RevealOnScroll
+              key={p.slug}
+              delay={(idx % 3) * 70}
+              className="h-full"
+              eager={idx < 4}
+            >
               <ProductCard
+                priority={idx < 4}
                 product={{
                   slug: p.slug,
                   name: p.name,

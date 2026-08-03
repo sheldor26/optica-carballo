@@ -122,7 +122,25 @@ Gate rápido con `conversion-optimizer` ANTES de codear (confirma la agrupación
 - Los 4 links de la lista compacta mantienen su `href` (siguen navegables). "Factura A o B" nunca había tenido link — se le agregó uno a `/preguntas-frecuentes` (verificado: existe una FAQ real ahí, "¿Emiten factura?", no es un link inventado).
 - Verificado en vivo: los 3 pilares en grid arriba, los 4 legales en lista fluida abajo con "·", los 4 links navegan a las URLs correctas. Chequeo de overflow horizontal en mobile (375px): `scrollWidth === innerWidth`, sin scroll horizontal real — el corte visual en el screenshot de la herramienta de browser es un artefacto de captura, no un bug de layout. `pnpm typecheck`/`lint` limpios.
 
-**Próximo paso EXACTO**: ninguno urgente. Falta commit + push. Quedan 2 propuestas del loop sin elegir: conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
+**Próximo paso original**: commit + push, quedaban 2 propuestas del loop. Superado por lo de abajo: founder pidió específicamente mejorar velocidad de carga de imágenes.
+
+### Implementado: fix real de LCP en grids de catálogo (`priority` + `eager`)
+
+Founder pidió "busquen maneras de mejorar la carga de imágenes, que carguen más rápido" — no una propuesta del loop, pedido directo. Auditado en paralelo con `nextjs-performance` (primario) y Codex (segunda opinión, quedó corriendo en background más de lo esperado — no llegó a tiempo, se sigue si aporta algo nuevo).
+
+**Contexto previo ya sano** (confirmado antes de invocar a los agentes, para no hacerles repetir trabajo): `next.config.ts` ya tenía AVIF+WebP y `minimumCacheTTL` de 31 días; JPGs originales en Supabase Storage ya livianos (20-100KB, muestreados); `sizes` ya correcto en grid y galería PDP.
+
+**Hallazgo real de `nextjs-performance`** (ya estaba parcialmente anotado en `BACKLOG.md:69` desde 2026-06-15, pero sin la causa raíz completa): `ProductCard` nunca recibía `priority` pese a que `CrossfadeImage` (el componente interno) ya lo soportaba — la primera foto de cada grid de categoría/marca/género/forma (candidata natural a LCP) cargaba lazy. Pero además, un problema compuesto que nadie había anotado: esas mismas cards de la 1ra fila estaban envueltas en `RevealOnScroll`, que las renderiza en `opacity-0` hasta que React hidrata y un `IntersectionObserver` dispara la transición — así que aunque se le pusiera `priority`, el LCP seguía atado al momento de hidratación del JS, no a cuándo llegaban los bytes de la imagen. Arreglar solo una de las dos cosas no alcanzaba.
+
+**Fix**: prop `priority?: boolean` nueva en `ProductCard` (pasada a `CrossfadeImage`), y prop `eager?: boolean` nueva en `RevealOnScroll` (`components/ui/reveal-on-scroll.tsx`) — cuando es `true`, arranca `visible=true` desde el SSR y se salta el `IntersectionObserver` y las clases de transición por completo. Aplicado `priority={idx < 4}` + `eager={idx < 4}` en los 6 grids de catálogo (`category-filtered-page.tsx`, `gender-catalog-page.tsx`, `shape-catalog-page.tsx`, `brand-page.tsx`, `brand-gender-page.tsx`, `brand-filter-page.tsx`) y `priority={idx < 4}` en `favoritos/page.tsx` (sin `RevealOnScroll`, no hacía falta `eager`). `recommended-products-grid.tsx` (grid del recomendador de rostro) se dejó sin tocar a propósito — ese grid solo aparece después de que el usuario sube una foto e interactúa, nunca es parte de la carga inicial de ninguna página, así que `priority` ahí no tendría efecto real en LCP.
+
+**Descartado por `nextjs-performance`** (con razón, no perseguir): pre-generar variantes de imagen en build — no vale la pena al volumen actual (~90 productos), la optimización on-demand de Vercel ya se calienta sola y se comparte entre visitantes por 31 días. Preload/prefetch por hover — margen de mejora marginal y frágil a esta escala, mejor resolver primero el hallazgo #1.
+
+**Verificado en vivo** (DOM post-hidratación, no HTML crudo por curl — esta app usa streaming SSR con Suspense, `curl` no refleja el HTML final): primeras 4 cards de `/anteojos-de-sol` sin atributo `loading` (carga eager, comportamiento correcto de Next.js cuando `priority=true`) y con `opacity-100`/sin clases de animación desde el primer render; cards 5+ con `loading="lazy"` y clases de fade-in sin cambios. Visualmente: la página ya no muestra el hueco en blanco mientras esperaba la animación. `pnpm typecheck`/`lint` limpios.
+
+**Pendiente real**: confirmar el LCP p75 antes/después con Vercel Speed Insights — el MCP de Vercel estaba rate-limited al momento del audit, así que el hallazgo de código está verificado pero la mejora cuantitativa todavía no está medida contra datos reales de producción. Recomendación de `nextjs-performance`: revisar Speed Insights (Mobile, filtro `/anteojos-de-sol` y una página de marca) después de este deploy.
+
+**Próximo paso EXACTO**: commit + push. Después: confirmar LCP real en Speed Insights cuando el rate-limit del MCP se libere. Quedan 2 propuestas del loop sin elegir: conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 

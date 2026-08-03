@@ -101,7 +101,16 @@ const MAX_VISIBLE_THUMBS = 3;
  * inválido (<button> dentro de <a>). El article wrapper es relative para
  * que el botón posicionado absolute funcione.
  */
-export function ProductCard({ product }: { product: ProductCardData }) {
+export function ProductCard({
+  product,
+  priority = false,
+}: {
+  product: ProductCardData;
+  /** Posición en el grid, no propiedad del producto — pasar `true` solo para
+   * las cards de la primera fila (candidatas a LCP). Nunca en todas
+   * (nextjs-performance 2026-08-01: anula el beneficio). */
+  priority?: boolean;
+}) {
   const outOfStock = product.inStockCount === 0;
   const variants = product.variants ?? [];
   // Ref al contenedor de la imagen: origen del "vuelo al carrito" del quick-add.
@@ -269,6 +278,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 scale={currentImages.primaryScale}
                 alt={imageAlt}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                priority={priority}
                 durationMs={350}
                 className={cn(
                   'absolute inset-0',
