@@ -159,6 +159,22 @@ Se inspeccionaron en producción (`opticacarballo.com.ar/anteojos-de-sol`, mobil
 
 **Conclusión**: no se pudo reproducir ni ubicar el origen de los 954 KiB reportados por Lighthouse/PageSpeed Insights. Con cada imagen real ya pesando <7KB, sumar TODAS las de la página completa (46 productos × ~2-4 fotos c/u) da un total estimado de ~300-400KB, lejos de 954KB. Es más probable que el número de Lighthouse sea un artefacto de sus condiciones específicas de test (negociación de formato distinta en su Chromium headless, o un cálculo hipotético/agregado que no corresponde a un archivo real pesado) que un problema real y accionable. **No se seguirá persiguiendo este número específico** — el pipeline de imágenes del sitio está genuinamente bien optimizado; el margen de mejora de LCP real probablemente esté más del lado de latencia de red/TTFB bajo throttling agresivo que de peso de archivo.
 
+### Sexto ciclo del loop (re-activado, modo automático) — hallazgo: cero tracking de embudo e-commerce en GA4
+
+Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO lo shippeado hoy (8 cambios) — encontró algo de mayor leverage que las 2 propuestas pendientes (tracking WhatsApp, View Transitions):
+
+**Cero eventos de embudo e-commerce en GA4** pese a que la infraestructura ya existe (`lib/analytics/track.ts`, con `Events.CHECKOUT_INITIATED` **definido pero nunca usado**). Ningún botón de compra real llama `track()`: `add-to-cart-button.tsx`, `quick-add-button.tsx`, el CTA "Iniciar compra" de `cart-page.tsx` — todos agregan/avanzan sin instrumentar nada. Faltan los eventos estándar de GA4 ecommerce: `view_item`, `select_item`, `add_to_cart`, `begin_checkout`, `purchase` (con `item_id`/`item_name`/`category`/`brand`/`price`/`quantity`).
+
+**Por qué importa más que las 2 propuestas pendientes**: después de shippear 8 cambios hoy (cuotas, cross-sell, trust signals, LCP, WhatsApp+foto, recordatorio de receta), sin medir el embudo real no hay forma de saber cuál de estos cambios realmente mueve conversión versus cuál solo "se siente mejor". Es una base de medición, no una feature más.
+
+**Ranking actualizado de Codex**:
+1. Funnel GA4 e-commerce mínimo (nuevo, mayor leverage).
+2. Tracking de WhatsApp en las 5 CTAs restantes (ya identificado, sigue vigente).
+3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
+4. View Transitions grid→PDP (polish, menor impacto de negocio).
+
+**Próximo paso EXACTO**: founder elige. El loop se re-armó automático de nuevo (mismo alcance que antes: investiga y propone, no implementa sin que el founder elija).
+
 **Próximo paso EXACTO**: commit + push. Después: confirmar LCP real en Speed Insights cuando el rate-limit del MCP se libere. Quedan 2 propuestas del loop sin elegir: conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
