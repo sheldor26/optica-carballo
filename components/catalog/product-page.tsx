@@ -252,7 +252,13 @@ export async function ProductDetailPage({
       priceCents: minPrice !== null ? minPrice : null,
       frameShape: extractFrameShape(product.attributes),
     }),
-    fetchCompanionModality({ slug: product.slug, categorySlug: category.slug }),
+    fetchCompanionModality({
+      slug: product.slug,
+      categorySlug: category.slug,
+      brandSlug: product.brand.slug,
+      frameShape: extractFrameShape(product.attributes),
+      priceCents: minPrice,
+    }),
   ]);
 
   // Alertas: el estado de sesión + alerta existente lo resuelve

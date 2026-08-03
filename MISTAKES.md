@@ -24,6 +24,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-08-01 — `document.body.innerText` + regex da falso negativo dos veces en la misma sesión — perseguí un "bug" que no existía por ~10 minutos
+
+**Estado**: ✅ Cerrado (sin impacto en el código shippeado — el bug era de mi método de verificación, no de la implementación)
+
+**Qué pasó**: al implementar el cross-sell por similitud (`fetchCompanionModality`), verifiqué en vivo con `document.body.innerText.match(/regex/gi)` y me dio `null` — asumí que la feature no funcionaba y pasé ~10 minutos agregando `console.error` de debug en 3 puntos de la función, confirmando con logs que la query, el filtro de precio y el resultado final eran TODOS correctos. Recién ahí consulté el DOM directo (`document.querySelector('a[href*="..."]')?.outerHTML`) y confirmé que el link SÍ estaba ahí, con el copy correcto — el problema era que `innerText` depende del layout computado (visibilidad, opacity, animaciones de entrada tipo `RevealOnScroll`) y no siempre captura contenido que técnicamente existe en el DOM. Ya me había pasado ANTES en esta misma sesión con el grid de trust signals (interpreté una animación de fade-in como una página rota) — el patrón no terminó de generalizarse la segunda vez.
+
+**Causa raíz**: usar `innerText` (sensible a layout/visibilidad) como método de verificación por defecto, en vez de `querySelector` + `textContent`/`outerHTML` (indiferente a layout) cuando lo que quiero confirmar es "¿este elemento específico existe con este contenido", no "¿qué ve un usuario ahora mismo".
+
+**Regla preventiva**: cuando un regex sobre `innerText` da `null`/vacío inesperado, ANTES de asumir que el código tiene un bug — buscar el elemento específico esperado con `document.querySelector` (por href, texto parcial, o selector conocido) y leer su `textContent`/`outerHTML` directo. Si eso SÍ lo encuentra, el problema es de timing/visibilidad de la verificación, no del código — no agregar debug logs al código de producción todavía. Reservar `innerText` para verificaciones genuinas de "qué es visible ahora" (ej. confirmar que algo condicional NO se muestra), no como primer chequeo de "¿esto se renderizó".
+
 ## 2026-08-01 — Casi corrí una prueba de cron contra la base de PRODUCCIÓN sin darme cuenta — `.env.local` apunta a cloud, no a local
 
 **Estado**: ✅ Cerrado (sin daño real — la query falló limpio antes de escribir nada; corregido en el mismo turno)

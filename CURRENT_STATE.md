@@ -61,7 +61,57 @@ Founder eligió los 2 ítems de mayor confianza de la síntesis del segundo cicl
 
 Ambos: `pnpm typecheck`/`lint` limpios. Commiteado y pusheado.
 
-**Próximo paso EXACTO**: ninguno urgente. Founder pidió pasar el loop a modo automático ("/loop automatico") — dejó de disparar cada ciclo a mano. Arrancó el 3er ciclo de investigación automáticamente al cerrar este; ver entry más reciente de este archivo (o `git log`/mensaje de cierre de esta sesión) para el resultado si ya terminó.
+Founder pidió pasar el loop a modo automático ("/loop automatico") — dejó de disparar cada ciclo a mano. **Aclaración importante**: la autonomía de IMPLEMENTACIÓN no cambió — el loop sigue "investiga y propone", el founder sigue eligiendo qué se shippea. Lo que cambió es que ya no hace falta que él escriba "seguí con el loop" — se re-arma solo (`ScheduleWakeup`, dentro de esta sesión; si algún día quiere que sobreviva el cierre de la sesión, es el mecanismo `/schedule` en la nube, no este).
+
+### Tercer ciclo del loop — audit de las propuestas pendientes del segundo ciclo (en vez de research externo repetido)
+
+Dado que investigar afuera cada ~20 min sería caro y redundante, el ciclo 3 auditó contra el código real las propuestas que quedaron sin elegir del ciclo 2 (regla #14, la misma disciplina que reveló que los ítems 1 y 2 ya estaban casi construidos) — esto corrige estimaciones de esfuerzo con datos reales en vez de suposición externa.
+
+- **Cross-sell "completá tu par"**: ya existe (`fetchCompanionModality` en `lib/catalog/queries.ts`, wireado en `product-page.tsx`), pero solo matchea productos con el MISMO slug exacto (`vulk-biller` ↔ `vulk-biller-receta`) — confirma la sospecha de Codex ("son pocos pares"). Extenderlo a matcheo por forma+marca+rango de precio es el trabajo real pendiente, esfuerzo medio (no bajo como parecía).
+- **View Transitions API**: ya está prendido a nivel de página completa (`app/globals.css` líneas 168-184, fade genérico en cada navegación). Falta la parte visualmente más fuerte que sugería el research — que la foto del grid se estire hasta la ficha — necesita `view-transition-name` compartido entre `ProductCard` y la PDP. Esfuerzo bajo, nativo, sin librería nueva.
+- **Reviews de producto con estrellas**: CERO infraestructura confirmada (sin campo en `types/supabase.ts`, sin componente, sin `aggregateRating` en JSON-LD). Es la MÁS cara de toda la lista de propuestas, no "esfuerzo bajo-medio" como sugería el research de competencia — necesita tabla nueva, moderación, y sobre todo volumen real de reviews que tarda en acumularse orgánicamente.
+- **Optimistic UI en favoritos/carrito**: confirmado que sigue sin implementar (`grep useOptimistic` sin resultados) — oportunidad real de esfuerzo bajo, sin cambios de estimación.
+
+**Próximo paso EXACTO**: ninguno urgente — founder elige de esta lista corregida cuándo quiera. El loop se re-armó automático (no requiere que el founder dispare el próximo ciclo).
+
+### Cuarto ciclo del loop — pasada corta con Codex (fallback automático de 1h, sin research externo repetido)
+
+En vez de repetir investigación web completa cada hora (caro y redundante sin que medie ship entre ciclos), se le pidió a Codex una opinión fresca acotada, grounded en los 5 shippeados de hoy (garantía, WhatsApp+foto, recordatorio de receta, cuotas MP, link del recomendador) más las 5 propuestas ya auditadas del ciclo 3.
+
+**Ranking de leverage real de Codex** (no solo esfuerzo, impacto de negocio):
+1. **Cross-sell "completá tu par" (forma+marca+precio)** — mayor leverage: hoy `fetchCompanionModality` solo cubre pares de slug exacto (pocos), dejando la mayoría de PDPs sin oferta contextual en la zona de decisión.
+2. Jerarquizar trust signals — mejora claridad, no abre camino de compra nuevo.
+3. Optimistic UI en carrito — impacto bajo, **corrección**: favoritos (`WishlistButton`) YA es optimista (state local + server action en background) — la propuesta original decía "cero implementado" basado en un grep de `useOptimistic` (el hook específico) que no capturó el patrón manual ya usado. Acotar la propuesta a solo carrito si se retoma.
+4. View Transitions grid→PDP — percepción, poco impacto directo de negocio.
+5. Reviews — potencial alto a largo plazo pero mal timing hoy (sin volumen ni moderación, puede restar confianza en vez de sumar).
+
+**Idea nueva no listada antes**: tracking granular de clicks a WhatsApp por origen (`source`: banner categoría, advisor PDP, cross-modality, etc.) — hoy no hay forma de saber qué CTA de WhatsApp realmente genera conversaciones que convierten, y con 3 puntos de entrada distintos ya shippeados hoy, medirlo es barato y de alto valor para un founder solo antes de invertir en features grandes nuevas.
+
+**Próximo paso EXACTO**: ninguno urgente — founder elige. Loop re-armado automático de nuevo.
+
+### Quinto ciclo del loop — audit de la idea nueva del ciclo 4 (tracking WhatsApp)
+
+`lib/analytics/track.ts` YA tiene el evento `Events.WHATSAPP_CLICK` con convención de parámetro `source` — ya implementado en 2 de 7 CTAs de WhatsApp del sitio (`floating-whatsapp.tsx`, `floating-chat.tsx`). Los otros 5 (incluido `whatsapp-photo-banner.tsx`, armado hoy mismo) no llaman `track()` — cero instrumentación. Conectarlos es un `onClick` de una línea por archivo, mismo patrón ya probado 2 veces, sin tocar UI/copy/legal — el hallazgo de Codex del ciclo 4 era todavía más barato de lo que él mismo estimó.
+
+**Nota para el founder, no solo hallazgo**: después de 3 ciclos de investigación (3, 4, 5) sin que se elija nada nuevo para implementar, ya se acumularon 4 propuestas listas para ejecutar sin más audit: cross-sell por forma+marca+precio, jerarquizar trust signals, conectar tracking de WhatsApp en las 5 CTAs restantes, y View Transitions grid→PDP. Seguir generando ciclos de investigación en modo automático sin que nada de esto se shippee empieza a ir en contra de "aprendo shipeando, no hablando" — vale la pena que el founder elija de esta lista la próxima vez que esté activo, en vez de que el loop siga sumando más propuestas al montón.
+
+**Loop PARADO 2026-08-01** (no re-armado para un 6to ciclo): se avisó explícitamente al founder del retorno decreciente al cerrar el ciclo 5, no llegó respuesta/elección antes de que el próximo wakeup disparara, así que se cortó en vez de generar otro ciclo repetitivo sin ship de por medio. Se puede reactivar con `/loop` o `/loop continuar` en cualquier momento.
+
+**Próximo paso original**: founder elige entre las 4 propuestas listas — o pide reactivar el loop. Superado por lo de abajo: eligió cross-sell al toque.
+
+### Implementado: cross-sell por similitud (forma+marca+precio) cuando no hay match exacto
+
+Founder pidió el de mayor leverage según el ranking de Codex del ciclo 4. Gate obligatorio con `conversion-optimizer` ANTES de escribir código (es una superficie de venta, y el copy original — "¿lo necesitás con tu graduación?" — implica que es el MISMO modelo, lo cual sería falso para un match por similitud).
+
+- `fetchCompanionModality` (`lib/catalog/queries.ts`) ahora prueba match exacto por slug primero (sin cambios, comportamiento preexistente), y si no hay, cae a un fallback: misma marca + misma `attributes->>frame_shape` + precio ±25% en la categoría opuesta, ordenado por cercanía de precio. Umbral estricto a propósito (conversion-optimizer): ante la duda, `null` en vez de forzar un match dudoso que rompa confianza en la zona de decisión de compra.
+- `CompanionModality` suma `matchType: 'exact' | 'similar'`. `CrossModalityLink` (`components/product/cross-modality-link.tsx`) rama el copy: exacto mantiene "¿Lo necesitás con tu graduación?"/"¿Lo querés también de sol?"; similar usa "¿Buscás algo parecido, para receta?"/"Ver un armazón similar" (nunca insinúa que es el mismo anteojo). Mismo tratamiento visual para ambos (conversion-optimizer: el copy ya distingue, un badge sería sobre-ingeniería) — único ajuste no-visual: `alt={companion.name}` en el caso similar (antes `alt=""` siempre) para que un lector de pantalla no asuma que es el mismo producto por el thumbnail.
+- `product-page.tsx` pasa `brandSlug`/`frameShape`/`priceCents` (ya computados ahí mismo para `fetchRelatedProducts`) al nuevo fallback.
+
+**Verificado en vivo contra datos reales de producción** (vía Supabase MCP, `execute_sql` de solo lectura, para confirmar qué matches debían aparecer antes de probar en el browser): `vulk-biller` (hexagonal, sin par en receta) → sin companion, correcto. `vulk-arvin` (cuadrado, sin par exacto) → matchea `vulk-tour-81-receta` (más cercano en precio de 4 candidatos válidos), copy "similar" correcto. `vulk-katleen` (tiene par exacto) → sigue con el copy "exacto" sin cambios, cero regresión. `pnpm typecheck`/`lint` limpios.
+
+**Nota de proceso** (ver `MISTAKES.md`): la primera verificación en vivo (`document.body.innerText` + regex) dio falso negativo — perdí ~10 min agregando debug logs pensando que el código tenía un bug, cuando en realidad el link SÍ se renderizaba (confirmado después con `document.querySelector` directo). `innerText` es sensible a animaciones de entrada (`RevealOnScroll`); para confirmar "¿este elemento existe" hay que consultar el DOM directo, no el texto visible.
+
+**Próximo paso EXACTO**: ninguno urgente. Falta commit + push (ver estado del working tree). Quedan 3 propuestas del loop sin elegir: jerarquizar trust signals, conectar tracking de WhatsApp en las 5 CTAs restantes, View Transitions grid→PDP.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 

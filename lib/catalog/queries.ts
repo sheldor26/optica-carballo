@@ -519,12 +519,23 @@ export async function fetchRelatedProducts(args: {
 }
 
 /**
- * Datos del producto "hermano" en la otra modalidad (sol ↔ receta) del MISMO
- * modelo, para el cross-link de la PDP. El vínculo se deriva por convención de
- * naming del slug: el armazón de receta lleva sufijo `-receta`, el de sol no.
- * (Validado en DB 2026-06-14: los 6 pares sol↔receta cumplen exactamente
- * slug ± "-receta" — rusty-misty/patien/spell/xold, vulk-katleen, vulk-the-trial.)
- * Devuelve null si el modelo no tiene par en la otra modalidad.
+ * Datos del producto "hermano" en la otra modalidad (sol ↔ receta), para el
+ * cross-link de la PDP. Dos niveles de match:
+ *
+ * 1. `exact` — el MISMO modelo, derivado por convención de naming del slug
+ *    (el armazón de receta lleva sufijo `-receta`, el de sol no). Validado en
+ *    DB 2026-06-14: los 6 pares sol↔receta cumplen exactamente slug ± "-receta"
+ *    — rusty-misty/patien/spell/xold, vulk-katleen, vulk-the-trial.
+ * 2. `similar` — fallback cuando no hay match exacto: misma marca + misma
+ *    `frame_shape` + precio ±25%, en la otra categoría. Umbral estricto a
+ *    propósito (conversion-optimizer 2026-08-01): un match dudoso en la zona
+ *    de decisión de compra rompe más confianza que no mostrar nada, así que
+ *    ante la duda devuelve null en vez de forzar cobertura.
+ *
+ * El caller (PDP) usa `matchType` para elegir copy honesto — "similar" NUNCA
+ * debe decir que es el mismo anteojo.
+ *
+ * Devuelve null si no hay ningún match en ninguno de los dos niveles.
  */
 export type CompanionModality = {
   href: string;
@@ -533,6 +544,7 @@ export type CompanionModality = {
   name: string;
   imagePath: string | null;
   imageScale: number;
+  matchType: 'exact' | 'similar';
 };
 
 type CompanionRow = {
@@ -543,32 +555,14 @@ type CompanionRow = {
   images: { storage_path: string; is_primary: boolean; sort_order: number }[] | null;
 };
 
-export async function fetchCompanionModality(args: {
-  slug: string;
-  categorySlug: string;
-}): Promise<CompanionModality | null> {
-  const isReceta = args.categorySlug === 'anteojos-de-receta';
-  const companionSlug = isReceta
-    ? args.slug.replace(/-receta$/, '')
-    : `${args.slug}-receta`;
-  if (companionSlug === args.slug) return null;
+type SimilarCompanionRow = CompanionRow & {
+  variants: { price_cents: number; stock_qty: number; is_active: boolean }[];
+};
 
-  const supabase = createStaticClient();
-  const { data } = await supabase
-    .from('products')
-    .select(
-      `slug, name,
-       brand:brands!inner(slug, is_active),
-       category:categories!inner(slug),
-       images:product_images(storage_path, is_primary, sort_order)`,
-    )
-    .eq('is_active', true)
-    .eq('slug', companionSlug)
-    .maybeSingle()
-    .returns<CompanionRow>();
-
-  if (!data || !data.brand.is_active) return null;
-
+function toCompanionModality(
+  data: CompanionRow,
+  matchType: CompanionModality['matchType'],
+): CompanionModality {
   const imgs = data.images ?? [];
   const primaryPath =
     imgs.find((i) => i.is_primary)?.storage_path ??
@@ -581,7 +575,92 @@ export async function fetchCompanionModality(args: {
     name: data.name,
     imagePath: primaryPath,
     imageScale: getImageScale(primaryPath),
+    matchType,
   };
+}
+
+export async function fetchCompanionModality(args: {
+  slug: string;
+  categorySlug: string;
+  /** Necesarios solo para el fallback por similitud — omitir si no se tienen
+   * a mano hace que la función se limite al match exacto. */
+  brandSlug?: string;
+  frameShape?: string | null;
+  priceCents?: number | null;
+}): Promise<CompanionModality | null> {
+  const isReceta = args.categorySlug === 'anteojos-de-receta';
+  const targetCategorySlug = isReceta ? 'anteojos-de-sol' : 'anteojos-de-receta';
+  const companionSlug = isReceta
+    ? args.slug.replace(/-receta$/, '')
+    : `${args.slug}-receta`;
+
+  const supabase = createStaticClient();
+
+  if (companionSlug !== args.slug) {
+    const { data } = await supabase
+      .from('products')
+      .select(
+        `slug, name,
+         brand:brands!inner(slug, is_active),
+         category:categories!inner(slug),
+         images:product_images(storage_path, is_primary, sort_order)`,
+      )
+      .eq('is_active', true)
+      .eq('slug', companionSlug)
+      .maybeSingle()
+      .returns<CompanionRow>();
+
+    if (data && data.brand.is_active) {
+      return toCompanionModality(data, 'exact');
+    }
+  }
+
+  if (!args.brandSlug || !args.frameShape || args.priceCents == null) {
+    return null;
+  }
+
+  const minPrice = Math.floor(args.priceCents * 0.75);
+  const maxPrice = Math.ceil(args.priceCents * 1.25);
+
+  const { data: similarRows } = await supabase
+    .from('products')
+    .select(
+      `slug, name,
+       brand:brands!inner(slug, is_active),
+       category:categories!inner(slug),
+       variants:product_variants(price_cents, stock_qty, is_active),
+       images:product_images(storage_path, is_primary, sort_order)`,
+    )
+    .eq('is_active', true)
+    .eq('category.slug', targetCategorySlug)
+    .eq('brand.slug', args.brandSlug)
+    .eq('attributes->>frame_shape', args.frameShape)
+    .neq('slug', args.slug)
+    .returns<SimilarCompanionRow[]>();
+
+  const candidates = (similarRows ?? [])
+    .filter((row) => row.brand.is_active)
+    .map((row) => {
+      const inStock = row.variants.filter((v) => v.is_active && v.stock_qty > 0);
+      const minVariantPrice =
+        inStock.length > 0 ? Math.min(...inStock.map((v) => v.price_cents)) : null;
+      return { row, minVariantPrice };
+    })
+    .filter(
+      (c): c is { row: SimilarCompanionRow; minVariantPrice: number } =>
+        c.minVariantPrice !== null &&
+        c.minVariantPrice >= minPrice &&
+        c.minVariantPrice <= maxPrice,
+    )
+    .sort(
+      (a, b) =>
+        Math.abs(a.minVariantPrice - args.priceCents!) -
+        Math.abs(b.minVariantPrice - args.priceCents!),
+    );
+
+  if (candidates.length === 0) return null;
+
+  return toCompanionModality(candidates[0]!.row, 'similar');
 }
 
 /**
