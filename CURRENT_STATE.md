@@ -173,19 +173,17 @@ Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO
 3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
 4. View Transitions grid→PDP (polish, menor impacto de negocio).
 
-### 🔴 BUG BLOQUEANTE en curso — primera venta real no puede generar envío (MiCorreo 500)
+### 🟡 BUG en curso — primera venta real no puede generar envío (MiCorreo 500) — fix aplicado, esperando confirmación
 
 Founder tuvo la primera venta real del sitio (pedido `14373e52-0ab4-4838-9804-ee3a36976f76`, Ronald Ferrari, envío a sucursal Correo Viedma R0300) e interrumpió el loop automático para reportarlo — correcto, esto tiene prioridad sobre cualquier propuesta del loop. Loop parado.
 
-**Síntoma**: al clickear "Generar envío en Correo" en el panel admin, devuelve `MiCorreo /shipping/import 500: {"code":500,"message":null}` — error genérico sin detalle útil del lado de MiCorreo.
+**Síntoma**: al clickear "Generar envío en Correo" en el panel admin, devuelve `MiCorreo /shipping/import 500: {"code":500,"message":null}`.
 
-**Hallazgo**: `lib/correo/import.ts` tiene una advertencia propia sin resolver: *"pendiente de validar en el ambiente de TEST... NO usar contra producción hasta validar"* — la integración se usó en prod de todas formas (ver entry nueva en `MISTAKES.md` sobre el gap de proceso).
+**Causa raíz CONFIRMADA vía Vercel logs**: con logging de diagnóstico temporal deployado (commit `138c1cc`, fix de truncación `28609fe`), el log del 2do reintento del founder mostró el body exacto mandado a MiCorreo: `sender.originAddress = {streetName: null, streetNumber: null, city: null, provinceCode: null, postalCode: "3342"}`. `buildSender()` (`lib/correo/import.ts`) arma la dirección de la óptica desde env vars `NEXT_PUBLIC_BUSINESS_ADDRESS_*`, que no están cargadas en Vercel — a diferencia de `getBusinessInfo()` en `lib/site/business.ts` (mismo dato), no tenía fallback hardcodeado, así que el resto del sitio se ve bien pero MiCorreo recibía un remitente sin calle/ciudad/provincia. `postalCode: "3342"` sí resolvía porque `normalizePostalCode` cae a una env var server-only distinta (`BUSINESS_POSTAL_CODE`) que sí está seteada. `shipping.address` en null es correcto/esperado para este envío (a sucursal, usa `agencyCode`).
 
-**Hipótesis principal (sin confirmar todavía)**: `buildSender()` arma la dirección de la óptica (remitente) desde env vars `NEXT_PUBLIC_BUSINESS_ADDRESS_*` SIN el fallback hardcodeado que sí tiene `lib/site/business.ts` para el mismo dato — si esas env vars no están cargadas en Vercel, el resto del sitio se ve bien (por el fallback en business.ts) pero MiCorreo recibe remitente vacío. La lógica de peso NO depende de `product.weight_grams` (usa paquete default fijo 500g + 250g/ítem extra), así que se descartó esa hipótesis.
+**Fix aplicado**: agregado a `buildSender()` el mismo fallback hardcodeado que ya usa `business.ts` — calle "Av. Lavalle 2686", localidad "Gob. Virasoro", provincia "Corrientes" (→ código `W`), postal "3342". No se agregó fallback de teléfono (sin precedente en el código, y el teléfono del destinatario sí llegaba bien — no era la causa). Typecheck OK.
 
-**Acción tomada**: agregado logging de diagnóstico temporal en `importShipment()` (sin exponer `customerId`) — loguea el body exacto enviado y la respuesta cruda de MiCorreo a Vercel logs. Deployado (commit `138c1cc`). Vercel logs (`get_runtime_logs`) NO mostraron detalle adicional del intento ya hecho por el founder (la request original solo aparece como `POST 200` a nivel de Server Action — el error 500 de MiCorreo queda encapsulado en el valor de retorno, no como error HTTP visible en logs sin el nuevo logging).
-
-**Próximo paso EXACTO**: esperando que el founder reintente "Generar envío" (es idempotente, seguro reintentar) para capturar el log con el payload real y confirmar/descartar la hipótesis del remitente vacío. Con eso, aplicar el fix real (agregar el mismo fallback hardcodeado a `buildSender()`, u otra causa si los logs muestran algo distinto) y sacar el logging temporal después.
+**Próximo paso EXACTO**: pedirle al founder que reintente "Generar envío" una vez más (idempotente) para confirmar que ahora da `{ok:true}`. Si confirma: sacar el logging temporal de `importShipment()` y cerrar el entry de `MISTAKES.md` como ✅.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 

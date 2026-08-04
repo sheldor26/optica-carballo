@@ -31,23 +31,30 @@ import type {
 /** Datos del remitente (la óptica) leídos de env. MiCorreo puede usar los de la
  * cuenta si van null, pero hay errores tipo "El codigo Postal del emisor debe
  * tener valor" → los mandamos explícitos. */
+// Fallbacks hardcodeados de la dirección real del local — mismo patrón y mismos
+// valores que getBusinessInfo() en lib/site/business.ts. Confirmado en producción
+// (2026-08-04, primera venta real) que las env vars NEXT_PUBLIC_BUSINESS_ADDRESS_*
+// no están seteadas en Vercel; sin fallback, MiCorreo recibía un remitente con
+// streetName/city/provinceCode en null y tiraba 500 sin mensaje.
 function buildSender(): CorreoSender {
   const e = process.env;
-  const provinceName = e.NEXT_PUBLIC_BUSINESS_ADDRESS_REGION ?? '';
+  const street = e.NEXT_PUBLIC_BUSINESS_ADDRESS_STREET || 'Av. Lavalle 2686';
+  const city = e.NEXT_PUBLIC_BUSINESS_ADDRESS_LOCALITY || 'Gob. Virasoro';
+  const provinceName = e.NEXT_PUBLIC_BUSINESS_ADDRESS_REGION || 'Corrientes';
   return {
     name: e.NEXT_PUBLIC_SITE_NAME ?? 'Óptica Carballo',
     phone: e.NEXT_PUBLIC_BUSINESS_PHONE ?? null,
     cellPhone: e.NEXT_PUBLIC_BUSINESS_PHONE ?? null,
     email: process.env.RESEND_FROM_EMAIL?.match(/<(.+)>/)?.[1] ?? null,
     originAddress: {
-      streetName: e.NEXT_PUBLIC_BUSINESS_ADDRESS_STREET ?? null,
+      streetName: street,
       streetNumber: null, // la calle de env ya incluye altura; ajustar tras test si separa
       floor: null,
       apartment: null,
-      city: e.NEXT_PUBLIC_BUSINESS_ADDRESS_LOCALITY ?? null,
-      provinceCode: provinceName ? provinceCodeFor(provinceName) : null,
+      city,
+      provinceCode: provinceCodeFor(provinceName),
       postalCode: normalizePostalCode(
-        e.NEXT_PUBLIC_BUSINESS_ADDRESS_POSTAL ?? e.BUSINESS_POSTAL_CODE ?? '',
+        e.NEXT_PUBLIC_BUSINESS_ADDRESS_POSTAL || e.BUSINESS_POSTAL_CODE || '3342',
       ),
     },
   };
