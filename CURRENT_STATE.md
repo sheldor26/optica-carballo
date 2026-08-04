@@ -173,6 +173,10 @@ Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO
 3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
 4. View Transitions grid→PDP (polish, menor impacto de negocio).
 
+### ✅ Detalle de variante visible en el pedido (admin + cliente) — 2026-08-04
+
+Founder reportó (con captura) que el detalle de pedido mostraba dos líneas de "Vulk Dieven" idénticas salvo por el SKU numérico — no se podía saber a simple vista qué color/variante era cada una. `describeVariant()`/`extractDisplayCode()` ya existían en el selector de variantes de la PDP (`components/product/variant-list.tsx`) leyendo `frame_color`/`lens_color`/`size`/`model_code` de `attributes`; se extrajeron a `lib/catalog/variant-label.ts` (módulo puro, sin `'use client'`) y se reusan en `app/admin/pedidos/[id]/page.tsx` + `components/account/order-detail.tsx`, contra `order_items.variant_attributes` (mismo shape, snapshoteado al crear el pedido). Verificado contra los datos reales del pedido de Ronald Ferrari (`OC-2026-00014`) vía Supabase: variante 1 → "Negro brillo / Gris Degradado · SBLK/SG91 POL", variante 2 → "Rosa Palido Translucido / Marron Degradado Verde · ROSE/BROWN-GREEN" — ya distinguibles. typecheck OK. **No pude verificar visualmente en el navegador** (ambas páginas requieren sesión logueada, admin o cliente, que no tengo) — pendiente que el founder lo confirme mirando el pedido real.
+
 ### ✅ RESUELTO — primera venta real no podía generar envío a sucursal (MiCorreo 500)
 
 Founder tuvo la primera venta real del sitio (pedido `14373e52-0ab4-4838-9804-ee3a36976f76`, Ronald Ferrari, envío a sucursal Correo Viedma R0300) e interrumpió el loop automático para reportarlo — correcto, esto tiene prioridad sobre cualquier propuesta del loop. Loop parado.
