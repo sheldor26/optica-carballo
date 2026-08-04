@@ -195,6 +195,14 @@ export async function importShipment(
   const raw = await res.text().catch(() => '');
 
   if (!res.ok) {
+    // DEBUG TEMPORAL (2026-08-04, primer envío real fallando con 500 sin
+    // mensaje) — loguea el body exacto (sin credenciales) para diagnosticar
+    // en Vercel logs. Sacar una vez resuelto.
+    console.error('[MiCorreo import FAILED]', {
+      status: res.status,
+      raw,
+      sentBody: { ...body, customerId: '[redacted]' },
+    });
     // 402 con "ya importada" = idempotencia, no es fallo real.
     if (/ya fue importada/i.test(raw)) {
       return { ok: true, createdAt: '', alreadyImported: true };
