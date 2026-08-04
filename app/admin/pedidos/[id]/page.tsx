@@ -6,6 +6,7 @@ import {
   fetchOrderByIdAdmin,
   fetchOrderStatusEventsAdmin,
 } from '@/lib/orders/admin-queries';
+import { describeVariant, extractDisplayCode } from '@/lib/catalog/variant-label';
 import { OrderStatusBadge } from '@/components/account/order-status-badge';
 import { OrderTimeline } from '@/components/account/order-timeline';
 import { OrderStatusControl } from '@/components/admin/order-status-control';
@@ -119,6 +120,11 @@ export default async function Page({
                 <div className="flex-1">
                   <p className="text-foreground font-medium">
                     {item.productName}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {describeVariant(item.variantAttributes)}
+                    {extractDisplayCode(item.variantAttributes) &&
+                      ` · ${extractDisplayCode(item.variantAttributes)}`}
                   </p>
                   <p className="text-muted-foreground text-xs">
                     {item.brandName ? `${item.brandName} · ` : ''}SKU{' '}

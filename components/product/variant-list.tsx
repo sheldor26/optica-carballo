@@ -5,6 +5,7 @@ import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { VariantWhatsappCta } from '@/components/product/variant-whatsapp-cta';
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { isPolarizedVariant as isPolarized } from '@/lib/catalog/polarized';
+import { describeVariant, extractDisplayCode } from '@/lib/catalog/variant-label';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { cn } from '@/lib/utils';
@@ -19,69 +20,6 @@ export type VariantListItem = {
   attributes: AttributesJson;
   primaryImagePath: string | null;
 };
-
-const FRAME_COLOR_LABELS: Record<string, string> = {
-  negro: 'Negro',
-  'negro-mate': 'Negro mate',
-  'negro-brillo': 'Negro brillo',
-  'negro-satinado': 'Negro satinado',
-  carey: 'Carey',
-  'carey-mate-y-negro-mate': 'Frente carey mate / patillas negro mate',
-  'negro-brillo-carey': 'Frente negro brillo / patillas carey',
-  'steelblue-negro-mate': 'Frente azul acero / patillas negro mate',
-  transparente: 'Transparente',
-  'azul-mate': 'Azul mate',
-  'gris-oscuro-transparente': 'Gris oscuro transparente',
-  dorado: 'Dorado',
-  plata: 'Plata',
-  azul: 'Azul',
-  marron: 'Marrón',
-  blanco: 'Blanco',
-  rojo: 'Rojo',
-  verde: 'Verde',
-};
-
-const LENS_COLOR_LABELS: Record<string, string> = {
-  gris: 'Gris',
-  marron: 'Marrón',
-  verde: 'Verde',
-  azul: 'Azul',
-  'marron-degrade': 'Marrón degradé',
-  'gris-degrade': 'Gris degradé',
-  espejado: 'Espejado',
-};
-
-function toTitleCase(s: string): string {
-  return s
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
-    .join(' ');
-}
-
-function lookup(map: Record<string, string>, key: unknown): string | null {
-  if (typeof key !== 'string') return null;
-  if (map[key]) return map[key];
-  return toTitleCase(key);
-}
-
-function describeVariant(attrs: AttributesJson): string {
-  const frame = lookup(FRAME_COLOR_LABELS, attrs.frame_color);
-  const lens = lookup(LENS_COLOR_LABELS, attrs.lens_color);
-  const size = typeof attrs.size === 'string' ? attrs.size : null;
-  const parts = [frame, lens, size].filter((v): v is string => Boolean(v));
-  return parts.length > 0 ? parts.join(' / ') : 'Variante';
-}
-
-/** Extrae el código de modelo del fabricante (`model_code`) para mostrarlo
- * junto al label de la variante. Founder 2026-05-31: "agregar la variante
- * al lado C..." — quiere ver C1/C2/C3 del Vrast, GB10/SG91 del Dearly, etc.
- * Devuelve string para renderizar o null si no hay code. */
-function extractDisplayCode(attrs: AttributesJson): string | null {
-  const code = attrs.model_code;
-  if (typeof code !== 'string' || code.trim().length === 0) return null;
-  return code.trim();
-}
 
 export function VariantList({
   variants,

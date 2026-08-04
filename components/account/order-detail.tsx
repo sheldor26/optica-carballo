@@ -3,6 +3,7 @@ import { ExternalLink, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OrderStatusBadge } from '@/components/account/order-status-badge';
 import { OrderTimeline } from '@/components/account/order-timeline';
+import { describeVariant, extractDisplayCode } from '@/lib/catalog/variant-label';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
@@ -111,6 +112,11 @@ export function OrderDetailView({
               <div className="flex-1">
                 <p className="text-foreground font-medium">
                   {item.productName}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {describeVariant(item.variantAttributes)}
+                  {extractDisplayCode(item.variantAttributes) &&
+                    ` · ${extractDisplayCode(item.variantAttributes)}`}
                 </p>
                 <p className="text-muted-foreground text-xs">
                   {item.brandName ? `${item.brandName} · ` : ''}SKU{' '}
