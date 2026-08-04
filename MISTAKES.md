@@ -24,6 +24,18 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 # Log de mistakes
 
+## 2026-08-04 — Integración de MiCorreo marcada "NO usar en producción hasta validar en TEST" llegó a producción igual y bloqueó la primera venta real
+
+**Estado**: 🔴 Abierto (diagnóstico en curso, ver `CURRENT_STATE.md` para el estado más reciente)
+
+**Qué pasó**: la primera venta real del sitio (pedido a Ronald Ferrari, Viedma) quedó bloqueada al intentar generar el envío — `MiCorreo /shipping/import 500: {"code":500,"message":null}`. Al revisar `lib/correo/import.ts` encontré un comentario propio, ya existente en el código, que dice explícitamente: *"⚠️ ESTADO: construido contra el manual v2025-01-14, pendiente de validar en el ambiente de TEST... NO usar contra producción hasta validar — el import en prod genera un envío real (preimposición)."* La integración se usó en producción de todos modos, sin que nada en el flujo (UI del admin, feature flag, chequeo de config) impidiera o advirtiera sobre eso.
+
+**Causa raíz (parcial, en investigación)**: hipótesis fuerte — `buildSender()` arma la dirección de la óptica desde variables de entorno (`NEXT_PUBLIC_BUSINESS_ADDRESS_*`) SIN el fallback hardcodeado que sí tiene `lib/site/business.ts` para el mismo dato (ese archivo hardcodea "Av. Lavalle 2686"/"3342"/etc. si la env var falta, explícitamente "para que aparezca en producción sin depender de env vars en Vercel"). Si esas env vars nunca se cargaron en Vercel, el resto del sitio se ve bien igual (por el fallback), pero MiCorreo recibe un remitente con dirección vacía — plausible causa de un 500 sin mensaje. Sin confirmar todavía con el log real (logging de diagnóstico agregado y deployado, esperando que el founder reintente).
+
+**Por qué importa más allá de este bug puntual**: un comentario de "no usar en prod" en el código no es un gate real — no bloquea nada, nadie lo lee antes de clickear un botón en el panel admin. La causa raíz de fondo (más allá del bug técnico específico) es de proceso: cuando una integración queda explícitamente marcada como no-validada, necesita un gate real (env var / feature flag que la desactive, o un check en el propio código que falle temprano con un mensaje claro) — no alcanza con documentarlo en un comentario.
+
+**Regla preventiva**: cuando se construye una integración externa marcada como "pendiente de validar", agregar un guard real en el código (ej. `if (!CORREO_VALIDATED_IN_TEST) return { ok: false, error: '...' }` gateado por env var) en vez de confiar en que un comentario evite el uso prematuro. Aplica en general a cualquier feature marcada "no usar todavía" en este proyecto.
+
 ## 2026-08-01 — `document.body.innerText` + regex da falso negativo dos veces en la misma sesión — perseguí un "bug" que no existía por ~10 minutos
 
 **Estado**: ✅ Cerrado (sin impacto en el código shippeado — el bug era de mi método de verificación, no de la implementación)
