@@ -18,5 +18,10 @@ export function getProductImageUrl(storagePath: string): string {
   if (storagePath.startsWith('http://') || storagePath.startsWith('https://')) {
     return storagePath;
   }
-  return `${SUPABASE_URL}/storage/v1/object/public/${PRODUCTS_BUCKET}/${storagePath}`;
+  // Encodeamos por segmento (no la ruta entera) para preservar las "/" como
+  // separadores. Necesario porque algunos storage_path tienen caracteres con
+  // significado especial en URLs — ej. "vulk-ready?-receta/Ready?-CRY-PERFIL.jpg":
+  // el "?" sin encodear se interpreta como inicio de query string y corta el path.
+  const encodedPath = storagePath.split('/').map(encodeURIComponent).join('/');
+  return `${SUPABASE_URL}/storage/v1/object/public/${PRODUCTS_BUCKET}/${encodedPath}`;
 }

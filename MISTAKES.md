@@ -22,6 +22,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-04 — `getProductImageUrl` no encodeaba caracteres especiales del `storage_path`, rompió las fotos de Vulk Ready?
+
+**Qué pasó**: al cargar el producto Vulk Ready? (nombre real del modelo con signo de pregunta, `storage_path` = `vulk-ready?-receta/Ready?-CRY-PERFIL.jpg`), las fotos aparecían rotas en el sitio. `lib/storage/product-image-url.ts` (`getProductImageUrl`) concatenaba el `storage_path` crudo dentro de la URL sin encodear. Con espacios funcionaba (el navegador los tolera y auto-encodea al parsear), pero el `?` es un carácter con significado reservado en URLs (inicia el query string) — al no encodearlo, el navegador cortaba la ruta ahí mismo y la request a Supabase Storage quedaba rota.
+
+**Causa raíz**: la función asumía que cualquier `storage_path` era "seguro" para concatenar directo en una URL, sin considerar que viene de nombres de archivo reales del founder (que pueden traer cualquier carácter, incluidos los reservados de URL). Como es el primer producto con `?` en el nombre, el bug estuvo latente sin manifestarse en ~90 productos previos.
+
+**Regla preventiva**: `getProductImageUrl` ahora encodea CADA SEGMENTO del path con `encodeURIComponent` (split por `/`, encode, join) antes de concatenar — preserva las `/` como separadores de carpeta pero encodea todo lo demás (`?`, espacios, etc). Había un segundo lugar (`lib/catalog/metadata.ts`, el `og:image` de metadata) que duplicaba la misma construcción de URL sin pasar por la función central — se corrigió para reusar `getProductImageUrl` en vez de reimplementar la lógica. **Regla general**: cualquier URL construida a partir de un `storage_path` (o cualquier dato que venga de un nombre de archivo real, no controlado) DEBE pasar por `getProductImageUrl`, nunca concatenarse a mano.
+
+---
+
 # Log de mistakes
 
 ## 2026-08-04 — Integración de MiCorreo marcada "NO usar en producción hasta validar en TEST" llegó a producción igual y bloqueó la primera venta real

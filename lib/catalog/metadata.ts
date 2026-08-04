@@ -6,6 +6,7 @@ import { createStaticClient } from '@/lib/supabase/static';
 import { fetchCategoryByFilter } from '@/lib/catalog/queries';
 import { isPlaceholder } from '@/lib/catalog/placeholder';
 import { hasAvailableStock } from '@/lib/catalog/availability';
+import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { CATEGORIES, type CategoryConfig } from '@/lib/catalog/categories';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -307,7 +308,7 @@ export async function buildProductMetadata(
     .maybeSingle();
 
   const ogImageUrl = primaryImage?.storage_path
-    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/products/${primaryImage.storage_path}`
+    ? getProductImageUrl(primaryImage.storage_path)
     : null;
 
   const isPh = isPlaceholder(product.name);
