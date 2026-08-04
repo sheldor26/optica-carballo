@@ -195,6 +195,8 @@ Founder tuvo la primera venta real del sitio (pedido `14373e52-0ab4-4838-9804-ee
 
 **Próximo paso EXACTO (del founder, manual, ya conocido — no es código)**: entrar al panel de MiCorreo, copiar el nº de seguimiento del envío de Ronald Ferrari, pegarlo en "Cambiar estado" del pedido + marcar "Enviado" (dispara el email al cliente con el tracking). De paso, cancelar/ignorar los 4 envíos de prueba `DIAG-*` del panel.
 
+**Precio real de Expreso confirmado (2026-08-04, founder preguntó por prioridad/tipo de envío)**: cotización `/rates` (read-only, sin efectos secundarios, sin envíos de prueba nuevos) para Viedma CP 8500: Clásico sucursal $7.488 / Expreso sucursal $17.160 (2.3x) / Clásico domicilio $10.848 / Expreso domicilio $24.871 (2.3x) — más caro que la estimación "~2x" anotada en junio (línea de arriba). Actualiza la decisión pendiente **(2) ¿solo Clásico o también Expreso como upgrade?**: con el dato real en mano, falta que el founder decida si lo activa en el checkout — pregunta hecha, sin respuesta todavía.
+
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 
 Plan formal aprobado por el founder (`/Users/juan/.claude/plans/sunny-bouncing-flamingo.md`) tras audit obligatorio (regla #14) que encontró bastante más construido de lo esperado en los 3 frentes. Los 3 verificados en vivo (`pnpm typecheck`/`lint` limpios en cada uno) y con gates de agentes especialistas ANTES de tocar código, no después.
