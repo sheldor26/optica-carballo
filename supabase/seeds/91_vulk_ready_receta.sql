@@ -13,8 +13,8 @@
 -- penalización SEO real por el símbolo — mismo criterio de precisión que The Sil/
 -- PRO 30/Be Again sin traducir/limpiar nombres). El `slug` SÍ va sin el símbolo
 -- (`vulk-ready-receta`, URL-safe) — slug técnico y nombre visible son cosas
--- distintas. `storage_path` de las imágenes SÍ lleva el "?" literal porque así se
--- llaman los archivos reales en el bucket (columna `storage_path text`, sin
+-- distintas. La CARPETA sí lleva el "?" literal porque así se llama en el bucket
+-- (columna `storage_path text`, sin
 -- restricción de charset, confirmado en migración 20260528030711).
 --
 -- 1 SOLA VARIANTE (item simple → mercadolibre_variation_code = NULL). Precio/stock
@@ -41,13 +41,23 @@
 -- CROSS-LINK sol↔receta: NO existe Vulk Ready de SOL cargado (grep vacío, con y sin
 -- el símbolo). Si se carga el sol como slug `vulk-ready`, engancha solo.
 --
--- 📸 FOTOS (bucket products/vulk-ready?-receta/ — ⚠️ nombre de carpeta LITERAL con el
+-- 📸 FOTOS (bucket products/vulk-ready?-receta/ — ⚠️ nombre de CARPETA LITERAL con el
 -- signo de pregunta, distinto del slug técnico; confirmado listando el bucket
--- completo, HTTP 200 verificado con URL-encoding %3F):
---   Ready?-CRY-PERFIL.jpg / Ready?-CRY-FRENTE.jpg (900×442, PRIMARY perfil)
+-- completo, HTTP 200 verificado):
+--   Ready-CRY-PERFIL.jpg / Ready-CRY-FRENTE.jpg (900×442, PRIMARY perfil)
 --   medidas.png (sort 99)
 -- Scale 1.1 perfil / 1.0 frente (baseline receta establecido, 900×442 idéntico al
 -- resto del cluster; reverificar grid, regla 15).
+--
+-- ⚠️ BUG + FIX (2026-08-04): los NOMBRES DE ARCHIVO originales también tenían el "?"
+-- literal (`Ready?-CRY-PERFIL.jpg`), lo que rompía las fotos en el sitio — el
+-- navegador interpretaba el "?" como inicio de query string y cortaba la URL antes
+-- de llegar al archivo. `lib/storage/product-image-url.ts` no encodeaba el
+-- storage_path. Corregido en 2 lugares: (a) `getProductImageUrl` ahora encodea cada
+-- segmento del path con encodeURIComponent (fix general, sirve para cualquier futuro
+-- storage_path con caracteres reservados); (b) el founder renombró los ARCHIVOS
+-- (no la carpeta) sacándoles el "?" — este seed y la DB ya reflejan los nombres
+-- reales post-rename. Ver MISTAKES.md 2026-08-04.
 -- ============================================
 
 BEGIN;
@@ -103,9 +113,9 @@ ON CONFLICT (sku) DO UPDATE SET
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-ready-receta'), (SELECT id FROM public.product_variants WHERE sku='956944'),
-   'vulk-ready?-receta/Ready?-CRY-PERFIL.jpg', 'Armazón de receta Vulk Ready? unisex vista lateral, transparente cristal', 900, 442, 0, true),
+   'vulk-ready?-receta/Ready-CRY-PERFIL.jpg', 'Armazón de receta Vulk Ready? unisex vista lateral, transparente cristal', 900, 442, 0, true),
   ((SELECT id FROM public.products WHERE slug='vulk-ready-receta'), (SELECT id FROM public.product_variants WHERE sku='956944'),
-   'vulk-ready?-receta/Ready?-CRY-FRENTE.jpg', 'Armazón de receta Vulk Ready? unisex vista frontal, transparente cristal', 900, 442, 1, false),
+   'vulk-ready?-receta/Ready-CRY-FRENTE.jpg', 'Armazón de receta Vulk Ready? unisex vista frontal, transparente cristal', 900, 442, 1, false),
   ((SELECT id FROM public.products WHERE slug='vulk-ready-receta'), NULL,
    'vulk-ready?-receta/medidas.png', 'Esquema técnico de medidas Vulk Ready?: frente 145mm, lente 54x42mm, puente 19mm, varilla 142mm', 1500, 1500, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
