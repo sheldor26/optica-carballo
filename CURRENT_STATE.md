@@ -173,6 +173,16 @@ Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO
 3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
 4. View Transitions grid→PDP (polish, menor impacto de negocio).
 
+### 🟡 EN CURSO — DNI/CUIT + Factura A en el checkout (2026-08-04)
+
+Founder preguntó si hace falta pedir DNI para facturar. Consulté `argentine-ecom` (verificado contra normativa vigente, RG 5700/2025 ARCA): **NO es obligatorio** salvo operaciones ≥ $10.000.000 (ninguna venta de óptica llega a eso) — es recomendable solo por motivos operativos (garantías, evitar homónimos), no por AFIP. Con esa info, el founder decidió igual: **quiere pedir DNI/CUIT como campo obligatorio del checkout + un checkbox "Necesito Factura A"**.
+
+**Audit del código existente (regla 14) — hallazgo clave**: `orders.customer_dni` YA EXISTE en el schema (migración `20260528114114_identity_and_orders.sql`) pero el checkout NUNCA lo llena — columna muerta hasta hoy. Más importante: el founder tiene una app de escritorio externa (`~/Facturador optica/cloud.mjs`, fuera de este repo) que se conecta directo a Supabase (rol staff, ver `20260706000000_facturador_staff_rls.sql`) y YA LEE `customer_dni` para armar la factura vía Tusfacturas. O sea: conectar el checkout a esa columna activa una integración que ya estaba armada del otro lado, no hay que inventar nada ahí.
+
+**Bloqueante real para "Factura A"**: no existe ninguna columna para CUIT/razón social/condición IVA (todo lo que exige una Factura A además del CUIT) — y no tengo visibilidad del código del Facturador externo para saber si ya sabe emitir Factura A o solo Factura B consumidor final. Pregunté al founder antes de diseñar el schema nuevo — sin su respuesta, cualquier columna que arme podría no matchear lo que el Facturador espera.
+
+**Próximo paso EXACTO**: esperando que el founder confirme si su Facturador de escritorio ya soporta Factura A. Con eso, armar migración (nueva(s) columna(s) para CUIT/razón social/condición IVA si aplica) + campo DNI/CUIT obligatorio en el checkout + checkbox Factura A + mostrar el dato en el admin. No se escribió código todavía.
+
 ### ✅ Detalle de variante visible en el pedido (admin + cliente) — 2026-08-04
 
 Founder reportó (con captura) que el detalle de pedido mostraba dos líneas de "Vulk Dieven" idénticas salvo por el SKU numérico — no se podía saber a simple vista qué color/variante era cada una. `describeVariant()`/`extractDisplayCode()` ya existían en el selector de variantes de la PDP (`components/product/variant-list.tsx`) leyendo `frame_color`/`lens_color`/`size`/`model_code` de `attributes`; se extrajeron a `lib/catalog/variant-label.ts` (módulo puro, sin `'use client'`) y se reusan en `app/admin/pedidos/[id]/page.tsx` + `components/account/order-detail.tsx`, contra `order_items.variant_attributes` (mismo shape, snapshoteado al crear el pedido). Verificado contra los datos reales del pedido de Ronald Ferrari (`OC-2026-00014`) vía Supabase: variante 1 → "Negro brillo / Gris Degradado · SBLK/SG91 POL", variante 2 → "Rosa Palido Translucido / Marron Degradado Verde · ROSE/BROWN-GREEN" — ya distinguibles. typecheck OK. **No pude verificar visualmente en el navegador** (ambas páginas requieren sesión logueada, admin o cliente, que no tengo) — pendiente que el founder lo confirme mirando el pedido real.
