@@ -721,6 +721,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_p.jpg': 1.20,
   'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_f.jpg': 1.0,
 
+  // Rusty Yeah SOL — aviador doble puente acetato, 3 colores. 900×442, gemelo de forma =
+  // The Take → mismo scale 1.2/1.0. PROVISIONAL, reverificar contra el grid (regla 15).
+  'rusty-yeah/YEAH_C1_POL.__perfil.jpg': 1.2,
+  'rusty-yeah/YEAH_C1_POL.__frente.jpg': 1.0,
+  'rusty-yeah/YEAH_C2_POL._perfil.jpg': 1.2,
+  'rusty-yeah/YEAH_C2_POL._frente.jpg': 1.0,
+  'rusty-yeah/YEAH_C3_perfil.jpg': 1.2,
+  'rusty-yeah/YEAH_C3_frente.jpg': 1.0,
+
   // Rusty The Take Optics RECETA — aviador. Fotos 900×442 (2.04:1) más anchas que el card 3:2
   // → object-contain llena por ancho → 1.0 en las 4 (como Raven/Trial; 1.15 cropearía patillas).
   'rusty-the-take-receta/THE_TAKE_MDEMI_PERFIL.jpg': 1.1,

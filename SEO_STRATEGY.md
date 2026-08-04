@@ -337,13 +337,24 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 *Rusty The Take (SOL, AVIADOR doble puente, UNISEX, 1/1 polarizado, G-Flex + patillas acetato, policarbonato UV400 cat3, 18g) — slug `rusty-the-take` en `/anteojos-de-sol/rusty/rusty-the-take`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
-| lentes de sol aviador | 170 | — | **primaria forma** — carril ÚNICO del cluster Rusty-sol |
+| lentes de sol aviador | 170 | — | **primaria forma** — the take usa esta variante; Yeah (2026-08-04) usa `anteojos de sol aviador` (110) para no pisarla, ya NO es carril único |
 | lentes de sol rusty | 1.300 | 9 | head de marca, soporte (1er párrafo/H2, no primaria — saturada) |
 | anteojos de sol rusty | 880 | 10 | variante "anteojos" → copy |
 | lentes/anteojos de sol polarizados | 260/170 | 12/10 | atributo (1/1 → afirmable) → H1/copy |
 | rusty the take (branded) | 0 medido | ~4 | title/H1/slug |
 
-**Honestidad**: 1/1 polarizado → SÍ se afirma "Polarizado" en title/H1 (criterio Terdey/The Sil 3/3). Unisex → NO targetear `aviador hombre`. **Anti-canibalización**: (A) vs Vulk The Trial sol (también aviador doble puente): marca distinta + The Trial 2/4 pol (destaca "Unisex") vs The Take 1/1 pol (afirma "Polarizado") + cross-link "otros aviadores de sol" + ambos → `/anteojos-de-sol/aviador`. (B) vs The Take receta: intención sol vs receta + cross-link sol↔receta. Único aviador del cluster Rusty-sol. Title: `Lentes de Sol Rusty The Take Aviador | Óptica Carballo`. H1: `Lentes de Sol Rusty The Take — Aviador Polarizado Unisex`.
+**Honestidad**: 1/1 polarizado → SÍ se afirma "Polarizado" en title/H1 (criterio Terdey/The Sil 3/3). Unisex → NO targetear `aviador hombre`. **Anti-canibalización**: (A) vs Vulk The Trial sol (también aviador doble puente): marca distinta + The Trial 2/4 pol (destaca "Unisex") vs The Take 1/1 pol (afirma "Polarizado") + cross-link "otros aviadores de sol" + ambos → `/anteojos-de-sol/aviador`. (B) vs The Take receta: intención sol vs receta + cross-link sol↔receta. (C) vs **Rusty Yeah** (2026-08-04, también aviador doble puente Rusty-sol): The Take mantiene `lentes de sol aviador` (170/12, 1/1 pol afirmado); Yeah toma `anteojos de sol aviador` (110/10, 2/3 pol acotado) — diferenciador real acetato full+32,9g (Yeah) vs G-Flex+acetato 18g (The Take) + 3 colores vs 1 + cross-link obligatorio. Title: `Lentes de Sol Rusty The Take Aviador | Óptica Carballo`. H1: `Lentes de Sol Rusty The Take — Aviador Polarizado Unisex`.
+
+*Rusty Yeah (SOL, AVIADOR doble puente, UNISEX, acetato bio-based, policarbonato UV400 cat3, 32,9g, 3 colores — C1 negro mate/gris oscuro POL, C2 negro brillo/verde degradé POL, C3 carey/marrón degradé NO pol) — slug `rusty-yeah` en `/anteojos-de-sol/rusty/rusty-yeah`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos de sol aviador | 110 | 10 | **primaria forma** — variante "anteojos" del carril aviador, distinta de `lentes de sol aviador` que usa The Take |
+| lentes de sol rusty | 1.300 | 9 | head de marca (soporte, NO primaria) |
+| anteojos de sol rusty | 880 | 10 | head de marca (soporte, NO primaria) |
+| lentes/anteojos de sol polarizados | 260/170 | 12/10 | atributo, 2/3 variantes → se acota, NO se afirma modelo completo |
+| rusty yeah (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug |
+
+**Honestidad**: 2 de 3 variantes polarizadas (C1, C2 — C3 carey NO polariza) → NUNCA afirmar "polarizado" para el modelo entero en title/H1; se acota "en 2 de 3 colores" (criterio Play/Patien 2/4, NO el de Terdey/Zinz 100%). **Anti-canibalización vs Rusty The Take** (también aviador doble puente Rusty-sol): NO comparten keyword primaria — The Take usa `lentes de sol aviador` (170/12, 1/1 pol afirmado), Yeah usa `anteojos de sol aviador` (110/10, 2/3 pol acotado). Diferenciador físico real: acetato bio-based + 32,9g (Yeah) vs G-Flex+acetato 18g (The Take) + 3 colores vs 1. Cross-link obligatorio Yeah↔The Take ("otro aviador de sol Rusty"). Sin versión de receta cargada — sin cross-link sol↔receta por ahora. **NO linkear a `/anteojos-de-sol/rusty/polarizados`** mientras esa faceta siga con el criterio viejo "todas las variantes" (BACKLOG.md), Yeah no calificaría honestamente ahí; SÍ linkear a `/anteojos-de-sol/polarizados` (criterio correcto "≥1 variante"). Title: `Anteojos de Sol Rusty Yeah Aviador | Óptica Carballo`. H1 = name = `Rusty Yeah`.
 
 *Rusty Ther Optics (receta, REDONDO de METAL, UNISEX, liviano 14,5g, lentes demo mono/bi/multifocal) — slug `rusty-ther-receta` en `/anteojos-de-receta/rusty/rusty-ther-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
