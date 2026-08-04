@@ -173,7 +173,7 @@ Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO
 3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
 4. View Transitions grid→PDP (polish, menor impacto de negocio).
 
-### 🟡 BUG en curso — primera venta real no puede generar envío (MiCorreo 500) — fix aplicado, esperando confirmación
+### ✅ RESUELTO — primera venta real no podía generar envío a sucursal (MiCorreo 500)
 
 Founder tuvo la primera venta real del sitio (pedido `14373e52-0ab4-4838-9804-ee3a36976f76`, Ronald Ferrari, envío a sucursal Correo Viedma R0300) e interrumpió el loop automático para reportarlo — correcto, esto tiene prioridad sobre cualquier propuesta del loop. Loop parado.
 
@@ -183,7 +183,15 @@ Founder tuvo la primera venta real del sitio (pedido `14373e52-0ab4-4838-9804-ee
 
 **Fix aplicado**: agregado a `buildSender()` el mismo fallback hardcodeado que ya usa `business.ts` — calle "Av. Lavalle 2686", localidad "Gob. Virasoro", provincia "Corrientes" (→ código `W`), postal "3342". No se agregó fallback de teléfono (sin precedente en el código, y el teléfono del destinatario sí llegaba bien — no era la causa). Typecheck OK.
 
-**Próximo paso EXACTO**: pedirle al founder que reintente "Generar envío" una vez más (idempotente) para confirmar que ahora da `{ok:true}`. Si confirma: sacar el logging temporal de `importShipment()` y cerrar el entry de `MISTAKES.md` como ✅.
+**Founder reintentó tras el 1er fix (dirección del remitente) — MISMO ERROR**. Log confirmó que la dirección ya llegaba completa (`streetName`, `city`, `provinceCode` OK) — no era la única causa.
+
+**Causa raíz REAL** (founder dio OK explícito para diagnosticar contra prod con `extOrderId` falsos, mismo patrón sin-costo aprobado en junio): para envíos a **sucursal** (`deliveryType: "S"`), MiCorreo tira 500 sin mensaje si `shipping.address` va como OBJETO — con todos los campos `null` o con datos reales, da igual. Solo funciona con `address: null` literal. Aislado con 9 variantes de payload contra la API real; domicilio (`D`) siempre funcionó, ningún caso de sucursal funcionó hasta cambiar la forma de `address`. Coincide con lo ya anotado en este archivo desde junio: sucursal nunca se había validado contra prod, solo domicilio.
+
+**Fix real**: `lib/correo/import.ts` — se eliminó `EMPTY_ADDRESS` (objeto con 7 campos `null`), ahora `shippingAddress` es `null` real para sucursal (tipo actualizado en `lib/correo/types.ts`: `address: CorreoApiAddress | null`). **Verificado contra prod con el payload EXACTO del pedido real** (agency R0300, peso 750g, mismo declaredValue) → `200 {createdAt}`. Logging temporal de diagnóstico sacado de `importShipment()` (quedó un log de error permanente, liviano, sin PII del payload). typecheck OK.
+
+**Quedaron 4 envíos de prueba reales en el panel MiCorreo del founder** (extOrderId `DIAG-*-E`, `DIAG-*-G`, `DIAG-*-H`, `DIAG-*-FINAL`, en estado preimposición, sin costo si no se despachan) — avisado al founder para que los ignore/cancele desde el panel cuando pueda.
+
+**Próximo paso EXACTO**: pedirle al founder el reintento REAL (a través del sitio, no del script) del pedido de Ronald Ferrari para el cierre definitivo — la verificación directa contra la API con el payload idéntico da confianza muy alta, pero falta el click real en producción.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 

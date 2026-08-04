@@ -103,8 +103,10 @@ export type CorreoShipmentDetails = {
   deliveryType: CorreoDeliveredType;
   /** Código de sucursal de destino — obligatorio si deliveryType="S". */
   agency: string | null;
-  /** Dirección de entrega — obligatoria si deliveryType="D". */
-  address: CorreoApiAddress;
+  /** Dirección de entrega — obligatoria si deliveryType="D". Para "S"
+   * (sucursal) MiCorreo exige `null` explícito: un objeto con todos los
+   * campos en null tira 500 sin mensaje (confirmado empíricamente 2026-08-04). */
+  address: CorreoApiAddress | null;
   /** Tipo de producto, default "CP" (Clásico). */
   productType: string;
   /** Enteros: gramos / cm. */

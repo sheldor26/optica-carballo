@@ -96,16 +96,6 @@ export type ImportShipmentResult =
   | { ok: true; createdAt: string; alreadyImported?: boolean }
   | { ok: false; error: string };
 
-const EMPTY_ADDRESS: CorreoApiAddress = {
-  streetName: null,
-  streetNumber: null,
-  floor: null,
-  apartment: null,
-  city: null,
-  provinceCode: null,
-  postalCode: null,
-};
-
 /**
  * Da de alta un envío en MiCorreo. Devuelve `{ok:true, createdAt}` o un error
  * legible. Trata "La orden ya fue importada con anterioridad" como
@@ -128,7 +118,11 @@ export async function importShipment(
     return { ok: false, error: 'Envío a domicilio sin dirección de destino.' };
   }
 
-  let shippingAddress: CorreoApiAddress = EMPTY_ADDRESS;
+  // Para sucursal (S), MiCorreo espera `address` en null — mandar un objeto
+  // con todos los campos en null (lo que hacíamos antes) tira 500 sin mensaje.
+  // Confirmado empíricamente contra prod con extOrderId de diagnóstico
+  // (2026-08-04): null literal / key omitida → 200; objeto all-null → 500.
+  let shippingAddress: CorreoApiAddress | null = null;
   if (!isBranch && input.address) {
     const provinceCode = provinceCodeFor(input.address.provinceName);
     if (!provinceCode) {
@@ -202,19 +196,7 @@ export async function importShipment(
   const raw = await res.text().catch(() => '');
 
   if (!res.ok) {
-    // DEBUG TEMPORAL (2026-08-04, primer envío real fallando con 500 sin
-    // mensaje) — loguea el body exacto (sin credenciales) para diagnosticar
-    // en Vercel logs. JSON.stringify en vez de pasar el objeto directo:
-    // console.error trunca objetos anidados a profundidad 2 (originAddress
-    // salía como "[Object]"). Sacar una vez resuelto.
-    console.error(
-      '[MiCorreo import FAILED]',
-      JSON.stringify({
-        status: res.status,
-        raw,
-        sentBody: { ...body, customerId: '[redacted]' },
-      }),
-    );
+    console.error('[MiCorreo import FAILED]', JSON.stringify({ status: res.status, raw }));
     // 402 con "ya importada" = idempotencia, no es fallo real.
     if (/ya fue importada/i.test(raw)) {
       return { ok: true, createdAt: '', alreadyImported: true };
