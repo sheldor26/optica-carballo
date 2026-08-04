@@ -197,12 +197,17 @@ export async function importShipment(
   if (!res.ok) {
     // DEBUG TEMPORAL (2026-08-04, primer envío real fallando con 500 sin
     // mensaje) — loguea el body exacto (sin credenciales) para diagnosticar
-    // en Vercel logs. Sacar una vez resuelto.
-    console.error('[MiCorreo import FAILED]', {
-      status: res.status,
-      raw,
-      sentBody: { ...body, customerId: '[redacted]' },
-    });
+    // en Vercel logs. JSON.stringify en vez de pasar el objeto directo:
+    // console.error trunca objetos anidados a profundidad 2 (originAddress
+    // salía como "[Object]"). Sacar una vez resuelto.
+    console.error(
+      '[MiCorreo import FAILED]',
+      JSON.stringify({
+        status: res.status,
+        raw,
+        sentBody: { ...body, customerId: '[redacted]' },
+      }),
+    );
     // 402 con "ya importada" = idempotencia, no es fallo real.
     if (/ya fue importada/i.test(raw)) {
       return { ok: true, createdAt: '', alreadyImported: true };
