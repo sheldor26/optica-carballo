@@ -191,7 +191,9 @@ Founder tuvo la primera venta real del sitio (pedido `14373e52-0ab4-4838-9804-ee
 
 **Quedaron 4 envíos de prueba reales en el panel MiCorreo del founder** (extOrderId `DIAG-*-E`, `DIAG-*-G`, `DIAG-*-H`, `DIAG-*-FINAL`, en estado preimposición, sin costo si no se despachan) — avisado al founder para que los ignore/cancele desde el panel cuando pueda.
 
-**Próximo paso EXACTO**: pedirle al founder el reintento REAL (a través del sitio, no del script) del pedido de Ronald Ferrari para el cierre definitivo — la verificación directa contra la API con el payload idéntico da confianza muy alta, pero falta el click real en producción.
+**✅ CONFIRMADO POR EL FOUNDER EN PRODUCCIÓN**: reintentó "Generar envío en Correo" en el pedido real de Ronald Ferrari → "Envío ya generado en Correo ✅". Bug cerrado de punta a punta.
+
+**Próximo paso EXACTO (del founder, manual, ya conocido — no es código)**: entrar al panel de MiCorreo, copiar el nº de seguimiento del envío de Ronald Ferrari, pegarlo en "Cambiar estado" del pedido + marcar "Enviado" (dispara el email al cliente con el tracking). De paso, cancelar/ignorar los 4 envíos de prueba `DIAG-*` del panel.
 
 ### Implementados: ítems 1, 2 y 6 del loop de mejora (sesión posterior, misma fecha)
 
