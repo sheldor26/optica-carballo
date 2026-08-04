@@ -3,10 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth/admin';
 import { createAdminClient } from '@/lib/supabase/admin';
-import {
-  sendOrderStatusUpdateToCustomer,
-  sendInvoiceToCustomer,
-} from '@/lib/emails/send-order-emails';
+import { sendOrderStatusUpdateToCustomer } from '@/lib/emails/send-order-emails';
+import { applyOrderInvoice, type SetInvoiceResult } from '@/lib/orders/set-invoice';
 import { shouldNotifyCustomer } from '@/lib/orders/email-policy';
 import { fetchOrderByIdAdmin } from '@/lib/orders/admin-queries';
 import { canGenerateShipment } from '@/lib/orders/order-status';
@@ -324,15 +322,18 @@ export async function generateShipmentsBulkAction(
   return { ok: true, results, generated, already, failed };
 }
 
-export type SetInvoiceResult =
-  | { ok: true; emailed: boolean; emailError?: string; cleared?: boolean }
-  | { ok: false; error: string };
+export type { SetInvoiceResult };
 
 /**
  * Carga (o quita) el link de la factura de un pedido y, opcionalmente, le avisa
  * al cliente por mail. El link queda en `orders.invoice_url` → el cliente lo ve
  * como "Ver factura" en su cuenta. V1 por LINK (no subimos el PDF). El link debe
- * ser accesible por el cliente (ej. URL de Tusfacturas/AFIP o Drive).
+ * ser accesible por el cliente (ej. URL de Tusfacturas/AFIP, Drive, o el bucket
+ * público que sube el Facturador Óptica).
+ *
+ * Gate de humano (`requireAdmin`) + delega la lógica en `applyOrderInvoice`,
+ * compartida con el endpoint interno que llama el Facturador Óptica — mismo
+ * mail para el cliente sin importar quién cargó el link.
  */
 export async function setOrderInvoiceAction(input: {
   orderId: string;
@@ -341,53 +342,11 @@ export async function setOrderInvoiceAction(input: {
 }): Promise<SetInvoiceResult> {
   await requireAdmin();
 
-  const url = input.invoiceUrl.trim();
-  if (url && !/^https?:\/\/.+/i.test(url)) {
-    return {
-      ok: false,
-      error: 'La URL debe empezar con http:// o https://',
-    };
-  }
-
-  const supabase = createAdminClient();
-
-  const { data: current, error: readErr } = await supabase
-    .from('orders')
-    .select('order_number, customer_name, customer_email')
-    .eq('id', input.orderId)
-    .maybeSingle();
-
-  if (readErr || !current) {
-    return { ok: false, error: 'No se encontró el pedido.' };
-  }
-
-  const { error: updErr } = await supabase
-    .from('orders')
-    .update({ invoice_url: url || null })
-    .eq('id', input.orderId);
-
-  if (updErr) {
-    return { ok: false, error: `No se pudo guardar: ${updErr.message}` };
-  }
-
-  let emailed = false;
-  let emailError: string | undefined;
-  if (input.notify && url && current.customer_email) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? '';
-    const res = await sendInvoiceToCustomer({
-      to: current.customer_email,
-      customerName: current.customer_name,
-      orderNumber: current.order_number,
-      invoiceUrl: url,
-      orderUrl: siteUrl ? `${siteUrl}/mi-cuenta/pedidos/${input.orderId}` : null,
-    });
-    emailed = res.ok;
-    if (!res.ok) emailError = res.error;
-  }
+  const result = await applyOrderInvoice(input);
 
   revalidatePath('/admin/pedidos');
   revalidatePath(`/admin/pedidos/${input.orderId}`);
   revalidatePath(`/mi-cuenta/pedidos/${input.orderId}`);
 
-  return { ok: true, emailed, emailError, cleared: !url };
+  return result;
 }
