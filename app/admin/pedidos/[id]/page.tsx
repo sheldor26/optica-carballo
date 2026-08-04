@@ -102,6 +102,14 @@ export default async function Page({
                 </dd>
               </div>
             )}
+            {order.customerDni && (
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">DNI/CUIT</dt>
+                <dd className="text-foreground text-right tabular-nums">
+                  {order.customerDni}
+                </dd>
+              </div>
+            )}
           </dl>
         </section>
 

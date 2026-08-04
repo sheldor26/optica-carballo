@@ -49,6 +49,10 @@ export async function createOrderFromCart(args: {
   userEmail: string;
   customerName: string;
   customerPhone?: string | null;
+  /** DNI o CUIT del comprador — lo lee el Facturador de escritorio para
+   * armar la factura (consulta el padrón AFIP y decide Consumidor Final vs
+   * Factura A). Obligatorio desde el checkout (validado en actions.ts). */
+  customerDni: string;
   cart: ResolvedCart;
   /** null cuando shippingMethod === 'pickup' (retiro en local sin envío). */
   address: Address | null;
@@ -72,6 +76,7 @@ export async function createOrderFromCart(args: {
     userEmail,
     customerName,
     customerPhone,
+    customerDni,
     cart,
     address,
     shipping,
@@ -119,6 +124,7 @@ export async function createOrderFromCart(args: {
     customer_name: customerName,
     customer_email: userEmail,
     customer_phone: address?.phone ?? customerPhone ?? null,
+    customer_dni: customerDni,
     shipping_recipient_name: address?.recipient_name ?? null,
     shipping_street: address?.street ?? null,
     shipping_number: address?.number ?? null,

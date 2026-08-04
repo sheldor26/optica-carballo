@@ -46,6 +46,7 @@ export type OrderDetail = {
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;
+  customerDni: string | null;
   shippingRecipientName: string | null;
   shippingStreet: string | null;
   shippingNumber: string | null;

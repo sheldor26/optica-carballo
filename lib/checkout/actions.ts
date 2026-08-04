@@ -55,6 +55,19 @@ function normalizeMethod(raw: FormDataEntryValue | null): string {
   return 'delivery';
 }
 
+/** DNI (7-8 dígitos) o CUIT (11 dígitos, con o sin guiones: 20-12345678-9).
+ * El Facturador de escritorio hace la búsqueda en el padrón AFIP con este
+ * número — acá solo validamos forma, no distinguimos DNI de CUIT. */
+const dniSchema = z
+  .string()
+  .trim()
+  .transform((v) => v.replace(/[.\-\s]/g, ''))
+  .pipe(
+    z.string().regex(/^\d{7,11}$/, {
+      error: 'DNI o CUIT inválido (solo números, 7 a 11 dígitos).',
+    }),
+  );
+
 export async function submitCheckout(
   _prev: CheckoutFormState,
   formData: FormData,
@@ -75,6 +88,15 @@ export async function submitCheckout(
       error: parsed.error.issues[0]?.message ?? 'Datos inválidos.',
     };
   }
+
+  const dniParsed = dniSchema.safeParse(formData.get('customer_dni') ?? '');
+  if (!dniParsed.success) {
+    return {
+      ok: false,
+      error: dniParsed.error.issues[0]?.message ?? 'DNI o CUIT inválido.',
+    };
+  }
+  const customerDni = dniParsed.data;
 
   // Idempotency key: UUID generado por el cliente al montar /checkout
   // (hidden field, estable entre reintentos del mismo submit — ver
@@ -188,6 +210,7 @@ export async function submitCheckout(
     userEmail: user.email,
     customerName,
     customerPhone: profile?.phone ?? null,
+    customerDni,
     cart: resolved,
     address,
     shipping,

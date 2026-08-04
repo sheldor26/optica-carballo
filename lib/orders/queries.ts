@@ -63,7 +63,7 @@ export async function fetchOrderById(
     .select(
       `id, order_number, status, payment_status,
        subtotal_cents, shipping_cents, discount_cents, total_cents,
-       customer_name, customer_email, customer_phone,
+       customer_name, customer_email, customer_phone, customer_dni,
        shipping_recipient_name, shipping_street, shipping_number,
        shipping_apartment, shipping_city, shipping_province,
        shipping_postal_code, shipping_phone, shipping_method,
@@ -108,6 +108,7 @@ export async function fetchOrderById(
     customerName: orderRow.customer_name,
     customerEmail: orderRow.customer_email,
     customerPhone: orderRow.customer_phone,
+    customerDni: orderRow.customer_dni,
     shippingRecipientName: orderRow.shipping_recipient_name,
     shippingStreet: orderRow.shipping_street,
     shippingNumber: orderRow.shipping_number,
@@ -154,4 +155,22 @@ export async function fetchOrderStatusEvents(
     note: ev.note,
     createdAt: ev.created_at,
   }));
+}
+
+/**
+ * DNI/CUIT usado en el pedido más reciente del user (si hay), para
+ * prellenar el campo del checkout y no hacer que lo retipeen cada vez.
+ */
+export async function fetchLastUsedDni(): Promise<string | null> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from('orders')
+    .select('customer_dni')
+    .not('customer_dni', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return data?.customer_dni ?? null;
 }

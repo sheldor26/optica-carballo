@@ -50,6 +50,7 @@ export function CheckoutPage({
   fallbackShipping,
   pickupAddress,
   prescription,
+  initialDni,
 }: {
   cart: ResolvedCart;
   addresses: Address[];
@@ -60,9 +61,12 @@ export function CheckoutPage({
   /** null si el carrito no tiene productos de receta, o si sí tiene pero
    * todavía no se cargó ninguna (bloquea "Confirmar pedido" en ese caso). */
   prescription: PrescriptionCookie | null;
+  /** DNI/CUIT guardado de una compra anterior, si lo hay — prellenar. */
+  initialDni: string | null;
 }) {
   const [state, formAction] = useActionState(submitCheckout, initialState);
   const [method, setMethod] = useState<ShippingMethod>('delivery');
+  const [dni, setDni] = useState(initialDni ?? '');
   const [selectedAddressId, setSelectedAddressId] = useState<string>(
     defaultAddressId ?? addresses[0]?.id ?? '',
   );
@@ -91,6 +95,7 @@ export function CheckoutPage({
 
   const needsAddressForDelivery = method !== 'pickup' && addresses.length === 0;
   const branchNotChosen = method === 'branch' && !selectedBranchCode;
+  const dniInvalid = !/^\d{7,11}$/.test(dni.replace(/[.\-\s]/g, ''));
 
   function handleAddressSelect(id: string) {
     setSelectedAddressId(id);
@@ -117,6 +122,34 @@ export function CheckoutPage({
       <form action={formAction} className="grid gap-8 md:grid-cols-[1fr_360px]">
         <input type="hidden" name="idempotency_key" value={idempotencyKey} />
         <div className="space-y-8">
+          <div>
+            <h2 className="text-foreground font-serif text-xl font-medium tracking-tight">
+              Datos de facturación
+            </h2>
+            <div className="mt-4">
+              <label
+                htmlFor="customer_dni"
+                className="text-foreground mb-1.5 block text-sm font-medium"
+              >
+                DNI o CUIT
+              </label>
+              <input
+                id="customer_dni"
+                name="customer_dni"
+                type="text"
+                inputMode="numeric"
+                required
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                placeholder="Ej: 30123456 o 20301234568"
+                className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full max-w-xs rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
+              />
+              <p className="text-muted-foreground mt-1.5 text-xs">
+                Lo necesitamos para tu factura.
+              </p>
+            </div>
+          </div>
+
           <ShippingMethodSelector
             selected={method}
             onChange={setMethod}
@@ -237,7 +270,8 @@ export function CheckoutPage({
               needsAddressForDelivery ||
               branchNotChosen ||
               cart.hasIssues ||
-              needsPrescription
+              needsPrescription ||
+              dniInvalid
             }
           >
             Confirmar pedido

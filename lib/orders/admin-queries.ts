@@ -85,7 +85,7 @@ export async function fetchOrderByIdAdmin(
     .select(
       `id, order_number, status, payment_status,
        subtotal_cents, shipping_cents, discount_cents, total_cents,
-       customer_name, customer_email, customer_phone,
+       customer_name, customer_email, customer_phone, customer_dni,
        shipping_recipient_name, shipping_street, shipping_number,
        shipping_apartment, shipping_city, shipping_province,
        shipping_postal_code, shipping_phone, shipping_method,
@@ -130,6 +130,7 @@ export async function fetchOrderByIdAdmin(
     customerName: orderRow.customer_name,
     customerEmail: orderRow.customer_email,
     customerPhone: orderRow.customer_phone,
+    customerDni: orderRow.customer_dni,
     shippingRecipientName: orderRow.shipping_recipient_name,
     shippingStreet: orderRow.shipping_street,
     shippingNumber: orderRow.shipping_number,

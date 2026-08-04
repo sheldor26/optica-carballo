@@ -5,6 +5,7 @@ import { requireAuth } from '@/lib/auth/server';
 import { readCartCookie } from '@/lib/cart/cookie';
 import { resolveCart } from '@/lib/cart/queries';
 import { fetchUserAddresses } from '@/lib/addresses/queries';
+import { fetchLastUsedDni } from '@/lib/orders/queries';
 import { resolveShippingQuotes } from '@/lib/shipping-server';
 import { calculateShipping } from '@/lib/shipping';
 import { listBranches } from '@/lib/correo/agencies';
@@ -44,6 +45,7 @@ export default async function Page() {
     : null;
 
   const addresses = await fetchUserAddresses();
+  const lastUsedDni = await fetchLastUsedDni();
 
   // Provincia tentativa para la cotización: la default del user, o la
   // primera. Si no hay addresses, usamos una zona conservadora (peor caso)
@@ -101,6 +103,7 @@ export default async function Page() {
       fallbackShipping={fallbackShipping}
       pickupAddress={pickupAddress}
       prescription={prescription}
+      initialDni={lastUsedDni}
     />
   );
 }
