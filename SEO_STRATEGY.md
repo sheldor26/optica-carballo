@@ -591,6 +591,18 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 
 > **ANTI-CANIBALIZACIÓN vs Vulk Katleen (también cuadrado femenino receta)**: NO comparten primaria. Katleen = carril **forma** (`anteojos/lentes cuadrados mujer` 320/18). Strewn = carril **transparente** (`anteojos transparentes mujer` 390/15), diferenciado por colores cristal/rosa transparente + small 17,8g (aún más liviano que Katleen 26,3g). Strewn nombra "cuadrado" en copy pero NO lo targetea como primaria. **Cross-link obligatorio Strewn↔Katleen**. No usar `anteojos vulk` (4.400 → hub) ni "armazón de receta" (0 vol) como target. Title (auto): `Vulk Strewn Receta | Anteojos de Receta - Óptica Carballo`.
 
+*Vulk Ready? (receta, forma cuadrado ⚠️HIPÓTESIS no concluyente, UNISEX, G-Flex con sistema de bisagras flexo, 18,2g, apto mono/bi/progresivo/multifocal, 1 SOLA variante — transparente cristal 100%) — slug `vulk-ready-receta` en `/anteojos-de-receta/vulk/vulk-ready-receta`*
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos transparentes | 720 | 16 | **primaria** — carril transparente GENÉRICO sin género, libre (Strewn=mujer, Rusty PRO 30=hombre, ninguno lo usa primaria) → title/H1/1er párrafo/meta_description |
+| anteojos recetados | 720 | 9 | head de intención receta compartido → copy |
+| armazones vulk | 110 | 8 | único "armazón" con volumen → body 1 vez |
+| anteojos multifocales | 1.000 | 8 | soporte — compatibilidad real (mono/bi/progresivo/multifocal) → 1 mención copy |
+| anteojos vulk mujer / hombre | 320/260 | 8/8 | respaldo, unisex los cubre → copy/alt |
+| vulk ready (branded) | 0 medido | ~4 | title/H1/slug/alt |
+
+> **name = "Vulk Ready?"** (con el signo de pregunta literal — nombre real del modelo, sin agregar "Unisex" porque no coexiste con versión de sol homónima, mismo criterio Be Again). **ANTI-CANIBALIZACIÓN cluster transparente**: Ready es el PRIMER Vulk receta 100% transparente (1/1 variante, no 2/3 como Strewn ni 1/3 como Be Again ni 1/2 como Vartis) y UNISEX → única ficha que puede reclamar el head genérico `anteojos transparentes` sin matizarlo (no aplica el criterio de "mayoría de variantes"). Cierra el cluster: mujer (Strewn) + hombre (Rusty PRO 30) + unisex genérico (Ready). Cross-link obligatorio Ready↔Strewn↔PRO 30 ("elegí tu transparente: mujer/hombre/unisex") + Ready↔Be Again↔Dieven Unisex (Vulk receta unisex) + `/anteojos-de-receta/vulk` + `/guias/como-leer-receta-anteojos`. Cross-link sol↔receta NO (Ready sol no existe en el catálogo). ⚠️ **frame_shape="cuadrado" es hipótesis no confirmada** (lente 54×42mm ratio 1.29:1, precedente más cercano Katleen 1.26:1) — confirmar con founder al ver la foto real. Title (auto): `Vulk Ready? | Anteojos de Receta - Óptica Carballo` (50). H1/name: `Vulk Ready?`.
+
 ### Reglas para futuros productos
 
 Cuando se cargue un producto nuevo, ANTES de escribir copy:

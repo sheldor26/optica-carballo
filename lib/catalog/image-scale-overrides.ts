@@ -793,6 +793,13 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-nova/NOVA C2 POL._FRENTE.jpg': 1.0,
   'vulk-nova/NOVA_C3_PERFIL.jpg': 1.1,
   'vulk-nova/NOVA_C3_FRENTE.jpg': 1.0,
+
+  // Vulk Ready? RECETA — unisex, 1 variante 100% transparente. Fotos 900×442 (2:1) →
+  // baseline receta 1.1 perfil / 1.0 frente (idéntico a Kirt/Dieven/Peating/Strewn).
+  // PROVISIONAL, reverificar grid /anteojos-de-receta/vulk (regla 15). Key con el "?"
+  // literal — es el mismo storage_path usado como lookup.
+  'vulk-ready?-receta/Ready?-CRY-PERFIL.jpg': 1.1,
+  'vulk-ready?-receta/Ready?-CRY-FRENTE.jpg': 1.0,
 };
 
 export function getImageScale(path: string | null | undefined): number {
