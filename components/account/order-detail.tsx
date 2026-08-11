@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { OrderStatusBadge } from '@/components/account/order-status-badge';
 import { OrderTimeline } from '@/components/account/order-timeline';
 import { describeVariant, extractDisplayCode } from '@/lib/catalog/variant-label';
+import { isPolarizedVariant } from '@/lib/catalog/polarized';
 import { formatPriceCents } from '@/lib/format/currency';
 import { formatOrderDate } from '@/lib/orders/labels';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
@@ -117,6 +118,9 @@ export function OrderDetailView({
                   {describeVariant(item.variantAttributes)}
                   {extractDisplayCode(item.variantAttributes) &&
                     ` · ${extractDisplayCode(item.variantAttributes)}`}
+                  {isPolarizedVariant(item.variantAttributes) && (
+                    <span className="text-blue-700"> · Polarizado</span>
+                  )}
                 </p>
                 <p className="text-muted-foreground text-xs">
                   {item.brandName ? `${item.brandName} · ` : ''}SKU{' '}

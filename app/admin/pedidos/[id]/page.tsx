@@ -7,6 +7,7 @@ import {
   fetchOrderStatusEventsAdmin,
 } from '@/lib/orders/admin-queries';
 import { describeVariant, extractDisplayCode } from '@/lib/catalog/variant-label';
+import { isPolarizedVariant } from '@/lib/catalog/polarized';
 import { OrderStatusBadge } from '@/components/account/order-status-badge';
 import { OrderTimeline } from '@/components/account/order-timeline';
 import { OrderStatusControl } from '@/components/admin/order-status-control';
@@ -133,6 +134,9 @@ export default async function Page({
                     {describeVariant(item.variantAttributes)}
                     {extractDisplayCode(item.variantAttributes) &&
                       ` · ${extractDisplayCode(item.variantAttributes)}`}
+                    {isPolarizedVariant(item.variantAttributes) && (
+                      <span className="text-blue-700"> · Polarizado</span>
+                    )}
                   </p>
                   <p className="text-muted-foreground text-xs">
                     {item.brandName ? `${item.brandName} · ` : ''}SKU{' '}
