@@ -197,8 +197,16 @@ export async function importShipment(
 
   if (!res.ok) {
     console.error('[MiCorreo import FAILED]', JSON.stringify({ status: res.status, raw }));
-    // 402 con "ya importada" = idempotencia, no es fallo real.
-    if (/ya fue importada/i.test(raw)) {
+    // "La orden fue importada con anterioridad" = idempotencia, no es un fallo.
+    //
+    // El patrón buscaba "ya fue importada" y MiCorreo NO dice "ya": contesta
+    // 400 con "La orden fue importada con anterioridad.". Nunca coincidía, así
+    // que reintentar un alta que ya existía mostraba el JSON crudo de la API
+    // como si algo se hubiera roto. Verificado contra producción el 11/08/2026
+    // con el pedido OC-2026-00015.
+    //
+    // "fue importada" cubre las dos redacciones: la real y la que se suponía.
+    if (/fue importada/i.test(raw)) {
       return { ok: true, createdAt: '', alreadyImported: true };
     }
     return { ok: false, error: `MiCorreo /shipping/import ${res.status}: ${raw}`.trim() };
