@@ -22,6 +22,16 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-04 — Al extraer `describeVariant()` a un módulo compartido, se perdió el indicador "Polarizado" en el detalle de pedido
+
+**Estado**: ✅ Cerrado (fix en el mismo día, sin impacto real más allá de que el founder vio el dato incompleto en una venta real)
+
+**Qué pasó**: en esta misma sesión, al construir el feature de "mostrar detalle de variante en el pedido" (color/lente/código), extraje `describeVariant()`/`extractDisplayCode()` de `components/product/variant-list.tsx` (la PDP) a un módulo nuevo compartido `lib/catalog/variant-label.ts`, y los reusé en el admin y en el detalle de pedido del cliente. Pero en la PDP el indicador "· Polarizado" NO vive dentro de `describeVariant()` — se renderiza aparte, como un `<span>` condicional propio (`isPolarizedVariant()`). Al copiar solo `describeVariant()`/`extractDisplayCode()` sin ese tercer elemento, el detalle de pedido quedó sin mostrar "Polarizado" — invisible mientras el `model_code` de la variante incluyera "POL" como texto (varios productos lo tienen así, ej. "SBLK/SG91 POL"), pero expuesto en cuanto un producto no lo tuviera (ej. Vulk Reporter, `model_code: "MBLK/S10"`, `polarized: true` sin sufijo). El founder lo encontró en una venta real (pedido `OC-2026-00015`) el mismo día que se shippeó el feature.
+
+**Causa raíz**: al extraer lógica compartida de un componente a un módulo reusable, extraje las funciones que "se veían como la lógica" (`describeVariant`, `extractDisplayCode`) pero no audité TODO lo que el componente original renderizaba junto a esa lógica antes de reusarla en un contexto nuevo — el indicador de polarizado era parte del mismo "bloque visual" en la PDP pero vivía en una línea de JSX separada, fácil de pasar por alto.
+
+**Regla preventiva**: al extraer lógica de un componente existente para reusarla en un lugar nuevo, no alcanza con copiar la función que calcula el string principal — hay que revisar TODO el bloque de JSX de origen (no solo la función) buscando badges/indicadores condicionales que se rendericen "al lado" (no dentro) del valor que se está extrayendo, y decidir explícitamente si el nuevo consumidor los necesita también. Aplica en general a cualquier extracción de "lógica compartida" desde un componente con UI condicional rica.
+
 ## 2026-08-04 — `getProductImageUrl` no encodeaba caracteres especiales del `storage_path`, rompió las fotos de Vulk Ready?
 
 **Qué pasó**: al cargar el producto Vulk Ready? (nombre real del modelo con signo de pregunta, `storage_path` = `vulk-ready?-receta/Ready?-CRY-PERFIL.jpg`), las fotos aparecían rotas en el sitio. `lib/storage/product-image-url.ts` (`getProductImageUrl`) concatenaba el `storage_path` crudo dentro de la URL sin encodear. Con espacios funcionaba (el navegador los tolera y auto-encodea al parsear), pero el `?` es un carácter con significado reservado en URLs (inicia el query string) — al no encodearlo, el navegador cortaba la ruta ahí mismo y la request a Supabase Storage quedaba rota.

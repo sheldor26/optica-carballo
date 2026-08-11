@@ -173,6 +173,10 @@ Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO
 3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
 4. View Transitions grid→PDP (polish, menor impacto de negocio).
 
+### ✅ Fix: faltaba "Polarizado" en el detalle de variante del pedido (2026-08-04)
+
+Founder reportó (venta real, pedido `OC-2026-00015`, Vulk Reporter MBLK/S10) que el detalle de pedido no decía "POL" pese a ser una variante polarizada (`attributes.polarized: true`). Causa: al extraer `describeVariant()`/`extractDisplayCode()` a `lib/catalog/variant-label.ts` más temprano en esta misma sesión, no se replicó el indicador "· Polarizado" que la PDP renderiza aparte (`isPolarizedVariant()`, blue text) — se perdió justo en el caso donde el `model_code` no trae "POL" como texto (algunos productos sí lo traen embebido, ej. "SBLK/SG91 POL", otros no, ej. "MBLK/S10"). La descripción larga del producto en la ficha NUNCA tuvo el problema — ya decía "POLARIZADA" correctamente, el bug era solo del feature nuevo de hoy. Fix: `isPolarizedVariant(item.variantAttributes)` agregado a `app/admin/pedidos/[id]/page.tsx` + `components/account/order-detail.tsx`, mismo criterio visual que la PDP. Ver entry nueva en `MISTAKES.md`. typecheck OK, commit `a72f77c`.
+
 ### ✅ DNI/CUIT obligatorio en el checkout (2026-08-04)
 
 Founder preguntó si hace falta pedir DNI para facturar. `argentine-ecom` confirmó (RG 5700/2025 ARCA): no es obligatorio salvo operaciones ≥ $10.000.000, pero el founder decidió pedirlo igual por motivos operativos. Founder aclaró la duda clave: su Facturador de escritorio (`~/Facturador optica/cloud.mjs`, fuera de este repo) **ya resuelve Factura A automático** — con solo el DNI/CUIT busca en el padrón AFIP y decide Consumidor Final vs Factura A. Esto simplificó el alcance: **no hace falta el checkbox "Factura A"**, un solo campo alcanza.
