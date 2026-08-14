@@ -22,6 +22,20 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-14 — El webhook de MP no distinguía "ya pagado" de "ya pagado y AVANZADO" — un reenvío tardío de MP regresó un pedido `shipped` a `paid` y reenvió el email de venta
+
+**Estado**: 🟡 Mitigado (fix en el código, falta corregir el pedido puntual afectado y confirmarlo)
+
+**Qué pasó**: el founder reportó recibir el 14/8 un email de "nueva venta" de un producto que ya había vendido y despachado el 3-4/8 — sin que hubiera ocurrido ninguna compra nueva. `order_status_events` del pedido mostró la secuencia real: `pending → paid → preparing → reviewed → shipped` (4/8, todo bien) y después, 10 días más tarde, un evento `paid` extra — el pedido volvió de `shipped` a `paid`.
+
+**Causa raíz**: Mercado Pago reenvió la notificación webhook de ese mismo pago 10 días después (comportamiento normal de MP — no un bug de ellos, los webhooks no son "una sola vez garantizada"). El handler (`app/api/mp/webhook/route.ts`) tenía DOS chequeos que asumían mal el modelo de estados: (1) la idempotencia comparaba `orderRow.status === newOrderStatus` — como el pedido ya estaba en `shipped` y MP volvía a mapear a `paid`, `"shipped" !== "paid"` → no lo detectó como ya-procesado; (2) `wasUnpaid = orderRow.status !== 'paid'` trataba CUALQUIER estado que no fuera literalmente `"paid"` como "todavía no pagado" — incluyendo `shipped`, que obviamente ya está pagado y más avanzado. Combinados, el webhook pisó `orders.status` de vuelta a `paid` y volvió a mandar los emails de confirmación (cliente + admin) como si fuera una venta nueva.
+
+**Por qué no se detectó antes**: el código nunca se probó contra un pedido que ya hubiera avanzado más allá de `paid` cuando llega un webhook tardío/reenviado — los tests/smoke previos de MP fueron de flujo feliz (pago → email), no de "pago se reprocesa días después sobre un pedido ya despachado". Con solo 2 ventas reales hasta ahora, este caso recién apareció con la primera venta que llegó a `shipped` y tuvo tiempo de que MP reenviara.
+
+**Fix**: la idempotencia y el guard de regresión ahora usan `TRACKER_STEPS` (`lib/orders/order-status.ts`, el orden real del flujo: `paid → preparing → reviewed → shipped → delivered`) en vez de comparar contra el string literal `"paid"`. Si el pedido ya está en `paid` o más adelante y el webhook vuelve a mapear a `paid`, se skipea entero — no toca `status`, no manda email. Además, ningún `UPDATE` de `orders.status` puede regresar el pedido si ya progresó más allá de `paid`, incluso si llegara un `payment_id` distinto (pago duplicado/reintento) sobre un pedido ya despachado.
+
+**Regla preventiva**: cualquier código que compare o actualice `orders.status` (webhooks, cron jobs, integraciones externas) tiene que razonar sobre la POSICIÓN en el flujo (`TRACKER_STEPS`), no sobre igualdad de string contra un solo valor. "¿Es igual a X?" está casi siempre mal cuando X es un estado intermedio de un flujo con más pasos después — la pregunta correcta es "¿ya pasó de acá, sea cual sea el estado actual?". Aplica en general: no asumir que un evento externo (webhook, notificación) que "amerita marcar valor final Y" es seguro de aplicar sin comparar contra el estado actual completo del flujo, no solo contra el valor anterior de Y.
+
 ## 2026-08-04 — Al extraer `describeVariant()` a un módulo compartido, se perdió el indicador "Polarizado" en el detalle de pedido
 
 **Estado**: ✅ Cerrado (fix en el mismo día, sin impacto real más allá de que el founder vio el dato incompleto en una venta real)

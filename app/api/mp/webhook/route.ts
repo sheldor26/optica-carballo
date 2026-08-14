@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { releaseOrderStock } from '@/lib/checkout/orders';
+import { TRACKER_STEPS } from '@/lib/orders/order-status';
 import {
   fetchPaymentById,
   mpStatusToOrderStatus,
@@ -30,9 +31,13 @@ export const dynamic = 'force-dynamic';
  *   2. Filtrar solo eventos de tipo `payment`.
  *   3. Fetch del payment completo vía MP API (el webhook no trae el status).
  *   4. Lookup order por `external_reference` (= order_number).
- *   5. Idempotencia: si la order ya tiene mp_payment_id matching → skip.
+ *   5. Idempotencia: si la order ya está paid o más adelante (preparing/
+ *      reviewed/shipped/delivered) y el pago mapea a "paid" → skip (MP puede
+ *      reenviar la notificación de un pago ya confirmado días después; no
+ *      debe regresar el status ni reenviar los emails de confirmación).
  *   6. Map MP status → order status.
- *   7. UPDATE orders + mp_payment_id + paid_at.
+ *   7. UPDATE orders + mp_payment_id + paid_at (sin regresar el status si el
+ *      pedido ya progresó más allá de "paid").
  *   8. Si paso a `paid`, mandar emails (cliente + admin) — best-effort.
  *   9. Siempre responder 200 a MP (sino reintenta indefinidamente).
  *
@@ -110,19 +115,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, error: 'order not found' });
   }
 
-  // Idempotencia: si ya está marcada paid con este payment_id, skip.
+  // El pedido ya avanzó a paid o más allá (preparing/reviewed/shipped/
+  // delivered) — MP puede reenviar la notificación de un pago ya confirmado
+  // días o semanas después (bug real 2026-08-14, pedido OC-2026-00014: un
+  // pedido `shipped` el 4/8 recibió el mismo webhook de pago 10 días
+  // después; el chequeo viejo comparaba `status === newOrderStatus`, y como
+  // "shipped" ≠ "paid" no lo detectaba como ya-procesado — pisó el status a
+  // "paid" de nuevo y reenvió los emails de confirmación).
+  const alreadyConfirmedPaidOrLater = (
+    TRACKER_STEPS as readonly string[]
+  ).includes(orderRow.status);
+
+  // Idempotencia: mismo payment_id + el pedido ya está paid o más adelante
+  // → no hay nada que hacer, no tocar status ni reenviar emails.
   if (
     orderRow.mp_payment_id === String(payment.id) &&
-    orderRow.status === newOrderStatus
+    newOrderStatus === 'paid' &&
+    alreadyConfirmedPaidOrLater
   ) {
     return NextResponse.json({
       ok: true,
-      skipped: 'already processed (idempotent)',
+      skipped: 'already processed (order already at or past paid)',
     });
   }
 
-  const wasUnpaid = orderRow.status !== 'paid';
+  const wasUnpaid = !alreadyConfirmedPaidOrLater;
   const isNowPaid = newOrderStatus === 'paid';
+  // Nunca regresar el status si el pedido ya progresó más allá de "paid" —
+  // aunque llegue un payment_id distinto (pago duplicado, reintento, etc.),
+  // el envío/entrega real no se deshace por una notificación de pago.
+  const regressesProgress = isNowPaid && alreadyConfirmedPaidOrLater;
 
   // Anti-subpago: no marcar `paid` si el monto aprobado es menor al total de la
   // orden (bug de precio, preferencia manipulada, etc.). Dejamos rastro del pago
@@ -152,10 +174,12 @@ export async function POST(request: NextRequest) {
   }
 
   const update: Record<string, unknown> = {
-    status: newOrderStatus,
     mp_payment_id: String(payment.id),
     payment_status: payment.status,
   };
+  if (!regressesProgress) {
+    update.status = newOrderStatus;
+  }
   if (isNowPaid && !orderRow.paid_at) {
     update.paid_at = new Date().toISOString();
   }

@@ -173,6 +173,18 @@ Founder reactivó el loop automático. Consulta fresca a Codex, grounded en TODO
 3. Bug del email silencioso de Resend (ya en BACKLOG, más importante que #4).
 4. View Transitions grid→PDP (polish, menor impacto de negocio).
 
+### 🟡 EN CURSO — bug del webhook MP: pedido `shipped` regresó a `paid` y reenvió el email de venta (2026-08-14)
+
+**Síntoma reportado por el founder**: el pedido `OC-2026-00014` (Ronald Ferrari, ya despachado el 4/8) generó de nuevo el email de "nueva venta" el 14/8, como si fuera una compra distinta de la misma persona — no hubo venta nueva.
+
+**Causa raíz confirmada** (`order_status_events` del pedido): secuencia real fue `pending → paid → preparing → reviewed → shipped` (4/8, todo normal) y después, el 14/8 a las 05:01 UTC, un evento `paid` nuevo — el pedido volvió de `shipped` a `paid`. MP reenvió la notificación webhook de ese mismo pago 10 días después (comportamiento normal de MP, no un bug de ellos). El código de `app/api/mp/webhook/route.ts` tenía un chequeo de idempotencia roto: comparaba `orderRow.status === newOrderStatus` (es decir, "¿el status actual es exactamente igual al nuevo?") — como el pedido ya estaba en `shipped` y el nuevo status calculado era `paid`, `"shipped" !== "paid"` → NO lo detectó como ya-procesado. Pisó `orders.status` a `paid` de nuevo y, como `wasUnpaid = status !== 'paid'` también daba `true` para `shipped`, volvió a mandar los emails de confirmación (cliente + admin) — de ahí el "mail con la venta del mismo producto".
+
+**Fix aplicado** (`app/api/mp/webhook/route.ts`, sin pushear todavía): idempotencia ahora usa `TRACKER_STEPS` (`lib/orders/order-status.ts`, ya existente) para saber si el pedido YA está en `paid` o más adelante (`preparing/reviewed/shipped/delivered`) — si así es y el webhook vuelve a mapear a `paid`, se skipea entero (no toca status, no manda email). Además, el `UPDATE` de `orders` nunca vuelve a escribir `status` si eso significaría regresar un pedido ya avanzado (`regressesProgress`) — cubre también el caso borde de un `payment_id` distinto llegando tarde sobre un pedido ya despachado. typecheck OK.
+
+**Verificado con una query sobre todo `order_status_events`**: `OC-2026-00014` es el ÚNICO pedido que sufrió este regreso (`preparing/reviewed/shipped/delivered` → `paid`) — no hay otros casos ocultos que limpiar.
+
+**Pendiente**: (1) commitear + pushear el fix; (2) corregir el pedido `OC-2026-00014` en la base (quedó con `status='paid'` en vez de `'shipped'`) — le di 2 opciones al founder (re-marcar "Enviado" desde el panel = reenvía el email de "enviado" al cliente; o UPDATE puntual mío en la base = no dispara nada) y **esperando que elija**.
+
 ### ✅ Fix: faltaba "Polarizado" en el detalle de variante del pedido (2026-08-04)
 
 Founder reportó (venta real, pedido `OC-2026-00015`, Vulk Reporter MBLK/S10) que el detalle de pedido no decía "POL" pese a ser una variante polarizada (`attributes.polarized: true`). Causa: al extraer `describeVariant()`/`extractDisplayCode()` a `lib/catalog/variant-label.ts` más temprano en esta misma sesión, no se replicó el indicador "· Polarizado" que la PDP renderiza aparte (`isPolarizedVariant()`, blue text) — se perdió justo en el caso donde el `model_code` no trae "POL" como texto (algunos productos sí lo traen embebido, ej. "SBLK/SG91 POL", otros no, ej. "MBLK/S10"). La descripción larga del producto en la ficha NUNCA tuvo el problema — ya decía "POLARIZADA" correctamente, el bug era solo del feature nuevo de hoy. Fix: `isPolarizedVariant(item.variantAttributes)` agregado a `app/admin/pedidos/[id]/page.tsx` + `components/account/order-detail.tsx`, mismo criterio visual que la PDP. Ver entry nueva en `MISTAKES.md`. typecheck OK, commit `a72f77c`.
