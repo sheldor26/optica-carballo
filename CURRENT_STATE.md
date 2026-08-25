@@ -382,11 +382,16 @@ Lo detecté y lo corregí antes de tocar nada.
 El founder preguntó qué modelos de Vulk y Rusty tiene publicados en Mercado Libre y no en el
 catálogo. Salió script (`scripts/ml-faltantes.ts`), porque es una pregunta que se repite.
 
-**Resultado: 98 modelos sin cargar, 1.222 unidades en stock.** Para dimensionarlo, el sitio tiene
+**Resultado: 98 modelos sin cargar, 913 unidades en stock.** Para dimensionarlo, el sitio tiene
 74 productos: el catálogo podría más que duplicarse. Top por stock parado + ventas ya demostradas en
-ML: Malice (108 u / 64 vendidos), Blozon (88 / 55), Le Groupie (68 / 35), Zion (52 / 6),
-Harry sol (38 / 20), Dunsert (34 / 24). Caso aparte: See Life tiene 62 unidades y **cero ventas** —
-mucho stock sin ninguna señal de demanda, va después de los que ya vendieron.
+ML: Malice (3 colores / 54 u / 64 vendidos), Blozon (4 / 46 / 55), Le Groupie (4 / 34 / 35),
+Zion (8 / 52 / 6), Cinema (6 / 24 / 46), Ardigan (4 / 20 / 22). Caso aparte: See Life tiene mucho
+stock y **cero ventas** — va después de los que ya vendieron.
+
+⚠️ **Los primeros números que se le pasaron al founder estaban inflados** (1.222 unidades, y Malice
+con 108). El conteo agrupaba por publicación y no por pozo de stock. Ver MISTAKES 2026-08-25.
+`user_product_id` es la clave de deduplicación de inventario en ML, no `item_id`: dos publicaciones
+del mismo User Product comparten las mismas unidades. Ya está corregido en el script.
 
 **Tres decisiones de diseño que cambian el número que sale:**
 
@@ -414,11 +419,33 @@ carga: son una oportunidad de limpieza en ML, que quedó anotada pero no ejecuta
 327 pausadas sin mirar, `--incluir-pausadas` las incluye), y quedan dos o tres modelos duplicados en
 el conteo donde el color viene pegado al nombre (Marilyn / Marilyn '23, ROUM / ROUM L.BLUE).
 
+### En curso: carga del Rusty Malice
+
+El founder eligió arrancar por el Malice y **ya dejó las 6 fotos** en `marketing/fotos/malice/`
+(convención de nombres suya: `AGALERIA-*` es el frente y `GALERIA-*` el perfil). El fabricante NO
+tiene el Malice en rustyoptical.com — se revisó el índice completo de sol — así que estas fotos son
+la única fuente.
+
+3 colorways, confirmadas contra el `user_product_id` de cada publicación:
+
+| Colorway | Lente | Pol | Stock | Precio |
+|---|---|---|---|---|
+| MBLK/REVO BLUE | azul espejado | no | 11 | $92.810 |
+| MBLK/S10 POL | gris oscuro | sí | 18 | $96.205 |
+| SBLK/S10 POL | gris oscuro | sí | 25 | $96.205 |
+
+De los atributos de sus propias publicaciones salen: G-Flex frente y patillas, policarbonato, UV
+sí, unisex, calibre 59, puente 16, varilla 155, alto de lente 41.
+
+**Falta y se le preguntó**: ancho total del frente, peso, y desempate del alto de lente — dos
+publicaciones dicen 4.1 cm y una dice 5.9 cm, que es casi seguro un copy-paste del ancho. También
+se le consultó la forma: dos publicaciones dicen "Rectangular", una "Cuadrada" y el DESIGN dice
+"Anteojo Cuadrado"; por proporción (59×41 = 1,44) corresponde `rectangular`.
+
 ### Próximo paso EXACTO
 
-Esperando que el founder elija con qué modelos arrancar la carga — la recomendación es Malice,
-Blozon y Le Groupie, que entre los tres suman 264 unidades y 154 ventas acumuladas en ML. Sigue
-pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
+Con esos tres datos: generar las placas, subirlas y cargar el producto. Sigue pendiente, aparte, el
+control diferido de 24 h del alta de MLA2035140957: que
 `GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
 `closed` solo. Nada más queda abierto del Bruice.
 

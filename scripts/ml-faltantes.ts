@@ -46,6 +46,8 @@ type Item = {
   available_quantity: number;
   sold_quantity: number;
   permalink: string;
+  /** Mismo User Product = mismo pozo de stock, aunque sean items distintos. */
+  user_product_id?: string | null;
   attributes?: Array<{ id: string; value_name: string | null }>;
   variations?: Variacion[];
 };
@@ -181,6 +183,7 @@ async function main(): Promise<void> {
     etiqueta?: string;
     parcial?: boolean;
     modelo: string;
+    pozo: string;
   };
 
   const faltan: Falta[] = [];
@@ -190,6 +193,9 @@ async function main(): Promise<void> {
       item: it.id,
       titulo: it.title,
       modelo: modeloDe(it),
+      // El pozo de stock: dos publicaciones del mismo User Product comparten
+      // unidades. Sin esto, el mismo inventario se cuenta una vez por publicación.
+      pozo: it.user_product_id ?? it.id,
       marca: marcaDe(it) ?? '?',
       estado: it.status,
       categoria: it.category_id === 'MLA417128' ? 'sol' : 'armazón',
@@ -240,6 +246,7 @@ async function main(): Promise<void> {
     marca: string; modelo: string; categorias: Set<string>;
     items: Set<string>; variantes: number; stock: number;
     precios: number[]; vendidos: number; parcial: boolean; link: string;
+    pozos: Map<string, number>;
   };
   const porModelo = new Map<string, Grupo>();
   for (const f of faltan) {
@@ -247,16 +254,22 @@ async function main(): Promise<void> {
     let g = porModelo.get(k);
     if (!g) {
       g = { marca: f.marca, modelo: f.modelo, categorias: new Set(), items: new Set(),
-            variantes: 0, stock: 0, precios: [], vendidos: 0, parcial: false, link: f.link };
+            variantes: 0, stock: 0, precios: [], vendidos: 0, parcial: false, link: f.link,
+            pozos: new Map() };
       porModelo.set(k, g);
     }
     g.categorias.add(f.categoria);
     g.items.add(f.item);
-    g.variantes++;
-    g.stock += f.stock;
+    // Un pozo cuenta una sola vez, con el stock que declara.
+    const clavePozo = f.variacion ? `${f.pozo}::${f.variacion}` : f.pozo;
+    if (!g.pozos.has(clavePozo)) g.pozos.set(clavePozo, f.stock);
     g.precios.push(f.precio);
     g.vendidos = Math.max(g.vendidos, f.vendidos);
     if (f.parcial) g.parcial = true;
+  }
+  for (const g of porModelo.values()) {
+    g.variantes = g.pozos.size;
+    g.stock = [...g.pozos.values()].reduce((a, b) => a + b, 0);
   }
 
   const grupos = [...porModelo.values()].sort((a, b) => {
@@ -273,7 +286,7 @@ async function main(): Promise<void> {
     console.log('\n' + '='.repeat(88));
     console.log(titulo);
     console.log('='.repeat(88));
-    console.log('marca  modelo                     tipo      pubs var  stock   precio        vendidos');
+    console.log('marca  modelo                     tipo      pubs colores stock  precio        vendidos');
     console.log('-'.repeat(88));
     for (const g of lista) {
       const min = Math.min(...g.precios), max = Math.max(...g.precios);
@@ -314,7 +327,15 @@ async function main(): Promise<void> {
 
   console.log('\n' + '='.repeat(88));
   console.log(`${porItem.size} publicaciones con algo sin cargar · ${faltan.length} variantes`);
-  console.log(`${faltan.filter((f) => f.stock > 0).length} variantes con stock (${faltan.reduce((s, f) => s + f.stock, 0)} unidades)`);
+  const pozosUnicos = new Map<string, number>();
+  for (const f of faltan) {
+    const k = f.variacion ? `${f.pozo}::${f.variacion}` : f.pozo;
+    if (!pozosUnicos.has(k)) pozosUnicos.set(k, f.stock);
+  }
+  const unidades = [...pozosUnicos.values()].reduce((a, b) => a + b, 0);
+  console.log(`${pozosUnicos.size} colores distintos · ${unidades} unidades reales`);
+  console.log('(deduplicado por user_product_id: dos publicaciones del mismo User Product');
+  console.log(' comparten el pozo de stock, así que el inventario se cuenta una sola vez)');
 
   if (salidaJson) {
     fs.writeFileSync(salidaJson, JSON.stringify(faltan, null, 2));

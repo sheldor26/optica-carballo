@@ -22,6 +22,38 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-25 — Deduplicé la mitad del reporte y la otra mitad no, y le pasé al founder totales inflados un 34%
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: le reporté al founder que tiene **98 modelos sin cargar con 1.222 unidades**, y que el
+Rusty Malice —el primero de la lista— tenía **108 unidades en 6 publicaciones**. Los dos números
+estaban mal. El Malice son **3 colores y 54 unidades**: cada color está publicado dos veces con
+títulos distintos. El total real es **913 unidades**, no 1.222.
+
+**Causa raíz, y es la parte incómoda**: en el mismo reporte yo había detectado ese problema. Vi que
+46 modelos aparecían como "les falta una variante" cuando en realidad eran publicaciones duplicadas,
+lo verifiqué contra la base con tres casos, lo separé en una tabla aparte y hasta escribí un
+learning sobre verificar una muestra antes de reportar el total. **Pero apliqué esa corrección sólo
+a los modelos ya cargados y no a los que faltan**, que eran justamente el número que el founder iba
+a usar para decidir. Traté el hallazgo como una anomalía de una sección en vez de como una propiedad
+de la cuenta entera.
+
+Lo que lo destapó fue mirar el detalle del Malice cuando el founder eligió empezar por ahí: seis
+publicaciones con los stocks repetidos de a pares (11, 11, 25, 25, 18, 18). El `user_product_id`
+confirmó que son tres pozos, no seis.
+
+**Regla preventiva**: cuando se descubre un factor de distorsión en un reporte —duplicados, unidades
+compartidas, doble conteo— **aplicarlo a TODO el reporte antes de mandarlo, no sólo a la sección
+donde apareció**. La pregunta a hacerse es "¿esto vale también para el resto?", y por default la
+respuesta es sí, porque el factor casi nunca es local: es una propiedad de la fuente de datos.
+
+Concreto para Mercado Libre: **el `user_product_id` es la clave de deduplicación de stock**, no el
+`item_id`. Dos publicaciones del mismo User Product comparten el pozo de unidades. Cualquier conteo
+de inventario sobre ML tiene que agrupar por ahí. Ya está aplicado en `scripts/ml-faltantes.ts`.
+
+---
+
 ## 2026-08-25 — Copié la estructura del seed molde pero no miré cómo se llaman los hermanos
 
 **Estado**: ✅ Cerrado
