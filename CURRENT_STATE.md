@@ -470,6 +470,19 @@ Tres cosas que el análisis desmintió y conviene no volver a levantar: `/polari
 
 Informe completo en el output del workflow; lo accionable quedó resumido acá.
 
+### Refactor: un solo lugar para el token de Mercado Libre
+
+El descifrado AES-256-GCM del token estaba copiado en cuatro scripts. Al ser criptografía, la copia
+es el peor lugar para una divergencia: si cambia el formato del ciphertext o cómo se deriva la
+clave, hay que acordarse de tocar los cuatro.
+
+Quedó en `scripts/lib/ml-auth.ts`, que además hace dos cosas que ninguna copia hacía: **avisa si el
+token ya venció** (en vez de fallar con un 401 a mitad de camino) y **avisa si vence en menos de 10
+minutos**, que en un script que escribe en publicaciones es la diferencia entre no empezar y quedar
+a medias. Migrados `ml-diagnostico-imagenes`, `ml-auditar-medidas` y `ml-corregir-medidas`, los tres
+verificados corriendo después del cambio. `ml-item.ts` se dejó como estaba: es previo a la sesión,
+funciona, y tocarlo no aportaba nada hoy.
+
 ### Las 8 publicaciones con medidas imposibles — CORREGIDAS
 
 Se corrigieron los 13 atributos de las 8 publicaciones activas. Verificado con una re-auditoría:
