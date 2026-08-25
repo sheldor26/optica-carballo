@@ -74,11 +74,28 @@ type CajaBurbuja = { x: number; y: number; w: number; h: number };
  * Calcula la caja de la burbuja según su esquina, y devuelve el SVG de la
  * burbuja + la flecha curva que la conecta con el target.
  */
-export function burbujaConFlecha(
+/**
+ * Calcula la caja de una burbuja y sus cuerpos tipográficos, sin dibujarla.
+ *
+ * Se separó del dibujo porque el tamaño del producto depende de cuánto espacio
+ * libre dejan las burbujas, y las burbujas no dependen del producto salvo para
+ * la punta de su flecha. Primero se miden las cajas, después se encaja el
+ * producto en lo que queda, y recién ahí se dibuja todo.
+ */
+export function medirBurbuja(
   b: Burbuja,
   canvas: number,
   opciones: { margen?: number; tituloPx?: number; subPx?: number } = {},
-): string {
+): { caja: CajaBurbuja; tituloPx: number; subPx: number; padX: number; padY: number } {
+  const { caja, tituloPx, subPx, padX, padY } = calcular(b, canvas, opciones);
+  return { caja, tituloPx, subPx, padX, padY };
+}
+
+function calcular(
+  b: Burbuja,
+  canvas: number,
+  opciones: { margen?: number; tituloPx?: number; subPx?: number } = {},
+) {
   const margen = opciones.margen ?? Math.round(canvas * 0.055);
   // Dos burbujas por fila: cada una no puede pasar de la mitad del ancho
   // libre, así siempre queda un canal de aire entre las de la misma fila.
@@ -116,6 +133,25 @@ export function burbujaConFlecha(
     w,
     h,
   };
+
+  return { caja, tituloPx, subPx, padX, padY, trackingTitulo, trackingSub };
+}
+
+/** Dibuja la burbuja ya medida, con su flecha hacia el destino. */
+export function burbujaConFlecha(
+  b: Burbuja,
+  canvas: number,
+  opciones: { margen?: number; tituloPx?: number; subPx?: number } = {},
+): string {
+  const { caja, tituloPx, subPx, padX, padY, trackingTitulo, trackingSub } = calcular(
+    b,
+    canvas,
+    opciones,
+  );
+
+  const izq = b.esquina === 'tl' || b.esquina === 'bl';
+  const arriba = b.esquina === 'tl' || b.esquina === 'tr';
+  const h = caja.h;
 
   const cx = caja.x + caja.w / 2;
   const baseTitulo = b.subtitulo

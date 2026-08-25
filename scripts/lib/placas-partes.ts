@@ -286,7 +286,10 @@ export async function detectarPartes(recorte: Buffer): Promise<Partes> {
 /** Qué parte busca cada callout, deducida de lo que dice su título. */
 export function parteSegunTexto(titulo: string, subtitulo?: string): NombreParte | 'auto' {
   const texto = `${titulo} ${subtitulo ?? ''}`.toLowerCase();
-  if (/bisagra|charnela|flex/.test(texto)) return 'bisagra_izquierda';
+  // "flex" pide contexto: en "G-Flex" es el nombre del material del armazón,
+  // no una bisagra. Sin la excepción, un callout de material se llevaba la
+  // flecha a la bisagra y chocaba con el callout que sí habla de bisagras.
+  if (/bisagra|charnela|(?<!g[\s-])flex/.test(texto)) return 'bisagra_izquierda';
   if (/patilla|varilla|temple/.test(texto)) return 'patilla_izquierda';
   if (/lente|cristal|espejad|polariz|uv|filtro/.test(texto)) return 'lente_izquierdo';
   if (/puente|nariz|plaqueta/.test(texto)) return 'puente';
@@ -402,4 +405,66 @@ async function conGrilla(recorte: Buffer, width: number, height: number): Promis
     .composite([{ input: svg, left: 0, top: 0 }])
     .png()
     .toBuffer();
+}
+
+/**
+ * Corrige los puntos que quedaron fuera del armazón.
+ *
+ * Dos cosas los sacan de lugar: el modelo, que a veces ubica una parte en el
+ * aire, y la propia corrección de "el marco no va sobre el cristal", que baja
+ * el punto sin fijarse si abajo todavía hay producto. En los dos casos la
+ * flecha termina señalando fondo blanco.
+ *
+ * Acá se resuelve con la foto, no con más Vision: se arma la máscara de lo
+ * que no es fondo y todo punto que caiga afuera se corre al pixel de producto
+ * más cercano. Es determinista y no cuesta una llamada extra.
+ */
+export async function pegarAlProducto(partes: Partes, recorte: Buffer): Promise<Partes> {
+  const ANCHO = 240;
+  const { data, info } = await sharp(recorte)
+    .resize({ width: ANCHO, fit: 'inside' })
+    .greyscale()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const { width: w, height: h } = info;
+  // 244 y no 255: el fondo de estas fotos tiene ruido de compresión y una
+  // sombra suave que igual es fondo.
+  const esProducto = (i: number) => data[i]! < 244;
+
+  const hayProducto = (cx: number, cy: number) =>
+    cx >= 0 && cy >= 0 && cx < w && cy < h && esProducto(cy * w + cx);
+
+  const corregidas: Partes = {};
+  for (const [nombre, p] of Object.entries(partes) as Array<[NombreParte, Punto]>) {
+    const px = Math.min(w - 1, Math.max(0, Math.round(p.fx * w)));
+    const py = Math.min(h - 1, Math.max(0, Math.round(p.fy * h)));
+
+    if (hayProducto(px, py)) {
+      corregidas[nombre] = p;
+      continue;
+    }
+
+    // Anillos concéntricos: el primer pixel de producto que aparece es el más
+    // cercano, y se corta apenas se encuentra.
+    let mejor: { x: number; y: number } | undefined;
+    for (let r = 1; r <= Math.max(w, h) && !mejor; r++) {
+      for (let dx = -r; dx <= r && !mejor; dx++) {
+        for (const dy of [-r, r]) {
+          if (hayProducto(px + dx, py + dy)) { mejor = { x: px + dx, y: py + dy }; break; }
+        }
+      }
+      for (let dy = -r + 1; dy <= r - 1 && !mejor; dy++) {
+        for (const dx of [-r, r]) {
+          if (hayProducto(px + dx, py + dy)) { mejor = { x: px + dx, y: py + dy }; break; }
+        }
+      }
+    }
+
+    if (!mejor) { corregidas[nombre] = p; continue; }
+    corregidas[nombre] = { fx: (mejor.x + 0.5) / w, fy: (mejor.y + 0.5) / h };
+    console.log(`  · ${nombre} caía en el fondo, la corrí al armazón`);
+  }
+
+  return corregidas;
 }

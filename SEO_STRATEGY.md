@@ -356,6 +356,47 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 
 **Honestidad**: 2 de 3 variantes polarizadas (C1, C2 — C3 carey NO polariza) → NUNCA afirmar "polarizado" para el modelo entero en title/H1; se acota "en 2 de 3 colores" (criterio Play/Patien 2/4, NO el de Terdey/Zinz 100%). **Anti-canibalización vs Rusty The Take** (también aviador doble puente Rusty-sol): NO comparten keyword primaria — The Take usa `lentes de sol aviador` (170/12, 1/1 pol afirmado), Yeah usa `anteojos de sol aviador` (110/10, 2/3 pol acotado). Diferenciador físico real: acetato bio-based + 32,9g (Yeah) vs G-Flex+acetato 18g (The Take) + 3 colores vs 1. Cross-link obligatorio Yeah↔The Take ("otro aviador de sol Rusty"). Sin versión de receta cargada — sin cross-link sol↔receta por ahora. **NO linkear a `/anteojos-de-sol/rusty/polarizados`** mientras esa faceta siga con el criterio viejo "todas las variantes" (BACKLOG.md), Yeah no calificaría honestamente ahí; SÍ linkear a `/anteojos-de-sol/polarizados` (criterio correcto "≥1 variante"). Title: `Anteojos de Sol Rusty Yeah Aviador | Óptica Carballo`. H1 = name = `Rusty Yeah`.
 
+*Rusty Bruice (SOL, AVIADOR doble puente, UNISEX, G-Flex, policarbonato UV400 cat3, 23g, 2 colores cargados — MBLK/ORANGE negro mate/naranja y MDEMI HD-GG47 carey mate con patillas negras/verde degradé, NINGUNO polarizado) — slug `rusty-bruice` en `/anteojos-de-sol/rusty/rusty-bruice`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos de sol rusty bruice | 0 medido | 4 | **primaria branded** — aparece en autocompletado real de Ubersuggest, o sea que alguien la tipea, sólo que por debajo de 10/mes. Se gana sin esfuerzo |
+| lentes de sol rusty | 1.300 | 9 | head de marca (soporte, NO primaria) |
+| anteojos de sol rusty | 880 | 10 | head de marca (soporte, NO primaria) |
+| lentes de sol naranjas | 50 | 36 | carril de color — copy y alt, NO title ni H1: difficulty prohibitiva para nuestra DA |
+| anteojos naranjas | 110 | 11 | buena difficulty pero **intención de armazón**, no de lente de sol → mismatch, no targetear |
+
+**Lectura honesta: esta ficha no va a traer tráfico orgánico propio.** Sirve para convertir a quien
+ya llegó y para darle profundidad a la faceta aviador. El valor SEO real de cargar Bruice no es la
+PDP: es que `/anteojos-de-sol/aviador` pasa a **4 productos** (The Take, Yeah, Vulk The Trial,
+Bruice) y `/anteojos-de-sol/rusty/aviador` a **3**. Una faceta con 3-4 productos es un ranker mucho
+más creíble para `lentes de sol aviador` (170/12) que cualquier PDP individual. Ahí va el esfuerzo,
+no acá.
+
+**Honestidad**: esta variante NO polariza → la palabra "polarizado" no aparece en title, H1, meta ni
+alt, y hay un callout `warning` que lo aclara en la ficha. ⚠️ `anteojos de sol rusty bruice
+polarizado` existe en Ubersuggest y es **trampa**: hay demanda pero este producto no la satisface.
+Perseguirla sería bait-and-switch. Si mañana entra la colorway polarizada (existe: SKU 957005 /
+957004 en el catálogo del fabricante), entra como **variante de esta misma URL** — por eso el slug
+NO lleva el color. **Anti-canibalización**: Bruice es el TERCER aviador doble puente de Rusty-sol y
+los dos carriles de forma ya están tomados — `lentes de sol aviador` es de The Take,
+`anteojos de sol aviador` es de Yeah. Bruice no puede tomar ninguno de los dos, por eso va branded.
+Tampoco puede pelear género: es unisex (`GENDER="Sin género"` en la propia publicación de ML), así
+que `lentes de sol aviador hombre` (90/16) sigue libre para un modelo masculino futuro. Cross-link
+obligatorio Bruice ↔ The Take ↔ Yeah. Sin versión de receta cargada. Title: `Anteojos de Sol Rusty Bruice Aviador Doble Puente | Carballo` (60 chars).
+Arrancó como `... Aviador Naranja | Carballo` para no chocar con el de Yeah
+(`Anteojos de Sol Rusty Yeah Aviador | Óptica Carballo`); al entrar la segunda colorway el color
+dejó de ser representativo del modelo, así que "Naranja" salió y entró "doble puente", que es el
+diferenciador físico real y vale para las dos. H1 = name = `Rusty Bruice`.
+
+**Carril carey — evaluado y descartado para esta ficha.** `anteojos de sol carey` es 40/dif 34,
+el mismo perfil que `lentes de sol naranjas` (50/36) que ya se había descartado. `anteojos carey`
+(390/dif 8) tiene volumen y buena dificultad pero vive en el CSV de armazones: es intención de
+receta, mismatch desde una PDP de sol. Los dos van a copy y alt, no a title ni H1. Aparte, y sin
+mezclarlo con esta ficha: `anteojos carey` (390/8), `lentes carey` (260/10) y `anteojos negros de
+carey` (320/16) son buenos carriles para una faceta `/anteojos-de-receta/carey` que hoy no existe,
+con cinco recetas carey mate ya cargadas. Anotado en BACKLOG, no es de este producto.
+
 *Rusty Ther Optics (receta, REDONDO de METAL, UNISEX, liviano 14,5g, lentes demo mono/bi/multifocal) — slug `rusty-ther-receta` en `/anteojos-de-receta/rusty/rusty-ther-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|

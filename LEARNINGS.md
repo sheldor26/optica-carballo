@@ -22,6 +22,119 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-25 — Una integración se diseña para los dos consumidores (server de Next y script de terminal) desde el día uno, o termina duplicada
+
+**Contexto**: al empezar la integración de Instagram, el molde natural era copiar la de Mercado
+Libre. Pero `lib/integrations/mercadolibre/*` lleva `import 'server-only'` y usa
+`createAdminClient()` adentro, que también lo lleva. En un `tsx script.ts` eso tira
+`Error: This module cannot be imported from a Client Component module` — verificado, no es
+teórico. La consecuencia ya está en el repo: `scripts/lib/ml-auth.ts` tiene una **copia a mano
+del descifrado AES**, y su propio comentario dice que duplicar criptografía es el peor lugar
+donde tener una divergencia.
+
+**Qué funcionó**: escribir los módulos de Instagram sin `server-only` y **recibiendo el
+`SupabaseClient` por parámetro** en vez de construirlo adentro. El mismo `publish.ts` lo usa el
+script (`crearClienteAdmin` de `scripts/lib/supabase-script.ts`) y lo va a usar el cron
+(`createAdminClient`), sin una sola línea repetida. De paso, el cifrado se subió a
+`lib/integrations/encryption.ts` y ahora lo comparten las dos integraciones.
+
+**Por qué funciona**: `server-only` protege contra importar algo en un componente de cliente.
+Un script de Node no es un componente de cliente, pero el paquete no puede distinguirlos: falla
+igual. La protección real contra filtrar secretos al browser es no importar el módulo desde
+código con `'use client'`, y eso se ve en el import. Inyectar el cliente en vez de construirlo
+adentro es lo que hace el módulo portable, y además lo vuelve testeable sin tocar la base.
+
+**Cómo replicarlo**: cuando una integración nueva vaya a tener un comando de terminal además del
+uso desde el server — que en este repo son casi todas — el núcleo va sin `server-only` y con el
+cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si el módulo maneja
+secretos, chequear que ningún archivo con `'use client'` lo importe.
+
+
+## 2026-08-25 — Mirar lo que vas a pisar encuentra cosas que ninguna verificación de datos encuentra
+
+**Contexto**: el founder pidió reemplazar las 6 fotos de una publicación de ML con 60 ventas. El
+paso técnico era trivial: subir, hacer el PUT, listo. Antes de eso bajé las 6 fotos viejas y las
+miré en una hoja de contacto, sólo para saber qué estaba reemplazando.
+
+**Qué apareció**: la placa de medidas vieja decía **puente 18** y la ficha del sitio, cargada esa
+misma mañana, decía **16**. Una de las dos estaba mal y la ficha ya estaba publicada. Resultó que
+el correcto era 18 — el grabado del armazón estaba gastado y el 8 parecía un 6.
+
+**Por qué ninguna otra verificación lo habría encontrado**: todo lo que se chequea normalmente daba
+verde. El JSON parseaba, la geometría cerraba (56×2+16 = 128 ≤ 146, y con 18 también), la PDP
+renderizaba, las facetas listaban bien. `pnpm ml:medidas` sí lo habría detectado, pero recién
+después, porque compara contra publicaciones y el producto acababa de entrar al catálogo. El único
+canal por el que ese dato podía aparecer era **mirar el contenido viejo**, y sólo se lo mira si uno
+se toma el trabajo de bajarlo antes de sobrescribirlo.
+
+**La regla**: antes de reemplazar contenido que ya está publicado —fotos de una publicación, un
+texto, un archivo del bucket— abrirlo y leerlo, aunque el reemplazo sea obviamente mejor. No es por
+prudencia genérica: el contenido viejo es un registro de lo que se sabía en su momento, y cuando
+contradice a lo nuevo, esa contradicción es información. Cuesta un minuto y es el único momento en
+que ese dato es visible.
+
+**Corolario operativo**: el script `pnpm ml:fotos` que salió de esta tarea guarda un snapshot de la
+galería vieja antes de tocar nada y puede restaurarla con `--restaurar`. El snapshot sirve para
+volver atrás, pero además deja el contenido viejo en disco para poder mirarlo.
+
+---
+
+## 2026-08-25 — Para que el contenido entre grande, primero medir lo que lo rodea
+
+**Contexto**: en la placa de callouts el anteojo se veía chico y perdido entre bandas blancas. La
+tentación era subir el número: el producto se encajaba en un 73% fijo del cuadro, subilo a 85% y
+listo. Eso habría roto la placa: con las burbujas en las cuatro esquinas, un producto más ancho se
+mete abajo del texto.
+
+**Qué funcionó**: darse cuenta de que la dependencia iba en un solo sentido. La **posición** de cada
+burbuja depende sólo de su texto y del tamaño del cuadro; del producto depende únicamente la punta
+de su flecha. Entonces no hay círculo que romper: se miden primero las cuatro cajas, se calcula la
+banda libre que queda entre la fila de arriba y la de abajo, y el producto se encaja en esa banda al
+94%. En una foto apaisada como la del Bruice el anteojo pasó de ocupar ~36% del alto a llenar el
+hueco entero, y de yapa las flechas quedaron cortas porque el producto ahora llega cerca de las
+burbujas.
+
+Requirió partir `burbujaConFlecha()` en dos: `medirBurbuja()` devuelve la caja sin dibujar nada, y
+el dibujo se hace después. Esa separación —*calcular layout, después renderizar*— es la que habilita
+todo lo demás.
+
+**La regla**: cuando algo tiene que "verse más grande" dentro de una composición, no subir el
+porcentaje a ojo; medir qué espacio dejan libre los otros elementos y encajarlo ahí. Y si el cambio
+mejora un caso pero podría empeorar otro (acá: una foto poco apaisada, donde la banda es más angosta
+que el cuadro), dejar el encuadre viejo como piso y quedarse con el más grande de los dos. Sale una
+línea de código y convierte "mejora en mi caso de prueba" en "no puede empeorar ninguno".
+
+**Dónde más aplica**: cualquier composición con contenido fijo alrededor — el hero del sitio, las
+cards de categoría, las placas de historias de Instagram (donde el "contenido alrededor" es la UI de
+la app, ver MISTAKES 2026-08-24).
+
+---
+
+## 2026-08-25 — Contra una alucinación de coordenadas, verificar contra el dato sale más barato que mejorar el prompt
+
+**Contexto**: el generador de placas le pide a Claude Vision dónde está cada parte del anteojo para
+que las flechas salgan del lugar correcto. Venía acumulando esfuerzo en el prompt: grilla de
+porcentajes dibujada encima de la foto, Sonnet en vez de Haiku, `tool_choice: auto` para que el
+modelo describa la pose antes de ubicar, un reintento que fuerza la tool. Todo eso ayudó y sigue en
+pie, pero el modelo igual erraba algunos puntos y los dejaba en el aire.
+
+**Qué funcionó**: dejar de pedirle más precisión al modelo y chequear su respuesta contra la imagen.
+La foto ya viene recortada al ras del producto, así que "¿este punto cae sobre el anteojo?" es leer
+la luminancia de un pixel. `pegarAlProducto()` arma la máscara a 240px de ancho, y cualquier punto
+que caiga en el fondo se corre por anillos concéntricos hasta el pixel de producto más cercano.
+Treinta líneas, sin llamada extra, y el resultado no cambia entre corridas.
+
+**La causa real**: el modelo es bueno decidiendo **qué** parte es cuál y flojo en el pixel exacto.
+La corrección determinista no le discute lo primero —respeta la etiqueta que eligió— y sólo arregla
+lo segundo. Por eso no pelea con el prompt: se reparten el trabajo según en qué es bueno cada uno.
+
+**La regla**: cuando un modelo devuelve coordenadas, medidas o cualquier valor que se pueda validar
+contra el dato de origen, escribir esa validación antes de invertir otra ronda en el prompt. El
+prompt sube la probabilidad de acertar; la verificación pone un piso. Y el piso es lo que hace que
+se pueda publicar sin mirar cada resultado a mano.
+
+---
+
 ## 2026-08-24 — Para auditar consistencia, el umbral sale de la distribución de los datos, no de la intuición
 
 **Contexto**: el founder pidió revisar que todas las fotos del catálogo se vieran del mismo tamaño

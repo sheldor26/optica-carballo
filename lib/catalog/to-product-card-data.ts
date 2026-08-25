@@ -1,4 +1,5 @@
 import type { ProductCardData, ProductCardVariant } from '@/components/product/product-card';
+import { describeVariant } from '@/lib/catalog/variant-label';
 import type { ProductCardSource } from '@/lib/catalog/queries';
 import { getImageScale } from '@/lib/catalog/image-scale-overrides';
 import { isPolarizedVariant } from '@/lib/catalog/polarized';
@@ -90,7 +91,7 @@ function deriveStockState(
  *    de modo que el hover en la card swap entre dos fotos DE LA MISMA variante
  *    (founder feedback: el hover anterior cambiaba a otra variante, confuso).
  * 4. Mini-thumbnails: una entrada por variante con su imagen primary +
- *    label visible (color_frame del JSONB attributes).
+ *    label visible (frame_color / lens_color del JSONB attributes).
  */
 export function toProductCardData(
   source: ProductCardSource,
@@ -217,22 +218,14 @@ function sortImage(
 }
 
 /**
- * Extrae label legible para el thumbnail. Prioriza `color_frame` del JSONB,
- * cae a `color_lens` si no hay, fallback a "Variante N" si nada existe.
+ * Label legible para el thumbnail de la variante.
+ *
+ * Leía `color_frame` / `color_lens`, claves que no escribe ningún seed: los 72
+ * usan `frame_color` / `lens_color`. O sea que el fallback ganaba siempre y
+ * TODAS las miniaturas del catálogo decían "Variante". Ahora usa el mismo
+ * `describeVariant` que el selector de la PDP y el detalle de pedido, así el
+ * mismo dato se lee igual en todos lados.
  */
 function extractColorLabel(attributes: Record<string, unknown>): string {
-  const colorFrame = attributes?.color_frame;
-  if (typeof colorFrame === 'string' && colorFrame.length > 0) {
-    return capitalizeFirst(colorFrame);
-  }
-  const colorLens = attributes?.color_lens;
-  if (typeof colorLens === 'string' && colorLens.length > 0) {
-    return capitalizeFirst(colorLens);
-  }
-  return 'Variante';
-}
-
-function capitalizeFirst(s: string): string {
-  if (s.length === 0) return s;
-  return s.charAt(0).toUpperCase() + s.slice(1);
+  return describeVariant(attributes);
 }

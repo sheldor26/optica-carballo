@@ -35,6 +35,7 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   azul: 'Azul',
   'marron-degrade': 'Marrón degradé',
   'gris-degrade': 'Gris degradé',
+  'verde-degrade': 'Verde degradé',
   espejado: 'Espejado',
 };
 

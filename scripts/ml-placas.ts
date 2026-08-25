@@ -58,12 +58,14 @@ import {
   burbujaConFlecha,
   escaparXml,
   fontQueEntra,
+  medirBurbuja,
   type Burbuja,
 } from './lib/placas-svg';
 import { svgMedidas, type Medidas } from './lib/placas-medidas';
 import { detectarCotas, plantillaA32, rellenarPlantilla } from './lib/placas-plantilla';
 import {
   detectarPartes,
+  pegarAlProducto,
   parteSegunTexto,
   resolverAncla,
   type Partes,
@@ -85,7 +87,13 @@ const WEB_H = 1333;
  */
 const FILL_ML = 0.92;
 const FILL_WEB = 0.92;
-const FILL_CALLOUTS = 0.73;
+/**
+ * Cuánto del hueco entre burbujas ocupa el producto en la placa de callouts.
+ * Se aplica sobre el espacio libre real, no sobre el canvas entero.
+ */
+const FILL_CALLOUTS = 0.94;
+/** El mismo encuadre pero contra el cuadro entero, para las fotos poco apaisadas. */
+const FILL_CALLOUTS_CUADRO = 0.73;
 /** El de la placa de lentes va apenas menor porque comparte cuadro con la banda. */
 const FILL_LENTES = 0.88;
 
@@ -293,8 +301,6 @@ async function placaCallouts(
   anclasCustom: Array<{ fx: number; fy: number } | undefined> = [],
   partes: Partes = {},
 ): Promise<void> {
-  const fit = await encajar(recorte, { width: ML, height: ML }, FILL_CALLOUTS);
-
   // Posiciones de respaldo, en fracciones del rectángulo del armazón, para
   // cuando no se pudieron detectar las partes. Se pueden pisar con --a1..--a4.
   const anclas: Array<{ fx: number; fy: number; esquina: Burbuja['esquina'] }> = [
@@ -303,6 +309,43 @@ async function placaCallouts(
     { fx: 0.36, fy: 0.82, esquina: 'bl' },
     { fx: 0.82, fy: 0.74, esquina: 'br' },
   ];
+
+  // El producto se encaja en el hueco REAL que dejan las burbujas, no en un
+  // porcentaje fijo del canvas. Con un porcentaje fijo, una foto apaisada
+  // quedaba chica y rodeada de blanco: ocupaba el 73% del ancho pero apenas un
+  // tercio del alto. Midiendo primero las burbujas, el producto crece hasta
+  // llenar el espacio disponible y las flechas quedan cortas.
+  const cajas = callouts.slice(0, 4).map((c, i) =>
+    medirBurbuja(
+      { titulo: c.titulo, subtitulo: c.subtitulo, esquina: anclas[i]!.esquina, target: { x: 0, y: 0 } },
+      ML,
+    ).caja,
+  );
+
+  const arribaHasta = Math.max(
+    ...cajas.filter((_, i) => anclas[i]!.esquina.startsWith('t')).map((c) => c.y + c.h),
+  );
+  const abajoDesde = Math.min(
+    ...cajas.filter((_, i) => anclas[i]!.esquina.startsWith('b')).map((c) => c.y),
+  );
+
+  // Aire entre la burbuja y el producto: es por donde corre la flecha.
+  const aire = Math.round(ML * 0.06);
+  const bandaY = arribaHasta + aire;
+  const bandaAlto = Math.max(ML * 0.3, abajoDesde - aire - bandaY);
+
+  const enLaBanda = await encajar(recorte, { width: ML, height: bandaAlto }, FILL_CALLOUTS);
+  // `encajar` centra en la caja que se le pasa; hay que bajarlo a la banda.
+  enLaBanda.top += Math.round(bandaY);
+
+  // Piso de seguridad: con una foto alta la banda es más angosta que el cuadro
+  // y encajar ahí achicaría el producto. Se compara contra el encuadre de todo
+  // el cuadro y gana el más grande, así el cambio nunca empeora un caso.
+  const enElCuadro = await encajar(recorte, { width: ML, height: ML }, FILL_CALLOUTS_CUADRO);
+  const fit =
+    enLaBanda.width * enLaBanda.height >= enElCuadro.width * enElCuadro.height
+      ? enLaBanda
+      : enElCuadro;
 
   // Primero se resuelven los cuatro destinos, después se corrigen los cruces
   // y recién ahí se dibuja: si se dibujara sobre la marcha no habría forma de
@@ -637,7 +680,12 @@ function revisarClaims(textos: string[]): void {
   for (const texto of textos) {
     for (const [patron, queVerificar] of CLAIMS_A_VERIFICAR) {
       const encontrado = texto.match(patron);
-      if (encontrado) avisos.push(`"${encontrado[0]}" en «${texto}» → verificá ${queVerificar}`);
+      if (!encontrado) continue;
+      // Negar un beneficio no es un claim: "no polarizado" es exactamente la
+      // aclaración honesta que buscamos. Avisar ahí enseña a ignorar los avisos.
+      const antes = texto.slice(0, encontrado.index ?? 0).toLowerCase();
+      if (/\b(no|sin)\s+$/.test(antes)) continue;
+      avisos.push(`"${encontrado[0]}" en «${texto}» → verificá ${queVerificar}`);
     }
   }
   if (avisos.length === 0) return;
@@ -738,9 +786,12 @@ async function main(): Promise<void> {
   if (hacer('3')) {
     // Dónde está cada parte en ESTA foto: sin esto las flechas apuntan a
     // fracciones fijas del cuadro y caen donde toque.
-    const partes = process.argv.includes('--sin-vision')
+    const detectado = process.argv.includes('--sin-vision')
       ? {}
       : await detectarPartes(recortePerfil.buffer);
+    // Vision ubica bien la parte pero a veces erra el punto exacto y lo deja
+    // en el aire; esto lo devuelve al armazón antes de dibujar la flecha.
+    const partes = await pegarAlProducto(detectado, recortePerfil.buffer);
     if (process.argv.includes('--debug-partes')) {
       await debugPartes(recortePerfil, partes, path.join(mlDir, 'debug-partes.jpg'));
       console.log('  · escribí debug-partes.jpg con los puntos detectados');
@@ -780,7 +831,13 @@ async function main(): Promise<void> {
     console.log(`  ✓ 04 medidas (ML + web)${plantilla ? ' — sobre tu plantilla' : ''}`);
   }
   if (hacer('5')) {
-    const lentes = flag('lentes') || 'monofocales, bifocales y progresivos';
+    // El `|` separa igual que en los callouts: en el resto de los flags es
+    // separador, y si acá saliera literal la placa se publica con las barras.
+    const lentes = (flag('lentes') || 'monofocales, bifocales y progresivos')
+      .split('|')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .join(' · ');
     if (/progresiv/i.test(lentes) && medidas.alto < 30) {
       console.warn(
         `  ⚠️ el frente mide ${medidas.alto}mm de alto: para progresivos conviene 30mm+. Revisá el texto con --lentes.`,
@@ -794,7 +851,7 @@ async function main(): Promise<void> {
       {
         titulo: 'Se pueden adaptar lentes',
         subtitulo: lentes,
-        aclaracion: flag('aclaracion') || undefined,
+        aclaracion: flag('aclaracion')?.split('|').map((t) => t.trim()).filter(Boolean).join(' · ') || undefined,
       },
       flag('lifestyle') || undefined,
     );

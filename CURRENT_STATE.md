@@ -10,7 +10,7 @@
 **Fecha**: 2026-08-25
 **Por**: Claude Code (a pedido de Juan)
 
-### En curso: alta del Rusty Bruice MBLK/ORANGE
+### Cerrado: alta del Rusty Bruice MBLK/ORANGE
 
 El founder pidió crear este producto en Supabase, publicarlo en el sitio, subir las imágenes y
 vincularlo con su publicación de Mercado Libre.
@@ -51,17 +51,307 @@ obligatorios del contrato, convención de `storage_path` y `alt_text`, trampas d
 `seo-strategist` por slug, meta, structured data, linking interno y cómo redactar lo del filtro azul
 sin hacer un claim médico. Sus resultados llegan por notificación; ninguno escribe nada.
 
+**Placa de callouts rehecha.** El founder rechazó la primera versión: "el producto quedó chico,
+debería verse más grande, y las flechas no están bien alineadas". Tenía razón en las dos cosas y
+eran dos bugs distintos del generador, no una cuestión de gusto:
+
+1. **Tamaño**: el producto se encajaba en un 73% fijo del cuadro. Como la foto del Bruice es muy
+   apaisada (2,04:1), ese 73% de ancho daba apenas un tercio del alto y dejaba dos franjas blancas
+   enormes. Ahora se miden primero las cuatro burbujas, se calcula la banda libre que queda entre
+   la fila de arriba y la de abajo, y el producto se encaja **ahí** al 94%. Se agregó un piso de
+   seguridad: si la foto fuera poco apaisada, la banda sería más angosta que el cuadro, así que se
+   compara contra el encuadre viejo y gana el más grande — el cambio no puede empeorar ningún caso.
+2. **Flechas**: dos causas sumadas. (a) El regex que mapea texto → parte matcheaba `flex`, así que
+   el callout "Armazón **G-Flex**" se leía como bisagra y las dos flechas de arriba peleaban por la
+   misma pieza cruzando la foto. (b) Cuatro de los nueve puntos que devolvía Vision caían **fuera
+   del armazón**, sobre fondo blanco — en parte por error del modelo y en parte por la propia
+   corrección de "el marco no va sobre el cristal", que bajaba el punto sin verificar que abajo
+   todavía hubiera producto.
+
+Se verificó regenerando también un Vulk Katleen (forma completamente distinta) y el fallback
+`--sin-vision`: los tres mejoran, ninguno empeora.
+
+**Además**: `--lentes` y `--aclaracion` ahora aceptan `|` como separador igual que los callouts (la
+primera corrida imprimió las barras literales en la placa 05), y el chequeo de claims dejó de
+avisar sobre afirmaciones **negadas** — "no polarizado" es justamente la aclaración honesta que se
+busca, y un aviso que hay que ignorar enseña a ignorarlos todos.
+
+**Llegaron los dos informes de agentes** (`catalog-loader` y `seo-strategist`). Lo accionable:
+
+- Slug `rusty-bruice` (sin color: si mañana entra el polarizado, va como variante de la misma URL).
+- **`MLAU948680760` no sirve** para `mercadolibre_item_id`: es id de catálogo y `/items/{id}` da 404.
+  Va `MLA1904009956`.
+- **El "altura total 54" sí mapea a `lens_height_mm`**: `components/product/product-measurements.tsx`
+  rotula ese campo como "Altura total", que es exactamente lo que mide el founder.
+- Orden de inserts: `products` → `product_variants` → `product_images`. Si las imágenes van antes,
+  el subselect de la variante devuelve `NULL` y **no falla**: inserta con `variant_id = NULL`, y esas
+  filas son el pool de fallback del card — puede terminar mostrando la placa de medidas en la grilla.
+- El `alt_text` de la placa de medidas tiene formato parseable obligatorio (lo lee
+  `scripts/ml-auditar-medidas.ts`): `frente 146mm, lente 56x54mm, puente 16mm, varilla 140mm`.
+- Sobre el bloque de sueño, el veredicto es más fuerte que "es un claim clínico": la lente es
+  **categoría 3**, o sea que transmite entre 8% y 18% de la luz visible. El uso del que habla la
+  evidencia de blue-blocking (de noche, en interior, antes de dormir) necesita lente clara o
+  categoría 0-1. **No es que la evidencia sea floja para este producto: el producto no es el
+  dispositivo del que habla la evidencia.** Va afuera de la ficha, y el ángulo se recupera en la
+  guía `/guias/filtro-luz-azul-evidencia-real` que ya está planificada.
+
+### Los bloqueantes se resolvieron sin preguntar
+
+Lo que faltaba se pudo averiguar en vez de esperarlo:
+
+- **Stock**: 2 unidades, el de ML. Regla ya establecida — el stock sale siempre de ML.
+- **Precio**: $84.354, el de ML. Se verificó que ésa es la convención del catálogo comparando
+  contra Yeah, PRO 30, Ready y Strewn: coinciden exacto. (De paso apareció un hallazgo: **Vulk Nova
+  y Rusty Peating tienen el precio del sitio desactualizado** respecto de ML — 128.299 vs 143.097 y
+  79.790 vs 85.590. Nada re-sincroniza precio después de la carga.)
+- **Género**: unisex. Sale del atributo `GENDER = "Sin género"` de la propia publicación del founder.
+- **SKU**: 957006, confirmado en la ficha del fabricante (`.../bruice/mblk-orange-sku-957006/`), no
+  inventado. De paso quedó a la vista que el Bruice tiene **5 colorways más**, dos de ellas
+  polarizadas con SKU propio (957005, 957004) — lo que respalda que ésta no lo sea.
+- **Patillas**: sigue sin dato. Se dejó `temple_material` vacío en vez de suponer G-Flex.
+
+### Hecho: el producto está cargado y en producción
+
+Seed `supabase/seeds/93_rusty_bruice_sol.sql`, aplicado. Verificado:
+
+- PDP `/anteojos-de-sol/rusty/rusty-bruice` HTTP 200, con las 3 fotos, precio, las 5 medidas, los
+  3 callouts y la aclaración de que no es polarizada. Sin rastro del claim de sueño.
+- Aparece en `/anteojos-de-sol/rusty`, `/anteojos-de-sol/aviador` y `/anteojos-de-sol/rusty/aviador`
+  (que ahora dice "6 modelos de Rusty forma aviador"). **No** aparece en `/anteojos-de-sol/polarizados`.
+- `pnpm auditar:encuadre --todas`: **92% en la primaria y 92% en la secundaria**, scale 1.00, dentro
+  de rango. No necesita entrada en `image-scale-overrides.ts`, y como las dos coinciden no hay salto
+  al pasar el mouse — que fue justo el bug del 2026-08-24.
+
+**Script nuevo**: `pnpm fotos:subir --slug <slug> --dir <carpeta web/ de pnpm placas>`. Sube las
+fotos al bucket, verifica cada URL con un HEAD y escupe los `storage_path` con sus dimensiones
+listos para el seed. Existe porque el paso manual fallaba siempre en lo mismo: el `storage_path` es
+texto libre y un nombre que no coincide al caracter deja la ficha rota sin que nada falle. Se niega
+a pisar un path existente (hay que pasar `--sufijo`), porque la imagen optimizada de Next se cachea
+31 días por path.
+
+**Dos filas de `CLOUD_APPLIED.md` estaban mal**: `product_images_unique_path` y
+`marketplace_integrations` figuraban "⏳ pendiente" y las dos están aplicadas hace rato (se verificó
+con un SELECT sobre `pg_constraint` y sobre `information_schema.tables`). Corregidas. También se
+agregó al inventario el **Rusty Yeah**, que estaba aplicado desde el 2026-08-04 pero no figuraba.
+
+### Segunda tanda: fotos de ML + colorway MDEMI
+
+**Las 6 fotos de MLA1904009956 están reemplazadas.** Quedó activa, `sub_status: []`, health 0.9,
+60 ventas intactas. Antes de pisar nada se guardó un snapshot de la galería vieja. Las 6 placas
+pasaron el diagnóstico de moderación de ML antes de subirse.
+
+Script nuevo para esto: **`pnpm ml:fotos --item MLA... --dir <carpeta>`** (`--dry` para ver qué
+haría, `--restaurar <snapshot.json>` para volver atrás). Existe porque el PUT de `pictures`
+**reemplaza el array completo**: lo que no se remanda, se pierde. Una publicación con ventas no es
+lugar para hacerlo a mano.
+
+**El puente es 18, no 16 — y el sitio estaba mal.** Mirar la galería vieja de ML antes de pisarla
+destapó que su placa decía 18 mientras el sitio tenía 16. El founder confirmó 18: el grabado del
+armazón estaba gastado y el 8 le pareció un 6. Corregido en la base, el seed, la placa (regenerada
+y subida como `medidas-18mm.jpg`, nombre nuevo obligatorio por el cache de 31 días) y el `alt_text`.
+`pnpm ml:medidas` ya no lista al Bruice entre las discrepancias.
+
+**Colorway MDEMI HD-GG47 cargada** (SKU 968190, carey mate con patillas negras, lente verde
+degradé, $84.354, stock 3, sin publicación propia en ML). Verificado en producción: el selector de
+color muestra las dos, el deep link `?v=968190` selecciona la carey, su galería muestra sus propias
+fotos, el grid de `/anteojos-de-sol/rusty` muestra el badge "2 colores" y el Bruice sigue **fuera**
+de `/anteojos-de-sol/polarizados`. `pnpm auditar:encuadre --todas`: las **cuatro** fotos en 92% con
+scale 1.00, así que no necesita override y no hay salto en el hover.
+
+Los dos campos de marketplace de la variante MDEMI quedan en `NULL`. **Está prohibido** ponerle
+`('MLA1904009956', NULL)` para colgarla del item de la otra: la constraint `UNIQUE` no lo bloquea
+porque Postgres trata los NULL como distintos, pero `syncStockInbound` busca la variante con
+`variation_code` NULL y agarra una sola — el stock de ML terminaría aplicado a la variante
+equivocada, en silencio y sin error.
+
+**El copy se reescribió para dos colores.** El texto más peligroso era el callout `warning`: decía
+*"Esta variante no es polarizada"*, y con dos colorways ese singular hace inferir por contraste que
+la otra SÍ polariza. No miente literalmente y genera igual la expectativa falsa que prohíbe la
+regla dura #3. Ahora es *"Ninguno de los dos colores es polarizado"*. También cambió el
+`meta_title`: se sacó "Naranja" (que estaba para no chocar con el del Yeah) y entró "Doble puente",
+que es el diferenciador físico real y vale para las dos.
+
+**Bug preexistente encontrado y arreglado**: `extractColorLabel()` leía `color_frame` / `color_lens`
+y los 72 seeds escriben `frame_color` / `lens_color`, así que **todas** las miniaturas de variante
+del catálogo decían "Variante" en vez del color. Mismo error en `lib/catalog/quick-view.ts`. La
+causa raíz estaba en `PRODUCT_SCHEMA.md`, que documentaba la clave invertida y se contradecía con
+su propio ejemplo doce líneas más abajo. Corregidos los tres. `extractColorLabel` ahora delega en
+`describeVariant()`, el mismo que usan el selector de la PDP y el detalle de pedido.
+
+### Pendiente de deploy
+
+Dos arreglos de código que todavía no están en producción (el sitio corre el build deployado):
+
+- el bug de las miniaturas de variante (arriba),
+- la etiqueta `'verde-degrade': 'Verde degradé'` en `lib/catalog/variant-label.ts`. Sin ella el
+  selector muestra "Verde Degrade" sin tilde, que es lo que se ve ahora mismo en la ficha. De paso
+  arregla a Gresent y Yeah, que usan la misma clave.
+
 ### Próximo paso EXACTO
 
-Con el stock y el precio que confirme el founder: crear el producto y su variante, subir las 3
-imágenes del sitio con `pnpm foto:reemplazar` (nombre nuevo desde el vamos), cargar la placa de
-medidas con el `alt_text` en el formato parseable, y guardar `mercadolibre_item_id =
-MLA1904009956` en la variante. Antes de escribir en la base, mostrarle el plan.
+La MDEMI en Mercado Libre. **No se tocó, a propósito.** La opción correcta es agregarla como
+variación de MLA1904009956 (conserva las 60 ventas, la URL, el `3x_campaign` y el
+`good_quality_thumbnail`; una publicación nueva arranca de cero, y "sólo sumar las fotos" le
+mostraría al comprador un color que no puede elegir). Hay precedentes en la cuenta de items activos
+de MLA417128 con 4 colorways como variaciones — Rusty Spell MLA1510168748 tiene una que es
+literalmente "MDEMI-MBLK / Carey Mate con Patillas Negro Mate".
+
+**Pero MLA1904009956 no es igual a esos precedentes**: tiene `user_product_id` a nivel item
+(MLAU948680760), `inventory_id` y el tag `user_product_listing`; los multi-variación de la cuenta
+tienen esos tres campos en null. Puede haber una restricción real para convertir un item simple que
+ya está en el modelo User Product, y eso se prueba, no se asume. **Que lo pruebe el founder desde
+el panel de ML**, no por API: un array `pictures` mal armado desvincula las 6 fotos de una
+publicación viva. Después de intentarlo, verificar por GET que `status` siga `active`, que
+`variations.length === 2`, que la variación del naranja conserve sus 6 fotos y su stock 2, y anotar
+el `id` de cada variación — son los `mercadolibre_variation_code` que van a la base, **en las dos
+variantes**, incluida la MBLK que hoy lo tiene en NULL.
+
+Segunda decisión para el founder: el título de esa publicación está **congelado** por tener 60
+ventas y nombra sólo el naranja. Si suma la carey ahí, va a vender un color que el título no
+nombra.
 
 ## Última actualización (anterior)
 
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
+
+### Qué se construyó — publicación en Instagram, Fase 2 (cola programada)
+
+Ya se puede dejar contenido agendado y que salga solo. Todo lo de la Fase 1 sigue igual.
+
+**Lo nuevo**
+
+| Archivo | Qué es |
+|---|---|
+| `app/admin/social/page.tsx` + `actions.ts` | El panel: cargar imagen, texto, formato y fecha; reprogramar, bajar de la cola, borrar, publicar ahora |
+| `components/admin/social-post-form.tsx` | Formulario con vista previa en la proporción real del formato |
+| `components/admin/social-queue-list.tsx` | Cola e historial con los estados y el error de cada una |
+| `lib/integrations/instagram/dispatch.ts` | El despachador que comparten el cron, el botón "publicar ahora" y `pnpm ig:despachar` |
+| `lib/integrations/instagram/alerts.ts` | Avisos por mail con freno |
+| `lib/emails/send-social-alert-email.ts` | El mail al founder cuando algo se rompe |
+| `app/api/cron/publish-social/route.ts` | Cron cada 15 min (`vercel.json`), auth con `CRON_SECRET` |
+| `scripts/ig-despachar.ts` (`pnpm ig:despachar`) | Correr el despacho a mano sin esperar al reloj |
+
+**Las decisiones que importan**
+
+- **Que no se publique dos veces es el requisito duro**, porque un post duplicado en el feed no
+  se deshace. Tres barreras: `claimPost` es un UPDATE condicional sobre `status='scheduled'`
+  (si dos corridas se pisan, la segunda no afecta ninguna fila); el botón "publicar ahora" usa
+  **el mismo despachador** que el cron en vez de un camino propio, así compite por el mismo
+  claim; y `schedulePost` no toca lo ya publicado, así que reprogramar algo que salió no lo
+  vuelve a publicar.
+- **Si el token está roto, el lote se aborta ANTES de tocar la cola.** Las publicaciones quedan
+  en `scheduled` y salen solas cuando se arregle. Publicando una por una, un token vencido
+  mandaría toda la cola a `failed` y habría que reprogramar todo a mano.
+- **`rescatarTrabados`** pasa a `failed` lo que quedó en `publishing` más de 15 minutos (proceso
+  cortado por timeout de Vercel), avisando que hay que revisar en Instagram si llegó a salir
+  antes de reintentar. Sin esto la fila queda trabada para siempre.
+- **Avisos con freno.** El cron corre 96 veces por día: sin freno, un token vencido con algo en
+  cola manda 96 mails iguales. `alertarConFreno` avisa una vez cada 6 h usando
+  `marketplace_sync_errors` (que ya existía justo para esto) y de paso deja el histórico.
+- **La cola vacía no pide token ni llama a Meta.** El caso normal es "no hay nada que hacer" y
+  cuesta una query.
+- **Zona horaria**: el `datetime-local` usa la hora del navegador. Debajo del campo se muestra
+  siempre la fecha interpretada **en hora de Argentina**, así que si alguna vez se agenda desde
+  un dispositivo con otro huso, el desfase se ve antes de confirmar en vez de descubrirse
+  después.
+
+**Verificado**
+
+- `pnpm typecheck`, `pnpm lint` (los mismos 5 warnings preexistentes) y `pnpm build` completo:
+  `/admin/social` y `/api/cron/publish-social` compilan.
+- Despachador contra la base real (todo creado y borrado, quedó en 0 filas): cola vacía corta
+  sin pedir token; con algo vencido y sin token **aborta sin marcar nada como fallado** y la
+  publicación sigue en `scheduled` con 0 intentos; `rescatarTrabados` respeta el margen de
+  gracia y después rescata; el `limit` por corrida se respeta.
+- Freno de avisos: primera vez manda, segunda dentro de las 6 h no, queda 1 error abierto para
+  observabilidad, y al volver a andar se marcan resueltos.
+- Auth del cron: 401 sin header y con header falso.
+- `/admin/social` responde igual que las otras páginas admin (307 a `/ingresar` sin sesión).
+- **NO verificado**: la pantalla del admin no se vio renderizada — hace falta tu login de admin.
+  Compila y el gate funciona, pero nadie miró todavía cómo se ve.
+
+**Sigue bloqueado por lo mismo**: la app de Meta. Sin token se puede cargar la cola pero no sale
+nada — el panel lo avisa arriba de todo con un cartel rojo.
+
+### Qué se construyó — publicación en Instagram, Fase 1 (comando manual)
+
+Se puede publicar en @optica.carballo desde la terminal. Plan completo aprobado en
+`~/.claude/plans/zippy-moseying-scone.md`; decisión en **ADR-027**.
+
+```bash
+pnpm ig:token                      # estado del token + cupo del día
+pnpm ig:token --seed               # sembrar el token la primera vez
+pnpm ig:post --img <ruta> --tipo story --dry-run   # sube y arma el container, NO publica
+pnpm ig:post --img <ruta> --tipo story             # publica (pide confirmación)
+pnpm ig:post --img <ruta> --tipo feed --caption-file caption.txt
+```
+
+**Archivos nuevos**
+
+| Archivo | Qué es |
+|---|---|
+| `lib/integrations/instagram/` | La integración: `config`, `types`, `api-client`, `repo`, `token`, `publish` + README |
+| `lib/integrations/encryption.ts` | El AES-256-GCM que antes vivía en `mercadolibre/encryption.ts`, ahora compartido |
+| `scripts/ig-post.ts` · `scripts/ig-token.ts` | Los comandos |
+| `scripts/lib/supabase-script.ts` | Cliente service_role para scripts (sin `server-only`) |
+| `supabase/migrations/20260825000000_instagram_publishing.sql` | `refresh_token` nullable + tabla `social_posts` + bucket `social` |
+
+**Decisiones de implementación**
+
+- **Nada lleva `import 'server-only'`**, a propósito: todos los módulos reciben el
+  `SupabaseClient` por parámetro, así sirven igual desde el server de Next y desde un script.
+  La integración de Mercado Libre no lo hizo así y terminó con el descifrado de tokens
+  duplicado a mano en `scripts/lib/ml-auth.ts` — el propio comentario de ese archivo dice que
+  duplicar criptografía es el peor lugar donde tener una divergencia.
+- **El cifrado se movió a `lib/integrations/encryption.ts`.** La versión vieja leía la clave
+  vía `getMLConfig()`, que exige `ML_CLIENT_ID` y `ML_CLIENT_SECRET`: Instagram no podía cifrar
+  nada sin tener configurado Mercado Libre. Ahora lee `APP_ENCRYPTION_KEY` directo. El derivado
+  y el formato del ciphertext son idénticos — verificado descifrando los dos tokens de ML que
+  ya estaban en la base.
+- **Validación de aspecto antes de mandar nada.** Una placa de historia (1080×1920) mandada
+  como post de feed la rechaza Meta con un error genérico; `prepararImagen()` la corta antes
+  con un mensaje que dice qué hacer. Verificado con las 5 placas de medios de pago.
+- **`--dry-run` llega hasta el container y frena.** Crear el container no publica nada y se
+  vence solo a las 24 h, así que se puede mirar la URL pública antes de que salga al aire.
+- **El token se renueva con 7 días de anticipación**, no a último momento: si la renovación
+  falla queda margen para arreglarlo. Instagram no da refresh token — si se deja vencer, hay
+  que generar uno a mano.
+
+**Verificado**
+
+- `pnpm typecheck` y `pnpm lint` en verde (solo quedan los 5 warnings preexistentes).
+- Round-trip del cifrado compartido + descifrado real de los 2 tokens de ML en la base.
+- `prepararImagen()` sobre casos reales: historia 1080×1920 → JPEG 215 KB aspect 0.5625;
+  la misma como feed → rechazada con mensaje claro; 1080×1350 → aceptada; 2160×3840 →
+  reescalada a 1440 con aviso; PNG transparente → fondo blanco, no negro.
+- Errores de los comandos sin configurar: mensajes que dicen exactamente qué falta.
+- **NO verificado todavía contra Instagram**: falta la app de Meta y el token. Ninguna llamada
+  real a la Graph API se ejecutó.
+
+**Migración aplicada** (2026-08-25, vía MCP con autorización explícita del founder). Verificada
+con SELECT y con una prueba funcional end-to-end que se creó y se borró: subida al bucket +
+descarga pública HTTP 200 con `content-type: image/jpeg`; ciclo completo de la cola
+scheduled → publishing → failed → published; **segundo `claimPost` devuelve null**, que es la
+garantía de que dos corridas del cron superpuestas no publican la misma placa dos veces; el
+CHECK de `scheduled` sin fecha rechaza con 23514. Las 2 filas de Mercado Libre conservan su
+`refresh_token`. Detalle en `supabase/CLOUD_APPLIED.md`.
+
+**Bloqueado esperando al founder** (una sola cosa, ~20 min):
+
+1. **App de Meta** — crear la app, agregar @optica.carballo como *Instagram Tester*, generar el
+   token y cargar `IG_APP_ID`, `IG_APP_SECRET`, `IG_USER_ID`, `IG_LONG_LIVED_TOKEN` en
+   `.env.local`, después `pnpm ig:token --seed`. Pasos detallados en
+   `lib/integrations/instagram/README.md`. No hace falta App Review: solo publicamos en la
+   cuenta propia.
+
+**Pendiente menor**: `types/supabase.ts` no tiene todavía la tabla `social_posts` — `pnpm db:types`
+necesita el Supabase local y en esta máquina no hay Docker corriendo. No rompe nada (el código de
+Instagram usa `SupabaseClient` sin tipar el schema y el typecheck pasa), pero conviene regenerarlo
+cuando haya Docker.
+
+**Próximo paso después de eso**: `pnpm ig:post --img marketing/placas-medios-de-pago/02-minimal-claro.png --tipo story --dry-run`,
+mirar la URL, y publicar la historia de prueba. Recién ahí arranca la Fase 2 (cola + `/admin/social` + cron).
 
 ### Qué se construyó — 5 placas de "Medios de pago" para Instagram (auditadas con el trío)
 

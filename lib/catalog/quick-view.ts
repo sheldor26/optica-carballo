@@ -111,9 +111,11 @@ export async function getProductQuickViewAction(
         sku: v.sku,
         priceCents: v.price_cents,
         stockQty: v.stock_qty,
+        // `frame_color`, no `color_frame`: la clave invertida no la escribe
+        // ningún seed y dejaba el Quick View sin color de armazón.
         colorFrame:
-          typeof v.attributes?.color_frame === 'string'
-            ? v.attributes.color_frame
+          typeof v.attributes?.frame_color === 'string'
+            ? v.attributes.frame_color
             : null,
         primaryImagePath: variantImages[0]?.storage_path ?? globalPrimary,
       };

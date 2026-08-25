@@ -43,8 +43,8 @@ Si el founder no tiene un dato OBLIGATORIO (ej: peso) → buscar en la web del f
 | `sku` | string | Único globalmente. |
 | `price_cents` | int | En centavos AR (ej: 79900 = $799.00). |
 | `stock_qty` | int | Stock real físico. Si es 0 el producto se sigue mostrando pero "sin stock". |
-| `attributes.color_frame` | string | Color del frame ("negro", "carey"). Para que el variant list sea legible. |
-| `attributes.color_lens` | string \| null | Color del lente ("verde-g15", "espejado-azul"). Null si no aplica. |
+| `attributes.frame_color` | string | Color del frame ("negro", "carey"). Para que el variant list sea legible. ⚠️ El orden importa: es `frame_color`, no `color_frame`. Este doc decía la clave al revés y el código la siguió — resultado: todas las miniaturas de variante del catálogo mostraban "Variante" en vez del color. Corregido 2026-08-25. |
+| `attributes.lens_color` | string \| null | Color del lente ("verde-g15", "espejado-azul"). Null si no aplica. Ídem: `lens_color`, no `color_lens`. |
 | `is_active` | bool | true. |
 
 ### 🔴 Imágenes (mínimo 3)
@@ -144,8 +144,8 @@ VARIANTE 1 (mínimo)
 [ ] sku:
 [ ] price (ARS):
 [ ] stock:
-[ ] color_frame:
-[ ] color_lens (o null):
+[ ] frame_color:
+[ ] lens_color (o null):
 
 IMÁGENES
 [ ] URL imagen primary (frontal):

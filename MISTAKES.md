@@ -22,6 +22,111 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-25 — Apliqué "la medición del founder gana" cuando las dos fuentes en conflicto eran del founder
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: el founder pasó las medidas del Rusty Bruice como 56-16-140 y se cargó puente 16.
+Al ir a reemplazar las fotos de su publicación de ML aparecieron dos datos suyos que decían otra
+cosa: la placa vieja de la publicación mostraba 18, y el atributo `BRIDGE_LENGTH` del item decía
+1.8 cm. Se lo mostré y confirmó que el correcto es **18**: el grabado del armazón estaba gastado y
+el 8 le pareció un 6. O sea que la ficha del sitio salió a producción con una medida equivocada.
+
+**Causa raíz**: existe una regla —bien fundada— de que cuando la base y la ficha del fabricante se
+contradicen, gana la medición a mano del founder. Acá la apliqué de memoria sin registrar que **las
+dos fuentes en conflicto eran de él**: su dato de hoy contra su propia publicación de hace meses.
+Esa regla resuelve "founder vs fabricante", no "founder vs founder", y en el segundo caso no hay
+nadie con autoridad para desempatar salvo él mismo, mirando el armazón de nuevo.
+
+Lo que sí funcionó: no pisar las fotos viejas sin mirarlas antes. El conflicto no lo destapó
+ninguna verificación de datos, lo destapó abrir la galería que estaba por reemplazar.
+
+**Regla preventiva**: antes de cargar una medida, cruzarla contra lo que ya declara la publicación
+de ML de ese mismo producto (`LENS_WIDTH`, `BRIDGE_LENGTH`, la placa de medidas). Si no coinciden,
+**mostrarle los dos números al founder y que desempate** — nunca elegir uno por regla. Un número
+gastado en el grabado es una fuente de error real y frecuente, no una excepción rara. Y cuando la
+discrepancia se resuelve, corregir en los cuatro lugares: base, seed, placa (con **nombre de
+archivo nuevo**, por el cache de 31 días) y `alt_text`.
+
+---
+
+## 2026-08-25 — Un contrato de datos que se contradecía con su propio ejemplo dejó todo el catálogo mostrando "Variante"
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: al agregar la segunda colorway del Bruice apareció que `extractColorLabel()` en
+`lib/catalog/to-product-card-data.ts` leía `attributes.color_frame` y `attributes.color_lens`,
+claves que **no escribe ninguno de los 72 seeds** — todos usan `frame_color` y `lens_color`. El
+fallback ganaba siempre, así que **todas** las miniaturas de variante del catálogo mostraban
+"Variante" en vez del color. Mismo error en `lib/catalog/quick-view.ts`.
+
+**Causa raíz**: `PRODUCT_SCHEMA.md`, que es el contrato de datos por producto, documentaba
+`attributes.color_frame` / `attributes.color_lens` en su tabla de campos **y `frame_color` /
+`lens_color` en su ejemplo JSON doce líneas más abajo**. Los seeds siguieron el ejemplo y el código
+siguió la tabla. Nadie los cruzó porque el síntoma es silencioso: no rompe nada, no tira error, sólo
+degrada un label a un genérico plausible.
+
+**Regla preventiva**: cuando un doc de contrato tenga tabla de campos **y** ejemplo, los dos son la
+misma fuente y tienen que decir lo mismo — un ejemplo no es ilustrativo, es normativo, porque es lo
+que la gente copia. Y ante cualquier campo del JSONB que se lea desde código, verificar con un grep
+sobre los seeds que la clave exista de verdad antes de confiar en el doc. Un fallback que devuelve
+un valor razonable ("Variante") esconde el bug en vez de exponerlo: si el dato es obligatorio,
+conviene que el fallback se note.
+
+---
+
+## 2026-08-25 — Corregí la posición de una flecha sin verificar que el resultado siguiera cayendo sobre el producto
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: el founder rechazó la placa de callouts del Rusty Bruice: "las flechas no están bien
+alineadas". Cuatro de los nueve puntos que el generador usa para apuntar caían **fuera del
+armazón**, sobre el fondo blanco. Una flecha que dice "frente negro mate" señalando aire vacío.
+
+**Causa raíz**: hay una corrección en `scripts/lib/placas-partes.ts` que existe por una buena razón
+— si Vision pone el punto del marco encima del cristal, hay que bajarlo al borde de abajo del aro,
+que sí es material. Esa corrección hace `fy = cristal.y1 + 12%` y **da por sentado que abajo del
+cristal hay armazón**. Cuando el recuadro del cristal que devolvió el modelo venía corrido hacia
+abajo, ese +12% se iba del producto. O sea: escribí un ajuste geométrico que arregla el caso que yo
+tenía en la cabeza y nunca verifiqué su postcondición, que es lo único que importa acá — *el punto
+final tiene que estar sobre el anteojo*.
+
+El agravante es que la verificación era barata y determinista: la foto ya está recortada al ras del
+producto, así que averiguar si un pixel es armazón o fondo es leer su luminancia. Estuve pidiéndole
+más precisión al modelo (grilla de porcentajes, Sonnet en vez de Haiku, `tool_choice: auto` para que
+razone la pose antes de ubicar) cuando lo que faltaba era chequear el resultado contra la imagen.
+
+**Regla preventiva**: cuando un ajuste mueve una coordenada calculada (empujarla, separarla de otra,
+desplazarla un porcentaje), el ajuste no termina hasta verificar que el punto **sigue cumpliendo la
+condición por la que existe**. Si la condición se puede chequear contra el dato en vez de contra el
+modelo que lo generó, chequearla ahí: es más barato y no falla distinto cada corrida. Concretamente,
+`pegarAlProducto()` corre ahora al final de la detección y corre al armazón cualquier punto que haya
+quedado en el fondo, venga del modelo o de mis propias correcciones.
+
+---
+
+## 2026-08-25 — Un regex de una palabra se comió el nombre de un material
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: en la misma placa, las dos flechas de arriba apuntaban a la misma pieza y se cruzaban
+sobre la foto. El callout "Armazón **G-Flex** / 23 gramos" se estaba resolviendo como si hablara de
+bisagras, porque el regex que decide a qué parte apunta cada callout era
+`/bisagra|charnela|flex/` y "G-Flex" contiene "flex".
+
+**Causa raíz**: metí `flex` en el patrón pensando en "bisagra con flex" (el sistema de resorte), sin
+registrar que en este catálogo **"G-Flex" es el nombre comercial del material del armazón** y
+aparece en casi todos los Vulk y Rusty. Es el mismo malentendido que ya está documentado el
+2026-08-24, cuando escribí "ARMAZÓN G-FLEX / flexible y liviano" y el founder lo frenó: las dos
+veces traté un nombre de producto como si fuera una descripción física.
+
+**Regla preventiva**: antes de meter una palabra suelta en un patrón que clasifica texto del
+catálogo, grepear cómo aparece esa palabra en el catálogo real. Si es parte del nombre de una marca,
+línea o material, no puede ir sola. Acá quedó `(?<!g[\s-])flex`. Y a nivel más general: **"G-Flex"
+es un nombre, no una propiedad** — ni implica que el armazón sea flexible ni que tenga bisagras flex.
+
+---
+
 ## 2026-08-24 — Entregué 5 placas de Instagram sin chequear las safe areas de story ni un solo ratio de contraste
 
 **Estado**: 🟡 Mitigado
