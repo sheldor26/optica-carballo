@@ -18,7 +18,7 @@ stock sí se pueden tomar de esas fuentes.
 
 ---
 
-## 🔴 Le Groupie — medidas y peso · Blozon — peso · Zion — patillas y un SKU
+## 🔴 Le Groupie — medidas, peso y SKUs · Blozon — peso
 
 - [ ] **Medidas del Vulk Le Groupie** — ancho de frente, calibre, alto total, puente y varilla. La
   ficha está publicada sin el bloque de medidas. El fabricante publica una placa y ML declara los
@@ -27,12 +27,6 @@ stock sí se pueden tomar de esas fuentes.
 - [ ] **Peso del Blozon** (gramos). Es lo único que le falta.
 - [ ] **SKUs de fabricante del Le Groupie.** Hoy están con códigos inventados
   (`LEGROUPIE-388-CH74`, etc.). Ninguna publicación declara `SELLER_SKU`.
-- [ ] **Zion — SKU de la colorway SDEMI-D.GUN/DRT15.** Las otras tres salieron del catálogo del
-  fabricante (128749, 128740, 128720) pero ésa no figura ahí: lo que él publica es
-  SDEMI-D.GUN/**UB14** (128746), mismo armazón con otro lente. Hoy está con código inventado.
-- [ ] **Zion — material de las patillas.** Los atributos de ML dicen "grilamid" para armazón,
-  patillas Y lente, lo cual es imposible para el lente. En las fotos las patillas se ven de metal,
-  pero no se cargó nada porque no hay fuente confiable.
 - [ ] **Zion — forma: ¿redondo u ovalado?** Los atributos dicen "Ovalada", tu título dice
   "Redondos" y las fotos parecen redondas. Se cargó `redondo`.
 
@@ -125,5 +119,10 @@ Está cargado el material del frente pero no el de las patillas. En varios model
   128814, 128815). El calibre, el puente y la varilla coincidían con lo leído de ML; el ancho no —
   decía 142 y es 147.
 - [x] **2026-08-25 — Zion: medidas 145 / 50 x 50 / 19 / 142 mm y peso 26,9 g.**
+- [x] **2026-08-25 — Zion: patillas de metal con terminales de acetato hechas a mano.** Ese detalle
+  no está en ninguna fuente; lo aportó el founder y se puso en la descripción y en el callout
+  principal porque es un diferenciador de confort real.
+- [x] **2026-08-25 — Zion: el SDEMI es DRT15 y su SKU es 128746**, el mismo que el fabricante usa
+  para el UB14. Mismo aspecto, distinto lente.
 - [x] **2026-08-25 — Confirmado que el SBLK/S10 del Blozon sí es polarizado**, aunque en la lista de
   SKUs venía escrito sin el "POL".

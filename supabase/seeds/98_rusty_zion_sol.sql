@@ -24,18 +24,21 @@
 -- 📸 FOTOS del fabricante (rustyoptical.com/sunglasses/ss24/zion), que tiene 6 colorways — 2 más de
 -- las que el founder vende. Tres de las cuatro salieron de ahí:
 --   SBLK/D.GUN S10 → sku 128740 · F223/J.GOLD DRT02 → sku 128720 · 0292/J.GOLD DRT04 → sku 128749
--- ⚠️ La cuarta, **SDEMI-D.GUN/DRT15**, NO está en el fabricante: el que él publica es
--- SDEMI-D.GUN/**UB14** (sku 128746), mismo armazón pero otro lente. Usar esa foto habría mostrado
--- un color de cristal que no es el que se vende. Sus fotos salieron de la publicación de ML
--- (MLA2311394646), bajadas por `GET /pictures/{id}` para tener resolución. Su SKU quedó sintético.
+-- ⚠️ La cuarta es **SDEMI-D.GUN/DRT15**, que en el catálogo del fabricante figura como
+-- SDEMI-D.GUN/**UB14** — mismo SKU (128746) y aspecto idéntico, pero el lente que llega es DRT15.
+-- Lo confirmó el founder. Por eso las fotos NO se tomaron del fabricante sino de su publicación de
+-- ML (MLA2311394646), bajadas por `GET /pictures/{id}`: la foto del fabricante muestra el cristal
+-- del UB14, que no es el que sale en la caja.
 -- ⚠️ En esa publicación las fotos 1 y 2 venían INVERTIDAS respecto de la convención (la 1 era el
 -- frente y la 2 el perfil). Hay que mirarlas siempre.
 --
 -- ⚠️ LOS ATRIBUTOS DE ML DICEN QUE EL LENTE ES "GRILAMID". Es falso: grilamid es un polímero de
 -- armazón, no de lente. Se cargó `lens_material: policarbonato`, que es el default documentado del
 -- proyecto para anteojos de sol (memoria `default-sol-cat3-policarbonato-uv`).
--- `temple_material` NO se carga: los atributos dicen grilamid pero en las fotos las patillas son
--- claramente metálicas, y no hay fuente confiable para el dato. Anotado en DATOS_PENDIENTES.
+-- `temple_material: metal` — lo confirmó el founder, y agregó un dato que no está en ninguna
+-- fuente: las patillas **terminan en acetato trabajado a mano**, en la zona que apoya detrás de la
+-- oreja. Es un diferenciador real de confort, así que va en la descripción y en el callout de
+-- arriba, no escondido en la ficha técnica.
 -- `frame_material: grilamid` es un valor NUEVO en el catálogo (los demás usan g-flex, metal o
 -- acetate); se agregó su etiqueta a `components/product/product-attributes.tsx`.
 --
@@ -63,9 +66,10 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-zion', 'Rusty Zion',
   'Anteojos de sol Rusty Zion: redondos unisex con frente de grilamid y patillas de metal. Lente de policarbonato polarizada, con 100% protección UV (UV400, categoría 3). Los cuatro colores polarizan.',
-  E'Los **Rusty Zion** son **anteojos de sol redondos, unisex**, con frente de **grilamid** —un polímero liviano y resistente— y **patillas de metal** finas, que es lo que les da el aire clásico.\n\n**Los cuatro colores son polarizados.** La lente es de policarbonato, con **100% protección UV (UV400) y categoría 3**, y el filtro polarizado corta los reflejos del asfalto y del agua.\n\nMedidas: frente 145 mm · lente 50 mm de ancho × 50 mm de alto · puente 19 mm · varilla 142 mm. Pesan 26,9 g.\n\nDisponible en 4 colores:\n\n• **Negro brillo con patillas gun, lente gris oscuro.**\n• **Carey con patillas doradas, lente marrón degradé.**\n• **Rosa pálido translúcido con patillas doradas, lente verde degradé.**\n• **Carey oscuro con patillas gun, lente marrón.**\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Zion** son **anteojos de sol redondos, unisex**, con frente de **grilamid** —un polímero liviano y resistente— y **patillas de metal** finas que terminan en **acetato trabajado a mano**, justo en la parte que apoya detrás de la oreja.\n\n**Los cuatro colores son polarizados.** La lente es de policarbonato, con **100% protección UV (UV400) y categoría 3**, y el filtro polarizado corta los reflejos del asfalto y del agua.\n\nMedidas: frente 145 mm · lente 50 mm de ancho × 50 mm de alto · puente 19 mm · varilla 142 mm. Pesan 26,9 g.\n\nDisponible en 4 colores:\n\n• **Negro brillo con patillas gun, lente gris oscuro.**\n• **Carey con patillas doradas, lente marrón degradé.**\n• **Rosa pálido translúcido con patillas doradas, lente verde degradé.**\n• **Carey oscuro con patillas gun, lente marrón.**\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "grilamid",
+    "temple_material": "metal",
     "frame_shape": "redondo",
     "lens_material": "policarbonato",
     "lens_treatment": ["uv400", "polarized"],
@@ -77,7 +81,7 @@ VALUES (
     "warranty_months": 12,
     "new_until": "2026-09-25",
     "callouts": [
-      {"type": "info", "position": "top", "title": "Redondo unisex, frente de grilamid y patillas de metal", "body": "El frente es de grilamid, un polímero liviano y resistente; las patillas son de metal fino, que es lo que le da el aire clásico. Cuatro combinaciones de armazón y lente."},
+      {"type": "info", "position": "top", "title": "Patillas de metal con terminales de acetato hechas a mano", "body": "El frente es de grilamid, un polímero liviano y resistente. Las patillas son de metal fino y terminan en acetato trabajado a mano, que es la parte que apoya detrás de la oreja: más cómodo y menos frío que el metal desnudo."},
       {"type": "tip", "position": "middle", "title": "Los cuatro colores son polarizados", "body": "A diferencia de otros modelos donde el filtro polarizado está sólo en algunas variantes, acá lo llevan los cuatro. Corta los reflejos del asfalto y del agua, además del 100% de la radiación UV."},
       {"type": "recommendation", "position": "bottom", "title": "Policarbonato UV400 categoría 3", "body": "Lente de policarbonato con 100% de protección UVA y UVB, categoría 3, pensada para sol fuerte. Categoría 3 no sirve para manejar de noche."}
     ],
@@ -104,7 +108,7 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-zion'), '128720',
    '{"frame_color":"carey","temple_color":"dorado","lens_color":"marron-degrade","model_code":"F223/J.GOLD DRT02 POL","polarized":true}'::jsonb,
    11247900, 4, true, 3, 'MLA2007517918', '182831395594'),
-  ((SELECT id FROM public.products WHERE slug='rusty-zion'), 'ZION-SDEMI-DGUN-DRT15',
+  ((SELECT id FROM public.products WHERE slug='rusty-zion'), '128746',
    '{"frame_color":"carey-oscuro","temple_color":"gun","lens_color":"marron","model_code":"SDEMI-D.GUN/DRT15 POL","polarized":true}'::jsonb,
    11247900, 3, true, 4, 'MLA2007517918', '182831395596')
 ON CONFLICT (sku) DO UPDATE SET
@@ -128,9 +132,9 @@ VALUES
    'rusty-zion/perfil-f223.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista lateral, armazón carey patillas doradas lente marrón degradé polarizada', 2000, 1333, 4, false),
   ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='128720'),
    'rusty-zion/frente-f223.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista frontal, armazón carey patillas doradas lente marrón degradé polarizada', 2000, 1333, 5, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='ZION-SDEMI-DGUN-DRT15'),
+  ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='128746'),
    'rusty-zion/perfil-sdemi.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista lateral, armazón carey oscuro patillas gun lente marrón polarizada', 2000, 1333, 6, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='ZION-SDEMI-DGUN-DRT15'),
+  ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='128746'),
    'rusty-zion/frente-sdemi.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista frontal, armazón carey oscuro patillas gun lente marrón polarizada', 2000, 1333, 7, false),
   ((SELECT id FROM public.products WHERE slug='rusty-zion'), NULL,
    'rusty-zion/medidas.jpg', 'Esquema técnico de medidas Rusty Zion: frente 145mm, lente 50x50mm, puente 19mm, varilla 142mm', 2000, 1333, 99, false)
