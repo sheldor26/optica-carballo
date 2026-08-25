@@ -22,6 +22,80 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-25 — Diagnostiqué mal un 403 de Mercado Libre dos veces seguidas, con dos evidencias que apuntaban al lugar equivocado
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: en medio de la carga del Bruice de receta, toda la API de ML empezó a devolver
+**403 `PolicyAgent` / `PA_UNAUTHORIZED_RESULT_FROM_POLICIES`**. Diagnostiqué dos veces mal antes de
+acertar, y las dos veces se lo dije al founder como si fuera un hecho:
+
+1. **"El token venció, tenés que reconectar ML."** Falso: `token_expires_at` en
+   `marketplace_integrations` decía que vencía dos meses después.
+2. Corregí eso, y después de ver que `/items` y `/sites` daban 403 **incluso sin token** mientras
+   `/categories` daba 200, dije: **"es un bloqueo temporal por volumen de llamadas, reautorizar no
+   va a servir."** También falso. El founder reautorizó igual y se destrabó al instante.
+
+**Causa raíz**: las dos evidencias que usé eran ciertas pero no probaban lo que les hice decir.
+
+- `token_expires_at` es lo que la base *cree*, no lo que ML *acepta*. Un token puede quedar
+  invalidado del lado de ML sin que esa fila se entere. Traté un valor almacenado como si fuera
+  autoridad sobre un sistema externo.
+- Que `/items` diera 403 sin token no probaba que el token fuera irrelevante: probaba que ML dejó de
+  servir ese endpoint sin autenticar, que es otra cosa. Confundí "el endpoint también falla sin
+  credenciales" con "el problema no son las credenciales". Un loop de 20 llamadas sin token que
+  quedó corriendo lo confirmó después: siguió en 403 durante 15 minutos, **incluidos los intentos
+  posteriores a la reautorización**, cuando las autenticadas ya andaban.
+
+Lo caro no fue el tiempo, fue el segundo error: le dije al founder que la acción que sí funcionaba
+no iba a funcionar. Si me hubiera hecho caso, seguíamos trabados.
+
+**Regla preventiva**: ante un 403/401 de una API con OAuth, **reautorizar es el primer paso, no el
+último**. Cuesta un minuto y descarta la causa más común de todas. Recién si eso no lo arregla vale
+la pena investigar. Y en el caso concreto de ML:
+`https://opticacarballo.com.ar/api/ml/oauth/initiate`; `token_expires_at` **no** es fuente de verdad
+sobre si el token sirve.
+
+Regla más general, que es la que realmente falló acá: **antes de decirle al founder "esto no va a
+servir", chequear si esa afirmación es barata de testear.** Si la acción que estoy descartando
+cuesta un minuto, no hay que descartarla con un razonamiento — hay que probarla. Descartar por
+deducción una acción barata es peor que probarla, porque si la deducción falla el founder queda
+bloqueado por mi error.
+
+---
+
+## 2026-08-25 — 40 minutos para crear una publicación: investigué a fondo algo que se resolvía probando
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el founder pidió crear una publicación en Mercado Libre para una colorway. Entre que
+lo pidió y que estuvo publicada pasaron más de 40 minutos. Él lo notó y preguntó si era normal. No
+lo es: **la creación en sí fueron 6 llamadas a la API, dos minutos**. El resto se fue en dos
+workflows de investigación multi-agente, el segundo de los cuales corrió 35 minutos de reloj.
+
+**Causa raíz**: dimensioné la investigación por el *valor del activo en riesgo* (una publicación con
+60 ventas) en vez de por *cuánto costaba averiguarlo probando*. Y resultó que probar era barato y
+seguro: `POST /items/validate` corre el validador real sin crear nada, y devolvió en dos corridas
+exactamente lo que hacía falta saber. Los hallazgos que sí valieron —que la cuenta está en el modelo
+User Products, que el título lo arma ML y se congela con la primera venta, que pausar no libera el
+stock— salieron de ahí y de leer la doc, no de las 8 corridas de agentes en paralelo.
+
+Dicho honestamente: parte de esa investigación era necesaria y evitó un error real (el orden del
+rollback). Pero se podía haber hecho en un tercio del tiempo empezando por el endpoint de
+validación en vez de terminando en él.
+
+**Regla preventiva**: antes de lanzar investigación pesada sobre una API, gastar 5 minutos en
+buscar si tiene **dry-run, validate o sandbox**. Si lo tiene, ése es el primer paso, no el último:
+responde con la verdad del sistema en vez de con la doc, que suele estar incompleta. La
+investigación profunda se reserva para lo que el dry-run no puede responder — que acá fue una sola
+pregunta: qué pasa con el stock si dos publicaciones caen en el mismo User Product.
+
+Segunda regla, de comunicación: si una tarea que el founder espera "en minutos" va a llevar mucho
+más, **decírselo mientras corre**, no al final. Él no tenía forma de saber que el reloj estaba
+corriendo en investigación y no en un problema.
+
+---
+
 ## 2026-08-25 — Apliqué "la medición del founder gana" cuando las dos fuentes en conflicto eran del founder
 
 **Estado**: ✅ Cerrado
@@ -126,6 +200,93 @@ línea o material, no puede ir sola. Acá quedó `(?<!g[\s-])flex`. Y a nivel m�
 es un nombre, no una propiedad** — ni implica que el armazón sea flexible ni que tenga bisagras flex.
 
 ---
+
+## 2026-08-25 — La primera publicación real quedó registrada como "published" pero sin el link ni el id
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: se publicó la primera historia de verdad y salió bien (media `18080605085695826`).
+Al chequear la fila en `social_posts`, estaba con `status = 'published'` pero con `ig_media_id`,
+`ig_permalink` y `published_at` en NULL. O sea: el historial decía que algo se publicó, sin decir
+qué ni cuándo.
+
+**Causa raíz**: `scripts/ig-post.ts` publica y después llama a `createSocialPost` para dejar el
+registro, pero le pasaba solo `kind`, `imagePath`, `caption`, `status` y `source`. El resultado de
+la publicación —que estaba ahí, en la variable de al lado— nunca se pasaba, y `createSocialPost`
+ni siquiera aceptaba esos campos. El camino del cron sí los guarda, porque usa `markPostPublished`;
+el del script quedó a medias.
+
+Se me pasó porque los dos caminos escriben en la misma tabla pero con funciones distintas, y solo
+probé el del cron. La verificación del script llegó hasta "publicó bien" y no hasta "quedó bien
+registrado".
+
+**Regla preventiva**: cuando dos caminos distintos escriben en la misma tabla, la verificación no
+termina en "la acción salió bien" — termina en **leer la fila y comprobar que quedó igual de
+completa por los dos caminos**. Un `SELECT` después de cada camino, comparando campo por campo.
+`createSocialPost` ahora acepta `igMediaId`, `igPermalink` y `publishedAt`, y completa
+`published_at` sola si el estado es `published` y no se pasó fecha.
+
+**Dato de paso**: las historias SÍ devuelven permalink
+(`instagram.com/stories/optica.carballo/...`), al contrario de lo que decía el comentario en
+`api-client.ts`. Corregido.
+
+## 2026-08-25 — El freno de cupo de Instagram nunca frenó nada, y no había forma de notarlo
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: al conectar el token real, `pnpm ig:token` imprimió
+`Publicaciones usadas hoy: undefined de 100`. La respuesta de
+`GET /{ig-user-id}/content_publishing_limit` viene envuelta en un array:
+
+```json
+{"data":[{"config":{"quota_total":100,"quota_duration":86400},"quota_usage":0}]}
+```
+
+y yo la había tipado como objeto plano (`{quota_usage, config}`). O sea que `quota_usage` era
+`undefined` en los tres lugares que lo usan: el estado del token, el chequeo previo de
+`pnpm ig:post` y el del despachador del cron.
+
+**Causa raíz**: tipé la respuesta de una API externa desde la documentación en vez de desde una
+respuesta real. Pero lo importante no es el error de tipo — es **cómo falla**: `100 - undefined`
+es `NaN`, y `NaN <= 0` es `false`, igual que `NaN < 5`. El guard entero se evaluaba a "seguí
+adelante" sin lanzar nada, sin loguear nada y sin fallar ningún test. Un chequeo de seguridad que
+no puede fallar ruidosamente es un chequeo que no existe, y este habría pasado por bueno hasta el
+día que hiciera falta.
+
+Tampoco lo agarró la verificación previa: probé el despachador con la cola vacía y con el token
+roto, pero nunca con un token válido — el único camino donde se llama a este endpoint.
+
+**Regla preventiva**: dos cosas.
+1. **La forma de una respuesta de API externa se copia de una respuesta real, no de la doc.** Un
+   `curl` (o un script de 5 líneas como el que encontró esto) antes de escribir el `type`.
+2. **Un guard numérico no compara valores que pueden ser `undefined`.** Si el dato no vino con la
+   forma esperada, devolver `null` y que quien llama decida explícitamente — nunca dejar que la
+   comparación se evalúe contra `NaN`, porque el resultado es "no hago nada" en silencio.
+   Aplicado en `getPublishingLimit`: valida `typeof quota_usage === 'number'` y devuelve `null` si
+   no.
+
+## 2026-08-25 — La confirmación de una publicación programada a las 20:00 decía "08:00"
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: al probar `pnpm ig:producto ... --encolar "2026-12-24 20:00"`, el mensaje de
+confirmación devolvió `En cola para el 24/12/2026, 08:00:00`. La fecha guardada en la base era
+correcta (23:00 UTC = 20:00 en Argentina); lo que estaba mal era cómo se mostraba. El mismo bug
+estaba en el formulario del admin, en la lista de la cola y en las server actions — o sea, en
+todas las superficies donde el founder confirma a qué hora sale algo.
+
+**Causa raíz**: `Intl.NumberFormat`/`toLocaleString` con locale `es-AR` usa reloj de **12 horas**
+por default. Y peor: con `dateStyle`/`timeStyle` cortos, el marcador `p. m.` **no aparece**, así
+que las 20:00 se imprimen como `08:00:00` sin nada que indique que es de tarde. No es un error de
+zona horaria, que es lo que uno busca primero: es de formato, y por eso pasa desapercibido.
+
+Lo encontré porque probé el comando con una hora de la tarde. Con 10:00 hubiera dado igual en los
+dos formatos y el bug llegaba a producción.
+
+**Regla preventiva**: en este proyecto, **todo `toLocaleString`/`toLocaleTimeString` con `es-AR`
+que muestre una hora lleva `hour12: false` explícito.** No alcanza con pasar `timeZone`. Y al
+probar cualquier cosa con horarios, usar una hora **de la tarde** (14:00+): una prueba con 09:00
+no distingue un reloj de 12 del de 24 y da falso verde.
 
 ## 2026-08-24 — Entregué 5 placas de Instagram sin chequear las safe areas de story ni un solo ratio de contraste
 

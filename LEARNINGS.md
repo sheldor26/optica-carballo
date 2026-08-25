@@ -75,6 +75,32 @@ cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si 
 secretos, chequear que ningún archivo con `'use client'` lo importe.
 
 
+## 2026-08-25 — La ficha del fabricante por línea de producto sirve como tercer testigo para desempatar un dato
+
+**Contexto**: a la mañana hubo un conflicto de medidas en el Rusty Bruice: el founder había dicho
+puente 16, su publicación de ML declaraba 1.8 cm y su placa vieja decía 18. Se resolvió
+mostrándoselo y confirmando él que era 18 (el grabado del armazón estaba gastado). Quedó resuelto
+pero con una sola fuente humana desempatando su propio conflicto.
+
+**Qué funcionó**: al cargar a la tarde la versión de RECETA del mismo armazón, apareció que
+rustyoptical.com publica una placa `MEDIDAS.jpg` **por línea de producto** —
+`/productos/fw23/bruice/MEDIDAS.jpg` para receta, `/productos/ss24/bruice/MEDIDAS.jpg` para sol—.
+La de receta dice **56-18-140**. Es una fuente independiente, generada por el fabricante, que
+confirma el 18 sin depender de la memoria de nadie.
+
+**Por qué importa más de lo que parece**: la regla del proyecto es que la medición a mano del
+founder gana contra la ficha del fabricante, y está bien fundada porque las fichas suelen estar mal.
+Pero eso deja sin árbitro el caso "founder contra founder". Esta placa es el árbitro: no reemplaza
+su medición, la corrobora o la contradice, que es justo lo que hacía falta.
+
+**La regla**: al cargar un producto, buscar la placa de medidas del fabricante para **esa línea**
+(no la del modelo en general — sol y receta pueden tener carpetas distintas) y cruzarla contra lo
+que se va a cargar. Si coincide, se gana confianza gratis. Si no coincide, se le muestran los dos
+números al founder ANTES de publicar, no después. En rustyoptical.com el patrón es
+`/images/Rusty/productos/<temporada>/<modelo>/MEDIDAS.jpg`.
+
+---
+
 ## 2026-08-25 — Cuando una API deja probar sin crear, probar es gratis y hay que hacerlo siempre
 
 **Contexto**: había que crear una publicación en Mercado Libre en una cuenta con una publicación

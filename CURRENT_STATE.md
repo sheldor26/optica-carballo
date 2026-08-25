@@ -224,17 +224,202 @@ se puede editar** (`PUT /items/{id}/description?api_version=2`). El mismo argume
 sitio aplica ahí: la lente es categoría 3 y la evidencia de blue-blocking habla de lente clara.
 Decisión del founder.
 
+### Las 4 colorways del Bruice, cargadas
+
+Entraron las dos polarizadas, en stock 0 a pedido del founder para tenerlas disponibles en el
+catálogo:
+
+| SKU | Colorway | Lente | Pol | Stock | Precio | ML |
+|---|---|---|---|---|---|---|
+| 957006 | Negro mate | Naranja | no | 2 | $84.354 | MLA1904009956 |
+| 968190 | Carey mate / patillas negras | Verde degradé | no | 3 | $84.354 | MLA2035140957 |
+| 957005 | Negro mate | Gris degradé | **sí** | 0 | $96.251 | MLA1897188728 var 184579332651 |
+| 957004 | Azul acero translúcido | Gris oscuro | **sí** | 0 | $96.251 | MLA1897188728 var 184579332649 |
+
+Las dos polarizadas comparten un item **multi-variación** de ML (pausado, out_of_stock, 24 ventas),
+así que llevan `mercadolibre_variation_code` real. Eso importa: `syncStockFromMLItem` usa ese código
+para saber a qué variante aplicarle cada stock cuando el item tiene variaciones.
+
+**El precio de las polarizadas es otro**: $96.251 contra $84.354. El founder dijo "el resto de las
+propiedades coincide", que aplica a medidas y materiales, no al precio — el de ML manda y ahí valen
+más.
+
+**El color de la STEELBLUE se cargó como `azul-acero-translucido`**, no "celeste" como lo describió
+el founder: es lo que dicen su propia publicación de ML ("Anteojo Azul Acero Transparente"), el
+nombre del fabricante (STEELBLUE) y la foto. Mismo criterio que con el puente — cuando dos fuentes
+suyas no coinciden, se le muestra y decide él.
+
+**El callout de polarización se reescribió por tercera vez en el día.** Cada vez que cambia la
+cantidad de colorways, el texto anterior deja de ser cierto: con una variante decía "Esta variante
+no es polarizada"; con dos, ese singular hacía inferir por contraste que la otra sí polarizaba; con
+cuatro, el plural "ninguna" pasó a ser directamente falso. Ahora nombra cuáles sí y cuáles no.
+**Es un patrón, no un descuido**: cualquier texto que cuente variantes ("esta", "ninguna", "las
+dos") queda desactualizado en la próxima carga. Conviene revisarlo siempre que entre una colorway.
+
+**Ahora el Bruice entra a `/anteojos-de-sol/polarizados`.** El criterio de esa faceta es POR VARIANTE
+(`lib/catalog/polarized.ts`): se queda sólo con las polarizadas y recalcula precio, stock y foto
+sobre ese subconjunto. Verificado en producción: la card ahí muestra "Polarizado · Sin stock ·
+2 colores", con la foto de la polarizada y no la de la naranja.
+
+El `Product` JSON-LD sigue emitiendo `Offer` simple con $84.354 y no `AggregateOffer`, porque el
+componente sólo cuenta variantes **con stock** — que es lo correcto: no se publica un precio de algo
+que no se puede vender.
+
+`pnpm auditar:encuadre --todas`: las **ocho** fotos del Bruice en 92% con scale 1.00. Sin overrides.
+
+### Sobre el vínculo con Mercado Libre (lo que preguntó el founder)
+
+Verificado leyendo el código y contra la base: el sync es **bidireccional y cubre stock y precio**.
+
+- **Entrante**: `app/api/ml/webhook/route.ts` → topic `items` → `syncStockFromMLItem`, que patchea
+  `stock_qty` **y** `price_cents` (`lib/integrations/mercadolibre/sync-stock.ts:236`).
+- **Saliente**: una venta en el sitio dispara `syncVariantStockToML` desde
+  `lib/checkout/orders.ts:199`.
+
+El mapeo resuelve 1:1 en las cuatro variantes: las dos de items simples por `variation_code IS NULL`,
+las dos polarizadas por su `variation_code` real.
+
+### Rusty Bruice RECETA cargado (seed 94)
+
+`/anteojos-de-receta/rusty/rusty-bruice-receta`, 2 colorways, HTTP 200 y verificado en producción.
+
+| SKU | Color | Stock | Precio | ML |
+|---|---|---|---|---|
+| 957000 | Negro mate (MBLK) | 4 | $84.932 | MLA1476793113 var 187532074917 |
+| 957001 | Transparente cristal (CRY) | 0 | $84.932 | MLA1476793113 var 186939241003 |
+
+**El "bluecut" de la publicación de ML es falso** — el founder lo desmintió: los cristales son de
+demostración. En la ficha va como callout `warning` arriba de todo, junto con que un armazón de
+receta **no lleva UV400 ni polarizado** (eso es de sol). Verificado en producción: cero apariciones
+de "UV400", "bluecut" o "categoría 3" en la página; las menciones de "polarizado" son todas la
+negación explícita.
+
+**Atributos de receta, no de sol**: sin `lens_material`, `lens_treatment` ni `lens_category`; con
+`lens_compatibility` y `hinge_system`, siguiendo la convención del seed 84.
+
+**El slug `rusty-bruice-receta` es obligatorio, exacto.** `fetchCompanionModality()`
+(`lib/catalog/queries.ts:582`) arma el cross-link sol↔receta por convención de nombre. Verificado:
+las dos fichas se linkean en ambas direcciones.
+
+**SEO**: branded, no `anteojos aviador` (590) — ese carril ya es de **Rusty The Take receta**, que
+hasta hoy era el único aviador del cluster Rusty de receta. Bruice es el segundo, misma situación
+que en sol donde también quedó branded por ser el tercero. Title `Armazón de Receta Rusty Bruice
+Doble Puente | Carballo` (54), con "doble puente" en vez de "aviador" justamente para no chocar con
+el de The Take.
+
+**Dato que cierra el asunto del puente**: la placa MEDIDAS del fabricante para la línea de receta
+(fw23) dice 56-18-140. Es una confirmación independiente de que el puente es 18, la corrección que
+se hizo esta mañana sobre la versión de sol.
+
+Facetas verificadas: `/anteojos-de-receta` (pasó a 26 modelos), `/anteojos-de-receta/rusty`,
+`/anteojos-de-receta/rusty/aviador` y `/anteojos-de-receta/aviador`. Encuadre: las 4 fotos en 92%
+con scale 1.00, sin overrides.
+
+### Sobre el 403 de Mercado Libre — diagnóstico corregido
+
+A mitad de esta carga, toda la API de ML empezó a devolver **403 `PolicyAgent`**. Diagnostiqué mal
+dos veces antes de acertar:
+
+1. Primero dije "el token venció". Falso: la base decía que expiraba recién en octubre.
+2. Después, viendo que `/items` y `/sites` daban 403 **incluso sin token** mientras `/categories`
+   daba 200, dije que era un bloqueo por volumen de llamadas y que reautorizar no iba a servir.
+   También falso: **el founder reautorizó y se destrabó al instante.**
+
+Lo que probablemente pasa: ML invalidó el access token del lado suyo (no de la base, que quedó
+desactualizada) y además ya no sirve `/items` sin autenticar. La lección práctica es corta: **ante
+un 403 de ML, reautorizar primero** (`https://opticacarballo.com.ar/api/ml/oauth/initiate`), y
+recién si eso no arregla, investigar. Cuesta un minuto y descarta la causa más común. El campo
+`token_expires_at` de `marketplace_integrations` **no es confiable** para saber si el token sirve.
+
+Confirmado después con un loop que quedó corriendo: 20 llamadas **sin token** a `/items` siguieron
+en 403 durante 15 minutos, incluidas las posteriores a la reautorización, cuando las autenticadas
+ya funcionaban. El 403 sin token es permanente, no un límite temporal — esperar no sirve.
+
 ### Próximo paso EXACTO
 
-Reescribir la descripción de MLA1904009956 sacando el bloque de terapia del sueño, si el founder
-está de acuerdo. Y quedan dos controles diferidos del alta: repetir a las 24 h el chequeo de que
-`GET /user-products/MLAU948680760/stock` siga en 2 y que MLA2035140957 no haya pasado a `closed`
-solo (ML cierra lo que detecta como duplicado propio).
+Reescribir la descripción de MLA1904009956 sacando el bloque de "terapia del sueño" — sigue viva y
+la descripción sí se puede editar. Y el control diferido de 24 h del alta de MLA2035140957.
 
 ## Última actualización (anterior)
 
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
+
+### Qué se construyó — 5 tipos de placa por PRODUCTO del catálogo
+
+`pnpm ig:producto <slug>` pasó de generar 1 diseño a generar **5 tipos distintos**, en historia
+(1080×1920) y post (1080×1350). Van a `marketing/placas-producto/<slug>/`.
+
+| Tipo | Gancho | De dónde salen los datos |
+|---|---|---|
+| `ficha` | Foto grande, marca, modelo, specs y precio. El clásico. | `product_images` + `product_variants.price_cents` |
+| `colores` | Los colores CON STOCK, con la foto real de cada uno. | Fotos por `variant_id` + `attributes.frame_color` |
+| `medidas` | El esquema + la tabla. Contesta "¿me va a quedar bien?". | Imagen `medidas.png` del pipeline de ML + `attributes.measurements` |
+| `detalle` | Un dato técnico explicado (polarizado, material, UV). | `attributes.callouts[]` — copy ya escrito y revisado |
+| `incluye` | Estuche, franela y garantía. Confianza. | `BUSINESS_POLICIES.md` §1 + `attributes.warranty_months` |
+
+**Cobertura real del catálogo** (chequeada antes de diseñar): 74/74 productos tienen callouts y
+medidas cargadas, 73 tienen el esquema de medidas ya generado, 59 tienen peso. O sea que los 5
+tipos funcionan para prácticamente todo el catálogo, no solo para los productos "completos".
+
+**Nada se inventa**: precios, stock, colores, medidas y los textos de los callouts salen de
+Supabase. El tipo que no tiene su dato **se saltea** y el script lo dice. Los colores solo listan
+variantes con stock, y si una variante no tiene foto propia se omite en vez de repetir la de otro
+color — mostrar un color que no es sería peor que mostrar uno menos.
+
+**Archivos**: `scripts/lib/placa-producto.ts` (reescrito con los 5 tipos), `scripts/ig-producto.ts`
+(flags `--tipo`, `--formato`, `--callout`).
+
+**Refactor**: las primitivas visuales (paleta, safe areas, corte de texto, tamaño adaptativo,
+encabezado, pie, composición del logo) se sacaron a `scripts/lib/placa-base.ts`, que ahora
+comparten las placas de producto y las de guías. Estaban por duplicarse — y un ajuste de marca
+aplicado a la mitad de las placas es el tipo de divergencia que nadie ve hasta que sale publicada.
+
+**Tres arreglos que salieron de mirar los renders:**
+
+- `sharp` exige enteros en `left`/`top` de un composite, y las posiciones vienen de sumar alturas
+  de texto (px × interlineado), que dan fraccionarios: reventaba con
+  *"Expected integer for top but received 560.8"*. Se redondea dentro de `componer()`, así protege
+  a todos los que la usen.
+- El esquema de medidas viene sobre blanco opaco y sobre el fondo hueso quedaba un rectángulo
+  recortado. Ahora va dentro de una tarjeta blanca, el mismo recurso que las fotos.
+- Centrado vertical del cuerpo, igual que en las guías, **moviendo también las imágenes**: son
+  bitmaps compuestos aparte del SVG, así que si solo se desplaza el texto la foto queda donde
+  estaba.
+
+### Qué se construyó — 5 tipos de placa para promocionar las guías
+
+`pnpm ig:guia <slug>` arma 5 placas distintas de cualquier guía del sitio, en historia
+(1080×1920) y post (1080×1350). 36 archivos generados para las 4 guías publicadas, en
+`marketing/placas-guias/<slug>/`.
+
+| Tipo | Gancho | De dónde sale el texto |
+|---|---|---|
+| `pregunta` | La pregunta sola, sin responder. Curiosidad → click. | `faqs[].question` |
+| `respuesta` | Pregunta chica + respuesta corta grande. Da valor de una. | `faqs[].question` + primera oración de `answer` |
+| `titular` | Título y bajada. El anuncio de "salió nota nueva". | `title`, `description`, `readingMinutes` |
+| `temario` | Los temas que cubre, en lista. | Los H2 del cuerpo del `.mdx` |
+| `autoridad` | Quién la escribe. El gancho de confianza. | Fijo: Juan Carballo, Técnico Superior |
+
+**Todo el texto sale del `.mdx` de la guía.** No se escribe una palabra que no esté publicada en
+el sitio. Si a una guía le falta el dato que un tipo necesita, ese tipo **se saltea** en vez de
+rellenarse: presbicia no tiene FAQs en el frontmatter, así que sus placas `pregunta` y `respuesta`
+no se generan y el script lo avisa. (Si se le cargan FAQs a presbicia, aparecen solas.)
+
+**Archivos nuevos**: `scripts/lib/placa-articulo.ts` (los 5 layouts), `scripts/ig-guia.ts`
+(`pnpm ig:guia`). Reusa el pipeline SVG + sharp y el sistema visual de las placas de producto.
+
+**Dos decisiones de layout que salieron de mirar los renders:**
+
+- **El cuerpo se centra vertical dentro del área segura**, con un pequeño sesgo hacia arriba
+  (42% en vez de 50%: el centro matemático se lee bajo). La primera versión anclaba todo arriba y
+  una pregunta corta dejaba media placa vacía.
+- **El cuerpo de letra se adapta para que el texto entre ENTERO.** La primera versión recortaba
+  con "…" y dejó una afirmación médica a la mitad: *"se corrige con anteojos, lentes de contacto
+  tóricas o…"*. Antes que recortar, `ajustar()` baja el tamaño hasta que la oración completa
+  entra. En salud visual, media frase es peor que una letra más chica.
+
+**Sin verificar**: ninguna de estas 36 se publicó todavía. El founder elige cuáles.
 
 ### Estado de la app de Meta (2026-08-25) — el único paso que falta
 
@@ -286,15 +471,43 @@ Facebook es `315125471946479` y NO es el que va.
 Se resolvió consultando `me?fields=instagram_business_account` (que sí funciona con page token) y
 después volviendo el selector a **User Token**, que es el tipo que espera `seedToken`.
 
-**Próximo paso exacto**: en el Explorador (abierto, con *User Token* ya seleccionado y los 4
-permisos cargados), apretar *Generate Access Token*, copiar el token a `IG_LONG_LIVED_TOKEN`,
-copiar el App Secret de *App settings → Basic → Show* a `IG_APP_SECRET`, poner
-`IG_APP_ID=2250257252375503` e `IG_USER_ID=17841412146058136`, y correr:
+**✅ CONECTADO (2026-08-25).** El token está sembrado y el pipeline entero se probó contra la API
+real de Meta.
 
-```bash
-pnpm ig:token --seed
-pnpm ig:post --img marketing/placas-medios-de-pago/02-minimal-claro.png --tipo story --dry-run
 ```
+Estado: active · Cuenta 17841412146058136 (@optica.carballo)
+Vence: 24/10/2026 (60 días, se renueva solo con 7 de anticipación)
+Publicaciones usadas hoy: 0 de 100
+```
+
+`pnpm ig:post --dry-run` sobre la placa 02: imagen preparada (1080×1920, 215 KB), subida al bucket,
+container creado en Instagram (`18187488007404869`) y aceptado por Meta. Todo el camino menos el
+`media_publish` final está verificado en producción.
+
+**Bug encontrado y corregido al conectar**: `content_publishing_limit` devuelve la respuesta dentro
+de un array `data`, no en la raíz. Estaba tipado como objeto plano, así que `quota_usage` era
+`undefined` y el chequeo de cupo comparaba contra `NaN` — es decir, **nunca frenaba nada, en
+silencio**. Afectaba a `ig:post` y al despachador del cron. Ver `MISTAKES.md`.
+
+**🎉 PRIMERA PUBLICACIÓN REAL (2026-08-25 10:42 AR)**: la placa `03-rosa-mate` salió como historia
+en @optica.carballo. Media `18080605085695826`,
+[link](https://www.instagram.com/stories/optica.carballo/3971547184958041704) (vive 24 h).
+El sistema de las tres fases está funcionando de punta a punta.
+
+**Segundo bug encontrado al publicar**: la fila de `social_posts` quedó como `published` pero sin
+`ig_media_id`, `ig_permalink` ni `published_at`. `ig-post.ts` publicaba y registraba, pero no le
+pasaba el resultado a `createSocialPost` (que ni siquiera aceptaba esos campos). El camino del
+cron sí los guardaba, vía `markPostPublished` — dos caminos a la misma tabla, uno probado y el
+otro no. Corregido en `createSocialPost`, `ig-post.ts` e `ig-producto.ts`; la fila de la primera
+publicación se completó a mano. Ver `MISTAKES.md`.
+
+**También**: las historias SÍ devuelven permalink, al revés de lo que asumía el código. Corregido
+el comentario en `api-client.ts`.
+
+**Próximo paso**: mirar la historia en el celular para confirmar que las safe areas de la placa
+quedaron bien con la UI de Instagram encima — es la última verificación que no se puede hacer
+desde acá. Después, elegir qué publicar de forma programada desde `/admin/social` o generar la
+primera placa de producto con `pnpm ig:producto`.
 
 ### Qué se construyó — publicación en Instagram, Fase 3 (contenido generado)
 
@@ -1063,7 +1276,7 @@ dice 5,5 — **5,3 es justo lo que dice la ficha de Vulk**, o sea que esas publi
 con el dato del fabricante y no con la medición del founder. Antes de tocar estas 50 conviene que él
 confirme, porque son 50 publicaciones y el criterio es suyo.
 
-### Próximo paso EXACTO (estado al cierre)### Próximo paso EXACTO (estado al cierre)
+### Próximo paso EXACTO (estado al cierre)
 
 **Lo primero (ya hecho): las 8 publicaciones con medidas imposibles quedaron corregidas.** Lo que
 sigue son las 49 con discrepancias chicas, que necesitan que el founder decida si vale corregirlas

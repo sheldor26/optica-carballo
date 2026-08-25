@@ -732,6 +732,25 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty The Take Optics RECETA — aviador. Fotos 900×442 (2.04:1) más anchas que el card 3:2
   // → object-contain llena por ancho → 1.0 en las 4 (como Raven/Trial; 1.15 cropearía patillas).
+
+  // Rusty Bruice (sol y receta) — las 12 fotos salen de `pnpm placas`, que las
+  // genera 2000×1333 con el anteojo al 92% del ancho. Ese 92% cae justo en la
+  // mediana del catálogo, pero los vecinos concretos de sus grillas están en
+  // 95-97%, así que el Bruice se veía más chico. 1.05 lo lleva a 96,6%.
+  // Medido reproduciendo el render de la card (object-contain 3:2 + transform
+  // scale), no a ojo. 1.10 quedaba en 101% y se recortaba.
+  'rusty-bruice/perfil.jpg': 1.05,
+  'rusty-bruice/frente.jpg': 1.05,
+  'rusty-bruice/perfil-mdemi.jpg': 1.05,
+  'rusty-bruice/frente-mdemi.jpg': 1.05,
+  'rusty-bruice/perfil-sg91.jpg': 1.05,
+  'rusty-bruice/frente-sg91.jpg': 1.05,
+  'rusty-bruice/perfil-s10.jpg': 1.05,
+  'rusty-bruice/frente-s10.jpg': 1.05,
+  'rusty-bruice-receta/perfil-mblk.jpg': 1.05,
+  'rusty-bruice-receta/frente-mblk.jpg': 1.05,
+  'rusty-bruice-receta/perfil-cry.jpg': 1.05,
+  'rusty-bruice-receta/frente-cry.jpg': 1.05,
   'rusty-the-take-receta/THE_TAKE_MDEMI_PERFIL.jpg': 1.1,
   'rusty-the-take-receta/THE_TAKE_MDEMI_frente.jpg': 1.0,
   'rusty-the-take-receta/THE_TAKE_L.ROSE_-_p.jpg': 1.1,
