@@ -75,7 +75,13 @@ cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si 
 secretos, chequear que ningún archivo con `'use client'` lo importe.
 
 
-## 2026-08-25 — El dato que le ibas a pedir al founder suele estar en sus propias publicaciones
+## 2026-08-25 — En las galerías de ML hay fotos y datos que no están en los campos estructurados
+
+> ⚠️ **Corrección del founder, mismo día**: esto vale para FOTOS, tipo de bisagra, colores y
+> materiales — **no para medidas**. Las medidas de esas placas no son utilizables: él no confía en
+> ninguna de esas fuentes. Ver MISTAKES 2026-08-25 y la regla dura 7 de CLAUDE.md. El resto del
+> learning sigue en pie.
+
 
 **Contexto**: para cargar el Rusty Malice faltaba el ancho total del frente. No estaba en ningún
 atributo de sus publicaciones de ML ni en el sitio del fabricante, así que se le pidió y quedó

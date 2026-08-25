@@ -22,6 +22,45 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-25 — Publiqué medidas sacadas de fuentes que el founder no valida, y las presenté como un logro
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: cargué el Rusty Malice y el Rusty Blozon con el bloque de medidas completo, leyéndolas
+de los atributos de sus publicaciones de Mercado Libre y de unas placas de medidas viejas que él
+mismo había hecho y que estaban dentro de esas galerías. Se lo conté como un hallazgo —"no hizo
+falta pedírtelas"— y hasta escribí un learning celebrándolo. Su respuesta:
+
+> *"No confío en los datos que hoy en día están en Mercado Libre... yo me basé en otras cosas o en
+> otras fuentes, y hay muchos errores... incluso el fabricante tiene muchos errores en su página.
+> Todo lo que sea medida, si yo no te la paso, más vale esperar."*
+
+O sea que las tres fuentes que usé —atributos de ML, sus placas viejas, el fabricante— son
+exactamente las que él considera poco confiables. Estuvieron publicadas unas horas.
+
+**Causa raíz**: la regla que tenía registrada decía *"la medición del founder gana contra la ficha
+del fabricante"*, y la leí como una jerarquía —él primero, el resto después— cuando en realidad es
+una **lista blanca de una sola entrada**. La diferencia importa: una jerarquía autoriza a usar la
+segunda opción cuando falta la primera; una lista blanca no. Y había una señal que ignoré: ese mismo
+día, el episodio del puente del Bruice mostró que dos fuentes suyas se contradecían entre sí. Si sus
+propias fuentes no coinciden, ninguna de ellas es utilizable sin que él desempate — que es
+precisamente lo que él me estaba diciendo, y yo lo traté como un caso aislado en vez de como
+evidencia sobre la calidad de esas fuentes.
+
+**Agravante**: el dato es de los que el comprador usa para decidir si el anteojo le entra. Una
+medida equivocada no degrada la ficha, genera una devolución.
+
+**Regla preventiva**: para las medidas, la única fuente válida es el founder pasándolas. Si no las
+pasó, la ficha va **sin** el bloque y el dato queda en `DATOS_PENDIENTES.md`. Quedó como regla dura
+7 de CLAUDE.md y con la memoria endurecida. Material, peso, color, precio y stock sí se pueden tomar
+de esas fuentes: la prohibición es sólo para medidas.
+
+**Regla más general**: cuando una regla dice "X gana sobre Y", preguntarse si es una jerarquía o una
+lista blanca — o sea, si Y sirve cuando falta X. Si el dato es de los caros de equivocar, asumir
+lista blanca hasta que el founder diga lo contrario.
+
+---
+
 ## 2026-08-25 — Deduplicé la mitad del reporte y la otra mitad no, y le pasé al founder totales inflados un 34%
 
 **Estado**: ✅ Cerrado
