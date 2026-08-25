@@ -53,7 +53,12 @@
 -- Primaria = perfil de la MBLK. medidas.jpg con variant_id NULL y sort 99. Se generó una placa de
 -- medidas propia en vez de reusar la del sol: son el mismo número pero cada producto con su archivo,
 -- para que el bucket siga siendo legible.
--- `pnpm auditar:encuadre --todas`: las 4 fotos de producto en 92% con scale 1.00, sin overrides.
+-- Scale: las 4 fotos van a **1.05** en `image-scale-overrides.ts`. `pnpm placas` las genera al 92%
+-- del ancho del card, que cae en la mediana del catálogo, pero los vecinos de esta grilla están en
+-- 95-97% y el Bruice se veía más chico — lo detectó el founder. 1.05 lo lleva a 96,6%. Se midió
+-- reproduciendo el render de la card (object-contain 3:2 + transform scale) sobre las fotos reales,
+-- no con `auditar:encuadre`: ese script compara contra la mediana global y por eso no marcaba nada.
+-- 1.10 daba 101% y recortaba.
 -- ============================================
 
 BEGIN;

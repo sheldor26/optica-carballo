@@ -22,6 +22,37 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-25 — Copié la estructura del seed molde pero no miré cómo se llaman los hermanos
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: cargué la versión de receta del Bruice con `name = "Rusty Bruice"`. En
+`/anteojos-de-receta/rusty` **12 de los 14 productos se llaman "Rusty &lt;Modelo&gt; Optics"** — Invig
+Optics, Misty Optics, Opposit Optics, Spell Optics, The Take Optics… El mío quedó como el único sin
+el sufijo, al lado de tres que sí lo tienen. Lo vio el founder mirando la grilla; yo no.
+
+Peor: el founder me lo había dicho en su primer mensaje —*"son 2 variantes nomas **OPTICS**"*— y lo
+leí como que las variantes se llamaban así, no como el nombre de la línea.
+
+**Causa raíz**: usé el seed 84 de molde para la **estructura** (qué atributos van en receta, qué
+callouts, qué no cargar) y eso salió bien. Pero el nombre no es estructura, es convención de
+familia, y para verla hay que mirar a los hermanos, no al molde. Un molde te enseña la forma de una
+fila; una convención sólo se ve en el conjunto.
+
+**Regla preventiva**: antes de cargar un producto a una familia que ya existe, correr una query que
+liste **name, slug y meta_title de todos los hermanos** de esa marca y categoría, y copiar el patrón.
+Es una consulta de diez segundos:
+
+```sql
+SELECT p.name, p.slug, p.meta_title FROM public.products p
+JOIN public.categories c ON c.id=p.category_id JOIN public.brands b ON b.id=p.brand_id
+WHERE c.slug='<categoria>' AND b.slug='<marca>' ORDER BY p.name;
+```
+
+Vale para el nombre, para el patrón del `meta_title` y para detectar qué carriles SEO están tomados.
+
+---
+
 ## 2026-08-25 — Diagnostiqué mal un 403 de Mercado Libre dos veces seguidas, con dos evidencias que apuntaban al lugar equivocado
 
 **Estado**: ✅ Cerrado

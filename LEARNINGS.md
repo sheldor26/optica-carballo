@@ -75,6 +75,34 @@ cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si 
 secretos, chequear que ningún archivo con `'use client'` lo importe.
 
 
+## 2026-08-25 — Un promedio global no detecta que algo desentona con sus vecinos
+
+**Contexto**: el founder vio que el Bruice de receta se veía distinto de los productos que tenía al
+lado en la grilla. `pnpm auditar:encuadre` decía que estaba bien: 92% de ocupación, y la mediana del
+catálogo es 93%. Por esa métrica no había nada que corregir.
+
+**Qué pasaba**: la métrica global era correcta y aun así el founder tenía razón. Los **vecinos
+concretos de esa grilla** —Invig, Misty, Opposit— están en 95-97%, bastante por encima de la mediana
+del catálogo. El Bruice, sentado justo en la mediana, era el más chico de su fila. Un producto no se
+ve contra el promedio del catálogo: se ve contra los tres que tiene al lado.
+
+**Cómo se resolvió**: en vez de discutir la métrica, se reprodujo el render real de la card
+—`object-contain` en un cuadro 3:2 más el `transform: scale()` de cada uno— componiendo las fotos
+verdaderas una al lado de la otra, y se midió el bounding box del anteojo sobre esa composición. Ahí
+la diferencia apareció clarísima y el número salió solo: 1.05 lleva al Bruice de 92% a 96,6%, que es
+donde están sus vecinos. También mostró que 1.10 daba 101% y recortaba.
+
+**La regla**: cuando alguien reporta que algo "desentona", medirlo contra **lo que tiene al lado**,
+no contra el agregado. Y cuando la métrica y el ojo se contradicen, reproducir lo que el ojo ve
+—armar la composición real— en vez de defender la métrica. Un promedio esconde la varianza local
+por definición; ése es su trabajo.
+
+**Ojo con esto**: `auditar:encuadre` sigue siendo útil para detectar outliers groseros contra el
+catálogo, pero **no sirve para "¿se ve parejo en esta grilla?"**. Para eso hay que comparar contra
+los vecinos de esa página.
+
+---
+
 ## 2026-08-25 — La ficha del fabricante por línea de producto sirve como tercer testigo para desempatar un dato
 
 **Contexto**: a la mañana hubo un conflicto de medidas en el Rusty Bruice: el founder había dicho

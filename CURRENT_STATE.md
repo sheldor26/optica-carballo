@@ -335,6 +335,36 @@ Confirmado después con un loop que quedó corriendo: 20 llamadas **sin token** 
 en 403 durante 15 minutos, incluidas las posteriores a la reautorización, cuando las autenticadas
 ya funcionaban. El 403 sin token es permanente, no un límite temporal — esperar no sirve.
 
+### Correcciones sobre el Bruice de receta (las dos las detectó el founder)
+
+**1. El nombre lleva "Optics".** Se cargó como "Rusty Bruice" y la convención de la línea de receta
+de Rusty es "Rusty &lt;Modelo&gt; Optics" — 12 de los 14 productos de esa grilla lo llevan. Corregido a
+**Rusty Bruice Optics**, y el `meta_title` a `Armazón de Receta Rusty Bruice Optics | Óptica
+Carballo` (55). Verificado en producción.
+
+**2. Se veía más chico que sus vecinos.** `pnpm auditar:encuadre` decía que estaba bien (92%, contra
+una mediana de catálogo de 93%), pero **los vecinos concretos de esa grilla están en 95-97%**. Un
+producto no se ve contra el promedio del catálogo, se ve contra los tres que tiene al lado.
+
+Se resolvió reproduciendo el render real de la card —`object-contain` en un cuadro 3:2 más el
+`transform: scale()` de cada producto— componiendo las fotos verdaderas una al lado de la otra y
+midiendo el bounding box del anteojo sobre esa composición. Resultado: **scale 1.05** para las
+**12 fotos del Bruice, sol y receta** (regla 15: el cambio de tamaño aplica a todas las categorías).
+Las deja en 96,6%, alineadas con los vecinos. 1.10 daba 101% y recortaba.
+
+Consecuencia: `auditar:encuadre` ahora las marca con ▲ por estar sobre la mediana global. Es
+esperado y es el tradeoff elegido — se priorizó que se vean parejas en su grilla.
+
+**Nota sobre el generador**: `pnpm placas` produce las fotos web a 2000×1333 con el anteojo al 92%
+del ancho. Ese 92% cae en la mediana del catálogo, así que **todo producto cargado con el generador
+va a necesitar un override si sus vecinos de grilla están por encima**. No se cambió `FILL_WEB`
+porque el valor correcto depende de la grilla de destino, no del generador.
+
+**Error mío en el camino, ya corregido**: al analizar esto le pasé al founder un número equivocado
+(dije "el Bruice está en 92% y los vecinos en 83%") porque medí la ocupación de las fotos **sin
+multiplicar por el scale override de cada vecino**. Con el scale aplicado la relación se invertía.
+Lo detecté y lo corregí antes de tocar nada.
+
 ### Próximo paso EXACTO
 
 Reescribir la descripción de MLA1904009956 sacando el bloque de "terapia del sueño" — sigue viva y
@@ -345,7 +375,50 @@ la descripción sí se puede editar. Y el control diferido de 24 h del alta de M
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
 
-### Qué se construyó — 5 tipos de placa por PRODUCTO del catálogo
+### Qué se construyó — 5 DISEÑOS de la placa de promoción de producto
+
+El founder pasó una placa de productosvirales.com.ar como referencia y aclaró: quiere **cinco
+formatos distintos de la misma placa de promoción**, no cinco placas hablando de cosas distintas
+del producto. (La primera lectura fue la equivocada: se habían hecho cinco *ángulos*.)
+
+`pnpm ig:producto <slug>` ahora genera por default los **5 diseños**, en historia y post:
+
+| Diseño | Cómo se ve |
+|---|---|
+| `editorial` | Navy y dorado, foto en tarjeta, tipografía grande. El de la marca. |
+| `tarjeta` | Fondo hueso con una tarjeta flotante. Se lee como ficha impresa. |
+| `full` | La foto a sangre con degradado y el texto encima. El más impactante. |
+| `split` | Mitad foto sobre blanco, mitad bloque navy con el precio en pastilla dorada. |
+| `cartel` | El modelo en tipografía gigante arriba, la foto abajo. |
+
+Los cuatro ángulos anteriores siguen disponibles con `--extra colores|medidas|detalle|incluye`.
+
+**Qué NO lleva ninguna, y por qué.** La placa de referencia tiene precio tachado, "-43% OFF",
+"Ahorrás $X", estrellas y "+10 mil vendidos". Eso funciona ahí porque son datos de Mercado Libre
+en un sitio de afiliados. **En esta base no existe ninguno**: `product_variants` solo tiene
+`price_cents`, no hay precio de lista ni reviews. Ponerlos sería inventarlos, y choca con las
+reglas duras (sin reviews falsas, sin urgencia artificial).
+
+Lo que sí es real y ocupa ese lugar:
+- **Aviso de stock**: sale de `stock_qty` y **solo aparece si quedan 5 o menos** ("ÚLTIMAS 2
+  UNIDADES"). Cuando quedan 2 y decís que quedan 2, es un dato, no una presión.
+- **Sello de confianza**: "Estuche, franela y garantía de N meses", de `BUSINESS_POLICIES.md` §1.
+
+Si algún día se carga un precio de lista real (una columna `compare_at_price_cents`), el badge de
+descuento entra sin rediseñar nada: el hueco está previsto en los cinco diseños.
+
+**Tres bugs de composición corregidos mirando los renders** (los tres del mismo orden de capas):
+
+- En `split` el encabezado desaparecía: los bloques de color se dibujaban con el resto del cuerpo,
+  o sea DESPUÉS del header, y lo tapaban. Ahora van en `fondoExtra`, antes del header. El logo
+  sobrevivía porque lo compone `sharp` aparte — pista de que el problema era de orden, no de color.
+- En `split` y `full` el logo se volvía invisible: el tratamiento depende de si el fondo es claro
+  u oscuro, y en los diseños partidos el encabezado cae sobre el bloque BLANCO aunque el fondo
+  general sea navy. Se agregó `logoSobreClaro`, separado de `fondoClaro`.
+- En `full` la foto le pasaba por encima al nombre de la óptica: las fotos se componen después del
+  SVG. Ahora el anteojo arranca debajo del encabezado aunque el blanco llegue hasta el borde.
+
+### Qué se construyó — 5 tipos de placa por PRODUCTO del catálogo (primera versión, reemplazada)
 
 `pnpm ig:producto <slug>` pasó de generar 1 diseño a generar **5 tipos distintos**, en historia
 (1080×1920) y post (1080×1350). Van a `marketing/placas-producto/<slug>/`.
