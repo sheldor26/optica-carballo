@@ -138,6 +138,7 @@ Si tomaste una decisión importante: agregala a `DECISIONS.md` con formato ADR.
 | `METRICS.md` | KPIs del negocio con targets |
 | `EXPERIMENTS.md` | Log de experimentos y A/B tests |
 | `AGENT_PERFORMANCE.md` | Tracker de performance de cada agente |
+| `DATOS_PENDIENTES.md` | **Datos que el founder tiene que medir, pesar o confirmar.** Se consulta cuando pregunta "¿qué me falta pasarte?". Regla: si una carga queda incompleta por falta de un dato suyo, se agrega acá EN EL MISMO TURNO, con qué bloquea. |
 | `BACKLOG.md` | Pendientes acumulados (assets, data real, mejoras técnicas, features menores) |
 | `supabase/CLOUD_APPLIED.md` | Registro de qué migraciones y seeds están aplicados al Supabase cloud |
 

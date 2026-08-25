@@ -458,6 +458,24 @@ ML salen calibre 59, puente 16, varilla 155 y alto 41, pero falta el **ancho tot
 copy-paste del ancho. El seed NO carga `measurements` — mejor sin el bloque que con un número
 inventado — y tampoco hay placa de medidas.
 
+### `DATOS_PENDIENTES.md` — lo que el founder tiene que pasar
+
+El founder pidió que se le vaya guardando lo que tiene que enviar, para después preguntar "¿qué me
+falta?" y que salga de un lado. Archivo nuevo en la raíz, apuntado desde la tabla de CLAUDE.md.
+
+No se llenó de memoria: se consultó la base por productos activos con `measurements`,
+`weight_grams` o `temple_material` vacíos. Salieron **16 productos sin peso** y **8 sin material de
+patilla**, además de lo del Malice. Esos dos grupos son ideales para hacer de una sola sentada con
+la balanza, que es justo lo que el founder pidió poder hacer.
+
+Está dividido en tres niveles: lo que bloquea algo hoy (Malice), lo que falta pero no bloquea
+(pesos y materiales), y decisiones de criterio que no son datos (la forma del Malice, el nombre del
+color del STEELBLUE, las 49 publicaciones de ML con medidas que no coinciden). Abajo lleva un
+registro de lo ya recibido, con fecha, para que se vea qué se fue cerrando.
+
+**Regla que quedó en CLAUDE.md**: si una carga queda incompleta por falta de un dato del founder,
+se agrega a ese archivo **en el mismo turno**, anotando qué bloquea.
+
 ### Próximo paso EXACTO
 
 Cuando el founder pase las medidas del Malice: agregar `measurements` al producto y al seed 95,
@@ -472,6 +490,56 @@ control diferido de 24 h del alta de MLA2035140957: que
 
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
+
+### Medición real de texto, presupuesto vertical y callouts anclados
+
+Feedback del founder: "que las palabras no tapen otras palabras" y "que se vean más estéticas".
+Además preguntó por los stickers: *"están como flotando sin ningún tipo de orden, no entiendo
+qué vienen a hacer"*.
+
+**Causa raíz de los solapamientos: la estimación de ancho de texto.** librsvg no expone métricas
+tipográficas, así que `ajustar()` estimaba el ancho con un factor fijo por carácter (0.52).
+Medido contra el render real, ese factor va de **0.40 a 0.63** según el texto y la familia:
+
+| Texto | Real | Estimado | Ancho útil |
+|---|---|---|---|
+| `53&3 MARKY RAMONE` @104 DM Sans 700 | **1108 px** | 919 px | 928 px |
+| `THE SIL` @104 | 358 px | 379 px | 928 px |
+| `$ 107.792` @76 Anton | 274 px | 356 px | — |
+
+O sea que mandaba los modelos largos fuera de la placa y achicaba de más los precios en Anton.
+Ninguna constante única puede servir.
+
+**Solución: medir de verdad** (`medirTexto` y `ajustarMedido` en `placa-base.ts`). Se rasteriza
+la palabra a un tamaño de referencia y se mide el bounding box con `trim`. El ancho escala lineal
+con el cuerpo, así que con UNA medición por palabra alcanza; se cachea en memoria. Reemplaza a
+`ajustar()` en las 16 llamadas de los diseños de producto, y también se usa para el ancho de las
+pastillas y del texto de fondo de `tipografia`.
+
+**Presupuesto vertical**: `ajustarMedido` acepta `altoDisponible`. Ancho y alto son la misma
+restricción — cortar en más líneas para que entre a lo ancho gasta espacio vertical, y ahí el
+precio terminaba montado sobre el pie. Cada diseño reserva de antemano lo que ocupan specs y
+precio antes de elegir el cuerpo del modelo.
+
+**`stickers` → `callouts`.** Tenía razón el founder: eran pastillas en posiciones fijas que no se
+relacionaban con nada. Un rótulo que dice "Metal" apoyado sobre el fondo no explica nada. Ahora
+cada globo **apunta con una flecha a la parte del armazón de la que habla**, reusando la
+maquinaria que ya existía para las placas de Mercado Libre: `detectarPartes()` encuentra bisagras,
+patillas, lentes y puente sobre la foto recortada, y `burbujaConFlecha()` dibuja el globo con la
+curva. Los textos son los `attributes.callouts` reales de la ficha, ya escritos y revisados.
+
+Para eso `placas-svg.ts` necesitó dos cambios, los dos retrocompatibles (las placas de ML no
+cambian): `canvasAlto` opcional —el helper asumía lienzo cuadrado de 1500, y las de Instagram son
+verticales— y colores parametrizables, porque el globo azul del set de ML desaparece sobre navy.
+
+**Verificado** con el caso peor del catálogo (`vulk-53-3`, "53&3 Marky Ramone", 17 caracteres, con
+sello de stock): el modelo corta en dos líneas, entra a lo ancho, y specs + precio + pie no se
+pisan.
+
+**En curso**: hay una auditoría multi-agente corriendo sobre los 8 diseños (geometría en el caso
+peor, sistema tipográfico, jerarquía, dirección de arte y consistencia) con verificación
+adversarial de cada hallazgo. Cuando termine, se aplica el plan de escala tipográfica y ritmo —
+que es la parte de "más estético" que todavía falta.
 
 ### Recorte con rembg + correcciones de posición
 
