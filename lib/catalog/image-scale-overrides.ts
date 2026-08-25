@@ -65,11 +65,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   //     mezclados (/anteojos-de-sol/hombre, /anteojos-de-sol/mujer, etc).
   // Aplica a las 3 variantes del Rusty Yau (S10/POL, Revo Blue, Revo Green).
   'rusty-yau/01-lateral.jpg': 1.76,
-  'rusty-yau/02-frontal.jpg': 1.15,
+  'rusty-yau/02-frontal.jpg': 1.32,
   'rusty-yau/04-revo-blue-lateral.jpg': 1.76,
-  'rusty-yau/05-revo-blue-frontal.jpg': 1.15,
+  'rusty-yau/05-revo-blue-frontal.jpg': 1.32,
   'rusty-yau/06-revo-green-lateral.jpg': 1.75,
-  'rusty-yau/07-revo-green-frontal.jpg': 1.15,
+  'rusty-yau/07-revo-green-frontal.jpg': 1.34,
 
   // Rusty Feeled — founder reportó inconsistencia visual en grid 2026-05-31:
   // anteojo se ve chico vs Rusty Yau (que tiene overrides 1.8 / 1.4). Aplico
@@ -153,7 +153,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // default emparejando con Dearly/Etiquet (redondos/cuadrados femeninos).
   // 10 entries (2 por variante × 5 variantes).
   'rusty-xold/XOLD SBLK-perfil.jpg': 1.38,
-  'rusty-xold/XOLD SBLK-frente.jpg': 1.0,
+  'rusty-xold/XOLD SBLK-frente.jpg': 1.47,
   'rusty-xold/XOLD 0292-perfil.jpg': 1.15,
   'rusty-xold/XOLD 0292-frente.jpg': 1.0,
   'rusty-xold/XOLD MBLK BG26-perfil.jpg': 1.15,
@@ -295,7 +295,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // MBLU 670 lateral) respetado tal cual.
   // SBLK lateral quedó más chica que el resto del grid (founder 2026-05-31) → 1.3.
   'rusty-spell/SPELL SBLK - S10 POL perfil.jpg': 1.4,
-  'rusty-spell/SPELL SBLK - S10 POL frente.jpg': 1.0,
+  'rusty-spell/SPELL SBLK - S10 POL frente.jpg': 1.39,
   'rusty-spell/SPELL MBLK GBU30-perfil.jpg': 1.15,
   'rusty-spell/SPELL MBLK GBU30-frente.jpg': 1.0,
   'rusty-spell/SPELL_MBLK_-_S10_POL_perfil.jpg': 1.15,
@@ -331,7 +331,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // (founder "agrandar") → 1.6/1.3. Las fotos del Sotion tienen el anteojo
   // más chico en el frame que las del Yau. Si recorta, bajar a 1.5/1.25.
   'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.6,
-  'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.3,
+  'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.31,
   'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-PERFIL.jpg': 1.6,
   'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-FRENTE.jpg': 1.3,
   'rusty-sotion/MBLK-S10-POL-YELLOW-PERFIL.jpg': 1.6,
@@ -582,7 +582,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 2.0 / frente 1.6 "quedó muy grande" → iter 3 (punto medio) 1.8/1.45 "un poco más
   // chico" → iter 4 1.7/1.4 → iter 5 1.6/1.35 → iter 6 "-0.1 más" perfil 1.5 / frente 1.25.
   'rusty-esvep/ESVEP-MBLK--S10-POL---perfil.jpg': 1.5,
-  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.25,
+  'rusty-esvep/ESVEP-MBLK--S10-POL---frente.jpg': 1.6,
   'rusty-esvep/ESVEP-SBLK--S10-POL---perfil.jpg': 1.5,
   'rusty-esvep/ESVEP-SBLK--S10-POL---frente.jpg': 1.25,
   'rusty-esvep/ESVEP-SBLK--S10--perfil.jpg': 1.5,
@@ -646,7 +646,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // founder 2026-06-13: +0.05 a todas (1.2/1.05 → 1.25/1.10) MENOS MBLK/S10 POL que
   // quedó bien en 1.2/1.05 (esa variante tiene la foto con el anteojo un toque más grande).
   'rusty-patien/PATIEN-SBLK---S15-perfil.jpg': 1.41,
-  'rusty-patien/PATIEN-SBLK---S15-frente.jpg': 1.1,
+  'rusty-patien/PATIEN-SBLK---S15-frente.jpg': 1.4,
   'rusty-patien/PATIEN-MBLK---R-BLUE-perfil.jpg': 1.25,
   'rusty-patien/PATIEN-MBLK---R-BLUE-frente.jpg': 1.1,
   'rusty-patien/PATIEN MBLK S10 POL.-p.jpg': 1.2,
@@ -719,7 +719,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty The Take SOL — aviador doble puente polarizado. 900×442 → 1.15 (founder pidió agrandar 2026-07-01).
   'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_p.jpg': 1.20,
-  'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_f.jpg': 1.0,
+  'rusty-the-take/THE_TAKE_L.GREY-mblk_s10_pol_-_f.jpg': 1.12,
 
   // Rusty Yeah SOL — aviador doble puente acetato, 3 colores. 900×442, gemelo de forma =
   // The Take → mismo scale 1.2/1.0. PROVISIONAL, reverificar contra el grid (regla 15).

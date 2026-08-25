@@ -37,6 +37,8 @@ import path from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import sharp from 'sharp';
 
+import { IMAGE_SCALE_OVERRIDES } from '../lib/catalog/image-scale-overrides';
+
 const BACKUP_DIR = path.join(process.cwd(), 'marketing/backup-imagenes');
 
 function flag(nombre: string): string | undefined {
@@ -108,6 +110,20 @@ async function main(): Promise<void> {
   // con "...-POL--20260825.jpg".
   const baseLimpia = base.replace(/-\d{8}$/, '').replace(/-+$/, '');
   const pathNuevo = pisar ? storagePath : `${dir}/${baseLimpia}${sufijo}${ext}`;
+
+  // El scale del grid está indexado por path: al renombrar, el override del
+  // path viejo deja de aplicar y la foto pasa a 1.0 sin ningún error visible.
+  // Si la imagen nueva viene del pipeline ya está normalizada y 1.0 es lo
+  // correcto; si no, hay que decidir qué scale lleva.
+  const overrideViejo = IMAGE_SCALE_OVERRIDES[storagePath];
+  if (overrideViejo !== undefined && overrideViejo !== 1 && !pisar) {
+    console.warn(
+      `\n  ⚠️ "${path.basename(storagePath)}" tenía scale ${overrideViejo} en image-scale-overrides.ts.\n` +
+        '     Con el nombre nuevo ese override deja de aplicar y la foto pasa a 1.0.\n' +
+        '     Si la imagen nueva sale de `pnpm placas` ya viene normalizada y 1.0 es correcto.\n' +
+        '     Si no, agregá el override para el path nuevo o corré después `pnpm auditar:encuadre`.\n',
+    );
+  }
 
   if (pisar) {
     console.warn(

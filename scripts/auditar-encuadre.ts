@@ -66,16 +66,21 @@ async function main(): Promise<void> {
   if (!url || !key) throw new Error('Faltan env de Supabase. Corré con --env-file=.env.local');
 
   const supabase = createClient(url, key);
-  const { data, error } = await supabase
+  // Por defecto sólo las primarias (las que definen la grilla). Con --todas
+  // entran también las secundarias, que son las que se ven al pasar el mouse:
+  // si su scale no acompaña al de la primaria, el producto "salta" de tamaño
+  // en el hover.
+  const todas = process.argv.includes('--todas');
+  const query = supabase
     .from('product_images')
-    .select('storage_path, width, height, products!inner(slug, brands!inner(name))')
-    .eq('is_primary', true);
+    .select('storage_path, width, height, is_primary, products!inner(slug, brands!inner(name))');
+  const { data, error } = todas ? await query : await query.eq('is_primary', true);
 
   if (error) throw new Error(`No pude leer product_images: ${error.message}`);
 
   const filas: Fila[] = (data ?? [])
     .map((r: any) => ({
-      slug: r.products.slug,
+      slug: r.products.slug + (r.is_primary === false ? ' (secundaria)' : ''),
       marca: r.products.brands.name,
       storage_path: r.storage_path,
       width: r.width,
@@ -86,44 +91,46 @@ async function main(): Promise<void> {
 
   console.log(`Midiendo ${filas.length} fotos primarias...\n`);
 
+  // Se mide en paralelo con un tope de concurrencia: secuencial son 456
+  // descargas de a una y tarda más de lo que nadie va a esperar.
+  const CONCURRENCIA = 12;
   const mediciones: Medicion[] = [];
-  for (const fila of filas) {
+
+  async function medir(fila: Fila): Promise<void> {
     const publica = `${url}/storage/v1/object/public/products/${encodeURI(fila.storage_path)}`;
     try {
       const r = await fetch(publica);
-      if (!r.ok) {
-        console.warn(`  ⚠️ ${fila.storage_path} → HTTP ${r.status}`);
-        continue;
-      }
+      if (!r.ok) return;
       const buf = Buffer.from(await r.arrayBuffer());
       const meta = await sharp(buf).metadata();
       const w = meta.width ?? fila.width ?? 0;
       const h = meta.height ?? fila.height ?? 0;
-      if (!w || !h) continue;
+      if (!w || !h) return;
 
-      // Bbox del producto: `trim` recorta el fondo uniforme del perímetro.
       const { info } = await sharp(buf).trim({ threshold: 12 }).toBuffer({ resolveWithObject: true });
       const ocupacionEnFoto = info.width / w;
-
       const ratio = w / h;
       const scale = IMAGE_SCALE_OVERRIDES[fila.storage_path] ?? 1;
-      // Con object-contain, una foto más apaisada que la card llena el ancho;
-      // una menos apaisada llena el alto y deja aire a los costados.
       const factorContain = ratio >= CARD_RATIO ? 1 : ratio / CARD_RATIO;
       const ocupacionEnCard = ocupacionEnFoto * factorContain * scale;
 
-      // El alto también importa: la card recorta lo que se pasa (overflow
-      // oculto), así que un scale alto puede cortarle las patillas al producto.
       const ocupacionAltoEnFoto = info.height / h;
       const factorContainAlto = ratio >= CARD_RATIO ? CARD_RATIO / ratio : 1;
       const ocupacionAltoEnCard = ocupacionAltoEnFoto * factorContainAlto * scale;
       const seCorta = ocupacionEnCard > 1 || ocupacionAltoEnCard > 1;
 
       mediciones.push({ ...fila, scale, ocupacionEnFoto, ocupacionEnCard, ocupacionAltoEnCard, seCorta });
-    } catch (e) {
-      console.warn(`  ⚠️ ${fila.storage_path}: ${e instanceof Error ? e.message : String(e)}`);
+    } catch {
+      /* una foto que no se puede leer no aporta a la comparación */
     }
   }
+
+  const pendientes = [...filas];
+  await Promise.all(
+    Array.from({ length: CONCURRENCIA }, async () => {
+      for (let f = pendientes.pop(); f; f = pendientes.pop()) await medir(f);
+    }),
+  );
 
   mediciones.sort((a, b) => a.ocupacionEnCard - b.ocupacionEnCard);
 

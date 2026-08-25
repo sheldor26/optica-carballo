@@ -362,10 +362,31 @@ Los ajustes más grandes: `rusty-yau` 1.40 → 1.76 (ocupaba 74%), `rusty-spell-
 1.25 → 1.41 (36 unidades). En el otro extremo se bajaron los que llenaban el cuadro al 100%:
 `rusty-terdey`, `vulk-way-back`, `rusty-yeah`, `rusty-vorez` y `vulk-clems`, todos a ~1.07-1.12.
 
-**Importante — todavía no se ve en el sitio.** El cambio es en código (`image-scale-overrides.ts`),
-así que recién se ve al deployar. No se pudo verificar en el dev server local porque pide login y no
-corresponde ingresar credenciales; la verificación se hizo con la medición y con una simulación que
-replica el render real (object-contain + scale + recorte por overflow).
+**Deployado**: commit `9aa1900` pusheado a `main` el 2026-08-24, con `pnpm build` en verde antes de
+pushear. Vercel deploya por push a main (no hay CLI ni `.vercel` local). El commit incluye además
+las herramientas de la sesión (`ml-placas`, `vulk-fotos`, `foto:reemplazar`, `ml:diag`,
+`auditar:encuadre`), que no tocan el runtime del sitio. Se agregaron a `.gitignore` los backups de
+trabajo (`marketing/backup-imagenes/`, `marketing/backup-ml/`) para no meter binarios al repo, y se
+dejaron sin trackear las carpetas que ya estaban así antes de la sesión (`KEYWORDS OPTICA/`,
+`scripts/gsc/`, `marketing/placas-medios-de-pago/`).
+
+No se pudo verificar en el dev server local porque pide login y no corresponde ingresar
+credenciales; la verificación previa se hizo con la medición y con una simulación que replica el
+render real (object-contain + scale + recorte por overflow).
+
+**Verificado en producción**: leyendo el DOM de `/anteojos-de-sol/rusty`, el wrapper de la foto de
+`rusty-yau` sirve `transform: scale(1.76)`, el valor nuevo. Las grillas quedaron parejas.
+
+**PROBLEMA DETECTADO AL VERIFICAR — pendiente de arreglar**: el card usa **dos** imágenes, la
+primaria y una secundaria que aparece en el hover, cada una con su propio scale
+(`product-card.tsx:133-156`). La auditoría midió sólo las primarias, así que al subirles el scale se
+agrandó el salto de tamaño en el hover: `rusty-yau` pasó de 0.25 a **0.61** de diferencia (1.76
+contra 1.15), y lo mismo menor en Spell, Xold y Patien. El salto ya existía en productos que no se
+tocaron (`rusty-eslav` 0.35, `rusty-sotion` 0.30, `rusty-esvep` 0.25), o sea que no se introdujo,
+pero sí se agravó donde se ajustó. Detalle y regla preventiva en `MISTAKES.md`.
+
+`pnpm auditar:encuadre --todas` ya extiende la medición a las secundarias. Falta calcular sus
+scales, aplicarlos y hacer un segundo deploy.
 
 **Marcha atrás**: `git checkout lib/catalog/image-scale-overrides.ts`. El archivo estaba limpio en
 git antes del cambio (último commit 8295c74), y además quedó copia en el scratchpad de la sesión.
@@ -395,11 +416,31 @@ en Supabase, que implica agrandar con pérdida de nitidez (en el Katleen quedó 
 techo real), o conseguir las originales en alta del proveedor. **Es una decisión del founder, no
 técnica: hay que saber si tiene acceso a las fotos originales de Rusty.**
 
+### Tareas que quedaron corriendo al cerrar la sesión
+
+Dos procesos en segundo plano. Ninguno bloquea nada de lo ya entregado; los dos generan
+información para decidir, y sus resultados llegan como notificación cuando terminan.
+
+1. **`pnpm auditar:encuadre --todas`** — mide las 456 fotos (primarias + secundarias) para calcular
+   los scales de hover y cerrar el problema del salto de tamaño descrito arriba. Es la tarea
+   accionable: cuando termine hay que aplicar los valores a las secundarias y hacer un segundo
+   deploy. Si el proceso se perdió, se relanza con ese mismo comando: sólo lee, se puede correr
+   cuantas veces haga falta.
+2. **Workflow `oportunidades-post-placas`** — responde a la pregunta del founder sobre qué conviene
+   mejorar, con los datos reales del catálogo (169 imágenes en baja resolución, los productos con
+   más stock y peor foto). Cuatro analistas ya terminaron, faltaban un verificador y la síntesis.
+   No lo pidió como trabajo, es material para decidir el próximo foco.
+
 ### Próximo paso EXACTO (estado al cierre)
 
-Los 6 sets del Katleen y el de The Sil están generados y validados, pero **todavía no subidos a las
-publicaciones de ML** salvo el de SDEMI-SBLK/GB27 (MLA1549858831, ya activo con sus 6 imágenes).
-Las opciones sobre la mesa, a decisión del founder:
+**Lo primero: cerrar el salto de hover.** Es lo único que quedó a medias de un cambio ya deployado.
+Cuando termine `pnpm auditar:encuadre --todas`, aplicar los scales a las secundarias con el mismo
+criterio (93% de ocupación) y deployar. Hasta entonces las grillas se ven bien, pero al pasar el
+mouse el producto salta de tamaño en los cuatro productos ajustados.
+
+Después de eso, los sets del Katleen y The Sil están generados y validados pero **todavía no subidos
+a las publicaciones de ML** salvo el de SDEMI-SBLK/GB27 (MLA1549858831, ya activo con sus 6
+imágenes). Las opciones sobre la mesa, a decisión del founder:
 
 1. Subir los sets a las publicaciones de ML del resto de las variantes del Katleen y a las tres de
    The Sil, con el mismo procedimiento verificado (multipart + PUT del array completo + verificar

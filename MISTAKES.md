@@ -56,6 +56,35 @@ mecánicos, no a ojo:
 Para piezas visuales completas (no ajustes chicos), el trío ahora es parte del flujo, igual que
 para contenido escrito.
 
+## 2026-08-24 — Audité el tamaño de las fotos del grid mirando sólo las primarias, cuando cada card usa dos
+
+**Qué pasó**: la auditoría de encuadre midió las 82 fotos `is_primary = true` y ajustó sus scales
+para emparejarlas al 93% de ocupación. Se deployó. Al verificar en producción apareció que el card
+usa **dos** imágenes: la primaria y una secundaria que aparece al pasar el mouse, cada una con su
+propio scale. Al subir el de la primaria sin tocar el de la secundaria, el producto ahora "salta" de
+tamaño en el hover: `rusty-yau` pasó de un salto de 0.25 a uno de **0.61** (primaria 1.76 contra
+hover 1.15), y lo mismo en menor medida en Spell, Xold y Patien.
+
+**Causa raíz**: definí el alcance de la auditoría por lo que me pareció que importaba —"la foto que
+se ve en la grilla"— en vez de leer primero qué imágenes consume el componente. `product-card.tsx`
+lo dice sin ambigüedad en las líneas 133-156: arma `primaryScale` y `secondaryScale`, y usa las dos.
+Bastaba con abrir ese archivo antes de escribir la query.
+
+**Matiz honesto**: el salto en hover ya existía antes del cambio en varios productos que no toqué
+(`rusty-eslav` 0.35, `rusty-sotion` 0.30, `rusty-esvep` 0.25). No lo introduje, pero lo agravé en
+los cuatro que ajusté, y no lo detecté antes de deployar porque no estaba mirando ahí.
+
+**Regla preventiva**: antes de auditar o modificar cómo se ve algo, leer el componente que lo
+renderiza y enumerar TODAS las entradas que consume. Si el componente usa dos imágenes, la auditoría
+cubre las dos. El criterio para acotar el alcance sale del código, no de la intuición sobre qué es
+lo importante.
+
+**Cómo se arregla**: `pnpm auditar:encuadre --todas` ya extiende la medición a las secundarias. El
+ajuste es el mismo método sobre esos scales, y requiere un segundo deploy.
+
+**Estado**: 🟡 Mitigado — la herramienta ya cubre el caso; falta aplicar el ajuste a las secundarias
+y verificar que el salto de hover quede parejo en todo el catálogo.
+
 ## 2026-08-24 — Reemplacé fotos de producto pisando el archivo, con una advertencia escrita en el propio next.config.ts diciendo que eso no funciona
 
 **Qué pasó**: para cambiar las dos fotos del Vulk Katleen subí las nuevas al mismo `storage_path`,
