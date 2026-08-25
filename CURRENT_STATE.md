@@ -419,32 +419,51 @@ carga: son una oportunidad de limpieza en ML, que quedó anotada pero no ejecuta
 327 pausadas sin mirar, `--incluir-pausadas` las incluye), y quedan dos o tres modelos duplicados en
 el conteo donde el color viene pegado al nombre (Marilyn / Marilyn '23, ROUM / ROUM L.BLUE).
 
-### En curso: carga del Rusty Malice
+### Cargado: Rusty Malice (seed 95) — primer producto del cruce de faltantes
 
-El founder eligió arrancar por el Malice y **ya dejó las 6 fotos** en `marketing/fotos/malice/`
-(convención de nombres suya: `AGALERIA-*` es el frente y `GALERIA-*` el perfil). El fabricante NO
-tiene el Malice en rustyoptical.com — se revisó el índice completo de sol — así que estas fotos son
-la única fuente.
+`/anteojos-de-sol/rusty/rusty-malice`, 3 colorways, 54 unidades. Es el primero que sale del
+`pnpm ml:faltantes`: 64 ventas acumuladas en ML y cero presencia en el sitio.
 
-3 colorways, confirmadas contra el `user_product_id` de cada publicación:
+| SKU | Color | Lente | Pol | Stock | Precio | ML |
+|---|---|---|---|---|---|---|
+| MALICE-MBLK-S10-POL | negro mate | gris oscuro | sí | 18 | $96.205 | MLA1529925840 |
+| MALICE-SBLK-S10-POL | negro brillo | gris oscuro | sí | 25 | $96.205 | MLA1430095941 |
+| MALICE-MBLK-REVO-BLUE | negro mate | azul espejada | no | 11 | $92.810 | MLA1507015278 |
 
-| Colorway | Lente | Pol | Stock | Precio |
-|---|---|---|---|---|
-| MBLK/REVO BLUE | azul espejado | no | 11 | $92.810 |
-| MBLK/S10 POL | gris oscuro | sí | 18 | $96.205 |
-| SBLK/S10 POL | gris oscuro | sí | 25 | $96.205 |
+**El fabricante no lo tiene**: se revisó el índice completo de sol de rustyoptical.com y el Malice no
+figura. Las fotos las pasó el founder a `marketing/fotos/malice/`; su convención es `AGALERIA-*`
+para el FRENTE y `GALERIA-*` para el PERFIL.
 
-De los atributos de sus propias publicaciones salen: G-Flex frente y patillas, policarbonato, UV
-sí, unisex, calibre 59, puente 16, varilla 155, alto de lente 41.
+**6 publicaciones, 3 colores.** Cada colorway está publicada dos veces con títulos distintos. Se
+mapea la que indicó el founder de cada par; la gemela queda sin vincular porque no se puede
+(un `mercadolibre_item_id` por variante).
 
-**Falta y se le preguntó**: ancho total del frente, peso, y desempate del alto de lente — dos
-publicaciones dicen 4.1 cm y una dice 5.9 cm, que es casi seguro un copy-paste del ancho. También
-se le consultó la forma: dos publicaciones dicen "Rectangular", una "Cuadrada" y el DESIGN dice
-"Anteojo Cuadrado"; por proporción (59×41 = 1,44) corresponde `rectangular`.
+**`frame_shape: cuadrado` y `gender: male`** los dio el founder. ⚠️ Sus publicaciones declaran
+`GENDER = "Sin género"` y dos de tres `FRAME_SHAPE = "Rectangular"` — gana él, que tiene el producto
+en la mano, pero conviene alinear ML. Ojo que **"cuadrado" no tiene faceta de forma en el sitio**:
+`brand-filters.ts` sólo expone wayfarer, aviador, cat-eye y rectangular, así que el Malice no entra
+a ninguna faceta de forma.
+
+**SEO**: primaria `lentes de sol cuadrados hombre` (90/mes). Es forma+género, y no pisa a nadie:
+Zinz tiene `lentes de sol cuadrados` (390) pero es unisex; Play tiene `lentes de sol hombre rusty`
+(480) pero no pelea forma. Honestidad 2/3 polarizadas → no se afirma "polarizados" para el modelo.
+
+**Encuadre**: las 6 fotos en 92% con scale 1.00, que es la banda de la grilla de sol (89-93%). Sin
+overrides. De paso se verificó que el 1.05 que se le puso al Bruice —decidido mirando la grilla de
+receta— tampoco lo desentona en la de sol.
+
+**⚠️ MEDIDAS PENDIENTES.** El founder no las tenía a mano y las sube a la tarde. De sus atributos de
+ML salen calibre 59, puente 16, varilla 155 y alto 41, pero falta el **ancho total del frente** y el
+**peso**, y hay que desempatar el alto: dos publicaciones dicen 4.1 cm y una 5.9 cm, que parece un
+copy-paste del ancho. El seed NO carga `measurements` — mejor sin el bloque que con un número
+inventado — y tampoco hay placa de medidas.
 
 ### Próximo paso EXACTO
 
-Con esos tres datos: generar las placas, subirlas y cargar el producto. Sigue pendiente, aparte, el
+Cuando el founder pase las medidas del Malice: agregar `measurements` al producto y al seed 95,
+generar la placa de medidas (`pnpm placas --solo 4`), subirla y sumar la fila de imagen con
+`variant_id NULL` y `sort_order 99`. Después seguir con el próximo modelo del cruce — Blozon (4
+colores, 46 u, 55 vendidos) o Le Groupie (4 colores, 34 u, 35 vendidos). Sigue pendiente, aparte, el
 control diferido de 24 h del alta de MLA2035140957: que
 `GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
 `closed` solo. Nada más queda abierto del Bruice.
