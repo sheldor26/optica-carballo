@@ -377,9 +377,48 @@ porque el valor correcto depende de la grilla de destino, no del generador.
 multiplicar por el scale override de cada vecino**. Con el scale aplicado la relación se invertía.
 Lo detecté y lo corregí antes de tocar nada.
 
+### `pnpm ml:faltantes` — qué hay en ML que no está en el sitio
+
+El founder preguntó qué modelos de Vulk y Rusty tiene publicados en Mercado Libre y no en el
+catálogo. Salió script (`scripts/ml-faltantes.ts`), porque es una pregunta que se repite.
+
+**Resultado: 98 modelos sin cargar, 1.222 unidades en stock.** Para dimensionarlo, el sitio tiene
+74 productos: el catálogo podría más que duplicarse. Top por stock parado + ventas ya demostradas en
+ML: Malice (108 u / 64 vendidos), Blozon (88 / 55), Le Groupie (68 / 35), Zion (52 / 6),
+Harry sol (38 / 20), Dunsert (34 / 24). Caso aparte: See Life tiene 62 unidades y **cero ventas** —
+mucho stock sin ninguna señal de demanda, va después de los que ya vendieron.
+
+**Tres decisiones de diseño que cambian el número que sale:**
+
+1. **Matchea por variación, no por item.** Una publicación multi-variación puede estar cargada a
+   medias; contar por item lo escondería.
+2. **Normaliza el nombre del modelo antes de comparar.** Los `MODEL` de ML vienen sucios: "And Now?",
+   "YA U", "PRO30", "SOTION MBLK S10 POLARZED", "Katleen mblk/c8b15". Sin normalizar daban **ocho
+   falsos positivos** de modelos que sí están cargados. La normalización corta en la primera barra,
+   saca los códigos de color y colapsa espacios y signos.
+3. **Separa lo que falta de verdad de las publicaciones duplicadas.** Ver abajo — es lo que más
+   cambió el resultado.
+
+**El hallazgo que casi arruina el reporte.** El cruce marcaba, además, 46 modelos ya cargados como
+"les falta una variante", con 480 unidades. Antes de reportarlo se verificaron tres casos contra la
+base —Beason, Terdey y The Sil— y **ninguno tenía un color faltante**: son publicaciones
+DUPLICADAS del mismo anteojo con otro título, compitiendo entre sí en la misma cuenta. Coinciden
+hasta en el número de stock con las que ya están vinculadas. O sea que esas 480 unidades son el
+mismo inventario contado dos veces. **Reportar el total sin verificar habría dicho 1.702 unidades
+faltantes cuando son 1.222.**
+
+Como no se pueden mapear dos items de ML a la misma variante, esas duplicadas no son trabajo de
+carga: son una oportunidad de limpieza en ML, que quedó anotada pero no ejecutada.
+
+**Límites del número, dichos al founder**: sólo se leyeron las 649 publicaciones **activas** (hay
+327 pausadas sin mirar, `--incluir-pausadas` las incluye), y quedan dos o tres modelos duplicados en
+el conteo donde el color viene pegado al nombre (Marilyn / Marilyn '23, ROUM / ROUM L.BLUE).
+
 ### Próximo paso EXACTO
 
-El control diferido de 24 h del alta de MLA2035140957: que
+Esperando que el founder elija con qué modelos arrancar la carga — la recomendación es Malice,
+Blozon y Le Groupie, que entre los tres suman 264 unidades y 154 ventas acumuladas en ML. Sigue
+pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
 `GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
 `closed` solo. Nada más queda abierto del Bruice.
 
@@ -387,6 +426,79 @@ El control diferido de 24 h del alta de MLA2035140957: que
 
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
+
+### Recorte con rembg + correcciones de posición
+
+**El recorte por luminancia se reemplazó por `rembg`** (feedback del founder: "quedó horrible cómo
+le eliminaste el fondo"). Él señaló que en **shotpilot** ya había un venv con esa herramienta.
+Efectivamente: `/Users/juan/Proyectos web/shotpilot/rembg-test/venv` tiene `rembg 2.0.76` con los
+modelos ya descargados (birefnet-general, isnet-general-use, u2net, u2netp).
+
+Se reusa ese venv en vez de instalar nada acá. Modelo: **birefnet-general**, que da los bordes más
+limpios de los cuatro. El método por luminancia queda como respaldo: si el venv no está en la
+máquina, la placa sale igual con bordes peores en vez de romperse.
+
+`scripts/lib/recorte-rembg.ts`. Se puede apuntar a otro intérprete o modelo con `REMBG_PYTHON` y
+`REMBG_MODELO`.
+
+**Caché obligatoria**: rembg tarda ~15 s la primera vez (carga el modelo) y ~2-3 s después. Con 8
+diseños × 2 formatos la misma foto se recortaría 16 veces. El resultado se cachea por hash del
+contenido en `marketing/.cache-recortes/` (gitignoreada): una foto = un recorte, y las corridas
+siguientes son instantáneas.
+
+**Bug que costó una corrida colgada**: `execFile` **asíncrono no acepta la opción `input`** — esa
+es de `execFileSync`. El proceso de Python quedaba esperando stdin para siempre, sin error, sin
+timeout y sin salida. Se reescribió con `spawn` escribiendo a stdin y con timeout propio.
+
+**Dos posiciones corregidas, ambas señaladas por el founder mirando los renders:**
+
+- `editorial` — el producto quedaba hundido. Causa: el centrado vertical que se había agregado
+  para las placas de puro texto también corría hacia abajo las que tienen una foto grande. Los
+  diseños con foto (`editorial`, `stickers`, `cartel`, `detalle`) ya no se centran: se anclan
+  arriba, que es donde se ven bien.
+- `tipografia` — el anteojo tapaba la palabra "SIL" del fondo en vez de cortarla. El texto arranca
+  más arriba (0.20 del alto) y el producto más abajo (0.31), así se lee entero y el anteojo le
+  cruza la base, que era el efecto buscado.
+
+### Qué se construyó — 8 diseños, recorte flotante y color por marca
+
+El founder eligió: pasar **todas** las placas al recorte flotante, sumar **color por marca** y
+**tipografía de fondo**, y pidió buscar tendencias actuales ("badges", "estilo neón").
+
+**Investigación** ([manypixels](https://www.manypixels.co/blog/social-media-design/trends),
+[squareshot](https://www.squareshot.com/post/7-creative-eyewear-product-photography-ideas)):
+lo que rinde en 2026 es tipografía sobredimensionada, capas y superposición, badges/stickers, y
+—específico de eyewear— **halo de luz difusa** detrás del producto. El neón literal se descartó
+a propósito: choca con "óptica seria" y es exactamente lo que la auditoría externa marcó como
+riesgo en las placas de medios de pago ("flyer de boliche VIP de 2012"). El halo es su traducción
+sobria.
+
+**Los 8 diseños** (`pnpm ig:producto <slug>`, historia + post):
+
+| Diseño | Qué hace |
+|---|---|
+| `editorial` · `tarjeta` · `full` · `split` · `cartel` | Los cinco anteriores, ahora con el producto recortado |
+| `halo` | Luz difusa dorada detrás del anteojo, sobre el color de la marca. Centrado y simétrico. |
+| `stickers` | Pastillas rotadas con datos REALES del producto, superpuestas al anteojo. |
+| `tipografia` | El modelo en Anton gigante detrás del producto, cortado por él. |
+
+**Recorte flotante en todos**: se eliminó la tarjeta blanca de `editorial`, `full`, `cartel` y
+`detalle`. `tarjeta` y `split` conservan su superficie blanca porque **es** su diseño, pero el
+producto va igual recortado (sin el borde duro del rectángulo). La función vive en
+`placa-base.ts` (`recorteFlotante`), con las dos trampas documentadas: `toColourspace('b-w')`
+antes del raw, y NO usar `ensureAlpha` antes de `joinChannel`.
+
+**Color por marca** (`colorDeMarca`): vulk petróleo, rusty tabaco, reef verde profundo, mormaii
+ciruela; el resto cae en navy. Tonos profundos que conviven con el dorado — el feed agarra ritmo
+sin pelearse con la identidad.
+
+**Los stickers no inventan nada**: cada pastilla sale de la ficha (forma, material, polarizado,
+UV400), más la garantía real y el stock si es bajo. Es el recurso de "badge" en tendencia, pero
+sin sellos genéricos, que están prohibidos por las reglas duras.
+
+**Corregido antes de todo esto** (feedback: "la imagen del artículo siempre debe estar
+centrada"): el diseño `full` usaba `fill: 1.0` y el anteojo se salía por los costados.
+`anteojoEn()` y `flotante()` ahora topean en 0.94/0.98 y centran en los dos ejes.
 
 ### Qué se construyó — 5 DISEÑOS de la placa de promoción de producto
 

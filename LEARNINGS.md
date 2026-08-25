@@ -75,6 +75,39 @@ cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si 
 secretos, chequear que ningún archivo con `'use client'` lo importe.
 
 
+## 2026-08-25 — Antes de reportar el total de un diff, verificar a mano una muestra de lo que marcó
+
+**Contexto**: el founder pidió saber qué modelos de Vulk y Rusty tiene en Mercado Libre y no en el
+sitio. El cruce entre las 649 publicaciones activas y `product_variants.mercadolibre_item_id` tiró
+dos grupos: 98 modelos ausentes (1.222 unidades) y otros 46 que aparecían como "cargados pero les
+falta una variante" (480 unidades). Sumado daba 1.702 unidades sin cargar.
+
+**Qué apareció al verificar**: antes de mandarlo se abrieron tres casos del segundo grupo —Beason,
+Terdey y The Sil— y se los comparó contra la base. **Ninguno tenía un color faltante.** Eran
+publicaciones DUPLICADAS del mismo anteojo, con otro título, compitiendo entre sí en la misma
+cuenta. Coincidían hasta en el número de stock con las que ya estaban vinculadas: el mismo
+inventario contado dos veces.
+
+O sea que el titular correcto era **1.222 unidades, no 1.702**. Y la acción sobre esos 46 no era
+cargarlos —no se puede, dos items de ML no pueden mapear a la misma variante— sino limpiar
+publicaciones duplicadas, que es otro problema.
+
+**Por qué el diff se equivocaba sin estar roto**: la consulta era correcta. Lo que fallaba era la
+interpretación de la ausencia. "No está mapeado" puede significar "falta cargarlo" o puede
+significar "es un duplicado que nunca va a mapear". El código no puede distinguirlos; sólo abrir un
+caso y mirarlo lo distingue.
+
+**La regla**: cuando un cruce o una reconciliación devuelve un total, **abrir dos o tres filas y
+verificarlas contra la fuente antes de reportar el número**. El total es lo que el founder va a
+recordar y sobre lo que va a decidir, y un diff siempre tiene al menos una categoría de falso
+positivo que no se ve desde la query. Cuesta tres minutos y acá evitó inflar el resultado un 39%.
+
+**Corolario**: si aparecen dos categorías en un diff, no sumarlas hasta entender si son la misma
+cosa. Presentarlas separadas y con su acción propia — "esto se carga" vs "esto se limpia" — vale
+más que un número grande.
+
+---
+
 ## 2026-08-25 — Un promedio global no detecta que algo desentona con sus vecinos
 
 **Contexto**: el founder vio que el Bruice de receta se veía distinto de los productos que tenía al
