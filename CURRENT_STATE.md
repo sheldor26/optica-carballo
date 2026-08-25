@@ -522,12 +522,59 @@ quedó para él. El "alto" de las placas (49 y 48) NO es contradicción: mide el
 
 Falta el peso de los dos.
 
+### Regla dura nueva: las medidas sólo se cargan si las pasa el founder
+
+El founder marcó una regla que no estaba escrita con esta fuerza:
+
+> *"No confío en los datos que hoy en día están en Mercado Libre... yo me basé en otras cosas o en
+> otras fuentes, y hay muchos errores... incluso el fabricante tiene muchos errores en su página.
+> Todo lo que sea medida, si yo no te la paso, más vale esperar."*
+
+Las medidas del Malice y del Blozon se habían cargado leyéndolas de los atributos de sus
+publicaciones de ML y de las placas viejas dentro de esas galerías — las tres fuentes que él
+considera poco confiables. **Se sacaron**: de la base, de los seeds, del texto de las fichas, y se
+despublicó la placa de medidas de cada uno. Las dos fichas quedan sin el bloque de medidas hasta que
+él las pase. Verificado en producción.
+
+Quedó como **regla dura 7 de `CLAUDE.md`** y con la memoria `medidas-las-mide-el-founder`
+endurecida: material, peso, color, precio y stock **sí** se pueden tomar de esas fuentes; medidas
+no. Los números viejos quedaron en `DATOS_PENDIENTES.md` en una tabla marcada explícitamente
+"para referencia, NO para cargar", porque sirven para que él compare cuando mida.
+
+El error de fondo, registrado en MISTAKES: la regla anterior decía *"la medición del founder gana
+contra la ficha del fabricante"* y se leyó como **jerarquía** cuando es **lista blanca de una sola
+entrada**. Una jerarquía autoriza a usar la segunda opción cuando falta la primera; una lista blanca
+no. También se corrigió el learning del mismo día que celebraba haber sacado las medidas de las
+galerías de ML: eso vale para fotos, bisagras, colores y materiales, no para medidas.
+
+### Bug encontrado y corregido: `\n` literales en dos descripciones
+
+Al sacar las medidas apareció que la descripción del Malice tenía un **`\n` literal** en vez de un
+salto de línea, visible en la ficha publicada. Causa: un `UPDATE ... replace(description, ...)`
+escrito con literal de cadena común en vez de un E-string. En Postgres, `'\n'` en un literal común
+son dos caracteres —barra y ene—; para un salto real hay que escribir `E'\n'`. El mismo error se
+coló después en el Blozon al limpiar el texto con `regexp_replace`. Los dos corregidos y verificados
+leyendo el valor de vuelta con los saltos hechos visibles.
+
+### Foto primaria nueva del Blozon
+
+El founder pasó una toma mejor del perfil de la MBLK/S10 (`marketing/fotos/blozon/`), que es la foto
+primaria del producto y la que se ve en la grilla. Subida como `perfil-mblk-s10-v2.jpg`: el nombre
+nuevo es obligatorio al reemplazar, porque la imagen optimizada de Next se cachea 31 días **por
+path**. Encuadre 92%, sin override. Con esta ya son tres archivos `-v2` en el Blozon (los dos
+frentes y este perfil).
+
 ### Próximo paso EXACTO
 
-Seguir con el próximo modelo del cruce: **Le Groupie** (Vulk, 4 colores, 34 u, 35 vendidos) o
-**Zion** (Rusty, 8 colores, 52 u). Aplicar de entrada lo aprendido con el Blozon: mirar primero las
-galerías de ML por si están las fotos y la placa de medidas, y bajar las imágenes por
-`GET /pictures/{id}`. Sigue pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
+Está sobre la mesa una pregunta al founder, sin responder: **si quiere que se revise el resto del
+catálogo** por productos cuyas medidas puedan venir de esas mismas fuentes. No se puede saber
+mirando la base —el número no dice de dónde salió— pero sí se pueden listar los que coinciden exacto
+con lo que declara ML, que serían los sospechosos.
+
+Si dice que no, seguir con el próximo modelo del cruce: **Le Groupie** (Vulk, 4 colores, 34 u, 35
+vendidos) o **Zion** (Rusty, 8 colores, 52 u). Aplicar lo aprendido con el Blozon: mirar primero las
+galerías de ML por si están las FOTOS (no las medidas) y bajarlas por `GET /pictures/{id}`, que es
+el único endpoint que da resolución usable. Sigue pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
 `GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
 `closed` solo. Nada más queda abierto del Bruice.
 

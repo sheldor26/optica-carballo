@@ -22,6 +22,36 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-25 — Un `\n` literal llegó a producción por escribir un UPDATE sin E-string
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: la descripción del Rusty Malice estuvo publicada mostrando un **`\n` literal** —barra
+invertida y ene, a la vista del comprador— en vez de un salto de línea. Vino de un
+`UPDATE products SET description = replace(description, ..., '...\n\nMedidas: ...')` donde el texto
+de reemplazo se escribió como literal común. En Postgres, `'\n'` en un literal de cadena estándar
+son **dos caracteres**; para un salto real hay que usar un E-string: `E'\n'`. Al ir a limpiarlo, el
+mismo error se coló en el Blozon con un `regexp_replace`.
+
+**Causa raíz**: se asumió que la sintaxis de escape de JavaScript o de un `E'...'` aplicaba también
+al literal común. Y no se verificó: después del UPDATE se comprobó que el texto de las medidas ya no
+estaba —que era el objetivo— pero no **cómo había quedado el texto alrededor**. La verificación
+miraba lo que se quiso sacar, no lo que quedó.
+
+**Regla preventiva**: en Postgres, cualquier literal con `\n`, `\t` o `\\` va con prefijo `E`.
+Y después de un UPDATE sobre una columna de texto con saltos, **leer el valor de vuelta con los
+saltos hechos visibles** para ver la forma real, no sólo comprobar que la parte que se quería sacar
+desapareció:
+
+```sql
+SELECT replace(description, E'\n', ' ⏎ ') FROM public.products WHERE slug = '...';
+```
+
+Ese `⏎` distingue de un vistazo un salto real de una barra-ene literal, que en un SELECT normal se
+ven casi igual.
+
+---
+
 ## 2026-08-25 — Publiqué medidas sacadas de fuentes que el founder no valida, y las presenté como un logro
 
 **Estado**: ✅ Cerrado
