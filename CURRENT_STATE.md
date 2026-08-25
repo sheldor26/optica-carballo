@@ -826,27 +826,46 @@ foto habría mostrado un cristal que no es el que se vende, así que salió de s
 acetate) y las etiquetas `rosa-transparente` y `carey-oscuro`. Los tres mapas de labels
 actualizados.
 
+### Zion completo — medidas, patillas y el SKU que faltaba
+
+El founder pasó lo que faltaba y el Zion quedó sin nada pendiente.
+
+**Medidas**: 145 / 50 x 50 / 19 / 142 mm y **26,9 g**. Geometría verificada (50×2 + 19 = 119 ≤ 145).
+Placa de medidas generada y subida.
+
+**Patillas de metal, con un dato que no está en ninguna fuente**: terminan en **acetato trabajado a
+mano**, en la zona que apoya detrás de la oreja. Lo aportó el founder. Se puso en la **descripción y
+en el callout principal**, no en la ficha técnica: es un diferenciador de confort real —el acetato
+no se enfría como el metal desnudo— y ninguna otra publicación lo cuenta, así que es de los datos
+que justifican comprarle a él. Enterrarlo en una tabla de atributos habría sido desperdiciarlo.
+
+**El SDEMI es DRT15 con SKU 128746** — el mismo código que el fabricante usa para el UB14: mismo
+aspecto y mismo SKU, distinto lente. Eso **confirma que fue correcto no usar la foto del
+fabricante**: muestra el cristal del UB14, que no es el que sale de la caja. Las suyas salieron de
+la publicación de ML. Con esto se fue el último SKU sintético del Zion.
+
+**Deployado** también lo del turno anterior: la etiqueta `grilamid` en el mapa de materiales (valor
+nuevo del catálogo) y `rosa-transparente` / `carey-oscuro` en el de colores. Verificado en la ficha.
+
+### Estado de la deuda de datos (contrastado contra la base, no contra el archivo)
+
+`1 sin medidas · 17 sin peso · 8 sin material de patillas`, sobre 78 productos activos. La lista de
+`DATOS_PENDIENTES.md` coincide con la base.
+
+- **Le Groupie** es el **único producto del catálogo sin medidas**. También le faltan peso y los 4
+  SKUs. Es lo que más rinde: con eso no queda ningún producto incompleto.
+- **Blozon**: sólo el peso.
+- **Malice y Zion**: completos.
+- Los 17 pesos y los 8 materiales de patilla son mejora, no deuda: ninguna ficha se rompe sin ellos.
+
 ### Próximo paso EXACTO
 
-Del lado de las placas: **elegir cuáles de los ocho diseños quedan**. La auditoría recomienda podar a
-seis de promoción (`editorial`, `full`, `split`, `halo`, `callouts`, `tipografia`) más los tres
-extras, sacando `cartel` y `detalle` por duplicar el ángulo de `tipografia` y de `callouts`
-respectivamente. Es una decisión del founder, no técnica — no se borró nada. Después, correr el set
-sobre los 74 productos.
+Cerrar el **Le Groupie** cuando el founder pase medidas, peso y SKUs. Mientras tanto, seguir con el
+próximo modelo del cruce: **Cinema** (Vulk, 6 colores, 24 u, 46 vendidos) o **Dunsert** (Rusty,
+2 colores, 17 u, 24 vendidos). ⚠️ Verificar primero si el modelo está publicado además como items
+simples sueltos —el caso que `ml:faltantes` no deduplica— y no tomar medidas de ninguna fuente que
+no sea el founder. Sigue pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957.
 
-Del lado del catálogo: está sobre la mesa una pregunta al founder, sin responder: **si quiere que se revise el resto del
-catálogo** por productos cuyas medidas puedan venir de esas mismas fuentes. No se puede saber
-mirando la base —el número no dice de dónde salió— pero sí se pueden listar los que coinciden exacto
-con lo que declara ML, que serían los sospechosos.
-
-Si dice que no, seguir con el próximo modelo del cruce: **Cinema** (Vulk, 6 colores, 24 u, 46
-vendidos) o **Dunsert** (Rusty, 2 colores, 17 u, 24 vendidos). ⚠️ Verificar primero si el modelo
-está publicado además como items simples sueltos, que es el caso que el script no deduplica. Orden de búsqueda de fotos que quedó establecido:
-sitio del fabricante primero, y si no está, las galerías de ML bajadas por `GET /pictures/{id}` —
-único endpoint que da resolución usable. Las medidas NO se toman de ninguna de las dos. Sigue
-pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
-`GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
-`closed` solo. Nada más queda abierto del Bruice.
 
 ## Última actualización (anterior)
 
