@@ -18,39 +18,17 @@ stock sí se pueden tomar de esas fuentes.
 
 ---
 
-## 🔴 Malice, Blozon y Le Groupie — medidas, peso y SKUs
+## 🔴 Le Groupie — medidas y peso · Blozon — peso
 
-**Las fichas están publicadas SIN el bloque de medidas.** Se habían cargado leyéndolas de las placas
-viejas que están dentro de las galerías de ML, y el founder marcó que eso no vale: no confía en esas
-fuentes porque tienen errores. Se sacaron de la base, del seed y de la ficha, y la placa de medidas
-se despublicó. Quedan así hasta que él las pase.
+- [ ] **Medidas del Vulk Le Groupie** — ancho de frente, calibre, alto total, puente y varilla. La
+  ficha está publicada sin el bloque de medidas. El fabricante publica una placa y ML declara los
+  atributos, pero ninguna de las dos fuentes vale.
+- [ ] **Peso del Le Groupie** (gramos).
+- [ ] **Peso del Blozon** (gramos). Es lo único que le falta.
+- [ ] **SKUs de fabricante del Le Groupie.** Hoy están con códigos inventados
+  (`LEGROUPIE-388-CH74`, etc.). Ninguna publicación declara `SELLER_SKU`.
 
-- [ ] **Medidas del Malice** — ancho de frente, calibre, alto de lente, puente y varilla.
-- [ ] **Medidas del Blozon** — las mismas cinco.
-- [ ] **Medidas del Le Groupie** — las mismas cinco. Acá ni se cargaron provisorias: el fabricante
-  publica una placa y ML declara los atributos, pero ninguna de las dos fuentes vale.
-- [ ] **Peso de los tres** (gramos).
-- [ ] **SKUs de fabricante de los tres.** Ninguna publicación declara `SELLER_SKU`, así que están
-  cargados con códigos inventados (`MALICE-MBLK-S10-POL`, `BLOZON-SBLK-S10-POL`, etc.). Funcionan,
-  pero conviene usar los reales.
-
-Cuando lleguen, se cargan en los cuatro lugares donde vive una medida: `attributes.measurements`,
-el texto de la descripción, la placa de medidas (`pnpm placas --solo 4`, subida con nombre nuevo) y
-el `alt_text` de esa imagen en el formato que parsea `scripts/ml-auditar-medidas.ts`.
-
-**Para referencia, NO para cargar** — esto es lo que dicen las otras fuentes, por si te sirve
-comparar cuando midas. Ojo que los dos largos de varilla no coinciden entre sí:
-
-| | Malice | Blozon |
-|---|---|---|
-| Ancho de frente (placa vieja) | 139 | 142 |
-| Calibre (atributos ML) | 59 | 53 |
-| Alto de lente (atributos ML) | 41 | 42 |
-| Puente (atributos ML) | 16 | 19 |
-| Varilla — placa vieja | 145 | 137 |
-| Varilla — atributos ML | 155 | 140 |
-
-## 🟡 Pesos que faltan — 18 productos
+## 🟡 Pesos que faltan — 17 productos
 
 Ninguno bloquea nada: la ficha se ve bien sin el peso. Pero es el dato que más preguntan para un
 anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una sola sentada.
@@ -62,7 +40,6 @@ anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una so
 - [ ] Rusty CCCP
 - [ ] Rusty Eslav
 - [ ] Rusty Esvep
-- [ ] Rusty Malice
 - [ ] Rusty Blozon
 - [ ] Vulk Le Groupie
 - [ ] Rusty Play
@@ -132,4 +109,10 @@ Está cargado el material del frente pero no el de las patillas. En varios model
 - [x] **2026-08-25 — Malice, ancho de frente 139 mm** — salió de tu placa de medidas, que estaba
   dentro de la galería de MLA1430095941.
 - [x] **2026-08-25 — Blozon completo sin pedirte nada**: fotos de las 4 colorways sacadas de tus
-  propias publicaciones de ML, y ancho de frente 142 mm de tu placa en la galería de MLA1755867522.
+  propias publicaciones de ML.
+- [x] **2026-08-25 — Malice: medidas 141 / 54 x 49 / 18 / 145 mm, peso 28,8 g y los 3 SKUs**
+  (128902, 128900, 128901). ⚠️ Confirmaron que las que se habían leído de ML estaban mal: decían
+  calibre 59 cuando es 54, y puente 16 cuando es 18.
+- [x] **2026-08-25 — Blozon: medidas 147 / 53 x 48 / 19 / 140 mm y los 4 SKUs** (128810, 128811,
+  128814, 128815). El calibre, el puente y la varilla coincidían con lo leído de ML; el ancho no —
+  decía 142 y es 147.

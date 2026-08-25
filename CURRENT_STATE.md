@@ -664,11 +664,109 @@ Encuadre: las 8 fotos en 92% con scale 1.00, sin overrides.
 un 404 cacheado por ISR (`revalidate = 300`) de la primera request, hecha apenas terminado el INSERT.
 Se destraba solo al vencer el TTL — no hay que tocar nada ni redeployar.
 
+### Segunda pasada: auditoría multiagente, escala definitiva y un verificador
+
+Una auditoría de 109 agentes sobre los tres archivos del generador devolvió 20 hallazgos
+confirmados. Dos tercios ya estaban resueltos por la pasada anterior; el tercio que quedaba fue lo
+que se aplicó acá. Antes de tocar nada se comprobó cada afirmación:
+
+| Afirmación de la auditoría | Comprobado |
+|---|---|
+| El titular nunca llena la medida | **12 de 12** modelos reales devolvían el techo. Llenado del 28% al 86% |
+| El separador `'  ·  '` colapsa | Sí: `'Aviador  ·  Metal'` y `'Aviador · Metal'` miden **lo mismo** |
+| `editorial` no puede mostrar el sello de stock | Sí: el helper se declaraba 60 líneas más abajo, fuera de scope |
+| `pegarAlProducto` existe y no se usa | Sí: `ml-placas` lo llama, `placa-producto` no |
+| Hay una copia muerta del generador | Sí, `_fix-placa-producto.ts`, 1110 líneas sin importadores. Borrada |
+
+**Lo que cambió:**
+
+- **La escala pasó de 8 cuerpos a 5 más 3 techos**, con razón sostenida de ≈1.32. Los tres pares que
+  quedaban a 1.08-1.2× entre sí (26 / 24 / 20) eran lo que seguía leyéndose como descuido.
+- **Los techos de titular ahora son de arranque, no de llegada** (`TIPO_OPTICO`). `ajustarMedido`
+  crece hasta llenar el 72% de la medida y recién ahí corta. El llenado pasó de 28-86% a 38-99%, y
+  el cuerpo lo fija el texto: 146 px para "53&3 Marky Ramone", 174 para "Blozon".
+- **Una sola regla para el sello de stock**: último elemento de la columna de texto, debajo del
+  precio, nunca dentro de una caja de foto. Los cinco solapamientos que se venían arreglando de a
+  uno eran el mismo bug cinco veces — el sello se dibujaba adentro de la caja que recibe la foto, y
+  las fotos las compone `sharp` DESPUÉS del SVG. Ahora es imposible por construcción. De paso pasó
+  de pastilla rellena (badge de oferta) a pastilla de contorno.
+- **`RESERVA_HEADER`**: ninguna caja de foto puede arrancar arriba de `yTop + 104`. Antes cada
+  diseño inventaba su reserva (96, 100, 110, 130) y algunos se montaban sobre el logo.
+- **`flotante()` devuelve el rect del recorte**, no sólo el overlay. Con eso las flechas de
+  `callouts` apuntan al anteojo y no a la caja que lo contiene (erraban 44-110 px), y `tipografia`
+  puede subir el anteojo hasta CORTAR el nombre también con modelos de una sola palabra —el efecto
+  que define ese diseño y que no pasaba nunca con la mayoría del catálogo.
+- **`colores` muestra todos los colores.** Cortaba en 3 (historia) o 2 (post) mientras el rótulo
+  anunciaba el total: decía "4 colores disponibles" y mostraba dos.
+- **La marca se mudó al rótulo** en `colores`, `medidas` e `incluye`, que la escribían pegada al
+  modelo en el mismo cuerpo y color.
+- **Grano y suelo en los fondos claros.** Los ocho fondos eran campos planos —lo que hace que un PNG
+  generado se vea generado— y los claros no tenían ningún tratamiento mientras los oscuros sí.
+  Medido: las mesetas del degradado pasan de 28 px a 1,6 px, con una amplitud de ruido de 7 sobre
+  navy y 8 sobre hueso (un solo valor sirve para los dos).
+- Se sacó la línea de "estuche, franela y garantía" de `full`: era el único diseño de promoción con
+  una línea de servicio suelta, y ese claim ya está desarrollado entero en la placa `incluye`.
+
+### `pnpm placas:verificar` — la comprobación que faltaba
+
+El defecto que el founder reportó tres veces no se puede seguir buscando a ojo: son 74 productos ×
+12 diseños × 2 formatos. **El chequeo sobre el PNG no sirve**: `split`, `full` y `cartel` pintan
+bloques a sangre a propósito, y sobre el pixel eso es indistinguible de un solapamiento (sobre 99
+placas dio 31 avisos, ninguno real).
+
+Se verifica sobre el SVG, que tiene las coordenadas exactas: el generador lo escribe en disco con
+`PLACAS_SVG=<carpeta>`, y el verificador arma la caja de tinta de cada `<text>` —midiendo el ancho
+real con el mismo motor que usa el generador— y las compara todas contra todas. Afirma tres cosas:
+ningún texto pisa a otro, ninguno se sale del margen, ninguno entra en la franja que tapa la
+interfaz de Instagram.
+
+**Encontró en la primera corrida un desborde de 34 px que yo había mirado y dado por bueno**, y que
+venía de un bug de la primitiva compartida: `cortarMedido()` **nunca medía la última línea**. El
+bucle sólo comprueba el ancho al intentar agregar una palabra, y la palabra que arranca el último
+renglón nunca llega a ese intento. Estaba mal desde siempre y afectaba a los tres archivos.
+
+**Bug de las guías, en producción, arreglado**: la placa `pregunta` sacaba los signos `¿?` para
+calcular qué cuerpo entraba y se los volvía a poner al dibujar. A 92 px cada signo pesa 43 px, así
+que "¿Cuánto astigmatismo es normal?" salía 64 px pasada del margen. No era latente: estaba mal en
+el archivo generado. De paso los tres titulares de las guías pasaron a medición real.
+
+### Malice y Blozon completos — con las medidas del founder
+
+El founder pasó las medidas reales, los SKUs de fabricante y el peso del Malice. Cargados en la
+base, en los seeds, en la descripción y en placas de medidas nuevas (`medidas-v2.jpg`, nombre nuevo
+por el cache de 31 días). Las dos fichas quedaron completas y verificadas en producción.
+
+| | Malice | Blozon |
+|---|---|---|
+| Ancho de frente | 141 | 147 |
+| Calibre | 54 | 53 |
+| Alto total | 49 | 48 |
+| Puente | 18 | 19 |
+| Varilla | 145 | 140 |
+| Peso | 28,8 g | falta |
+
+**Los números confirmaron por qué la regla existe.** Lo que se había leído de ML y de sus placas
+viejas estaba mal en el Malice: **calibre 59 cuando es 54, y puente 16 cuando es 18** — 5 mm y 2 mm
+de error en los dos datos que más importan para saber si un anteojo entra. En el Blozon el error fue
+menor pero real: el ancho decía 142 y es 147. De todo lo que se había inferido, sólo la varilla del
+Malice (145) resultó correcta.
+
+Los SKUs sintéticos se reemplazaron por los reales. Se verificó antes que ninguna FK apunte a `sku`
+—todas van contra `id`— así que renombrarlos es seguro.
+
+**"Altura total" mapea a `lens_height_mm`**, que es como lo rotula
+`components/product/product-measurements.tsx`. Es la convención del repo y coincide con cómo mide
+el founder.
+
+Sigue faltando el peso del Blozon y todo lo del Le Groupie.
+
 ### Próximo paso EXACTO
 
-Del lado de las placas: **elegir cuáles de los ocho diseños quedan**. La auditoría marcó que tres
-son variaciones del mismo esqueleto y que conviene podar a cinco; es una decisión del founder, no
-técnica. Después, correr el set sobre los 74 productos.
+Del lado de las placas: **elegir cuáles de los ocho diseños quedan**. La auditoría recomienda podar a
+seis de promoción (`editorial`, `full`, `split`, `halo`, `callouts`, `tipografia`) más los tres
+extras, sacando `cartel` y `detalle` por duplicar el ángulo de `tipografia` y de `callouts`
+respectivamente. Es una decisión del founder, no técnica — no se borró nada. Después, correr el set
+sobre los 74 productos.
 
 Del lado del catálogo: está sobre la mesa una pregunta al founder, sin responder: **si quiere que se revise el resto del
 catálogo** por productos cuyas medidas puedan venir de esas mismas fuentes. No se puede saber

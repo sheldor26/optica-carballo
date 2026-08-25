@@ -6,16 +6,17 @@
 -- Malice publicadas en Mercado Libre y sin cargar en el sitio, con 64 ventas acumuladas — la
 -- demanda mejor validada que tenía sin catalogar.
 --
--- 📏 MEDIDAS: 139 / 59 x 41 / 16 / 145 mm. Se cargaron sin molestar al founder, porque el ancho del
+-- 📏 MEDIDAS: 141 / 54 x 49 / 18 / 145 mm y 28,8 g — **pasadas por el founder**, que es la única
+-- fuente válida (regla dura 7 de CLAUDE.md). Su "altura total" mapea a `lens_height_mm`, que en
+-- `components/product/product-measurements.tsx` se rotula exactamente así.
+-- ⚠️ ANTES SE HABÍAN CARGADO MEDIDAS LEÍDAS DE ML Y DE SU PLACA VIEJA, Y ESTABAN MAL: decían
+-- calibre 59 cuando es 54, y puente 16 cuando es 18. Es la mejor prueba de por qué la regla existe.
+-- Registro de lo que se había puesto mal, por si sirve de referencia: Se cargaron sin molestar al founder, porque el ancho del
 -- frente apareció **dentro de su propia galería de ML**: la foto #3 de MLA1430095941 es su placa de
 -- medidas y dice 139 de ancho, 49 de alto y 145 de varilla. Vale la pena mirar las galerías
 -- completas antes de pedirle medidas — el dato suele estar ahí.
--- El 49 de la placa NO contradice el `LENS_HEIGHT = 4.1 cm` de los atributos: como en el Bruice, la
--- placa mide el ARMAZÓN y el atributo el CRISTAL.
--- ⚠️ La varilla SÍ está en conflicto: la placa dice **145** y los atributos de ML dicen **15.5 cm**.
--- Se cargó 145 porque es lo que dice su placa, y porque en el Bruice la placa le ganó a su
--- recuerdo; además 155 mm sería una patilla inusualmente larga. Desempate anotado en
--- DATOS_PENDIENTES.md. Falta también el peso.
+-- de su placa vieja salían 139 de ancho y 145 de varilla; de los atributos de ML, calibre 59,
+-- puente 16, alto 41 y varilla 155. De todo eso sólo la varilla (145) resultó correcta.
 --
 -- ⚠️ 6 PUBLICACIONES PERO 3 COLORES. Cada colorway está publicada dos veces con títulos distintos.
 -- Se confirmó con el `user_product_id`, que se repite de a pares — mismo User Product = mismo pozo
@@ -24,11 +25,11 @@
 -- por variante). Ver MISTAKES 2026-08-25 sobre el conteo inflado.
 --
 -- VARIANTES:
---   MALICE-MBLK-S10-POL     MLA1529925840  $96.205  stock 18  negro mate  / gris oscuro POLARIZADA
---   MALICE-SBLK-S10-POL     MLA1430095941  $96.205  stock 25  negro brillo/ gris oscuro POLARIZADA
---   MALICE-MBLK-REVO-BLUE   MLA1507015278  $92.810  stock 11  negro mate  / azul espejada, NO pol
---   El SKU es sintético: ninguna de las tres publicaciones declara `SELLER_SKU` y el founder no
---   pasó códigos de fabricante. Si aparecen los reales, renombrar.
+--   128902  MBLK/S10 POL      MLA1529925840  $96.205  stock 18  negro mate  / gris oscuro POLARIZADA
+--   128900  SBLK/S10 POL      MLA1430095941  $96.205  stock 25  negro brillo/ gris oscuro POLARIZADA
+--   128901  MBLK/R.BLUE       MLA1507015278  $92.810  stock 11  negro mate  / azul espejada, NO pol
+--   SKUs reales del fabricante, pasados por el founder el 2026-08-25. Ninguna de las publicaciones
+--   de ML declara `SELLER_SKU`, así que no había forma de sacarlos de ahí.
 --   Precio distinto entre variantes: las polarizadas valen más, como en el Bruice.
 --
 -- HONESTIDAD: 2 de 3 polarizadas → NO se afirma "polarizados" para el modelo entero en title/H1
@@ -68,7 +69,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-malice', 'Rusty Malice',
   'Anteojos de sol Rusty Malice: cuadrados masculinos, armazón G-Flex con bisagras metálicas flex. Lente de policarbonato con 100% protección UV (UV400, categoría 3). Polarizados en 2 de los 3 colores.',
-  E'Los **Rusty Malice** son **anteojos de sol cuadrados, de línea masculina**. Frente y patillas de **G-Flex**, con **bisagras metálicas con sistema flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los tres colores.\n\nDisponible en 3 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente azul espejada** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 3 colores.** Los tres filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Malice** son **anteojos de sol cuadrados, de línea masculina**. Frente y patillas de **G-Flex**, con **bisagras metálicas con sistema flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los tres colores.\n\nMedidas: frente 141 mm · lente 54 mm de ancho × 49 mm de alto · puente 18 mm · varilla 145 mm. Pesan 28,8 g.\n\nDisponible en 3 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente azul espejada** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 3 colores.** Los tres filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "temple_material": "g-flex",
@@ -78,6 +79,8 @@ VALUES (
     "lens_treatment": ["uv400"],
     "lens_category": 3,
     "gender": "male",
+    "weight_grams": 28.8,
+    "measurements": {"frame_width_mm": 141, "lens_width_mm": 54, "lens_height_mm": 49, "bridge_mm": 18, "temple_length_mm": 145},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-25",
@@ -99,13 +102,13 @@ ON CONFLICT (slug) DO UPDATE SET
 -- Las tres son items SIMPLES de ML (0 variaciones) → variation_code NULL en las tres.
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), 'MALICE-MBLK-S10-POL',
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), '128902',
    '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10 POL","polarized":true}'::jsonb,
    9620500, 18, true, 1, 'MLA1529925840', NULL),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), 'MALICE-SBLK-S10-POL',
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), '128900',
    '{"frame_color":"negro-brillo","lens_color":"gris-oscuro","model_code":"SBLK/S10 POL","polarized":true}'::jsonb,
    9620500, 25, true, 2, 'MLA1430095941', NULL),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), 'MALICE-MBLK-REVO-BLUE',
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), '128901',
    '{"frame_color":"negro-mate","lens_color":"azul-espejado","model_code":"MBLK/REVO BLUE","polarized":false}'::jsonb,
    9281000, 11, true, 3, 'MLA1507015278', NULL)
 ON CONFLICT (sku) DO UPDATE SET
@@ -116,18 +119,20 @@ ON CONFLICT (sku) DO UPDATE SET
 -- La placa de medidas va con variant_id NULL y sort 99, como en todos los productos.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-S10-POL'),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='128902'),
    'rusty-malice/perfil-mblk-s10.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista lateral, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 0, true),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-S10-POL'),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='128902'),
    'rusty-malice/frente-mblk-s10.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 1, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-SBLK-S10-POL'),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='128900'),
    'rusty-malice/perfil-sblk-s10.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista lateral, armazón negro brillo lente gris oscuro polarizada', 2000, 1333, 2, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-SBLK-S10-POL'),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='128900'),
    'rusty-malice/frente-sblk-s10.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro brillo lente gris oscuro polarizada', 2000, 1333, 3, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-REVO-BLUE'),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='128901'),
    'rusty-malice/perfil-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista lateral, armazón negro mate lente azul espejada', 2000, 1333, 4, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-REVO-BLUE'),
-   'rusty-malice/frente-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente azul espejada', 2000, 1333, 5, false)
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='128901'),
+   'rusty-malice/frente-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente azul espejada', 2000, 1333, 5, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), NULL,
+   'rusty-malice/medidas-v2.jpg', 'Esquema técnico de medidas Rusty Malice: frente 141mm, lente 54x49mm, puente 18mm, varilla 145mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
