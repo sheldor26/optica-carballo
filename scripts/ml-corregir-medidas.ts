@@ -25,11 +25,10 @@
  *   pnpm ml:corregir-medidas --item MLA123   (una sola publicación)
  */
 
-import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { createClient } from '@supabase/supabase-js';
+import { obtenerIntegracionML } from './lib/ml-auth';
 
 type Problema = {
   itemId: string;
@@ -43,18 +42,6 @@ type Problema = {
   correctoMm: number;
   diagnostico: string;
 };
-
-function deriveKey(k: string): Buffer {
-  if (/^[0-9a-f]{64}$/i.test(k)) return Buffer.from(k, 'hex');
-  return crypto.createHash('sha256').update(k).digest();
-}
-
-function decrypt(ciphertext: string, key: string): string {
-  const [ivHex, tagHex, encHex] = ciphertext.split(':') as [string, string, string];
-  const d = crypto.createDecipheriv('aes-256-gcm', deriveKey(key), Buffer.from(ivHex, 'hex'));
-  d.setAuthTag(Buffer.from(tagHex, 'hex'));
-  return Buffer.concat([d.update(Buffer.from(encHex, 'hex')), d.final()]).toString('utf8');
-}
 
 function flag(nombre: string): string | undefined {
   const i = process.argv.indexOf(`--${nombre}`);
@@ -104,15 +91,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabase = createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-  const { data: integ } = await supabase
-    .from('marketplace_integrations')
-    .select('access_token')
-    .eq('status', 'active')
-    .order('updated_at', { ascending: false })
-    .limit(1);
-  const token = decrypt((integ as any)[0].access_token, process.env.APP_ENCRYPTION_KEY!);
+  const { token } = await obtenerIntegracionML();
 
   await fs.mkdir(path.join(process.cwd(), 'marketing/backup-ml'), { recursive: true });
   console.log('\n' + '='.repeat(70));

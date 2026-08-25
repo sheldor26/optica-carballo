@@ -27,11 +27,12 @@
  * APP_ENCRYPTION_KEY
  */
 
-import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
 import { createClient } from '@supabase/supabase-js';
+
+import { obtenerIntegracionML } from './lib/ml-auth';
 
 /** Rangos físicos plausibles de un armazón, en milímetros. */
 const RANGOS: Record<string, { min: number; max: number; nombre: string }> = {
@@ -58,18 +59,6 @@ type MedidasReales = {
   puente: number;
   varilla: number;
 };
-
-function deriveKey(k: string): Buffer {
-  if (/^[0-9a-f]{64}$/i.test(k)) return Buffer.from(k, 'hex');
-  return crypto.createHash('sha256').update(k).digest();
-}
-
-function decrypt(ciphertext: string, key: string): string {
-  const [ivHex, tagHex, encHex] = ciphertext.split(':') as [string, string, string];
-  const d = crypto.createDecipheriv('aes-256-gcm', deriveKey(key), Buffer.from(ivHex, 'hex'));
-  d.setAuthTag(Buffer.from(tagHex, 'hex'));
-  return Buffer.concat([d.update(Buffer.from(encHex, 'hex')), d.final()]).toString('utf8');
-}
 
 /** Saca las medidas del alt_text de la placa. Devuelve null si no matchea. */
 function parsearAlt(alt: string): MedidasReales | null {
@@ -142,13 +131,7 @@ async function main(): Promise<void> {
   const ids = [...productoPorItem.keys()];
   console.log(`Revisando ${ids.length} publicaciones de Mercado Libre...\n`);
 
-  const { data: integ } = await supabase
-    .from('marketplace_integrations')
-    .select('access_token')
-    .eq('status', 'active')
-    .order('updated_at', { ascending: false })
-    .limit(1);
-  const token = decrypt((integ as any)[0].access_token, encKey);
+  const { token } = await obtenerIntegracionML();
 
   // --- Multiget de a 20 ----------------------------------------------------
   const problemas: Problema[] = [];

@@ -37,11 +37,10 @@
  *   NEXT_PUBLIC_SUPABASE_URL · SUPABASE_SERVICE_ROLE_KEY · APP_ENCRYPTION_KEY
  */
 
-import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { createClient } from '@supabase/supabase-js';
+import { obtenerIntegracionML } from './lib/ml-auth';
 
 const DIAGNOSTIC_URL = 'https://api.mercadolibre.com/moderations/pictures/diagnostic';
 /**
@@ -51,20 +50,6 @@ const DIAGNOSTIC_URL = 'https://api.mercadolibre.com/moderations/pictures/diagno
  */
 const CATEGORIA_DEFAULT = 'MLA417128';
 
-function deriveKey(k: string): Buffer {
-  if (/^[0-9a-f]{64}$/i.test(k)) return Buffer.from(k, 'hex');
-  return crypto.createHash('sha256').update(k).digest();
-}
-
-function decrypt(ciphertext: string, key: string): string {
-  const parts = ciphertext.split(':');
-  if (parts.length !== 3) throw new Error('Ciphertext inválido (esperado iv:authTag:encrypted).');
-  const [ivHex, tagHex, encHex] = parts as [string, string, string];
-  const d = crypto.createDecipheriv('aes-256-gcm', deriveKey(key), Buffer.from(ivHex, 'hex'));
-  d.setAuthTag(Buffer.from(tagHex, 'hex'));
-  return Buffer.concat([d.update(Buffer.from(encHex, 'hex')), d.final()]).toString('utf8');
-}
-
 function flag(nombre: string): string | undefined {
   const i = process.argv.indexOf(`--${nombre}`);
   if (i === -1) return undefined;
@@ -73,30 +58,9 @@ function flag(nombre: string): string | undefined {
 }
 
 async function obtenerToken(): Promise<string> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const encKey = process.env.APP_ENCRYPTION_KEY;
-  if (!url || !serviceKey || !encKey) {
-    throw new Error(
-      'Faltan env (NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / APP_ENCRYPTION_KEY). Corré con --env-file=.env.local',
-    );
-  }
-
-  const supabase = createClient(url, serviceKey);
-  const { data, error } = await supabase
-    .from('marketplace_integrations')
-    .select('access_token, external_user_id, token_expires_at')
-    .eq('status', 'active')
-    .order('updated_at', { ascending: false })
-    .limit(1);
-
-  if (error || !data || data.length === 0) {
-    throw new Error(`No hay integración ML activa. ${error?.message ?? ''}`);
-  }
-
-  const row = data[0] as { access_token: string; external_user_id: string; token_expires_at: string };
-  console.log(`Integración ML: user ${row.external_user_id} · token expira ${row.token_expires_at}\n`);
-  return decrypt(row.access_token, encKey);
+  const { token, externalUserId, expiraEn } = await obtenerIntegracionML();
+  console.log(`Integración ML: user ${externalUserId} · token expira ${expiraEn}\n`);
+  return token;
 }
 
 type Diagnostico = {
