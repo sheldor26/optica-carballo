@@ -17,8 +17,9 @@
 -- `variation_code` real — es lo que necesita `syncStockFromMLItem`. Los 4 simples quedan sin
 -- vincular (no se puede: un item por variante).
 --
--- ⚠️ SIN MEDIDAS. Regla dura 7 de CLAUDE.md: sólo se cargan si las pasa el founder. Anotado en
--- DATOS_PENDIENTES.md.
+-- 📏 MEDIDAS: 145 / 50 x 50 / 19 / 142 mm y 26,9 g — pasadas por el founder, única fuente válida
+-- (regla dura 7 de CLAUDE.md). Su "altura total" mapea a `lens_height_mm`, como en los demás.
+-- Geometría: 50x2 + 19 = 119 ≤ 145. ✓
 --
 -- 📸 FOTOS del fabricante (rustyoptical.com/sunglasses/ss24/zion), que tiene 6 colorways — 2 más de
 -- las que el founder vende. Tres de las cuatro salieron de ahí:
@@ -62,7 +63,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-zion', 'Rusty Zion',
   'Anteojos de sol Rusty Zion: redondos unisex con frente de grilamid y patillas de metal. Lente de policarbonato polarizada, con 100% protección UV (UV400, categoría 3). Los cuatro colores polarizan.',
-  E'Los **Rusty Zion** son **anteojos de sol redondos, unisex**, con frente de **grilamid** —un polímero liviano y resistente— y **patillas de metal** finas, que es lo que les da el aire clásico.\n\n**Los cuatro colores son polarizados.** La lente es de policarbonato, con **100% protección UV (UV400) y categoría 3**, y el filtro polarizado corta los reflejos del asfalto y del agua.\n\nDisponible en 4 colores:\n\n• **Negro brillo con patillas gun, lente gris oscuro.**\n• **Carey con patillas doradas, lente marrón degradé.**\n• **Rosa pálido translúcido con patillas doradas, lente verde degradé.**\n• **Carey oscuro con patillas gun, lente marrón.**\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Zion** son **anteojos de sol redondos, unisex**, con frente de **grilamid** —un polímero liviano y resistente— y **patillas de metal** finas, que es lo que les da el aire clásico.\n\n**Los cuatro colores son polarizados.** La lente es de policarbonato, con **100% protección UV (UV400) y categoría 3**, y el filtro polarizado corta los reflejos del asfalto y del agua.\n\nMedidas: frente 145 mm · lente 50 mm de ancho × 50 mm de alto · puente 19 mm · varilla 142 mm. Pesan 26,9 g.\n\nDisponible en 4 colores:\n\n• **Negro brillo con patillas gun, lente gris oscuro.**\n• **Carey con patillas doradas, lente marrón degradé.**\n• **Rosa pálido translúcido con patillas doradas, lente verde degradé.**\n• **Carey oscuro con patillas gun, lente marrón.**\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "grilamid",
     "frame_shape": "redondo",
@@ -70,6 +71,8 @@ VALUES (
     "lens_treatment": ["uv400", "polarized"],
     "lens_category": 3,
     "gender": "unisex",
+    "weight_grams": 26.9,
+    "measurements": {"frame_width_mm": 145, "lens_width_mm": 50, "lens_height_mm": 50, "bridge_mm": 19, "temple_length_mm": 142},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-25",
@@ -109,7 +112,8 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- Primaria = perfil de la 0292, que es la de más stock. Sin fila de medidas (ver cabecera).
+-- Primaria = perfil de la 0292, que es la de más stock. La placa de medidas va con variant_id
+-- NULL y sort 99, como en todos los productos.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='128749'),
@@ -127,7 +131,9 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='ZION-SDEMI-DGUN-DRT15'),
    'rusty-zion/perfil-sdemi.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista lateral, armazón carey oscuro patillas gun lente marrón polarizada', 2000, 1333, 6, false),
   ((SELECT id FROM public.products WHERE slug='rusty-zion'), (SELECT id FROM public.product_variants WHERE sku='ZION-SDEMI-DGUN-DRT15'),
-   'rusty-zion/frente-sdemi.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista frontal, armazón carey oscuro patillas gun lente marrón polarizada', 2000, 1333, 7, false)
+   'rusty-zion/frente-sdemi.jpg', 'Anteojos de sol Rusty Zion redondos unisex vista frontal, armazón carey oscuro patillas gun lente marrón polarizada', 2000, 1333, 7, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-zion'), NULL,
+   'rusty-zion/medidas.jpg', 'Esquema técnico de medidas Rusty Zion: frente 145mm, lente 50x50mm, puente 19mm, varilla 142mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
