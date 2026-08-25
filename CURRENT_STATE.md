@@ -470,6 +470,41 @@ Tres cosas que el análisis desmintió y conviene no volver a levantar: `/polari
 
 Informe completo en el output del workflow; lo accionable quedó resumido acá.
 
+### Las 8 publicaciones con medidas imposibles — CORREGIDAS
+
+Se corrigieron los 13 atributos de las 8 publicaciones activas. Verificado con una re-auditoría:
+antes había 9 atributos con el patrón de milímetros convertidos como pulgadas, **ahora hay 0**.
+Total: de 88 atributos mal a 74, y los 49 que quedan son las discrepancias chicas.
+
+| Publicación | Producto | Corregido |
+|---|---|---|
+| MLA1391436017 | vulk-arvin | alto 43 → 4,3 cm · varilla 145 → 14,5 cm |
+| MLA1441317097 | rusty-spell | puente 43,18 → 1,7 · calibre 142,24 → 5,6 · varilla 368,3 → 14,5 cm |
+| MLA1506967192 | rusty-beason | alto 132,08 → 5 cm |
+| MLA1543122552 | vulk-raven | puente 53,34 → 1,5 · calibre 139,7 → 5,5 cm |
+| MLA1440100603 | rusty-esvep | puente 25,4 → 1 · calibre 152,4 → 6 cm |
+| MLA1382580349 | rusty-and-now | alto 99,06 → 3,9 cm |
+| MLA1440111809 | rusty-peating | varilla 337,82 → 13,3 cm |
+| MLA1904009566 | vulk-bennie-51 | varilla 355,6 → 14 cm |
+
+Las 8 siguen `active` y ninguna perdió atributos.
+
+**Cómo se hizo con seguridad**: antes de tocar una publicación activa se probó el comportamiento del
+`PUT /items/{id}` con `attributes` sobre **MLA1499129431**, que está pausada y sin stock, o sea de
+riesgo cero. Ahí se confirmó que el PUT hace **merge** y no reemplazo: los 34 atributos sobrevivieron
+y sólo cambió el corregido. La documentación de ML no era concluyente en ese punto y no correspondía
+averiguarlo sobre una publicación con ventas.
+
+`scripts/ml-corregir-medidas.ts` (`pnpm ml:corregir-medidas`): dry-run por defecto, backup de los
+atributos de cada publicación antes de tocarla, un PUT por publicación con sólo los atributos a
+corregir, verificación posterior de cada una, y **freno al primer error** en vez de encadenar. Por
+defecto sólo toca las físicamente imposibles; las discrepancias chicas necesitan `--todas` explícito.
+
+**Quedan 49 publicaciones con discrepancias chicas** (mediana 5 mm), que necesitan criterio del
+founder: en varias el valor publicado coincide con el del fabricante, o sea que se cargaron de ahí
+en vez de su medición. Se corrigen con `pnpm ml:corregir-medidas --todas --aplicar`, o de a una con
+`--item MLA...`, pero conviene revisarlas con él antes.
+
 ### Auditor de medidas de Mercado Libre — construido y corrido
 
 `scripts/ml-auditar-medidas.ts` (`pnpm ml:medidas`). **Solo lectura, sin una sola escritura**: la
@@ -511,8 +546,9 @@ confirme, porque son 50 publicaciones y el criterio es suyo.
 
 ### Próximo paso EXACTO (estado al cierre)### Próximo paso EXACTO (estado al cierre)
 
-**Lo primero: las 8 publicaciones ACTIVAS con medidas imposibles** (la lista está arriba, con el
-valor correcto de cada una). Un lente de 142 cm publicado en
+**Lo primero (ya hecho): las 8 publicaciones con medidas imposibles quedaron corregidas.** Lo que
+sigue son las 49 con discrepancias chicas, que necesitan que el founder decida si vale corregirlas
+en bloque o revisarlas de a una. Un lente de 142 cm publicado en
 una ficha activa es lo más caro que hay abierto, y es más urgente que cualquier tema de fotos porque
 ML mueve 88 pedidos por mes contra 2,4 del sitio. Ya no hay nada que preguntar sobre cuál es la
 medida buena: la fuente es la base, con las medidas que midió el founder. El plan sería un script

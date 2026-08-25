@@ -1,15 +1,27 @@
 {
   "problemas": [
     {
-      "itemId": "MLA1388056603",
-      "titulo": "Anteojos De Sol Polarizados Rusty Xold Sblk/s10 Mujer E",
+      "itemId": "MLA2086807302",
+      "titulo": "Anteojos Lentes De Sol Polarizados Rusty Dearly Cuadrad",
       "status": "active",
-      "slug": "rusty-xold",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "2.2 cm",
-      "publicadoMm": 22,
-      "correctoMm": 20,
+      "slug": "rusty-dearly",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.9 cm",
+      "publicadoMm": 49,
+      "correctoMm": 51,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1468016411",
+      "titulo": "Anteojos De Sol Polarizados Rusty Etiquet L.pink Femeni",
+      "status": "active",
+      "slug": "rusty-etiquet",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.9 cm",
+      "publicadoMm": 49,
+      "correctoMm": 57,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -37,30 +49,6 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA2086807302",
-      "titulo": "Anteojos Lentes De Sol Polarizados Rusty Dearly Cuadrad",
-      "status": "active",
-      "slug": "rusty-dearly",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.9 cm",
-      "publicadoMm": 49,
-      "correctoMm": 51,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1468016411",
-      "titulo": "Anteojos De Sol Polarizados Rusty Etiquet L.pink Femeni",
-      "status": "active",
-      "slug": "rusty-etiquet",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.9 cm",
-      "publicadoMm": 49,
-      "correctoMm": 57,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
       "itemId": "MLA1470675939",
       "titulo": "Anteojos De Sol Rusty Etiquet Mujer Redondos Lentes Deg",
       "status": "active",
@@ -70,6 +58,90 @@
       "publicado": "5 cm",
       "publicadoMm": 50,
       "correctoMm": 57,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1388056603",
+      "titulo": "Anteojos De Sol Polarizados Rusty Xold Sblk/s10 Mujer E",
+      "status": "active",
+      "slug": "rusty-xold",
+      "atributo": "BRIDGE_LENGTH",
+      "nombre": "puente",
+      "publicado": "2.2 cm",
+      "publicadoMm": 22,
+      "correctoMm": 20,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1397923163",
+      "titulo": "Anteojos De Sol Rusty Spell Polarizado Negro Brillo Cua",
+      "status": "active",
+      "slug": "rusty-spell",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "5 cm",
+      "publicadoMm": 50,
+      "correctoMm": 45,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1391397105",
+      "titulo": "Anteojos Lentes De Sol Polarizados Vulk Arvin Gafas Liv",
+      "status": "active",
+      "slug": "vulk-arvin",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.9 cm",
+      "publicadoMm": 49,
+      "correctoMm": 43,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1401348333",
+      "titulo": "Anteojos De Sol Polarizados Rusty Spell Mblk/s10 Unisex",
+      "status": "active",
+      "slug": "rusty-spell",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.8 cm",
+      "publicadoMm": 48,
+      "correctoMm": 45,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1695988466",
+      "titulo": "Anteojo De Sol Rusty Etiquet Polarizado Marrón Redondo ",
+      "status": "active",
+      "slug": "rusty-etiquet",
+      "atributo": "BRIDGE_LENGTH",
+      "nombre": "puente",
+      "publicado": "2 cm",
+      "publicadoMm": 20,
+      "correctoMm": 23,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1695988466",
+      "titulo": "Anteojo De Sol Rusty Etiquet Polarizado Marrón Redondo ",
+      "status": "active",
+      "slug": "rusty-etiquet",
+      "atributo": "TEMPLE_LENGTH",
+      "nombre": "varilla",
+      "publicado": "14.2 cm",
+      "publicadoMm": 142,
+      "correctoMm": 135,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1398511741",
+      "titulo": "Anteojo De Sol Rusty Xold Mblk/pink Polarizado Espejado",
+      "status": "paused",
+      "slug": "rusty-xold",
+      "atributo": "BRIDGE_LENGTH",
+      "nombre": "puente",
+      "publicado": "2.2 cm",
+      "publicadoMm": 22,
+      "correctoMm": 20,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -89,36 +161,12 @@
       "titulo": "Anteojo Vulk Arvin Mblk S10 Polarizado Negro Mate Cuadr",
       "status": "active",
       "slug": "vulk-arvin",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "43 cm",
-      "publicadoMm": 430,
-      "correctoMm": 43,
-      "diagnostico": "fuera del rango físico"
-    },
-    {
-      "itemId": "MLA1391436017",
-      "titulo": "Anteojo Vulk Arvin Mblk S10 Polarizado Negro Mate Cuadr",
-      "status": "active",
-      "slug": "vulk-arvin",
       "atributo": "LENS_WIDTH",
       "nombre": "calibre",
       "publicado": "4.3 cm",
       "publicadoMm": 43,
       "correctoMm": 54,
       "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1391436017",
-      "titulo": "Anteojo Vulk Arvin Mblk S10 Polarizado Negro Mate Cuadr",
-      "status": "active",
-      "slug": "vulk-arvin",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "145 cm",
-      "publicadoMm": 1450,
-      "correctoMm": 145,
-      "diagnostico": "fuera del rango físico"
     },
     {
       "itemId": "MLA2498720468",
@@ -130,54 +178,6 @@
       "publicado": "2.2 cm",
       "publicadoMm": 22,
       "correctoMm": 20,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1441317097",
-      "titulo": "Lentes Anteojos De Sol Rusty Spell Gafas Espejadas Azul",
-      "status": "active",
-      "slug": "rusty-spell",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "43.18 cm",
-      "publicadoMm": 431.8,
-      "correctoMm": 17,
-      "diagnostico": "mm convertidos como pulgadas (17 × 2,54)"
-    },
-    {
-      "itemId": "MLA1441317097",
-      "titulo": "Lentes Anteojos De Sol Rusty Spell Gafas Espejadas Azul",
-      "status": "active",
-      "slug": "rusty-spell",
-      "atributo": "LENS_WIDTH",
-      "nombre": "calibre",
-      "publicado": "142.24 cm",
-      "publicadoMm": 1422.4,
-      "correctoMm": 56,
-      "diagnostico": "mm convertidos como pulgadas (56 × 2,54)"
-    },
-    {
-      "itemId": "MLA1441317097",
-      "titulo": "Lentes Anteojos De Sol Rusty Spell Gafas Espejadas Azul",
-      "status": "active",
-      "slug": "rusty-spell",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "368.3 cm",
-      "publicadoMm": 3683,
-      "correctoMm": 145,
-      "diagnostico": "mm convertidos como pulgadas (145 × 2,54)"
-    },
-    {
-      "itemId": "MLA1401348333",
-      "titulo": "Anteojos De Sol Polarizados Rusty Spell Mblk/s10 Unisex",
-      "status": "active",
-      "slug": "rusty-spell",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.8 cm",
-      "publicadoMm": 48,
-      "correctoMm": 45,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -205,81 +205,9 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1391397105",
-      "titulo": "Anteojos Lentes De Sol Polarizados Vulk Arvin Gafas Liv",
+      "itemId": "MLA1387942969",
+      "titulo": "Anteojo De Sol Rusty Dapper Sblk/s10 Polarizado Negro B",
       "status": "active",
-      "slug": "vulk-arvin",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.9 cm",
-      "publicadoMm": 49,
-      "correctoMm": 43,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1398511741",
-      "titulo": "Anteojo De Sol Rusty Xold Mblk/pink Polarizado Espejado",
-      "status": "paused",
-      "slug": "rusty-xold",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "2.2 cm",
-      "publicadoMm": 22,
-      "correctoMm": 20,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1695988466",
-      "titulo": "Anteojo De Sol Rusty Etiquet Polarizado Marrón Redondo ",
-      "status": "active",
-      "slug": "rusty-etiquet",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "2 cm",
-      "publicadoMm": 20,
-      "correctoMm": 23,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1695988466",
-      "titulo": "Anteojo De Sol Rusty Etiquet Polarizado Marrón Redondo ",
-      "status": "active",
-      "slug": "rusty-etiquet",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "14.2 cm",
-      "publicadoMm": 142,
-      "correctoMm": 135,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1397923163",
-      "titulo": "Anteojos De Sol Rusty Spell Polarizado Negro Brillo Cua",
-      "status": "active",
-      "slug": "rusty-spell",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "5 cm",
-      "publicadoMm": 50,
-      "correctoMm": 45,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA2007542724",
-      "titulo": "Anteojos De Sol Polarizados Rusty Vorez Sblk Cuadrados ",
-      "status": "active",
-      "slug": "rusty-vorez",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "5 cm",
-      "publicadoMm": 50,
-      "correctoMm": 52,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1866325356",
-      "titulo": "Lentes Anteojo De Sol Rusty Dapper Grey/uvs17 Moderno U",
-      "status": "paused",
       "slug": "rusty-dapper",
       "atributo": "BRIDGE_LENGTH",
       "nombre": "puente",
@@ -289,9 +217,9 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1866325356",
-      "titulo": "Lentes Anteojo De Sol Rusty Dapper Grey/uvs17 Moderno U",
-      "status": "paused",
+      "itemId": "MLA1387942969",
+      "titulo": "Anteojo De Sol Rusty Dapper Sblk/s10 Polarizado Negro B",
+      "status": "active",
       "slug": "rusty-dapper",
       "atributo": "TEMPLE_LENGTH",
       "nombre": "varilla",
@@ -325,6 +253,18 @@
       "diagnostico": "fuera del rango físico"
     },
     {
+      "itemId": "MLA2007542724",
+      "titulo": "Anteojos De Sol Polarizados Rusty Vorez Sblk Cuadrados ",
+      "status": "active",
+      "slug": "rusty-vorez",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "5 cm",
+      "publicadoMm": 50,
+      "correctoMm": 52,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
       "itemId": "MLA1387893041",
       "titulo": "Anteojo De Sol Rusty Dapper Sbh/6208 Marrón Protección ",
       "status": "active",
@@ -361,9 +301,9 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1387942969",
-      "titulo": "Anteojo De Sol Rusty Dapper Sblk/s10 Polarizado Negro B",
-      "status": "active",
+      "itemId": "MLA1564448740",
+      "titulo": "Anteojo De Sol Rusty Dapper Orange/118 Redondo Antirefl",
+      "status": "paused",
       "slug": "rusty-dapper",
       "atributo": "BRIDGE_LENGTH",
       "nombre": "puente",
@@ -373,9 +313,21 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1387942969",
-      "titulo": "Anteojo De Sol Rusty Dapper Sblk/s10 Polarizado Negro B",
-      "status": "active",
+      "itemId": "MLA1564448740",
+      "titulo": "Anteojo De Sol Rusty Dapper Orange/118 Redondo Antirefl",
+      "status": "paused",
+      "slug": "rusty-dapper",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.6 cm",
+      "publicadoMm": 46,
+      "correctoMm": 49,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1564448740",
+      "titulo": "Anteojo De Sol Rusty Dapper Orange/118 Redondo Antirefl",
+      "status": "paused",
       "slug": "rusty-dapper",
       "atributo": "TEMPLE_LENGTH",
       "nombre": "varilla",
@@ -383,18 +335,6 @@
       "publicadoMm": 125,
       "correctoMm": 130,
       "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1506967192",
-      "titulo": "Rusty Beason Sblk/g15 Negro Brillo Antireflex Mujer 100",
-      "status": "active",
-      "slug": "rusty-beason",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "132.08 cm",
-      "publicadoMm": 1320.8000000000002,
-      "correctoMm": 50,
-      "diagnostico": "fuera del rango físico"
     },
     {
       "itemId": "MLA1441238733",
@@ -409,8 +349,8 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1564448740",
-      "titulo": "Anteojo De Sol Rusty Dapper Orange/118 Redondo Antirefl",
+      "itemId": "MLA1866325356",
+      "titulo": "Lentes Anteojo De Sol Rusty Dapper Grey/uvs17 Moderno U",
       "status": "paused",
       "slug": "rusty-dapper",
       "atributo": "BRIDGE_LENGTH",
@@ -421,20 +361,8 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1564448740",
-      "titulo": "Anteojo De Sol Rusty Dapper Orange/118 Redondo Antirefl",
-      "status": "paused",
-      "slug": "rusty-dapper",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.6 cm",
-      "publicadoMm": 46,
-      "correctoMm": 49,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1564448740",
-      "titulo": "Anteojo De Sol Rusty Dapper Orange/118 Redondo Antirefl",
+      "itemId": "MLA1866325356",
+      "titulo": "Lentes Anteojo De Sol Rusty Dapper Grey/uvs17 Moderno U",
       "status": "paused",
       "slug": "rusty-dapper",
       "atributo": "TEMPLE_LENGTH",
@@ -442,54 +370,6 @@
       "publicado": "12.5 cm",
       "publicadoMm": 125,
       "correctoMm": 130,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1867589720",
-      "titulo": "Lentes Anteojos De Sol Vulk Lady Piny 285/gb10s Gafas M",
-      "status": "active",
-      "slug": "vulk-lady-piny",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "13.7 cm",
-      "publicadoMm": 137,
-      "correctoMm": 135,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA2707007110",
-      "titulo": "Anteojos Lentes De Sol Polarizados Rusty Yau Deportivos",
-      "status": "active",
-      "slug": "rusty-yau",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.3 cm",
-      "publicadoMm": 43,
-      "correctoMm": 45,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA2707007110",
-      "titulo": "Anteojos Lentes De Sol Polarizados Rusty Yau Deportivos",
-      "status": "active",
-      "slug": "rusty-yau",
-      "atributo": "LENS_WIDTH",
-      "nombre": "calibre",
-      "publicado": "6.8 cm",
-      "publicadoMm": 68,
-      "correctoMm": 66,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA2133710836",
-      "titulo": "Anteojos Lentes De Sol Vulk Deserve Grandes Cuadrados U",
-      "status": "active",
-      "slug": "vulk-deserve",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "5.5 cm",
-      "publicadoMm": 55,
-      "correctoMm": 58,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -529,6 +409,54 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
+      "itemId": "MLA2707007110",
+      "titulo": "Anteojos Lentes De Sol Polarizados Rusty Yau Deportivos",
+      "status": "active",
+      "slug": "rusty-yau",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.3 cm",
+      "publicadoMm": 43,
+      "correctoMm": 45,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA2707007110",
+      "titulo": "Anteojos Lentes De Sol Polarizados Rusty Yau Deportivos",
+      "status": "active",
+      "slug": "rusty-yau",
+      "atributo": "LENS_WIDTH",
+      "nombre": "calibre",
+      "publicado": "6.8 cm",
+      "publicadoMm": 68,
+      "correctoMm": 66,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1867589720",
+      "titulo": "Lentes Anteojos De Sol Vulk Lady Piny 285/gb10s Gafas M",
+      "status": "active",
+      "slug": "vulk-lady-piny",
+      "atributo": "TEMPLE_LENGTH",
+      "nombre": "varilla",
+      "publicado": "13.7 cm",
+      "publicadoMm": 137,
+      "correctoMm": 135,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA2133710836",
+      "titulo": "Anteojos Lentes De Sol Vulk Deserve Grandes Cuadrados U",
+      "status": "active",
+      "slug": "vulk-deserve",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "5.5 cm",
+      "publicadoMm": 55,
+      "correctoMm": 58,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
       "itemId": "MLA1480729607",
       "titulo": "Anteojos Lentes De Sol Rusty Dileri Mujer Livianos Gafa",
       "status": "active",
@@ -541,30 +469,6 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA2493352472",
-      "titulo": "Anteojos Lentes De Sol Polarizados Vulk Biller Hexagona",
-      "status": "paused",
-      "slug": "vulk-biller",
-      "atributo": "LENS_WIDTH",
-      "nombre": "calibre",
-      "publicado": "14 cm",
-      "publicadoMm": 140,
-      "correctoMm": 51,
-      "diagnostico": "fuera del rango físico"
-    },
-    {
-      "itemId": "MLA2493352472",
-      "titulo": "Anteojos Lentes De Sol Polarizados Vulk Biller Hexagona",
-      "status": "paused",
-      "slug": "vulk-biller",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "14 cm",
-      "publicadoMm": 140,
-      "correctoMm": 145,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
       "itemId": "MLA1470866679",
       "titulo": "Anteojos De Sol Espejados Vulk Way Back Deportivos Mode",
       "status": "active",
@@ -574,18 +478,6 @@
       "publicado": "4.9 cm",
       "publicadoMm": 49,
       "correctoMm": 43,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1549821015",
-      "titulo": "Anteojos Lentes De Sol Mujer Vulk Lady Piny Grandes Com",
-      "status": "active",
-      "slug": "vulk-lady-piny",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.8 cm",
-      "publicadoMm": 48,
-      "correctoMm": 54,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -613,6 +505,42 @@
       "diagnostico": "fuera del rango físico"
     },
     {
+      "itemId": "MLA1549821015",
+      "titulo": "Anteojos Lentes De Sol Mujer Vulk Lady Piny Grandes Com",
+      "status": "active",
+      "slug": "vulk-lady-piny",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.8 cm",
+      "publicadoMm": 48,
+      "correctoMm": 54,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA2493352472",
+      "titulo": "Anteojos Lentes De Sol Polarizados Vulk Biller Hexagona",
+      "status": "paused",
+      "slug": "vulk-biller",
+      "atributo": "LENS_WIDTH",
+      "nombre": "calibre",
+      "publicado": "14 cm",
+      "publicadoMm": 140,
+      "correctoMm": 51,
+      "diagnostico": "fuera del rango físico"
+    },
+    {
+      "itemId": "MLA2493352472",
+      "titulo": "Anteojos Lentes De Sol Polarizados Vulk Biller Hexagona",
+      "status": "paused",
+      "slug": "vulk-biller",
+      "atributo": "TEMPLE_LENGTH",
+      "nombre": "varilla",
+      "publicado": "14 cm",
+      "publicadoMm": 140,
+      "correctoMm": 145,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
       "itemId": "MLA2052436076",
       "titulo": "Anteojos De Sol Mujer Rusty Vorez Gafas Antirreflex Len",
       "status": "active",
@@ -623,78 +551,6 @@
       "publicadoMm": 50,
       "correctoMm": 52,
       "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1543122552",
-      "titulo": "Anteojo De Sol Vulk Raven Espejado Azul Revo Antireflex",
-      "status": "active",
-      "slug": "vulk-raven",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "53.34 cm",
-      "publicadoMm": 533.4000000000001,
-      "correctoMm": 15,
-      "diagnostico": "fuera del rango físico"
-    },
-    {
-      "itemId": "MLA1543122552",
-      "titulo": "Anteojo De Sol Vulk Raven Espejado Azul Revo Antireflex",
-      "status": "active",
-      "slug": "vulk-raven",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.3 cm",
-      "publicadoMm": 43,
-      "correctoMm": 46,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1543122552",
-      "titulo": "Anteojo De Sol Vulk Raven Espejado Azul Revo Antireflex",
-      "status": "active",
-      "slug": "vulk-raven",
-      "atributo": "LENS_WIDTH",
-      "nombre": "calibre",
-      "publicado": "139.7 cm",
-      "publicadoMm": 1397,
-      "correctoMm": 55,
-      "diagnostico": "mm convertidos como pulgadas (55 × 2,54)"
-    },
-    {
-      "itemId": "MLA1463014195",
-      "titulo": "Anteojos De Sol Vulk Bennie 51 Lentes Gafas Modernas Un",
-      "status": "active",
-      "slug": "vulk-bennie-51",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4.4 cm",
-      "publicadoMm": 44,
-      "correctoMm": 37,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1440100603",
-      "titulo": "Lentes Anteojos De Sol Rusty Esvep Mblk/s10 Polarizado ",
-      "status": "active",
-      "slug": "rusty-esvep",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "25.4 cm",
-      "publicadoMm": 254,
-      "correctoMm": 10,
-      "diagnostico": "mm convertidos como pulgadas (10 × 2,54)"
-    },
-    {
-      "itemId": "MLA1440100603",
-      "titulo": "Lentes Anteojos De Sol Rusty Esvep Mblk/s10 Polarizado ",
-      "status": "active",
-      "slug": "rusty-esvep",
-      "atributo": "LENS_WIDTH",
-      "nombre": "calibre",
-      "publicado": "152.4 cm",
-      "publicadoMm": 1524,
-      "correctoMm": 60,
-      "diagnostico": "mm convertidos como pulgadas (60 × 2,54)"
     },
     {
       "itemId": "MLA1382548759",
@@ -718,30 +574,6 @@
       "publicado": "5.4 cm",
       "publicadoMm": 54,
       "correctoMm": 61,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1543083906",
-      "titulo": "Anteojos De Sol Polarizados Vulk Raven Negro Mate Unise",
-      "status": "active",
-      "slug": "vulk-raven",
-      "atributo": "BRIDGE_LENGTH",
-      "nombre": "puente",
-      "publicado": "2.1 cm",
-      "publicadoMm": 21,
-      "correctoMm": 15,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1543083906",
-      "titulo": "Anteojos De Sol Polarizados Vulk Raven Negro Mate Unise",
-      "status": "active",
-      "slug": "vulk-raven",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "14.5 cm",
-      "publicadoMm": 145,
-      "correctoMm": 142,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -781,6 +613,42 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
+      "itemId": "MLA1543083906",
+      "titulo": "Anteojos De Sol Polarizados Vulk Raven Negro Mate Unise",
+      "status": "active",
+      "slug": "vulk-raven",
+      "atributo": "BRIDGE_LENGTH",
+      "nombre": "puente",
+      "publicado": "2.1 cm",
+      "publicadoMm": 21,
+      "correctoMm": 15,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1543083906",
+      "titulo": "Anteojos De Sol Polarizados Vulk Raven Negro Mate Unise",
+      "status": "active",
+      "slug": "vulk-raven",
+      "atributo": "TEMPLE_LENGTH",
+      "nombre": "varilla",
+      "publicado": "14.5 cm",
+      "publicadoMm": 145,
+      "correctoMm": 142,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
+      "itemId": "MLA1463014195",
+      "titulo": "Anteojos De Sol Vulk Bennie 51 Lentes Gafas Modernas Un",
+      "status": "active",
+      "slug": "vulk-bennie-51",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.4 cm",
+      "publicadoMm": 44,
+      "correctoMm": 37,
+      "diagnostico": "no coincide con la medida real"
+    },
+    {
       "itemId": "MLA1543147968",
       "titulo": "Anteojos Lentes De Sol Polarizados Vulk Raven Gafas Liv",
       "status": "active",
@@ -829,15 +697,15 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1398498685",
-      "titulo": "Anteojo De Sol Vulk The Sil Polarizado Verde G15 Cuadra",
+      "itemId": "MLA1543122552",
+      "titulo": "Anteojo De Sol Vulk Raven Espejado Azul Revo Antireflex",
       "status": "active",
-      "slug": "vulk-the-sil",
-      "atributo": "LENS_WIDTH",
-      "nombre": "calibre",
-      "publicado": "5.3 cm",
-      "publicadoMm": 53,
-      "correctoMm": 55,
+      "slug": "vulk-raven",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4.3 cm",
+      "publicadoMm": 43,
+      "correctoMm": 46,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -853,8 +721,8 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1391852396",
-      "titulo": "Gafas De Sol Vulk The Sil Polarizadas Protección Uv Uni",
+      "itemId": "MLA1398498685",
+      "titulo": "Anteojo De Sol Vulk The Sil Polarizado Verde G15 Cuadra",
       "status": "active",
       "slug": "vulk-the-sil",
       "atributo": "LENS_WIDTH",
@@ -913,16 +781,16 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1382580349",
-      "titulo": "Anteojo De Sol Rusty And Now? 336 Mblk Polarizado Negro",
+      "itemId": "MLA1391852396",
+      "titulo": "Gafas De Sol Vulk The Sil Polarizadas Protección Uv Uni",
       "status": "active",
-      "slug": "rusty-and-now",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "99.06 cm",
-      "publicadoMm": 990.6,
-      "correctoMm": 39,
-      "diagnostico": "mm convertidos como pulgadas (39 × 2,54)"
+      "slug": "vulk-the-sil",
+      "atributo": "LENS_WIDTH",
+      "nombre": "calibre",
+      "publicado": "5.3 cm",
+      "publicadoMm": 53,
+      "correctoMm": 55,
+      "diagnostico": "no coincide con la medida real"
     },
     {
       "itemId": "MLA2823986022",
@@ -937,16 +805,16 @@
       "diagnostico": "no coincide con la medida real"
     },
     {
-      "itemId": "MLA1440111809",
-      "titulo": "Lentes Anteojos De Sol Rusty Peating Sblk/drt03 Polariz",
+      "itemId": "MLA1679617223",
+      "titulo": "Rusty Terdey 724 Mblk/s10 Negro",
       "status": "active",
-      "slug": "rusty-peating",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "337.82 cm",
-      "publicadoMm": 3378.2,
-      "correctoMm": 133,
-      "diagnostico": "mm convertidos como pulgadas (133 × 2,54)"
+      "slug": "rusty-terdey",
+      "atributo": "LENS_HEIGHT",
+      "nombre": "alto de lente",
+      "publicado": "4 cm",
+      "publicadoMm": 40,
+      "correctoMm": 47,
+      "diagnostico": "no coincide con la medida real"
     },
     {
       "itemId": "MLA1564461942",
@@ -970,30 +838,6 @@
       "publicado": "4.6 cm",
       "publicadoMm": 46,
       "correctoMm": 48,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1679617223",
-      "titulo": "Rusty Terdey 724 Mblk/s10 Negro",
-      "status": "active",
-      "slug": "rusty-terdey",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4 cm",
-      "publicadoMm": 40,
-      "correctoMm": 47,
-      "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1499129431",
-      "titulo": "Anteojos De Sol Polarizados Rusty Terdey Lentes Espejad",
-      "status": "paused",
-      "slug": "rusty-terdey",
-      "atributo": "LENS_HEIGHT",
-      "nombre": "alto de lente",
-      "publicado": "4 cm",
-      "publicadoMm": 40,
-      "correctoMm": 47,
       "diagnostico": "no coincide con la medida real"
     },
     {
@@ -1043,24 +887,12 @@
       "publicadoMm": 15,
       "correctoMm": 18,
       "diagnostico": "no coincide con la medida real"
-    },
-    {
-      "itemId": "MLA1904009566",
-      "titulo": "Anteojos De Sol Vulk Bennie 51 Lentes Polarizadas Gafas",
-      "status": "active",
-      "slug": "vulk-bennie-51",
-      "atributo": "TEMPLE_LENGTH",
-      "nombre": "varilla",
-      "publicado": "355.6 cm",
-      "publicadoMm": 3556,
-      "correctoMm": 140,
-      "diagnostico": "mm convertidos como pulgadas (140 × 2,54)"
     }
   ],
   "sinMedidas": [
     "MLA1824193366",
-    "MLA1391497225",
     "MLA2026217358",
+    "MLA1391497225",
     "MLA2197866182",
     "MLA1878518671",
     "MLA1878507183",
