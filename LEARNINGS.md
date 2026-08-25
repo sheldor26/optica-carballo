@@ -75,6 +75,40 @@ cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si 
 secretos, chequear que ningún archivo con `'use client'` lo importe.
 
 
+## 2026-08-25 — El dato que le ibas a pedir al founder suele estar en sus propias publicaciones
+
+**Contexto**: para cargar el Rusty Malice faltaba el ancho total del frente. No estaba en ningún
+atributo de sus publicaciones de ML ni en el sitio del fabricante, así que se le pidió y quedó
+pendiente medio día. Al día siguiente, cargando el Blozon, apareció por casualidad: **la foto #4 de
+una de sus publicaciones era una placa de medidas que él mismo había hecho**, con el ancho escrito.
+Al revisar la galería del Malice con el mismo criterio, ahí estaba: 139 mm.
+
+**Qué había pasado**: se leyeron los `attributes` de la API —que son datos estructurados y fáciles
+de consultar— y se dio por agotada la fuente. Pero una publicación de Mercado Libre tiene tres capas
+de información y sólo una es estructurada: los atributos, el texto de la descripción, y **las
+imágenes**, donde vive todo lo que el vendedor no supo dónde poner. La placa de medidas es
+exactamente eso.
+
+**Lo que se ganó de yapa** al mirar las galerías completas, en el mismo pase:
+- Fotos limpias de producto sobre fondo blanco para las 4 colorways del Blozon, que evitaron
+  pedírselas.
+- El dato de que las bisagras del Blozon son **plásticas** y no metálicas — estaba escrito en el
+  callout de su placa vieja, y por marca se habría asumido lo contrario.
+
+**La regla**: antes de pedirle un dato al founder, **mirar todas las imágenes de sus publicaciones**,
+no sólo los campos estructurados. En este catálogo las placas viejas suelen traer ancho de frente,
+alto de armazón, largo de varilla y el tipo de bisagra. Cuesta un GET y una hoja de contacto.
+
+**Dos trampas concretas al usar esas imágenes**:
+1. El `secure_url` que devuelve `GET /items/{id}` sirve **500 px** aunque la URL termine en `-O`.
+   Para la resolución real hay que pedir `GET /pictures/{picture_id}` y quedarse con la variación
+   más grande de `variations[]` (1100-1200 px). Sin eso las placas salen pixeladas.
+2. **No asumir que la foto 1 es el perfil y la 2 el frente.** En dos de las cuatro colorways del
+   Blozon la #2 era otra toma de tres cuartos y el frente real estaba en la #5 y la #3. Hay que
+   mirarlas.
+
+---
+
 ## 2026-08-25 — Antes de reportar el total de un diff, verificar a mano una muestra de lo que marcó
 
 **Contexto**: el founder pidió saber qué modelos de Vulk y Rusty tiene en Mercado Libre y no en el
