@@ -20,6 +20,7 @@
     "db:types": "supabase gen types typescript --local > types/supabase.ts",
     "normalize-photos": "tsx scripts/normalize-product-photos.ts",
     "placas": "tsx --env-file=.env.local scripts/ml-placas.ts",
+    "ml:medidas": "tsx --env-file=.env.local scripts/ml-auditar-medidas.ts",
     "ml:diag": "tsx --env-file=.env.local scripts/ml-diagnostico-imagenes.ts",
     "foto:reemplazar": "tsx --env-file=.env.local scripts/reemplazar-foto-producto.ts",
     "vulk:fotos": "tsx scripts/vulk-fotos.ts",

@@ -470,9 +470,49 @@ Tres cosas que el análisis desmintió y conviene no volver a levantar: `/polari
 
 Informe completo en el output del workflow; lo accionable quedó resumido acá.
 
+### Auditor de medidas de Mercado Libre — construido y corrido
+
+`scripts/ml-auditar-medidas.ts` (`pnpm ml:medidas`). **Solo lectura, sin una sola escritura**: la
+única llamada HTTP es un `GET /items?ids=` de a 20. Corregir es un paso aparte, de a una
+publicación con confirmación, porque son publicaciones activas con ventas.
+
+**De dónde saca la medida correcta**: del `alt_text` de la placa de medidas de cada producto, que
+tiene formato parseable ("frente 140mm, lente 64x39mm, puente 18mm, varilla 108mm"). Esas son las
+que midió el founder a mano. Fue el hallazgo que destrabó el script: las medidas no están en ninguna
+columna de la base, están ahí. Cubre 71 productos.
+
+**Resultado sobre las 169 publicaciones**: 55 con alguna medida que no coincide, 88 atributos en
+total. Se separan en dos grupos, que no son el mismo problema:
+
+**1. Trece atributos en 8 publicaciones, todas ACTIVAS, con medidas físicamente imposibles:**
+
+| Publicación | Producto | Medida | Publicado | Correcto |
+|---|---|---|---|---|
+| MLA1441317097 | rusty-spell | varilla | **368,3 cm** | 14,5 cm |
+| MLA1904009566 | vulk-bennie-51 | varilla | **355,6 cm** | 14,0 cm |
+| MLA1440111809 | rusty-peating | varilla | **337,82 cm** | 13,3 cm |
+| MLA1440100603 | rusty-esvep | calibre | **152,4 cm** | 6,0 cm |
+| MLA1391436017 | vulk-arvin | varilla | **145 cm** | 14,5 cm |
+| MLA1441317097 | rusty-spell | calibre | **142,24 cm** | 5,6 cm |
+| MLA1543122552 | vulk-raven | calibre | **139,7 cm** | 5,5 cm |
+| MLA1506967192 | rusty-beason | alto de lente | **132,08 cm** | 5,0 cm |
+| MLA1382580349 | rusty-and-now | alto de lente | **99,06 cm** | 3,9 cm |
+
+Más puente de raven (53,34 cm), puente de spell (43,18 cm), alto de arvin (43 cm) y puente de esvep
+(25,4 cm). Nueve encajan exacto con el patrón de **milímetros a los que se les aplicó la conversión
+de pulgadas**: 145 × 2,54 = 368,3; 56 × 2,54 = 142,24; 39 × 2,54 = 99,06.
+
+**2. Setenta y cinco atributos en 50 publicaciones con discrepancias chicas** (mediana de 5 mm):
+27 de alto de lente, 20 de puente, 16 de calibre, 12 de varilla. Estos NO son absurdos: son valores
+plausibles que no coinciden con la placa. Caso concreto: The Sil publica calibre 5,3 cm y la placa
+dice 5,5 — **5,3 es justo lo que dice la ficha de Vulk**, o sea que esas publicaciones se cargaron
+con el dato del fabricante y no con la medición del founder. Antes de tocar estas 50 conviene que él
+confirme, porque son 50 publicaciones y el criterio es suyo.
+
 ### Próximo paso EXACTO (estado al cierre)### Próximo paso EXACTO (estado al cierre)
 
-**Lo primero: las 28 publicaciones de ML con medidas imposibles.** Un lente de 142 cm publicado en
+**Lo primero: las 8 publicaciones ACTIVAS con medidas imposibles** (la lista está arriba, con el
+valor correcto de cada una). Un lente de 142 cm publicado en
 una ficha activa es lo más caro que hay abierto, y es más urgente que cualquier tema de fotos porque
 ML mueve 88 pedidos por mes contra 2,4 del sitio. Ya no hay nada que preguntar sobre cuál es la
 medida buena: la fuente es la base, con las medidas que midió el founder. El plan sería un script
