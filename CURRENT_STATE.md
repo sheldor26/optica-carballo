@@ -416,29 +416,63 @@ en Supabase, que implica agrandar con pérdida de nitidez (en el Katleen quedó 
 techo real), o conseguir las originales en alta del proveedor. **Es una decisión del founder, no
 técnica: hay que saber si tiene acceso a las fotos originales de Rusty.**
 
-### Tareas que quedaron corriendo al cerrar la sesión
+### Salto de hover — CERRADO (commit 3a3db00)
 
-Dos procesos en segundo plano. Ninguno bloquea nada de lo ya entregado; los dos generan
-información para decidir, y sus resultados llegan como notificación cuando terminan.
+Se midieron las 456 fotos (la medición pasó a correr en paralelo: 41 segundos contra varios minutos
+en secuencial) y se ajustaron las 9 secundarias de los productos con más salto. Resultado: en
+`rusty-yau`, `rusty-spell`, `rusty-xold` y `rusty-patien` la foto fija y la del hover ocupan **las
+dos el 93%**, o sea diferencia visual cero.
 
-1. **`pnpm auditar:encuadre --todas`** — mide las 456 fotos (primarias + secundarias) para calcular
-   los scales de hover y cerrar el problema del salto de tamaño descrito arriba. Es la tarea
-   accionable: cuando termine hay que aplicar los valores a las secundarias y hacer un segundo
-   deploy. Si el proceso se perdió, se relanza con ese mismo comando: sólo lee, se puede correr
-   cuantas veces haga falta.
-2. **Workflow `oportunidades-post-placas`** — responde a la pregunta del founder sobre qué conviene
-   mejorar, con los datos reales del catálogo (169 imágenes en baja resolución, los productos con
-   más stock y peor foto). Cuatro analistas ya terminaron, faltaban un verificador y la síntesis.
-   No lo pidió como trabajo, es material para decidir el próximo foco.
+**Detalle que importa para no "corregir" esto en el futuro**: los scales de las dos fotos de un
+mismo producto quedan distintos a propósito (yau: 1.76 y 1.32). Son fotos con encuadres distintos,
+así que necesitan factores distintos para verse del mismo tamaño. Lo que se empareja es la ocupación
+final, no el número del scale. Comparar los scales entre sí lleva a la conclusión equivocada.
 
-### Próximo paso EXACTO (estado al cierre)
+También se blindó `foto:reemplazar`: el scale está indexado por path, así que al renombrar una foto
+su override dejaba de aplicar y pasaba a 1.0 sin ningún error visible. Ahora avisa. Verificado que
+las 8 fotos renombradas hoy (Katleen y The Sil) ocupan 92% con scale 1.0 — no las afectó, porque el
+pipeline ya las normaliza al 92%, pero el riesgo era real para cualquier foto no normalizada.
 
-**Lo primero: cerrar el salto de hover.** Es lo único que quedó a medias de un cambio ya deployado.
-Cuando termine `pnpm auditar:encuadre --todas`, aplicar los scales a las secundarias con el mismo
-criterio (93% de ocupación) y deployar. Hasta entonces las grillas se ven bien, pero al pasar el
-mouse el producto salta de tamaño en los cuatro productos ajustados.
+### Análisis de oportunidades — TERMINADO, hallazgos para decidir
 
-Después de eso, los sets del Katleen y The Sil están generados y validados pero **todavía no subidos
+El workflow cerró: 28 propuestas, 26 sobrevivieron a la verificación adversarial. Lo que aparece
+primero no son las fotos, y con un argumento fuerte: **ML procesó 266 pedidos en tres meses contra
+4 del sitio en siete semanas.** Los hallazgos que hay que mirar sí o sí:
+
+- **28 publicaciones de ML tienen medidas físicamente imposibles en la ficha técnica que ve el
+  comprador.** Ejemplo verificado: MLA1441317097 (rusty-spell) publica un lente de **142,24 cm** y
+  una varilla de **368,3 cm** — son pulgadas mal convertidas. MLA1506967192 (rusty-beason) dice
+  altura de lente 132,08 cm. Son publicaciones con ventas.
+- **Las medidas del Katleen podrían estar mal en la base.** La DB dice 53-18-129, alto 42; la ficha
+  oficial de Vulk dice 47-25-146, ancho 138, alto 50. Cinco de seis valores no coinciden, pero el
+  peso coincide exacto (26,3 g), o sea que es el mismo modelo. Eso alimenta el `fit-checker` y las
+  6 placas de medidas generadas hoy. **Antes de tocar nada, el founder tiene que medir un ejemplar
+  real con calibre**: tiene el producto en la mano y el título de óptico, y la página del fabricante
+  también puede estar desactualizada.
+- **MLA1518722044 (Rusty Terdey) está pausada con 6 unidades de stock.** Las otras 22 pausadas
+  tienen `out_of_stock` con stock 0, o sea que ML las pausó sola. Ésta es la excepción.
+- **La cuenta tiene 647 publicaciones activas y el sitio conoce 169.** De los pares duplicados
+  revisados, la mayoría comparte `inventory_id` (ML sincroniza el stock, no hay riesgo de
+  sobreventa), pero **el sitio está mapeado a la publicación floja del par**: Vulk Arvin apunta a
+  la que lleva 4 ventas mientras la otra lleva 42; Katleen a la que lleva 0 mientras la otra lleva
+  12. Se mira, no se toca todavía.
+
+Tres cosas que el análisis desmintió y conviene no volver a levantar: `/polarizados` no está roto
+(`toPolarizedCatalog()` ya resuelve por variante), el texto de las placas no es ilegible en celular
+(el dato que circulaba salía de la imagen de debug, no de las placas reales), y
+`recommended_face_shapes` no lo usa el recomendador (matchea por `frame_shape`, que está en 72 de
+72), así que el ítem del BACKLOG que pide backfillear 70 productos es trabajo fantasma.
+
+Informe completo en el output del workflow; lo accionable quedó resumido acá.
+
+### Próximo paso EXACTO (estado al cierre)### Próximo paso EXACTO (estado al cierre)
+
+**Lo primero: las 28 publicaciones de ML con medidas imposibles.** Un lente de 142 cm publicado en
+una ficha con ventas es lo más caro que hay abierto, y es más urgente que cualquier tema de fotos
+porque ML mueve 88 pedidos por mes contra 2,4 del sitio. Requiere antes que el founder mida un
+Katleen real con calibre, para saber si la fuente correcta es la base o el fabricante.
+
+Después, los sets del Katleen y The Sil están generados y validados pero **todavía no subidos
 a las publicaciones de ML** salvo el de SDEMI-SBLK/GB27 (MLA1549858831, ya activo con sus 6
 imágenes). Las opciones sobre la mesa, a decisión del founder:
 
