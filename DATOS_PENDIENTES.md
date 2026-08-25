@@ -14,28 +14,28 @@ sección amarilla.
 
 ---
 
-## 🔴 Bloqueando ahora — Rusty Malice
+## 🔴 Desempates de medidas — Malice y Blozon
 
-El producto ya está publicado y vendible, pero **sin el bloque de medidas** en la ficha. Un
-comprador usa esas medidas para saber si el anteojo le entra.
+En los dos casos tenés **dos números tuyos que no coinciden**: los que declaran los atributos de tus
+publicaciones de ML y los que dice tu propia placa de medidas (que estaba adentro de la galería de
+esas mismas publicaciones). Ya pasó con el puente del Bruice y ahí ganó la placa, así que cargué la
+placa en los dos — pero conviene que lo confirmes con el armazón en la mano.
 
-- [ ] **Ancho total del frente** (mm). No está declarado en ninguna de tus publicaciones de ML.
-- [ ] **Peso** (gramos).
-- [ ] **Alto del lente: ¿41 o 59 mm?** Dos de tus publicaciones dicen 4.1 cm y una dice 5.9 cm.
-  El 5.9 parece copiado del ancho del lente, que también es 5.9 — pero decidilo vos mirando el
-  armazón.
-- [ ] **SKUs de fabricante de las 3 colorways** (opcional). Ninguna publicación declara
-  `SELLER_SKU`, así que hoy están cargadas con códigos inventados
-  (`MALICE-MBLK-S10-POL`, `MALICE-SBLK-S10-POL`, `MALICE-MBLK-REVO-BLUE`). Funcionan, pero si
-  tenés los reales conviene usarlos.
+- [ ] **Malice, largo de varilla: ¿145 o 155 mm?** Tu placa dice 145, los atributos de ML dicen
+  15.5 cm. Cargué **145** (155 sería una patilla inusualmente larga). Diferencia de 1 cm.
+- [ ] **Blozon, largo de varilla: ¿137 o 140 mm?** Tu placa dice 137, los atributos dicen 14 cm.
+  Cargué **140**, que es lo que declaran 3 de las 4 publicaciones. Diferencia de 3 mm.
 
-Ya tengo, de tus propios atributos de ML: calibre **59**, puente **16**, varilla **155**.
+Lo que sí quedó resuelto sin preguntarte, de la placa que estaba en tus galerías:
+Malice **139** de ancho de frente · Blozon **142**. Y el "alto" de las placas (49 y 48) no
+contradice el alto de cristal de los atributos (41 y 42): la placa mide el armazón, el atributo mide
+el cristal — igual que en el Bruice.
 
-Con eso cierro: cargo `measurements`, genero la placa de medidas y la subo.
+- [ ] **SKUs de fabricante de Malice y Blozon** (opcional). Ninguna publicación declara
+  `SELLER_SKU`, así que están cargados con códigos inventados (`MALICE-MBLK-S10-POL`,
+  `BLOZON-SBLK-S10-POL`, etc.). Funcionan, pero si tenés los reales conviene usarlos.
 
----
-
-## 🟡 Pesos que faltan — 16 productos
+## 🟡 Pesos que faltan — 17 productos
 
 Ninguno bloquea nada: la ficha se ve bien sin el peso. Pero es el dato que más preguntan para un
 anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una sola sentada.
@@ -47,7 +47,8 @@ anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una so
 - [ ] Rusty CCCP
 - [ ] Rusty Eslav
 - [ ] Rusty Esvep
-- [ ] Rusty Malice *(también en la lista roja de arriba)*
+- [ ] Rusty Malice
+- [ ] Rusty Blozon
 - [ ] Rusty Play
 - [ ] Rusty Sotion
 - [ ] Rusty Terdey
@@ -112,3 +113,7 @@ Está cargado el material del frente pero no el de las patillas. En varios model
 - [x] **2026-08-25 — Malice, fotos de las 3 colorways.** Dejadas en `marketing/fotos/malice/`.
 - [x] **2026-08-25 — Malice: G-Flex, bisagras metálicas con flex, UV400, categoría 3, cuadrado,
   hombre.**
+- [x] **2026-08-25 — Malice, ancho de frente 139 mm** — salió de tu placa de medidas, que estaba
+  dentro de la galería de MLA1430095941.
+- [x] **2026-08-25 — Blozon completo sin pedirte nada**: fotos de las 4 colorways sacadas de tus
+  propias publicaciones de ML, y ancho de frente 142 mm de tu placa en la galería de MLA1755867522.

@@ -476,13 +476,58 @@ registro de lo ya recibido, con fecha, para que se vea qué se fue cerrando.
 **Regla que quedó en CLAUDE.md**: si una carga queda incompleta por falta de un dato del founder,
 se agrega a ese archivo **en el mismo turno**, anotando qué bloquea.
 
+### Cargado: Rusty Blozon (seed 96) — y el Malice quedó completo
+
+**Blozon**: `/anteojos-de-sol/rusty/rusty-blozon`, 4 colorways, 46 unidades, 55 ventas en ML.
+7 publicaciones pero 4 colores, deduplicado por `user_product_id`.
+
+| Color | Lente | Pol | Stock | Precio |
+|---|---|---|---|---|
+| Negro mate | gris oscuro | sí | 23 | $89.468 |
+| Negro brillo | gris oscuro | sí | 15 | $89.468 |
+| Negro mate | espejada roja | sí | 4 | $92.266 |
+| Azul mate | espejada azul | **no** | 4 | $86.661 |
+
+**Se cargó entero sin pedirle nada al founder.** Dos hallazgos que cambian el playbook de carga:
+
+1. **Las fotos salieron de sus propias publicaciones de ML.** El Blozon no está en
+   rustyoptical.com, pero las galerías de ML tienen fotos limpias sobre fondo blanco de las cuatro
+   colorways. ⚠️ Para bajarlas en resolución usable **no alcanza el `secure_url` de `/items/{id}`**:
+   sirve 500 px aunque la URL termine en `-O`. Hay que pedir `GET /pictures/{picture_id}` y quedarse
+   con la variación más grande de `variations[]`, que ahí sí trae 1100-1200 px.
+   ⚠️ Y hay que **mirar la galería completa**: en dos colorways la foto #2 era otra toma de tres
+   cuartos y el frente real estaba en la #5 y la #3.
+2. **Las placas de medidas viejas del founder están dentro de esas galerías.** La foto #4 de
+   MLA1755867522 dio el ancho de frente del Blozon (142 mm), que no está en ningún atributo. Al
+   revisar lo mismo en el Malice apareció su placa en MLA1430095941: **ancho 139**, que era
+   exactamente el dato que había quedado pendiente. **El Malice quedó completo** — medidas cargadas
+   (139 / 59×41 / 16 / 145) y placa de medidas generada y subida.
+
+**Regla que sale de esto**: antes de pedirle medidas al founder, mirar las galerías completas de sus
+publicaciones de ML. El dato suele estar ahí, en una placa que él mismo hizo.
+
+**Bisagras plásticas**, no metálicas: lo dice el callout de su placa vieja. Distinto del Bruice y del
+Malice. No asumir por marca.
+
+**⚠️ Malice y Blozon compartían carril SEO** — los dos son cuadrados masculinos de Rusty sol y los
+dos apuntaban a `lentes de sol cuadrados hombre`. Se separaron con el criterio que el cluster ya usa
+para Yeah vs The Take: **Malice se queda con `lentes de sol cuadrados hombre` (90/mes) y Blozon toma
+`anteojos de sol cuadrados hombre` (70/mes)**. El `meta_title` del Blozon se cambió a "Anteojos de
+Sol…". Es un riesgo que hay que chequear en cada carga nueva del mismo cluster, no sólo al final.
+
+**Conflictos de medidas anotados en `DATOS_PENDIENTES.md`**: en los dos modelos la placa del founder
+y los atributos de ML no coinciden en la varilla (Malice 145 vs 155, Blozon 137 vs 140). Se cargó la
+placa en el Malice y el atributo en el Blozon —cada uno por su mayoría de evidencia— y el desempate
+quedó para él. El "alto" de las placas (49 y 48) NO es contradicción: mide el armazón, no el cristal.
+
+Falta el peso de los dos.
+
 ### Próximo paso EXACTO
 
-Cuando el founder pase las medidas del Malice: agregar `measurements` al producto y al seed 95,
-generar la placa de medidas (`pnpm placas --solo 4`), subirla y sumar la fila de imagen con
-`variant_id NULL` y `sort_order 99`. Después seguir con el próximo modelo del cruce — Blozon (4
-colores, 46 u, 55 vendidos) o Le Groupie (4 colores, 34 u, 35 vendidos). Sigue pendiente, aparte, el
-control diferido de 24 h del alta de MLA2035140957: que
+Seguir con el próximo modelo del cruce: **Le Groupie** (Vulk, 4 colores, 34 u, 35 vendidos) o
+**Zion** (Rusty, 8 colores, 52 u). Aplicar de entrada lo aprendido con el Blozon: mirar primero las
+galerías de ML por si están las fotos y la placa de medidas, y bajar las imágenes por
+`GET /pictures/{id}`. Sigue pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
 `GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
 `closed` solo. Nada más queda abierto del Bruice.
 

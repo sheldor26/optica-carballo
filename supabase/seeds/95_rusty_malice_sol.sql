@@ -6,13 +6,16 @@
 -- Malice publicadas en Mercado Libre y sin cargar en el sitio, con 64 ventas acumuladas — la
 -- demanda mejor validada que tenía sin catalogar.
 --
--- ⚠️ MEDIDAS PENDIENTES. El founder no las tenía a mano y las mide él (ver la regla de siempre: la
--- ficha del fabricante no gana contra su medición). De sus propios atributos de ML salen calibre 59,
--- puente 16, varilla 155 y alto de lente 41 — pero **falta el ancho total del frente y el peso**, y
--- hay que desempatar el alto: dos publicaciones dicen 4.1 cm y una dice 5.9 cm, que es casi seguro
--- un copy-paste del ancho. Por eso este seed NO carga `measurements` todavía: mejor sin el bloque
--- que con un número inventado. Anotado en BACKLOG. Cuando lleguen, agregar `measurements` y generar
--- la placa de medidas (`pnpm placas --solo 4`), que hoy tampoco está.
+-- 📏 MEDIDAS: 139 / 59 x 41 / 16 / 145 mm. Se cargaron sin molestar al founder, porque el ancho del
+-- frente apareció **dentro de su propia galería de ML**: la foto #3 de MLA1430095941 es su placa de
+-- medidas y dice 139 de ancho, 49 de alto y 145 de varilla. Vale la pena mirar las galerías
+-- completas antes de pedirle medidas — el dato suele estar ahí.
+-- El 49 de la placa NO contradice el `LENS_HEIGHT = 4.1 cm` de los atributos: como en el Bruice, la
+-- placa mide el ARMAZÓN y el atributo el CRISTAL.
+-- ⚠️ La varilla SÍ está en conflicto: la placa dice **145** y los atributos de ML dicen **15.5 cm**.
+-- Se cargó 145 porque es lo que dice su placa, y porque en el Bruice la placa le ganó a su
+-- recuerdo; además 155 mm sería una patilla inusualmente larga. Desempate anotado en
+-- DATOS_PENDIENTES.md. Falta también el peso.
 --
 -- ⚠️ 6 PUBLICACIONES PERO 3 COLORES. Cada colorway está publicada dos veces con títulos distintos.
 -- Se confirmó con el `user_product_id`, que se repite de a pares — mismo User Product = mismo pozo
@@ -65,7 +68,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-malice', 'Rusty Malice',
   'Anteojos de sol Rusty Malice: cuadrados masculinos, armazón G-Flex con bisagras metálicas flex. Lente de policarbonato con 100% protección UV (UV400, categoría 3). Polarizados en 2 de los 3 colores.',
-  E'Los **Rusty Malice** son **anteojos de sol cuadrados, de línea masculina**. Frente y patillas de **G-Flex**, con **bisagras metálicas con sistema flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los tres colores.\n\nDisponible en 3 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente azul espejada** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 3 colores.** Los tres filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Malice** son **anteojos de sol cuadrados, de línea masculina**. Frente y patillas de **G-Flex**, con **bisagras metálicas con sistema flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los tres colores.\n\nMedidas: frente 139 mm · lente 59 mm de ancho × 41 mm de alto · puente 16 mm · varilla 145 mm.\n\nDisponible en 3 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente azul espejada** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 3 colores.** Los tres filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "temple_material": "g-flex",
@@ -75,6 +78,7 @@ VALUES (
     "lens_treatment": ["uv400"],
     "lens_category": 3,
     "gender": "male",
+    "measurements": {"frame_width_mm": 139, "lens_width_mm": 59, "lens_height_mm": 41, "bridge_mm": 16, "temple_length_mm": 145},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-25",
@@ -110,7 +114,7 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- Sin fila de medidas todavía: la placa no se generó porque faltan datos (ver cabecera).
+-- La placa de medidas va con variant_id NULL y sort 99, como en todos los productos.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-S10-POL'),
@@ -124,7 +128,9 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-REVO-BLUE'),
    'rusty-malice/perfil-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista lateral, armazón negro mate lente azul espejada', 2000, 1333, 4, false),
   ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-REVO-BLUE'),
-   'rusty-malice/frente-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente azul espejada', 2000, 1333, 5, false)
+   'rusty-malice/frente-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente azul espejada', 2000, 1333, 5, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-malice'), NULL,
+   'rusty-malice/medidas.jpg', 'Esquema técnico de medidas Rusty Malice: frente 139mm, lente 59x41mm, puente 16mm, varilla 145mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
