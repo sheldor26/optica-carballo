@@ -760,6 +760,72 @@ el founder.
 
 Sigue faltando el peso del Blozon y todo lo del Le Groupie.
 
+### Revisión visual a escala, y el diseño que había quedado peor
+
+Una segunda tanda de agentes miró la matriz (3 productos × 12 diseños × 2 formatos) y verificó cada
+defecto adversarialmente antes de reportarlo: 13 confirmados de 26. Cinco eran PNG viejos de un
+producto que no se había regenerado, y tres son del esquema de medidas —que no lo hace este
+generador, viene guardado en la ficha desde el pipeline de Mercado Libre— y quedaron en `BACKLOG`.
+
+Los cuatro reales, todos en el mismo lugar:
+
+- **`tipografia` no cortaba el nombre: lo borraba.** Con "53&3 Marky Ramone" la placa terminaba
+  diciendo **"RA__NE"** (la O tapada al 97%, la M al 77%), y con "The Sil" se leía **"THE SII"**
+  porque el frente del armazón le comía el pie a la L. Con un nombre de una sola palabra pasaba lo
+  contrario: 362 px de banda muerta en el medio del lienzo.
+
+  Las tres cosas eran el mismo error de planteo. Yo había fijado el texto arriba y movía el anteojo
+  para que lo mordiera, y eso no puede funcionar: con tres palabras el bloque es tan alto que el
+  anteojo, para alcanzar la última línea, tiene que subir hasta taparle los dos tercios de arriba.
+  **Ahora el ancla es la baseline de la última palabra** (46% del alto): las líneas se apilan hacia
+  arriba desde ahí y el anteojo se apoya un tercio por encima. La mordida es la misma tenga el
+  modelo una palabra o tres, y arriba del corte el nombre siempre se lee entero. Es más grave de lo
+  que parece porque en este diseño el texto gigante es el ÚNICO lugar donde aparece el modelo.
+
+- **`colores`: el nombre del color quedaba equidistante entre su propia foto y la de abajo**, así
+  que se leía como epígrafe de la variante equivocada. El rótulo se anclaba al borde de la CAJA y el
+  anteojo va centrado adentro. Ahora se ancla al borde real del recorte, que `flotante` ya devuelve.
+
+### Verificado
+
+- `pnpm typecheck` y `pnpm lint` limpios.
+- **`pnpm placas:verificar` sobre 14 productos elegidos por caso límite** —los cuatro nombres más
+  largos, los más cortos, los de más variantes, los de más palabras— **334 placas, cero problemas**.
+  Corriendo ahora sobre los 77 del catálogo.
+- Los 12 diseños mirados uno por uno en historia y en post, sobre tres productos con
+  características opuestas (nombre largo / nombre de una palabra / sin sello de stock).
+
+### Cargado: Rusty Zion (seed 98) — y un patrón de duplicación nuevo
+
+`/anteojos-de-sol/rusty/rusty-zion`, 4 colorways, 26 unidades, todas polarizadas, $112.479.
+
+**⚠️ El cruce decía 8 colores y 52 unidades. Son 4 y 26.** Es un tipo de duplicación distinto al de
+los anteriores: el mismo producto está publicado **una vez como item multi-variación**
+(MLA2007517918, 4 variaciones) **y otra vez como 4 items simples sueltos**, con los mismos stocks
+(8, 4, 3, 11). `pnpm ml:faltantes` **no lo detecta**, porque deduplica por `user_product_id` y en
+este caso las variaciones y los items simples tienen UPs distintos aunque compartan el inventario
+físico. Señal para reconocerlo: un modelo que aparece con item multi-variación Y items simples con
+la misma lista de stocks. Queda como mejora pendiente del script.
+
+Se mapeó el item multi-variación, que cubre las 4 con `variation_code` real.
+
+**Primer producto del catálogo con `lens_treatment` que incluye `polarized`**: las 4 colorways
+polarizan, así que acá sí se afirma para el modelo entero (criterio Terdey/The Sil), a diferencia de
+Malice, Blozon y Le Groupie donde es parcial.
+
+**Tres datos que no se cargaron por no tener fuente confiable**: medidas (regla dura 7), material de
+las patillas —los atributos dicen "grilamid" para armazón, patillas y lente, lo cual es imposible
+para el lente— y el SKU de la colorway SDEMI. Todo en `DATOS_PENDIENTES.md`.
+
+**Fotos**: tres del fabricante y una de ML. La SDEMI-D.GUN/**DRT15** que él vende no está en
+rustyoptical.com — el que publican es SDEMI-D.GUN/**UB14**, mismo armazón con otro lente. Usar esa
+foto habría mostrado un cristal que no es el que se vende, así que salió de su publicación de ML.
+⚠️ Ahí las fotos 1 y 2 venían invertidas respecto de la convención.
+
+**Valores nuevos en el catálogo**: `frame_material: grilamid` (los demás usan g-flex, metal o
+acetate) y las etiquetas `rosa-transparente` y `carey-oscuro`. Los tres mapas de labels
+actualizados.
+
 ### Próximo paso EXACTO
 
 Del lado de las placas: **elegir cuáles de los ocho diseños quedan**. La auditoría recomienda podar a
@@ -773,8 +839,9 @@ catálogo** por productos cuyas medidas puedan venir de esas mismas fuentes. No 
 mirando la base —el número no dice de dónde salió— pero sí se pueden listar los que coinciden exacto
 con lo que declara ML, que serían los sospechosos.
 
-Si dice que no, seguir con el próximo modelo del cruce: **Zion** (Rusty, 8 colores, 52 u) o
-**Cinema** (Vulk, 6 colores, 24 u, 46 vendidos). Orden de búsqueda de fotos que quedó establecido:
+Si dice que no, seguir con el próximo modelo del cruce: **Cinema** (Vulk, 6 colores, 24 u, 46
+vendidos) o **Dunsert** (Rusty, 2 colores, 17 u, 24 vendidos). ⚠️ Verificar primero si el modelo
+está publicado además como items simples sueltos, que es el caso que el script no deduplica. Orden de búsqueda de fotos que quedó establecido:
 sitio del fabricante primero, y si no está, las galerías de ML bajadas por `GET /pictures/{id}` —
 único endpoint que da resolución usable. Las medidas NO se toman de ninguna de las dos. Sigue
 pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
