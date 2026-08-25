@@ -440,15 +440,20 @@ primero no son las fotos, y con un argumento fuerte: **ML procesó 266 pedidos e
 4 del sitio en siete semanas.** Los hallazgos que hay que mirar sí o sí:
 
 - **28 publicaciones de ML tienen medidas físicamente imposibles en la ficha técnica que ve el
-  comprador.** Ejemplo verificado: MLA1441317097 (rusty-spell) publica un lente de **142,24 cm** y
-  una varilla de **368,3 cm** — son pulgadas mal convertidas. MLA1506967192 (rusty-beason) dice
-  altura de lente 132,08 cm. Son publicaciones con ventas.
-- **Las medidas del Katleen podrían estar mal en la base.** La DB dice 53-18-129, alto 42; la ficha
-  oficial de Vulk dice 47-25-146, ancho 138, alto 50. Cinco de seis valores no coinciden, pero el
-  peso coincide exacto (26,3 g), o sea que es el mismo modelo. Eso alimenta el `fit-checker` y las
-  6 placas de medidas generadas hoy. **Antes de tocar nada, el founder tiene que medir un ejemplar
-  real con calibre**: tiene el producto en la mano y el título de óptico, y la página del fabricante
-  también puede estar desactualizada.
+  comprador. CONFIRMADO en vivo contra la API, y encontrado el patrón exacto.** En MLA1441317097
+  (Rusty Spell, **activa**): `LENS_WIDTH` 142,24 cm, `BRIDGE_LENGTH` 43,18 cm, `TEMPLE_LENGTH`
+  368,3 cm. El patrón es que **alguien tomó los milímetros y les aplicó la conversión de pulgadas a
+  centímetros**: 56 × 2,54 = 142,24 · 17 × 2,54 = 43,18 · 145 × 2,54 = 368,3. Encaja exacto en los
+  tres. En MLA1506967192 (Beason) el bug es parcial: `LENS_HEIGHT` 132,08 cm (= 52 × 2,54) pero
+  `BRIDGE` 1,6 cm y `LENS_WIDTH` 5,4 cm están bien.
+  Lo correcto sería `LENS_WIDTH` 5,6 cm, `BRIDGE` 1,7 cm, `TEMPLE` 14,5 cm. Las medidas buenas
+  salen de la base, que es donde están las que midió el founder.
+- ~~Las medidas del Katleen podrían estar mal en la base~~ — **DESCARTADO por el founder**. Las
+  medidas de la base y de las placas son las correctas: él las mide a mano sobre el armazón,
+  verificando contra el grabado de la patilla. La ficha de Vulk (47-25-146) es la que está mal.
+  **Regla que queda**: ante una discrepancia entre la base y la ficha del fabricante, gana la base.
+  Del fabricante sirven material, peso y fotos, no las medidas. Guardado en memoria como
+  `medidas-las-mide-el-founder`.
 - **MLA1518722044 (Rusty Terdey) está pausada con 6 unidades de stock.** Las otras 22 pausadas
   tienen `out_of_stock` con stock 0, o sea que ML las pausó sola. Ésta es la excepción.
 - **La cuenta tiene 647 publicaciones activas y el sitio conoce 169.** De los pares duplicados
@@ -468,9 +473,12 @@ Informe completo en el output del workflow; lo accionable quedó resumido acá.
 ### Próximo paso EXACTO (estado al cierre)### Próximo paso EXACTO (estado al cierre)
 
 **Lo primero: las 28 publicaciones de ML con medidas imposibles.** Un lente de 142 cm publicado en
-una ficha con ventas es lo más caro que hay abierto, y es más urgente que cualquier tema de fotos
-porque ML mueve 88 pedidos por mes contra 2,4 del sitio. Requiere antes que el founder mida un
-Katleen real con calibre, para saber si la fuente correcta es la base o el fabricante.
+una ficha activa es lo más caro que hay abierto, y es más urgente que cualquier tema de fotos porque
+ML mueve 88 pedidos por mes contra 2,4 del sitio. Ya no hay nada que preguntar sobre cuál es la
+medida buena: la fuente es la base, con las medidas que midió el founder. El plan sería un script
+que liste las 28 con su valor actual y el correcto (dividiendo por 2,54 y validando contra la base),
+y recién después un PUT por publicación, con confirmación. **Nunca un corrector automático**: son
+publicaciones activas con ventas.
 
 Después, los sets del Katleen y The Sil están generados y validados pero **todavía no subidos
 a las publicaciones de ML** salvo el de SDEMI-SBLK/GB27 (MLA1549858831, ya activo con sus 6
