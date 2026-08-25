@@ -215,14 +215,26 @@ Verde Degradé Carey Mate Varilla Negra"**. Se puede cambiar mientras no tenga v
 mediante `family_name` (≤60 chars) y los `value_name` de DESIGN / LENS_COLOR / FRAME_COLOR /
 TEMPLE_COLOR — `title` directo devuelve bad request bajo este modelo.
 
-### Encontrado de paso, sin resolver
+### Resuelto: el claim de "terapia del sueño" salió de la publicación naranja
 
-**La descripción de MLA1904009956 tiene el claim de "terapia del sueño"** que sacamos de la ficha
+**La descripción de MLA1904009956 tenía el claim de "terapia del sueño"** que sacamos de la ficha
 del sitio: "las lentes naranjas pueden ayudar a bloquear la luz azul, promoviendo un descanso más
 reparador". Está viva en la publicación con 60 ventas. A diferencia del título, **la descripción sí
-se puede editar** (`PUT /items/{id}/description?api_version=2`). El mismo argumento que la sacó del
-sitio aplica ahí: la lente es categoría 3 y la evidencia de blue-blocking habla de lente clara.
-Decisión del founder.
+se puede editar** (`PUT /items/{id}/description?api_version=2` — un segundo POST sobre una
+descripción existente da 400). El founder lo aprobó y se reescribió: 8 menciones de sueño / luz azul
+/ descanso pasaron a cero. El argumento es el mismo que la sacó del sitio: la lente es categoría 3,
+transmite entre 8% y 18% de la luz visible, y la evidencia de blue-blocking vespertino habla de
+lente clara — el producto no es el dispositivo del que habla el estudio.
+
+En su lugar entró lo que sí es verificable: por qué una lente naranja (atenúa más las longitudes de
+onda cortas y levanta el contraste percibido con luz plana o neblina), y **la aclaración de que no
+es polarizado**, que antes no estaba en ningún lado de la publicación. También entraron las medidas
+reales y la aclaración de que G-Flex no es metal ni titanio.
+
+La descripción vieja quedó guardada en el scratchpad por si hay que volver atrás. Verificado después
+del PUT: item `active`, `sub_status` vacío, 60 ventas, stock 2 y las 6 fotos intactas. Se escribió en
+voseo, igual que la de MLA2035140957, para que las dos publicaciones del Bruice suenen a la misma
+persona.
 
 ### Las 4 colorways del Bruice, cargadas
 
@@ -367,8 +379,9 @@ Lo detecté y lo corregí antes de tocar nada.
 
 ### Próximo paso EXACTO
 
-Reescribir la descripción de MLA1904009956 sacando el bloque de "terapia del sueño" — sigue viva y
-la descripción sí se puede editar. Y el control diferido de 24 h del alta de MLA2035140957.
+El control diferido de 24 h del alta de MLA2035140957: que
+`GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
+`closed` solo. Nada más queda abierto del Bruice.
 
 ## Última actualización (anterior)
 
