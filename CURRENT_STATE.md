@@ -470,6 +470,22 @@ Tres cosas que el análisis desmintió y conviene no volver a levantar: `/polari
 
 Informe completo en el output del workflow; lo accionable quedó resumido acá.
 
+### Review de los scripts — cortado a propósito, relanzable
+
+Se lanzó un review adversarial de los siete scripts de la sesión (cinco lentes: destructivo,
+correctitud, robustez ante fallas externas, duplicación y usabilidad, más un verificador por
+hallazgo). **Se cortó antes de terminar** para no dejar la sesión abierta esperándolo: la pregunta
+del founder ("¿algo más que mejorar?") ya tenía respuesta concreta con el refactor del token, y el
+review es profundidad opcional, no un pendiente.
+
+Si se quiere retomar, el script quedó guardado y se relanza con
+`Workflow({scriptPath: '.../workflows/scripts/review-scripts-sesion-wf_6614052d-2ac.js'})`. Los
+agentes que ya habían corrido se reusan desde caché.
+
+Lo que sí conviene mirar si alguna vez se retoma, porque son los dos que pueden hacer daño real:
+`scripts/reemplazar-foto-producto.ts` y `scripts/ml-corregir-medidas.ts`, los únicos que escriben en
+producción.
+
 ### Refactor: un solo lugar para el token de Mercado Libre
 
 El descifrado AES-256-GCM del token estaba copiado en cuatro scripts. Al ser criptografía, la copia
