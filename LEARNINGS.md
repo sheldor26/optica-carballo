@@ -22,6 +22,200 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-24 — Para auditar consistencia, el umbral sale de la distribución de los datos, no de la intuición
+
+**Contexto**: el founder pidió revisar que todas las fotos del catálogo se vieran del mismo tamaño
+en las grillas de categoría. Se midió, para las 82 fotos primarias, cuánto ocupa el anteojo en la
+card considerando las tres cosas que influyen: cuánto ocupa dentro de su propio JPG, el aspecto de
+la foto contra el 3:2 de la card (con `object-contain`, una foto más apaisada deja franjas y el
+producto se ve más chico) y el scale de `image-scale-overrides.ts`.
+
+**El error que casi se comete**: elegí a ojo un objetivo de 86% de ocupación y con ese umbral el
+reporte decía **41 productos fuera de rango**. Sonaba a hallazgo grande. Antes de mandarlo, se midió
+la distribución real: mediana 93%, p25 89%, p75 96%. O sea que el grueso del catálogo vive entre 90
+y 99%, y **ése** es el estándar de facto. Con el umbral corregido a 93% quedaron 25 fuera, no 41, y
+los 16 que "sobraban" eran justamente la norma. Reportar con el umbral inventado habría hecho que
+el founder tocara 41 productos para acercarlos a un número que salió de mi cabeza.
+
+**La regla**: cuando la pregunta es "¿son todos parecidos?", el valor de referencia es la mediana
+de lo que ya existe, no un ideal elegido de antemano. Primero medir todo, después mirar la
+distribución (mediana y cuartiles), y recién ahí definir qué está fuera. Y si igual se quiere un
+ideal distinto del actual, eso es una decisión de diseño explícita del founder, no un supuesto
+escondido en el umbral de una auditoría.
+
+**Y validar el número con la vista**: además del reporte numérico se simuló la grilla renderizando
+cada card como la muestra el sitio (`object-contain` + el scale + recorte por overflow). Ver los de
+74% al lado de los de 93% confirma que la diferencia es real y no un artefacto de la medición. Un
+porcentaje solo no alcanza para decidir sobre algo estético.
+
+**Quedó en**: `scripts/auditar-encuadre.ts` (`pnpm auditar:encuadre`), que sólo lee y sugiere; no
+toca imágenes, ni la base, ni los overrides.
+
+
+## 2026-08-24 — Las medidas de un armazón se validan solas: dos calibres más el puente tienen que entrar en el ancho total
+
+**Contexto**: la ficha del Vulk Katleen que circulaba decía "Ancho de lente: 57 mm" y "Ancho total:
+129 mm". La placa de medidas ya publicada decía 53. Había que decidir cuál era la correcta sin
+tener el armazón a mano.
+
+**Qué funcionó**: la aritmética del propio producto. Un frente está compuesto por dos calibres más
+el puente, y todo eso tiene que entrar en el ancho total dejando además material del armazón a los
+costados. Con 57: 57 × 2 + 18 = 132 mm, más ancho que los 129 mm del armazón entero. Imposible.
+Con 53: 53 × 2 + 18 = 124 mm, y quedan 5 mm para el material de los dos lados. Cierra. No hizo
+falta medir nada ni preguntar: el dato erróneo se delata solo. El founder después confirmó que 53
+era el correcto.
+
+**Sistematizado**: `revisarMedidas()` en `scripts/ml-placas.ts` avisa cuando 2 × calibre + puente
+supera el ancho total, cuando el margen que queda para el armazón es menor a 4 mm, y cuando el
+alto es sospechosamente mayor que el calibre (señal de que están invertidos). Corre en cada
+generación de placas, que es justo el momento antes de imprimir el dato.
+
+**Generalizable a**: cualquier campo numérico del catálogo que tenga una relación aritmética con
+otro. Antes de publicar un dato que viene de una ficha de tercero, buscar la restricción interna
+que lo tiene que satisfacer. Es más rápido y más confiable que verificar contra otra fuente, y no
+depende de que la otra fuente esté bien.
+
+
+## 2026-08-24 — Para que un modelo razone antes de dar coordenadas SIN perder la llamada estructurada: `tool_choice: auto` y reintento forzando la tool
+
+**Contexto**: el generador de placas necesita ubicar partes del armazón (bisagras, patillas, marco)
+dentro de una foto para que las flechas de los callouts apunten a donde corresponde. Forzar la tool
+desde el principio (`tool_choice: {type:'tool'}`) daba coordenadas peores: el modelo tiraba números
+sin haber mirado la pose. Pedirle que describiera la pose primero, con `tool_choice: auto`, mejoró
+mucho la precisión.
+
+**El problema que apareció al usarlo en serio**: con `auto`, a veces el modelo se queda en la
+descripción y no llama a la tool. El código recibía cero partes y caía a posiciones por defecto.
+El resultado no se rompía — se degradaba en silencio, que es peor: la placa salía con las flechas
+mal puestas y nada lo gritaba. Pasó 1 de cada 3 corridas.
+
+**Qué funcionó**: dejar `auto` en el primer intento, y si la respuesta no trae bloque `tool_use`,
+reintentar la MISMA request con `tool_choice: {type:'tool', name:...}`. Se conserva la precisión
+del razonamiento previo en el caso normal, y se garantiza la salida estructurada en el caso raro.
+El segundo intento sólo se paga cuando hace falta. Verificado en 3 corridas: la que falló se
+recuperó y devolvió 7 de 9 partes.
+
+**Regla general que deja**: cuando un fallback degrada la calidad del resultado en vez de romperlo,
+tiene que ser ruidoso. Un `catch` que devuelve el valor por defecto y sigue es una forma de mentir
+sobre lo que produjo el sistema. Distinguir siempre "lo verifiqué y está bien" de "no pude
+verificarlo" — vale para detección con Vision, para validadores externos y para cualquier
+integración que pueda contestar 429.
+
+**Y el andamiaje visual sigue rindiendo**: la grilla de porcentajes dibujada sobre la foto (ver la
+entry de más abajo) fue lo que hizo que las coordenadas dejaran de salir corridas. Con dos modelos
+distintos ya, se puede tomar como técnica confiable y no como casualidad.
+
+
+## 2026-08-24 — Para una placa social, rehacer sobre un sistema compartido gana por goleada contra parchear 5 diseños sueltos
+
+**Contexto**: 5 placas de "Medios de pago" para Instagram, hechas primero como 5 HTML
+independientes. El trío (Codex + Gemini) las auditó y los dos, por separado, marcaron
+exactamente los mismos 6 problemas — y los marcaron en las 5 placas a la vez: safe areas
+ignoradas, sombras difusas, script de sistema (Snell Roundhand) abaratando el logotipo,
+contraste insuficiente en los secundarios, decoración de relleno (glows, rings, tarjetas 3D),
+y falta de coherencia entre piezas.
+
+**Qué funcionó**: en vez de aplicar los ~20 parches CSS placa por placa, se rehicieron las 5
+desde un `build.py` con un sistema compartido (tokens, escala tipográfica, safe areas, bloque
+de banco, footer, grano) y solo la capa de dirección de arte distinta por placa. Cada hallazgo
+transversal se arregló **una vez** y quedó arreglado en las 5. Las pasadas 2 y 3 del trío
+bajaron de ~20 hallazgos a 2, y cerraron con GO de ambos.
+
+**Por qué funciona**: cuando N piezas comparten contenido y formato, los hallazgos de una
+auditoría son casi siempre transversales, no locales. Parchear N veces multiplica el trabajo
+y garantiza deriva entre piezas; centralizar convierte N arreglos en 1 y hace que la
+coherencia sea gratis en vez de un esfuerzo de revisión.
+
+**Cómo replicarlo**: si hay que entregar más de 2 variantes de la misma pieza gráfica, escribir
+primero el generador y después las variantes. Nunca al revés.
+
+## 2026-08-24 — Los auditores del trío sirven para diseño visual, no solo para texto y normas
+
+**Contexto**: hasta ahora `/trio-auditor` se usaba para guías, fichas y publicaciones de ML.
+Se lo usó por primera vez sobre HTML/CSS de placas gráficas, pasándoles el código fuente y
+describiendo el render, con roles separados: Codex como auditor de ejecución (escala
+tipográfica, ritmo vertical, contraste WCAG calculado, alineaciones, safe areas) y Gemini como
+director de arte externo (comparación contra marcas de eyewear premium, ranking, qué recurso
+gráfico agregar).
+
+**Qué funcionó**: la división de roles evitó la superposición. Codex trajo números duros
+(ratios de contraste calculados, valores CSS exactos) y Gemini trajo criterio de mercado
+("esto se ve a flyer de boliche de 2012", "sacale las sombras, el diseño premium huye de las
+sombras difusas") más una solución técnica que no se me había ocurrido: fundir un PNG de logo
+con fondo opaco usando `filter:grayscale(100%) contrast(600%) + mix-blend-mode:screen`.
+
+**Por qué funciona**: en diseño, "está mal ejecutado" y "está bien ejecutado pero se ve barato"
+son dos fallas distintas que necesitan dos evaluadores distintos. Un solo auditor mezcla las
+dos y termina dando feedback tibio en las dos dimensiones.
+
+**Cómo replicarlo**: para auditar cualquier pieza visual con el trío, pasarles el código fuente
+(no solo el PNG), la lista de fuentes realmente instaladas en la máquina, las safe areas de la
+plataforma destino, y qué decisiones estéticas son intencionales. Sin ese contexto, la primera
+pasada trae ruido.
+
+
+## 2026-08-24 — Cuando dos auditores externos se contradicen sobre una norma de plataforma, la respuesta no es elegir al más convincente: es buscar el endpoint que la plataforma expone para responderla
+
+**Contexto**: se auditó la estética de las placas de Mercado Libre con el trío (Codex + Gemini)
+más un workflow multi-agente. En lo estético coincidieron bastante. En lo normativo se
+contradijeron de frente: Codex dictaminó que las placas con texto (callouts, medidas, banda de
+lentes, garantía) violan las normas de imágenes de ML y dio NO-GO; Gemini dictaminó que las
+imágenes secundarias con infografía están permitidas y dio GO. Los dos citaron fuentes oficiales.
+
+**Qué pasó**: los dos tenían una parte. La norma de ML está redactada de forma general ("la imagen
+no debe tener texto, logos u otras marcas personales"), que es lo que leyó Codex; pero la
+moderación automática está scopeada a la foto de portada — tag `poor_quality_thumbnail`, y el
+campo `picture_type: thumbnail` es el que la doc de ML describe como el de "reglas más estrictas"
+— que es lo que leyó Gemini. Discutir cuál de las dos lecturas gana era irresoluble desde afuera.
+
+**Qué funcionó**: en vez de arbitrar entre los dos, buscar si ML expone una forma de preguntárselo
+directamente. La tiene: `POST /moderations/pictures/diagnostic`, que la propia doc define como el
+paso previo a asociar cualquier imagen a una publicación — principal, de variante o secundaria — y
+que devuelve los criterios que fallan (`white_background`, `minimum_size`, `text_logo`,
+`watermark`). Acepta la imagen en base64, así que se puede validar material local sin publicarlo
+ni subirlo a ningún lado, y sin tocar ninguna publicación existente. Quedó como
+`scripts/ml-diagnostico-imagenes.ts` (`pnpm ml:diag`), reusando el token OAuth que ya vive
+encriptado en `marketplace_integrations`.
+
+**Generalizable a**: cualquier disputa sobre reglas de una plataforma con API (ML, Meta, Google
+Merchant, AFIP). Antes de resolver por autoridad o por mayoría de opiniones, preguntar si la
+plataforma tiene un validador, un linter o un endpoint de diagnóstico. Una respuesta de la
+plataforma vale más que dos auditores seguros de cosas distintas.
+
+**Bonus del mismo trabajo — identificar una tipografía que no tenés**: la plantilla de medidas del
+founder viene de Canva y su tipografía es propietaria. Para elegir el reemplazo más parecido se
+recortó el "mm" de la plantilla y se compararon 17 familias normalizando por altura de x y
+midiendo error absoluto de píxeles más una penalización por diferencia de proporción
+ancho/x-height. Ganó DM Sans 400. El método es reproducible y objetivo, y toma dos minutos: mucho
+mejor que elegir "la que parece" y que después el número desentone al lado del texto existente.
+
+
+## 2026-08-24 — Tipografías custom en imágenes generadas con sharp en macOS: fontconfig no alcanza, hay que registrar la fuente en el sistema
+
+**Contexto**: el generador de placas (`scripts/ml-placas.ts`) necesita Archivo Black para los
+callouts amarillos. La fuente se bajó al repo (`assets/placas/fonts/`) y se apuntó fontconfig
+ahí con `FONTCONFIG_FILE` y con `FONTCONFIG_PATH`.
+
+**Qué pasó**: `fc-list` con ese config SÍ listaba la fuente, y fontconfig hasta generaba su
+cache — pero el texto seguía saliendo en Helvetica. La pista fue que Manrope sí renderizaba:
+la única diferencia era que Manrope estaba instalada en `~/Library/Fonts`. En macOS, librsvg
+(el rasterizador de SVG que usa sharp) resuelve las familias por CoreText, no por fontconfig,
+así que un config apuntado a una carpeta del repo no tiene efecto sobre el render.
+
+**Qué funcionó**: versionar los `.ttf` en el repo como fuente de verdad y que el script copie
+a `~/Library/Fonts` lo que falte en su primer arranque (`fc-list` para detectar, `cp`,
+`fc-cache -f`). El repo queda reproducible y el render encuentra la fuente.
+
+**Generalizable a**: cualquier imagen generada server-side con sharp/librsvg en macOS (OG
+images, placas, banners). Antes de pelearse con fontconfig, verificar si la fuente está
+registrada en el sistema — y en Linux/Vercel el criterio se invierte, ahí fontconfig sí manda.
+
+**Bonus del mismo trabajo**: al dibujar siluetas para diagramas, un trazo (`stroke` con
+`stroke-linecap="round"`) sale más limpio que un contorno relleno. La patilla del armazón
+dibujada como contorno generaba picos y muescas en el codo en cada intento; como trazo de
+grosor uniforme salió bien al primer intento.
+
+
 ## 2026-08-04 — Un 500 sin mensaje de una API externa, con logs de nuestro lado ya limpios: aislar el campo real pegándole directo a la API con IDs falsos, no seguir iterando a ciegas sobre el código
 
 **Contexto**: el primer envío real del sitio a MiCorreo fallaba con `{"code":500,"message":null}`. Un primer fix (fallback de dirección del remitente, basado en un log de Vercel que mostraba `originAddress` con campos en `null`) se aplicó, se deployó, y el founder reintentó — mismo error exacto. En ese punto ya no había más señal nueva del lado de nuestros logs: el payload que mandábamos se veía razonable y el error de MiCorreo seguía sin dar ningún detalle.

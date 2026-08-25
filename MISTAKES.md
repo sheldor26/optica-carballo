@@ -22,6 +22,147 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-24 — Entregué 5 placas de Instagram sin chequear las safe areas de story ni un solo ratio de contraste
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: se entregaron al founder 5 placas 1080×1920 para historias de Instagram como
+"listas para subir". Ninguna respetaba las safe areas: el footer con el handle caía en los
+últimos ~250px, la franja que tapa la caja de "Responde a…" y los botones de la app. En dos de
+ellas (01 y 04) el bloque de Banco Corrientes con el "30% OFF" — el beneficio más fuerte de la
+pieza — también quedaba en zona tapada o al filo. Además, varios textos secundarios estaban por
+debajo del mínimo de contraste: dorado `#B08B45` sobre hueso da **2.82:1** y gris `#9A8F79`
+sobre el ticket da **2.99:1**, cuando el piso es 4.5:1 (3:1 para texto grande). Lo detectó la
+auditoría del trío, no yo.
+
+**Causa raíz**: se diseñó para el lienzo (1080×1920) en vez de para el medio (una story dentro
+de la app de Instagram, con UI encima). El lienzo se ve entero en el PNG que yo miro; la UI de
+la plataforma no aparece en ningún lado del render, así que el error es invisible a menos que
+se lo busque activamente. Con el contraste pasa lo mismo: "se ve bien" en una pantalla
+calibrada al 100% de brillo no es evidencia de nada, y nunca calculé un ratio.
+
+**Regla preventiva**: antes de entregar CUALQUIER pieza gráfica para una plataforma con UI
+encima (story de IG/WhatsApp, reel, portada de YouTube, banner de ML), hacer dos chequeos
+mecánicos, no a ojo:
+1. **Safe areas**: definir la caja útil de la plataforma ANTES de maquetar y meterla como
+   `padding` del contenedor. Para story de Instagram: 250px arriba y 250-320px abajo sobre
+   1080×1920. Nada de contenido obligatorio afuera de esa caja, y `margin-top:auto` no puede
+   empujar información al borde.
+2. **Contraste**: calcular el ratio WCAG real de cada par de color de texto (hay un snippet de
+   Python de 8 líneas en el historial de esta sesión). Piso 4.5:1; 3:1 solo para texto grande.
+   Los dorados y los grises sobre fondos claros son los que fallan sistemáticamente.
+
+**Nota**: el error también expone que las placas se entregaron sin pasar por `/trio-auditor`.
+Para piezas visuales completas (no ajustes chicos), el trío ahora es parte del flujo, igual que
+para contenido escrito.
+
+## 2026-08-24 — Reemplacé fotos de producto pisando el archivo, con una advertencia escrita en el propio next.config.ts diciendo que eso no funciona
+
+**Qué pasó**: para cambiar las dos fotos del Vulk Katleen subí las nuevas al mismo `storage_path`,
+razonando que así no había que tocar la fila de `product_images`. Verifiqué que las URLs públicas
+de Supabase devolvieran las nuevas, dieron bien, y reporté la tarea como hecha. El founder avisó
+que en el sitio seguían las viejas.
+
+**Causa raíz**: no leí el config del proyecto antes de escribir el script. `next.config.ts` tiene
+`minimumCacheTTL: 2678400` (31 días) y arriba, en un comentario puesto justamente después de una
+auditoría previa, dice textual: *"si se reemplaza una foto, hay que subirla con OTRO nombre de
+archivo (el path es la cache key)"*. Hice exactamente lo contrario, y encima construí el script
+sobre esa premisa equivocada y la documenté como si fuera una virtud ("mantiene el mismo path para
+no tocar la fila").
+
+**Por qué la verificación no lo agarró**: verifiqué la capa equivocada. Bajar la URL de Supabase
+Storage confirma que el archivo cambió, no que el sitio lo muestre. Entre el archivo y el usuario
+hay dos caches más: la imagen optimizada de Vercel (keyed por path de origen, 31 días) y el ISR de
+la página (300 s). Verificar el origen y dar por verificado el destino es el mismo patrón de las
+otras entradas de hoy: confundir "el paso que controlo salió bien" con "el resultado que le importa
+al usuario está bien".
+
+**Reglas preventivas**:
+1. Antes de escribir un script que toca un subsistema del proyecto, leer su configuración. La
+   respuesta a "por qué no se ve el cambio" ya estaba escrita en el repo.
+2. Reemplazar una imagen de producto = **subir con nombre nuevo y actualizar `storage_path`**, no
+   pisar el archivo. `scripts/reemplazar-foto-producto.ts` ahora lo hace así por defecto: agrega un
+   sufijo de fecha, actualiza la fila y deja el archivo viejo en Storage. Queda `--pisar` para el
+   caso de una foto que nunca se publicó, y avisa fuerte.
+3. Verificar en la superficie que ve el usuario, no en el origen. Para el sitio eso es pedir la
+   página y buscar el path nuevo en el HTML, mirando además `x-vercel-cache` y `age`.
+
+**Estado**: 🟡 Mitigado — el script corregido evita el caso más común, pero la regla 3 depende de
+acordarse de verificar la punta de la cadena y no el eslabón que uno acaba de tocar.
+
+## 2026-08-24 — Convertí el nombre comercial de un material en una propiedad del producto: "G-Flex" → "flexible", y casi se publica
+
+**Qué pasó**: al armar los callouts del Vulk Katleen escribí `--c1 "Armazón G-Flex|flexible y
+liviano"`. El founder lo frenó: el material es algo maleable, no flexible propiamente dicho, y
+publicarlo así invita a que alguien lo doble esperando que vuelva. Al revisar la ficha de Vulk,
+nunca dice "flexible": dice "material G-Flex liviano" y habla de ajuste cómodo.
+
+**Causa raíz**: tomé el nombre comercial del material y lo traduje a una propiedad física. El
+nombre de un material no es una declaración de lo que hace — "G-Flex" es una marca de Vulk, igual
+que "Gore-Tex" no significa que algo sea impermeable por llamarse así. Además omití el trigger
+automático de `optical-expert` que el propio CLAUDE.md marca como obligatorio ante cualquier
+afirmación técnica óptica ANTES de publicar: un subtítulo de callout es exactamente eso.
+
+**Por qué es caro**: no es un texto en una página que se edita y listo. Queda quemado en un JPG,
+en cada publicación donde se subió, y corregirlo obliga a regenerar y volver a subir todo el set.
+Y choca con dos reglas duras del negocio: no prometer beneficios técnicos que no se cumplen, y
+honestidad sobre las limitaciones del producto.
+
+**Reglas preventivas**:
+1. Todo subtítulo de callout es una afirmación técnica. Va **textual de la ficha del fabricante**,
+   o no va. Ante la duda, el callout lleva sólo el título (el nombre del material o la parte), sin
+   adjetivos.
+2. Invocar `optical-expert` antes de generar placas con claims ópticos, como ya manda CLAUDE.md.
+3. `scripts/ml-placas.ts` ahora tiene `revisarClaims()`: avisa por consola cuando un texto contiene
+   flexible, irrompible, memoria, antirrayas, polarizado, fotocromático, filtro azul, "de por vida"
+   o absolutos tipo 100%, y dice qué hay que verificar en cada caso. No bloquea: avisa.
+4. Se sacó "metálicas con flex" del subtítulo por defecto del primer callout — el tipo de bisagra
+   cambia por modelo, y el Katleen justamente las tiene plásticas.
+
+**Estado**: 🟡 Mitigado — el aviso está implementado y probado, pero depende de que alguien lea la
+consola. La barrera real sigue siendo la regla 1.
+
+## 2026-08-24 — Casi reporto "6/6 placas aprobadas por Mercado Libre" sin haber probado que el validador estuviera evaluando algo
+
+**Qué pasó**: se corrió la API de diagnóstico de imágenes de ML sobre las 6 placas y devolvió las
+6 sin observaciones. El impulso fue reportarlo como "pasan todas". Pero la primera corrida fue
+sobre la categoría MLA457893 (Anteojos Graduados), y ahí la API devuelve `action: "empty"` y
+`detections: []` **para cualquier imagen**, incluida una placa con logo del vendedor, texto y
+fondo azul puesta como portada. Un "sin observaciones" de un validador que no está evaluando ese
+criterio no es una aprobación: es silencio.
+
+**Cómo se detectó**: antes de reportar, se armó un control negativo — una imagen con "OFERTA!",
+"ENVÍO GRATIS", una URL, un teléfono y una marca de agua semitransparente — y se la mandó como
+portada. En MLA457893 pasó limpia (señal de que el criterio no estaba activo); en MLA417128
+(Anteojos de Sol) la API sí la marcó con `text_logo`. Recién con el control funcionando la matriz
+completa tuvo valor.
+
+**Causa raíz**: confundir "el servicio respondió 200 sin errores" con "el servicio validó y
+aprobó". Es el mismo patrón que ya está en LEARNINGS del 2026-08-04 con MiCorreo, donde el control
+con `deliveryType: D` fue lo que hizo interpretable el resto de las variantes.
+
+**Regla para no repetirlo**: cuando un validador externo (API de moderación, linter, checker de
+plataforma) devuelve "todo bien", no reportarlo hasta haber corrido un caso que **tiene que**
+fallar. Si el caso que tiene que fallar pasa, el resultado positivo no significa nada todavía.
+Aplica a: diagnóstico de imágenes de ML, validaciones de AFIP/facturación, checkers de schema, y
+cualquier "smoke test" que sólo mire que no hubo excepción.
+
+**Segunda parte del mismo error, detectada después**: incluso con el control funcionando, la
+primera matriz se corrió sobre MLA457893 "Anteojos Graduados" por asumir que ahí van los armazones
+de receta. Un verificador adversarial del workflow lo marcó: un armazón que se vende SIN lentes
+graduados va a MLA417127 "Armazones y lentes sin graduar", que cuelga de Moda. La API de
+categorías lo confirma sin ambigüedad: MLA417127 tiene 87.881 publicaciones, MLA457893 tiene 141.
+Validar en la categoría equivocada da un resultado que parece bueno y no significa nada.
+
+**Regla ampliada**: antes de validar contra una plataforma, verificar que el contexto que se le
+pasa (categoría, cuenta, tipo de recurso) sea el real. Un `total_items_in_this_category` de dos
+dígitos contra uno de cinco es una señal clara de que la categoría elegida no es la del negocio.
+
+**Estado**: 🟡 Mitigado — la regla queda escrita acá; el script `ml-diagnostico-imagenes.ts` tiene
+`--verbose` para ver la respuesta cruda (lo que hizo visible el `action: "empty"`) y documenta en
+su encabezado cuál es la categoría correcta de cada tipo de producto.
+
+
 ## 2026-08-14 — El webhook de MP no distinguía "ya pagado" de "ya pagado y AVANZADO" — un reenvío tardío de MP regresó un pedido `shipped` a `paid` y reenvió el email de venta
 
 **Estado**: 🟡 Mitigado (fix en el código, falta corregir el pedido puntual afectado y confirmarlo)

@@ -72,3 +72,7 @@ Desktop.ini
 
 # Archivos derivados (concatenación de migrations + seeds para aplicar manualmente)
 supabase/cloud-bootstrap.sql
+
+# Backups de trabajo (fotos y descripciones anteriores antes de reemplazar)
+marketing/backup-imagenes/
+marketing/backup-ml/

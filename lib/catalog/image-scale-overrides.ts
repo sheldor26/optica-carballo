@@ -29,7 +29,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Iter 14.5 — primer feedback empírico REAL (iters previos no se aplicaban).
   // Founder ref: var 4 (brown) a 0.85 es la mejor → target visual.
   // Iter 14.6 — var 2 y 3 = ancla (perfectas a 0.95). Subir var 1 y 4 al target.
-  'vulk-day-light-sol/01-lateral.jpg': 0.86, // iter 14.5 0.78 chica → +10%
+  'vulk-day-light-sol/01-lateral.jpg': 0.93, // iter 14.5 0.78 chica → +10%
   'vulk-day-light-sol/02-frontal.jpg': 0.86,
   'vulk-day-light-sol/04-lateral-rosa.jpg': 0.95, // ✓ PERFECTA
   'vulk-day-light-sol/05-frontal-rosa.jpg': 0.95,
@@ -64,11 +64,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   //     y Rusty Dearly (1.15 uniforme) — target visual común para grids
   //     mezclados (/anteojos-de-sol/hombre, /anteojos-de-sol/mujer, etc).
   // Aplica a las 3 variantes del Rusty Yau (S10/POL, Revo Blue, Revo Green).
-  'rusty-yau/01-lateral.jpg': 1.4,
+  'rusty-yau/01-lateral.jpg': 1.76,
   'rusty-yau/02-frontal.jpg': 1.15,
-  'rusty-yau/04-revo-blue-lateral.jpg': 1.4,
+  'rusty-yau/04-revo-blue-lateral.jpg': 1.76,
   'rusty-yau/05-revo-blue-frontal.jpg': 1.15,
-  'rusty-yau/06-revo-green-lateral.jpg': 1.4,
+  'rusty-yau/06-revo-green-lateral.jpg': 1.75,
   'rusty-yau/07-revo-green-frontal.jpg': 1.15,
 
   // Rusty Feeled — founder reportó inconsistencia visual en grid 2026-05-31:
@@ -152,7 +152,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Rusty Xold — sub-regla 15 obligatoria post-carga: scale 1.15/1.0
   // default emparejando con Dearly/Etiquet (redondos/cuadrados femeninos).
   // 10 entries (2 por variante × 5 variantes).
-  'rusty-xold/XOLD SBLK-perfil.jpg': 1.15,
+  'rusty-xold/XOLD SBLK-perfil.jpg': 1.38,
   'rusty-xold/XOLD SBLK-frente.jpg': 1.0,
   'rusty-xold/XOLD 0292-perfil.jpg': 1.15,
   'rusty-xold/XOLD 0292-frente.jpg': 1.0,
@@ -270,7 +270,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Iter 2: 1.3/1.15 → founder reportó "te pasaste, quedó cortada".
   // Iter 3 (actual): 1.2/1.05 — +4.5%/+5% sobre iter 1, dentro del cap
   // visual (no recorta). Si queda chico vs iter 1, subir a 1.22/1.08.
-  'vulk-booping/BOOPING L.PINKS10 POL-perfil.jpg': 1.2,
+  'vulk-booping/BOOPING L.PINKS10 POL-perfil.jpg': 1.12,
   'vulk-booping/BOOPING L.PINKS10 POL- frente.jpg': 1.05,
   'vulk-booping/BOOPING MBLKDRT-03 POL-perfil.jpg': 1.2,
   'vulk-booping/BOOPING MBLKDRT-03 POL- frente.jpg': 1.05,
@@ -294,7 +294,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // founder (underscores en MBLK S10, espacios en otros, sin "perfil" en
   // MBLU 670 lateral) respetado tal cual.
   // SBLK lateral quedó más chica que el resto del grid (founder 2026-05-31) → 1.3.
-  'rusty-spell/SPELL SBLK - S10 POL perfil.jpg': 1.3,
+  'rusty-spell/SPELL SBLK - S10 POL perfil.jpg': 1.4,
   'rusty-spell/SPELL SBLK - S10 POL frente.jpg': 1.0,
   'rusty-spell/SPELL MBLK GBU30-perfil.jpg': 1.15,
   'rusty-spell/SPELL MBLK GBU30-frente.jpg': 1.0,
@@ -309,7 +309,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 1.2/1.05. Sweet spot entre 1.15 (chico) y 1.3 (grande).
   // Founder 2026-06-29: quedaba muy grande vs el resto del grid de receta →
   // perfiles 1.2 → 1.1 (frentes en 1.05).
-  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 0.9,
+  'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_perfil.jpg': 1.12,
   'rusty-spell-receta/SPELL_MBLU_670_R_BLUE_frente.jpg': 1.05,
   'rusty-spell-receta/SPELL_MBLK_p.jpg': 0.9,
   'rusty-spell-receta/SPELL_MBLK_f.jpg': 1.05,
@@ -372,7 +372,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Vulk Biller — hexagonal. Perfil 1.15 / frente-lateral 1.0. Nombres reales
   // del founder (casing/espacios inconsistentes, AQ31 en webp). Sin verificación
   // visual — founder chequea grid.
-  'vulk-biller/BILLER AQ31 PERFIL.webp': 1.15,
+  'vulk-biller/BILLER AQ31 PERFIL.webp': 1.4,
   'vulk-biller/BILLER AQ31 FRENTE.webp': 1.0,
   'vulk-biller/Biller MBLK 046 S10 perfil.jpg': 1.15,
   'vulk-biller/Biller MBLK 046  S10 Frontal.jpg': 1.0,
@@ -417,7 +417,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Vorez — cuadrado femenino. Perfil 1.15 / frente 1.0 (foto GALERIA-WEB
   // estilo Beason). Pendiente verificación visual del founder.
-  'rusty-vorez/VOREZ GALERIA-WEB-MROSE-HGB1 Perfil.jpg': 1.15,
+  'rusty-vorez/VOREZ GALERIA-WEB-MROSE-HGB1 Perfil.jpg': 1.07,
   'rusty-vorez/VOREZ AGALERIA-WEB-MROSE-HGB1 frente.jpg': 1.0,
   'rusty-vorez/VOREZ GALERIA-WEB-SBLK-S10-POL perfil.jpg': 1.15,
   'rusty-vorez/VOREZ AGALERIA-WEB-SBLK-S10-POL frente.jpg': 1.0,
@@ -471,7 +471,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Gresent — aviador doble puente. Founder 2026-06-02: perfil (lateral)
   // 1.20 (iteración: 1.35 mucho → 1.25 todavía grande → -0.05 → 1.20); frente 1.0.
-  'rusty-gresent/GRESENT_SDEMI_GG47_-_p.jpg': 1.2,
+  'rusty-gresent/GRESENT_SDEMI_GG47_-_p.jpg': 1.13,
   'rusty-gresent/GRESENT_SDEMI_GG47_-_F.jpg': 1.0,
   'rusty-gresent/GRESENT_sbh_gs9_-_p.jpg': 1.2,
   'rusty-gresent/GRESENT_sbh_gs9_-_f.jpg': 1.0,
@@ -482,7 +482,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Vulk Way Back — wayfarer. Perfil 1.15 / frente 1.0 (default). Nombres con
   // formatos inconsistentes (SBLK sin "galeria"). Pendiente verificación founder.
-  'vulk-way-back/WAY BACK-SBLK-S10-PERFIL.jpg': 1.15,
+  'vulk-way-back/WAY BACK-SBLK-S10-PERFIL.jpg': 1.07,
   'vulk-way-back/WAYBACK-SBLK-S10 F.jpg': 1.0,
   'vulk-way-back/WAY BACK MDBLU-REVO BLUE p galeria.jpg': 1.15,
   'vulk-way-back/WAY BACK MDBLU-REVO BLUE f galeria.jpg': 1.0,
@@ -571,7 +571,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // cambie lo que se ve en la grilla hay que mover la MBLK también.
   'vulk-clems/CLEMS CRY P.jpg': 1.195,
   'vulk-clems/CLEMS CRY F.jpg': 1.045,
-  'vulk-clems/CLEMS MBLK P.webp': 1.095,
+  'vulk-clems/CLEMS MBLK P.webp': 1.02,
   'vulk-clems/CLEMS MBLK F.webp': 0.945,
   'vulk-clems/CLEMS SBLK P.jpg': 1.195,
   'vulk-clems/CLEMS SBLK F.jpg': 1.045,
@@ -607,7 +607,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Vulk Tour 81 Receta — cuadrado unisex G-Flex. Fotos GALERIA. Inicial 1.3/1.15
   // (precedente My Crew); founder confirmó visual GRANDE → -0.05 → 1.25/1.10 → otro
   // -0.05 "un poco más" → perfil 1.20 / frente 1.05 (2026-06-13). medidas.jpeg en 1.0.
-  'vulk-tour-81/TOUR 81-MBLK PERFIL GALERIA.jpg': 1.2,
+  'vulk-tour-81/TOUR 81-MBLK PERFIL GALERIA.jpg': 1.13,
   'vulk-tour-81/TOUR 81-MBLK FRENTE GALERIA.jpg': 1.05,
   'vulk-tour-81/TOUR 81 CRY PERFIL GALERIA.jpg': 1.2,
   'vulk-tour-81/TOUR 81 CRY FRENTE GALERIA.jpg': 1.05,
@@ -632,7 +632,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // (GALERIA=perfil, AGALERIA=frente). Encuadre estándar GALERIA-WEB → perfil 1.15 /
   // frente 1.0. Revo Red usa -p/-f. medidas.png en 1.0 (no grid). (MBLUE/Revo Blue del
   // bucket NO se carga: sin SKU/MLA.)
-  'rusty-terdey/TERDEY GALERIA-WEB-SBLK-S10-POL.jpg': 1.15,
+  'rusty-terdey/TERDEY GALERIA-WEB-SBLK-S10-POL.jpg': 1.07,
   'rusty-terdey/TERDEY AGALERIA-WEB-SBLK-S10-POL.jpg': 1.0,
   'rusty-terdey/TERDEY GALERIA-WEB-MBLK-S10-POL.jpg': 1.15,
   'rusty-terdey/TERDEY AGALERIA-WEB-MBLK-S10-POL.jpg': 1.0,
@@ -645,7 +645,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Rusty Patien SOL — wayfarer unisex, bisagras metálicas flex. Fotos 1200×589.
   // founder 2026-06-13: +0.05 a todas (1.2/1.05 → 1.25/1.10) MENOS MBLK/S10 POL que
   // quedó bien en 1.2/1.05 (esa variante tiene la foto con el anteojo un toque más grande).
-  'rusty-patien/PATIEN-SBLK---S15-perfil.jpg': 1.25,
+  'rusty-patien/PATIEN-SBLK---S15-perfil.jpg': 1.41,
   'rusty-patien/PATIEN-SBLK---S15-frente.jpg': 1.1,
   'rusty-patien/PATIEN-MBLK---R-BLUE-perfil.jpg': 1.25,
   'rusty-patien/PATIEN-MBLK---R-BLUE-frente.jpg': 1.1,
@@ -694,7 +694,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 2026-06-14): las 6 son 900×442 (2.04:1) = MÁS ANCHAS que el card 3:2 → object-contain
   // ajusta por ancho y el anteojo ya llena ~90-95% → scale 1.0 en TODAS (subir cropearía las
   // patillas, ≠ The Sil que venía con más margen y usaba 1.15). ⚠️ paths con espacios/typo del founder.
-  'vulk-raven/RAVEN SBLK P.jpg': 1.0,
+  'vulk-raven/RAVEN SBLK P.jpg': 1.07,
   'vulk-raven/RAVEN SBLK F.jpg': 1.0,
   'vulk-raven/RAVEN MBLK P.jpg': 1.0,
   'vulk-raven/RAVEN MBLK F.jpg': 1.0,
@@ -723,7 +723,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
 
   // Rusty Yeah SOL — aviador doble puente acetato, 3 colores. 900×442, gemelo de forma =
   // The Take → mismo scale 1.2/1.0. PROVISIONAL, reverificar contra el grid (regla 15).
-  'rusty-yeah/YEAH_C1_POL.__perfil.jpg': 1.2,
+  'rusty-yeah/YEAH_C1_POL.__perfil.jpg': 1.12,
   'rusty-yeah/YEAH_C1_POL.__frente.jpg': 1.0,
   'rusty-yeah/YEAH_C2_POL._perfil.jpg': 1.2,
   'rusty-yeah/YEAH_C2_POL._frente.jpg': 1.0,
@@ -740,7 +740,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // Rusty Zinz Optics RECETA — cuadrado unisex. Fotos 1200×589 (ratio 2.04:1 panorámico,
   // más ancho que el card 3:2) → object-contain llena por ancho. Baseline receta perfil 1.1 /
   // frente 1.0 (mismo encuadre que Patien/The Take receta; reverificar grid post-deploy, regla 15).
-  'rusty-zinz-receta/ZINZ-SBLK-PERFIL.jpg': 1.1,
+  'rusty-zinz-receta/ZINZ-SBLK-PERFIL.jpg': 1.32,
   'rusty-zinz-receta/ZINZ-SBLK-FRENTE.jpg': 1.0,
   'rusty-zinz-receta/ZINZ-669K-SBLK-PERFIL.jpg': 1.1,
   'rusty-zinz-receta/ZINZ-669K-SBLK-FRENTE.jpg': 1.0,
@@ -784,7 +784,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // fotos 900×442 (más anchas que el card 3:2 → object-contain llena por ancho) → scale 1.0
   // en las 4 (mismo criterio que el sol The Trial y Raven; NO el 1.15 receta que cropearía).
   // Founder 2026-06-14: ambas variantes +0.03 → perfil 1.03 (frentes en 1.0).
-  'vulk-the-trial-receta/THE TRIAL 670-056 PERFIL.jpg': 1.03,
+  'vulk-the-trial-receta/THE TRIAL 670-056 PERFIL.jpg': 1.13,
   'vulk-the-trial-receta/THE TRIAL 670-056 FRENTE.jpg': 1.0,
   'vulk-the-trial-receta/THE TRIAL MBLK-046 PERFIL.jpg': 1.03,
   'vulk-the-trial-receta/THE TRIAL MBLK-046 FRENTE.jpg': 1.0,
@@ -809,6 +809,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // literal — es el mismo storage_path usado como lookup.
   'vulk-ready?-receta/Ready-CRY-PERFIL.jpg': 1.1,
   'vulk-ready?-receta/Ready-CRY-FRENTE.jpg': 1.0,
+
+  // --- Ajuste por medición del 2026-08-24 -------------------------------
+  // Estas fotos no tenían override (o sea, scale 1.0 implícito) y quedaban
+  // por debajo del 93% de ocupación que es la mediana del catálogo. Valores
+  // calculados con `pnpm auditar:encuadre`, no a ojo.
+  'vulk-stray-receta/03-sblk-lateral.jpg': 1.13, // ocupaba 82%
+  'vulk-stray-receta/05-663-lateral.jpg': 1.13, // ocupaba 83%
+  'vulk-stray-receta/10-cry-lateral.jpg': 1.13, // ocupaba 83%
+  'vulk-stray-receta/01-mblk-lateral.jpg': 1.12, // ocupaba 83%
+  'vulk-stray-receta/07-mdemi-mblk-lateral.jpg': 1.12, // ocupaba 83%
 };
 
 export function getImageScale(path: string | null | undefined): number {

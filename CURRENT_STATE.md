@@ -7,6 +7,539 @@
 
 ## Última actualización
 
+**Fecha**: 2026-08-24
+**Por**: Claude Code (a pedido de Juan)
+
+### Qué se construyó — 5 placas de "Medios de pago" para Instagram (auditadas con el trío)
+
+Rediseño de la placa de medios de pago en 5 direcciones visuales distintas, mismo contenido,
+story 1080×1920. Vive en `marketing/placas-medios-de-pago/`:
+
+- `build.py` — genera los 5 HTML desde un sistema compartido (tokens, escala tipográfica,
+  safe areas, bloque de banco, footer). **Editar acá, no los HTML sueltos** (se sobrescriben).
+- `render.sh` — pasa cada HTML a PNG 1080×1920 con Chrome headless.
+
+| Archivo | Dirección |
+|---------|-----------|
+| `01-editorial-navy` | Navy + dorado de la marca, spotlight radial, tipografía editorial |
+| `02-minimal-claro` | Hueso + marco hairline, la más premium — **recomendada** |
+| `03-rosa-mate` | Rosa de la placa vieja, mesh de radiales, mate |
+| `04-cartel-negro` | Negro + dorado, Avenir Next Condensed gigante, tipo afiche |
+| `05-ticket` | Ticket troquelado con `-webkit-mask` + trama de impresión térmica |
+
+**Sistema compartido** (aplica a las 5): safe areas de story (250px arriba / 260px abajo, nada
+de contenido en la zona que tapa la UI de IG); una sola familia (Avenir Next) + New York itálica
+como acento en "pago"; cero `box-shadow` (hairlines de 1px en su lugar); grano SVG `feTurbulence`
+inline; dorado `#7E5F26` sobre fondos claros y `#E3B968` sobre oscuros (WCAG ≥4.5:1 verificado);
+bloque Banco Corrientes idéntico en las 5 (grid día | cuotas | % OFF); footer unificado
+`@optica.carballo` + `opticacarballo.com.ar`.
+
+**Truco reutilizable**: el logo PNG (cuadrado navy opaco) se funde sobre fondos oscuros con
+`filter:grayscale(100%) contrast(600%); mix-blend-mode:screen` — queda solo el monograma blanco
+flotando, sin cuadrado ni anillo. Sobre fondos claros, `mix-blend-mode:multiply`.
+
+**Auditoría**: 3 pasadas de `/trio-auditor` (Codex + Gemini). Cerró con **GO de los dos en las 5
+placas** y sin bloqueantes. Detalle de lo corregido en `LEARNINGS.md` y `MISTAKES.md` de esta fecha.
+
+Para regenerar todo:
+
+```bash
+cd marketing/placas-medios-de-pago && python3 build.py && ./render.sh
+```
+
+**Pendiente**: que el founder elija la dirección ganadora y decidir si se adapta a 1080×1350 (feed).
+Según los auditores, la 02 y la 04 son las que mejor aguantan el recorte a 4:5 y 1:1; la 05 se
+rompe en 1:1 porque el troquelado necesita la verticalidad completa.
+
+### Qué se construyó — generador de placas para publicaciones de Mercado Libre
+
+Script nuevo `scripts/ml-placas.ts` (comando `pnpm placas`): a partir de 2 fotos del
+armazón (perfil + frente) y sus medidas en mm, genera el set completo de placas de una
+publicación de ML **y** las 3 placas limpias que sirven para la ficha del sitio.
+
+Salidas por corrida:
+
+| Archivo | Formato | Qué es |
+|---------|---------|--------|
+| `ml/01-perfil.jpg` | 1500×1500 | Perfil centrado sobre blanco puro, sin texto ni logo |
+| `ml/02-frente.jpg` | 1500×1500 | Frente centrado sobre blanco puro, sin texto ni logo |
+| `ml/03-callouts.jpg` | 1500×1500 | Perfil + 4 burbujas amarillas con flecha |
+| `ml/04-medidas.jpg` | 1500×1500 | Esquema del armazón con las cotas reales |
+| `ml/05-lentes.jpg` | 1500×1500 | "Se pueden adaptar lentes…" con banda amarilla (acepta foto de persona con `--lifestyle`) |
+| `ml/06-garantia.jpg` | 1500×1500 | Card de trust sobre azul, textos tomados de `BUSINESS_POLICIES.md` |
+| `web/perfil.jpg` \| `frente.jpg` \| `medidas.jpg` | 2000×1333 (3:2) | Mismo criterio que `normalize-product-photos.ts`, listas para el catálogo |
+
+Decisiones de implementación:
+
+- **Recorte del armazón**: `trim` de sharp por default (gratis, instantáneo, funciona con
+  las fotos de catálogo sobre fondo blanco); cae a Claude Vision automáticamente si el
+  fondo no es uniforme, y se puede forzar con `--vision`. Reusa el prompt de bbox de
+  `normalize-product-photos.ts` (helper nuevo `scripts/lib/placas-frame.ts`).
+- **Producto siempre centrado**: el encuadre lo hace `encajar()` sobre el bbox recortado,
+  no sobre la foto original — así el armazón queda centrado aunque la foto venga descuadrada.
+- **Diagrama de medidas**: se dibuja en espacio milimétrico y se escala, así la proporción
+  entre calibre / puente / ancho total es fiel a las medidas cargadas. El reparto vertical
+  se calcula (no son fracciones fijas) para que el mismo dibujo entre en 1:1 y en 3:2.
+- **Tipografía**: Archivo Black para los callouts (misma estética que las placas que ya usa
+  el founder), Manrope para las cotas. Fuentes versionadas en `assets/placas/fonts/` (OFL);
+  el script las registra en `~/Library/Fonts` la primera vez porque librsvg en macOS resuelve
+  familias por CoreText y no por fontconfig.
+- **Guardrail óptico**: si el alto del frente es menor a 30mm y el texto de la placa 05
+  menciona progresivos, avisa por consola (altura de montaje insuficiente).
+
+Verificado corriendo el set completo con fotos reales del catálogo (Rusty And Now) en 1:1 y
+3:2, revisando cada placa a ojo e iterando 4 veces sobre el diagrama de medidas.
+
+### Segunda iteración — plantilla del founder + auditoría estética (misma fecha)
+
+**Placa de medidas: ahora usa la plantilla del founder.** Juan dejó en `marketing/medidas.png`
+su plantilla real (1500×1500, dibujo de armazón + patilla con las flechas de cota ya trazadas y
+la palabra "mm" en su lugar, sin los números). El generador ahora la rellena en vez de dibujar su
+propio diagrama:
+
+- `scripts/lib/placas-plantilla.ts` detecta los cinco "mm" por análisis de componentes conectadas
+  (flood fill + agrupación por línea de base) y los identifica por posición. Las coordenadas NO
+  están hardcodeadas: si el founder mueve un texto en Canva, el relleno lo sigue.
+- Los números se escriben en **DM Sans 400**, elegida comparando 17 familias contra un recorte del
+  "mm" de la plantilla (normalización por altura de x + error de píxeles + penalización por
+  proporción). La tipografía original es de Canva, propietaria y no distribuible.
+- Para el 3:2 del sitio, `plantillaA32()` recorta los dos bloques (frente y patilla), los escala y
+  los reapila, en vez de encajar el cuadrado entero y dejarlo chico entre dos franjas vacías.
+- El diagrama dibujado por código queda como respaldo si la plantilla no está o no se puede leer.
+
+**Auditoría estética con el trío + workflow multi-agente.** Se auditó el set con Codex CLI y
+Antigravity/`agy` en paralelo (skill `trio-auditor`) más un workflow de 10 agentes (normas de ML
+Argentina, benchmark de la categoría, tres análisis visuales con lectura real de las imágenes, y
+tres verificadores adversariales sobre cada regla normativa recolectada).
+
+Cambios aplicados a partir de esa auditoría:
+
+| Placa | Cambio | Por qué |
+|-------|--------|---------|
+| 01 / 02 | Producto de 88% a 92% del cuadro + enfoque suave sobre el producto | En la miniatura de ML competía con fotos que llenan el cuadro |
+| 03 | Producto de 62% a 73%; ancho de burbuja acotado a media fila; subtítulo de 1.7% a 2.4% del canvas; tracking de 0.14/0.24 a 0.08 em; flechas de 8 a 11px | Las burbujas de la fila de abajo se solapaban, el subtítulo era ilegible en miniatura y el producto quedaba como elemento secundario |
+| 03 | Alto de burbuja uniforme con o sin subtítulo; default del cuarto callout de "Cómodos" a "Lente / protección UV" | Las burbujas de una fila terminaban a alturas distintas, y la flecha del cuarto apunta al lente: un claim de confort ahí no se entiende |
+| 05 | Banda de 15% a 18%, texto centrado en la banda, subtítulo derivado del título (0.55×), producto a 88%, y ahora usa la foto de FRENTE | El texto colgaba del borde superior, título y subtítulo medían casi lo mismo, y el perfil aparecía en tres placas del set |
+| 06 | Tracking de 0.16/0.12 a 0.02/0.01 em; más aire bajo el título; verde de #1FA24A a #157F38 (3.3:1 → 5.1:1); check más grueso; margen de card de 5.5% a 8% | El tracking crecía con el cuerpo, el título se leía como parte del primer ítem y el check verde estaba al límite de contraste |
+| 06 | El logo se pinta como tinta azul sobre la card, extrayendo el isotipo por luminancia con umbral | `logo-square.png` es el isotipo blanco sobre un cuadrado azul: puesto tal cual quedaba como un parche recortado |
+| 06 | Ítems y plazo de garantía configurables (`--item`, `--garantia`, `--titulo6`) | Estaban hardcodeados; el primer modelo con garantía de 6 meses salía publicado con "1 año" |
+
+Flags nuevos: `--plantilla`, `--aclaracion`, `--garantia`, `--item` (repetible), `--titulo6`.
+
+### Verificación normativa: se le preguntó a Mercado Libre, no a los auditores
+
+Codex y Gemini se contradijeron de frente sobre las normas de imágenes: Codex dio NO-GO diciendo
+que las placas con texto (03 a 06) violan las normas; Gemini dio GO diciendo que las secundarias
+con infografía están permitidas. En vez de arbitrar, se usó la API oficial de diagnóstico de ML
+(`POST /moderations/pictures/diagnostic`), que valida una imagen antes de asociarla a una
+publicación. Quedó como `scripts/ml-diagnostico-imagenes.ts` (`pnpm ml:diag`), reusando el token
+OAuth de `marketplace_integrations`. **No crea, modifica ni pausa ninguna publicación.**
+
+Matriz corrida el 2026-08-24, con control negativo (imagen con "OFERTA!", URL, teléfono y marca de
+agua) para confirmar que la API estaba evaluando de verdad:
+
+| Categoría | `picture_type` | Placas limpias (01, 02) | Placas con texto (03, 04, 06) |
+|-----------|----------------|-------------------------|-------------------------------|
+| MLA417128 Anteojos de Sol (Moda) | `thumbnail` (portada) | sin observaciones | **`text_logo`** |
+| MLA417128 Anteojos de Sol (Moda) | `other` (secundaria) | sin observaciones | sin observaciones |
+| MLA417127 Armazones sin graduar (Moda) | `thumbnail` (portada) | sin observaciones | **`text_logo`** |
+| MLA417127 Armazones sin graduar (Moda) | `other` (secundaria) | sin observaciones | sin observaciones |
+
+**Corrección importante sobre la categoría.** La primera corrida se hizo sobre MLA457893
+"Anteojos Graduados" (Salud), donde la API no marca nada — ni siquiera el control negativo. Un
+verificador adversarial del workflow señaló que ésa no es la categoría del negocio: un armazón que
+se vende SIN lentes graduados va a **MLA417127 "Armazones y lentes sin graduar"**, que cuelga de
+Moda. Verificado contra la API de categorías: MLA417127 tiene 87.881 publicaciones y MLA457893
+tiene 141. Rehecha la matriz sobre MLA417127, el resultado es idéntico al de Anteojos de Sol.
+
+Conclusión: los dos auditores tenían una parte. La norma está redactada de forma general (Codex),
+pero la moderación automática se aplica sobre la portada (Gemini). Matiz honesto: que la
+moderación no marque una infografía secundaria **no es lo mismo que una autorización explícita** —
+los verificadores confirmaron que ninguna doc oficial de ML AR dice que las secundarias admitan
+texto. Lo verificable es que el sistema no las penaliza, en las dos categorías del negocio.
+
+**Regla operativa: la portada va siempre limpia (placa 01). Las placas con texto, sólo como
+secundarias.**
+
+### Paleta: el set pasó a azul + blanco
+
+El founder aclaró que la identidad de la óptica es azul marino + blanco, y que el amarillo de las
+placas viejas era heredado, no una decisión de marca: "podés pasar todo a Azul (ya que la óptica
+predomina el azul y blanco)". Las burbujas de callouts, sus flechas y la banda de la placa de
+lentes pasaron a `#12294B` con texto blanco. Sale de dos constantes (`ACENTO` / `ACENTO_TEXTO` en
+`scripts/lib/placas-svg.ts`): cambiarlas repinta el set entero.
+
+### Receta vs sol
+
+El founder aclaró que un armazón de receta no lleva claims de UV400, categoría de filtro ni
+polarizado — el lente es de demostración. Esos claims son sólo para anteojos de sol, y para esos
+él ya tiene sus propias placas hechas. Se agregó `--tipo receta|sol` (default `receta`): en sol el
+cuarto callout habla del lente, en receta habla de confort. **No se agregó** la placa de
+protección UV que proponían los agentes: para receta no corresponde y para sol ya existe.
+
+### Flechas de los callouts: ahora se detectan las partes del armazón
+
+El founder pidió que las flechas salgan de donde corresponde: "la flecha que habla de las bisagras
+debe tratar de salir de la bisagra más cercana". Las anclas eran fracciones fijas del cuadro
+pasadas a mano por flag, así que nunca caían bien en una foto concreta.
+
+`scripts/lib/placas-partes.ts` (nuevo) detecta con Vision dónde está cada parte en ESA foto:
+bisagras, patillas, cristales, puente y marco de cada lado. Después:
+
+- Cada callout busca la parte de la que habla (por lo que dice su título) y toma **la del lado de
+  su burbuja**: la flecha de "bisagras" va a la bisagra más cercana, no cruza la foto.
+- Un callout genérico ("cómodos", "liviano") va a una parte estructural — patilla, bisagra, marco —
+  nunca al cristal, para no dar a entender que habla del lente.
+- `destrenzar()` corrige los cruces: las dos flechas de un mismo lado tienen que respetar el orden
+  vertical de sus burbujas.
+- La flecha sale del borde de la burbuja que mira al destino, no siempre de abajo.
+
+Detalles de implementación que costaron:
+
+- **Haiku no alcanza para esto.** Devolvía todos los puntos corridos hacia arriba. Con Sonnet la
+  detección es correcta. Es una llamada por producto, el costo no mueve la aguja.
+- **Grilla de referencia**: se le manda la foto con una grilla de porcentajes dibujada encima y se
+  le piden las coordenadas en porcentaje de esa grilla, no en pixels. Con la referencia visible
+  ancla mucho mejor.
+- **Se le pide describir la pose antes de ubicar** (`tool_choice: auto` en vez de forzar la tool).
+- `--debug-partes` escribe un JPG con los puntos detectados y su nombre. Sin eso se itera a ciegas
+  sobre coordenadas y no se distingue un error de detección de un error de asignación.
+
+Verificado en dos poses muy distintas: un envolvente de sol en tres cuartos y un armazón metálico
+de receta.
+
+### HECHO: fotos de Vulk Katleen SDEMI-SBLK GB27 reemplazadas en producción
+
+El founder reportó que las fotos de esa variante estaban mal. Al revisarlas aparecieron dos
+problemas además del que él reportó:
+
+1. **La foto no correspondía a lo que vende.** La publicada mostraba el armazón con patillas
+   negras; el producto real es todo carey brillo, patillas incluidas. Es el defecto que la
+   auditoría marcó como crítico: una foto que no es exactamente el artículo ofrecido es causal de
+   reclamo y choca con las Políticas de Publicación de ML.
+2. **La base y el archivo estaban desincronizados.** `product_images` declaraba 1500×1000 y los
+   archivos eran 900×442 (aspecto 2.04:1, no el 3:2 del catálogo). Por eso se deformaban.
+
+**Origen de las fotos nuevas**: el founder pasó la URL de Vulk. Las dos imágenes de producto se
+bajaron de ahí (900×442, el máximo que publica Vulk). La página de Vulk las lista bajo otro código
+de variante; el founder aclaró explícitamente que **el nombre no importa, las imágenes son las
+correctas** — tiene el producto físico en la óptica.
+
+**Qué se hizo**: se generaron con `pnpm placas --web-ancho 1500 --web-alto 1000` (flags nuevos)
+para que coincidan exactamente con lo que declara `product_images` y no haya que tocar la fila.
+Se reemplazaron los dos archivos en Storage con `pnpm foto:reemplazar`, que guarda el anterior en
+`marketing/backup-imagenes/` antes de pisar. Verificado bajando las URLs públicas: las dos sirven
+1500×1000. Los `alt_text` ya decían "frente carey brillo con lente marrón degradé", así que siguen
+siendo correctos y no se tocaron.
+
+| storage_path | sort_order | primaria | estado |
+|---|---|---|---|
+| `vulk-katleen/KATLEEN SDEMI-SBLK GB27 -Perfil.jpg` | 0 | sí | reemplazada, 1500×1000 |
+| `vulk-katleen/KATLEEN SDEMI-SBLK GB27 - F.jpg` | 1 | no | reemplazada, 1500×1000 |
+
+La placa de medidas (`vulk-katleen/medidas.webp`) no se tocó.
+
+**Medidas confirmadas por el founder**: las de la placa que ya está en Supabase son las reales —
+calibre 53 mm, alto 42 mm, ancho total 129 mm, puente 18 mm, patilla 145 mm. La descripción que
+circula dice "Ancho de lente: 57 mm", que es **incorrecto** y hay que corregir en la publicación:
+con 57 el ancho daría 132 mm, más que los 129 mm de ancho total declarados. La ficha también dice
+bisagras plásticas, así que en este modelo no corresponde el callout de bisagras metálicas.
+
+**Set de placas de ML generado** para el modelo, con esos datos y `--tipo sol`. Pasó el
+diagnóstico oficial de ML en MLA417128: 6/6 sin observaciones.
+
+### Herramienta nueva: bajar todas las variantes de un modelo Vulk
+
+El founder preguntó si, dándole la URL de una ficha de Vulk, se pueden hacer las placas de todas
+las variantes del modelo. Sí, y quedó automatizado: `scripts/vulk-fotos.ts` (`pnpm vulk:fotos`).
+
+Cómo está hecho el sitio de Vulk, verificado sobre Katleen y The Sil:
+
+- La **página madre** del modelo (`/eyewear/sunglasses/<linea>/<modelo>/`) trae un `data-url` por
+  cada variante en el selector de colores. Ése es el índice: partir de ahí evita adivinar URLs.
+- La línea cambia por modelo (`g-flex` para Katleen, `grilamid` para The Sil) y el código de
+  variante en la URL usa **guion doble** donde el código lleva barra: "SBLK/S10 POL" →
+  `sblk--s10-pol`. Por eso no sirve construir la URL a mano.
+- Las fotos están en el HTML crudo, no hace falta ejecutar JavaScript.
+- Cada ficha trae tres imágenes: frente, perfil y una del packaging. El frente se identifica por el
+  `<img id="open-product-color-preview">` cuyo `alt` es el código de la variante; el packaging se
+  descarta por tamaño (mide varios miles de píxeles contra los ~900 de las de producto).
+
+Corrido sobre Katleen: **6 variantes** descubiertas, con su código y SKU, frente y perfil de cada
+una. Se generaron los 6 sets completos — **54 placas** — con las medidas confirmadas
+(129/53/18/42/145) y el color de frente y lente propio de cada variante.
+
+**Revisión del set completo (mosaico)**: para controlar 36 placas sin abrirlas de a una se armó un
+mosaico de 6 variantes × 6 placas (`mosaico-completo.jpg` en la carpeta de salida). Es la forma
+práctica de auditar un lote: de un vistazo se ve si algún color salió cruzado, si falta una placa o
+si un callout quedó fuera de lugar. Conviene repetirlo en cada lote.
+
+Lo que mostró la revisión:
+
+- Los colores de frente y lente salieron correctos en las 6, y los callouts se adaptan solos
+  ("frente negro mate" / "frente carey brillo" / "frente siena mate", "lente naranja" / "lente
+  polarizado gris" / "lente marrón degradé").
+- Las placas de **medidas y garantía son idénticas** entre variantes. Es correcto —mismo modelo,
+  misma garantía— y se generan igual para cada una, de modo que cada publicación tenga su set
+  completo sin depender de archivos de otra variante.
+- **A afinar**: la flecha del callout genérico ("ultra liviano") no cae siempre en la misma parte.
+  Como no nombra una parte concreta, `elegirAuto()` la manda a la estructural más cercana visible,
+  y eso cambia con la pose: en algunas variantes va a la patilla, en otras al armazón o al lente.
+  Ninguna quedó absurda, pero si se quiere consistencia entre variantes del mismo modelo hay que
+  fijarla con `--a2`. Alternativa a evaluar: que un callout sin parte reconocible tenga una parte
+  preferida configurable, en vez de resolverse por cercanía.
+
+**Cotejo con el catálogo**: de las 6 variantes que publica Vulk, el catálogo tiene 4
+(MBLK/C8B15, MBLK/S10 POL, MSIENNA/HGG1, SDEMI-SBLK/GB27). **Faltan dos**: MDEMI/HGB1 (SKU 125908)
+y SBLK/S10 POL (SKU 125900). Ojo que MDEMI/HGB1 y SDEMI-SBLK/GB27 son variantes distintas aunque
+las dos sean carey con lente marrón degradé — es la confusión que apareció al cargar las fotos del
+Katleen. Además MSIENNA/HGG1 está en el catálogo con stock 0.
+
+### Segundo producto con el mismo flujo: Vulk The Sil
+
+El founder pidió repetir el proceso en otro producto de Vulk para ver si es repetible. Se eligió
+**The Sil** con criterio de dato: 56 unidades de stock (el siguiente producto Vulk con fotos sin
+procesar tiene 15) y 6 de sus 7 imágenes en 900×442.
+
+**El problema resultó distinto al del Katleen.** Acá el producto SÍ corresponde en las tres
+variantes; lo que estaba mal era el formato: 900×442 es aspecto 2.04:1, no el 3:2 del catálogo, así
+que las fotos se deformaban en la ficha. No hizo falta bajar nada del fabricante: alcanzó con pasar
+las que ya estaban por el pipeline.
+
+**Hecho**: las 6 fotos (3 variantes × perfil y frente) procesadas a 1500×1000 centradas y
+reemplazadas con nombre nuevo + `storage_path` actualizado. Verificado en
+`/anteojos-de-sol/vulk/vulk-the-sil`: primera consulta `STALE` con las viejas, segunda `HIT` con las
+nuevas, 145 referencias al path nuevo en el HTML.
+
+**Set de placas generado** para la variante primaria (SBLK/S10 POL). 6/6 pasaron el diagnóstico de
+ML en MLA417128. Los callouts usan sólo lo que la ficha oficial de Vulk declara textualmente:
+armazón **Grilamid** (frente y patillas), **28 gramos**, lente **polarizado** con **100% protección
+UVA y UVB**. El chequeo `revisarClaims()` avisó por "polarizado" y por "100%", y los dos quedaron
+verificados contra la ficha — funcionó como corresponde: avisa, no bloquea.
+
+**Lo que la ficha de Vulk NO dice y por lo tanto no se puso**: material del lente (no menciona
+policarbonato) ni categoría de filtro (no menciona cat 3). Es el default del founder para anteojos
+de sol, pero se dejó fuera hasta que él lo confirme para este modelo.
+
+**Discrepancia de medidas a resolver con el founder**: la placa cargada en Supabase dice calibre
+**55** y ancho total **144**; la ficha de Vulk dice **53-20-145** y ancho **145**. Coinciden en
+puente 20, alto 51 y patilla 145. Las dos versiones cierran geométricamente, así que el chequeo no
+lo resuelve. Se usaron los de la placa por el precedente del Katleen (el founder confirmó entonces
+que su placa es la fuente real), pero conviene que lo confirme. Además la ficha de Vulk repite
+"145" como patilla y como ancho total, lo que sugiere un error en la ficha del fabricante.
+
+**Dos datos nuevos que salieron del fabricante**:
+- Peso oficial **28 gr** — destraba la entrada de este modelo en la lista de pesos pendientes de
+  `BACKLOG.md`, sin necesidad de balanza.
+- Existe una **cuarta variante** que no está en el catálogo: MBLK/REVO BLUE POL, SKU 128300, con
+  lente polarizado con coating revo.
+
+**Pendiente**: las tres variantes tienen publicación propia en ML (MLA1391852396, MLA1532396744,
+MLA1398498685). No se tocaron todavía.
+
+### Encuadre en las grillas — AUDITADO Y CORREGIDO (pendiente de deploy)
+
+El founder pidió que todas las fotos se vean del mismo tamaño en las categorías, y después aprobó
+aplicar el ajuste con la condición de poder volver atrás.
+
+**Herramienta**: `scripts/auditar-encuadre.ts` (`pnpm auditar:encuadre`), sólo lectura. Mide las 82
+fotos primarias combinando las tres variables que determinan el tamaño percibido: cuánto ocupa el
+producto dentro de su JPG, el aspecto de la foto contra el 3:2 de la card (con `object-contain`, una
+foto más apaisada deja franjas y el producto se ve más chico) y el scale de
+`image-scale-overrides.ts`. Además chequea si el producto se sale de la card, porque un anteojo
+cortado por el borde es peor que uno chico.
+
+**El umbral salió de los datos, no de la intuición.** Con un objetivo elegido a ojo (86%) el reporte
+marcaba 41 productos fuera de rango; midiendo la distribución real (mediana 93%, p25 89%, p75 96%)
+quedaron 25, y los 16 restantes eran la norma del catálogo. Detalle en `LEARNINGS.md`.
+
+**Aplicado**: 20 scales corregidos y 5 agregados (los de `vulk-stray`, que no tenían override y
+quedaban al 82-83%). Resultado medido: **de 57/82 a 82/82 dentro del rango, y 0 productos cortados**
+(el más apretado es `rusty-yau`, 93% de ancho y 89% de alto). Typecheck en verde.
+
+Los ajustes más grandes: `rusty-yau` 1.40 → 1.76 (ocupaba 74%), `rusty-spell-receta` 0.90 → 1.12,
+`vulk-biller` 1.15 → 1.40, `rusty-xold` 1.15 → 1.38 (32 unidades de stock), `rusty-patien`
+1.25 → 1.41 (36 unidades). En el otro extremo se bajaron los que llenaban el cuadro al 100%:
+`rusty-terdey`, `vulk-way-back`, `rusty-yeah`, `rusty-vorez` y `vulk-clems`, todos a ~1.07-1.12.
+
+**Importante — todavía no se ve en el sitio.** El cambio es en código (`image-scale-overrides.ts`),
+así que recién se ve al deployar. No se pudo verificar en el dev server local porque pide login y no
+corresponde ingresar credenciales; la verificación se hizo con la medición y con una simulación que
+replica el render real (object-contain + scale + recorte por overflow).
+
+**Marcha atrás**: `git checkout lib/catalog/image-scale-overrides.ts`. El archivo estaba limpio en
+git antes del cambio (último commit 8295c74), y además quedó copia en el scratchpad de la sesión.
+
+### Medición del catálogo completo: el problema de las fotos no era de dos productos### Medición del catálogo completo: el problema de las fotos no era de dos productos
+
+Al preguntar el founder qué convenía mejorar, se midió el catálogo entero contra producción en vez
+de proponer de memoria. Resultado:
+
+| Marca | Productos | Imágenes | En baja resolución (<1400px) | Fuera del aspecto 3:2 |
+|-------|-----------|----------|------------------------------|------------------------|
+| Rusty | 42 | 298 | **90 (30%)** | 88 |
+| Vulk | 30 | 229 | **79 (34%)** | 87 |
+
+**169 imágenes en baja resolución y 175 fuera del 3:2** en las dos únicas marcas del catálogo. Lo
+que se arregló a mano en Katleen y The Sil afecta a un tercio del catálogo.
+
+Los cuatro productos con más stock y peores fotos son **todos de Rusty**, y suman 114 unidades:
+`rusty-patien` (36 unidades, 8 de 9 fotos malas), `rusty-terdey` (34, 8 de 9), `rusty-play`
+(24, 9 de 10) y `rusty-and-now` (20, 3 de 4). Todo el trabajo de hoy fue sobre Vulk.
+
+**Limitación verificada para Rusty**: no tiene un sitio de fabricante equivalente al de Vulk.
+`rusty.com.ar` es una tienda Shopify de indumentaria, no un catálogo técnico con fichas por variante
+(sin medidas, sin material, sin fotos de producto por código de color). O sea que `vulk-fotos.ts` no
+tiene equivalente posible para Rusty. Quedan dos caminos: reprocesar las fotos de 900px que ya están
+en Supabase, que implica agrandar con pérdida de nitidez (en el Katleen quedó aceptable, pero es un
+techo real), o conseguir las originales en alta del proveedor. **Es una decisión del founder, no
+técnica: hay que saber si tiene acceso a las fotos originales de Rusty.**
+
+### Próximo paso EXACTO (estado al cierre)
+
+Los 6 sets del Katleen y el de The Sil están generados y validados, pero **todavía no subidos a las
+publicaciones de ML** salvo el de SDEMI-SBLK/GB27 (MLA1549858831, ya activo con sus 6 imágenes).
+Las opciones sobre la mesa, a decisión del founder:
+
+1. Subir los sets a las publicaciones de ML del resto de las variantes del Katleen y a las tres de
+   The Sil, con el mismo procedimiento verificado (multipart + PUT del array completo + verificar
+   `thumbnail_id` + re-diagnosticar la portada).
+2. Correr `pnpm vulk:fotos` + `pnpm placas` sobre el resto de la marca Vulk, que es donde está el
+   grueso del catálogo con fotos sin procesar.
+3. Cargar las dos variantes del Katleen que Vulk publica y el catálogo no tiene (MDEMI/HGB1 SKU
+   125908 y SBLK/S10 POL SKU 125900), que ya tienen sus placas generadas.
+
+Antes de cualquiera de las tres, confirmar la discrepancia de medidas de The Sil (calibre 55 de la
+placa cargada contra 53 de la ficha de Vulk).
+
+### Fotos del sitio: el archivo estaba bien pero el sitio servía la vieja
+
+Después de reemplazar los archivos en Storage, el founder avisó que la ficha seguía mostrando las
+fotos viejas. El archivo estaba correcto; el problema era el cache: `next.config.ts` tiene
+`minimumCacheTTL` en 31 días y **el path es la cache key**, así que pisar el archivo dejando el
+mismo nombre no invalida nada. La advertencia estaba escrita en el propio config. Detalle en
+`MISTAKES.md`.
+
+**Arreglado**: `scripts/reemplazar-foto-producto.ts` ahora sube con un nombre nuevo (sufijo de
+fecha), actualiza `storage_path` + `width`/`height` en `product_images`, y deja el archivo viejo en
+Storage por si hay que volver. Queda `--pisar` para fotos que nunca se publicaron, con aviso.
+
+Las dos filas del Katleen apuntan ahora a `...-Perfil-20260825.jpg` y `... - F-20260825.jpg`.
+Verificado en la superficie que ve el usuario, no en el origen: `/anteojos-de-sol/vulk` y
+`/anteojos-de-sol/vulk/vulk-katleen` devuelven `x-vercel-cache: HIT` con el path nuevo en el HTML.
+La primera consulta las agarró en `STALE` con `age: 306` — el ISR es de 300 s y sirve la versión
+vieja mientras regenera, así que hay que pedir la página dos veces para ver el cambio.
+
+### HECHO: reemplazadas 4 de las 7 imágenes de la publicación de ML
+
+Al ir a cambiar las dos primeras apareció que **cinco de las siete** mostraban la variante
+equivocada (patillas negras): la 1 y 2 (fotos limpias), la 3 (callouts), la 5 (adaptar lentes) y la
+6 (protección UV). Sólo la 4 (medidas) y la 7 (garantía) estaban bien. Consultado al founder, eligió
+reemplazar las cuatro que tenían reemplazo ya generado y dejar la 6 pendiente.
+
+Estado final del item **MLA1549858831**:
+
+| # | Antes | Ahora |
+|---|-------|-------|
+| 1 | perfil, patillas negras | `01-perfil.jpg` nueva |
+| 2 | frente, patillas negras | `02-frente.jpg` nueva |
+| 3 | callouts amarillos, producto viejo | `03-callouts.jpg` nueva, paleta azul |
+| 4 | medidas (129/53/18/42/145) | **conservada**, ya era correcta |
+| 5 | adaptar lentes, producto viejo | `05-lentes.jpg` nueva |
+| 6 | protección UV, **producto viejo** | **conservada — PENDIENTE**, sigue mostrando patillas negras |
+| 7 | garantía azul | **conservada**, no muestra el producto |
+
+**Cómo se hizo**: `POST /pictures/items/upload` (multipart, único método que acepta) para cada
+imagen nueva, y después un solo `PUT /items/{id}` con el array completo de 7 en orden. El PUT
+**reemplaza toda la galería**, así que las tres conservadas se remandaron por su `picture_id`
+existente. El array anterior quedó en `marketing/backup-ml/MLA1549858831-pictures.anterior.json`
+para poder revertir.
+
+**Verificado**: las 7 quedaron en el orden esperado; `thumbnail_id` apunta a la foto nueva; la
+portada **ya recortada por ML** se re-diagnosticó con `picture_type: thumbnail` y volvió sin
+observaciones; `GET /moderations/last_moderation/{id}-ITM` devuelve 404, o sea ninguna moderación;
+y el item sigue `paused` con `sub_status: ["paused_by_seller"]`. Se bajaron las 4 nuevas desde el
+CDN de ML y se revisaron a ojo.
+
+**Dato de plataforma**: ML aplica un recorte automático del fondo sobrante al subir. Las placas
+cuadradas de 1500×1500 quedaron apaisadas (1200×551, 1200×442, 1200×1092, 1200×992). No cortó nada
+del contenido —sólo aire blanco, los callouts y las bandas están completos— y el producto se ve más
+grande en la galería. No hace falta pelearse con el encuadre cuadrado para ML.
+
+**Cerrado**: el founder decidió eliminar esa imagen en vez de rehacerla. Como ML no tiene borrado
+puntual de imágenes —el único mecanismo es omitirla del PUT del array completo— se remandaron las
+6 restantes en orden. Después, en un **PUT aparte** (nunca junto con `pictures` ni con `price`), se
+activó la publicación con `{"status":"active"}`.
+
+Estado final de MLA1549858831: `active`, `sub_status: []`, 6 imágenes, portada = la foto nueva,
+stock 8, precio 78.200, sin moderaciones. Confirmado además que aparece en
+`/users/{id}/items/search?status=active`. Backup del array previo en
+`marketing/backup-ml/MLA1549858831-pictures.antes-de-quitar-6.json`.
+
+Galería final: 1 perfil · 2 frente · 3 callouts (azul) · 4 medidas · 5 adaptar lentes (azul) ·
+6 garantía. Sin rastros de la variante equivocada.
+
+### Corregido el "57 mm" en la publicación de Mercado Libre
+
+El dato erróneo no estaba en el sitio (las descripciones de Supabase están limpias) sino en la
+publicación de ML. La variante SDEMI-SBLK/GB27 (SKU 968265) corresponde al item **MLA1549858831**,
+que estaba pausado. Se corrigió "Ancho de lente: 57 mm" por "53 mm" vía
+`PUT /items/{id}/description`, con reemplazo puntual de esa cadena —no un reemplazo global de
+"57"— y verificando antes que hubiera exactamente una ocurrencia. La descripción anterior quedó
+guardada en `marketing/backup-ml/MLA1549858831-descripcion.anterior.txt`. Verificado después de
+aplicar: el 57 ya no está, el 53 sí, y el largo del texto no cambió salvo el número.
+
+Se revisaron las otras cinco publicaciones de Katleen: ninguna tenía el dato mal. Las dos de
+receta (MLA2013975658 y MLA2014157548) declaran otras medidas —puente 25, ancho total 138— y no
+incluyen ancho de lente, así que no hay nada que corregir ahí.
+
+**Chequeo agregado**: `revisarMedidas()` en el generador avisa cuando las medidas no cierran
+geométricamente (2 × calibre + puente contra el ancho total). Probado: con 57 avisa, con 53 no.
+
+### Corrección del founder: nada de claims técnicos que la ficha no respalde
+
+El callout decía "ARMAZÓN G-FLEX / flexible y liviano". El founder lo frenó: el material es algo
+maleable, no flexible, y no quiere invitar a que alguien lo doble. La ficha de Vulk efectivamente
+nunca dice "flexible". El callout quedó sólo como **"ARMAZÓN G-FLEX"**, el nombre del material, sin
+adjetivo propio. Detalle en `MISTAKES.md`.
+
+Se agregó `revisarClaims()` al generador: avisa por consola cuando un texto contiene flexible,
+irrompible, memoria, antirrayas, polarizado, fotocromático, filtro azul, "de por vida" o absolutos
+tipo 100%, indicando qué verificar en la ficha. Y se sacó "metálicas con flex" del subtítulo por
+defecto del primer callout, porque el tipo de bisagra cambia por modelo.
+
+### Tres arreglos que salieron de usar el generador en un producto real
+
+- **La detección de partes fallaba en silencio.** Con `tool_choice: auto` el modelo a veces
+  describe la pose y no llama a la tool; el código devolvía `{}` y las flechas caían a las
+  posiciones por defecto con sólo un aviso. Ahora hay un reintento que **fuerza** la tool, y el
+  aviso de "no pude detectar" es explícito. Probado en 3 corridas seguidas: una falló y el
+  reintento la recuperó.
+- **`pnpm ml:diag` contaba un 429 como imagen no diagnosticada.** Mandar 6 imágenes seguidas
+  gatilla el rate limit de ML. Ahora reintenta con espera creciente y deja 1,2 s entre imágenes.
+  Un 429 no es un veredicto sobre la imagen: contarlo como fallo llevaría a publicar sin validar.
+- **El anti-cruce de flechas pisaba destinos semánticos.** `destrenzar()` intercambiaba los
+  destinos de las dos flechas de un lado para que no se cruzaran, sin mirar si alguno correspondía
+  a una parte concreta: el callout "lente marrón degradé" terminó apuntando al marco. Ahora sólo
+  intercambia cuando los dos callouts son genéricos. Antes de mandar una flecha a la parte
+  equivocada, es preferible el cruce.
+
+### Auditoría completa guardada
+
+El workflow multi-agente terminó: `marketing/auditorias/2026-08-24-placas-ml.md` (36 reglas
+confirmadas tras verificación adversarial, 12 descartadas, 36 hallazgos visuales). Sus seis
+bloqueantes convergen con lo ya aplicado; quedan como propuestas abiertas al founder el título de
+la placa 06 ("Qué incluye tu compra" en vez de "Producto de Alta Calidad") y la aclaración de que
+el lente recetado se cotiza aparte.
+
+### Próximo paso EXACTO
+
+El founder pasa las 2 fotos del modelo que quiere publicar (perfil + frente) más las medidas
+en mm, y se corre `pnpm placas` con esos valores. Pendiente definir si la placa 05 va con foto
+de persona (necesita el asset) o con el armazón sobre blanco.
+
+## Última actualización (anterior)
+
 **Fecha**: 2026-08-01
 **Por**: Claude Code (a pedido de Juan)
 
