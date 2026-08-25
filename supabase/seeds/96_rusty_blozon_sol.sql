@@ -63,7 +63,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-blozon', 'Rusty Blozon',
   'Anteojos de sol Rusty Blozon: cuadrados masculinos, armazón G-Flex con bisagras plásticas. Lente de policarbonato con 100% protección UV (UV400, categoría 3). Polarizados en 3 de los 4 colores.',
-  E'Los **Rusty Blozon** son **anteojos de sol cuadrados, de línea masculina**, con frente y patillas de **G-Flex** y **bisagras plásticas**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los cuatro colores.\n\nMedidas: frente 142 mm · lente 53 mm de ancho × 42 mm de alto · puente 19 mm · varilla 140 mm.\n\nDisponible en 4 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente espejada roja** — **polarizada**.\n• **Azul mate, lente espejada azul** — no polarizada.\n\n**El filtro polarizado lo tienen 3 de los 4 colores.** Los cuatro filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. El azul mate con lente espejada azul es el que no lo lleva.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Blozon** son **anteojos de sol cuadrados, de línea masculina**, con frente y patillas de **G-Flex** y **bisagras plásticas**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los cuatro colores.\n\nDisponible en 4 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente espejada roja** — **polarizada**.\n• **Azul mate, lente espejada azul** — no polarizada.\n\n**El filtro polarizado lo tienen 3 de los 4 colores.** Los cuatro filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. El azul mate con lente espejada azul es el que no lo lleva.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "temple_material": "g-flex",
@@ -73,7 +73,6 @@ VALUES (
     "lens_treatment": ["uv400"],
     "lens_category": 3,
     "gender": "male",
-    "measurements": {"frame_width_mm": 142, "lens_width_mm": 53, "lens_height_mm": 42, "bridge_mm": 19, "temple_length_mm": 140},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-25",
@@ -114,12 +113,16 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- ⚠️ Los dos frentes llevan sufijo `-v2`: los primeros que se subieron eran otra toma de tres
--- cuartos, no un frente. Los archivos viejos quedaron en el bucket sin referenciar.
+-- ⚠️ Tres archivos llevan sufijo `-v2`. Los dos frentes, porque los primeros que se subieron eran
+-- otra toma de tres cuartos y no un frente. Y el perfil de la MBLK/S10 —que es la foto PRIMARIA del
+-- producto— porque el founder pasó una toma mejor después (`marketing/fotos/blozon/`). El nombre
+-- nuevo es obligatorio al reemplazar: la imagen optimizada de Next se cachea 31 días POR PATH, así
+-- que pisar el archivo dejaría la vieja a la vista. Los archivos anteriores quedaron en el bucket
+-- sin referenciar.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-blozon'), (SELECT id FROM public.product_variants WHERE sku='BLOZON-MBLK-S10-POL'),
-   'rusty-blozon/perfil-mblk-s10.jpg', 'Anteojos de sol Rusty Blozon cuadrados hombre vista lateral, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 0, true),
+   'rusty-blozon/perfil-mblk-s10-v2.jpg', 'Anteojos de sol Rusty Blozon cuadrados hombre vista lateral, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 0, true),
   ((SELECT id FROM public.products WHERE slug='rusty-blozon'), (SELECT id FROM public.product_variants WHERE sku='BLOZON-MBLK-S10-POL'),
    'rusty-blozon/frente-mblk-s10-v2.jpg', 'Anteojos de sol Rusty Blozon cuadrados hombre vista frontal, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 1, false),
   ((SELECT id FROM public.products WHERE slug='rusty-blozon'), (SELECT id FROM public.product_variants WHERE sku='BLOZON-SBLK-S10-POL'),
@@ -133,9 +136,7 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-blozon'), (SELECT id FROM public.product_variants WHERE sku='BLOZON-MBLU-REVO-BLUE'),
    'rusty-blozon/perfil-mblu-revo-blue.jpg', 'Anteojos de sol Rusty Blozon cuadrados hombre vista lateral, armazón azul mate lente espejada azul', 2000, 1333, 6, false),
   ((SELECT id FROM public.products WHERE slug='rusty-blozon'), (SELECT id FROM public.product_variants WHERE sku='BLOZON-MBLU-REVO-BLUE'),
-   'rusty-blozon/frente-mblu-revo-blue.jpg', 'Anteojos de sol Rusty Blozon cuadrados hombre vista frontal, armazón azul mate lente espejada azul', 2000, 1333, 7, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-blozon'), NULL,
-   'rusty-blozon/medidas.jpg', 'Esquema técnico de medidas Rusty Blozon: frente 142mm, lente 53x42mm, puente 19mm, varilla 140mm', 2000, 1333, 99, false)
+   'rusty-blozon/frente-mblu-revo-blue.jpg', 'Anteojos de sol Rusty Blozon cuadrados hombre vista frontal, armazón azul mate lente espejada azul', 2000, 1333, 7, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 

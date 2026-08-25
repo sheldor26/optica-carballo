@@ -43,7 +43,11 @@ Objetivo: ser **la óptica online más confiable y técnicamente avanzada de Arg
 4. **Honestidad sobre limitaciones de productos**. Si los blue light no tienen evidencia clínica robusta, lo decimos.
 5. **Toda factura es electrónica**. Cumple AFIP.
 6. **Botón de arrepentimiento + política de devolución visibles**. Defensa del Consumidor.
-7. **Trust signals reales, no inventados**. Sin reviews falsas, sin sellos genéricos, sin urgencia artificial.
+7. **Las medidas de un armazón sólo se cargan si las pasó Juan.** Ni de Mercado Libre, ni del
+   fabricante, ni de sus propias placas viejas: él no confía en esas fuentes porque tienen errores.
+   Si no las pasó, la ficha va sin el bloque de medidas y el dato se anota en
+   `DATOS_PENDIENTES.md`. Material, peso, color, precio y stock sí se pueden tomar de esas fuentes.
+8. **Trust signals reales, no inventados**. Sin reviews falsas, sin sellos genéricos, sin urgencia artificial.
 
 ## Stack tecnológico (no se cuestiona, ver ADR-001)
 

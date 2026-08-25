@@ -10,42 +10,43 @@ ver qué se cerró.
 agrega acá **en el mismo turno**, con qué bloquea. Si un dato no bloquea nada, va igual pero en la
 sección amarilla.
 
+⚠️ **Las medidas SIEMPRE entran acá si no las pasó él.** No se copian de Mercado Libre, del
+fabricante ni de sus placas viejas — regla dura 7 de CLAUDE.md. Material, peso, color, precio y
+stock sí se pueden tomar de esas fuentes.
+
 Última revisión: 2026-08-25.
 
 ---
 
-## 🔴 Malice y Blozon — el founder va a pasar medidas, peso y SKUs
+## 🔴 Malice y Blozon — medidas, peso y SKUs
 
-**Contexto para el que lea esto después**: las medidas de estos dos productos **no salieron de una
-medición fresca del founder**. Se leyeron de las placas viejas que él mismo hizo y que están dentro
-de las galerías de sus publicaciones de ML. Sirven, pero son de segunda mano — por eso él va a
-re-verificarlas con el armazón en la mano, y eso **no es redundante**: es la fuente buena
-reemplazando a la provisoria.
+**Las fichas están publicadas SIN el bloque de medidas.** Se habían cargado leyéndolas de las placas
+viejas que están dentro de las galerías de ML, y el founder marcó que eso no vale: no confía en esas
+fuentes porque tienen errores. Se sacaron de la base, del seed y de la ficha, y la placa de medidas
+se despublicó. Quedan así hasta que él las pase.
 
-Cargado hoy, a confirmar:
-
-| | Malice | Blozon |
-|---|---|---|
-| Ancho de frente | 139 | 142 |
-| Calibre (ancho de lente) | 59 | 53 |
-| Alto de lente | 41 | 42 |
-| Puente | 16 | 19 |
-| Varilla | **145** ⚠️ | **140** ⚠️ |
-
-- [ ] **Verificar las medidas de los dos** con el armazón en la mano. Si alguna cambia, avisar y se
-  corrige en base, seed, placa de medidas y `alt_text` (los cuatro lugares, como se hizo con el
-  puente del Bruice).
-- [ ] **⚠️ Los dos largos de varilla están en conflicto entre dos fuentes tuyas.** Malice: la placa
-  dice 145 y los atributos de ML dicen 15.5 cm — se cargó 145. Blozon: la placa dice 137 y los
-  atributos 14 cm — se cargó 140. Son las dos únicas medidas donde hubo que elegir.
+- [ ] **Medidas del Malice** — ancho de frente, calibre, alto de lente, puente y varilla.
+- [ ] **Medidas del Blozon** — las mismas cinco.
 - [ ] **Peso de los dos** (gramos).
 - [ ] **SKUs de fabricante de los dos.** Ninguna publicación declara `SELLER_SKU`, así que están
   cargados con códigos inventados (`MALICE-MBLK-S10-POL`, `BLOZON-SBLK-S10-POL`, etc.). Funcionan,
   pero conviene usar los reales.
 
-Nota: el "alto" que figura en tus placas viejas (49 en el Malice, 48 en el Blozon) **no contradice**
-el alto de lente cargado (41 y 42). La placa mide el armazón entero y el atributo mide el cristal,
-igual que pasó con el Bruice.
+Cuando lleguen, se cargan en los cuatro lugares donde vive una medida: `attributes.measurements`,
+el texto de la descripción, la placa de medidas (`pnpm placas --solo 4`, subida con nombre nuevo) y
+el `alt_text` de esa imagen en el formato que parsea `scripts/ml-auditar-medidas.ts`.
+
+**Para referencia, NO para cargar** — esto es lo que dicen las otras fuentes, por si te sirve
+comparar cuando midas. Ojo que los dos largos de varilla no coinciden entre sí:
+
+| | Malice | Blozon |
+|---|---|---|
+| Ancho de frente (placa vieja) | 139 | 142 |
+| Calibre (atributos ML) | 59 | 53 |
+| Alto de lente (atributos ML) | 41 | 42 |
+| Puente (atributos ML) | 16 | 19 |
+| Varilla — placa vieja | 145 | 137 |
+| Varilla — atributos ML | 155 | 140 |
 
 ## 🟡 Pesos que faltan — 17 productos
 

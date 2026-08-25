@@ -68,7 +68,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-malice', 'Rusty Malice',
   'Anteojos de sol Rusty Malice: cuadrados masculinos, armazón G-Flex con bisagras metálicas flex. Lente de policarbonato con 100% protección UV (UV400, categoría 3). Polarizados en 2 de los 3 colores.',
-  E'Los **Rusty Malice** son **anteojos de sol cuadrados, de línea masculina**. Frente y patillas de **G-Flex**, con **bisagras metálicas con sistema flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los tres colores.\n\nMedidas: frente 139 mm · lente 59 mm de ancho × 41 mm de alto · puente 16 mm · varilla 145 mm.\n\nDisponible en 3 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente azul espejada** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 3 colores.** Los tres filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Malice** son **anteojos de sol cuadrados, de línea masculina**. Frente y patillas de **G-Flex**, con **bisagras metálicas con sistema flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los tres colores.\n\nDisponible en 3 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente azul espejada** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 3 colores.** Los tres filtran el 100% de la radiación UV, pero sólo los polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "temple_material": "g-flex",
@@ -78,7 +78,6 @@ VALUES (
     "lens_treatment": ["uv400"],
     "lens_category": 3,
     "gender": "male",
-    "measurements": {"frame_width_mm": 139, "lens_width_mm": 59, "lens_height_mm": 41, "bridge_mm": 16, "temple_length_mm": 145},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-25",
@@ -128,9 +127,7 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-REVO-BLUE'),
    'rusty-malice/perfil-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista lateral, armazón negro mate lente azul espejada', 2000, 1333, 4, false),
   ((SELECT id FROM public.products WHERE slug='rusty-malice'), (SELECT id FROM public.product_variants WHERE sku='MALICE-MBLK-REVO-BLUE'),
-   'rusty-malice/frente-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente azul espejada', 2000, 1333, 5, false),
-  ((SELECT id FROM public.products WHERE slug='rusty-malice'), NULL,
-   'rusty-malice/medidas.jpg', 'Esquema técnico de medidas Rusty Malice: frente 139mm, lente 59x41mm, puente 16mm, varilla 145mm', 2000, 1333, 99, false)
+   'rusty-malice/frente-revoblue.jpg', 'Anteojos de sol Rusty Malice cuadrados hombre vista frontal, armazón negro mate lente azul espejada', 2000, 1333, 5, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 
