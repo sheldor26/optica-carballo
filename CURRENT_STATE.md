@@ -7,6 +7,59 @@
 
 ## Última actualización
 
+**Fecha**: 2026-08-25
+**Por**: Claude Code (a pedido de Juan)
+
+### En curso: alta del Rusty Bruice MBLK/ORANGE
+
+El founder pidió crear este producto en Supabase, publicarlo en el sitio, subir las imágenes y
+vincularlo con su publicación de Mercado Libre.
+
+**Hecho en este tramo:**
+
+- **Rusty SÍ tiene sitio de fabricante.** En la sesión anterior se había reportado que no, y era
+  incorrecto: se había buscado `rusty.com.ar`, que es la tienda de indumentaria. El catálogo óptico
+  está en **rustyoptical.com**, con fichas por modelo y variante. Patrón de URL de las fotos:
+  `/images/Rusty/productos/<temporada>/<modelo>/<variante-sku-XXXXXX>/<MODELO>_<VARIANTE>_F.jpg`,
+  donde `_F` es frente y `_P` perfil. Esto cambia el plan para las 90 imágenes de Rusty en baja
+  resolución: se pueden bajar del fabricante en vez de reprocesar las de 900 px.
+- **Set de 6 placas generado** para el Bruice, con las medidas que dio el founder (56-16-140, alto
+  54, ancho total 146; la geometría cierra: 56×2+16 = 128 ≤ 146).
+- **Identificada la publicación de ML**: el link que pasó el founder es de CATÁLOGO
+  (`MLAU948680760`), no de su publicación. La suya es **MLA1904009956**, activa, stock 2, $84.354,
+  **60 vendidos**. También tiene `MLA1897188728` (Bruice polarizado, pausada) y `MLA1476742499`
+  (Bruice de descanso/receta con filtro de luz azul, pausada).
+
+**Decisiones tomadas y por qué:**
+
+- **La variante NO es polarizada**, aunque el meta description de rustyoptical.com diga
+  "POLARIZADAS": ese texto es genérico del modelo y el founder desmintió para esta variante. Aplica
+  la regla ya establecida — el founder tiene el producto en la mano y su dato gana. Lo confirma que
+  exista una publicación aparte de Bruice polarizado.
+- **El bloque de "terapia del sueño" NO se puso en las placas.** La descripción que pasó el founder
+  dice que las lentes naranjas "ayudan a bloquear la luz azul, promoviendo un descanso más reparador
+  y mejorando tu ciclo de sueño". El filtro naranja efectivamente corta transmisión en la banda azul
+  y eso es medible, pero "mejora tu ciclo de sueño" es un claim clínico y el proyecto tiene regla
+  dura de honestidad sobre blue light. En las placas quedó sólo lo verificable.
+
+**Bloqueado esperando al founder**: cuántas unidades hay en stock físico real y a qué precio va en
+el sitio. En ML figuran 2 unidades y $84.354, pero el sitio maneja su propio precio y stock, y la
+regla del negocio es no publicar lo que no hay.
+
+**En paralelo**: se consultó a `catalog-loader` por el playbook de alta (orden de inserts, campos
+obligatorios del contrato, convención de `storage_path` y `alt_text`, trampas del repo) y a
+`seo-strategist` por slug, meta, structured data, linking interno y cómo redactar lo del filtro azul
+sin hacer un claim médico. Sus resultados llegan por notificación; ninguno escribe nada.
+
+### Próximo paso EXACTO
+
+Con el stock y el precio que confirme el founder: crear el producto y su variante, subir las 3
+imágenes del sitio con `pnpm foto:reemplazar` (nombre nuevo desde el vamos), cargar la placa de
+medidas con el `alt_text` en el formato parseable, y guardar `mercadolibre_item_id =
+MLA1904009956` en la variante. Antes de escribir en la base, mostrarle el plan.
+
+## Última actualización (anterior)
+
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
 
