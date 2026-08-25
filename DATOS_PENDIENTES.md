@@ -18,7 +18,7 @@ stock sí se pueden tomar de esas fuentes.
 
 ---
 
-## 🔴 Malice y Blozon — medidas, peso y SKUs
+## 🔴 Malice, Blozon y Le Groupie — medidas, peso y SKUs
 
 **Las fichas están publicadas SIN el bloque de medidas.** Se habían cargado leyéndolas de las placas
 viejas que están dentro de las galerías de ML, y el founder marcó que eso no vale: no confía en esas
@@ -27,8 +27,10 @@ se despublicó. Quedan así hasta que él las pase.
 
 - [ ] **Medidas del Malice** — ancho de frente, calibre, alto de lente, puente y varilla.
 - [ ] **Medidas del Blozon** — las mismas cinco.
-- [ ] **Peso de los dos** (gramos).
-- [ ] **SKUs de fabricante de los dos.** Ninguna publicación declara `SELLER_SKU`, así que están
+- [ ] **Medidas del Le Groupie** — las mismas cinco. Acá ni se cargaron provisorias: el fabricante
+  publica una placa y ML declara los atributos, pero ninguna de las dos fuentes vale.
+- [ ] **Peso de los tres** (gramos).
+- [ ] **SKUs de fabricante de los tres.** Ninguna publicación declara `SELLER_SKU`, así que están
   cargados con códigos inventados (`MALICE-MBLK-S10-POL`, `BLOZON-SBLK-S10-POL`, etc.). Funcionan,
   pero conviene usar los reales.
 
@@ -48,7 +50,7 @@ comparar cuando midas. Ojo que los dos largos de varilla no coinciden entre sí:
 | Varilla — placa vieja | 145 | 137 |
 | Varilla — atributos ML | 155 | 140 |
 
-## 🟡 Pesos que faltan — 17 productos
+## 🟡 Pesos que faltan — 18 productos
 
 Ninguno bloquea nada: la ficha se ve bien sin el peso. Pero es el dato que más preguntan para un
 anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una sola sentada.
@@ -62,6 +64,7 @@ anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una so
 - [ ] Rusty Esvep
 - [ ] Rusty Malice
 - [ ] Rusty Blozon
+- [ ] Vulk Le Groupie
 - [ ] Rusty Play
 - [ ] Rusty Sotion
 - [ ] Rusty Terdey

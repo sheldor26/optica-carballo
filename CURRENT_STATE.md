@@ -564,17 +564,122 @@ nuevo es obligatorio al reemplazar, porque la imagen optimizada de Next se cache
 path**. Encuadre 92%, sin override. Con esta ya son tres archivos `-v2` en el Blozon (los dos
 frentes y este perfil).
 
+### Sistema visual de las placas de producto: escala tipográfica y de espaciado
+
+Pedido del founder: *"que se vean más estéticas, que las palabras no tapen otras palabras"*. Los
+solapamientos que quedaban se arreglaron, pero el pedido de fondo era otro: el set se veía generado.
+
+**Lo que estaba pasando, medido con una auditoría multiagente sobre el archivo**: 38 cuerpos de
+letra distintos para 8 roles (22, 23, 24, 25 y 26 conviviendo en una placa) y 50 constantes de
+espaciado, de las cuales sólo 14 eran múltiplos de una misma unidad. Esas diferencias de 1-2 px no
+se leen como jerarquía, se leen como descuido. Ver LEARNINGS 2026-08-25.
+
+**Lo que se hizo** (`scripts/lib/placa-base.ts`, `placa-producto.ts`, `placas-svg.ts`):
+
+- **`TIPO` y `ESP`**: ocho cuerpos para ocho roles, y espaciado en base 8. Los ocho diseños los usan.
+- **Los cuerpos grandes pasaron a ser techos.** `ajustarMedido` ya bajaba desde `maxPx`, pero los
+  techos estaban tan bajos que el texto nunca los alcanzaba: **ningún titular llenaba la medida**.
+  Con el techo en 168, un nombre corto llena el ancho y uno largo baja solo. Esto de paso arregló
+  `cartel`, cuya premisa ("el modelo en tipografía gigante") no se cumplía con nombres cortos, que
+  son casi todo el catálogo.
+- **`bloqueTexto()` devuelve el borde de la tinta, no la baseline.** Antes, el aire visible entre
+  bloques cambiaba según el nombre del producto tuviera o no letras con cola (g, j, p, q, y).
+- **Se sacó el lenguaje de cupón**: el precio bajó a un solo cuerpo de la escala (58, era 68-82) y
+  `split` perdió la pastilla dorada con esquinas redondeadas, que era el elemento que más tiraba el
+  set hacia "flyer de oferta".
+- **`bloquePrecio()` compartido**: antes cada diseño dibujaba el precio a mano. En `tarjeta`, `full`
+  y `cartel` el "DESDE" quedaba **tapado** por los dígitos (Anton sube 0,87 em sobre la baseline y
+  las separaciones estaban calculadas como si subiera la mitad), y en `callouts`, `tipografia` y
+  `halo` **no se dibujaba**, así que la placa afirmaba un precio plano cuando es el mínimo entre
+  variantes. Eso último no era estético: chocaba con la regla dura de no prometer de más.
+- **`callouts`**: las dos flechas caían en el mismo punto porque el código leía `partes[nombre]`
+  directo y ese nombre es siempre el de la pieza IZQUIERDA. Ya existía `resolverAncla()` para elegir
+  el lado según de qué esquina sale el globo, y no se estaba usando. Además los globos pasaron de
+  Archivo Black (una tercera familia en un sistema de dos) a DM Sans, y un callout largo se parte en
+  dos renglones: en uno solo bajaba a ~11 px sobre un lienzo de 1080.
+- **`halo`**: la luz era dorada sobre el color de la marca y daba barro verde militar. Pasó a blanco
+  cálido, y de círculo a elipse — el producto mide 3:1 y un halo redondo desperdiciaba la luz.
+- **`tipografia`**: la tinta del texto gigante arrancaba 124 px **arriba** del área segura, o sea
+  que Instagram le tapaba el techo con el avatar. Ahora se ancla al área segura. Y dejó de repetir
+  el nombre del modelo dos veces (gigante atrás y chico abajo), que se leía como error de datos.
+- **`tarjeta`**: la tarjeta se dimensiona a su contenido en vez de estirarse hasta el pie.
+- **`medidas`**: la tarjeta se ajusta al esquema en vez de dejar dos tercios de blanco vacío.
+- **`colores`**: era el único que seguía con foto sin recortar dentro de una caja blanca.
+- **El brillo de fondo** dejó de ser una elipse deformada con banding (`gradientUnits` en espacio de
+  usuario + cortes intermedios).
+
+**Bug de guías arreglado de paso**: la placa `pregunta` publicaba la pregunta **sin el signo de
+cierre** cuando entraba en una sola línea — el `map` tomaba la rama del `¿` y nunca llegaba al `?`.
+
+**Verificado**: `pnpm typecheck` y `pnpm lint` limpios; los 8 diseños renderizados y mirados uno por
+uno en historia (Vulk 53&3, nombre largo) y en post (Rusty Blozon, nombre corto **y con `desde`**,
+que es el caso que antes rompía); las 5 placas de guías regeneradas para confirmar que los cambios
+en `placa-base.ts` no las tocaron; y las placas de Mercado Libre quedaron **sin cambios de
+comportamiento** (la reserva de alto del subtítulo de los globos siguió siendo el default, se
+desactiva sólo desde Instagram).
+
+**Se metió un bug propio en el camino y se arregló**: al unificar encabezado y pie con el mismo
+tracking, los dos textos del pie se tocaron en el medio — el mismo defecto que el founder había
+pedido arreglar. Registrado en MISTAKES.
+
+### Cargado: Vulk Le Groupie (seed 97) — y estrena la faceta cat eye
+
+`/anteojos-de-sol/vulk/vulk-le-groupie`, 4 colorways, 34 unidades, 95 ventas acumuladas en ML entre
+8 publicaciones. Tercer producto del cruce de faltantes.
+
+| Color | Lente | Pol | Stock | Precio |
+|---|---|---|---|---|
+| Negro mate | gris oscuro | **sí** | 9 | $100.141 |
+| Marrón transparente | marrón degradé | no | 12 | $89.427 |
+| Carey | marrón degradé | no | 8 | $89.427 |
+| Negro brillo | gris oscuro | no | 5 | $89.427 |
+
+**Primer producto sin medidas por la regla nueva.** El fabricante publica su placa y ML declara los
+atributos, pero ninguna de las dos fuentes es admisible. La ficha va sin el bloque y el dato quedó
+en `DATOS_PENDIENTES.md`.
+
+**Fotos del fabricante.** El founder pasó la URL de una variante y de ahí salió el patrón:
+`vulkeyewear.com/eyewear/sunglasses/g-flex/le-groupie<CODIGO>/`. ⚠️ Cada página trae 6 hashes de
+imagen pero **4 se repiten entre las 4 páginas**: ésos son las miniaturas del selector (el FRENTE de
+cada colorway), y el que aparece sólo en una página es su PERFIL. El pareo se confirmó por dos vías,
+la unicidad del hash y el color de la foto.
+
+**Dos decisiones del founder**, porque sus fuentes se contradecían:
+
+- **Forma `cat_eye`**: sus 8 publicaciones dicen "Ojo de gato" pero uno de sus títulos dice
+  "Redondo", y las fotos parecen redondas con un leve levante. Eligió cat eye. Pesó que la faceta
+  `/anteojos-de-sol/cat-eye` **existía y estaba vacía** — ningún producto usaba el valor `cat_eye`.
+  Este la estrena, verificado en producción.
+- **388/CH74 como `marron-transparente`**: en la foto el armazón se ve rosa/salmón translúcido, pero
+  eligió el nombre que declara su publicación.
+
+**SEO**: `anteojos de sol cat eye` (40/mes) + `lentes de sol cat eye` (50). Volumen chico pero es un
+carril enteramente libre: ningún producto del catálogo usaba esa forma. Sólo 1 de 4 polarizada, así
+que no se afirma "polarizados" para el modelo.
+
+Facetas verificadas: `/anteojos-de-sol/vulk`, `/cat-eye`, `/vulk/cat-eye` y `/polarizados`.
+Encuadre: las 8 fotos en 92% con scale 1.00, sin overrides.
+
+🐛 **Al crear el producto la PDP dio 404 durante ~5 minutos** aunque las facetas ya lo listaban. Era
+un 404 cacheado por ISR (`revalidate = 300`) de la primera request, hecha apenas terminado el INSERT.
+Se destraba solo al vencer el TTL — no hay que tocar nada ni redeployar.
+
 ### Próximo paso EXACTO
 
-Está sobre la mesa una pregunta al founder, sin responder: **si quiere que se revise el resto del
+Del lado de las placas: **elegir cuáles de los ocho diseños quedan**. La auditoría marcó que tres
+son variaciones del mismo esqueleto y que conviene podar a cinco; es una decisión del founder, no
+técnica. Después, correr el set sobre los 74 productos.
+
+Del lado del catálogo: está sobre la mesa una pregunta al founder, sin responder: **si quiere que se revise el resto del
 catálogo** por productos cuyas medidas puedan venir de esas mismas fuentes. No se puede saber
 mirando la base —el número no dice de dónde salió— pero sí se pueden listar los que coinciden exacto
 con lo que declara ML, que serían los sospechosos.
 
-Si dice que no, seguir con el próximo modelo del cruce: **Le Groupie** (Vulk, 4 colores, 34 u, 35
-vendidos) o **Zion** (Rusty, 8 colores, 52 u). Aplicar lo aprendido con el Blozon: mirar primero las
-galerías de ML por si están las FOTOS (no las medidas) y bajarlas por `GET /pictures/{id}`, que es
-el único endpoint que da resolución usable. Sigue pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
+Si dice que no, seguir con el próximo modelo del cruce: **Zion** (Rusty, 8 colores, 52 u) o
+**Cinema** (Vulk, 6 colores, 24 u, 46 vendidos). Orden de búsqueda de fotos que quedó establecido:
+sitio del fabricante primero, y si no está, las galerías de ML bajadas por `GET /pictures/{id}` —
+único endpoint que da resolución usable. Las medidas NO se toman de ninguna de las dos. Sigue
+pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957: que
 `GET /user-products/MLAU948680760/stock` siga leyendo 2 y que el item nuevo no haya pasado a
 `closed` solo. Nada más queda abierto del Bruice.
 
