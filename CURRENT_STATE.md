@@ -178,42 +178,189 @@ causa raíz estaba en `PRODUCT_SCHEMA.md`, que documentaba la clave invertida y 
 su propio ejemplo doce líneas más abajo. Corregidos los tres. `extractColorLabel` ahora delega en
 `describeVariant()`, el mismo que usan el selector de la PDP y el detalle de pedido.
 
-### Pendiente de deploy
+### Deployado
 
-Dos arreglos de código que todavía no están en producción (el sitio corre el build deployado):
+Commit `da05b08`, en producción y verificado: **cero `alt="Variante"`** en todo el catálogo (antes
+estaban todas), y la etiqueta del lente sale con tilde. La miniatura del Bruice carey muestra
+"Frente carey mate / patillas negro mate / Verde degradé".
 
-- el bug de las miniaturas de variante (arriba),
-- la etiqueta `'verde-degrade': 'Verde degradé'` en `lib/catalog/variant-label.ts`. Sin ella el
-  selector muestra "Verde Degrade" sin tilde, que es lo que se ve ahora mismo en la ficha. De paso
-  arregla a Gresent y Yeah, que usan la misma clave.
+### La MDEMI ya tiene publicación propia en ML
+
+**MLA2035140957** — activa, `sub_status: []`, 3 unidades, $84.354, las 6 placas del carey, SKU
+968190. Vinculada a la variante en Supabase.
+
+**Por qué publicación nueva y no una variación de la de la naranja.** La cuenta está en el modelo
+**User Products**: `title` no se manda, ML lo arma con `family_name` + atributos, y el título de
+MLA1904009956 está congelado por sus 60 ventas nombrando sólo el naranja. Se intentó primero la
+ruta determinística —crear el User Product antes que el item, para conocer su id y descartar de
+raíz cualquier fusión de stock— y **el endpoint funciona**:
+`POST /user-products-families/{family_id}/user-products` devuelve 201 (pide `pictures`, que no está
+en la doc). Pero el paso siguiente entra en un **callejón sin salida**: `POST /user-products/{UP}/items`
+exige los atributos `VALUE_ADDED_TAX` e `IMPORT_DUTY` y **a la vez rechaza el campo `attributes`**
+como inválido, y no existe `PUT /user-products` para cargarlos después.
+
+Se resolvió con `POST /items` clásico y `family_name` propio. Nació con familia
+(6200119182557266) y User Product (MLAU4917426093) propios. Antes de crear nada se validó el
+payload con `POST /items/validate`, que prueba sin crear: quedó en cero errores.
+
+**Verificación anti-doble-stock, que era el único riesgo con daño real** (vender dos veces las 2
+unidades del naranja): los pozos quedaron independientes — `MLAU4917426093` en 3 y `MLAU948680760`
+en 2 — y la publicación de 60 ventas quedó intacta (status, stock, ventas y portada iguales al
+baseline). Nota importante que salió de la investigación: **pausar o cerrar un item NO libera el
+stock de su User Product**, así que si alguna vez hubiera fusión, lo primero es corregir el número
+del pozo y recién después pausar; al revés, la publicación que sigue sobrevendiendo es la otra.
+
+El título que quedó es **"Anteojos Lentes De Sol Rusty Bruice Carey Uv400 Aviador Doble Puente
+Verde Degradé Carey Mate Varilla Negra"**. Se puede cambiar mientras no tenga ventas, y sólo
+mediante `family_name` (≤60 chars) y los `value_name` de DESIGN / LENS_COLOR / FRAME_COLOR /
+TEMPLE_COLOR — `title` directo devuelve bad request bajo este modelo.
+
+### Encontrado de paso, sin resolver
+
+**La descripción de MLA1904009956 tiene el claim de "terapia del sueño"** que sacamos de la ficha
+del sitio: "las lentes naranjas pueden ayudar a bloquear la luz azul, promoviendo un descanso más
+reparador". Está viva en la publicación con 60 ventas. A diferencia del título, **la descripción sí
+se puede editar** (`PUT /items/{id}/description?api_version=2`). El mismo argumento que la sacó del
+sitio aplica ahí: la lente es categoría 3 y la evidencia de blue-blocking habla de lente clara.
+Decisión del founder.
 
 ### Próximo paso EXACTO
 
-La MDEMI en Mercado Libre. **No se tocó, a propósito.** La opción correcta es agregarla como
-variación de MLA1904009956 (conserva las 60 ventas, la URL, el `3x_campaign` y el
-`good_quality_thumbnail`; una publicación nueva arranca de cero, y "sólo sumar las fotos" le
-mostraría al comprador un color que no puede elegir). Hay precedentes en la cuenta de items activos
-de MLA417128 con 4 colorways como variaciones — Rusty Spell MLA1510168748 tiene una que es
-literalmente "MDEMI-MBLK / Carey Mate con Patillas Negro Mate".
-
-**Pero MLA1904009956 no es igual a esos precedentes**: tiene `user_product_id` a nivel item
-(MLAU948680760), `inventory_id` y el tag `user_product_listing`; los multi-variación de la cuenta
-tienen esos tres campos en null. Puede haber una restricción real para convertir un item simple que
-ya está en el modelo User Product, y eso se prueba, no se asume. **Que lo pruebe el founder desde
-el panel de ML**, no por API: un array `pictures` mal armado desvincula las 6 fotos de una
-publicación viva. Después de intentarlo, verificar por GET que `status` siga `active`, que
-`variations.length === 2`, que la variación del naranja conserve sus 6 fotos y su stock 2, y anotar
-el `id` de cada variación — son los `mercadolibre_variation_code` que van a la base, **en las dos
-variantes**, incluida la MBLK que hoy lo tiene en NULL.
-
-Segunda decisión para el founder: el título de esa publicación está **congelado** por tener 60
-ventas y nombra sólo el naranja. Si suma la carey ahí, va a vender un color que el título no
-nombra.
+Reescribir la descripción de MLA1904009956 sacando el bloque de terapia del sueño, si el founder
+está de acuerdo. Y quedan dos controles diferidos del alta: repetir a las 24 h el chequeo de que
+`GET /user-products/MLAU948680760/stock` siga en 2 y que MLA2035140957 no haya pasado a `closed`
+solo (ML cierra lo que detecta como duplicado propio).
 
 ## Última actualización (anterior)
 
 **Fecha**: 2026-08-24
 **Por**: Claude Code (a pedido de Juan)
+
+### Estado de la app de Meta (2026-08-25) — el único paso que falta
+
+El founder creó la app y habilitó **todos** los casos de uso disponibles, no solo el de
+Instagram: Marketing API, Threads, ads MCP, Catalog, Instagram, oEmbed y WhatsApp.
+
+**Decisión: el token pide solo 4 permisos de los que la app podría dar.**
+
+```
+instagram_basic · instagram_content_publish · pages_show_list · pages_read_engagement
+```
+
+Tener un caso de uso habilitado NO le da permisos al token: los permisos son los que se piden
+explícitamente al generarlo. Se pide el mínimo a propósito, porque ese token queda cifrado en la
+base y lo usa un cron sin nadie mirando: con `ads_management` encima serviría para gastar plata,
+y con `whatsapp_business_messaging` para escribirle a los clientes.
+
+Efecto secundario a tener presente: si Meta pide **verificación del negocio**, viene de los casos
+de uso de Ads o WhatsApp, no del de Instagram. Publicar en la cuenta propia no la necesita; si
+llega a trabar algo, lo primero es apagar los casos de uso que no se usan.
+
+Dos de los casos de uso habilitados abren puertas reales y quedaron anotados en `BACKLOG.md`:
+**Threads** (puede reusar la cola `social_posts` entera — la columna `platform` existe para eso,
+hoy el CHECK solo acepta `'instagram'`) y **Instagram Shopping vía Catalog API** (etiquetar
+productos en los posts; pide verificación del negocio y aprobación de compras).
+
+**Configurado el 2026-08-25 en el panel de Meta** (por pedido del founder, vía su Chrome):
+app **Óptica Carballo**, App ID `2250257252375503`. Se agregaron los permisos de contenido desde
+*API setup with Facebook login* y se dejó el Explorador de la API Graph preparado con los 4
+permisos y la consulta del `IG_USER_ID`. **No se tocaron el App Secret ni el token**: son
+credenciales y las carga el founder directo en `.env.local`.
+
+Tres cosas que aparecieron al configurar y quedaron documentadas en el README de la integración:
+
+- El caso de uso **abre por default en "API setup with Instagram login"**, que es otro camino de
+  autenticación. El nuestro es el de **Facebook login**. Con el token generado del lado
+  equivocado no funciona nada.
+- **El rol de "Instagram Tester" no hace falta** por el camino de Facebook login — alcanza con ser
+  Administrator. El README decía que sí; corregido. Un paso menos.
+- El permiso real es **`instagram_content_publish`**; la pantalla del caso de uso lo escribe
+  "instagram_content_publishing", pero la lista del Explorador (la que vale) va sin la "ing".
+
+**`IG_USER_ID` resuelto: `17841412146058136`** (cuenta `optica.carballo`). El id de la página de
+Facebook es `315125471946479` y NO es el que va.
+
+**Error resuelto en el camino**: con el selector *User or Page* en la página, Meta entrega un
+*page access token* y `me` pasa a apuntar a la página; `me/accounts` falla con
+`(#100) Tried accessing nonexisting field (accounts)`, porque `accounts` es un campo del usuario.
+Se resolvió consultando `me?fields=instagram_business_account` (que sí funciona con page token) y
+después volviendo el selector a **User Token**, que es el tipo que espera `seedToken`.
+
+**Próximo paso exacto**: en el Explorador (abierto, con *User Token* ya seleccionado y los 4
+permisos cargados), apretar *Generate Access Token*, copiar el token a `IG_LONG_LIVED_TOKEN`,
+copiar el App Secret de *App settings → Basic → Show* a `IG_APP_SECRET`, poner
+`IG_APP_ID=2250257252375503` e `IG_USER_ID=17841412146058136`, y correr:
+
+```bash
+pnpm ig:token --seed
+pnpm ig:post --img marketing/placas-medios-de-pago/02-minimal-claro.png --tipo story --dry-run
+```
+
+### Qué se construyó — publicación en Instagram, Fase 3 (contenido generado)
+
+Con esto cierra el plan aprobado. `pnpm ig:producto <slug>` arma la placa y el texto de
+cualquier producto del catálogo, y un cron diario avisa qué vale la pena publicar.
+
+```bash
+pnpm ig:producto vulk-the-sil                                   # historia + post en disco
+pnpm ig:producto vulk-the-sil --tipo story --encolar "2026-08-26 19:30"
+pnpm ig:producto vulk-the-sil --tipo story --publicar
+pnpm ig:producto rusty-spell --foto 3                           # otra foto que la primaria
+```
+
+**Lo nuevo**
+
+| Archivo | Qué es |
+|---|---|
+| `scripts/lib/placa-producto.ts` | El generador: SVG + sharp, historia 1080×1920 y post 1080×1350 |
+| `scripts/lib/caption-producto.ts` | El texto del post, armado con los datos de Supabase |
+| `scripts/ig-producto.ts` (`pnpm ig:producto`) | El comando |
+| `scripts/lib/placas-fuentes.ts` | `asegurarFuentes()`, sacado de `ml-placas.ts` para compartirlo |
+| `lib/integrations/instagram/oportunidades.ts` | Detecta bajas de precio y stock que vuelve |
+| `app/api/cron/social-oportunidades/route.ts` | Cron diario 10:00 AR que avisa por mail |
+| `supabase/migrations/20260825120000_social_price_watch.sql` | La foto de precios contra la que se compara |
+
+**Dos cosas se resolvieron distinto del plan, con motivo** (addendum en ADR-027)
+
+- **La placa se genera local, no en Vercel.** Necesita las tipografías de `assets/placas/fonts/`,
+  y el runtime de Vercel no garantiza fuentes. Como la aprobación manual ya era la decisión, no
+  se pierde nada: el founder igual tenía que mirar la placa antes de que salga.
+- **El disparador NO se colgó de `check-alerts`.** El plan lo daba por resuelto ahí, pero la base
+  tiene **0 alertas de clientes activas** — el disparador no se habría disparado nunca. Y aunque
+  hubiera, esa tabla solo cubre productos que alguien siguió. Se agregó `social_price_watch`,
+  que compara el catálogo entero contra la foto del día anterior.
+
+**Decisiones de contenido**
+
+- **Nada se inventa.** Precio, stock, medidas, materiales y colores salen de Supabase. Lo que no
+  está cargado no se escribe, y el comando avisa qué faltó (ej. "sin weight_grams").
+- **No se publica lo que no hay.** Si ninguna variante tiene stock, el comando se niega a generar.
+  Si algunas están agotadas, el texto solo menciona los colores disponibles.
+- **"Polarizado" solo si TODAS las variantes lo son.** Si no, sería mentira para algunas.
+- Del resto solo se afirma lo que está en `BUSINESS_POLICIES.md`: estuche original, franela,
+  garantía de fabricación de 1 año, envío por Correo Argentino. Sin tiempos de entrega (§3).
+- La foto usa `getImageScale()` del override central del catálogo — misma corrección de tamaño
+  que los grids del sitio (regla #15 de CLAUDE.md).
+
+**Verificado**
+
+- Placas reales generadas y miradas: `vulk-the-sil` y `rusty-spell`, historia y post.
+- Tres bugs visuales encontrados y corregidos mirando el render: el recorte de la foto se veía
+  como un rectángulo blanco sobre la tarjeta hueso (ahora la tarjeta es blanca); el logo quedaba
+  como un cuadrado azul (ahora se funde con `grayscale` + `linear` + blend `screen`, el mismo
+  truco que en las placas de medios de pago pero con sharp); y "DESDE" se montaba sobre la línea
+  divisoria.
+- Detector contra la base real (creado y borrado, quedó en 0 filas): primera corrida guarda las
+  230 variantes sin avisar; sin cambios no reporta; baja del 10% y stock 0→>0 detectados; la
+  misma variante no repite aviso por 14 días; una baja del 1% se ignora.
+- `--encolar` de punta a punta: sube al bucket, crea la fila en `social_posts` y guarda la hora
+  correcta en UTC. Fila y objeto borrados después.
+- `pnpm typecheck`, `pnpm lint` (los 5 warnings preexistentes) y `pnpm build` en verde.
+- **NO verificado**: nada llegó a Instagram todavía — sigue faltando la app de Meta.
+
+**Bug encontrado y corregido en las tres fases**: `toLocaleString('es-AR')` formatea en 12 horas
+y, sin `hour12: false`, **se come el a.m./p.m.** Programar a las 20:00 confirmaba "08:00". Estaba
+en el comando, en el formulario, en la lista de la cola y en las server actions. Ver `MISTAKES.md`.
 
 ### Qué se construyó — publicación en Instagram, Fase 2 (cola programada)
 

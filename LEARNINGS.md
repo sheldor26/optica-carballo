@@ -22,6 +22,31 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-25 — Antes de construir un disparador, mirar si la fuente de datos tiene datos
+
+**Contexto**: el plan de la fase 3 (aprobado por el founder) decía enganchar la publicación
+automática de bajas de precio al cron `check-alerts`, "que ya detecta el trigger". Es verdad que
+lo detecta. Antes de escribir el código corrí un `SELECT count(*) FROM product_alerts WHERE
+is_active` y dio **0**.
+
+**Qué funcionó**: esa consulta de diez segundos cambió el diseño. `product_alerts` son las
+alertas que ponen los CLIENTES ("avisame cuando baje"); con cero filas, el disparador nunca se
+habría disparado, y el modo de falla es el peor que hay: no tira error, no aparece en los logs,
+simplemente nunca pasa nada. Se habría descubierto semanas después con un "che, nunca me avisó".
+En su lugar se agregó `social_price_watch`, que compara el catálogo entero contra la foto del día
+anterior — que además es lo que se quería: enterarse de TODO lo que cambia, no solo de lo que
+alguien siguió.
+
+**Por qué funciona**: un plan puede estar bien razonado y apoyarse igual en un supuesto sobre los
+datos que nadie chequeó. "La tabla X ya tiene lo que necesitamos" es una afirmación verificable
+con una query, y verificarla cuesta menos que cualquier otra parte del trabajo.
+
+**Cómo replicarlo**: cuando un plan diga "reusamos el mecanismo que ya existe en X", contar las
+filas de X antes de escribir la primera línea. Si el mecanismo depende de datos que se generan
+solos, chequear que se estén generando; si depende de datos que carga un usuario, chequear que
+haya usuarios que los hayan cargado.
+
+
 ## 2026-08-25 — Una integración se diseña para los dos consumidores (server de Next y script de terminal) desde el día uno, o termina duplicada
 
 **Contexto**: al empezar la integración de Instagram, el molde natural era copiar la de Mercado
@@ -49,6 +74,52 @@ uso desde el server — que en este repo son casi todas — el núcleo va sin `s
 cliente inyectado. El marcador va en los wrappers de Next, no en la lógica. Si el módulo maneja
 secretos, chequear que ningún archivo con `'use client'` lo importe.
 
+
+## 2026-08-25 — Cuando una API deja probar sin crear, probar es gratis y hay que hacerlo siempre
+
+**Contexto**: había que crear una publicación en Mercado Libre en una cuenta con una publicación
+hermana activa de 60 ventas. El payload tenía 25 atributos, varios con `value_id` que había que
+adivinar contra la categoría, y un POST fallido puede dejar basura o —peor— un item mal armado.
+
+**Qué funcionó**: `POST /items/validate` corre el mismo validador que el alta real y devuelve todos
+los errores **sin crear nada**. Dos corridas alcanzaron: la primera devolvió un único error real
+(`MODEL` necesitaba `value_name` además del `value_id`) entre dos avisos de envío que eran
+esperables; la segunda, cero errores. Recién ahí se hizo el POST, que salió 201 a la primera.
+
+Sin el validador, ese mismo error se habría descubierto con un POST fallido, y el ciclo
+prueba-error habría corrido sobre la cuenta de producción.
+
+**La regla**: antes de un POST con efectos sobre una cuenta real, buscar si la API tiene un
+endpoint de validación o dry-run. Muchas lo tienen y no está en el camino feliz de la doc. Vale lo
+mismo para el `--dry` de los scripts propios: si un script escribe algo, que tenga modo seco.
+
+**Corolario**: el error que encontró (`MODEL` requería `value_name` aunque el `value_id` fuera
+correcto) es exactamente el tipo de cosa que no se deduce de la doc ni de mirar otra publicación,
+porque el item existente ya lo tiene resuelto.
+
+---
+
+## 2026-08-25 — El orden del rollback importa: primero el dato, después la visibilidad
+
+**Contexto**: el riesgo del alta era que la publicación nueva cayera en el mismo "User Product" que
+la hermana y las dos terminaran ofreciendo el mismo pozo de 2 unidades. El plan de marcha atrás
+intuitivo era: pausar la publicación nueva y listo.
+
+**Qué se descubrió al verificarlo**: **pausar o cerrar un item NO libera el stock de su User
+Product.** Se comprobó sobre 15 UPs de la cuenta que conservan stock con todos sus items pausados o
+cerrados. O sea que el rollback intuitivo dejaba el pozo inflado y la que seguía sobrevendiendo era
+**la hermana, activa, con 60 ventas** — exactamente el daño que se quería evitar.
+
+El orden correcto es al revés: **primero corregir el número del pozo, después pausar**. Y el
+criterio de cierre del incidente no es "la publicación nueva está pausada" sino "el pozo de la
+hermana volvió a leer 2".
+
+**La regla**: cuando se diseña un rollback, distinguir entre **apagar la superficie** (pausar,
+ocultar, despublicar) y **corregir el dato** (el stock, el precio, la fila). Apagar la superficie
+tranquiliza pero no siempre arregla, porque el dato puede estar compartido con algo que sigue
+prendido. Verificar cuál de los dos es el que realmente causa el daño, y atacarlo primero.
+
+---
 
 ## 2026-08-25 — Mirar lo que vas a pisar encuentra cosas que ninguna verificación de datos encuentra
 

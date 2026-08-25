@@ -19,6 +19,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   transparente: 'Transparente',
   'azul-mate': 'Azul mate',
   'gris-oscuro-transparente': 'Gris oscuro transparente',
+  'azul-acero-translucido': 'Azul acero translúcido',
   dorado: 'Dorado',
   plata: 'Plata',
   azul: 'Azul',
@@ -36,6 +37,7 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'marron-degrade': 'Marrón degradé',
   'gris-degrade': 'Gris degradé',
   'verde-degrade': 'Verde degradé',
+  'gris-oscuro': 'Gris oscuro',
   espejado: 'Espejado',
 };
 
