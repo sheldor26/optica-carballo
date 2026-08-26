@@ -43,9 +43,9 @@
 --                                         translúcido / lente gris oscuro POLARIZADA (STEELBLUE/S10 POL)
 --   Las dos polarizadas comparten un item MULTI-VARIACIÓN de ML (pausado, out_of_stock, 24 ventas)
 --   y por eso llevan `mercadolibre_variation_code` real, no NULL. Precio $96.251, distinto de las
---   no polarizadas: el polarizado vale más. El founder describió la STEELBLUE como "celeste brillo
---   translúcido"; se cargó `azul-acero-translucido` porque es lo que dicen su propia publicación
---   de ML ("Anteojo Azul Acero Transparente"), el nombre del fabricante (STEELBLUE) y la foto.
+--   no polarizadas: el polarizado vale más. El founder la llamó primero "celeste brillo translúcido"; se
+--   cargó `azul-acero-translucido` por lo que decían su publicación de ML y el fabricante, y el
+--   2026-08-25 él zanjó el nombre: **azul metálico**.
 --   La MDEMI se agregó el 2026-08-25 y ese mismo día se le creó publicación PROPIA en ML
 --   (MLA2035140957), separada de la de la naranja. Las dos son items simples → variation_code NULL
 --   en ambas, que es correcto porque cada una apunta a un item distinto.
@@ -126,7 +126,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-bruice', 'Rusty Bruice',
   'Anteojos de sol Rusty Bruice: aviador de doble puente unisex, armazón G-Flex de 23 g. Lente de policarbonato con 100% protección UV (UV400, categoría 3). Disponible en 4 colores, 2 de ellos con lente polarizada.',
-  E'Los **Rusty Bruice** son **anteojos de sol aviador de doble puente, unisex**, con armazón **G-Flex** y **bisagras metálicas con sistema flex**. Pesan **23 g**, lo que los vuelve de los más livianos del catálogo.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3**.\n\nMedidas: frente 146 mm · lente 56 mm de ancho × 54 mm de alto · puente 18 mm · varilla 140 mm.\n\nDisponible en 4 colores:\n\n• **Negro mate, lente naranja** — no polarizada. El tinte naranja levanta el contraste percibido cuando la luz está plana o hay neblina.\n• **Carey mate con patillas negras, lente verde degradé** — no polarizada. El verde rinde más parejo en color, y el degradé va de más oscuro arriba a más claro abajo.\n• **Negro mate, lente gris degradé** — **polarizada**.\n• **Azul acero translúcido, lente gris oscuro** — **polarizada**.\n\n**Ojo con el filtro polarizado: lo tienen 2 de los 4 colores.** Los cuatro filtran el 100% de la radiación UV, pero sólo los dos polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Rusty Bruice** son **anteojos de sol aviador de doble puente, unisex**, con armazón **G-Flex** y **bisagras metálicas con sistema flex**. Pesan **23 g**, lo que los vuelve de los más livianos del catálogo.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3**.\n\nMedidas: frente 146 mm · lente 56 mm de ancho × 54 mm de alto · puente 18 mm · varilla 140 mm.\n\nDisponible en 4 colores:\n\n• **Negro mate, lente naranja** — no polarizada. El tinte naranja levanta el contraste percibido cuando la luz está plana o hay neblina.\n• **Carey mate con patillas negras, lente verde degradé** — no polarizada. El verde rinde más parejo en color, y el degradé va de más oscuro arriba a más claro abajo.\n• **Negro mate, lente gris degradé** — **polarizada**.\n• **Azul metálico, lente gris oscuro** — **polarizada**.\n\n**Ojo con el filtro polarizado: lo tienen 2 de los 4 colores.** Los cuatro filtran el 100% de la radiación UV, pero sólo los dos polarizados cortan los reflejos del asfalto y del agua. Fijate cuál elegís, y si tenés dudas escribinos.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "aviador",
@@ -168,7 +168,7 @@ VALUES
    '{"frame_color":"negro-mate","lens_color":"gris-degrade","model_code":"MBLK/SG91 POL","polarized":true}'::jsonb,
    9625100, 0, true, 3, 'MLA1897188728', '184579332651'),
   ((SELECT id FROM public.products WHERE slug='rusty-bruice'), '957004',
-   '{"frame_color":"azul-acero-translucido","lens_color":"gris-oscuro","model_code":"STEELBLUE/S10 POL","polarized":true}'::jsonb,
+   '{"frame_color":"azul-metalico","lens_color":"gris-oscuro","model_code":"STEELBLUE/S10 POL","polarized":true}'::jsonb,
    9625100, 0, true, 4, 'MLA1897188728', '184579332649')
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
@@ -196,9 +196,9 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-bruice'), (SELECT id FROM public.product_variants WHERE sku='957005'),
    'rusty-bruice/frente-sg91.jpg', 'Anteojos de sol Rusty Bruice aviador doble puente unisex vista frontal, armazón negro mate lente gris degradé polarizada', 2000, 1333, 5, false),
   ((SELECT id FROM public.products WHERE slug='rusty-bruice'), (SELECT id FROM public.product_variants WHERE sku='957004'),
-   'rusty-bruice/perfil-s10.jpg', 'Anteojos de sol Rusty Bruice aviador doble puente unisex vista lateral, armazón azul acero translúcido lente gris oscuro polarizada', 2000, 1333, 6, false),
+   'rusty-bruice/perfil-s10.jpg', 'Anteojos de sol Rusty Bruice aviador doble puente unisex vista lateral, armazón azul metálico lente gris oscuro polarizada', 2000, 1333, 6, false),
   ((SELECT id FROM public.products WHERE slug='rusty-bruice'), (SELECT id FROM public.product_variants WHERE sku='957004'),
-   'rusty-bruice/frente-s10.jpg', 'Anteojos de sol Rusty Bruice aviador doble puente unisex vista frontal, armazón azul acero translúcido lente gris oscuro polarizada', 2000, 1333, 7, false),
+   'rusty-bruice/frente-s10.jpg', 'Anteojos de sol Rusty Bruice aviador doble puente unisex vista frontal, armazón azul metálico lente gris oscuro polarizada', 2000, 1333, 7, false),
   ((SELECT id FROM public.products WHERE slug='rusty-bruice'), NULL,
    'rusty-bruice/medidas-18mm.jpg', 'Esquema técnico de medidas Rusty Bruice: frente 146mm, lente 56x54mm, puente 18mm, varilla 140mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

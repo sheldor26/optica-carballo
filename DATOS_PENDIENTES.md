@@ -18,83 +18,33 @@ stock sí se pueden tomar de esas fuentes.
 
 ---
 
-## 🔴 Le Groupie — medidas, peso y SKUs · Blozon — peso
+## ✅ No queda nada bloqueando
 
-- [ ] **Medidas del Vulk Le Groupie** — ancho de frente, calibre, alto total, puente y varilla. La
-  ficha está publicada sin el bloque de medidas. El fabricante publica una placa y ML declara los
-  atributos, pero ninguna de las dos fuentes vale.
-- [ ] **Peso del Le Groupie** (gramos).
-- [ ] **Peso del Blozon** (gramos). Es lo único que le falta.
-- [ ] **SKUs de fabricante del Le Groupie.** Hoy están con códigos inventados
-  (`LEGROUPIE-388-CH74`, etc.). Ninguna publicación declara `SELLER_SKU`.
-- [ ] **Zion — forma: ¿redondo u ovalado?** Los atributos dicen "Ovalada", tu título dice
-  "Redondos" y las fotos parecen redondas. Se cargó `redondo`.
+Los 78 productos activos del catálogo tienen **medidas y material de patillas completos**. No hay
+ninguna ficha incompleta.
 
-## 🟡 Pesos que faltan — 17 productos
-
-Ninguno bloquea nada: la ficha se ve bien sin el peso. Pero es el dato que más preguntan para un
-anteojo de uso diario, y conviene hacerlos todos juntos con la balanza en una sola sentada.
-
-**Anteojos de sol**
-
-- [ ] Rusty And Now
-- [ ] Rusty Bruk
-- [ ] Rusty CCCP
-- [ ] Rusty Eslav
-- [ ] Rusty Esvep
-- [ ] Rusty Blozon
-- [ ] Vulk Le Groupie
-- [ ] Rusty Play
-- [ ] Rusty Sotion
-- [ ] Rusty Terdey
-- [ ] Rusty Yau
-- [ ] Vulk Arvin
-- [ ] Vulk Deserve
-- [ ] Vulk Disarn
-- [ ] Vulk Reporter
-
-**Armazones de receta**
-
-- [ ] Rusty Woxi Optics
-- [ ] Vulk Tour 81
-
----
-
-## 🟡 Material de las patillas — 8 productos
-
-Está cargado el material del frente pero no el de las patillas. En varios modelos son distintos
-(frente de acetato con patillas de metal, por ejemplo), así que no se puede asumir.
-
-- [ ] Rusty Bruice *(sol — el frente es G-Flex, ¿las patillas también?)*
-- [ ] Rusty Feeled
-- [ ] Rusty Yau
-- [ ] Rusty R-CY 02 Optics
-- [ ] Rusty Woxi Optics
-- [ ] Vulk Day Light
-- [ ] Vulk Stray
-- [ ] Vulk Yamain
+Lo único que falta son **16 pesos**, y están en una lista aparte para hacerlos con la balanza:
+👉 **[PESOS_A_MEDIR.md](PESOS_A_MEDIR.md)**
 
 ---
 
 ## 🔵 Decisiones tuyas (no son datos, son criterios)
 
-- [ ] **Rusty Malice, forma**: lo cargué como `cuadrado` porque me lo dijiste, pero **"cuadrado" no
-  tiene faceta de forma en el sitio** — sólo existen wayfarer, aviador, cat-eye y rectangular. Hoy
-  el Malice no entra a ninguna faceta de forma. Opciones: dejarlo así, cargarlo como `rectangular`
-  (que es lo que dicen dos de tus tres publicaciones), o crear la faceta `cuadrado`.
-- [ ] **Rusty Malice, género en ML**: el sitio dice hombre porque me lo dijiste, tus publicaciones
-  dicen `GENDER = "Sin género"`. Conviene alinearlas.
-- [ ] **Rusty Bruice, forma en ML**: el sitio dice aviador, tu publicación dice
-  `FRAME_SHAPE = "Anteojo Cuadrado"`. Mismo caso.
-- [ ] **Vulk Bruice STEELBLUE, nombre del color**: vos lo llamaste "celeste brillo translúcido" y lo
-  cargué como **azul acero translúcido**, que es lo que dicen tu publicación de ML ("Anteojo Azul
-  Acero Transparente"), el nombre del fabricante (STEELBLUE) y la foto. Si preferís "celeste", lo
-  cambio.
-- [ ] **49 publicaciones de ML con medidas que no coinciden** con lo que está cargado en el sitio
-  (74 atributos en total, mediana de diferencia 5 mm). Se listan con `pnpm ml:medidas`. Para
-  corregirlas hace falta tu medición, porque en varios casos no se sabe cuál de los dos números es
-  el bueno. Ya pasó una vez con el puente del Bruice: tu dato viejo decía 18 y el nuevo 16, y el
-  correcto era 18.
+- [ ] **Rusty Malice, forma**: lo cargaste como `cuadrado`, pero **"cuadrado" no tiene faceta de
+  forma en el sitio** — sólo existen wayfarer, aviador, cat-eye y rectangular. Hoy el Malice no
+  entra a ninguna faceta de forma. Opciones: dejarlo así, pasarlo a `rectangular`, o crear la
+  faceta `cuadrado`. Lo mismo aplicaría al Blozon, que también es cuadrado.
+- [ ] **Alinear ML con el sitio** en tres casos donde tus publicaciones declaran otra cosa: el
+  Malice dice `GENDER = "Sin género"` y en el sitio es hombre; el Bruice dice
+  `FRAME_SHAPE = "Anteojo Cuadrado"` y en el sitio es aviador; el Zion dice "Ovalada" y en el sitio
+  es redondo. No urge — el sitio es el que manda.
+
+### ⏸️ Congelado por decisión del founder (2026-08-25)
+
+**Las 49 publicaciones de ML con medidas que no coinciden con el sitio.** Textual suyo: *"las
+medidas que estoy subiendo en mi página son las precisas; si en ML no coincide lo dejamos para ver
+después"*. O sea que **el sitio es la fuente de verdad** y las discrepancias no se tocan por ahora.
+Se listan cuando se quiera con `pnpm ml:medidas`.
 
 ---
 
@@ -126,3 +76,11 @@ Está cargado el material del frente pero no el de las patillas. En varios model
   para el UB14. Mismo aspecto, distinto lente.
 - [x] **2026-08-25 — Confirmado que el SBLK/S10 del Blozon sí es polarizado**, aunque en la lista de
   SKUs venía escrito sin el "POL".
+- [x] **2026-08-25 — Le Groupie: medidas 141 / 50 x 50 / 14 / 140 mm, peso 20 g y los 4 SKUs**
+  (125265, 125263, 125264, 125261). Es el más liviano del catálogo.
+- [x] **2026-08-25 — Los 8 materiales de patilla: todos G-Flex.** Con eso el catálogo quedó sin
+  ningún producto sin ese dato.
+- [x] **2026-08-25 — Zion es redondo, Malice es cuadrado y para hombre** (los dos ya estaban
+  cargados así).
+- [x] **2026-08-25 — El STEELBLUE del Bruice se llama "azul metálico"**, no azul acero translúcido
+  ni celeste.

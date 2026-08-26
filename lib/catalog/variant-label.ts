@@ -19,7 +19,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   transparente: 'Transparente',
   'azul-mate': 'Azul mate',
   'gris-oscuro-transparente': 'Gris oscuro transparente',
-  'azul-acero-translucido': 'Azul acero translúcido',
+  'azul-metalico': 'Azul metálico',
   'rosa-transparente': 'Rosa transparente',
   'carey-oscuro': 'Carey oscuro',
   dorado: 'Dorado',

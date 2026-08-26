@@ -18,10 +18,10 @@
 -- página es su PERFIL. El pareo se confirmó por dos vías: la unicidad del hash y el color de la
 -- foto.
 --
--- ⚠️ SIN MEDIDAS, A PROPÓSITO. Regla dura 7 de CLAUDE.md: las medidas sólo se cargan si las pasa el
--- founder. El fabricante publica una placa (`/img/fotos/Home/MEDIDAS/4/LE GROUPIE.jpg`) y los
--- atributos de ML también las declaran, pero ninguna de las dos fuentes es admisible. La ficha va
--- sin el bloque y el dato quedó en DATOS_PENDIENTES.md.
+-- 📏 MEDIDAS: 141 / 50 x 50 / 14 / 140 mm y 20 g — pasadas por el founder, única fuente válida
+-- (regla dura 7 de CLAUDE.md). Geometría: 50x2 + 14 = 114 ≤ 141. ✓ Es el más liviano del catálogo.
+-- El fabricante publica su propia placa y ML declara los atributos, pero ninguna de esas dos
+-- fuentes es admisible para medidas.
 --
 -- ⚠️ DOS DECISIONES DEL FOUNDER, porque sus fuentes se contradecían:
 --   · **Forma = `cat_eye`**. Los atributos de sus 8 publicaciones dicen "Ojo de gato" pero uno de
@@ -55,7 +55,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM vulk), (SELECT id FROM sol), 'vulk-le-groupie', 'Vulk Le Groupie',
   'Anteojos de sol Vulk Le Groupie: cat eye unisex de G-Flex, con lente de policarbonato y 100% protección UV (UV400, categoría 3). Disponible en 4 colores, uno de ellos polarizado.',
-  E'Los **Vulk Le Groupie** son **anteojos de sol cat eye, unisex**, con frente y patillas de **G-Flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los cuatro colores.\n\nDisponible en 4 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro.**\n• **Marrón transparente, lente marrón degradé.**\n• **Carey, lente marrón degradé.**\n\n**El filtro polarizado lo tiene sólo el negro mate.** Los cuatro filtran el 100% de la radiación UV, pero únicamente el polarizado corta los reflejos del asfalto y del agua. Los otros tres no lo llevan.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Vulk Le Groupie** son **anteojos de sol cat eye, unisex**, con frente y patillas de **G-Flex**.\n\nLa **lente es de policarbonato**, con **100% protección UV (UV400) y categoría 3** en los cuatro colores.\n\nMedidas: frente 141 mm · lente 50 mm de ancho × 50 mm de alto · puente 14 mm · varilla 140 mm. Pesan 20 g.\n\nDisponible en 4 colores:\n\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro brillo, lente gris oscuro.**\n• **Marrón transparente, lente marrón degradé.**\n• **Carey, lente marrón degradé.**\n\n**El filtro polarizado lo tiene sólo el negro mate.** Los cuatro filtran el 100% de la radiación UV, pero únicamente el polarizado corta los reflejos del asfalto y del agua. Los otros tres no lo llevan.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "temple_material": "g-flex",
@@ -64,6 +64,8 @@ VALUES (
     "lens_treatment": ["uv400"],
     "lens_category": 3,
     "gender": "unisex",
+    "weight_grams": 20,
+    "measurements": {"frame_width_mm": 141, "lens_width_mm": 50, "lens_height_mm": 50, "bridge_mm": 14, "temple_length_mm": 140},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-25",
@@ -84,19 +86,19 @@ ON CONFLICT (slug) DO UPDATE SET
 
 -- Las cuatro son items SIMPLES de ML → variation_code NULL. Se mapea una publicación por pozo de
 -- stock; la gemela de cada par queda sin vincular (un `mercadolibre_item_id` por variante).
--- SKU sintético: ninguna publicación declara `SELLER_SKU`.
+-- SKUs reales del fabricante, pasados por el founder: ninguna publicación declara `SELLER_SKU`.
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), 'LEGROUPIE-MBLK-S10-POL',
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), '125265',
    '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10 POL","polarized":true}'::jsonb,
    10014100, 9, true, 1, 'MLA1382286207', NULL),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), 'LEGROUPIE-388-CH74',
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), '125263',
    '{"frame_color":"marron-transparente","lens_color":"marron-degrade","model_code":"388/CH74","polarized":false}'::jsonb,
    8942700, 12, true, 2, 'MLA1506698031', NULL),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), 'LEGROUPIE-M0445-907',
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), '125264',
    '{"frame_color":"carey","lens_color":"marron-degrade","model_code":"M0 445/907","polarized":false}'::jsonb,
    8942700, 8, true, 3, 'MLA1529887450', NULL),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), 'LEGROUPIE-SBLK-S15',
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), '125261',
    '{"frame_color":"negro-brillo","lens_color":"gris-oscuro","model_code":"SBLK/S15","polarized":false}'::jsonb,
    8942700, 5, true, 4, 'MLA1563834906', NULL)
 ON CONFLICT (sku) DO UPDATE SET
@@ -105,25 +107,27 @@ ON CONFLICT (sku) DO UPDATE SET
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
 -- Primaria = perfil de la MBLK/S10 POL, la única polarizada y la de más ventas.
--- Sin fila de medidas: la placa no se generó porque no hay medidas del founder (ver cabecera).
+-- La placa de medidas va con variant_id NULL y sort 99, como en todos los productos.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-MBLK-S10-POL'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125265'),
    'vulk-le-groupie/perfil-mblk-s10.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista lateral, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 0, true),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-MBLK-S10-POL'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125265'),
    'vulk-le-groupie/frente-mblk-s10.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista frontal, armazón negro mate lente gris oscuro polarizada', 2000, 1333, 1, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-388-CH74'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125263'),
    'vulk-le-groupie/perfil-388-ch74.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista lateral, armazón marrón transparente lente marrón degradé', 2000, 1333, 2, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-388-CH74'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125263'),
    'vulk-le-groupie/frente-388-ch74.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista frontal, armazón marrón transparente lente marrón degradé', 2000, 1333, 3, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-M0445-907'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125264'),
    'vulk-le-groupie/perfil-m0445-907.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista lateral, armazón carey lente marrón degradé', 2000, 1333, 4, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-M0445-907'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125264'),
    'vulk-le-groupie/frente-m0445-907.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista frontal, armazón carey lente marrón degradé', 2000, 1333, 5, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-SBLK-S15'),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125261'),
    'vulk-le-groupie/perfil-sblk-s15.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista lateral, armazón negro brillo lente gris oscuro', 2000, 1333, 6, false),
-  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='LEGROUPIE-SBLK-S15'),
-   'vulk-le-groupie/frente-sblk-s15.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista frontal, armazón negro brillo lente gris oscuro', 2000, 1333, 7, false)
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), (SELECT id FROM public.product_variants WHERE sku='125261'),
+   'vulk-le-groupie/frente-sblk-s15.jpg', 'Anteojos de sol Vulk Le Groupie cat eye unisex vista frontal, armazón negro brillo lente gris oscuro', 2000, 1333, 7, false),
+  ((SELECT id FROM public.products WHERE slug='vulk-le-groupie'), NULL,
+   'vulk-le-groupie/medidas.jpg', 'Esquema técnico de medidas Vulk Le Groupie: frente 141mm, lente 50x50mm, puente 14mm, varilla 140mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 

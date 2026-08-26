@@ -791,9 +791,88 @@ Los cuatro reales, todos en el mismo lugar:
 - `pnpm typecheck` y `pnpm lint` limpios.
 - **`pnpm placas:verificar` sobre 14 productos elegidos por caso límite** —los cuatro nombres más
   largos, los más cortos, los de más variantes, los de más palabras— **334 placas, cero problemas**.
-  Corriendo ahora sobre los 77 del catálogo.
+  Después, corrida completa sobre los 77 del catálogo.
+- **`pnpm placas:verificar --guias`: 166 placas, cero problemas.** Cubre los 5 tipos × 2 formatos ×
+  **cada FAQ** de cada guía, que es donde estaba el desborde real: la que fallaba era la cuarta
+  pregunta de astigmatismo, no la primera, así que verificar sólo la placa por defecto no lo habría
+  encontrado.
 - Los 12 diseños mirados uno por uno en historia y en post, sobre tres productos con
   características opuestas (nombre largo / nombre de una palabra / sin sello de stock).
+
+### El set quedó en 7 diseños + 3 extras, y la tanda se corrió entera
+
+El founder resolvió la poda: **fuera `cartel` y `detalle`**. Los dos se borraron del código, no se
+dejaron detrás de un flag.
+
+- **`cartel`** ("el modelo en tipografía gigante, la foto de acompañamiento") era la premisa de
+  `tipografia`, que la resuelve mejor: ahí el anteojo CORTA el nombre, o sea que hay una idea y no
+  sólo un cuerpo de letra grande. Encima `cartel` era el único diseño sin presupuesto de alto propio
+  y el que más código pedía para funcionar con nombres cortos.
+- **`detalle`** era `callouts` sin las flechas: mismo dato de la ficha, contado igual, sin señalar
+  la pieza de la que habla. Y era el bloque más apretado del set —34 caracteres de título más 214 de
+  cuerpo sobre 1350 px—, o sea el candidato número uno a volver a desbordar con un callout largo.
+
+Con eso salieron también el campo `callout` (singular) de `DatosPlacaProducto` y el flag
+`--callout`, que existían sólo para `detalle`.
+
+**El set final**: `editorial`, `tarjeta`, `full`, `split`, `halo`, `callouts`, `tipografia` de
+promoción, más `colores`, `medidas` e `incluye` como ángulos extra. Diez layouts por producto en dos
+formatos.
+
+**Limpieza de la carpeta**: se borraron los PNG de generaciones viejas del set que quedaban en
+`marketing/placas-producto/` —`ficha-*`, `stickers-*`, `cartel-*`, `detalle-*` y un `story.png` /
+`feed.png` sueltos, 31 archivos— de diseños que ya no existen. Mezclados con los actuales hacían
+parecer que el set no era consistente.
+
+**Un defecto que apareció al mirar la tanda y no en la revisión anterior**: en `tipografia`, un
+modelo de nombre corto salía con la palabra chiquita en el medio del cartel. "YAU" ocupaba 280 px de
+una medida de 928. La causa era un techo fijo de 300 px sobre el cuerpo del texto de fondo, que no
+respondía a ninguna restricción real: el ancho de la palabra y el alto disponible ya acotan solos.
+Sacado el techo, el cuerpo lo fijan esas dos cosas y el nombre llena la medida tenga tres letras o
+tres palabras. Con nombres largos manda el alto igual que antes, así que esas placas no cambiaron.
+Se encontró recién ahora porque los tres productos de la revisión visual tenían nombres de una
+palabra larga o de varias — ninguno de tres letras.
+
+**La tanda salió: 78 productos, 1.532 placas, verificadas todas.** `pnpm placas:verificar --svg`
+sobre las 1.514 de la corrida grande más las 18 del producto que se repitió: **cero solapamientos,
+cero desbordes de margen, cero invasiones de la franja que tapa la UI de Instagram.**
+
+**Un producto falló y destapó un bug de los scripts** (no de la web): el Vulk Ready? no generaba
+nada, con "No pude bajar la foto: Object not found", pero los archivos estaban en el bucket. Su
+carpeta es `vulk-ready?-receta/` —el signo viene del nombre del modelo— y **el SDK de Supabase no
+escapa el `?` al armar la URL de descarga**, así que el path se corta ahí y el resto se interpreta
+como query string. Se verificó que la **web NO está afectada**: Next Image lo escapa por su cuenta
+(`%253F`) y la ficha en producción sirve las fotos con HTTP 200. Rompía sólo en los scripts.
+Arreglado escapando cada segmento del path por separado —el `/` tiene que sobrevivir— en la bajada
+del generador. El producto ya genera sus 18 placas y pasan la verificación.
+
+⚠️ **El `?` en el `storage_path` sigue ahí** y va a volver a morder en cualquier script nuevo que
+baje por path. La limpieza de fondo —renombrar la carpeta del bucket y actualizar `storage_path`— es
+una migración de datos del catálogo y quedó en `BACKLOG.md`, no se hizo acá.
+
+**La tanda se corre en UNA pasada, no en dos.** El primer intento generaba los PNG y después corría
+`pnpm placas:verificar` sobre el catálogo: dos corridas de ~1,5 h que hacen exactamente el mismo
+trabajo caro —bajar las fotos y recortarlas con rembg— y difieren sólo en qué guardan. Ahora la
+tanda corre con `PLACAS_SVG=<carpeta>`, que deja el SVG al lado del PNG, y el verificador tiene un
+modo `--svg <carpeta>` que los lee ya generados. La verificación pasó de 90 minutos a segundos.
+
+**La tanda salió: 1.532 PNG en 78 productos.** Diez layouts por producto en dos formatos, en
+`marketing/placas-producto/<slug>/`.
+
+**14 productos tienen 18 archivos y no 20, y eso es correcto, no una falla.** Al generador le falta
+un dato para un ángulo extra y lo saltea en vez de rellenarlo:
+
+- **13 sin `colores`**: tienen un solo color con stock, así que la placa de "N colores disponibles"
+  no tiene qué mostrar (`rusty-bruice-receta`, `rusty-bruk`, `rusty-eslav`, `rusty-feeled`,
+  `rusty-opposit-receta`, `rusty-pro-30-receta`, `rusty-the-take`, `rusty-vrast`, `vulk-bennie-51`,
+  `vulk-biller`, `vulk-deserve`, `vulk-kirt-receta`, `vulk-ready-receta`).
+- **1 sin `medidas`**: `vulk-le-groupie` no tiene medidas cargadas. Es la regla dura 7 funcionando —
+  si no las midió el founder, la ficha va sin el bloque.
+
+⚠️ **El script de la tanda vivía en el scratchpad y se perdió al reiniciar la sesión.** Los PNG
+quedaron, pero para volver a correr el catálogo entero hoy hay que rearmarlo: `pnpm ig:producto`
+trabaja de a un producto. **Conviene agregarle un flag `--todos` al script**, que es la forma de que
+la tanda sea reproducible sin depender de un archivo temporal. Quedó anotado en `BACKLOG.md`.
 
 ### Cargado: Rusty Zion (seed 98) — y un patrón de duplicación nuevo
 
@@ -858,11 +937,46 @@ nuevo del catálogo) y `rosa-transparente` / `carey-oscuro` en el de colores. Ve
 - **Malice y Zion**: completos.
 - Los 17 pesos y los 8 materiales de patilla son mejora, no deuda: ninguna ficha se rompe sin ellos.
 
+### El catálogo quedó sin datos faltantes (salvo pesos)
+
+El founder pasó de una todo lo que quedaba abierto. Estado verificado contra la base sobre los
+**78 productos activos**: `0 sin medidas · 0 sin material de patillas · 16 sin peso`.
+
+**Le Groupie completo**: 141 / 50 x 50 / 14 / 140 mm, **20 g** —el más liviano del catálogo— y los
+4 SKUs reales (125265, 125263, 125264, 125261). Placa de medidas generada y subida. Geometría:
+50×2 + 14 = 114 ≤ 141. ✓
+
+**Los 8 materiales de patilla son todos G-Flex.** Se cargaron de una con un UPDATE sobre los que
+tenían el campo vacío, así que ese hueco se cerró entero.
+
+**El STEELBLUE del Bruice se llama "azul metálico"** — ni azul acero translúcido (lo que decían ML
+y el fabricante) ni celeste (como lo había llamado él antes). Cambiado en la variante, la
+descripción, los `alt_text` y el mapa de etiquetas.
+
+**Zion redondo y Malice cuadrado/hombre**: confirmados, ya estaban cargados así.
+
+### Los pesos van en su propio archivo
+
+`PESOS_A_MEDIR.md`, a pedido del founder: trajo la balanza y quiere la lista suelta para trabajarla
+de una sentada. 16 modelos ordenados por stock —que es el orden en que más rinde tenerlos— con la
+aclaración de que **es un peso por modelo y no por color**: las variantes comparten armazón y lente,
+así que pesar una de cada uno alcanza.
+
+### ⏸️ Las discrepancias de medidas con ML quedan congeladas
+
+Decisión del founder: *"las medidas que estoy subiendo en mi página son las precisas; si en ML no
+coincide lo dejamos para ver después"*. **El sitio es la fuente de verdad** y las 49 publicaciones
+con diferencias no se tocan. Sigue disponible `pnpm ml:medidas` para listarlas cuando se quiera.
+
+Con esto `DATOS_PENDIENTES.md` baja a **2 ítems abiertos**, y los dos son de criterio, no datos: qué
+hacer con la forma "cuadrado" —que no tiene faceta en el sitio y afecta a Malice y Blozon— y si vale
+la pena alinear ML con el sitio en tres publicaciones.
+
 ### Próximo paso EXACTO
 
-Cerrar el **Le Groupie** cuando el founder pase medidas, peso y SKUs. Mientras tanto, seguir con el
-próximo modelo del cruce: **Cinema** (Vulk, 6 colores, 24 u, 46 vendidos) o **Dunsert** (Rusty,
-2 colores, 17 u, 24 vendidos). ⚠️ Verificar primero si el modelo está publicado además como items
+Seguir con el próximo modelo del cruce de faltantes: **Cinema** (Vulk, 6 colores, 24 u, 46 vendidos)
+o **Dunsert** (Rusty, 2 colores, 17 u, 24 vendidos). Cargarlo **sin medidas** y anotarlas en
+`DATOS_PENDIENTES.md`, que es el flujo que quedó establecido. ⚠️ Verificar primero si el modelo está publicado además como items
 simples sueltos —el caso que `ml:faltantes` no deduplica— y no tomar medidas de ninguna fuente que
 no sea el founder. Sigue pendiente, aparte, el control diferido de 24 h del alta de MLA2035140957.
 
