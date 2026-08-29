@@ -10,6 +10,57 @@
 **Fecha**: 2026-08-29
 **Por**: Claude Code (a pedido de Juan)
 
+### 🔵 En carga, bloqueado por datos del founder: Rusty Bad Card
+
+Décimo producto del cruce y **el tope de la lista por stock parado que además ya vendió**.
+Fotos bajadas (`marketing/fotos/rusty-bad-card/`, 39 en 6 subcarpetas) y **12 placas web
+generadas** (`marketing/placas-producto/rusty-bad-card/`). Falta el seed.
+
+**6 colorways, 33 unidades, 2 precios, 6 ventas — y el 33 es REAL.** Verificado uno por uno: los
+6 `user_product_id` son distintos, así que acá NO hay el doble conteo de `ml:faltantes` que apareció
+en el Zion, el Cinema, el Ardigan y el Dunsert. Están partidos en **dos publicaciones
+multi-variación que se comportan casi como dos productos**:
+
+| Pub | Precio | Ventas | Health | Tratamiento | Colorways |
+|---|---|---|---|---|---|
+| MLA1470709119 | $104.885 | 5 | 0,90 | `UV400 Polarizado` | C3 rosa (6 u), C5 negro mate (5 u) |
+| MLA2498615612 | $90.836 | 1 | null | `ANTIREFLEX/PROTECCION UV400` | C1 azul (5), C2 marrón (11), C4 carey (3), C6 negro brillo (3) |
+
+Comunes: G-Flex frente y patillas, policarbonato, unisex ("Sin género"), UV sí, **doble puente** en
+las 6. Son items MULTI-VARIACIÓN → `mercadolibre_variation_code` va con el código numérico
+(patrón Ardigan seed 101), no NULL como en los simples.
+
+**🔺 LA FORMA NO ES RECTANGULAR, Y ESO CAMBIA CONTRA QUIÉN COMPITE.** ML declara "Rectangular
+doble puente", pero abriendo las fotos es un **aviador tipo navigator de doble puente**, con el
+puente calado y lentes cuadradas que se afinan. O sea que el choque **no es contra el Rusty Rew**
+(que tiene `lentes de sol rectangulares`) **sino contra el Rusty Bruice**, cuyo title ya dice
+"Aviador Doble Puente". Es el cuarto caso seguido de forma mal declarada por ML tras Zion, Ardigan
+y Dunsert — con la diferencia de que los tres anteriores erraban hacia "Ovalada" y éste hacia
+"Rectangular".
+
+**⚠️ Dos errores de color en las publicaciones del founder**, detectados abriendo las fotos y
+comparándolas entre sí (la regla que salió del MISTAKES del Dunsert):
+- **C6**: ML declara `LENS_COLOR = Degradé Marrón`. La lente es un **gris degradé que vira a celeste
+  abajo**. No es marrón. Misma clase que el terracota del Cinema.
+- **C1**: ML lo llama "Azul Metálico" y es un **azul humo translúcido**, no un metalizado.
+En el sitio va lo verificado en la foto. Anotado en DATOS_PENDIENTES para que él lo corrija en ML.
+
+**✅ Lo que SÍ salió bien en las fotos**: la convención `01`=perfil / `02`=frente se cumple en los
+**6** colorways. Se verificó abriendo las 12 y comparándolas entre sí, que es exactamente el chequeo
+que faltó en el Dunsert. También se detectó que varias fotos de la galería son **placas viejas
+amarillas con texto** (callouts "LENTES CON ANTIRREFLEX", "UV400"): no van al sitio.
+
+**⬜ Bloqueado por el founder** (todo en DATOS_PENDIENTES.md): medidas (regla dura 7), **los 6 SKU**
+(`SELLER_SKU` está VACÍO en las 6 variaciones de ML, no hay de dónde sacarlos), peso, tipo de
+bisagra, y confirmar que el antirreflex lo tienen las 4 no polarizadas y no las 2 polarizadas.
+
+**Próximo paso exacto**: leer lo que devuelvan los agentes de SEO y de carga (en curso al cierre) y,
+cuando el founder pase medidas + SKU, escribir `supabase/seeds/105_rusty_bad_card_sol.sql`.
+Si los SKU no existen, se inventan de casa con el formato del Rew — pero requiere su OK porque
+`sku` tiene índice único.
+
+---
+
 ### ✅ Cargado y live: Rusty Dunsert (`/anteojos-de-sol/rusty/rusty-dunsert`)
 
 Noveno producto del cruce. Seed `supabase/seeds/103_rusty_dunsert_sol.sql`, aplicado a cloud,

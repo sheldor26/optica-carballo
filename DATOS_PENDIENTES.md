@@ -92,6 +92,33 @@ stock sí se pueden tomar de esas fuentes.
   - 🔴 **Se encontró un claim de cuero VIVO**: el alt de esa imagen decía "estuche **de cuero**" y se
     mostraba en los **33 productos Vulk** desde el seed 17 (2026-05-30). Corregido. Ver MISTAKES.md.
 
+## 🔵 Rusty Bad Card — en carga, bloqueado por datos tuyos (2026-08-29)
+
+6 colorways, 33 unidades, 2 precios, en dos publicaciones multi-variación
+(MLA1470709119 polarizadas $104.885 · MLA2498615612 no polarizadas $90.836). Los 6
+`user_product_id` son distintos, o sea que el 33 es stock real. Fotos bajadas y 12 placas
+generadas. **Falta esto para poder escribir el seed**:
+
+- [ ] **Medidas** (regla dura 7, sólo las pasás vos): calibre – puente – varilla, alto total y
+  ancho total. ML no declara ninguna en las dos publicaciones. Sin esto la ficha va sin bloque
+  de medidas.
+- [ ] **Los 6 SKU**. ML tiene `SELLER_SKU` VACÍO en las 6 variaciones, así que no hay de dónde
+  sacarlos. Si no los tenés, se inventan de casa con el formato del Rew (`BADCARD-C1`… ), pero
+  avisame porque queda fijo: `sku` tiene índice único.
+- [ ] **Peso**. Tampoco lo declara ML. Si no lo tenés, va a PESOS_A_MEDIR.md.
+- [ ] **Bisagras**: ¿metálicas con flex, o plásticas? ML no lo dice. Recordá que **G-Flex es el
+  material y no autoriza a decir que el armazón sea flexible**: el flex, si existe, es de la bisagra.
+- [ ] **Confirmar el antirreflex.** Tu publicación MLA2498615612 declara
+  `LENS_TREATMENT = ANTIREFLEX/PROTECCION UV400` y una de tus placas viejas dice "LENTES CON
+  ANTIRREFLEX", o sea que el dato es tuyo. Sólo quiero que confirmes que **las 4 no polarizadas
+  (C1, C2, C4, C6) lo tienen y las 2 polarizadas (C3, C5) no** — es el mismo split que el Dunsert.
+
+**⚠️ Dos errores de color en TUS publicaciones de ML** (verificados abriendo las fotos):
+- **C6 negro brillo**: ML declara `LENS_COLOR = Degradé Marrón`. La lente es un **gris degradé que
+  vira a celeste abajo**, no marrón. En el sitio va lo que se ve; corregilo en ML cuando quieras.
+- **C1**: ML lo llama "Azul Metálico". Es un **azul humo translúcido**, no un metalizado. Menos
+  grave, pero "metálico" hace pensar en un acabado que no tiene.
+
 ## ✅ El resto del catálogo
 
 Los otros 77 productos activos tienen **material de patillas completo**. Sobre las medidas, ojo con
