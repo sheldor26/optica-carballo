@@ -30,12 +30,75 @@ correcto — hubo que reconstruir el diseño a mano sobre la mejor base.
 **Entregado**: PNG 1600×900 (`placa-sponsor-torneo-optica-carballo.png`, enviado a Juan) + diseño
 editable en Canva (`https://www.canva.com/d/ZQMrkpRvLFmRvtQ`, id `DAHTtBb7YZw`).
 
-**Próximo paso exacto**: ninguno pendiente de acá — si Juan pide ajustes de tamaño/posición para
-imprenta, se retoca el mismo diseño de Canva (ya tiene el logo y el ícono de IG cargados).
+**Ajustes post-entrega a pedido de Juan**: acercar el bloque de redes al logo/título y agrandarlo
+(ícono IG 34→48px, handle 30→40px), y ubicar el ícono de Instagram al lado del `@handle` en vez de
+arriba (con el path SVG oficial de simple-icons, no una aproximación dibujada a mano — la primera
+versión con formas propias no se leía como el ícono real). Después, igualar el tamaño del texto del
+sitio web al de Instagram (40px, bold, ambos).
+
+**Auditoría con `/trio-auditor`**: Codex 8.2/10, GO — pieza lista para uso digital; sugiere separar
+~40-50px el bloque de redes del nombre (ahora compite visualmente con "CARBALLO" tras el ajuste de
+achicar el gap) y, si va a imprenta física grande, preparar versión con sangrado 3-5mm + margen
+interno 60-80px en PDF (el PNG 1600×900 sirve para pantalla, no necesariamente para lona grande).
+`agy` no devolvió veredicto — falló por permiso `read_file` denegado en modo headless al intentar
+abrir el PNG (ver MISTAKES.md 2026-08-29, entry nueva). Veredicto real es de un solo auditor, no del
+trío completo.
+
+Juan confirmó aplicar la sugerencia de Codex: el bloque de Instagram+web bajó 40px (icono/handle de
+top 512/507 a 552/547, sitio de top 578 a 618) — queda separado del nombre pero mucho más junto al
+logo que en la versión original. Exportado y entregado.
+
+**Próximo paso exacto**: ninguno pendiente. Si la placa termina yendo a imprenta física grande
+(lona/cartel de cancha), generar la variante con sangrado 3-5mm + margen interno 60-80px que sugirió
+Codex — el PNG 1600×900 actual sirve para pantalla/proyección, no está optimizado para imprenta.
+
+**🔄 Pivot a mitad de sesión — Juan aclaró que era para un tercero, no para él.** Se la piden como
+sponsor para que el torneo/la gráfica la incorpore a SU propio diseño de lona; no hacía falta una
+pieza terminada sino material suelto. Se le entregó el archivo de logo original
+(`public/brand/logo-square.png`) + el texto plano (nombre, `@optica.carballo`,
+`opticacarballo.com.ar`), con una advertencia real detectada en el momento: **ese es el único asset
+de logo que existe en el proyecto y mide apenas 100×100px**, sin versión vectorial. Se probó
+upscalear con Lanczos y quedó borroso en los bordes (confirmado visualmente) — no hay atajo, si la
+gráfica lo necesita grande van a tener que vectorizarlo de nuevo. Queda anotado acá para no repetir
+el intento de upscale la próxima vez que se pida el logo en alta resolución.
+
+**Juan pidió retomar la placa terminada** (sí la quería, con fondo navy en vez de blanco — probando
+si se ve mejor para el uso real en lona). Se invirtió la paleta de la última versión: fondo navy
+sólido (#0a1e3f) + nombre, ícono de Instagram y texto en blanco (antes era al revés). El isotipo
+mantiene su propio badge navy, que ahora se funde con el fondo (mismo tono) — efecto prolijo, sin
+borde visible. Exportado como `placa-sponsor-torneo-optica-carballo-navy.png` y entregado. El diseño
+de Canva sigue siendo el mismo (`DAHTtBb7YZw`), así que las dos versiones (blanco y navy) no
+coexisten — la última guardada es la navy.
+
+**Última ronda de mejoras (Juan preguntó "se puede mejorar de alguna manera?")**: se detectaron 3
+problemas reales sin necesidad de re-auditar con el trío (visual, evidente en el thumbnail):
+1. composición corrida hacia arriba (~230px vacíos abajo, sin equilibrio) → se centró verticalmente
+   corriendo los 5 elementos +78px (logo top 70→148, título 315→393, ícono IG 552→630, handle
+   547→625, sitio 618→696).
+2. el isotipo se fundía con el fondo (mismo navy, sin definición) → `update_stroke_properties` con
+   borde blanco de 6px directo sobre el rect del logo (sin necesidad de shapes extra ni jugar con
+   z-order).
+3. la placa no se leía como pieza cerrada → `update_stroke_properties` con borde blanco de 24px
+   sobre el rect de fondo de 1600×900 (al estar centrado en el borde del canvas, la mitad se recorta
+   afuera y queda un marco de ~12px visible puertas adentro — funcionó al probarlo, no hizo falta
+   insetear el path).
+
+Exportado y entregado como versión final.
+
+**Juan pidió la misma pieza mejorada pero en fondo blanco** (para comparar las dos). Se invirtió la
+paleta sobre el layout ya mejorado (centrado + marco + borde de logo), sin tocar posiciones ni
+tamaños: fondo blanco, texto/ícono/bordes en navy. Exportado como
+`placa-sponsor-torneo-optica-carballo-blanco.png` y entregado. **Hay dos versiones finales
+coexistiendo como archivos entregados** (navy y blanco); el diseño de Canva (`DAHTtBb7YZw`) solo
+guarda la última (blanco) — si Juan quiere retomar la navy hay que volver a invertir colores, no
+está guardada aparte.
+
+**Próximo paso exacto**: ninguno pendiente — Juan tiene las dos versiones para elegir. Si pide la
+variante con sangrado para imprenta física, retomar desde acá.
 
 ---
 
-### 🔵 En carga, bloqueado por datos del founder: Rusty Bad Card
+### ✅ Cargado y live: Rusty Bad Card (`/anteojos-de-sol/rusty/rusty-bad-card`)
 
 Décimo producto del cruce y **el tope de la lista por stock parado que además ya vendió**.
 Fotos bajadas (`marketing/fotos/rusty-bad-card/`, 39 en 6 subcarpetas) y **12 placas web
@@ -112,12 +175,44 @@ en el Dunsert.
 la misma imagen) que declara **138 / 54×48 / 19 / 145**. No se usa: además de la regla dura 7,
 **está dibujada sobre un wayfarer con remaches**, no sobre el Bad Card. Plantilla genérica reciclada.
 
-**Próximo paso exacto**: cuando el founder pase medidas + bisagra + forma, rehacer el ángulo SEO
-sobre `aviador` y escribir `supabase/seeds/105_rusty_bad_card_sol.sql` con los SKU del fabricante.
-⚠️ **La trampa de esta carga es el `mercadolibre_variation_code`**: son items MULTI-variación, así
-que va el ID numérico. Un NULL por inercia del patrón Rew/Dunsert **no da error** —
-`sync-stock.ts:296-298` hace un SKIP SILENCIOSO sin escribir en `marketplace_sync_errors`, y la
-variante queda congelada en stock **y precio** para siempre sin que se note en la PDP.
+**✅ EL FOUNDER PASÓ TODO EL 2026-08-29 y quedó cargado y verificado en producción.**
+Medidas **143 / 54×53 / 19 / 145** (geometría 54×2+19=127 ≤ 143 ✓), **bisagras plásticas sin flex**,
+y confirmó la forma con el armazón en la mano: *"Es estilo aviador doble puente"*.
+Seed `supabase/seeds/105_rusty_bad_card_sol.sql`, commit `ae22ef5`.
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 6 / 33 | 6 / 33 ✓ |
+| Polarizadas / con antirreflex | 2 / 4 | 2 / 4 ✓ |
+| `variation_code` en NULL | **0** (la trampa) | **0** ✓ |
+| Precios distintos | 2 | 2 ✓ |
+| `lens_treatment` producto | `["uv400"]` | ✓ |
+| Imágenes / primarias | 13 / 1 | 13 / 1 ✓ |
+| meta_title / meta_description | ≤60 / ≤160 | 54 / **157** ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| `/anteojos-de-sol/aviador` y `/rusty/aviador` | aparece | ✓ |
+| `/anteojos-de-sol/polarizados` | card con stock a $104.885 | **✓ "Polarizado · $104.885 · 2 colores"** |
+| `/anteojos-de-sol/rusty/polarizados` | **NO** aparece | ✓ correcto (2 de 6) |
+| `/mujer` · `/hombre` · `/rusty` | aparece en las 3 | ✓ |
+| `AggregateOffer` | low 90836 / high 104885 / 6 | ✓ |
+| Encuadre (regla 15) | 79-93% | **92% con scale 1.00, sin overrides** ✓ |
+| Typecheck / build | limpios | ✓ / ✓ |
+
+**⚠️ DOS FALSAS ALARMAS PROPIAS AL VERIFICAR, las dos por grep flojo — y las dos se cayeron al
+mirar bien.** Valen porque el reflejo era reportarlas como bugs:
+1. **"Ninguna faceta lo muestra", 6 de 6.** Era el cache ISR otra vez, pero **dos requests no
+   alcanzaron**: la primera dispara la regeneración y la segunda todavía sirve stale si la
+   regeneración no terminó. Hay que **esperar entre requests**, no encadenarlas. Corrige la nota que
+   quedó escrita en la carga del Dunsert, que decía que con pedirla dos veces bastaba.
+2. **"La card de polarizados dice Sin stock"** teniendo 11 unidades. Era un artefacto de
+   `grep -B5 -A25`, que se metió en la card del producto vecino. La card real dice
+   **"Polarizado · Rusty Bad Card · $104.885 · 3 cuotas · 2 colores"**, que es exactamente lo
+   correcto. **Regla: extraer el bloque acotado del elemento, nunca un rango de líneas alrededor de
+   un match.**
+
+**Próximo paso exacto**: seguir con el cruce `pnpm ml:faltantes`. El siguiente por stock parado que
+además vendió es el **Rusty Gover** (armazón, 8 colores, 30 u) o el **Vulk Harry** (sol, 1 color,
+19 u, 20 ventas). Antes de arrancar, dedupear por `user_product_id` como siempre.
 
 ---
 

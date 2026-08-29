@@ -92,46 +92,23 @@ stock sí se pueden tomar de esas fuentes.
   - 🔴 **Se encontró un claim de cuero VIVO**: el alt de esa imagen decía "estuche **de cuero**" y se
     mostraba en los **33 productos Vulk** desde el seed 17 (2026-05-30). Corregido. Ver MISTAKES.md.
 
-## 🔵 Rusty Bad Card — en carga, bloqueado por datos tuyos (2026-08-29)
+## ✅ Rusty Bad Card — CERRADO el 2026-08-29
 
-6 colorways, 33 unidades, 2 precios, en dos publicaciones multi-variación
-(MLA1470709119 polarizadas $104.885 · MLA2498615612 no polarizadas $90.836). Los 6
-`user_product_id` son distintos, o sea que el 33 es stock real. Fotos bajadas y 12 placas
-generadas. **Falta esto para poder escribir el seed**:
+El founder pasó **143 / 54×53 / 19 / 145**, **bisagras plásticas sin flex**, y confirmó la forma:
+*"Es estilo aviador doble puente"*. SKU (1035570-1035575) y peso (25 g) salieron del fabricante.
+Cargado y verificado en producción. Sigue abierto sólo un dato menor, que no bloquea nada:
 
-✅ **RESUELTO SIN VOS: SKU y peso.** El modelo SÍ está en `rustyoptical.com/collections/sunglasses/ss24/item/786-bad-card`:
-**C1 1035570 · C2 1035571 · C3 POL 1035572 · C4 1035573 · C5 POLARIZED 1035574 · C6 1035575**,
-peso **25 g**, frente y patillas **G-Flex**. La ficha marca POL en **exactamente C3 y C5**, que
-coincide 1:1 con `WITH_POLARIZED_LENS=Sí` de tu publicación A → **dos fuentes independientes**.
-⚠️ Esa misma ficha dice en el blurb genérico "LENTE: POLARIZADAS Y POLICARBONATO" para TODO el
-modelo, contradiciendo su propia lista de colorways. Es boilerplate y se descarta — misma trampa
-que la del Bruice, que el founder desmintió con el producto en la mano.
-⚖️ 25 g **no es notable**: empata con el Vulk 53&3 y el Guardian. Sin superlativos.
+- [ ] **¿El antirreflex va en la cara interna?** Que exista está doblemente respaldado (tu
+  publicación declara `LENS_TREATMENT = ANTIREFLEX/PROTECCION UV400` y una de tus placas viejas dice
+  "LENTES CON ANTIRREFLEX"). Lo que no sabemos es **dónde está la capa**, así que la ficha dice
+  "antirreflex" sin afirmar la posición — a diferencia del Dunsert, donde vos confirmaste que es
+  interna. Si lo confirmás, se agrega esa precisión.
 
-Falta todavía:
-
-- [ ] **Medidas** (regla dura 7, sólo las pasás vos): calibre – puente – varilla, alto total y
-  ancho total. Ni ML ni el fabricante las declaran. Sin esto la ficha va sin bloque de medidas.
-  ⚠️ **Hay una placa de medidas metida entre tus fotos de ML** (`c2-marron/04` y `c4-carey/04`,
-  es la misma imagen) que dice **138 / 54×48 / 19 / 145**. **NO se usa**: además de la regla dura 7,
-  **está dibujada sobre un wayfarer con remaches y puente simple**, que no es el Bad Card. Es una
-  plantilla genérica reciclada. Sirve sólo como número para contrastar contra lo que midas vos.
-- [ ] **Bisagras**: ¿metálicas con flex, o plásticas? No lo dice ni ML ni el fabricante. Recordá que
-  **G-Flex es el material y no autoriza a decir que el armazón sea flexible**: el flex, si existe,
-  es de la bisagra. Si abrís la patilla más de 90° y vuelve sola, tiene flex.
-- [ ] **Confirmar la FORMA.** ML dice "Rectangular", pero comparando las fotos contra el catálogo es
-  un **aviador de doble puente**, misma familia que el Bruice (que el sitio ya clasifica `aviador`)
-  y NO la del Rew (`rectangular`, lente plana y puente simple). Decidís vos, que lo tenés en la mano.
-- [ ] **El antirreflex: sólo falta DÓNDE está la capa.** Que existe ya está doblemente respaldado
-  (tu publicación declara `LENS_TREATMENT = ANTIREFLEX/PROTECCION UV400` y una de tus placas viejas
-  dice "LENTES CON ANTIRREFLEX"). Lo que NO sabemos es si va en la **cara interna** como en el
-  Dunsert. Sin que lo confirmes, la ficha dice "antirreflex" sin decir dónde.
-
-**⚠️ Dos errores de color en TUS publicaciones de ML** (verificados abriendo las fotos):
+**⚠️ Dos errores de color en TUS publicaciones de ML** (verificados abriendo las fotos, el sitio ya
+carga lo correcto):
 - **C6 negro brillo**: ML declara `LENS_COLOR = Degradé Marrón`. La lente es un **gris degradé que
-  vira a celeste abajo**, no marrón. En el sitio va lo que se ve; corregilo en ML cuando quieras.
-- **C1**: ML lo llama "Azul Metálico". Es un **azul humo translúcido**, no un metalizado. Menos
-  grave, pero "metálico" hace pensar en un acabado que no tiene.
+  vira a celeste abajo**, no marrón.
+- **C1**: ML lo llama "Azul Metálico". Es un **azul humo translúcido**, no un metalizado.
 
 ## ✅ El resto del catálogo
 
