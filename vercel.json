@@ -16,6 +16,18 @@
     {
       "path": "/api/cron/check-prescription-expiry",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/publish-social",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/social-oportunidades",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/ml-ventas",
+      "schedule": "0 * * * *"
     }
   ]
 }
