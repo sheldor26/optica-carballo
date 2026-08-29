@@ -7,8 +7,89 @@
 
 ## Última actualización
 
-**Fecha**: 2026-08-26
+**Fecha**: 2026-08-29
 **Por**: Claude Code (a pedido de Juan)
+
+### ✅ Cargado: Rusty Dunsert (`/anteojos-de-sol/rusty/rusty-dunsert`)
+
+Noveno producto del cruce. Seed `supabase/seeds/103_rusty_dunsert_sol.sql`, aplicado a cloud.
+**Falta el deploy y la verificación en producción** — es el próximo paso exacto.
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 3 / 17 | 3 / 17 ✓ |
+| Polarizadas | 1 de 3 (con 0 u) | 1 ✓ |
+| Con antirreflex interno | 2 de 3, a nivel variante | 2 ✓ |
+| `lens_treatment` de producto | `["uv400"]` | ✓ |
+| `weight_grams` | ausente (no declarado) | ✓ ausente |
+| `measurements` | 140 / 55×54 / 19 / 145 | ✓ |
+| Imágenes / primarias | 7 / 1 | 7 / 1 ✓ |
+| meta_title / meta_description | ≤60 / ≤160 | 53 / 160 ✓ |
+| `/anteojos-de-sol/cat-eye` | pasa de 3 a 4 | ✓ (Beason, Dunsert, Le Groupie, Yamain) |
+| `/anteojos-de-sol/rusty/cat-eye` | pasa de 1 a 2 | ✓ deja de ser faceta de un solo producto |
+| Typecheck | limpio | ✓ |
+
+**Datos del founder**: los 3 SKU (125410/125411/125412), las medidas, las bisagras plásticas sin
+sistema flex, y el dato de que dos colores traen antirreflex y el polarizado no. El modelo **no está
+en rustyoptical.com**, así que no hubo ficha de fabricante que cruzar.
+
+**El dato nuevo de esta ficha es el antirreflex, y se validó con `optical-expert` antes de escribir
+una sola línea.** Quedó en firme: el mecanismo es real y poner el AR sólo en la cara interna es el
+estándar de la industria; **no hay razón técnica documentada de por qué la polarizada no lo trae**
+(polarizado y AR conviven de rutina), así que **no se inventa una**. Lo que el agente frenó a tiempo:
+decir que el antirreflex "reduce el reflejo del asfalto" — eso es el **polarizado**, y conflacionarlos
+haría creer que las dos versiones no polarizadas hacen lo que hace la polarizada.
+
+**Dónde van los datos**: `lens_treatment` de producto queda `["uv400"]`. Meter el antirreflex ahí lo
+afirmaría para los **tres** colores, incluida la polarizada que no lo tiene — eso sí sería un claim
+falso publicado. Va a nivel **variante** como `["antirreflejo-interno"]`, precedente Deserve (seed 51)
+y CCCP (seed 54).
+
+**Doble corte de honestidad**: 1 de 3 polariza y 2 de 3 traen antirreflex → **ninguna de las dos
+palabras va en title ni H1**, y un callout `warning` nombra que los dos no vienen juntos.
+
+**La polarizada se cargó con 0 unidades y las dos publicaciones pausadas**, que es lo correcto: el
+stock sale siempre de ML y sincroniza solo. Verificado en código qué pasa — entra a
+`/anteojos-de-sol/polarizados` (resuelve por variante y no filtra stock → card "Sin stock" y sin
+precio, estado que ya tienen Deserve, Biller, Bruice y Lady Piny) y **no** a
+`/anteojos-de-sol/rusty/polarizados` (resuelve por producto). La ficha linkea sólo a la primera.
+
+**Forma `cat_eye` contra ML**, que declara "Ovalada" en las tres publicaciones: en las fotos de
+frente el aro superior sube en punta sobre la sien mientras el inferior es curva continua, y el
+lente es 55×54, casi 1:1. **Tercer caso seguido de "Ovalada" mal declarada por ML**, tras el Zion y
+el Ardigan.
+
+**⚠️ Dos fotos venían invertidas y se detectó abriéndolas.** En el negro brillo, el archivo `perfil`
+era el frente recto y el `frente` era el 3/4 lateral — o sea que la primaria del grid iba a ser un
+frente, contra la regla del founder. Se vio comparando las seis entre sí (el marrón y el azul sí
+venían bien). Las dos ya subidas se borraron del bucket y se resubieron; se pudo borrar sin costo
+sólo porque el producto todavía no existía y nadie las había renderizado. Entrada en `MISTAKES.md`.
+
+**Colores de lente verificados abriendo las fotos**, no copiados de ML: dice `Negro` para el que es
+gris oscuro y `SG91` para el azul degradé. `naranja-degrade` y `azul-degrade` se agregaron a
+`variant-label.ts` en el mismo commit.
+
+---
+
+### 🔴 Tres hallazgos de producción, encontrados de paso
+
+1. **La API key de Anthropic no tiene crédito** — el founder ya lo sabía. Tira abajo 5 endpoints:
+   `/api/chat` (502 verificado), lector de receta, recomendador por forma de cara, medición de DP y
+   generador de copy del admin. Log de Vercel: `Your credit balance is too low to access the
+   Anthropic API`. **Sólo lo resuelve el founder (billing).**
+2. **`match_products` seleccionaba `p.category_slug`, columna que no existe** (`products` tiene
+   `category_id`). La función tiraba error en **cada** llamada; el endpoint lo capturaba en silencio
+   y seguía sin contexto, así que el chat venía respondiendo **sin poder recomendar nada del
+   catálogo** y sin error visible. **ARREGLADO** — migración `fix_match_products_category_slug`,
+   agrega `JOIN public.categories c ON c.id = p.category_id` y selecciona `c.slug`. Verificado: la
+   función ya no tira error.
+3. **`product_embeddings` está VACÍA** — 0 filas para 83 productos activos. Aunque vuelva el crédito
+   y con la función arreglada, el RAG no tiene nada que buscar. Existe `scripts/embed-products.ts`
+   (no está en los scripts de package.json) y la key de OpenAI responde 200. **Esperando el OK del
+   founder para correrlo**, porque gasta plata suya aunque sea poca:
+   `pnpm exec tsx --env-file=.env.local scripts/embed-products.ts`.
+
+---
 
 ### ✅ Cargado y live: Vulk The Guardian (`/anteojos-de-sol/vulk/vulk-the-guardian`)
 

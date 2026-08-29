@@ -44,6 +44,8 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'gris-oscuro-degrade': 'Gris oscuro degradé',
   'sepia-degrade': 'Sepia degradé',
   'verde-oscuro': 'Verde oscuro',
+  'naranja-degrade': 'Naranja degradé',
+  'azul-degrade': 'Azul degradé',
   'azul-espejado': 'Azul espejado',
   'espejado-azul': 'Azul espejado',
   espejado: 'Espejado',

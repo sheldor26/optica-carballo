@@ -22,6 +22,40 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-29 — Preguntarle al experto POR QUÉ no, y aceptar "no lo sabemos" como respuesta
+
+**El caso**: el founder pasó un dato del Rusty Dunsert que no había aparecido nunca así: dos de los
+tres colores traen antirreflex en la cara interna de la lente, y **el polarizado no lo trae**. La
+pregunta obvia al redactar era por qué, y la tentación era resolverla sola — "porque el polarizado ya
+cumple esa función", que suena bien y es **falso**.
+
+**Qué se hizo**: se le pasó a `optical-expert` no sólo "validá que el antirreflex interno es real",
+sino explícitamente "**¿hay una razón técnica por la que un polarizado no pueda llevar antirreflex?**".
+La respuesta fue que no: el PVA polarizante va laminado **dentro** de la lente y el antirreflex se
+deposita **sobre** la superficie, son etapas distintas del proceso y conviven de rutina en todo el
+segmento premium. O sea que **la razón es una decisión de costo del fabricante, y no la tenemos**.
+Eso se escribió tal cual en el seed, y en la ficha no se explica el porqué en ninguna parte.
+
+**Por qué funcionó**: la pregunta "¿por qué no?" es la que descubre los huecos de conocimiento antes
+de que se conviertan en invento. Sin hacerla, el copy habría cerrado el hueco solo — es lo que hace
+naturalmente el texto de venta — y habría publicado dos claims falsos de una sola vez: que el
+polarizado sustituye al antirreflex (no lo hace: la luz que viene de atrás rebota en la cara
+posterior sin atravesar la película polarizante) y que hay una limitación técnica que no existe.
+
+**El segundo hallazgo, que fue el más valioso**: el mismo agente frenó la conflación más probable de
+toda la ficha — decir que el antirreflex "reduce el reflejo del asfalto". **Eso es el polarizado.**
+Escrito así, un comprador leería que las dos versiones no polarizadas hacen lo que hace la
+polarizada, que es exactamente el reclamo que la ficha tenía que prevenir. Terminó en un callout
+`warning` que dice que los dos no vienen juntos y qué corta cada uno.
+
+**Regla que sale de acá**: cuando un dato técnico nuevo viene con una asimetría rara ("lo tienen
+estos sí y aquel no"), **la asimetría es la pregunta**, no un detalle. Preguntarla explícitamente al
+especialista, y si la respuesta es "no está documentado", eso se escribe en el seed y **no se explica
+en la ficha**. Un hueco declarado es barato; uno rellenado con una explicación plausible es un claim
+falso publicado.
+
+---
+
 ## 2026-08-26 — Dos variantes que se ven iguales: mirar la fila renderizada, no los campos
 
 **El caso**: el Vulk The Guardian tiene dos colorways que son **el mismo armazón negro mate con la

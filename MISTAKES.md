@@ -22,6 +22,43 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-29 — Asigné perfil/frente por el orden de la galería de ML en vez de mirar las fotos
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: cargando el Rusty Dunsert generé las placas de los tres colorways tomando la foto `01`
+de cada galería de ML como **perfil** y la `02` como **frente**, que es lo que venía funcionando en
+las 8 cargas anteriores. En el negro brillo ese orden estaba invertido: la `01` era el **frente
+recto** y la `02` el **3/4 lateral**. Subí las siete fotos al bucket sin abrirlas.
+
+**Consecuencia si no se detectaba**: `perfil-sblk.jpg` es la foto de esa variante en el grid, y la
+regla del founder es que **la primaria del grid es siempre el perfil**. Ese colorway habría quedado
+mostrando un frente entre catorce perfiles. Peor: `subir-fotos-producto.ts` se niega a pisar un path
+a propósito (la imagen vieja queda cacheada 31 días), así que arreglarlo después de que el producto
+estuviera live habría obligado a renombrar los archivos y editar el seed, no a resubir.
+
+**Cómo se detectó**: abriendo las seis fotos antes de escribir el seed, para verificar los colores de
+lente contra lo que declara ML (que se sabe que miente: dice `Negro` para el gris oscuro y `SG91`
+para el azul degradé). Al verlas juntas, la del negro brillo desentonaba con las otras dos.
+
+**Causa raíz**: extrapolé una convención de la fuente (el orden de la galería de ML) a un caso nuevo,
+sin verificar. ML no garantiza ningún orden de fotos: cada publicación la cargó una persona distinta
+en un momento distinto. Que haya coincidido 8 veces seguidas es lo que hizo la regla invisible.
+
+**Regla preventiva**: **abrir siempre las fotos ya normalizadas antes de escribir el seed, las de
+todos los colorways, y compararlas ENTRE SÍ.** No alcanza con mirarlas de a una: el error se ve
+porque una desentona con las demás, no porque la foto en sí esté mal. Concretamente, dos chequeos:
+(1) todos los archivos `perfil` tienen que mostrar el mismo ángulo, y todos los `frente` también;
+(2) el color de lente de cada foto se compara contra lo declarado, nunca se copia. Los dos chequeos
+son el mismo gesto y cuestan un minuto. Precedente relacionado: el terracota del Vulk Cinema, donde
+ML decía "verde musgo" y la lente medía gris neutro (RGB 79,78,80).
+
+**Nota**: se pudo corregir sin costo — borrar del bucket y resubir — **sólo** porque el producto
+todavía no existía en la DB y nadie había renderizado esos paths. Esa ventana se cierra en el
+momento en que se aplica el seed.
+
+---
+
 ## 2026-08-26 — El carrito mostraba los slugs crudos: tercera superficie con el mismo bug
 
 **Estado**: 🟡 Mitigado

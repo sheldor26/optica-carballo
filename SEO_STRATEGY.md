@@ -397,6 +397,93 @@ mezclarlo con esta ficha: `anteojos carey` (390/8), `lentes carey` (260/10) y `a
 carey` (320/16) son buenos carriles para una faceta `/anteojos-de-receta/carey` que hoy no existe,
 con cinco recetas carey mate ya cargadas. Anotado en BACKLOG, no es de este producto.
 
+*Rusty Dunsert (SOL, CAT EYE redondeado, UNISEX, G-Flex frente y patillas,
+bisagras plásticas SIN flex, policarbonato UV400 cat 3, 140 / 55x54 / 19 / 145 mm,
+sin peso declarado, 3 colorways: LBR/GB1 marrón translúcido + naranja degradé AR,
+SBLK/S10 negro brillo + gris oscuro AR, SBLK/SG91 POL negro brillo + azul degradé
+polarizada sin AR y con 0 u.) — slug `rusty-dunsert` en
+`/anteojos-de-sol/rusty/rusty-dunsert`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol cat eye | 50 | 36 | **primaria de forma**, variante "lentes" (la de "anteojos" es de Le Groupie) → title, H2, copy |
+| rusty dunsert (branded) | sin medir | ~4 | **primaria real de conversión** → name, H1, slug, alt |
+| lentes de sol rusty | 1.300 | 9 | head de marca (soporte, NO primaria) |
+| anteojos de sol rusty | 880 | 10 | head de marca (soporte, NO primaria) |
+| lentes de sol cat eye mujer | 30 | 35 | copy/alt, sin reclamar género en title |
+
+**Forma resuelta contra ML**: ML declara `FRAME_SHAPE = Ovalada` en las tres publicaciones y un
+título dice "Ovalados", pero las fotos de frente (MLA1382626523-02, MLA1562519439-01) muestran el
+aro superior subiendo en punta sobre la sien mientras el inferior es curva continua: arriba y abajo
+no se espejan. Lente 55x54 (casi 1:1), y un ovalado es netamente más ancho que alto.
+`frame_shape="cat_eye"`. Tercer caso seguido de "Ovalada" mal declarada por ML, tras Zion y Ardigan.
+
+**Género**: `unisex`. Uno de los títulos de ML dice "Para Mujer" pero es relleno de keywords (el
+mismo título dice "Ovalados"). Cargarlo unisex es estrictamente dominante: verificado en
+`lib/catalog/queries.ts`, `fetchCategoryByGender` y `fetchBrandPageByGender` filtran
+`gender IN ('female','unisex')` para el target mujer, así que entra igual a `/anteojos-de-sol/mujer`
+y `/anteojos-de-sol/rusty/mujer` (los que deben rankear `anteojos de sol mujer` 5.400/10 y
+`lentes de sol rusty mujer` 390/9) y además a las de hombre. La PDP no reclama género.
+
+**Antirreflex: diferenciador de conversión, NO carril de keyword.** `lentes de sol antireflex`
+70/35 y `anteojos de sol antireflex` 40/36: mismo perfil descartado que `lentes de sol naranjas`
+(50/36) en Bruice. El volumen real vive en receta (`anteojos antireflex` 720/10, `lentes antireflex`
+590/10, CSV de armazones): intención de tratamiento sobre cristales graduados, mismatch desde una
+PDP de sol (patrón "lentes espejados"). `lentes de sol polarizados y antireflejo` (90/12) es TRAMPA:
+hay demanda pero **ninguna variante cumple las dos cosas**, perseguirla es bait-and-switch. Y 2/3 no
+alcanza para claim de modelo (criterio Bruk/Dieven/Yeah) → "antirreflex" NO va en title ni H1. Va a
+meta_description, callout `warning`, descripción y alt.
+
+**Honestidad polarizado**: 1 de 3 polarizada y encima en 0 unidades → la palabra "polarizados" NO
+aparece en title, H1 ni meta. `lens_treatment` de producto queda `["uv400"]`; el antirreflejo va a
+nivel VARIANTE como `lens_treatment:["antirreflejo-interno"]` (no es valor del enum de producto,
+precedente Deserve seed 51 y CCCP seed 54).
+
+**Facetas de polarizados (verificado en código)**: SÍ entra a `/anteojos-de-sol/polarizados`
+(`toPolarizedCatalog` en `lib/catalog/polarized.ts` resuelve por variante y no filtra stock → card
+con la SG91, `inStockCount:0`, `minPriceCents:null`, o sea "Sin stock" y sin precio; estado ya
+aceptado con Deserve, Biller, Bruice y Lady Piny). NO entra a `/anteojos-de-sol/rusty/polarizados`
+(`lib/catalog/brand-filters.ts` usa `lens_treatment_includes:'polarized'` a nivel producto). La
+ficha linkea sólo a la primera.
+
+**Anti-canibalización**: (A) vs **Rusty Beason**, el otro Rusty cat eye: Beason es femenino
+explícito (`gender:female`, title "Cat Eye Mujer", 141/54x50/16/145, 26 g, paleta rosada); Dunsert
+es unisex, no reclama género, y es otro armazón (lente 54 de alto vs 50, puente 19 vs 16).
+Cross-link obligatorio. (B) vs **Vulk Le Groupie**: marca y faceta de marca distintas; Le Groupie se
+queda con `anteojos de sol cat eye` (40), Dunsert toma `lentes de sol cat eye` (50). Mismo corte que
+The Take vs Yeah en aviador. (C) vs **Vulk Yamain** (frame_shape cat_eye pero title "Ovalados
+Mujer"): sin solape mientras ese title no cambie. (D) vs las últimas cargas: Rew = `lentes de sol
+rectangulares`, Ardigan = `lentes de sol polarizados`, Guardian = `anteojos de sol negros`, Cinema =
+branded. Dunsert no toca ninguno.
+
+**Evaluado y descartado**: `lentes de sol marrones` (110/11) y `... mujer` (90/18), sólo 1/3
+colorways (criterio naranja del Bruice). `lentes de sol grandes` (90/19), no es honesto con frente
+de 140 mm. `anteojos/lentes cat eye` (320/10-13) y `ojo de gato` (110/12), CSV de armazones =
+intención de receta.
+
+**Valor SEO real**: como el Bruice, esta ficha no va a traer tráfico orgánico propio. El valor es
+doble: (1) `/anteojos-de-sol/cat-eye` pasa de 3 a 4 productos y `/anteojos-de-sol/rusty/cat-eye` de
+1 a 2, o sea deja de ser faceta de un solo producto (verificado en DB post-carga: Beason, Dunsert,
+Le Groupie, Yamain); (2) la SERP de `rusty dunsert` hoy son la ficha de catálogo de ML
+(MLA23035059) y cuatro revendedores que la espejan (Óptica Saavedra, Tu Anteojos en Línea, Sunstore,
+Tienda de Anteojos), todos titulando "Gafas Antirreflejo" sin explicar cuáles la traen y sin medidas
+propias. Es ganable con una PDP de verdad.
+
+Title: `Lentes de Sol Rusty Dunsert Cat Eye | Óptica Carballo` (53).
+Meta: `Lentes de sol Rusty Dunsert: cat eye unisex de G-Flex, policarbonato UV400 categoría 3. Dos
+de los tres colores traen antirreflex interno. Envío a todo el país.` (160).
+H1 = name = `Rusty Dunsert`.
+Linking: `/anteojos-de-sol/rusty` + `/anteojos-de-sol/cat-eye` + `/anteojos-de-sol/rusty/cat-eye` +
+`/anteojos-de-sol/mujer` + `/anteojos-de-sol/rusty/mujer` + `/anteojos-de-sol/hombre` +
+`/anteojos-de-sol/rusty/hombre` + `/anteojos-de-sol/polarizados` + `/marcas/rusty` + related
+(beason, le-groupie, yamain, etiquet, dileri) + `/guias/anteojos-segun-forma-de-cara`.
+NO `/anteojos-de-sol/rusty/polarizados`, NO `/acetato`, NO `/metal`. Sin cross-link sol↔receta.
+
+⚠️ **Nota de deuda**: al escribir este bloque, el Le Groupie tiene que quedar acotado a
+`anteojos de sol cat eye` (40) y soltar `lentes de sol cat eye` (50), que pasa a ser del Dunsert.
+Y este archivo sigue **8 cargas atrás** (Cinema, Rew, Ardigan, Guardian y anteriores no tienen
+bloque) — sigue en BACKLOG.md.
+
 *Rusty Ther Optics (receta, REDONDO de METAL, UNISEX, liviano 14,5g, lentes demo mono/bi/multifocal) — slug `rusty-ther-receta` en `/anteojos-de-receta/rusty/rusty-ther-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
