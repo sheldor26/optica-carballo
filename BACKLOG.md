@@ -24,6 +24,12 @@ Fix de una línea: cambiar el title del Blinded a `Lentes de Sol Rusty Blinded R
 Carballo` (54 caracteres). Eso alinea el title con el carril que el doc ya le dio y le deja la
 variante "anteojos" limpia al Zion.
 
+**1-bis. Segunda colisión, misma clase: The Sil ↔ Zinz.** Salió cargando el Guardian.
+`SEO_STRATEGY.md` le da a Vulk The Sil `lentes de sol cuadrados` (390) **y** `anteojos de sol
+cuadrados` como H1, pero esa segunda también figura como primaria de Rusty Zinz sol. Dos productos
+de marcas distintas peleando la misma cadena. Van dos colisiones encontradas en dos cargas seguidas,
+lo que sugiere revisar el mapa entero de carriles y no sólo estos casos.
+
 **2. La faceta `redondo` no existe, y ya son 3 redondos de sol sólo en Rusty** (Blinded, Zion,
 Ardigan). En todo el catálogo hay **16 productos redondos huérfanos** y **530 búsquedas/mes**
 (320 + 210) que ninguna página del sitio consolida, mientras tres fichas se las disputan entre ellas.
@@ -32,7 +38,16 @@ Ardigan). En todo el catálogo hay **16 productos redondos huérfanos** y **530 
 Es el mismo argumento que ya se usó para la faceta aviador con el Bruice: el valor no está en la
 ficha nueva, está en que la faceta pase a ser un ranker creíble.
 Va junto con la decisión más grande de facetas de forma que está abierta en `DATOS_PENDIENTES.md`
-(cuadrado 24 productos, redondo 15, envolvente 7 — el 63% del catálogo sin página de forma).
+(cuadrado **25** productos con el Guardian, redondo 15, envolvente 7 — el 63% del catálogo sin
+página de forma). Los números de `cuadrado`, que es el grupo más grande: **990 búsquedas/mes de
+intención sol** y **2.530 de intención receta**, cerca de **3.500 al mes sin una sola página que las
+consolide**, mientras seis fichas individuales se las disputan entre ellas.
+
+**3. `SEO_STRATEGY.md` no tiene las últimas 8 cargas.** Faltan Malice, Blozon, Le Groupie, Zion,
+Cinema, Rew, Ardigan y Guardian: sus carriles viven sólo en las cabeceras de los seeds y en
+`CURRENT_STATE.md`. El archivo que los agentes leen como fuente de verdad está 8 productos atrasado,
+y por eso las dos colisiones de arriba pasaron desapercibidas. Cada carga nueva se vuelve más cara
+de decidir.
 
 ---
 

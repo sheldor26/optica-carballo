@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-26 — Cuando dos variantes se ven iguales, la etiqueta tiene que decirlo
+
+**El caso**: el Vulk The Guardian tiene dos colorways que son **el mismo armazón negro mate con la
+misma lente gris oscuro**. Lo único que las separa es el filtro polarizado y **$8.720**. En las
+fotos del fabricante no se distinguen.
+
+**Por qué el badge POLARIZADO no alcanzaba**: es una señal **sólo positiva**. Su ausencia no dice
+"esta no polariza", dice "no hay información". El comprador que escanea ve dos filas con el mismo
+nombre y elige por precio — o sea, elige mal y después reclama.
+
+**Lo que se hizo, en cuatro capas, porque con una no alcanzaba**:
+
+1. **`variant_note`, un cuarto slot opcional en `describeVariant()`.** Ahora las etiquetas dicen
+   "Negro mate / Gris oscuro / polarizada" y "… / sin polarizar". Se propaga solo a la PDP, los
+   swatches del grid, el detalle de pedido, el admin, el carrito y el mensaje de WhatsApp.
+   **No se reusó `attributes.size`** para esto: es el slot de talle, y meter "polarizada" ahí hace
+   que alguien después lo lea como un talle.
+2. **`model_code` CON el sufijo " POL"** — excepción deliberada a la convención del seed anterior,
+   que se lo saca por largo. Acá el " POL" *es* el desempate.
+3. **Un callout `warning` que nombra el problema en el título**, no lo insinúa: "Hay dos negro mate
+   con lente gris: uno polariza y el otro no".
+4. **Las dos van pegadas en el orden**, con la polarizada primero. Separadas por otro color se leen
+   como una carga duplicada; pegadas, con distinto badge y distinto precio, se leen como una
+   elección.
+
+**Y el orden importó**: el cambio de código y su deploy fueron **antes** del seed. Si el producto
+salía primero, las dos filas quedaban idénticas en producción hasta el siguiente build.
+
+**La regla general**: si dos variantes de un producto comparten todos los campos que componen su
+etiqueta, la ficha no está lista para publicarse. Antes de cargar, correr la etiqueta mentalmente
+sobre cada variante y ver si alguna se repite.
+
 ## 2026-08-26 — Limpiar el fondo que se ve A TRAVÉS del producto: color medido + tamaño
 
 **El problema**: al recortar un anteojo fotografiado con una hoja de papel detrás, la hoja que se ve

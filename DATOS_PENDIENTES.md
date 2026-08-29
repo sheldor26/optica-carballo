@@ -14,7 +14,7 @@ sección amarilla.
 fabricante ni de sus placas viejas — regla dura 7 de CLAUDE.md. Material, peso, color, precio y
 stock sí se pueden tomar de esas fuentes.
 
-Última revisión: 2026-08-26 (Cinema, Rew, Ardigan).
+Última revisión: 2026-08-26 (Cinema, Rew, Ardigan, Guardian).
 
 ---
 
@@ -51,6 +51,13 @@ stock sí se pueden tomar de esas fuentes.
 - [ ] **Vulk The Trial MDEMI (carey) — unidades reales y precio.** Ver la sección de decisiones.
 
 
+- [ ] **Vulk The Guardian — medidas del armazón, las 5.** Es el modelo que se está cargando ahora, y
+  el de más demanda probada de todo lo que queda: **80 ventas** sumando las publicaciones gemelas.
+  La ficha oficial de Vulk dice **calibre 53-14-140** y su widget **ancho 142 / alto 51**, pero por la
+  regla dura 7 no se cargan del fabricante — y ojo que su ficha ya erró en el Trial. Necesito
+  **calibre, puente, varilla, alto total y ancho total**.
+  Chequeo que voy a correr: 53 × 2 + 14 = 120, así que el ancho total tiene que dar 120 o más.
+
 - [ ] **Rusty Rew — los 2 SKUs (si los tenés).** Ninguna de las 4 publicaciones los declara y no los
   tenías a mano, así que el producto salió con SKUs de casa `REW-MBLK-S10` y `REW-MBLK-300CE`. Si
   aparecen los reales en el catálogo de Rusty, pasámelos: los cambio con un UPDATE. Conviene hacerlo
@@ -72,10 +79,14 @@ stock sí se pueden tomar de esas fuentes.
   propuesta: **"espejada dorada con reflejos celestes"**, que es lo que muestran tus dos fotos.
   Confirmame.
 
-- [ ] **Vulk Cinema — ¿estuche o funda?** ML declara `ACCESSORIES_INCLUDED = Funda` y la foto de
-  packaging muestra una **funda blanda** de cuerina, no un estuche rígido. `BUSINESS_POLICIES.md`
-  promete "estuche rígido o semirrígido de la marca". Confirmame qué viene realmente en la caja para
-  no prometer de más (regla dura 3).
+- [ ] **Vulk: ¿estuche o funda?** — una respuesta resuelve ~21 productos. ML declara
+  `ACCESSORIES_INCLUDED = Funda` en el Cinema, y las fotos de packaging del fabricante muestran una
+  **funda blanda de cuerina** tanto en el Cinema como en el Guardian, no un estuche rígido.
+  `BUSINESS_POLICIES.md` promete "estuche rígido **o semirrígido** de la marca", así que la funda con
+  broche podría entrar — pero quiero tu confirmación de qué viene realmente en la caja (regla dura 3).
+  **Ojo si la respuesta es "funda"**: no se arregla con un atributo por producto. `includes_override`
+  sólo FILTRA la lista, no renombra, así que habría que tocar el default del proyecto y
+  `BUSINESS_POLICIES.md`. Es una decisión de marca, no de ficha.
 
 ## ✅ El resto del catálogo
 
@@ -129,6 +140,11 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 ---
 
 ## ✅ Recibido y cargado
+
+- [x] **2026-08-26 — Vulk The Guardian: los 4 SKUs y el peso, sin pedírtelos.** Salieron de la ficha
+  oficial de vulkeyewear.com, que esta vez sí tiene el modelo: **109082** SBLK/S10 POL, **109089**
+  MBLK/S10 POL, **109081** MBLK/S10 y **109091** MBLK/REVO BLUE, más **peso 25 g**, bisagras con
+  sistema flexo y talle medium. El catálogo tiene 7 colorways; vos vendés 4.
 
 - [x] **2026-08-26 — Rusty Ardigan: los 4 SKUs, sus códigos y el peso confirmado.**
   `194290 SBLK/DRT25 POL` negro brillo · `194291 SDEMI-SBLK/DRT02 POL` carey ·

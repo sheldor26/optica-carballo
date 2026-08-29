@@ -22,6 +22,32 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-26 — El carrito mostraba los slugs crudos: tercera superficie con el mismo bug
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: `components/cart/cart-item-row.tsx` tenía su **propia** función `variantLabel()`, copiada
+y simplificada, que devolvía `frame_color` y `lens_color` **sin pasar por el mapa de etiquetas**. El
+carrito decía `negro-mate / gris-oscuro` en vez de `Negro mate / Gris oscuro`, y **no mostraba el
+indicador Polarizado**. Afectaba a los 80 productos del catálogo, no a uno.
+
+**Por qué importa que sea el carrito**: es la última pantalla antes de pagar. Y apareció justo
+cargando el Vulk The Guardian, que tiene dos colorways que comparten frente Y lente y sólo se
+distinguen por el filtro polarizado, con $8.720 de diferencia. En el carrito esas dos eran
+distinguibles **sólo por el número de SKU**.
+
+**Causa raíz**: no es un olvido puntual, es una recurrencia. Ya hay una entrada del 2026-08-04 por lo
+mismo: *"al extraer `describeVariant()` se perdió el indicador Polarizado en el detalle de pedido"*.
+La lógica de etiquetar una variante está centralizada en `lib/catalog/variant-label.ts`, pero cada
+superficie nueva que la necesitó **se escribió su propia versión** en vez de importarla. Van tres:
+lista de variantes, detalle de pedido y carrito.
+
+**Regla preventiva**: cuando una superficie nueva tenga que mostrar una variante, **importar
+`describeVariant()` e `isPolarizedVariant()`, nunca reimplementarlas**. Si hace falta un formato
+distinto, se agrega un parámetro a la función central. Chequeo barato antes de dar por cerrada una
+pantalla que muestre variantes: `grep -rn "frame_color" components/ | grep -v variant-label` — si
+aparece algo que no sea el archivo central, es un candidato a este mismo bug.
+
 ## 2026-08-26 — Copié el perfil tonal de un producto de OTRO color y teñí el armazón
 
 **Estado**: ✅ Cerrado

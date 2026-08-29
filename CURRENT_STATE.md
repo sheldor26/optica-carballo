@@ -10,6 +10,74 @@
 **Fecha**: 2026-08-26
 **Por**: Claude Code (a pedido de Juan)
 
+### ✅ Cargado y live: Vulk The Guardian (`/anteojos-de-sol/vulk/vulk-the-guardian`)
+
+Octavo producto del cruce, y **el de más demanda probada de todo lo que quedaba: 80 ventas** sumando
+las 8 publicaciones. Seed `supabase/seeds/102_vulk_the_guardian_sol.sql`.
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 4 / 15 | 4 / 15 ✓ |
+| Polarizadas | 2 de 4 | 2 ✓ |
+| Precios distintos | 3 | 3 ✓ |
+| Variantes con `variant_note` | 2 (las gemelas) | 2 ✓ |
+| `lens_treatment` | `["uv400"]` sin `polarized` | ✓ |
+| `weight_grams` / `measurements` | 25 / ausente | ✓ / ✓ |
+| Imágenes / primarias | 8 / 1 | 8 / 1 ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| `/anteojos-de-sol/polarizados` | aparece | ✓ |
+| `/anteojos-de-sol/vulk/polarizados` | **NO** aparece | ✓ correcto (2 de 4) |
+| Encuadre (regla 15) | 89-93% | **92% con scale 1.00 en las 8, sin overrides** ✓ |
+
+**El problema central de esta ficha, y cómo se resolvió.** Dos colorways son **el mismo armazón negro
+mate con la misma lente gris**: la 109089 polariza y cuesta $110.841, la 109081 no polariza y cuesta
+$102.121. En las fotos del fabricante no se distinguen, y el badge POLARIZADO no alcanzaba porque es
+una señal **sólo positiva** — su ausencia no dice "no polariza", dice "no hay información".
+
+Se resolvió en cuatro capas: **`variant_note`** (un cuarto slot que se agregó a `describeVariant()`),
+el `model_code` **con** el sufijo " POL" (excepción deliberada al seed 101, que se lo saca por
+largo), un callout `warning` que nombra el problema en el título, y las dos pegadas en el orden con
+la polarizada primero. Verificado en vivo: la PDP muestra "Negro mate / Gris oscuro / polarizada" y
+"… / sin polarizar".
+
+**El orden importó**: el código y su deploy fueron **antes** del seed. Si el producto salía primero,
+las dos filas quedaban idénticas en producción hasta el siguiente build.
+
+**Bug preexistente encontrado y arreglado en el mismo commit**: `cart-item-row.tsx` tenía su propia
+`variantLabel()` que mostraba los **slugs crudos** ("negro-mate / gris-oscuro") y **sin el indicador
+Polarizado**, en todo el catálogo. Es la **tercera** superficie con el mismo bug — hay una entrada de
+MISTAKES del 2026-08-04 por lo mismo en el detalle de pedido. Entrada nueva con la regla preventiva.
+
+**Los SKUs y el peso no hubo que pedirlos**: a diferencia del Cinema, el Rew y el Ardigan, **este
+modelo sí está en vulkeyewear.com**, y los SKU están en los atributos del selector de colores
+(109082, 109089, 109081, 109091), más el peso (25 g), las bisagras flexo y el talle medium.
+⚠️ Sin superlativos: 25 g **no es notable** y empata con el Vulk 53&3. Se corrió la query antes de
+escribir nada, que es la lección del Ardigan.
+
+**SEO — el peor punto de partida de las 8 cargas, y aun así encontró carril.** No tiene forma (los
+dos carriles de cuadrado son de The Sil y del Zinz) **ni** puede reclamar polarizado (2 de 4). Pero
+es **4 de 4 negro**, y `anteojos de sol negros` (110/mes, dificultad 14) estaba **libre en todo el
+catálogo**. Carril de color, patrón ya usado por Strewn y PRO 30.
+
+**`is_featured` = false a propósito.** Las 80 ventas lo justificarían, pero son 15 unidades en 4
+colorways, dos de ellas con 1 y 2 unidades: el hero de la home las agotaría en días y quedaría
+mostrando un producto con la mitad de las opciones sin stock. Y a diferencia de `new_until`, el flag
+**no vence solo**.
+
+**Tres cosas anotadas en `BACKLOG.md` que no son de esta carga**: la **segunda colisión SEO** en dos
+cargas seguidas (The Sil y Zinz se disputan `anteojos de sol cuadrados`), los números de la faceta
+`cuadrado` que sigue sin existir (**25 productos, ~3.500 búsquedas/mes sin página**), y que
+`SEO_STRATEGY.md` está **8 cargas atrasado**, que es la causa de que las dos colisiones pasaran
+desapercibidas.
+
+**Esperando al founder**: las **5 medidas** (la ficha del fabricante dice 53-14-140 y ancho 142 /
+alto 51, pero esa misma ficha ya erró en el Trial), y la **pregunta fusionada estuche/funda de Vulk**,
+que con una respuesta resuelve ~21 productos.
+
+**Próximo paso exacto**: commitear y deployar el seed 102 más los docs, y seguir con el próximo de la
+lista — por demanda probada el que sigue es el **Rusty Dunsert** (2 colores, 17 unidades, 24 ventas)
+o el **Vulk stately** (3 colores, 15 unidades, 16 ventas).
+
 ### ✅ Cargado y live: Rusty Ardigan (`/anteojos-de-sol/rusty/rusty-ardigan`)
 
 Séptimo producto del cruce, **22 ventas**. Seed `supabase/seeds/101_rusty_ardigan_sol.sql`.
