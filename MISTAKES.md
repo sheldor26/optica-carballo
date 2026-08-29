@@ -22,6 +22,90 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-29 — `agy` en modo headless no puede abrir un PNG sin permiso explícito, y devolvió texto vacío sin que se notara al toque
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: al auditar una pieza gráfica (placa de sponsor) con `trio-auditor`, Codex sí devolvió
+veredicto completo (auditó por la descripción textual del layout que se le pasó en el prompt). `agy`
+devolvió un archivo de 307 bytes con un solo mensaje: `jetski: no output produced — a tool required
+the "read_file" permission that headless mode cannot prompt for, so it was auto-denied`. Intentó abrir
+el PNG referenciado en el prompt y quedó bloqueado — el mismo patrón de permisos headless que ya está
+documentado en la memoria `project-antigravity-cli-agy` para `RunCommand`, pero esta vez con
+`read_file`, y sobre un tipo de contenido nuevo (imagen) que esa memoria no cubría.
+
+**Por qué importa**: si no se revisa el contenido de cada archivo de salida antes de sintetizar, un
+"veredicto del trío" puede terminar siendo en realidad el veredicto de uno solo, presentado como si
+fueran dos. Acá se atrapó porque se leyó el archivo completo antes de resumir — pero es exactamente
+el tipo de falso positivo silencioso que el punto 6 del propio `trio-auditor.md` (mitigación de la
+nota sobre `--dangerously-skip-permissions`) ya advierte que hay que verificar, no dar por bueno.
+
+**Causa raíz**: `agy` en modo headless (`--mode plan`, sin `--dangerously-skip-permissions`) pide
+confirmación interactiva para CUALQUIER tool call que toque el filesystem más allá de lo que ya trae
+en el prompt como texto — no solo `RunCommand` (ya conocido), también `read_file` cuando el contenido
+a auditar es un archivo binario/imagen referenciado por ruta en vez de pegado como texto.
+
+**Regla preventiva**:
+1. **Para auditar imágenes con el trío, no asumir que `agy`/Codex pueden abrir el archivo por su
+   cuenta.** Pasarles SIEMPRE la descripción textual completa del layout (coordenadas, tamaños,
+   colores) en el prompt, igual que se hizo acá — así el auditor que no puede leer el archivo todavía
+   puede opinar sobre lo que importa (jerarquía, proporciones, contraste).
+2. **Antes de sintetizar un veredicto "del trío", leer los dos archivos de salida completos**, no solo
+   confirmar que existen. Un archivo con contenido pero sin veredicto real (mensaje de error, permiso
+   denegado) cuenta como "no corrió", no como "dijo que está bien".
+3. Si un auditor falla por permisos, no inventarle una nota ni promediar solo con el que sí respondió
+   sin decirlo — avisar al founder que ese auditor no corrió y por qué.
+
+---
+
+## 2026-08-29 — 20 seeds cargaron medidas "de la FOTO", violando la regla dura 7
+
+**Estado**: 🔴 Abierto (auditoría hecha, corrección pendiente del founder)
+
+**Qué pasó**: buscando un armazón de receta con varilla de 150 mm apareció que el **Vulk The Trial**
+es el único del catálogo que llega, y que sus dos seeds (`71_vulk_the_trial_sol.sql:27` y
+`72_vulk_the_trial_receta.sql:21`) dicen textual **"Medidas (de la FOTO)"**. O sea que el número por
+el que se lo recomendaría **nunca lo midió el founder**.
+
+Al auditar los 74 seeds que cargan `measurements`, el problema resultó general y no del Trial:
+
+| Procedencia | Seeds |
+|---|---|
+| ✅ Founder explícito ("pasadas por el founder", regla dura 7) | **10** |
+| 📷 "de la FOTO" — violación directa | **20** |
+| ❓ Sin procedencia declarada | **44** |
+
+Los 20 de la foto son los seeds **60 a 78 más el 92**: Opposit, My Crew, Tour 81, Play, Terdey,
+Patien (sol y receta), The Sil, Blinded, And Now, Raven, The Trial (sol y receta), Bennie 51, Woxi,
+Ther, The Take (sol y receta), Zinz y Yeah.
+
+**Causa raíz**: la regla dura 7 existe desde el principio, pero **la convención de ESCRIBIR de dónde
+salió cada medida recién empezó alrededor del seed 93**. Antes, las medidas entraban sin dejar
+rastro de su fuente, así que el incumplimiento no era visible en ninguna revisión: había que abrir
+los seeds viejos y buscar. Los 44 "sin procedencia" son peores que los 20 declarados, porque de
+esos no se sabe ni siquiera qué se hizo.
+
+**Qué tan grave es, con precisión** (y esto lo aporta la carga del Bad Card del mismo día): esas
+placas de medidas **aciertan calibre, puente y varilla — los tres números que vienen IMPRESOS en la
+varilla del armazón — y erran el alto y el ancho**, que son los que hay que medir. Se comprobó
+contrastando la placa del Bad Card contra lo que midió el founder: 54-19-145 correctos, alto 48 vs
+53 y ancho 138 vs 143 equivocados. **Entonces la exposición está concentrada en `frame_width_mm` y
+`lens_height_mm` de esos 20 seeds**, no en las cinco medidas por igual. No es "todo el catálogo está
+mal"; es un campo y medio, en un subconjunto identificado.
+
+**Reglas preventivas**:
+1. **Todo seed que cargue `measurements` declara la procedencia en la cabecera, siempre.** Ya se
+   viene haciendo desde el 93; queda escrito acá para que no se pierda.
+2. **Antes de recomendarle un producto a alguien POR una medida, verificar que esa medida sea del
+   founder.** Es lo que salvó esta vez: la recomendación del Trial se entregó con el asterisco en
+   lugar de como un hecho.
+3. **Al auditar, distinguir los tres estados** (founder / foto / sin declarar). Agrupar "no-founder"
+   esconde que los 44 sin declarar son el grupo más incierto.
+
+**Backlog**: medir los 20 con placa declarada, priorizando por stock. Está en `BACKLOG.md`.
+
+---
+
 ## 2026-08-29 — Un claim de material sin verificar vivió 3 meses en un `alt`, en 33 productos
 
 **Estado**: 🟡 Mitigado

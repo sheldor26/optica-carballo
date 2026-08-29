@@ -98,6 +98,30 @@ variante con sangrado para imprenta física, retomar desde acá.
 
 ---
 
+### 🔴 Hallazgo al buscar una varilla de 150 mm: 20 productos con medidas "de la FOTO"
+
+El founder pidió un armazón de receta con varilla de **150 mm o más**. Respuesta: **hay uno solo**,
+el **Vulk The Trial Optics** (150 / frente 147 / calibre 50 / puente 15, aviador doble puente,
+5 u en stock). Todo el resto del catálogo se corta en **145** (15 modelos) y de ahí baja.
+Las **103 publicaciones de armazón sin cargar de ML no declaran varilla** en ningún caso, así que
+por esa vía no hay alternativa que ofrecer.
+
+**Pero el 150 del Trial no lo midió el founder**: sus dos seeds dicen textual "Medidas (de la FOTO)".
+Al auditar los 74 seeds con `measurements`, el problema resultó general: **10** declaran al founder,
+**20** dicen "de la FOTO" y **44** no declaran procedencia. Causa raíz: la convención de escribir la
+fuente recién empezó cerca del seed 93, así que antes el incumplimiento no era visible sin abrir los
+seeds viejos.
+
+**La exposición está acotada, y eso lo aporta el Bad Card del mismo día**: esas placas **aciertan
+calibre, puente y varilla** (van impresos en la varilla) **y erran alto y ancho**. O sea que lo
+dudoso es `frame_width_mm` y `lens_height_mm`, no las cinco medidas. La varilla del Trial cae en el
+grupo confiable — pero sigue sin verificar, y es justo el dato por el que se lo recomendaría.
+
+Entradas en `MISTAKES.md` (con las tres reglas preventivas) y `BACKLOG.md` (con los 20 identificados
+y The Trial como prioridad 1). **La recomendación se entregó con el asterisco, no como un hecho.**
+
+---
+
 ### ✅ Cargado y live: Rusty Bad Card (`/anteojos-de-sol/rusty/rusty-bad-card`)
 
 Décimo producto del cruce y **el tope de la lista por stock parado que además ya vendió**.
