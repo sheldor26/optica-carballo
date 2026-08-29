@@ -22,6 +22,46 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-29 — Un claim de material sin verificar vivió 3 meses en un `alt`, en 33 productos
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el seed 17 (2026-05-30) dejó publicado en `brands.includes_image_alt` de Vulk el texto
+`'Vulk kit incluido: estuche de cuero, franela de microfibra y stickers de marca'`. Esa imagen la
+inyecta `buildGalleryImages()` (`components/catalog/product-page.tsx:69`) al final de la galería de
+**todos** los productos Vulk, así que **"estuche de cuero" estuvo publicado en 33 productos activos
+durante casi tres meses**. Nadie verificó nunca el material: se dedujo de que en la foto parece cuero.
+Recién salió a la luz cuando el founder respondió, sobre otra pregunta, *"Es estuche Vulk tipo de
+cuero (no se si es cuero)"*.
+
+**Por qué importa**: es exactamente lo que prohíben la regla dura 3 (no prometemos lo que no podemos
+cumplir) y la 8 (trust signals reales). Un accesorio descrito como de cuero que resulta ser PU es un
+reclamo de Defensa del Consumidor, y la descripción del sitio integra el contrato.
+
+**Causa raíz — y es la parte interesante**: **la regla preventiva ya existía y aun así no lo atrapó.**
+`BUSINESS_POLICIES.md` §1 dice desde el principio "no adjetivos calificativos del estuche, sólo
+estuche original de la marca". Pero esa regla se escribió pensando en las **descripciones**, y los
+`alt` de las imágenes no se leen como copy: se escriben una vez, quedan enterrados en un seed de hace
+meses, no se ven en la pantalla y nadie los vuelve a mirar. El claim entró por el único canal de texto
+publicado que ninguna revisión estaba mirando.
+
+**Regla preventiva**:
+1. **Los `alt` son copy publicado y se auditan como tal.** Toda restricción de copy de
+   `BUSINESS_POLICIES.md` aplica a `alt_text`, `includes_image_alt` y cualquier texto de imagen, y
+   ahora está escrito explícitamente ahí.
+2. **Cuando el founder responde una pregunta de datos, grepear el claim en TODO el repo antes de dar
+   la respuesta por cerrada** — incluidos seeds viejos, campos de `brands` y alts. La respuesta no
+   sólo desbloquea lo nuevo: suele revelar que ya había algo publicado sobre eso.
+3. **Un dato a nivel MARCA se multiplica por todos sus productos.** `brands.includes_image_alt` toca
+   33 fichas de una; un error ahí no es un error de una ficha. Los campos brand-wide merecen el mismo
+   escrutinio que un cambio de código compartido.
+
+**Qué NO era el arreglo**: cambiarlo a "símil cuero" o "cuerina". Afirma lo contrario con exactamente
+la misma falta de dato — si el estuche fuera cuero de verdad, sería igual de falso. El alt nuevo
+describe la **forma** ("estuche negro con solapa y broche"), que es verificable abriendo la foto.
+
+---
+
 ## 2026-08-29 — Asigné perfil/frente por el orden de la galería de ML en vez de mirar las fotos
 
 **Estado**: 🟡 Mitigado

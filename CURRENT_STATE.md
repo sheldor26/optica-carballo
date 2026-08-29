@@ -81,6 +81,63 @@ gris oscuro y `SG91` para el azul degradé. `naranja-degrade` y `azul-degrade` s
 
 ---
 
+### 🔄 Respondido por el founder y en verificación: el estuche de Vulk
+
+**Respuesta textual del 2026-08-29**: *"Es estuche Vulk tipo de cuero (no se si es cuero)"*.
+
+Cierra la pregunta que estaba abierta desde el Vulk Cinema y que afectaba a ~21 productos.
+**Es ESTUCHE**, así que la palabra que ya usa el catálogo queda confirmada: **no hay que reescribir
+ninguna ficha ni tocar el default del proyecto**, que era el escenario caro. Se cae la hipótesis de
+la funda, que venía de que ML declara `ACCESSORIES_INCLUDED = Funda` en el Cinema y de las fotos de
+packaging del fabricante.
+
+**Lo que NO se puede escribir es el material.** El founder aclara él mismo que no sabe si es cuero:
+- "estuche de cuero" viola la regla dura 3 (no prometer lo que no podemos cumplir).
+- "símil cuero" / "cuerina" afirman lo contrario con exactamente la misma falta de dato.
+- **Se nombra el estuche sin material**, que además es lo que ya pide `BUSINESS_POLICIES.md`
+  línea 36 ("no adjetivos calificativos del estuche, sólo estuche original de la marca").
+
+**🔴 Lo que encontró la verificación: había un claim de cuero VIVO, y no en una ficha.**
+`brands.includes_image_alt` de Vulk decía `'Vulk kit incluido: estuche **de cuero**, franela de
+microfibra y stickers de marca'` desde el seed 17 (2026-05-30). Esa imagen la inyecta
+`buildGalleryImages()` (`components/catalog/product-page.tsx:69`) al final de la galería de **todos**
+los productos Vulk, así que el claim estuvo publicado en **33 productos activos durante ~3 meses**.
+Nadie verificó nunca el material: se dedujo de que la foto parece cuero.
+
+Lo interesante es que **la regla preventiva ya existía y no lo atrapó**: `BUSINESS_POLICIES.md` §1
+dice desde el principio "no adjetivos calificativos del estuche". Pero se escribió pensando en las
+descripciones, y **los `alt` no se leen como copy** — se escriben una vez, quedan enterrados en un
+seed viejo y nadie los vuelve a mirar. Entrada en `MISTAKES.md` con las tres reglas que salen de acá.
+
+**Corregido** (seed `104_vulk_kit_alt_sin_material.sql`, aplicado): el alt nuevo describe la **forma**,
+que es verificable abriendo la foto, en vez del material, que no lo es →
+`'Vulk kit incluido: estuche negro con solapa y broche, franela de microfibra y stickers de marca'`.
+**"Símil cuero" NO era el arreglo**: afirma lo contrario con la misma falta de dato.
+
+**Lo demás dio limpio y confirma la palabra "estuche" por dos fuentes independientes**:
+1. **ML le da la razón al founder**: `ACCESSORIES_INCLUDED` dice **"Estuche"** en 5 de 6
+   publicaciones consultadas (Guardian y Deserve: "Caja,Estuche,Paño de limpieza"; Dunsert ×2 y CCCP:
+   "Estuche"; Ardigan no declara). **El "Funda" del Cinema era el outlier** — el dato que disparó
+   toda esta duda estaba mal cargado en ESA publicación. Anotado para que él lo corrija en ML.
+2. **La foto del kit no contradice el texto**: estuche negro tipo sobre con solapa y broche, logo en
+   relieve, más la franela y los stickers. No es un rígido tipo almeja, pero es un estuche.
+3. **Ninguna descripción de producto afirma material** (grep sobre los 104 seeds): las únicas
+   menciones a "cuerina" están en comentarios internos de seeds, que no se publican.
+4. `BUSINESS_POLICIES.md` §1 decía "estuche rígido o semirrígido", que no describe bien al de Vulk →
+   ahora dice "el formato varía por marca: rígido, semirrígido, o de solapa con broche", más el veto
+   explícito del material.
+
+**No hubo que reescribir ninguna de las 33 fichas ni tocar el default `includes`.**
+
+⚠️ **La auditoría se intentó primero con un workflow de 5 agentes y se cayó entero** (límite de
+sesión + la compu se durmió). Se rehízo a mano en ~10 minutos con 4 greps, una query y abrir la foto.
+Lección barata: para una pregunta acotada y verificable con greps, el workflow era sobre-ingeniería.
+
+**Próximo paso exacto**: deployar (el cambio es de base + docs, pero el alt viaja en la query de
+marca, así que conviene confirmar en producción que ningún PDP de Vulk dice "cuero").
+
+---
+
 ### 🔴 Tres hallazgos de producción, encontrados de paso
 
 1. **La API key de Anthropic no tiene crédito** — el founder ya lo sabía. Tira abajo 5 endpoints:

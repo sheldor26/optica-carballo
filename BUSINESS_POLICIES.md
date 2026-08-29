@@ -19,7 +19,7 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 
 | Ítem | Descripción | Notas |
 |---|---|---|
-| **Estuche original** | Estuche rígido o semirrígido de la marca del producto (Vulk, Rusty, Reef, Mormaii, Paula Cahen D'Anvers según corresponda). | Diseño y material varía por marca pero siempre es el oficial del fabricante. |
+| **Estuche original** | Estuche oficial de la marca del producto (Vulk, Rusty, Reef, Mormaii, Paula Cahen D'Anvers según corresponda). El formato varía por marca: rígido, semirrígido, o de solapa con broche. | **El MATERIAL no se afirma nunca** — ver restricciones de copy. El de Vulk es un estuche negro tipo sobre con solapa y broche (foto del kit verificada 2026-08-29). |
 | **Franela** | Paño de microfibra para limpieza segura del cristal. | Genérica de la óptica o de la marca. |
 | **Garantía de fabricación 1 año** | Garantía del fabricante contra defectos de fabricación (no cubre uso indebido, golpes, ralladuras de uso). | Operativizada por la óptica como punto de entrega del producto al fabricante para resolución. Plazo del fabricante. |
 
@@ -34,6 +34,15 @@ Salvo aviso explícito del founder para un producto puntual, **todo anteojo vend
 - NO escribir "garantía total" o "garantía contra todo" — es solo contra DEFECTOS DE FABRICACIÓN.
 - NO escribir "garantía de por vida" salvo que la marca lo confirme para ese producto específico.
 - NO escribir "estuche premium" o adjetivos calificativos del estuche — solo "estuche original de la marca".
+- **NO afirmar NUNCA el MATERIAL del estuche** — ni "de cuero", ni "símil cuero", ni "cuerina", ni
+  "de PU". El founder confirmó el 2026-08-29 que **no sabe de qué material es** el estuche de Vulk:
+  *"Es estuche Vulk tipo de cuero (no se si es cuero)"*. Decir "cuero" viola la regla dura 3, y decir
+  "símil cuero" afirma lo contrario **con la misma falta de dato** — si resultara ser cuero de verdad,
+  sería igual de falso. Se describe la **forma** (tipo sobre, con solapa y broche), que es verificable
+  en la foto, nunca el material. Aplica a descripciones, callouts, meta **y a los `alt` de las
+  imágenes**, que es justo donde se coló el claim durante ~3 meses (ver `MISTAKES.md` 2026-08-29).
+- Este veto sólo se levanta si el founder confirma el material con una fuente real: la etiqueta
+  cosida del estuche, o el representante de la marca.
 - NO inventar accesorios que no vienen (cordón, kit limpieza, segundas lentes, etc).
 
 ---

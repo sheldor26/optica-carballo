@@ -72,14 +72,25 @@ stock sí se pueden tomar de esas fuentes.
   propuesta: **"espejada dorada con reflejos celestes"**, que es lo que muestran tus dos fotos.
   Confirmame.
 
-- [ ] **Vulk: ¿estuche o funda?** — una respuesta resuelve ~21 productos. ML declara
-  `ACCESSORIES_INCLUDED = Funda` en el Cinema, y las fotos de packaging del fabricante muestran una
-  **funda blanda de cuerina** tanto en el Cinema como en el Guardian, no un estuche rígido.
-  `BUSINESS_POLICIES.md` promete "estuche rígido **o semirrígido** de la marca", así que la funda con
-  broche podría entrar — pero quiero tu confirmación de qué viene realmente en la caja (regla dura 3).
-  **Ojo si la respuesta es "funda"**: no se arregla con un atributo por producto. `includes_override`
-  sólo FILTRA la lista, no renombra, así que habría que tocar el default del proyecto y
-  `BUSINESS_POLICIES.md`. Es una decisión de marca, no de ficha.
+- [x] **Vulk: ¿estuche o funda?** — **RESPONDIDO por el founder el 2026-08-29**, textual:
+  *"Es estuche Vulk tipo de cuero (no se si es cuero)"*.
+  **Es ESTUCHE**, así que la palabra que ya usan los ~21 productos Vulk queda confirmada y no hay
+  que reescribir ninguna ficha. Se cae la hipótesis de la funda que venía de que ML declara
+  `ACCESSORIES_INCLUDED = Funda` en el Cinema y de las fotos de packaging del fabricante.
+  ⚠️ **Lo que NO se puede escribir es el material.** Él mismo aclara que no sabe si es cuero, así
+  que "de cuero" viola la regla dura 3 (no prometer lo que no podemos cumplir) y "símil cuero" o
+  "cuerina" afirman lo contrario con la misma falta de dato. **El estuche se nombra sin material**,
+  que además es lo que ya pide `BUSINESS_POLICIES.md` línea 36 ("no adjetivos calificativos del
+  estuche, sólo estuche original de la marca").
+  ✅ **Verificado y cerrado el 2026-08-29** (seed 104):
+  - **ML te da la razón**: `ACCESSORIES_INCLUDED` dice **"Estuche"** en 5 de 6 publicaciones
+    consultadas. El **"Funda" del Cinema era el outlier** y fue lo que disparó toda esta duda — es un
+    dato mal cargado en esa publicación, no la regla de la marca. **Corregilo en ML cuando quieras**
+    (no se toca desde acá).
+  - **La foto del kit no contradice nada**: muestra un estuche negro tipo sobre con solapa y broche,
+    la franela y los stickers.
+  - 🔴 **Se encontró un claim de cuero VIVO**: el alt de esa imagen decía "estuche **de cuero**" y se
+    mostraba en los **33 productos Vulk** desde el seed 17 (2026-05-30). Corregido. Ver MISTAKES.md.
 
 ## ✅ El resto del catálogo
 
