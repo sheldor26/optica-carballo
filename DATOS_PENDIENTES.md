@@ -99,19 +99,33 @@ stock sí se pueden tomar de esas fuentes.
 `user_product_id` son distintos, o sea que el 33 es stock real. Fotos bajadas y 12 placas
 generadas. **Falta esto para poder escribir el seed**:
 
+✅ **RESUELTO SIN VOS: SKU y peso.** El modelo SÍ está en `rustyoptical.com/collections/sunglasses/ss24/item/786-bad-card`:
+**C1 1035570 · C2 1035571 · C3 POL 1035572 · C4 1035573 · C5 POLARIZED 1035574 · C6 1035575**,
+peso **25 g**, frente y patillas **G-Flex**. La ficha marca POL en **exactamente C3 y C5**, que
+coincide 1:1 con `WITH_POLARIZED_LENS=Sí` de tu publicación A → **dos fuentes independientes**.
+⚠️ Esa misma ficha dice en el blurb genérico "LENTE: POLARIZADAS Y POLICARBONATO" para TODO el
+modelo, contradiciendo su propia lista de colorways. Es boilerplate y se descarta — misma trampa
+que la del Bruice, que el founder desmintió con el producto en la mano.
+⚖️ 25 g **no es notable**: empata con el Vulk 53&3 y el Guardian. Sin superlativos.
+
+Falta todavía:
+
 - [ ] **Medidas** (regla dura 7, sólo las pasás vos): calibre – puente – varilla, alto total y
-  ancho total. ML no declara ninguna en las dos publicaciones. Sin esto la ficha va sin bloque
-  de medidas.
-- [ ] **Los 6 SKU**. ML tiene `SELLER_SKU` VACÍO en las 6 variaciones, así que no hay de dónde
-  sacarlos. Si no los tenés, se inventan de casa con el formato del Rew (`BADCARD-C1`… ), pero
-  avisame porque queda fijo: `sku` tiene índice único.
-- [ ] **Peso**. Tampoco lo declara ML. Si no lo tenés, va a PESOS_A_MEDIR.md.
-- [ ] **Bisagras**: ¿metálicas con flex, o plásticas? ML no lo dice. Recordá que **G-Flex es el
-  material y no autoriza a decir que el armazón sea flexible**: el flex, si existe, es de la bisagra.
-- [ ] **Confirmar el antirreflex.** Tu publicación MLA2498615612 declara
-  `LENS_TREATMENT = ANTIREFLEX/PROTECCION UV400` y una de tus placas viejas dice "LENTES CON
-  ANTIRREFLEX", o sea que el dato es tuyo. Sólo quiero que confirmes que **las 4 no polarizadas
-  (C1, C2, C4, C6) lo tienen y las 2 polarizadas (C3, C5) no** — es el mismo split que el Dunsert.
+  ancho total. Ni ML ni el fabricante las declaran. Sin esto la ficha va sin bloque de medidas.
+  ⚠️ **Hay una placa de medidas metida entre tus fotos de ML** (`c2-marron/04` y `c4-carey/04`,
+  es la misma imagen) que dice **138 / 54×48 / 19 / 145**. **NO se usa**: además de la regla dura 7,
+  **está dibujada sobre un wayfarer con remaches y puente simple**, que no es el Bad Card. Es una
+  plantilla genérica reciclada. Sirve sólo como número para contrastar contra lo que midas vos.
+- [ ] **Bisagras**: ¿metálicas con flex, o plásticas? No lo dice ni ML ni el fabricante. Recordá que
+  **G-Flex es el material y no autoriza a decir que el armazón sea flexible**: el flex, si existe,
+  es de la bisagra. Si abrís la patilla más de 90° y vuelve sola, tiene flex.
+- [ ] **Confirmar la FORMA.** ML dice "Rectangular", pero comparando las fotos contra el catálogo es
+  un **aviador de doble puente**, misma familia que el Bruice (que el sitio ya clasifica `aviador`)
+  y NO la del Rew (`rectangular`, lente plana y puente simple). Decidís vos, que lo tenés en la mano.
+- [ ] **El antirreflex: sólo falta DÓNDE está la capa.** Que existe ya está doblemente respaldado
+  (tu publicación declara `LENS_TREATMENT = ANTIREFLEX/PROTECCION UV400` y una de tus placas viejas
+  dice "LENTES CON ANTIRREFLEX"). Lo que NO sabemos es si va en la **cara interna** como en el
+  Dunsert. Sin que lo confirmes, la ficha dice "antirreflex" sin decir dónde.
 
 **⚠️ Dos errores de color en TUS publicaciones de ML** (verificados abriendo las fotos):
 - **C6 negro brillo**: ML declara `LENS_COLOR = Degradé Marrón`. La lente es un **gris degradé que

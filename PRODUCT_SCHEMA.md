@@ -123,7 +123,16 @@ Estos son los **13 campos exactos** que aparecen como filas en `/comparar`. Si f
 - `mercadolibre_item_id` — string formato `MLA1234567890`. Si el producto también se vende en ML, mapear la variante al item correspondiente.
 - **Cuándo cargar**: si vendés esta variante en ML Y querés sync automático de stock (ver ADR-024).
 - **Cuándo dejar NULL**: si la variante solo se vende en el sitio o si todavía no querés sync con ML.
-- **Restricción**: UNIQUE — un item ML no puede mapearse a 2 variantes distintas.
+- `mercadolibre_variation_code` — el código de la variación DENTRO de un item multi-variación
+  (el ID numérico que devuelve la API, ej. `'192307652497'`). **NULL sólo si el item ML es simple.**
+- **Restricción real**: `UNIQUE (mercadolibre_item_id, mercadolibre_variation_code)`, DEFERRABLE.
+  O sea que **varias variantes SÍ pueden colgar del mismo `MLA`**, siempre que tengan
+  `variation_code` distinto — es el caso normal de los items multi-variación (Ardigan seed 101,
+  Bad Card seed 105). La constraint vieja de un-item-una-variante la dropeó la migración
+  `20260529300000_ml_variation_support.sql:21-22`.
+- ⚠️ **Un `variation_code` en NULL sobre un item multi-variación NO da error: es un SKIP SILENCIOSO.**
+  `sync-stock.ts:296-298` incrementa un contador y sigue, sin escribir en `marketplace_sync_errors`.
+  La variante queda congelada en stock **y precio** para siempre y no se detecta mirando la PDP.
 - Sin este campo cargado, la variante NO se sincroniza con ML (sigue funcionando manualmente).
 
 ---

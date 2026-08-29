@@ -10,6 +10,31 @@
 **Fecha**: 2026-08-29
 **Por**: Claude Code (a pedido de Juan)
 
+### ✅ Placa de sponsor para torneo de fútbol (fuera del catálogo)
+
+Juan pidió una placa de auspiciante (logo + nombre + Instagram + sitio web) para presentar en un
+torneo local. No hay generador de imágenes IA operativo en este entorno: el MCP `nanobanana` no
+está configurado y no hay `GOOGLE_AI_API_KEY`; se descartó `agy` (Antigravity CLI) porque —
+verificado con `agy models` y un test real que quedó registrado en `~/.gemini/antigravity-cli/cli.log`
+— es un agente de código sin ningún modelo de imagen: ante un pedido de imagen intenta correr un
+script (`RunCommand`), no genera con IA.
+
+Se armó con el MCP de Canva en su lugar: subida del isotipo real (`public/brand/logo-square.png`,
+ya público en `opticacarballo.com.ar/brand/logo-square.png`, así que no hubo que publicar nada
+nuevo) + edición manual elemento por elemento (`edit-design`) para fondo blanco, texto azul marino,
+y el glifo oficial de Instagram (path SVG de simple-icons, MIT) ubicado al lado de `@optica.carballo`.
+Las primeras 4 variantes de `generate-design` (IA de Canva) fueron todas inservibles: texto de
+marketing inventado, ícono de pelota genérico en vez del logo real, sin Instagram ni sitio web
+correcto — hubo que reconstruir el diseño a mano sobre la mejor base.
+
+**Entregado**: PNG 1600×900 (`placa-sponsor-torneo-optica-carballo.png`, enviado a Juan) + diseño
+editable en Canva (`https://www.canva.com/d/ZQMrkpRvLFmRvtQ`, id `DAHTtBb7YZw`).
+
+**Próximo paso exacto**: ninguno pendiente de acá — si Juan pide ajustes de tamaño/posición para
+imprenta, se retoca el mismo diseño de Canva (ya tiene el logo y el ícono de IG cargados).
+
+---
+
 ### 🔵 En carga, bloqueado por datos del founder: Rusty Bad Card
 
 Décimo producto del cruce y **el tope de la lista por stock parado que además ya vendió**.
@@ -50,14 +75,49 @@ En el sitio va lo verificado en la foto. Anotado en DATOS_PENDIENTES para que é
 que faltó en el Dunsert. También se detectó que varias fotos de la galería son **placas viejas
 amarillas con texto** (callouts "LENTES CON ANTIRREFLEX", "UV400"): no van al sitio.
 
-**⬜ Bloqueado por el founder** (todo en DATOS_PENDIENTES.md): medidas (regla dura 7), **los 6 SKU**
-(`SELLER_SKU` está VACÍO en las 6 variaciones de ML, no hay de dónde sacarlos), peso, tipo de
-bisagra, y confirmar que el antirreflex lo tienen las 4 no polarizadas y no las 2 polarizadas.
+**✅ SKU Y PESO RESUELTOS SIN EL FOUNDER.** El modelo SÍ está en rustyoptical.com
+(`/collections/sunglasses/ss24/item/786-bad-card`): **C1 1035570 · C2 1035571 · C3 POL 1035572 ·
+C4 1035573 · C5 POLARIZED 1035574 · C6 1035575**, peso **25 g**, frente y patillas G-Flex. La ficha
+marca POL en **exactamente C3 y C5**, que coincide 1:1 con `WITH_POLARIZED_LENS=Sí` de la
+publicación A → **dos fuentes independientes**. Eso evita inventar SKU de casa como en el Rew.
+⚠️ La misma ficha dice "LENTE: POLARIZADAS Y POLICARBONATO" en el blurb genérico, contradiciendo su
+propia lista de colorways: **boilerplate, se descarta** — misma trampa que la del Bruice.
+⚖️ 25 g no es notable (empata con 53&3 y Guardian) → sin superlativos, y el Bad Card **no** va a
+PESOS_A_MEDIR.
 
-**Próximo paso exacto**: leer lo que devuelvan los agentes de SEO y de carga (en curso al cierre) y,
-cuando el founder pase medidas + SKU, escribir `supabase/seeds/105_rusty_bad_card_sol.sql`.
-Si los SKU no existen, se inventan de casa con el formato del Rew — pero requiere su OK porque
-`sku` tiene índice único.
+**🔺 LOS DOS AGENTES DISCREPARON EN LA FORMA, Y SE RESOLVIÓ MIRANDO.** `seo-strategist` dijo
+`rectangular` y `catalog-loader` dijo `aviador`. Se bajaron las primarias del **Rusty Bruice**
+(clasificado `aviador`) y del **Rusty Rew** (clasificado `rectangular`) y se compararon contra las
+del Bad Card: el Bruice tiene puente doble, barra recta arriba y lente trapezoidal que se afina —
+**idéntica familia al Bad Card**; el Rew tiene lente plana, puente simple y sin barra. **El Bad Card
+es `aviador`**, y ML vuelve a errar (cuarta forma mal declarada seguida tras Zion, Ardigan y Dunsert,
+las tres hacia "Ovalada" y ésta hacia "Rectangular").
+⚠️ **El informe de SEO se contradecía solo**: justificaba "no hay colisión con el Bruice" con el
+argumento *"las formas son distintas: Bruice=aviador, Bad Card=rectangular"*, que es exactamente lo
+que no se sostiene. **Toda su valuación SEO hay que rehacerla**: el "valor real" que declaraba era
+que `/anteojos-de-sol/rusty/rectangular` pasaba de 1 a 2 productos, y eso ya no ocurre. Como aviador,
+el Bad Card es el **4º aviador Rusty de sol** (The Take, Yeah, Bruice) y **los dos carriles de forma
+están tomados** (`lentes de sol aviador` 170/12 de The Take, `anteojos de sol aviador` 110/10 de
+Yeah) — el Bruice ya tuvo que caer a branded por esto mismo. Lo que SÍ sobrevive de su informe:
+la primaria branded, la honestidad 2/6, el género unisex, el criterio del antirreflex y el
+`is_featured` NO.
+**Lección de método**: cuando dos agentes discrepan en un hecho verificable, no se elige el más
+convincente — se verifica. Acá alcanzó con bajar dos fotos del propio catálogo y mirarlas.
+
+**⬜ Bloqueado por el founder** (todo en DATOS_PENDIENTES.md): **medidas** (regla dura 7), **tipo de
+bisagra**, **confirmar la forma** (tiene el armazón en la mano), y **dónde está la capa de
+antirreflex** — que exista ya está doblemente respaldado, falta sólo si va en la cara interna como
+en el Dunsert.
+⚠️ **Hay una placa de medidas escondida entre las fotos de ML** (`c2-marron/04` y `c4-carey/04` son
+la misma imagen) que declara **138 / 54×48 / 19 / 145**. No se usa: además de la regla dura 7,
+**está dibujada sobre un wayfarer con remaches**, no sobre el Bad Card. Plantilla genérica reciclada.
+
+**Próximo paso exacto**: cuando el founder pase medidas + bisagra + forma, rehacer el ángulo SEO
+sobre `aviador` y escribir `supabase/seeds/105_rusty_bad_card_sol.sql` con los SKU del fabricante.
+⚠️ **La trampa de esta carga es el `mercadolibre_variation_code`**: son items MULTI-variación, así
+que va el ID numérico. Un NULL por inercia del patrón Rew/Dunsert **no da error** —
+`sync-stock.ts:296-298` hace un SKIP SILENCIOSO sin escribir en `marketplace_sync_errors`, y la
+variante queda congelada en stock **y precio** para siempre sin que se note en la PDP.
 
 ---
 
