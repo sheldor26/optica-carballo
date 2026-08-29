@@ -10,10 +10,10 @@
 **Fecha**: 2026-08-29
 **Por**: Claude Code (a pedido de Juan)
 
-### ✅ Cargado: Rusty Dunsert (`/anteojos-de-sol/rusty/rusty-dunsert`)
+### ✅ Cargado y live: Rusty Dunsert (`/anteojos-de-sol/rusty/rusty-dunsert`)
 
-Noveno producto del cruce. Seed `supabase/seeds/103_rusty_dunsert_sol.sql`, aplicado a cloud.
-**Falta el deploy y la verificación en producción** — es el próximo paso exacto.
+Noveno producto del cruce. Seed `supabase/seeds/103_rusty_dunsert_sol.sql`, aplicado a cloud,
+commiteado (`85a3194`) y deployado. **PDP 200 y facetas verificadas en producción.**
 
 | Control | Esperado | Real |
 |---|---|---|
@@ -27,7 +27,17 @@ Noveno producto del cruce. Seed `supabase/seeds/103_rusty_dunsert_sol.sql`, apli
 | meta_title / meta_description | ≤60 / ≤160 | 53 / 160 ✓ |
 | `/anteojos-de-sol/cat-eye` | pasa de 3 a 4 | ✓ (Beason, Dunsert, Le Groupie, Yamain) |
 | `/anteojos-de-sol/rusty/cat-eye` | pasa de 1 a 2 | ✓ deja de ser faceta de un solo producto |
-| Typecheck | limpio | ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| `/anteojos-de-sol/polarizados` | aparece (por variante) | ✓ |
+| `/anteojos-de-sol/rusty/polarizados` | **NO** aparece (por producto) | ✓ correcto (1 de 3) |
+| `/anteojos-de-sol/mujer` y `/hombre` | aparece en las dos (unisex) | ✓ |
+| Typecheck / build | limpios | ✓ / ✓ |
+| Encuadre (regla 15) | 79-93% | **92% con scale 1.00, sin overrides** ✓ |
+
+⚠️ **Al verificar las facetas en vivo, `/mujer` y `/hombre` dieron "no aparece" en la primera
+request y "aparece" en la segunda.** No era un bug: con ISR la primera request después del vencimiento
+sirve la versión cacheada y recién ahí dispara la regeneración. **Verificar una faceta una sola vez
+después de un deploy da un falso negativo**; hay que pedirla dos veces.
 
 **Datos del founder**: los 3 SKU (125410/125411/125412), las medidas, las bisagras plásticas sin
 sistema flex, y el dato de que dos colores traen antirreflex y el polarizado no. El modelo **no está
