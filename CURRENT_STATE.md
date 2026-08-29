@@ -29,19 +29,27 @@ las 8 publicaciones. Seed `supabase/seeds/102_vulk_the_guardian_sol.sql`.
 | `/anteojos-de-sol/vulk/polarizados` | **NO** aparece | ✓ correcto (2 de 4) |
 | Encuadre (regla 15) | 89-93% | **92% con scale 1.00 en las 8, sin overrides** ✓ |
 
-**El problema central de esta ficha, y cómo se resolvió.** Dos colorways son **el mismo armazón negro
-mate con la misma lente gris**: la 109089 polariza y cuesta $110.841, la 109081 no polariza y cuesta
-$102.121. En las fotos del fabricante no se distinguen, y el badge POLARIZADO no alcanzaba porque es
-una señal **sólo positiva** — su ausencia no dice "no polariza", dice "no hay información".
+**El problema central de esta ficha, y una corrección del founder.** Dos colorways son **el mismo
+armazón negro mate con la misma lente gris**: la 109089 polariza y cuesta $110.841, la 109081 no
+polariza y cuesta $102.121.
 
-Se resolvió en cuatro capas: **`variant_note`** (un cuarto slot que se agregó a `describeVariant()`),
-el `model_code` **con** el sufijo " POL" (excepción deliberada al seed 101, que se lo saca por
-largo), un callout `warning` que nombra el problema en el título, y las dos pegadas en el orden con
-la polarizada primero. Verificado en vivo: la PDP muestra "Negro mate / Gris oscuro / polarizada" y
-"… / sin polarizar".
+Se había resuelto en cuatro capas, la primera de ellas un `variant_note` que hacía que las etiquetas
+dijeran "… / polarizada" y "… / sin polarizar". **El founder lo sacó mirando la fila renderizada, y
+tenía razón**: en la UI real cada fila ya muestra **cuatro diferenciadores** — el badge POLARIZADO,
+el `model_code` (`MBLK/S10 POL` contra `MBLK/S10`) justo debajo del nombre, el SKU y el precio. La
+nota era una quinta señal que alargaba la etiqueta sin agregar nada.
 
-**El orden importó**: el código y su deploy fueron **antes** del seed. Si el producto salía primero,
-las dos filas quedaban idénticas en producción hasta el siguiente build.
+**La lección es de método, y quedó en `LEARNINGS.md`**: yo razoné sobre los campos que componen la
+etiqueta (`describeVariant` devuelve frente + lente + talle) y no sobre lo que el usuario ve en la
+fila, que incluye además el código, el SKU, el precio, el stock y el badge. Antes de tocar el modelo
+de datos por dos variantes indistinguibles, abrir la PDP y contar los diferenciadores visibles.
+
+Quedaron las otras tres capas, que sí sirven: el `model_code` **con** el sufijo " POL" (excepción
+deliberada al seed 101, que se lo saca por largo), un callout `warning` que nombra el problema en el
+título, y las dos pegadas en el orden con la polarizada primero.
+
+El slot `variant_note` sigue en `describeVariant()` pero **no lo usa ningún producto**, con un
+comentario que explica cuál es el umbral real para volver a usarlo.
 
 **Bug preexistente encontrado y arreglado en el mismo commit**: `cart-item-row.tsx` tenía su propia
 `variantLabel()` que mostraba los **slugs crudos** ("negro-mate / gris-oscuro") y **sin el indicador
@@ -70,11 +78,16 @@ cargas seguidas (The Sil y Zinz se disputan `anteojos de sol cuadrados`), los n�
 `SEO_STRATEGY.md` está **8 cargas atrasado**, que es la causa de que las dos colisiones pasaran
 desapercibidas.
 
-**Esperando al founder**: las **5 medidas** (la ficha del fabricante dice 53-14-140 y ancho 142 /
-alto 51, pero esa misma ficha ya erró en el Trial), y la **pregunta fusionada estuche/funda de Vulk**,
-que con una respuesta resuelve ~21 productos.
+**Medidas recibidas el mismo día: 141 / 53 × 51 / 14 / 140 mm**, geometría verificada
+(53 × 2 + 14 = 120 ≤ 141), y peso 25 g confirmado. El calibre, el puente y la varilla coinciden con
+la ficha del fabricante, pero **el ancho total no**: ella decía 142 y el founder midió 141. Van cinco
+de cinco veces que la fuente externa erra algo. La placa de medidas ya está generada y subida, así
+que la ficha pasó de 8 a 9 imágenes.
 
-**Próximo paso exacto**: commitear y deployar el seed 102 más los docs, y seguir con el próximo de la
+**Esperando al founder**: sólo la **pregunta fusionada estuche/funda de Vulk**, que con una respuesta
+resuelve ~21 productos.
+
+**Próximo paso exacto**: seguir con el próximo de la
 lista — por demanda probada el que sigue es el **Rusty Dunsert** (2 colores, 17 unidades, 24 ventas)
 o el **Vulk stately** (3 colores, 15 unidades, 16 ventas).
 

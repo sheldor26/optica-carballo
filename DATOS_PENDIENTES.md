@@ -51,13 +51,6 @@ stock sí se pueden tomar de esas fuentes.
 - [ ] **Vulk The Trial MDEMI (carey) — unidades reales y precio.** Ver la sección de decisiones.
 
 
-- [ ] **Vulk The Guardian — medidas del armazón, las 5.** Es el modelo que se está cargando ahora, y
-  el de más demanda probada de todo lo que queda: **80 ventas** sumando las publicaciones gemelas.
-  La ficha oficial de Vulk dice **calibre 53-14-140** y su widget **ancho 142 / alto 51**, pero por la
-  regla dura 7 no se cargan del fabricante — y ojo que su ficha ya erró en el Trial. Necesito
-  **calibre, puente, varilla, alto total y ancho total**.
-  Chequeo que voy a correr: 53 × 2 + 14 = 120, así que el ancho total tiene que dar 120 o más.
-
 - [ ] **Rusty Rew — los 2 SKUs (si los tenés).** Ninguna de las 4 publicaciones los declara y no los
   tenías a mano, así que el producto salió con SKUs de casa `REW-MBLK-S10` y `REW-MBLK-300CE`. Si
   aparecen los reales en el catálogo de Rusty, pasámelos: los cambio con un UPDATE. Conviene hacerlo
@@ -140,6 +133,12 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 ---
 
 ## ✅ Recibido y cargado
+
+- [x] **2026-08-26 — Vulk The Guardian: medidas 141 / 53 × 51 / 14 / 140 mm y peso 25 g confirmado.**
+  Geometría verificada: 53 × 2 + 14 = 120 ≤ 141. El calibre, el puente y la varilla coinciden con la
+  ficha del fabricante, pero **el ancho total no**: ella decía 142 y vos mediste 141. Van cinco de
+  cinco veces que la fuente externa erra algo (Malice, Bruice, Cinema, Ardigan, Guardian) — poco
+  esta vez, pero erra.
 
 - [x] **2026-08-26 — Vulk The Guardian: los 4 SKUs y el peso, sin pedírtelos.** Salieron de la ficha
   oficial de vulkeyewear.com, que esta vez sí tiene el modelo: **109082** SBLK/S10 POL, **109089**

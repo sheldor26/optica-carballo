@@ -35,26 +35,33 @@
 -- **53&3 25 = Guardian 25** · Raven 26 · Day Light 26,1 · The Sil 28. Es la lección del Ardigan,
 -- donde estuvo a punto de publicarse "el más liviano" y era falso: **ningún comparativo sin query**.
 --
--- 📏 MEDIDAS: se OMITE la clave entera. La ficha del fabricante dice calibre 53-14-140 y su widget
--- ancho 142 / alto 51, pero por regla dura 7 no se cargan de ahí — y esa misma ficha ya erró las
--- medidas del Trial. Las pasa el founder. En `DATOS_PENDIENTES.md`.
+-- 📏 MEDIDAS: 141 / 53 x 51 / 14 / 140 mm — pasadas por el founder el 2026-08-26 (regla dura 7).
+-- Geometría: 53x2 + 14 = 120 ≤ 141. ✓
+-- El calibre, el puente y la varilla coinciden con la ficha del fabricante (53-14-140), pero el
+-- **ancho total NO**: la ficha dice 142 y el founder midió **141**. Otra vez la fuente externa erró,
+-- aunque por poco. Su "alto total" es del FRENTE, no del lente (ver seed 100): la descripción dice
+-- "alto total 51 mm".
 --
 -- ⚠️⚠️ EL PROBLEMA CENTRAL DE ESTA FICHA: DOS COLORWAYS SE VEN IDÉNTICAS.
 -- La 109089 (MBLK/S10 POL, $110.841) y la 109081 (MBLK/S10, $102.121) son **el mismo armazón negro
 -- mate con la misma lente gris**. En las fotos del fabricante no se distinguen. Lo único que las
 -- separa es el filtro polarizado y **$8.720**. Si el comprador elige mal, es un reclamo.
--- Se resolvió en cuatro capas, porque con una sola no alcanzaba:
---   1. **`variant_note`**, un cuarto slot que se agregó a `describeVariant()` en el commit anterior
---      a este seed. Sin eso las dos renderizaban la misma etiqueta ("Negro mate / Gris oscuro") en
---      la PDP, en los swatches del grid, en el detalle de pedido y en el carrito. Ahora dicen
---      "… / polarizada" y "… / sin polarizar".
---   2. **`model_code` CON el sufijo " POL"** — excepción deliberada a la convención del seed 101,
---      que se lo saca por largo. Acá el " POL" ES el desempate, y el code más largo
---      (`MBLK/REVO BLUE`, 14 chars) está muy por debajo de los 21 con los que el Yau rompió el
+-- Se resolvió en TRES capas, y el founder recortó una cuarta que sobraba:
+--   1. **`model_code` CON el sufijo " POL"** — excepción deliberada a la convención del seed 101,
+--      que se lo saca por largo. Acá el " POL" ES el desempate visible bajo cada fila, y el code más
+--      largo (`MBLK/REVO BLUE`, 14 chars) está muy por debajo de los 21 con los que el Yau rompió el
 --      layout a 3 líneas.
---   3. **Callout `warning`** que nombra el problema en el título, no lo insinúa.
---   4. **Las dos van pegadas** (sort 2 y 3), con la polarizada primero: separadas se leen como carga
+--   2. **Callout `warning`** que nombra el problema en el título, no lo insinúa.
+--   3. **Las dos van pegadas** (sort 2 y 3), con la polarizada primero: separadas se leen como carga
 --      duplicada, pegadas con distinto badge y distinto precio se leen como una elección.
+--
+-- ⚠️ **Se había cargado además un `variant_note`** ("polarizada" / "sin polarizar") como cuarto slot
+-- de la etiqueta, con el argumento de que el badge POLARIZADO es una señal SÓLO positiva. **El
+-- founder lo sacó el 2026-08-26 mirando la fila renderizada, y tenía razón**: en la UI real cada fila
+-- ya muestra CUATRO diferenciadores — el badge, el `model_code` (`MBLK/S10 POL` vs `MBLK/S10`), el
+-- SKU y el precio. La nota era una quinta señal redundante que alargaba la etiqueta sin agregar
+-- información. El slot `variant_note` queda igual en `describeVariant()` por si algún producto futuro
+-- tiene variantes que compartan TODOS esos campos, que no es el caso acá.
 -- En el mismo commit se arregló además un bug preexistente que agravaba esto: el carrito tenía su
 -- propia `variantLabel()` que devolvía los slugs crudos ("negro-mate / gris-oscuro") y no mostraba
 -- el indicador Polarizado. Afectaba a todo el catálogo.
@@ -116,7 +123,7 @@ INSERT INTO public.products (brand_id, category_id, slug, name, short_descriptio
 VALUES (
   (SELECT id FROM vulk), (SELECT id FROM sol), 'vulk-the-guardian', 'Vulk The Guardian',
   'Anteojos de sol Vulk The Guardian: cuadrados unisex, todos negros, con frente y patillas de G-Flex y bisagras con sistema flexo. Pesan 25 g. De los 4 colores, 2 son polarizados.',
-  E'Los **Vulk The Guardian** son **anteojos de sol cuadrados, unisex**, con frente y patillas de **G-Flex**. El fabricante declara **sistema de bisagras flexo**. Pesan **25 g**, talle medium.\n\nLa lente es de **policarbonato**, con **100% protección UV (UV400) y categoría 3** en los cuatro colores.\n\nDisponible en 4 colores, todos negros:\n\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente gris oscuro** — no polarizada.\n• **Negro mate, lente espejada azul** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 4 colores.** Los cuatro filtran el 100% de la radiación UV, pero sólo las versiones POL cortan los reflejos del asfalto y del agua.\n\nOjo con las dos del medio: son el mismo armazón negro mate con la misma lente gris. Lo único que cambia es el filtro polarizado, y ahí está toda la diferencia de precio. Al elegir, fijate en el badge POLARIZADO.\n\nDentro de la línea de sol de Vulk, el Guardian es el que viene sólo en negro: cuatro combinaciones sobre el mismo armazón, entre negro mate y negro brillo. Si buscás un anteojo de sol negro y querés elegir el lente antes que el color del marco, éste es el que te da esa opción.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'Los **Vulk The Guardian** son **anteojos de sol cuadrados, unisex**, con frente y patillas de **G-Flex**. El fabricante declara **sistema de bisagras flexo**. Pesan **25 g**, talle medium.\n\nLa lente es de **policarbonato**, con **100% protección UV (UV400) y categoría 3** en los cuatro colores.\n\nMedidas: frente 141 mm · lente 53 mm de ancho · alto total 51 mm · puente 14 mm · varilla 140 mm.\n\nDisponible en 4 colores, todos negros:\n\n• **Negro brillo, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente gris oscuro** — **polarizada**.\n• **Negro mate, lente gris oscuro** — no polarizada.\n• **Negro mate, lente espejada azul** — no polarizada.\n\n**El filtro polarizado lo tienen 2 de los 4 colores.** Los cuatro filtran el 100% de la radiación UV, pero sólo las versiones POL cortan los reflejos del asfalto y del agua.\n\nOjo con las dos del medio: son el mismo armazón negro mate con la misma lente gris. Lo único que cambia es el filtro polarizado, y ahí está toda la diferencia de precio. Al elegir, fijate en el badge POLARIZADO.\n\nDentro de la línea de sol de Vulk, el Guardian es el que viene sólo en negro: cuatro combinaciones sobre el mismo armazón, entre negro mate y negro brillo. Si buscás un anteojo de sol negro y querés elegir el lente antes que el color del marco, éste es el que te da esa opción.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "temple_material": "g-flex",
@@ -126,6 +133,7 @@ VALUES (
     "lens_category": 3,
     "gender": "unisex",
     "weight_grams": 25,
+    "measurements": {"frame_width_mm": 141, "lens_width_mm": 53, "lens_height_mm": 51, "bridge_mm": 14, "temple_length_mm": 140},
     "hinge_system": "flexo",
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
@@ -147,18 +155,18 @@ ON CONFLICT (slug) DO UPDATE SET
 
 -- Los 4 son items SIMPLES → `mercadolibre_variation_code` NULL en las cuatro (patrón Le Groupie/Rew).
 -- sort 1 = SBLK, la de más stock (8 de 15), polarizada y el único color que no se confunde.
--- sort 2 y 3 = las dos gemelas, PEGADAS y con la polarizada primero. `variant_note` es lo único que
--- las distingue en la etiqueta: sin eso son dos filas idénticas con $8.720 de diferencia.
+-- sort 2 y 3 = las dos gemelas, PEGADAS y con la polarizada primero. Lo que las distingue en la fila
+-- renderizada: el badge POLARIZADO, el `model_code` (MBLK/S10 POL vs MBLK/S10), el SKU y el precio.
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), '109082',
    '{"frame_color":"negro-brillo","lens_color":"gris-oscuro","model_code":"SBLK/S10 POL","polarized":true}'::jsonb,
    11084100, 8, true, 1, 'MLA1530408248', NULL),
   ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), '109089',
-   '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10 POL","variant_note":"polarizada","polarized":true}'::jsonb,
+   '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10 POL","polarized":true}'::jsonb,
    11084100, 2, true, 2, 'MLA1529900560', NULL),
   ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), '109081',
-   '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10","variant_note":"sin polarizar","polarized":false}'::jsonb,
+   '{"frame_color":"negro-mate","lens_color":"gris-oscuro","model_code":"MBLK/S10","polarized":false}'::jsonb,
    10212100, 4, true, 3, 'MLA1530369076', NULL),
   ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), '109091',
    '{"frame_color":"negro-mate","lens_color":"espejado-azul","model_code":"MBLK/REVO BLUE","polarized":false}'::jsonb,
@@ -168,7 +176,7 @@ ON CONFLICT (sku) DO UPDATE SET
   stock_qty=EXCLUDED.stock_qty, mercadolibre_item_id=EXCLUDED.mercadolibre_item_id,
   mercadolibre_variation_code=EXCLUDED.mercadolibre_variation_code, updated_at=now();
 
--- 8 imágenes, SIN `medidas.jpg` (no hay medidas cargadas todavía).
+-- 9 imágenes, con `medidas.jpg` (variant_id NULL, sort 99).
 -- "polarizada" SÓLO en los alt de las dos POL. Los alt de las gemelas difieren en esa única palabra
 -- final, que es exactamente la diferencia entre ellas.
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
@@ -188,7 +196,9 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), (SELECT id FROM public.product_variants WHERE sku='109091'),
    'vulk-the-guardian/perfil-revo.jpg', 'Anteojos de sol Vulk The Guardian cuadrados unisex vista lateral, armazón negro mate lente espejada azul', 2000, 1333, 6, false),
   ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), (SELECT id FROM public.product_variants WHERE sku='109091'),
-   'vulk-the-guardian/frente-revo.jpg', 'Anteojos de sol Vulk The Guardian cuadrados unisex vista frontal, armazón negro mate lente espejada azul', 2000, 1333, 7, false)
+   'vulk-the-guardian/frente-revo.jpg', 'Anteojos de sol Vulk The Guardian cuadrados unisex vista frontal, armazón negro mate lente espejada azul', 2000, 1333, 7, false),
+  ((SELECT id FROM public.products WHERE slug='vulk-the-guardian'), NULL,
+   'vulk-the-guardian/medidas.jpg', 'Esquema técnico de medidas Vulk The Guardian: frente 141mm, lente 53mm de ancho, alto total 51mm, puente 14mm, varilla 140mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
   variant_id=EXCLUDED.variant_id, alt_text=EXCLUDED.alt_text, sort_order=EXCLUDED.sort_order, is_primary=EXCLUDED.is_primary, updated_at=now();
 

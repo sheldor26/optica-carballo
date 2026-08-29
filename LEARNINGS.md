@@ -22,66 +22,38 @@ Sirve para:
 
 # Log de learnings
 
-## 2026-08-26 — Cuando dos variantes se ven iguales, la etiqueta tiene que decirlo
+## 2026-08-26 — Dos variantes que se ven iguales: mirar la fila renderizada, no los campos
 
 **El caso**: el Vulk The Guardian tiene dos colorways que son **el mismo armazón negro mate con la
 misma lente gris oscuro**. Lo único que las separa es el filtro polarizado y **$8.720**. En las
 fotos del fabricante no se distinguen.
 
-**Por qué el badge POLARIZADO no alcanzaba**: es una señal **sólo positiva**. Su ausencia no dice
-"esta no polariza", dice "no hay información". El comprador que escanea ve dos filas con el mismo
-nombre y elige por precio — o sea, elige mal y después reclama.
+**Mi razonamiento, que era incompleto**: `describeVariant()` compone la etiqueta con frente + lente +
+talle, así que las dos devolvían exactamente "Negro mate / Gris oscuro". Concluí que el badge
+POLARIZADO no alcanzaba —es una señal sólo positiva, su ausencia no dice "no polariza"— y agregué un
+cuarto slot `variant_note` para que dijeran "… / polarizada" y "… / sin polarizar".
 
-**Lo que se hizo, en cuatro capas, porque con una no alcanzaba**:
+**El founder lo sacó, y tenía razón.** Miró la fila renderizada y ahí se ve que cada una ya muestra
+**cuatro diferenciadores**: el badge, el `model_code` (`MBLK/S10 POL` contra `MBLK/S10`) justo debajo
+del nombre, el SKU y el precio. La nota era una quinta señal que alargaba la etiqueta sin agregar
+nada.
 
-1. **`variant_note`, un cuarto slot opcional en `describeVariant()`.** Ahora las etiquetas dicen
-   "Negro mate / Gris oscuro / polarizada" y "… / sin polarizar". Se propaga solo a la PDP, los
-   swatches del grid, el detalle de pedido, el admin, el carrito y el mensaje de WhatsApp.
-   **No se reusó `attributes.size`** para esto: es el slot de talle, y meter "polarizada" ahí hace
-   que alguien después lo lea como un talle.
-2. **`model_code` CON el sufijo " POL"** — excepción deliberada a la convención del seed anterior,
-   que se lo saca por largo. Acá el " POL" *es* el desempate.
-3. **Un callout `warning` que nombra el problema en el título**, no lo insinúa: "Hay dos negro mate
-   con lente gris: uno polariza y el otro no".
-4. **Las dos van pegadas en el orden**, con la polarizada primero. Separadas por otro color se leen
-   como una carga duplicada; pegadas, con distinto badge y distinto precio, se leen como una
-   elección.
+**La lección, que es sobre método y no sobre este producto**: yo razoné sobre **los campos que
+componen la etiqueta** y no sobre **lo que el usuario ve en la fila**. Son dos cosas distintas: la
+función devuelve tres campos, pero el componente renderiza además el código, el SKU, el precio, el
+stock y el badge. Mirar sólo la función lleva a resolver un problema que la UI ya resolvía.
 
-**Y el orden importó**: el cambio de código y su deploy fueron **antes** del seed. Si el producto
-salía primero, las dos filas quedaban idénticas en producción hasta el siguiente build.
+**Regla concreta**: cuando dos variantes parezcan indistinguibles, abrir la PDP renderizada y contar
+los diferenciadores visibles antes de tocar el modelo de datos. El umbral para agregar un campo nuevo
+no es "comparten frente y lente", es "comparten todo lo que se ve".
 
-**La regla general**: si dos variantes de un producto comparten todos los campos que componen su
-etiqueta, la ficha no está lista para publicarse. Antes de cargar, correr la etiqueta mentalmente
-sobre cada variante y ver si alguna se repite.
+**Lo que sí quedó y sirvió** en esta ficha: el `model_code` con el sufijo " POL" (excepción
+deliberada a la convención de sacárselo por largo, porque acá es el desempate visible), un callout
+`warning` que nombra el problema en el título, y las dos variantes pegadas en el orden con la
+polarizada primero. Con eso alcanza.
 
-## 2026-08-26 — Limpiar el fondo que se ve A TRAVÉS del producto: color medido + tamaño
-
-**El problema**: al recortar un anteojo fotografiado con una hoja de papel detrás, la hoja que se ve
-por los huecos —entre las patillas, arriba del puente— queda adentro del recorte. Sobre el blanco
-puro de la placa se nota como un parche gris.
-
-**El primer intento, que falla**: pintar de blanco todo pixel claro y poco saturado
-(`sat <= 0.18 && lum >= 0.55`). Dos defectos visibles en la foto entregada:
-- Quemaba los **brillos especulares** del acetato, dejando parches planos que parecen fallas.
-- Como la hoja traía **bloques de compresión JPEG**, unos entraban en el umbral y otros no: quedaba
-  un parche gris pixelado adentro de la patilla, peor que el original.
-
-**Lo que funciona, con dos criterios combinados**:
-
-1. **Color medido, no umbral genérico.** La misma pasada que corrige el balance de blancos ya midió
-   el nivel real de la hoja en ESA foto. Se busca "casi neutro y en ese nivel", con tolerancia
-   **asimétrica**: la hoja que se ve por los huecos suele estar en sombra, o sea más oscura que la
-   del fondo abierto. Hacia arriba se es estricto, para no comerse un brillo del acetato.
-2. **Filtro por tamaño.** Se etiquetan las regiones conectadas y se descartan las chicas. Los huecos
-   del armazón son manchas grandes; los brillos del acetato son chispas finas. Ese segundo criterio
-   es el que salva los reflejos legítimos, y es el que le faltaba al primer intento.
-
-**Y apagar el alfa en vez de pintar blanco**: al componer sobre el lienzo el borde queda
-antialiaseado en lugar de un escalón duro. La máscara se difumina 2 px por lo mismo.
-
-**Sombra de contacto**: se agregó, construida del propio alfa del recorte (franja de abajo,
-aplastada, difuminada, al 20%). Sin ella el producto parece un sticker pegado. No cambia forma,
-color ni tamaño — es presentación, igual que el fondo blanco — y es lo que hace el fabricante.
+**Y algo que apareció buscando esto y sí era un problema real**: el carrito tenía su propia función
+de etiqueta que mostraba los slugs crudos, en todo el catálogo. Ver `MISTAKES.md`.
 
 ## 2026-08-26 — Auditar con Antigravity (`agy`) sirve, pero hay que medir lo que propone
 

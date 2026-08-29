@@ -72,11 +72,22 @@ export function describeVariant(attrs: VariantAttributesJson): string {
   const lens = lookup(LENS_COLOR_LABELS, attrs.lens_color);
   const size = typeof attrs.size === 'string' ? attrs.size : null;
   // Cuarto slot, opcional: para cuando dos variantes comparten frente Y lente y
-  // sólo las separa un tratamiento. Sin esto, el Vulk The Guardian mostraría dos
-  // filas idénticas ("Negro mate / Gris oscuro") con $8.720 de diferencia entre
-  // ellas — el comprador no tiene con qué elegir. `size` NO sirve para esto: es
-  // el slot de talle y ensuciarlo hace que después alguien lea "polarizada" como
-  // si fuera un talle.
+  // sólo las separa un tratamiento.
+  //
+  // Hoy NO lo usa ningún producto, y hay una razón que conviene leer antes de
+  // volver a usarlo. Se agregó para el Vulk The Guardian, que tiene dos colorways
+  // idénticas (las dos "Negro mate / Gris oscuro", una polarizada y la otra no,
+  // con $8.720 de diferencia). El founder lo sacó mirando la fila renderizada: en
+  // la UI real cada fila ya muestra el badge POLARIZADO, el `model_code`
+  // (MBLK/S10 POL vs MBLK/S10), el SKU y el precio. Con cuatro diferenciadores,
+  // la nota sólo alargaba la etiqueta.
+  //
+  // O sea: antes de usar este slot, mirar la fila renderizada, no sólo los campos
+  // que componen la etiqueta. El umbral real es que las variantes compartan TODO
+  // lo que se ve, no sólo frente y lente.
+  //
+  // `size` NO sirve para esto: es el slot de talle, y ensuciarlo hace que después
+  // alguien lea "polarizada" como si fuera un talle.
   const note = typeof attrs.variant_note === 'string' ? attrs.variant_note : null;
   const parts = [frame, lens, size, note].filter((v): v is string => Boolean(v));
   return parts.length > 0 ? parts.join(' / ') : 'Variante';
