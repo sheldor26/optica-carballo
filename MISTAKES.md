@@ -22,6 +22,435 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-08-26 — Copié el perfil tonal de un producto de OTRO color y teñí el armazón
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: para que las fotos del Rusty The Javo "salieran iguales a las de Rusty", medí el perfil
+tonal de la referencia (`rusty-bruice/perfil.jpg`: p5 51 · p50 143 · p95 169) y mapeé las del Javo a
+esos tres números. El resultado: el armazón **marrón oscuro salió naranja ámbar y los lentes
+dorados**. Se lo mostré al founder en una comparación antes de darme cuenta.
+
+**Causa raíz**: el Bruice de la referencia es **negro con lente naranja**. Su p50 de 143 es una
+propiedad de ESOS colores, no de la luz del estudio. Forzar un producto marrón oscuro a la mediana
+de un producto claro no lo expone mejor: lo destiñe. Confundí "perfil tonal del estudio" con "perfil
+tonal del producto", que son cosas distintas.
+
+**Lo grave no es que se vea feo, es que deja de ser el producto.** Una foto de catálogo con el color
+cambiado es exactamente lo que prohíbe la regla dura 8 y lo que mira Defensa del Consumidor.
+
+**La corrección**: separar qué se puede copiar entre productos y qué no.
+- **Sí se copia**: el anclaje de negros (p5) y el de altas luces (p95). Dependen del estudio.
+- **No se copia**: el medio tono (p50). Depende del color del producto.
+
+El p50 quedó como flag `--p50` con un default conservador de 85, y se le entregó al founder una
+**escalera de cuatro tonos** para que elija comparando contra el anteojo que tiene en la mano. Él es
+el único que puede validar el color real; yo sólo veo la foto subexpuesta.
+
+**Verificación que sí sirvió**: medir el TONO (hue) del armazón en la foto cruda y en la salida —
+25° contra 25°. Eso prueba que el balance de blancos no corre el color, y que lo único en discusión
+es la exposición. Sin esa medición no habría podido distinguir "está más claro" de "está de otro
+color".
+
+**Regla preventiva**: una referencia sirve para calibrar lo que depende del SETUP (encuadre, fondo,
+negros, altas luces), nunca lo que depende del PRODUCTO (su color, su mediana, su saturación). Y
+cuando el parámetro depende del producto físico, la decisión es del founder, que lo tiene enfrente.
+
+## 2026-08-26 — `sharp().gamma()` no aclara nada si no hay un resize en el medio
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: para subir la exposición de las fotos del Javo usé `sharp(imagen).gamma(g)`. El log
+decía `brillo 55 → objetivo 120 (gamma 2.03)` y todo parecía bien. Al medir el archivo de salida, el
+brillo seguía en **53**. No había cambiado nada.
+
+**Causa raíz**: `gamma()` de sharp no es un control de exposición. Existe para corregir el gamma
+**alrededor de un resize**: oscurece antes y aclara después, para que la interpolación ocurra en
+espacio lineal. Sin un resize entre medio, las dos mitades se cancelan y la imagen sale idéntica.
+
+**Cómo se detectó**: porque después de aplicar la corrección volví a **medir el resultado** en vez
+de confiar en que el paso había funcionado. Si no llegaba a medir, entregaba cinco fotos "corregidas"
+que no tenían ninguna corrección, y encima con un log afirmando que sí.
+
+**La corrección**: aplicar la curva de potencia a mano sobre los pixeles con una tabla de 256
+entradas, `out = 255 * (in/255)^p`, despejando `p` del brillo medido y el objetivo. Verificado:
+49 → 109, 55 → 113, 44 → 112.
+
+**Regla preventiva**: cuando un paso de procesamiento tiene un efecto medible, **medir la salida y
+loguear el valor logrado, no el pedido**. El log de esta función ahora imprime `49 → 109`, o sea el
+resultado real. Un log que repite el parámetro de entrada no prueba nada — es exactamente el tipo de
+mensaje que hace que un bug silencioso parezca un éxito.
+
+## 2026-08-26 — Asumí que `resize` de sharp conserva la cantidad de canales de un raw
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: en `foto-limpia.ts` armé una máscara de 1 canal, la reescalé con
+`sharp(mascara, { raw: { channels: 1 } }).resize(W, H).raw().toBuffer()` y después la indexé como
+`grande[p]`, asumiendo 1 byte por pixel. **sharp devuelve 3 canales** (pasa el raw a sRGB). O sea
+que estaba leyendo un pixel cada tres: la máscara quedaba corrida y el resultado era basura — una
+foto salía con el recorte a la resolución completa de la cámara (3024×4032) en vez del bounding box
+del anteojo.
+
+**Por qué costó verlo**: el síntoma no parecía un problema de índices. Parecía que el filtro de
+manchas estaba *agrandando* el recorte, que es lo contrario de lo que hace. Estuve por explicarlo
+como "el modelo segmentó mal esta foto en particular".
+
+**Cómo se resolvió**: en vez de seguir teorizando, escribí tres líneas que reescalan un raw de
+1 canal conocido y miden el largo del buffer. Dio `esperado 45000 | real 135000 | channels 3`.
+Ahí se terminó la discusión.
+
+**Regla preventiva**: cuando se manipula un buffer `raw` de sharp, **nunca asumir la cantidad de
+canales de salida** — derivarla del largo real (`buffer.length / (ancho * alto)`) o pedirla con
+`toBuffer({ resolveWithObject: true })` y leer `info.channels`. Ya quedó así en el código.
+
+**La regla de fondo, que es la que vale**: ante un comportamiento raro de una librería, el
+experimento de tres líneas gana siempre a la hipótesis. Medir el buffer costó 30 segundos; la
+hipótesis equivocada ya había costado dos reprocesamientos completos de las 5 fotos.
+
+## 2026-08-26 — Declaré el catálogo "sin datos faltantes" sin verificar de dónde salían las medidas
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el 2026-08-25 escribí en `DATOS_PENDIENTES.md`: *"✅ No queda nada bloqueando — Los 78
+productos activos del catálogo tienen medidas y material de patillas completos"*. Era falso. Al
+preparar el alta del Vulk The Trial MDEMI apareció que las medidas de ese modelo nunca las midió el
+founder: la cabecera del seed 71 dice textualmente *"Medidas (de la FOTO)"*.
+
+**Cómo se descubrió**: contrastando tres fuentes sobre el mismo armazón.
+
+| Fuente | Lente | Puente | Varilla | Frente |
+|---|---|---|---|---|
+| Ficha del fabricante (calibre) | 47 | 20 | 145 | — |
+| Widget de medidas del mismo fabricante | — | — | — | 144 |
+| Seed propio ("de la foto") | 50 | 15 | 150 | 147 |
+
+El fabricante **se contradice con su propia página**, y contra el seed hay 5 mm de diferencia en el
+puente. Mismo patrón que el Malice (ML decía calibre 59, era 54) y el Bruice (decía 16, era 18).
+
+**Causa raíz**: confundí "el campo está lleno" con "el dato es válido". Conté celdas completas en
+la base en vez de verificar la procedencia de cada una. La regla dura 7 es una lista blanca de una
+sola fuente (Juan), y yo la traté como si cualquier valor presente ya la cumpliera.
+
+**Regla preventiva**: antes de declarar un bloque de datos "completo", verificar la PROCEDENCIA, no
+la presencia. Para medidas, eso significa buscar en el seed o en `DATOS_PENDIENTES.md` la evidencia
+de que las pasó el founder. Si el seed dice "de la foto", "de ML" o "del fabricante", el dato
+**cuenta como faltante** aunque la columna esté llena. Un campo lleno con un dato de origen
+prohibido es peor que un campo vacío: el vacío se ve, el otro no.
+
+**Efecto lateral que hay que arreglar**: las medidas dudosas del Trial hoy están publicadas en el
+sitio y en dos publicaciones de ML. La publicación nueva salió sin medidas. Queda pendiente que el
+founder mida el armazón para corregir las tres superficies de una.
+
+## 2026-08-25 — Un `?` en un path de Storage: el SDK no lo escapa y el archivo "no existe"
+
+**Estado**: 🟡 Mitigado (el generador lo escapa; el dato sigue con el `?`, ver BACKLOG)
+
+**Qué pasó**: en la tanda del catálogo, 1 de 78 productos no generó ninguna placa. El error era
+`No pude bajar la foto: Object not found`, pero `storage.list()` sobre esa misma carpeta listaba los
+tres archivos sin problema.
+
+**Causa raíz**: el producto es el **Vulk Ready?** y su carpeta en el bucket es
+`vulk-ready?-receta/`, con el signo de pregunta literal, heredado del nombre del modelo. El SDK de
+Supabase **no escapa el `?`** al armar la URL de descarga: el servidor lee el path hasta `vulk-ready`
+y todo lo que sigue como query string. De ahí el "no existe" sobre un archivo que sí está.
+
+**Lo que casi reporto mal**: mi primera lectura fue "las fotos de este producto están rotas en
+producción". Lo verifiqué antes de decirlo y **es falso**: Next Image escapa el `?` por su cuenta
+(lo manda como `%253F`), y la ficha en producción devuelve las fotos con HTTP 200. El defecto vive
+sólo en los scripts que bajan por path. Un `curl` de treinta segundos separó "bug de la web" de "bug
+de una herramienta interna", que son dos urgencias muy distintas.
+
+**Regla preventiva**: cuando el storage diga que un objeto no existe pero `list()` lo muestre,
+sospechar del **encoding del path** antes que del archivo. Y al bajar por path, escapar **cada
+segmento por separado** (`ruta.split('/').map(encodeURIComponent).join('/')`) — el `/` tiene que
+sobrevivir. Corolario para las cargas: no dejar `? # % &` en un `storage_path`; el slug del producto
+ya está normalizado, la carpeta del bucket debería salir de ahí y no del nombre del modelo.
+
+---
+
+## 2026-08-25 — El cortador de líneas nunca midió la última línea, y yo miré la placa y no lo vi
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: en la placa `cartel` de "53&3 Marky Ramone", la palabra RAMONE salía **34 px pasada
+del margen derecho**. Yo había mirado esa misma placa renderizada y la di por buena.
+
+**Causa raíz**: `cortarMedido()` arma las líneas intentando agregar una palabra por vez y midiendo
+la tentativa. Cuando no entra, cierra la línea y empieza otra con esa palabra. Pero **la palabra que
+arranca el último renglón nunca llega a un intento**: el bucle termina y el `push` final no medía
+nada. La única guarda que existía (`if (!actual) return null`) sólo cubre el caso de una palabra
+sola que no entra desde el arranque.
+
+O sea: el generador validaba todas las líneas menos una, y justo la última es la que más seguido
+tiene una sola palabra larga.
+
+**Por qué no lo vi**: en un contacto de 430 px de ancho, 34 px de desborde son 13 px. A ojo, sobre
+una miniatura, no se distingue de un titular que llega justo al margen. Lo encontró una herramienta.
+
+**Regla preventiva**: escrita en código, no en un documento — **`pnpm placas:verificar`**. Mide el
+ancho real de cada `<text>` del SVG y afirma tres invariantes sobre las 12 × 2 placas de cada
+producto: ningún texto pisa a otro, ninguno se sale del margen, ninguno entra en la franja que tapa
+la interfaz de Instagram. Corre sobre el catálogo entero.
+
+Y la regla de criterio: **mirar el render no es verificar**. Sirve para juzgar si algo se ve lindo;
+no sirve para afirmar que una coordenada está bien. Para eso hay que medir.
+
+---
+
+## 2026-08-25 — Los signos de pregunta se sumaban DESPUÉS de calcular si el texto entraba
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: la placa `pregunta` de la guía de astigmatismo publicaba "¿Cuánto astigmatismo es
+normal?" **64 px pasada del margen**. No era un riesgo latente: estaba mal en el archivo generado.
+
+**Causa raíz**: el código sacaba los signos (`faq.pregunta.replace(/^¿|\?$/g, '')`), calculaba con
+ese texto pelado qué cuerpo de letra entraba, y **después** se los volvía a poner al dibujar. A 92 px
+cada signo pesa 43 px, así que el texto que se medía y el que se dibujaba no eran el mismo.
+
+**Regla preventiva**: **se mide el string que se va a dibujar, no una versión de trabajo.** Si hay
+que transformarlo (agregar signos, comillas, un prefijo), la transformación va ANTES del cálculo de
+encaje. Vale para cualquier decoración que se agregue después de medir.
+
+---
+
+## 2026-08-25 — Industrialicé la producción mientras el founder todavía estaba eligiendo el diseño
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el founder me frenó en seco — *"todavía no quiero que me hagas de todos los
+productos… estamos buscando el stilo que mas me gusta"*. Yo estaba corriendo la tanda del catálogo
+entero por segunda vez, después de haberla corrido una vez, encontrado un bug y arreglado. Le había
+generado 1.532 placas y estaba por generarle otras 1.532.
+
+**Causa raíz**: tomé un "dale, sacá cartel y detalle y corré la tanda completa" y lo convertí en un
+objetivo permanente. Esa instrucción vino ANTES de que él viera el set podado: era razonable
+entonces y dejó de serlo apenas el trabajo pasó a ser elegir entre diseños. **Una aprobación puntual
+no es una dirección**, y yo la traté como si lo fuera durante varios turnos, incluso relanzando la
+corrida después de un arreglo sin volver a preguntar si seguía teniendo sentido.
+
+**La señal que ignoré**: él nunca dijo qué diseño le gustaba. Yo mismo le había dejado la pregunta
+abierta ("cuáles de los ocho quedan") y, cuando la contestó podando dos, leí eso como "el set está
+cerrado, a producir" en vez de "seguimos filtrando". Que quedaran siete y no uno era la pista.
+
+**Regla preventiva**: **antes de correr algo caro sobre TODO el catálogo, preguntarse si la decisión
+que lo justifica ya está tomada o todavía se está tomando.** Producir en masa tiene sentido cuando
+el diseño está elegido; mientras se elige, lo útil es una muestra chica que se pueda comparar. Y si
+una corrida larga se relanza después de un arreglo, ése es el momento de reconfirmar el objetivo, no
+de repetir el comando.
+
+---
+
+## 2026-08-25 — Confirmé una causa porque la diferencia existía, sin preguntarme si se veía
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: el founder reportó un borde suave alrededor del producto. Medí que el grano no llegaba
+al producto —ruido local 0,18 adentro contra 1,4-2,7 en el fondo, casi 10×—, di la causa por
+encontrada, la arreglé, y **se lo comuniqué como conclusión firme**. Una verificación adversarial
+posterior la refutó: la amplitud del grano es de ±1 nivel sobre 243, o sea 0,42% de contraste; el
+período es de 1 px, arriba del límite de resolución de un celular; y a JPEG q80 desaparece un 94%.
+Sintetizado el escalón aislado —con un contraste de grano todavía más extremo que el real— a tamaño
+natural es invisible. La causa verdadera era otra: la foto mide 900 px y hay que agrandarla 1,38×.
+
+**Causa raíz**: confundí *"hay una diferencia medible"* con *"esa diferencia es lo que se ve"*. El
+ratio de 10× es real y suena enorme, pero es un ratio entre dos cantidades minúsculas. Nunca convertí
+la medición a la unidad que importa —contraste percibido— ni la comparé contra el umbral del ojo.
+
+**Lo que lo habría evitado, y es barato**: el test que hizo el verificador. Sintetizar el efecto
+AISLADO —un campo plano con el escalón de grano y nada más— y mirarlo a 1:1. Si aislado no se ve,
+no es la causa. Treinta segundos.
+
+**Agravante**: se lo dije al founder con seguridad y con números, que es justo lo que vuelve creíble
+un diagnóstico equivocado. Los números eran ciertos; la conclusión no.
+
+**Regla preventiva**: **una diferencia medida no es una causa hasta que se demuestra que es
+perceptible.** Antes de afirmar que X produce un artefacto visual: (1) expresar la magnitud en la
+unidad que ve el ojo —contraste Weber, niveles sobre el fondo—, no como ratio; (2) aislar el efecto
+y mirarlo; (3) comprobar que sobrevive al canal por el que va a pasar, que acá es la recompresión
+JPEG de Instagram. Y cuando hay varias causas candidatas, medirlas TODAS antes de anunciar una:
+tenía cinco hipótesis y me quedé con la primera que dio positivo.
+
+---
+
+## 2026-08-25 — Agregué grano al fondo y le dibujé un contorno al producto sin darme cuenta
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: agregué un grano sutil a los fondos para que no se leyeran como campos de color
+planos. Lo puse en el SVG principal. Pero el SVG se compone ANTES que los bitmaps del producto, así
+que el producto quedó como **la única zona sin grano de toda la placa**. El resultado es un contorno
+alrededor del recorte: el ojo no percibe "acá hay menos ruido", percibe un borde. Lo detectó el
+founder mirando una placa, después de que yo hubiera dado por buenas cientos.
+
+**Causa raíz**: pensé el grano como "una textura para el fondo" cuando es **una capa de superficie
+para la imagen entera**. La diferencia no es semántica: define en qué punto del pipeline va. Un
+grano que no cubre todo no unifica, separa — hace exactamente lo contrario de para lo que se puso.
+
+**Por qué no lo vi**: lo verifiqué midiendo la amplitud del ruido sobre el fondo (7 niveles sobre
+navy, 8 sobre hueso: "un solo valor sirve para los dos") y me quedé ahí. Nunca comparé el ruido
+DENTRO del producto contra el del fondo, que es la medición que importa cuando lo que se agrega es
+una textura global. Medí que el efecto existiera, no que fuera uniforme.
+
+**Regla preventiva**: **cuando se agrega un tratamiento que pretende ser global —grano, viñeta,
+virado, textura— hay que verificar que llegue a TODAS las capas, y medirlo comparando zonas, no
+midiendo una sola.** En este generador la pregunta concreta es siempre la misma: ¿va antes o después
+de los bitmaps que compone `sharp`? Si el tratamiento es de superficie, va después.
+
+**Cómo detectarlo rápido**: un pasa-altos —la diferencia media entre píxeles vecinos— sobre una
+franja que cruce el borde del producto. Si el número salta de un lado al otro, hay contorno.
+
+---
+
+## 2026-08-25 — El mismo punto ciego del verificador, otra vez, el mismo día
+
+**Estado**: ✅ Cerrado · **2ª vez del mismo patrón** (ver la entrada de abajo, la de los recuadros)
+
+**Qué pasó**: a la mañana registré que el verificador sólo miraba `<text>` y por eso dejaba pasar un
+recuadro que cruzaba el pie. Lo arreglé. Horas después, para que `macro` pudiera tener la foto a
+sangre, agregué una **segunda capa de SVG que se dibuja encima de los bitmaps** y mudé todo el texto
+de esa placa ahí. El verificador volcaba a disco **solamente la capa de abajo**: pasó a dar verde
+sobre una placa de la que no estaba leyendo una sola palabra.
+
+**Causa raíz — y es la misma que la de la mañana**: extendí lo que el generador puede dibujar sin
+extender lo que el verificador puede ver. La primera vez la dimensión nueva fueron los recuadros;
+la segunda, una capa entera. El verde siguió significando "no encontré nada" y yo lo seguí leyendo
+como "no hay nada".
+
+**Por qué importa que sea la segunda**: la regla que me había anotado —"antes de confiar en un
+chequeo propio, hay que verlo fallar"— la apliqué al arreglo puntual y no al hábito. Verifiqué que
+detectara recuadros; no volví a verificarlo cuando cambié la arquitectura del render.
+
+**Regla preventiva, más fuerte que la anterior**: **cada vez que el generador aprenda a dibujar algo
+que antes no dibujaba —un tipo de elemento, una capa, un formato nuevo— hay que preguntarse en el
+mismo turno si el verificador lo ve, y probarlo con un caso malo a propósito.** Un chequeo no se
+valida una vez: se revalida cada vez que crece aquello que chequea. Concretamente para este
+generador: si aparece una tercera capa o un elemento nuevo, va al volcado de `PLACAS_SVG` antes de
+declarar nada verde.
+
+**Arreglado**: el volcado fusiona las dos capas. Contraprueba hecha — el SVG de `macro-story` pasó
+de 1 texto (sólo el pie) a 8.
+
+---
+
+## 2026-08-25 — Declaré 500 placas verificadas con un verificador que nunca vi fallar
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: escribí `pnpm placas:verificar`, lo corrí sobre 334 placas de producto y 166 de guías,
+dio todo verde y se lo reporté al founder como garantía de que ningún texto pisa a otro. Después,
+mirando una hoja de contactos a ojo, encontré que en `split` de feed **el borde de la pastilla del
+sello cruzaba por el medio del texto del pie**. El verificador había dado ✓ sobre ese archivo.
+
+**Causa raíz**: el verificador sólo extraía elementos `<text>`. El texto del sello no pisaba nada;
+lo que pisaba era el `<rect>` de su pastilla. Quedaba afuera toda una clase de choques —pastillas,
+tarjetas, líneas divisorias, paneles— que es la más visible de todas.
+
+**El error de método, que es el que importa**: nunca lo probé contra un caso que supiera malo. Lo
+escribí, dio verde en todo, y tomé el verde como prueba de que el set estaba bien — cuando también
+era compatible con que la herramienta no estuviera mirando. **Un verificador que sólo vi pasar no es
+evidencia de nada**: no sé distinguir "no hay defectos" de "no los detecta".
+
+**Regla preventiva**: **antes de confiar en un chequeo propio, hay que verlo fallar.** Se le da de
+comer un caso con el defecto puesto a mano —o uno viejo que ya se sabe roto— y recién cuando lo
+marca, su verde significa algo. Y cuando un chequeo cubre una dimensión (texto), decir explícitamente
+qué dimensiones NO cubre, porque el reporte se va a leer como cobertura total.
+
+**Arreglado**: mide `<rect>` y `<line>` contra el pie y contra cada texto, descartando los que van a
+sangre a propósito. La contraprueba quedó hecha: con el chequeo viejo `rusty-blozon` daba ✓, con el
+nuevo canta la coordenada exacta.
+
+---
+
+## 2026-08-25 — Puse en el scratchpad el script de una corrida que el founder me pidió, y lo perdí
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: el founder pidió "corré la tanda completa". Armé un shell script que recorre los
+productos activos y genera los 10 layouts en los dos formatos, lo dejé en el directorio temporal de
+la sesión y lo corrí. Salieron las 1.532 placas. Al reiniciarse la sesión, el scratchpad se limpió y
+**el script desapareció**. Los PNG quedaron, pero la corrida no es reproducible: `pnpm ig:producto`
+trabaja de a un producto, así que para volver a hacerla hay que rearmar el script desde cero.
+
+**Causa raíz**: usé el scratchpad por su propósito literal —un archivo temporal para ejecutar algo
+ahora— sin preguntarme si el resultado era temporal. No lo era: la salida son 1.532 archivos que el
+founder conserva en `marketing/`, y cualquier producto nuevo o cambio de diseño obliga a repetir la
+corrida. El script no era andamiaje, era la herramienta.
+
+**Lo que lo delata, y sirve como test**: si el output de un script va a un lugar que el founder
+conserva, el script no es descartable. Si el output también es descartable (una medición, una prueba
+de humo, un recorte para mirar), el scratchpad está bien.
+
+**Regla preventiva**: **si un script produce un artefacto que sobrevive a la sesión, el script va al
+repo con su entrada en `package.json`, no al scratchpad.** Y si en el momento no da para dejarlo
+prolijo, se anota en `BACKLOG.md` en el mismo turno, antes de correrlo — no después de perderlo.
+
+**Mitigación aplicada**: quedó anotado en `BACKLOG.md` como flag `--todos` de `pnpm ig:producto`,
+con el detalle de que además tiene que aceptar `PLACAS_SVG` para que la verificación no vuelva a
+pagar la hora y media de recorte con rembg.
+
+---
+
+## 2026-08-25 — Cambié el tracking del pie sin medirlo y generé el mismo solapamiento que estaba arreglando
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: un auditor marcó que el encabezado y el pie de las placas no coincidían entre sí
+(encabezado 25px/peso 600/tracking 8, pie 23px/peso 500/tracking 4) y que eso rompía el marco. Lo
+unifiqué llevando el pie a los valores del encabezado. El pie tiene **dos textos en la misma
+línea**, uno a cada margen: con el tracking nuevo, "EN LA WEB Y EN EL LOCAL" y
+"OPTICACARBALLO.COM.AR" se tocaban en el medio. Salió en las ocho placas.
+
+**Causa raíz**: apliqué una corrección de consistencia sin comprobar la restricción de espacio del
+lugar donde caía. El encabezado tiene una sola línea de texto y todo el ancho libre; el pie tiene
+dos que se reparten el mismo ancho. Son roles distintos aunque se vean parecidos, y el motivo por el
+que el pie era más chico estaba escrito en el propio valor: no era descuido, era el ajuste.
+
+**Lo peor del caso**: es exactamente el defecto que el founder había pedido arreglar —"que las
+palabras no tapen otras palabras"— reintroducido por la corrección estética que venía a arreglarlo.
+
+**Regla preventiva**: en este generador, **todo cambio de cuerpo, tracking o peso sobre un bloque
+que comparte línea con otro se verifica renderizando**, no razonando. El archivo tiene `medirTexto()`
+justamente para eso. Y cuando una inconsistencia parece gratuita, primero preguntarse qué
+restricción la explica: dos valores distintos para lo que parece el mismo rol suelen ser dos roles.
+
+---
+
+## 2026-08-24 — Estimar el ancho del texto con un factor por carácter, en un generador de imágenes
+
+**Estado**: ✅ Cerrado
+
+**Qué pasó**: durante semanas las placas salieron con texto encimado y bloques que se comían el pie.
+El founder lo reportó tres veces con distintas palabras. Cada vez se corrigió el caso puntual
+—bajar dos puntos el cuerpo, subir el bloque— y volvía a aparecer con el producto siguiente.
+
+**Causa raíz**: `ajustar()` decidía si un texto entraba estimando su ancho como
+`cantidad de caracteres × cuerpo × 0.52`. Medido contra el render real, ese factor va de **0.40 a
+0.63** según el texto y la familia. `53&3 MARKY RAMONE` a 104px en DM Sans 700 mide **1108 px**
+reales contra 919 estimados, sobre un ancho útil de 928: el generador creía que entraba con 9 px de
+sobra y en realidad se pasaba 180. Los que tenían muchas letras angostas fallaban al revés y salían
+innecesariamente chicos.
+
+**Por qué se había hecho así**: librsvg no expone métricas tipográficas. La estimación parecía la
+única opción.
+
+**Lo que la resolvió**: sí se puede medir — rasterizando la palabra a 100 px sobre negro y midiendo
+el bounding box con `sharp().trim()`. Es lineal con el cuerpo, así que una medición por palabra
+sirve para todos los tamaños, y se cachea. `medirTexto()` y `ajustarMedido()` en
+`scripts/lib/placa-base.ts`.
+
+**Regla preventiva**: **en un generador de imágenes no se estima lo que se puede medir.** Si una
+librería no expone una métrica, casi siempre se puede obtener renderizando y midiendo el píxel. Un
+síntoma que se repite después de tres correcciones puntuales no es un caso borde: es que se está
+arreglando el síntoma.
+
+**Deuda anotada**: `scripts/lib/placa-articulo.ts` (las placas de guías) todavía tiene su propia
+copia de `ajustar()` con el mismo factor 0.52 en cinco llamadas. Hoy no desborda porque los títulos
+de las ocho guías entran, pero es el mismo bug latente. Está en `BACKLOG.md`.
+
+---
+
 ## 2026-08-25 — Un `\n` literal llegó a producción por escribir un UPDATE sin E-string
 
 **Estado**: ✅ Cerrado

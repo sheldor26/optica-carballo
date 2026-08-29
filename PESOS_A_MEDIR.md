@@ -1,6 +1,6 @@
 # Pesos a medir con la balanza
 
-16 modelos del catálogo sin peso cargado. Es lo único que les falta.
+18 modelos del catálogo sin peso cargado. Es lo único que les falta.
 
 **Cómo pasarlos**: uno por línea, `modelo: XX,X g`. No hace falta el orden ni todos juntos —
 mandá los que vayas pesando y los cargo.
@@ -13,7 +13,7 @@ Ordenados por stock, que es el orden en que más rinde tenerlos.
 
 ---
 
-## Anteojos de sol — 14
+## Anteojos de sol — 16
 
 - [ ] **Rusty Blozon** — 4 colores · 46 unidades
 - [ ] **Rusty Terdey** — 3 colores · 34 unidades
@@ -21,7 +21,9 @@ Ordenados por stock, que es el orden en que más rinde tenerlos.
 - [ ] **Rusty And Now** — 3 colores · 20 unidades
 - [ ] **Rusty Eslav** — 2 colores · 14 unidades
 - [ ] **Rusty Esvep** — 3 colores · 14 unidades
+- [ ] **Vulk Cinema** — 3 colores · 12 unidades
 - [ ] **Rusty Sotion** — 3 colores · 11 unidades
+- [ ] **Rusty Rew** — 2 colores · 10 unidades
 - [ ] **Rusty CCCP** — 4 colores · 9 unidades
 - [ ] **Rusty Yau** — 3 colores · 9 unidades
 - [ ] **Vulk Arvin** — 3 colores · 8 unidades

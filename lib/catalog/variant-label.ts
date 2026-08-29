@@ -21,6 +21,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'gris-oscuro-transparente': 'Gris oscuro transparente',
   'azul-metalico': 'Azul metálico',
   'rosa-transparente': 'Rosa transparente',
+  'marron-transparente': 'Marrón transparente',
   'carey-oscuro': 'Carey oscuro',
   dorado: 'Dorado',
   plata: 'Plata',
@@ -40,9 +41,16 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'gris-degrade': 'Gris degradé',
   'verde-degrade': 'Verde degradé',
   'gris-oscuro': 'Gris oscuro',
+  'gris-oscuro-degrade': 'Gris oscuro degradé',
+  'sepia-degrade': 'Sepia degradé',
+  'verde-oscuro': 'Verde oscuro',
   'azul-espejado': 'Azul espejado',
   'espejado-azul': 'Azul espejado',
   espejado: 'Espejado',
+  // `espejado-rojo` ya lo usaba el Blozon (seed 96) sin entrada acá: caía al
+  // fallback de title-case y renderizaba "Espejado Rojo" en vez de "Rojo espejado".
+  'espejado-rojo': 'Rojo espejado',
+  'espejado-dorado': 'Dorado espejado',
 };
 
 function toTitleCase(s: string): string {

@@ -22,6 +22,158 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-26 — Limpiar el fondo que se ve A TRAVÉS del producto: color medido + tamaño
+
+**El problema**: al recortar un anteojo fotografiado con una hoja de papel detrás, la hoja que se ve
+por los huecos —entre las patillas, arriba del puente— queda adentro del recorte. Sobre el blanco
+puro de la placa se nota como un parche gris.
+
+**El primer intento, que falla**: pintar de blanco todo pixel claro y poco saturado
+(`sat <= 0.18 && lum >= 0.55`). Dos defectos visibles en la foto entregada:
+- Quemaba los **brillos especulares** del acetato, dejando parches planos que parecen fallas.
+- Como la hoja traía **bloques de compresión JPEG**, unos entraban en el umbral y otros no: quedaba
+  un parche gris pixelado adentro de la patilla, peor que el original.
+
+**Lo que funciona, con dos criterios combinados**:
+
+1. **Color medido, no umbral genérico.** La misma pasada que corrige el balance de blancos ya midió
+   el nivel real de la hoja en ESA foto. Se busca "casi neutro y en ese nivel", con tolerancia
+   **asimétrica**: la hoja que se ve por los huecos suele estar en sombra, o sea más oscura que la
+   del fondo abierto. Hacia arriba se es estricto, para no comerse un brillo del acetato.
+2. **Filtro por tamaño.** Se etiquetan las regiones conectadas y se descartan las chicas. Los huecos
+   del armazón son manchas grandes; los brillos del acetato son chispas finas. Ese segundo criterio
+   es el que salva los reflejos legítimos, y es el que le faltaba al primer intento.
+
+**Y apagar el alfa en vez de pintar blanco**: al componer sobre el lienzo el borde queda
+antialiaseado en lugar de un escalón duro. La máscara se difumina 2 px por lo mismo.
+
+**Sombra de contacto**: se agregó, construida del propio alfa del recorte (franja de abajo,
+aplastada, difuminada, al 20%). Sin ella el producto parece un sticker pegado. No cambia forma,
+color ni tamaño — es presentación, igual que el fondo blanco — y es lo que hace el fabricante.
+
+## 2026-08-26 — Auditar con Antigravity (`agy`) sirve, pero hay que medir lo que propone
+
+El founder pidió usar el CLI de Antigravity para mejorar el pipeline de fotos. Se le pasó el código
+completo y las mediciones, y devolvió una lista priorizada. **Tres de sus observaciones eran errores
+reales míos** que no había visto:
+
+1. **El endurecido del alfa (`< 170 → 0`) comía los bordes.** Cierto: el acetato es translúcido y el
+   borde tiene antialias, así que la guillotina binaria dejaba bordes serruchados. La corrección
+   —usar el umbral duro SÓLO para etiquetar componentes y aplicar la máscara sobre el alfa suave
+   original— es correcta y quedó aplicada.
+2. **La curva de potencia sin punto negro lavaba las sombras.** Cierto y medible: el percentil 5 del
+   perfil estaba en 66 contra 51 de la referencia. Con anclaje de negros bajó a 42.
+3. **Enfoque demasiado agresivo sobre una fuente comprimida**: resaltaba los bloques de JPEG de
+   WhatsApp en vez del producto. Ahora el enfoque y un `median(3)` previo se activan según cuánto
+   haya que estirar la foto.
+
+**Pero dos de sus recomendaciones eran incorrectas, y sólo se supo midiendo**:
+
+- Afirmó que las fotos tenían dominante cálida "de luces del local a 3000K" y propuso factores fijos.
+  Medido sobre la hoja blanca: tres fotos cálidas (194/180/167) y **la de WhatsApp fría**
+  (207/207/215). Su factor fijo habría empeorado esa última. Quedó implementado midiendo por foto.
+- Propuso mezclar las altas luces del lente hacia un marrón fijo `RGB 60,35,20` "el tinte del lente
+  Rusty". Ese número es del producto de la referencia, no del Javo. Aplicarlo habría pintado el
+  lente de un color inventado.
+
+**La lección**: un auditor externo sin acceso a los archivos razona sobre supuestos plausibles. Sus
+diagnósticos de CÓDIGO fueron muy buenos —ve lo que uno no ve— pero sus NÚMEROS hay que medirlos
+antes de aplicarlos. La división útil: que audite la lógica, y que los parámetros salgan de medir.
+
+**Cómo invocarlo**: `agy --print "<prompt>" --effort high --print-timeout 12m`. En modo headless no
+puede pedir permisos para usar herramientas, así que si se le pide leer archivos falla; conviene
+pegarle el código y las mediciones dentro del prompt.
+
+## 2026-08-26 — Igualar una foto al catálogo se mide, no se mira: encuadre, proporción y brillo
+
+**Contexto**: el founder pidió que las fotos del Rusty The Javo salieran "iguales a las de Rusty".
+En vez de discutirlo a ojo, se bajó una foto real de Rusty ya cargada en el catálogo
+(`rusty-bruice/perfil.jpg`) y se midieron las tres variables sobre ambas.
+
+**Lo que apareció al medir, y que a ojo se leía al revés**:
+
+| Variable | Rusty | El Javo (antes) | Veredicto |
+|---|---|---|---|
+| Ocupación de ancho | 91,5 % | 92,0 % | **ya estaba igual** |
+| Margen izq/der | 4,5 / 4,0 % | 4,0 / 4,0 % | **ya estaba igual** |
+| Proporción del producto | 2,44 | 1,98 – 2,36 | elegible entre las tomas |
+| Brillo medio del producto | 126 | 44 – 55 | **menos de la mitad** |
+
+En la comparación visual el producto de Rusty *parecía* más chico y con más aire. Era una ilusión:
+su armazón es más bajo (56 % de alto contra 70 %), y el encuadre horizontal era idéntico. Media
+hora de "ajustar el encuadre" habría sido trabajo tirado.
+
+**El hallazgo que sí movía la aguja era el brillo**: las fotos del local estaban subexpuestas a
+menos de la mitad del nivel del catálogo. Eso —y no el recorte— es lo que las hacía ver sucias al
+lado de las otras.
+
+**Y la proporción sirve para elegir la toma sin discutir**: de las 5 fotos, la de proporción 2,36
+era la que más se acercaba al 2,44 de Rusty. O sea que la métrica elige la foto, en vez de elegirla
+por gusto y después justificarla.
+
+**Regla para la próxima**: antes de tocar una foto para "que quede como las otras", medir contra una
+foto del catálogo que ya funciona. Tres números —ocupación, proporción, brillo— dicen en 30 segundos
+qué está mal de verdad y qué ya estaba bien.
+
+## 2026-08-26 — Foto de local → foto de catálogo: qué modelo de recorte y por qué
+
+**Contexto**: el Rusty The Javo no está en el sitio del fabricante ni en las publicaciones de ML.
+Las únicas fotos son 5 que sacó el founder en el local, sobre el mostrador, sosteniendo una hoja de
+papel de fondo. Había que convertirlas en fotos de catálogo.
+
+**Lo que funciona, en tres pasos y en este orden**:
+
+1. **Recortar con `isnet-general-use`, NO con `birefnet-general`.** birefnet es mejor para fotos de
+   catálogo, pero con una hoja sostenida a mano toma la hoja Y la mano como parte del objeto y las
+   recorta junto con el anteojo. isnet segmenta sólo el anteojo. Se probó sobre la misma foto: con
+   birefnet el recorte salió 2549×2028 (o sea, la hoja); con isnet, 2017×990 (o sea, el anteojo).
+2. **Quedarse con la región conectada más grande.** rembg deja fragmentos sueltos — un pedazo de
+   uña, el anillo, una esquina de la hoja. Arruinan la foto dos veces: se ven flotando sobre el
+   blanco, y además agrandan el bounding box, así que el producto queda chico y descentrado. En una
+   foto se descartaron 9 fragmentos y el encuadre pasó de 868×816 a 756×727.
+3. **Blanquear por color, no por forma, lo que se ve A TRAVÉS del armazón.** Por los huecos —entre
+   las patillas, arriba del puente— se sigue viendo la hoja, que sale gris azulada y contra el
+   blanco puro canta. La regla que funciona: la hoja es clara y DESATURADA, el armazón es marrón y
+   saturado. Todo pixel con saturación ≤ 0.18 y luminancia ≥ 0.55 va a blanco. De paso los brillos
+   especulares del armazón se van a blanco puro, que es justo lo que hace una foto de estudio.
+
+**Y el paso que hace que no desentone**: componer con `encajar()` de `placas-frame.ts` al mismo
+`fill` 0.92 que usan las placas del resto del catálogo, en vez de escribir un centrado propio. El
+0.92 es el mismo número de las 6 cargas de esta semana, así que el producto nuevo entra a la grilla
+con la misma ocupación visual.
+
+Quedó en `scripts/foto-limpia.ts` (`pnpm foto:limpia --dir <carpeta>`).
+
+**Límite que conviene saber de antemano**: las fotos que llegan por WhatsApp comprimidas
+(960×1280) dan un recorte de ~600 px, que al llevarlo a 2000 px se ve blando. Las de resolución
+completa (3024×4032) dan ~2400 px y salen nítidas. Si el founder va a sacar fotos para catálogo,
+que las mande sin comprimir.
+
+## 2026-08-26 — Para que el título de ML sea predecible, mandar UN SOLO atributo de color
+
+**Contexto**: en el modelo User Products, ML arma el título concatenando `family_name` con los
+`value_name` de DESIGN / LENS_COLOR / FRAME_COLOR / TEMPLE_COLOR. Y **el título se congela con la
+primera venta, para siempre**.
+
+**El problema**: el orden de concatenación NO es estable. Comparando dos publicaciones de la misma
+cuenta, en una quedó DESIGN → LENS_COLOR → FRAME_COLOR y en la otra DESIGN → FRAME_COLOR →
+LENS_COLOR. O sea que si mandás varios atributos de color, **no se puede predecir en papel cómo va
+a quedar el título**, y el margen para corregir es sólo hasta la primera venta.
+
+**Lo que funciona**: mandar **únicamente `DESIGN`**, con todo el detalle de color adentro de ese
+string, y NO mandar LENS_COLOR / FRAME_COLOR / TEMPLE_COLOR. Con un solo campo concatenable el
+título es exactamente `family_name + " " + DESIGN` y se puede escribir con certeza antes de crear.
+
+Ya lo hace así MLA2824914416 (Vulk The Trial SBLK/S10), cuyo DESIGN es
+`"SBLK/S10 - Frente Negro Brillo con Lentes Negras"`. Se replicó en el alta del MDEMI-068/UPG15.
+
+**Por qué funciona de verdad**: no es que el orden deje de importar — es que con un solo elemento
+el orden es irrelevante. Se elimina la variable en vez de intentar adivinarla.
+
+**Costo**: se pierden los filtros de ML por color de armazón y de lente. A cambio se gana control
+total sobre un texto irreversible. Para una publicación de una sola colorway, el intercambio
+conviene.
+
 ## 2026-08-25 — Antes de construir un disparador, mirar si la fuente de datos tiene datos
 
 **Contexto**: el plan de la fase 3 (aprobado por el founder) decía enganchar la publicación
@@ -11102,6 +11254,189 @@ Sobreescribir un objeto de Supabase Storage manteniendo el mismo path puede segu
 
 - Si el founder reporta que una imagen "no se actualiza" tras resubir → NO perder tiempo con cache-busting: pedir/usar un **nombre de archivo nuevo** y actualizar DB + seed + `image-scale-overrides.ts`.
 - ⚠️ La 1ra hipótesis (PNG semi-transparente aplanado a blanco) era plausible por el gris ~107 pero ERRÓNEA — no anclarse a una teoría antes de la prueba decisiva (renombrar).
+
+## 2026-08-25 — Lo que hace que un set generado se vea "de plantilla" son los números sueltos, no el diseño
+
+**Contexto**: el founder pidió que las ocho placas de producto se vieran "más estéticas". El pedido
+no venía con un defecto concreto: los solapamientos ya estaban arreglados y aun así se veían
+generadas.
+
+**Lo que estaba pasando, medido**: el archivo declaraba **38 cuerpos de letra distintos para 8
+roles** —22, 23, 24, 25 y 26 conviviendo en la misma placa— y **50 constantes de espaciado, de las
+cuales sólo 14 eran múltiplos de una misma unidad**. Ninguna de esas diferencias de 1 o 2 px se lee
+como jerarquía: se leen como descuido, y son lo que delata que un PNG lo hizo un script.
+
+**Lo que lo resolvió**, en orden de impacto:
+
+1. **Una escala tipográfica de ocho cuerpos y una de espaciado en base 8** (`TIPO` y `ESP` en
+   `placa-base.ts`). Ocho roles, ocho valores. Todo espaciado es múltiplo de 8.
+2. **Los cuerpos grandes pasaron a ser TECHOS, no valores.** `ajustarMedido` ya bajaba desde `maxPx`
+   hasta que el texto entrara, pero los techos estaban puestos tan bajos que el texto **nunca** los
+   alcanzaba: el cuerpo lo fijaba la constante y no el texto, así que ningún titular llenaba la
+   medida y todos quedaban cortos y desparejos. Subiendo el techo a 168, un modelo de nombre corto
+   llena el ancho y uno largo baja solo. Es la diferencia entre "plantilla rellenada" y "compuesto
+   para este producto".
+3. **`bloqueTexto()` devuelve el borde de la TINTA, no la baseline.** Todos los "+N" que seguían se
+   medían desde la baseline, así que el aire visible entre bloques cambiaba según el nombre del
+   producto tuviera o no letras con cola (g, j, p, q, y). Ritmo vertical que se movía solo.
+4. **Sacar el lenguaje de cupón.** El precio era el segundo elemento más grande de cada placa
+   (Anton dorado a 68-82 px) y en un diseño iba adentro de una pastilla dorada con esquinas
+   redondeadas. Eso es un flyer de oferta, no una marca de eyewear. Precio a un solo cuerpo de la
+   escala (58), sin pastilla, y el modelo como héroe.
+
+**Regla preventiva / cuándo aplicar**: cuando el pedido sea "que se vea más lindo" y no haya un
+defecto puntual, **contar los valores distintos que usa el archivo para el mismo rol** antes de
+tocar nada. Si hay más valores que roles, ahí está el problema. Es medible y se arregla una vez.
+
+**Qué NO era**: no hacía falta rediseñar ninguna placa. Las ocho composiciones quedaron iguales.
+
+## 2026-08-25 — Sobre el pixel no se puede verificar una placa; sobre el SVG sí
+
+**Contexto**: el founder reportó tres veces el mismo defecto —"que las palabras no tapen otras
+palabras"— y las tres veces se corrigió el caso puntual y volvió con el producto siguiente. Con 74
+productos × 12 diseños × 2 formatos, mirar las placas de a una no es una estrategia.
+
+**Lo primero que intenté y NO funciona**: chequear el PNG. Muestreás el color del fondo y buscás
+tinta donde no debería haber. Falla por diseño: `split` pinta un bloque blanco a sangre, `full`
+sangra la foto, `cartel` también — sobre el pixel **un solapamiento y un bloque a sangre puesto a
+propósito se ven exactamente igual**. Sobre 99 placas dio 31 avisos y ninguno era un defecto.
+
+**Lo que sí funciona**: verificar sobre el SVG, que tiene las coordenadas exactas.
+
+1. El generador escribe el SVG en disco si se le pasa `PLACAS_SVG=<carpeta>`.
+2. El verificador parsea los `<text>`, sumando el `translate` de los `<g>` que los envuelven (los
+   diseños centran el cuerpo con uno de esos, y sin sumarlo las coordenadas del atributo no son las
+   del render).
+3. De cada uno arma la caja de tinta: el ancho **midiendo el render real** (rasterizar y `trim`,
+   porque librsvg no expone métricas), y el alto con el ascenso y descenso medidos por familia.
+4. Compara todas las cajas contra todas: dos que se solapan en los dos ejes es un texto sobre otro.
+
+Encontró en el primer intento un desborde de 34 px que yo había mirado y dado por bueno, y que venía
+de un bug de la primitiva compartida (ver MISTAKES).
+
+**Regla / cuándo aplicar**: cuando un defecto visual **vuelve** después de tres correcciones
+puntuales, dejá de corregir el caso y escribí la comprobación. Y elegí el nivel donde el invariante
+se puede afirmar: en un generador de imágenes ese nivel casi nunca es el pixel de salida, es la
+estructura que lo produjo.
+
+**Un detalle que casi lo deja inútil**: la primera versión verificaba una placa por guía y daba
+verde. Pero cada FAQ genera una placa distinta, y la que desbordaba era **la cuarta pregunta de
+astigmatismo**, no la primera. Verificar "una de cada tipo" es verificar la plantilla, no el
+contenido; hay que recorrer las variantes de datos reales. Con eso pasó de 10 placas a 166.
+
+**Costo**: una tarde. **Lo que compra**: `pnpm placas:verificar` y `--guias` antes de cada tanda.
+
+## 2026-08-25 — Un techo constante que no defiende ninguna restricción es un bug esperando
+
+**Contexto**: el diseño `tipografia` pone el nombre del modelo en Anton gigante de fondo. Con "Yau"
+—tres letras— la palabra salía a 280 px sobre una medida de 928: un cartel con el texto chiquito en
+el medio, justo lo contrario de lo que el diseño existe para hacer.
+
+**La causa**: el cuerpo se calculaba como el mínimo de tres cosas — un techo de 300 px por formato,
+el ancho de la palabra más larga, y el alto disponible hasta el área segura. Las dos últimas son
+restricciones reales: si las violás, el texto se sale. **La primera no defendía nada.** Estaba ahí
+"por las dudas", y era la que ganaba en todos los nombres cortos.
+
+**El patrón**: es el mismo que ya había aparecido dos veces hoy con los techos tipográficos de los
+titulares. Una constante que acota un cálculo sin representar una restricción física del lienzo no
+es una salvaguarda: es un valor arbitrario que va a ser el que mande justo en los casos donde el
+cálculo tenía la respuesta correcta.
+
+**Regla / cuándo aplicar**: frente a un `Math.min(constante, cálculo…)`, preguntar **qué se rompe si
+saco la constante**. Si la respuesta es "nada, los otros términos ya acotan", sacarla. Si es "se
+sale de tal borde", entonces no era una constante: era una restricción mal escrita, y hay que
+escribirla en función de ese borde.
+
+**Cómo se encontró**: mirando la hoja de contactos de un producto de la tanda, no en la revisión
+visual — los tres productos que había elegido para revisar tenían nombres de una palabra larga o de
+varias, ninguno de tres letras. Corolario: al elegir casos límite para revisar a ojo, el largo del
+nombre hay que barrerlo hasta el extremo corto, no sólo hasta el largo.
+
+## 2026-08-25 — Generar y verificar en la misma pasada, cuando lo caro es lo que comparten
+
+**Contexto**: la tanda completa de placas son 78 productos × 10 diseños × 2 formatos. Arranqué
+corriendo el generador para producir los PNG y, después, `pnpm placas:verificar` para comprobarlos.
+Dos corridas de ~1,5 h.
+
+**Lo que vi a los tres productos**: las dos corridas hacen exactamente el mismo trabajo caro —bajar
+las fotos del bucket y recortarlas con la red neuronal— y difieren sólo en qué guardan al final. El
+verificador ni siquiera necesita el PNG: mide sobre el SVG.
+
+**La solución**: la tanda corre una sola vez con `PLACAS_SVG=<carpeta>`, que deja el SVG al lado del
+PNG, y el verificador gana un modo `--svg <carpeta>` que los lee ya generados. Una pasada cara en
+vez de dos, y la verificación pasa de 90 minutos a segundos.
+
+**Regla / cuándo aplicar**: antes de encadenar dos corridas largas sobre el mismo conjunto,
+preguntarse **qué parte del costo comparten**. Si el trabajo caro es el mismo y sólo cambia el
+artefacto que se guarda, guardar los dos artefactos en la primera pasada. Vale para cualquier
+pipeline donde el paso lento sea I/O o un modelo, y los pasos siguientes sean lectura.
+
+**Lo que NO hay que hacer**: apurar la verificación mirando menos casos para que entre en el tiempo.
+El costo estaba en el pipeline, no en la cobertura.
+
+## 2026-08-25 — Los blends de `sharp` se comen el alfa: para tratar un recorte, hacer la cuenta a mano
+
+**Contexto**: para el diseño `duotono` había que reducir el anteojo recortado a dos tintas de la
+marca (navy en las sombras, dorado en las luces) manteniendo el fondo transparente.
+
+**Lo que no funcionó**: `sharp(gris).composite([{ input: rectánguloDorado, blend: 'screen' }])`. El
+blend se aplica al lienzo ENTERO, incluido el fondo transparente, así que el resultado fue un
+rectángulo dorado macizo con el fantasma del anteojo adentro. Volver a pegar el canal alfa después
+tampoco lo salvó: para entonces la geometría del alfa ya no coincidía con lo pintado. `tint()` sí
+respeta el alfa, pero conserva la luminancia y deja el resultado lavado — no es un duotono.
+
+**Lo que sí funcionó**: la cuenta sobre los píxeles crudos.
+
+```
+const { data, info } = await sharp(png).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+for (let i = 0; i < data.length; i += 4) {
+  const l = (0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2]) / 255;
+  const t = Math.min(1, Math.max(0, (l - 0.18) * 1.5));   // contraste
+  data[i]   = sombra[0] + t * (luz[0] - sombra[0]);
+  data[i+1] = sombra[1] + t * (luz[1] - sombra[1]);
+  data[i+2] = sombra[2] + t * (luz[2] - sombra[2]);
+  // data[i+3] no se toca: el alfa queda intacto
+}
+```
+
+Son cuatro líneas, no depende de cómo `sharp` compone, y el alfa sobrevive porque nunca se lo toca.
+El `(l - 0.18) * 1.5` no es decorativo: el catálogo es casi todo gris medio y sin estirar el
+contraste el duotono sale plano.
+
+**Regla / cuándo aplicar**: para transformar el COLOR de una imagen con transparencia, ir al buffer
+crudo. Los blends y los composites de `sharp` están pensados para apilar capas opacas, y cualquier
+operación que involucre un lienzo de color completo va a pisar el alfa. Vale también para
+posterizados, mapas de gradiente y virados.
+
+## 2026-08-25 — Un recorte sin sombra se lee como calcomanía, no como producto
+
+**Contexto**: al agrandar el producto en el diseño `minimal` —blanco, el anteojo enorme, casi nada
+de texto— seguía sin verse bien y no era cuestión de tamaño ni de tipografía. El anteojo *flotaba*.
+
+**Qué era**: un PNG con el fondo borrado y pegado sobre un color plano no tiene ninguna relación
+física con ese fondo. La foto original tenía sombra sobre el blanco del estudio; el recorte la
+elimina junto con el fondo. Sin nada que la reemplace, el resultado se lee como una calcomanía
+encima de un papel, y ésa es exactamente la diferencia entre "foto de producto" y "recorte".
+
+**La solución, que es más barata de lo que parece**: una elipse difusa debajo del producto.
+
+```
+<ellipse cx={centro} cy={y + h * 0.97} rx={w * 0.42} ry={h * 0.10} fill="url(#sombra)"/>
+```
+
+Con un gradiente radial de negro al 30% al centro y 0 en el borde. Dos detalles que importan:
+**más angosta que el producto** (rx a 0.42 del ancho, no 0.5) porque una sombra tan ancha como el
+objeto se lee como halo y no como apoyo; y **apoyada casi en el borde inferior** (0.97 del alto),
+porque más arriba parece que el objeto levita.
+
+**Trampa que costó un rato**: la sombra iba en `fondoExtra`, que se dibuja fuera del grupo que
+centra la composición, mientras el producto sí se desplaza con ella. La sombra quedaba clavada y el
+anteojo se iba a otro lado. Tiene que ir en la misma capa que se mueve — en este generador,
+`cuerpo`, que también se dibuja antes que los bitmaps y por lo tanto queda debajo.
+
+**Regla / cuándo aplicar**: cualquier composición que apoye un recorte sobre un color plano lo
+necesita, y cuanto más limpio y más grande el fondo, más se nota la falta. El primitivo quedó en
+`placa-base.ts` (`DEFS_SOMBRA` + `sombraContacto`) disponible para todos los diseños.
 
 ## Notas finales
 

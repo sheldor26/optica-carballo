@@ -14,26 +14,106 @@ sección amarilla.
 fabricante ni de sus placas viejas — regla dura 7 de CLAUDE.md. Material, peso, color, precio y
 stock sí se pueden tomar de esas fuentes.
 
-Última revisión: 2026-08-25.
+Última revisión: 2026-08-26 (Cinema, Rew, Ardigan).
 
 ---
 
-## ✅ No queda nada bloqueando
+## 🔴 Bloqueando ahora
 
-Los 78 productos activos del catálogo tienen **medidas y material de patillas completos**. No hay
-ninguna ficha incompleta.
+- [ ] **CUIT, razón social y domicilio fiscal de la óptica.** Descubierto el 2026-08-26 investigando
+  el catálogo de Instagram, pero **no tiene nada que ver con Meta**: es una obligación legal del
+  sitio tal como está hoy. En `app/(storefront)/terminos-y-condiciones/page.tsx` el dato figura
+  literalmente como `**CUIT**: [A CONFIRMAR]`.
 
-Lo único que falta son **16 pesos**, y están en una lista aparte para hacerlos con la balanza:
+  **Qué bloquea**: el art. 8 de la Ley 24.240 exige identificar al vendedor con su CUIT en las
+  ventas por catálogo publicadas por cualquier medio, y el sitio ya publica precios. No bloquea una
+  carga de producto: bloquea estar en regla.
+
+  Con el dato se completan los términos y condiciones y se evalúa si además va en el pie del sitio.
+
+
+- [ ] **Vulk The Trial — medir el armazón.** Descubierto el 2026-08-26 preparando el alta en ML de
+  la colorway carey. Las medidas que hoy muestra el sitio (lente 50 · puente 15 · varilla 150 ·
+  frente 147) **no las mediste vos**: salieron de una foto, según dice la cabecera del seed 71. Y
+  las tres fuentes disponibles se contradicen entre sí:
+
+  | Fuente | Lente | Puente | Varilla | Frente |
+  |---|---|---|---|---|
+  | Ficha del fabricante (calibre) | 47 | 20 | 145 | — |
+  | Widget de medidas del MISMO fabricante | — | — | — | 144 |
+  | Lo que muestra el sitio hoy ("de la foto") | 50 | 15 | 150 | 147 |
+
+  Son 5 mm de diferencia en el puente. Mismo patrón que el Malice (decía 59, era 54) y el Bruice
+  (decía 16, era 18). **Qué bloquea**: la publicación nueva de ML salió sin bloque de medidas. Con
+  tu medición se corrigen de una las tres superficies — el sitio, las dos publicaciones hermanas de
+  ML y la publicación nueva.
+
+- [ ] **Vulk The Trial MDEMI (carey) — unidades reales y precio.** Ver la sección de decisiones.
+
+
+- [ ] **Rusty Rew — los 2 SKUs (si los tenés).** Ninguna de las 4 publicaciones los declara y no los
+  tenías a mano, así que el producto salió con SKUs de casa `REW-MBLK-S10` y `REW-MBLK-300CE`. Si
+  aparecen los reales en el catálogo de Rusty, pasámelos: los cambio con un UPDATE. Conviene hacerlo
+  ahora que no hay ventas en el sitio, porque el SKU es la llave de idempotencia del seed.
+
+- [ ] **Rusty Rew — ¿las patillas son de G-Flex también?** ML declara el material del frente pero no
+  el de las patillas. No lo cargo adivinando (precedente Bruice: mejor vacío que inventado).
+
+- [ ] **Rusty Rew — ¿rectangular o cuadrado?** ML dice "Rectangular" en las dos publicaciones, pero
+  en las fotos parece más un wayfarer escuadrado. Mi voto es dejarlo **rectangular**, y no sólo por
+  seguir a ML: es la única de las dos que tiene página en el sitio, y además el Rew sería el **primer
+  rectangular de sol de Rusty**, lo que saca a `/anteojos-de-sol/rusty/rectangular` del noindex por
+  falta de productos. Confirmame.
+
+- [ ] **Rusty Rew — cómo llamar al lente espejado.** Todo lo llama "celeste" (el título de ML y tu
+  placa vieja), pero midiendo el píxel del lente en tus fotos da **dorado-verdoso de frente**
+  (tono 68°) y **celeste sólo de perfil** (178°). Es un espejado que cambia con el ángulo, y la foto
+  principal se ve dorada. Si lo cargo como "celeste" a secas, el comprador ve otra cosa. Mi
+  propuesta: **"espejada dorada con reflejos celestes"**, que es lo que muestran tus dos fotos.
+  Confirmame.
+
+- [ ] **Vulk Cinema — ¿estuche o funda?** ML declara `ACCESSORIES_INCLUDED = Funda` y la foto de
+  packaging muestra una **funda blanda** de cuerina, no un estuche rígido. `BUSINESS_POLICIES.md`
+  promete "estuche rígido o semirrígido de la marca". Confirmame qué viene realmente en la caja para
+  no prometer de más (regla dura 3).
+
+## ✅ El resto del catálogo
+
+Los otros 77 productos activos tienen **material de patillas completo**. Sobre las medidas, ojo con
+la lección del Trial: campo lleno ≠ dato válido. Lo verificado es lo que pasaste vos.
+
+Lo único que falta además son **18 pesos** (el founder confirmó el 2026-08-26 que no tiene el del
+Rew ni el del Cinema), en una lista aparte para hacerlos con la balanza:
 👉 **[PESOS_A_MEDIR.md](PESOS_A_MEDIR.md)**
 
 ---
 
 ## 🔵 Decisiones tuyas (no son datos, son criterios)
 
-- [ ] **Rusty Malice, forma**: lo cargaste como `cuadrado`, pero **"cuadrado" no tiene faceta de
-  forma en el sitio** — sólo existen wayfarer, aviador, cat-eye y rectangular. Hoy el Malice no
-  entra a ninguna faceta de forma. Opciones: dejarlo así, pasarlo a `rectangular`, o crear la
-  faceta `cuadrado`. Lo mismo aplicaría al Blozon, que también es cuadrado.
+- [ ] **Faltan facetas de forma para el 63% del catálogo.** Esto arrancó como "el Malice quedó
+  afuera" y al medirlo contra la base resultó mucho más grande. Las facetas que existen hoy cubren
+  los cuatro grupos MÁS CHICOS, y los cinco más grandes no tienen ninguna:
+
+  | Forma | Productos | ¿Tiene faceta? |
+  |---|---|---|
+  | **cuadrado** | **24** | ❌ no |
+  | **redondo** | **15** | ❌ no |
+  | **envolvente** | **7** | ❌ no |
+  | ovalado | 2 | ❌ no |
+  | hexagonal | 1 | ❌ no |
+  | aviador | 11 | ✅ sí |
+  | wayfarer | 8 | ✅ sí |
+  | rectangular | 7 | ✅ sí |
+  | cat-eye | 3 | ✅ sí |
+
+  **49 de 78 productos activos no entran a ninguna faceta de forma**, incluido el grupo más grande
+  del catálogo. Cuadrado solo tiene más productos que aviador y wayfarer juntos.
+
+  **Qué bloquea ahora**: el Vulk Cinema es redondo, así que se suma a los 15 que quedan afuera.
+
+  Opciones: crear las facetas que faltan (empezando por cuadrado y redondo, que son 39 productos),
+  crear sólo esas dos, o dejarlo como está y aceptar que esas búsquedas no tienen página. Decisión
+  tuya — decime y lo armo.
 - [ ] **Alinear ML con el sitio** en tres casos donde tus publicaciones declaran otra cosa: el
   Malice dice `GENDER = "Sin género"` y en el sitio es hombre; el Bruice dice
   `FRAME_SHAPE = "Anteojo Cuadrado"` y en el sitio es aviador; el Zion dice "Ovalada" y en el sitio
@@ -49,6 +129,52 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 ---
 
 ## ✅ Recibido y cargado
+
+- [x] **2026-08-26 — Rusty Ardigan: los 4 SKUs, sus códigos y el peso confirmado.**
+  `194290 SBLK/DRT25 POL` negro brillo · `194291 SDEMI-SBLK/DRT02 POL` carey ·
+  `194292 D.BROWN-MBLK/DRT04 POL` marrón transparente · `194293 LPINK-MBLK/DRT03 POL` rosa
+  transparente. Reemplazaron a los SKU de casa con un UPDATE, antes de que hubiera ventas.
+  Peso 17,3 g confirmado. **Ojo con un superlativo que estuvo a punto de publicarse**: NO es el más
+  liviano del catálogo (van Spell 12,6 · Biller 13 · Dearly 17,3 · Ardigan 17,3). Sí es el más
+  liviano de los redondos de Rusty, que es lo que quedó escrito.
+
+- [x] **2026-08-26 — Rusty Rew: la bisagra también es metálica con flex.** Confirmado. Ya está en su
+  ficha, en la descripción, el callout y `hinge_system`. Se preguntó aparte del Ardigan a propósito:
+  las placas viejas de los dos decían lo mismo, pero son modelos distintos y no se dio por hecho.
+
+- [x] **2026-08-26 — Rusty Ardigan: medidas 145 / 52 × 51 / 19 / 140 mm, forma redonda y bisagra
+  metálica con flex.** Geometría verificada: 52 × 2 + 19 = 123 ≤ 145.
+  Dos cosas que salieron de esto: **tu placa vieja erraba otra vez** (decía varilla 133 y es 140 —
+  cuarta de cuatro, después de Malice, Bruice y Cinema), y con el flex confirmado por vos ya se puede
+  afirmar en la ficha, siempre atribuido a la BISAGRA y nunca al material.
+
+- [x] **2026-08-26 — Rusty Ardigan: peso 17,3 g.** No hizo falta pedírtelo: está en tus propias placas
+  viejas, y la regla dura 7 excluye las MEDIDAS pero permite expresamente el peso
+  (*"Material, peso, color, precio y stock sí se pueden tomar de esas fuentes"*). Es el primer modelo
+  de esta tanda que **no** va a `PESOS_A_MEDIR.md`.
+
+- [x] **2026-08-26 — Rusty Rew: medidas 146 / 55 × 47 / 19 / 145 mm.** Geometría verificada:
+  55 × 2 + 19 = 129 ≤ 146. Confirmaste el 55-19-145 en el que ya coincidían ML y tu placa vieja, y
+  aportaste los dos que no daba ninguna fuente: **ancho total 146 y alto total 47**.
+  Dato que salió de esto: tu "alto total" es del FRENTE, no del lente — la placa dibuja esa flecha
+  abarcando todo el armazón. Se corrigió también la descripción del Cinema, que decía
+  "lente 48 × 50 de alto" cuando el 50 es el alto total.
+
+- [x] **2026-08-26 — Vulk Cinema: SKUs y catálogo oficial.** Pasaste las páginas del catálogo de
+  Vulk. El modelo tiene 5 colorways y vos vendés 3:
+  **MBLK/GREY POL = 956950** (negro mate, stock 8) y **L.PINK/G.GREY POL = 956953** (rosa claro,
+  stock 1). La **terracota no tiene SKU**: es una variante que llegó con el color equivocado y te la
+  quedaste, no figura en el catálogo. Se le puso el SKU de casa `CINEMA-TERRACOTA`, misma convención
+  que `KATLEEN-MDEMI` y `SPELL-LGREY`. Las otras dos del catálogo que no tenés son CRY/G.GREY POL
+  (956951) y BURDEOS/GB27 (956954, la única NO polarizada del modelo).
+  Bonus del catálogo: confirma **48-22-135** de forma independiente, y aporta un dato que ML no
+  tenía — **sistema de bisagras flexo**.
+
+- [x] **2026-08-26 — Vulk Cinema: medidas 140 / 48 × 50 / 22 / 135 mm.** Calibre 48, puente 22,
+  varilla 135, alto total 50, ancho total 140. La geometría cierra (2 × 48 + 22 = 118 ≤ 140). Acá tu
+  placa vieja tenía bien el calibre, el puente y la varilla; se desviaba en el ancho total (decía
+  139) y en el alto (decía 51). Las medidas de ML seguían siendo inservibles: una publicación
+  declaraba varilla de 342,9 cm y otra 54-19-145.
 
 - [x] **2026-08-25 — Bruice, puente 18 mm.** Se había cargado 16; al cruzarlo contra tu publicación
   y tu placa vieja apareció la diferencia y confirmaste 18 (el grabado del armazón estaba gastado y

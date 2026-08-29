@@ -23,6 +23,12 @@ const FRAME_SHAPE_LABELS: Record<string, string> = {
   oversized: 'Oversized',
   wraparound: 'Envolvente',
   envolvente: 'Envolvente',
+  // Faltaban: sin entrada, `lookup()` devuelve null y la fila "Forma" NO se
+  // renderiza, en silencio. Afectaba a vulk-nova y vulk-clems-receta (ovalado)
+  // y a vulk-biller (hexagonal), cargados hace meses.
+  oval: 'Ovalado',
+  ovalado: 'Ovalado',
+  hexagonal: 'Hexagonal',
 };
 
 const LENS_TREATMENT_LABELS: Record<string, string> = {

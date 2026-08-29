@@ -7,8 +7,542 @@
 
 ## Última actualización
 
-**Fecha**: 2026-08-25
+**Fecha**: 2026-08-26
 **Por**: Claude Code (a pedido de Juan)
+
+### ✅ Cargado y live: Rusty Ardigan (`/anteojos-de-sol/rusty/rusty-ardigan`)
+
+Séptimo producto del cruce, **22 ventas**. Seed `supabase/seeds/101_rusty_ardigan_sol.sql`.
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 4 / 20 | 4 / 20 ✓ |
+| Variantes polarizadas | 4 de 4 | 4 ✓ |
+| `variation_code` distintos | 4 | 4 ✓ |
+| `measurements` / `weight_grams` / `hinge_system` | sí / 17.3 / flex | ✓ ✓ ✓ |
+| Imágenes / primarias | 9 / 1 | 9 / 1 ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| `/anteojos-de-sol/polarizados` | aparece | ✓ |
+| `/anteojos-de-sol/rusty/polarizados` | aparece | ✓ (a diferencia del Rew, que es 1/2) |
+| Encuadre (regla 15) | 89-93% | **92% con scale 1.00 en las 8, sin overrides** ✓ |
+
+**Datos del founder, todos en un mensaje**: medidas **145 / 52 × 51 / 19 / 140**, forma **redonda**
+confirmada y **bisagra metálica con flex** confirmada con el armazón en la mano. Geometría verificada:
+52 × 2 + 19 = 123 ≤ 145.
+
+**El peso no hubo que pedirlo: 17,3 g, de sus propias placas.** La regla dura 7 es una lista negra de
+MEDIDAS y dice literal que *"material, peso, color, precio y stock sí se pueden tomar de esas
+fuentes"*. Hay precedentes en los seeds 70, 77 y 80. **Es el primero de la tanda 93-101 que no entra
+a `PESOS_A_MEDIR.md`.** Lo que sí quedó sin escribir es el claim de "el más liviano del catálogo"
+(desplazaría al Le Groupie de 20 g): eso espera la balanza.
+
+**Su placa vieja erró por cuarta vez consecutiva** (Malice, Bruice, Cinema y ahora el Ardigan):
+decía varilla 133 y son 140. Refuerza la regla dura 7 con una muestra que ya no es anecdótica.
+
+**El cruce contó de más por tercera vez.** Decía 5 colores y 24 unidades; son 4 y 20. Zion, Cinema y
+Ardigan: mismo patrón (item multi-variación + gemela simple compartiendo pozo, y el multi no expone
+`user_product_id` a nivel padre). Ya es un bug con reproducción confiable de `pnpm ml:faltantes`.
+
+**SEO — el Ardigan no tiene carril de forma, y es un dato útil.** Los tres carriles de redondo están
+cerrados: `lentes de sol redondos` (320) es del Blinded, `anteojos de sol redondos` (210) es del Zion,
+y redondo+polarizado también es del Zion, cuyo title literal ya dice "Redondos Polarizados". El
+Ardigan es atributo por atributo su gemelo, así que decir "Redondos Polarizados" sería la misma cadena
+cambiando una palabra. Por eso **"Redondos" salió del title** y bajó a copy y alt. Toma
+`lentes de sol polarizados` (260/mes, dif 12), que estaba libre entre los Rusty, más el branded.
+
+**Dos bugs preexistentes arreglados de paso**: `FRAME_SHAPE_LABELS` de `product-attributes.tsx` no
+tenía las claves `ovalado` ni `hexagonal`, así que la fila "Forma" **desaparecía en silencio** en
+`vulk-nova`, `vulk-clems-receta` y `vulk-biller`, cargados hace meses. Fue además el argumento que
+cerró la discusión de la forma del Ardigan. Se agregaron también `sepia-degrade` y
+`gris-oscuro-degrade` a `variant-label.ts`.
+
+**Dos hallazgos anotados en `BACKLOG.md`, que no son de esta carga**: (1) hay una **colisión viva
+entre Blinded y Zion** — el title del Blinded ataca la keyword asignada al Zion, fix de una línea; y
+(2) la **faceta `redondo` no existe** y ya son 3 redondos de sol sólo en Rusty, con 16 productos
+huérfanos y 530 búsquedas/mes sin página que las consolide.
+
+**Pendiente técnico, y ya es acumulativo: deploy.** Son **6 etiquetas** esperando el mismo build —
+`marron-transparente` (Cinema), `espejado-dorado` y `espejado-rojo` (Rew), `sepia-degrade` y
+`gris-oscuro-degrade` (Ardigan), más `ovalado`/`hexagonal`. Hasta que salga, producción muestra
+"Sepia Degrade" y compañía.
+
+**Cerrado el mismo día con los datos del founder:**
+
+- **Los 4 SKU y códigos reales**, del catálogo de Rusty: `194290 SBLK/DRT25 POL` (negro brillo),
+  `194291 SDEMI-SBLK/DRT02 POL` (carey), `194292 D.BROWN-MBLK/DRT04 POL` (marrón transparente),
+  `194293 LPINK-MBLK/DRT03 POL` (rosa transparente). Reemplazaron a los de casa con un UPDATE
+  explícito, **antes de que hubiera ventas** — re-correr el seed con el SKU cambiado no actualiza,
+  crea filas nuevas. Verificado en la PDP en producción: los 4 se ven.
+- El `model_code` se carga **sin el sufijo " POL"**: el badge POLARIZADO ya está al lado diciendo lo
+  mismo, y el largo importa (el Yau rompió el layout a 3 líneas con 21 caracteres más el badge). Sin
+  " POL" el más largo queda en 18. El código completo está en la cabecera del seed.
+- **Peso 17,3 g confirmado.**
+
+**⚠️ Un superlativo falso que estuvo a punto de publicarse.** La recomendación era escribir que el
+Ardigan es el anteojo de sol más liviano del catálogo, comparándolo contra el Le Groupie (20 g). Se
+verificó contra la base antes de escribirlo y **es falso**: el ranking real es Spell 12,6 · Biller 13
+· Dearly 17,3 · **Ardigan 17,3**. Está cuarto, empatado. Lo que sí se verificó y quedó escrito es que
+**es el más liviano de los redondos de Rusty** (Ardigan 17,3 · Misty 18 · Xold 21,5 · Blinded 22,7 ·
+Zion 26,9 · Dapper 31 · Etiquet 32,8). Un superlativo de catálogo no se escribe sin correr la query.
+
+**También se cerró el Rew**: el founder confirmó que su bisagra **también** es metálica con flex. Ya
+está en su descripción, su callout y `hinge_system`, verificado en producción. Se había preguntado
+aparte del Ardigan a propósito: las placas viejas de los dos decían lo mismo, pero son modelos
+distintos y no se dio por hecho.
+
+**Próximo paso exacto**: deployar, y seguir con el próximo de la lista — por demanda probada siguen
+el **Vulk The Guardian** (4 colores, 15 unidades, 26 ventas) y el **Rusty Dunsert** (2 colores,
+17 unidades, 24 ventas).
+
+### ✅ Cargado y live: Rusty Rew (`/anteojos-de-sol/rusty/rusty-rew`)
+
+Sexto producto del cruce, y el de mejor ratio ventas/stock: **37 ventas**. Seed
+`supabase/seeds/100_rusty_rew_sol.sql`.
+
+**Verificación post-aplicación, toda en verde:**
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 2 / 10 | 2 / 10 ✓ |
+| Variantes polarizadas | 1 de 2 | 1 ✓ |
+| `lens_treatment` | `["uv400"]` sin `polarized` | ✓ |
+| `measurements` / `weight_grams` | sí / no | ✓ / ✓ |
+| Imágenes / primarias | 5 / 1 | 5 / 1 ✓ (contado explícito) |
+| PDP en producción | 200 | 200 ✓ |
+| `/anteojos-de-sol/rectangular` | aparece | ✓ |
+| `/anteojos-de-sol/rusty/rectangular` | aparece **y sale del noindex** | ✓ sin meta robots |
+| `/anteojos-de-sol/polarizados` | aparece | ✓ |
+| `/anteojos-de-sol/rusty/polarizados` | **NO** aparece | ✓ correcto |
+| Schema | `AggregateOffer` | ✓ low 82514 / high 88349 |
+| Encuadre (regla 15) | 89-93% | **92% con scale 1.00 en las 4, sin overrides** ✓ |
+
+**El valor SEO de esta carga, verificado en producción**: `lentes de sol rectangulares` (320/mes,
+dificultad 12) estaba **libre** y el Rew es el primer producto del catálogo que la reclama, además
+del **primer rectangular de sol de Rusty**. `/anteojos-de-sol/rectangular` pasó de 2 a 3 productos y
+dejó de ser mono-marca, y `/anteojos-de-sol/rusty/rectangular` pasó de 0 a 1 y **salió del `noindex`
+automático por thin content**. Es la situación opuesta a la del Bruice.
+
+**Honestidad 1 de 2, dos veces.** Sólo una colorway polariza y sólo una es espejada, así que no se
+afirma ni "polarizados" ni "espejados" del modelo. Consecuencia verificada en vivo: entra a
+`/anteojos-de-sol/polarizados` (criterio por variante, mostrando sólo la S10) y **no** a
+`/anteojos-de-sol/rusty/polarizados` (criterio por producto). Es lo correcto y no se forzó.
+
+**Trampa que hubiera roto la faceta en silencio**: `isPolarizedVariant` matchea `\bPOL\b` sobre
+`model_code`, y el código de la polarizada es `MBLK/S10` **sin "POL"**. Sin `"polarized": true` en la
+variante, el Rew habría desaparecido de `/anteojos-de-sol/polarizados` sin ningún error.
+
+**El desempate entre publicaciones gemelas no fue por ventas.** La 300 CE tiene 1 contra 0, que no es
+señal. Se eligió por salud: health 0,88 contra ninguna, actualizada el 27/08 contra el 31/07, 6 fotos
+contra 1. Importa porque el sync entrante trae `price_cents` además de `stock_qty`: **la publicación
+mapeada es la que le dicta el precio al sitio.**
+
+**El espejado vira de color.** Medido: tono 68° (dorado-verdoso) de frente y 178° (celeste) de
+perfil. Todas las fuentes lo llaman "celeste" pero la foto principal se ve dorada, y la placa vieja
+del founder se refuta a sí misma. Se cargó `espejado-dorado` y el viraje se explica en la ficha, que
+además es argumento de venta.
+
+**Corrección arrastrada al Cinema**: la placa de medidas mostró que el "alto total" del founder
+abarca todo el frente, no el lente. La descripción del Cinema decía "lente 48 mm de ancho × 50 mm de
+alto"; se corrigió en vivo y en el seed 99 a "lente 48 mm de ancho · alto total 50 mm", junto con el
+`alt_text` de su placa.
+
+**Bug preexistente arreglado**: `espejado-rojo` lo usaba el Blozon desde su carga sin entrada en
+`lib/catalog/variant-label.ts`, así que renderizaba "Espejado Rojo" por el fallback de title-case.
+
+**Pendiente técnico**: **deploy**. `espejado-dorado` y `espejado-rojo` son código y hoy producción
+muestra "Espejado Dorado". Mismo caso que `marron-transparente` del Cinema — un solo deploy arregla
+los tres.
+
+**Esperando al founder** (nada bloquea): el **peso**, si las **patillas** son G-Flex, si la forma es
+**rectangular o cuadrado**, si al abrir la patilla más de 90° **cede y vuelve** (para poder afirmar
+el flex de la bisagra, que hoy no se afirma), y los **SKUs reales** si aparecen en el catálogo de
+Rusty — salió con SKUs de casa `REW-MBLK-S10` y `REW-MBLK-300CE`.
+
+**Respuesta del founder (2026-08-26): no tiene el peso del Rew.** Queda pendiente de balanza, sin
+fecha. Se aprovechó para ordenar el registro de pesos, que tenía dos problemas:
+
+- **Estaba duplicado.** El peso del Rew y el del Cinema figuraban en `DATOS_PENDIENTES.md` **y** en
+  `PESOS_A_MEDIR.md`. La convención es que los pesos viven en `PESOS_A_MEDIR.md` y el otro archivo
+  sólo apunta. Se sacaron los duplicados.
+- **El orden por stock estaba roto.** Al ir agregando modelos nuevos quedaron pegados arriba de la
+  lista en vez de en su posición. Se reordenó: la lista está pensada para pesar de mayor a menor
+  stock, así el trabajo rinde desde el primer modelo. Quedan **18 pesos**, con el Cinema entre el
+  Esvep y el Sotion (12 unidades) y el Rew entre el Sotion y el CCCP (10).
+
+**Próximo paso exacto**: deployar (arregla las tres etiquetas de color pendientes), y seguir con el
+próximo de la lista — por demanda probada el que sigue es el **Rusty Ardigan** (5 colores,
+24 unidades, 22 ventas) o el **Vulk The Guardian** (4 colores, 15 unidades, 26 ventas).
+
+### ✅ Cargado y live: Vulk Cinema (`/anteojos-de-sol/vulk/vulk-cinema`)
+
+Quinto producto del cruce `pnpm ml:faltantes`, y el de más demanda probada: **46 ventas** en ML.
+Aplicado con el seed `supabase/seeds/99_vulk_cinema_sol.sql`.
+
+**Verificación post-aplicación, toda en verde:**
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes | 3 | 3 ✓ |
+| Stock total | 12 | 12 ✓ |
+| `variation_code` distintos | 3 | 3 ✓ |
+| Imágenes / primarias | 7 / 1 | 7 / 1 ✓ |
+| `measurements` presente | sí | sí ✓ |
+| `weight_grams` ausente | sí | sí ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| `/anteojos-de-sol/polarizados` | aparece | aparece ✓ |
+| `/anteojos-de-sol/vulk/polarizados` | aparece | aparece ✓ |
+| Encuadre (regla 15) | 89-93% | **92% con scale 1.00 en las 6, sin overrides** ✓ |
+
+**Hallazgo que corrigió el reporte de faltantes: eran 3 colores y 12 unidades, no 6 y 24.** Probado
+por coincidencia uno a uno de los `user_product_id` entre las variaciones del item multi y los 3
+items simples: comparten pozo de stock. Es la **segunda vez** que aparece (la primera fue el Zion) y
+el script sigue sin detectarlo porque el item multi-variación no expone `user_product_id` a nivel
+padre.
+
+**Datos del founder**: medidas **140 / 48 × 50 / 22 / 135** y las páginas del catálogo oficial de
+Vulk. El catálogo confirmó las medidas de forma independiente (SIZE 48-22-135), dio los SKUs
+**956950** y **956953**, y aportó un dato que ML no tenía: **sistema de bisagras flexo**. La
+terracota **no tiene SKU de fábrica** — llegó con el color equivocado y se la quedaron; va con SKU
+de casa `CINEMA-TERRACOTA`, convención ya usada en KATLEEN-MDEMI y SPELL-LGREY.
+
+**La revisión adversarial del seed pagó: encontró 3 bloqueantes y se corrigieron ANTES de aplicar.**
+Los tres eran claims, no datos (los números estaban todos bien):
+
+1. **Promesa de durabilidad inventada**: *"que es lo que hace que el armazón aguante el uso diario
+   sin que se afloje la bisagra"*. El fabricante declara que el sistema flexo existe, nada más.
+2. **Glosa funcional inventada** del sistema flexo (*"acompaña la apertura de la patilla en vez de
+   resistirla"*), que además, pegada a "G-Flex" en la misma oración, empujaba al lector a concluir
+   que el armazón flexa — justo el claim que el founder mandó a barrer.
+3. **"polímero inyectado"**: ninguna fuente lo dice, y el propio `PRODUCT_SCHEMA.md` trata
+   `injected` y `g-flex` como materiales distintos.
+
+Se corrigió además la atribución del bloqueo UV: lo hace el filtro UV de la lente, no el polarizado.
+
+**Dos cosas que esperan al founder, ninguna bloquea:**
+
+- **Color del lente de la terracota.** El atributo de ML dice "Verde musgo", pero midiendo el píxel
+  del lente en la foto da RGB (79,78,80): gris neutro, con el verde POR DEBAJO del rojo y del azul, y
+  en degradé. Se cargó `verde-oscuro`, compatible con las dos lecturas. Que lo mire sobre el armazón.
+- **Estuche o funda.** Se cargó el default de los otros 20 Vulk, que entra en "estuche rígido O
+  SEMIRRÍGIDO" de `BUSINESS_POLICIES` §1. Es la única decisión tomada sin su respuesta.
+
+**Pendiente técnico**: falta **deploy** para que `marron-transparente` renderice con acento. Se
+agregó esa etiqueta y `verde-oscuro` a `lib/catalog/variant-label.ts`, pero producción corre el build
+viejo y hoy muestra "Marron Transparente". El resto de la ficha está correcto en vivo.
+
+**Próximo paso exacto**: deployar (arregla el acento), y seguir con el próximo modelo de la lista de
+faltantes — el siguiente por demanda probada es el **Rusty Ardigan** (5 colores, 24 unidades,
+22 ventas) o el **Rusty Rew** (2 colores, 10 unidades, **37 ventas**).
+
+### Hecho: `pnpm foto:limpia` — fotos de catálogo del Rusty The Javo
+
+El founder trajo el **Rusty The Javo** (marrón, envolvente deportivo) con 5 fotos sacadas en el
+local sobre el mostrador, sosteniendo una hoja de papel de fondo. **Las dos fotos finales están
+entregadas** en `marketing/fotos/rusty-the-javo/limpias/finales/`, en los dos formatos
+(2000×1333 para el sitio, 1500×1500 para ML).
+
+**Verificado antes de empezar**: el Javo no está en rustyoptical.com (probé ficha y buscador) ni en
+ninguna de las **983 publicaciones** de la cuenta de ML. El founder ya lo había buscado y llegó a lo
+mismo. No había fotos de fábrica: fabricarlas era la única vía.
+
+**Por qué hizo falta una herramienta nueva**: `pnpm placas` recorta con `trim`, que asume fondo
+uniforme. Con hoja curvada, mano, sombra y muebles atrás no hay ningún borde uniforme, así que
+devuelve la foto entera.
+
+**Las tres decisiones técnicas que hicieron que saliera bien** (detalle en `LEARNINGS.md`):
+
+1. **`isnet-general-use` en vez de `birefnet-general`.** birefnet toma la hoja y la mano como parte
+   del objeto: sobre la misma foto dio un recorte de 2549×2028 (la hoja) contra 2017×990 de isnet
+   (el anteojo). Se dejó `isnet` como default del script nuevo; birefnet sigue siendo el default
+   global para fotos de catálogo.
+2. **Descarte de fragmentos sueltos**, quedándose con la región conectada más grande. rembg dejaba
+   pedazos de uña y anillo que se veían flotando y además agrandaban el encuadre.
+3. **Blanqueo por color de lo que se ve a través del armazón**: la hoja es clara y desaturada, el
+   armazón es marrón y saturado. Saturación ≤ 0.18 y luminancia ≥ 0.55 → blanco.
+
+Y lo que evita que desentone en la grilla: componer con `encajar()` de `placas-frame.ts` al mismo
+`fill` 0.92 que el resto del catálogo, en vez de un centrado propio.
+
+**Bug propio, encontrado y cerrado**: asumí que `resize` de sharp conserva la cantidad de canales de
+un buffer raw de 1 canal. Devuelve 3. La máscara quedaba corrida y una foto salía a resolución
+completa de cámara. Se resolvió midiendo el buffer en tres líneas en vez de teorizar.
+Entrada en `MISTAKES.md`.
+
+**Elección de las dos finales, y el motivo**: las únicas dos tomas de perfil verdadero
+(`1.jpeg`, `2.jpeg`) llegaron comprimidas por WhatsApp a 960×1280, y dan un recorte de ~600 px que
+al llevarlo a 2000 se ve blando. Las tres de resolución completa (3024×4032) son todas frontales.
+Se eligió el par de resolución completa: el 3/4 que muestra la patilla como **perfil** y la más
+simétrica como **frente**.
+
+**Pendiente del founder**: el **código de colorway** del Javo (está impreso en la patilla pero no se
+llega a leer en las fotos). Hace falta para nombrar los archivos con la convención del catálogo
+(`<MODELO> <COLORWAY> PERFIL.jpg`). Igual que las medidas, ese dato lo confirma él.
+
+**Próximo paso exacto**: con el código de colorway, renombrar el par, subir con `pnpm fotos:subir`
+y seguir el playbook de carga. Si quiere un perfil lateral verdadero y nítido, sacar esa toma de
+nuevo sin comprimir.
+
+**Pedido del founder: "que salgan iguales a las fotos de Rusty", usando las 5 fotos que ya mandó.**
+Hecho. El par final está en `marketing/fotos/rusty-the-javo/limpias/finales/`.
+
+- **`/trio-auditor` no aplica**: es un auditor de TEXTO (Codex + Gemini sobre contenido escrito). No
+  genera ni evalúa imágenes.
+- **Generar la foto con IA: NO.** Sería una imagen fabricada de un producto real que se vende. Es
+  regla dura 3 y 8, más Defensa del Consumidor. No hizo falta: se llegó procesando las reales.
+
+**Método: medir contra el catálogo en vez de discutir a ojo.** Se bajó `rusty-bruice/perfil.jpg`
+(foto real de Rusty ya cargada) y se midieron tres variables sobre ambas. Resultado:
+
+| Variable | Rusty | Javo antes | Javo ahora |
+|---|---|---|---|
+| Ocupación de ancho | 91,5 % | 92,0 % | 92,0 % |
+| Proporción del producto | 2,44 | 1,98 | 2,36 |
+| Brillo medio del producto | 126 | 44–55 | 109–113 |
+
+Dos conclusiones que a ojo se leían al revés: **el encuadre ya estaba idéntico** (parecía que no
+porque el armazón de Rusty es más bajo), y **el problema real era la exposición** — las fotos del
+local estaban a menos de la mitad del brillo del catálogo. Eso, y no el recorte, era lo que las
+hacía ver sucias al lado de las otras.
+
+La proporción además sirvió para **elegir la toma sin opinar**: de las 5, la de 2,36 es la que más
+se acerca al 2,44 de Rusty. Quedó como perfil.
+
+**Bug propio encontrado y cerrado**: `sharp().gamma()` no aclara nada si no hay un resize en el
+medio — existe para corregir el gamma alrededor de un resize y sin él las dos mitades se cancelan.
+El log decía que había corregido y el brillo seguía igual. Se reemplazó por una curva de potencia
+aplicada a mano, y ahora la función **mide y loguea el brillo logrado, no el pedido**. Entrada en
+`MISTAKES.md`.
+
+**Lo que NO se pudo igualar, y por qué**: ninguna de las 5 fotos es un frente real — todas están
+tomadas en ángulo y desde abajo. El "frente" entregado es la más frontal que hay (proporción 2,11
+contra 2,65 de Rusty). Corregir eso con una deformación de perspectiva cambiaría la forma del
+armazón, o sea que el cliente vería un producto más ancho o más angosto del que recibe: no se hizo.
+Se resuelve con UNA foto más, de frente y de lejos.
+
+**Entregado**: `the-javo-perfil.jpg`, `the-javo-frente.jpg`, sus versiones ML de 1500×1500, una
+alternativa de perfil más nítida pero de proporción más lejos del objetivo, y la comparación en
+`_referencias/comparacion-final.jpg`.
+
+**Herramienta**: `pnpm foto:limpia` ahora tiene `--brillo <n>` (default 120, el del catálogo) y
+endurece el alfa antes de buscar componentes, que era lo que dejaba un halo gris en una de las fotos.
+
+**Pendiente del founder**: el **código de colorway** del Javo (impreso en la patilla, no se lee en
+las fotos) y las **medidas**. Opcional: una toma de frente real si quiere cerrar esa diferencia.
+
+**Próximo paso exacto**: con el código de colorway, renombrar el par con la convención
+(`<MODELO> <COLORWAY> PERFIL.jpg`), subir con `pnpm fotos:subir` y seguir el playbook de carga.
+
+### Auditoría con Antigravity (`agy`) sobre el pipeline de fotos
+
+El founder pidió usar el CLI de Antigravity para mejorar `foto-limpia`. Se le pasó el código completo
+y las mediciones dentro del prompt (en headless no puede pedir permisos para leer archivos).
+
+**Lo que acertó y quedó aplicado** — tres errores reales que yo no había visto:
+
+1. **El endurecido del alfa a `< 170 → 0` comía los bordes.** El acetato es translúcido y el borde
+   tiene antialias. Ahora el umbral duro se usa SÓLO para etiquetar componentes y la máscara se
+   aplica sobre el alfa suave original.
+2. **La curva de exposición sin punto negro lavaba las sombras.** Medible: el p5 del perfil estaba en
+   66 contra 51 de la referencia. Con anclaje de negros bajó a 42.
+3. **Enfoque demasiado agresivo sobre fuente comprimida.** Ahora el `median(3)` previo y un enfoque
+   más suave se activan según cuánto haya que estirar la foto.
+
+**Lo que erró, y sólo se supo midiendo**:
+
+- Dijo que todas las fotos tenían dominante cálida de "luz de local a 3000K" y propuso factores
+  fijos. Medido sobre la hoja: tres cálidas (194/180/167) y **la de WhatsApp fría** (207/207/215).
+  Su factor fijo empeoraba esa última. Quedó implementado midiendo la hoja por foto.
+- Propuso mezclar las altas luces hacia un marrón fijo "del lente Rusty". Ese color es del producto
+  de la referencia, no del Javo: habría pintado el lente de un color inventado.
+
+### Error propio: teñí el armazón copiando el perfil tonal de otro producto
+
+Para "que salga igual a Rusty" mapeé los tres percentiles del Javo a los del Bruice
+(p5 51 · p50 143 · p95 169). **El marrón salió naranja ámbar y los lentes dorados**, y se lo mostré
+al founder antes de darme cuenta. El Bruice es negro con lente naranja: su p50 es propiedad de esos
+colores, no de la luz del estudio.
+
+**La separación correcta, que quedó en el código**: del setup se copian los negros (p5) y las altas
+luces (p95); el medio tono (p50) es del producto y no se copia. Quedó como flag `--p50` con default
+conservador 85.
+
+**Verificación que resolvió la duda**: se midió el TONO del armazón en la foto cruda y en la salida —
+**25° contra 25°**. O sea que el balance de blancos NO corre el color; lo único en discusión es la
+exposición. Entrada en `MISTAKES.md`.
+
+**Esperando al founder**: eligió mal quién elige. Se le entregó una **escalera de cuatro tonos**
+(`_referencias/escalera-de-tono.jpg`: sin corregir / 70 / 85 / 100) para que compare contra el
+anteojo que tiene en la mano. Es el único que puede validar el color real.
+
+### Segunda tanda de mejoras al pipeline de fotos (pedido del founder: "faltan mejoras")
+
+Se atacaron los dos defectos que quedaban sin resolver de la auditoría, ambos visibles en el par ya
+entregado.
+
+**1. El parche gris pixelado adentro de la patilla.** Era la hoja a medio blanquear: el criterio
+viejo (claro + poco saturado → blanco) quemaba los brillos del acetato y, como la hoja traía bloques
+de compresión, dejaba unos dentro del umbral y otros fuera. Reemplazado por `quitarFondoInterior()`,
+con dos criterios combinados: **color medido** de la hoja en esa foto (lo devuelve el mismo paso de
+balance de blancos) con tolerancia asimétrica hacia las sombras, y **filtro por tamaño** de región
+conectada, que es lo que salva los brillos legítimos. Además apaga el ALFA en vez de pintar blanco,
+así el borde queda antialiaseado.
+
+**2. Faltaba la sombra de contacto.** Sin ella el anteojo parece un sticker sobre el blanco. Se
+construye del propio alfa del recorte —franja inferior, aplastada, difuminada, al 20%— así sigue la
+silueta real en vez de ser un óvalo genérico. No cambia forma, color ni tamaño del producto: es
+presentación, como el fondo blanco, y es lo que hace el fabricante. Se puede apagar con
+`--sin-sombra`.
+
+Resultado verificado en `_referencias/comparacion-final.jpg`: interior limpio, sombra presente,
+color natural y el mismo encuadre que la referencia.
+
+**Próximo paso exacto**: cuando el founder diga qué nivel de tono es el fiel al anteojo real
+(escalera A/B/C/D en `_referencias/escalera-de-tono.jpg`), correr
+`pnpm foto:limpia --dir marketing/fotos/rusty-the-javo --p50 <elegido>`, rehacer el par de finales y
+seguir con el código de colorway y las medidas.
+
+### Encontrado: "G-Flex = flexible" está publicado en 51 productos del sitio
+
+El founder escaló una regla al revisar la placa de callouts (textual): *"que sea G-Flex no indica
+que sea flexible… puede llevar a una confusión para el comprador, debes recordar esto si o si"*. Es
+la **segunda vez** que corrige el mismo claim.
+
+G-Flex es el **nombre comercial** del polímero de Vulk, no una propiedad declarada. El fabricante
+no afirma flexibilidad en ninguna ficha. Prometerla es regla dura 3 (no prometer lo que no se puede
+cumplir).
+
+**Alcance real, medido contra la base**: **51 productos activos** dicen que el G-Flex es flexible —
+los 51 en la descripción y **25 además en los callouts** de la ficha. Se reparte entre Rusty y Vulk,
+sol y receta. También está en descripciones vivas de Mercado Libre: MLA1905026356 dice *"un material
+flexible y resistente"* y MLA2824914416 dice *"G-Flex (Polímero flexible y ligero)"*. Hasta la
+descripción del Bruice que se escribió hace días lo dice: *"es un polímero flexible que aguanta la
+torsión del uso diario"*.
+
+**En esta sesión sí se aplicó bien**: la placa de callouts del Trial MDEMI se rehizo sacando
+"flexible" antes de que el founder lo pidiera, y quedó `FRENTE DE G-FLEX | Todo el anteojo pesa
+19,5 g` — el beneficio se apoya en un dato medible en vez de en el nombre del material.
+
+**No se tocó nada todavía**: el barrido de los 51 es trabajo aparte y necesita el OK del founder.
+Anotado en `BACKLOG.md`. La regla quedó guardada en memoria para que no vuelva a colarse en texto
+nuevo.
+
+### ⏸️ FRENADO por el founder: alta en ML del Vulk The Trial MDEMI-068/UPG15
+
+**NO SE PUBLICÓ NADA.** El founder frenó antes de crear: *"espera, no publiques nada… yo me
+confundí, aun no lo tengo en la optica"*. La mercadería todavía no llegó.
+
+Lo único que llegó a tocar Mercado Libre fueron **5 fotos subidas a la biblioteca de medios**
+(`POST /pictures/items/upload`), que no son visibles para nadie hasta colgarse de una publicación.
+El resto fue `POST /items/validate`, que no crea nada.
+
+**Queda todo listo para retomar el día que entre la mercadería**, en
+`marketing/placas-ml/vulk-the-trial-mdemi/`: las 5 placas, el `payload-ml-listo.json` ya validado
+con 0 errores, y los ids de las fotos en `pictures-ml-subidas.json`.
+
+**Qué se hizo:**
+
+- **Fotos de la colorway** bajadas de la ficha oficial que pasó el founder
+  (`vulkeyewear.com/eyewear/sunglasses/g-flex/the-trial-mdemi-068upg15-polarized/`), guardadas en
+  `marketing/fotos/trial-mdemi/`. Se verificó que el fabricante NO tiene versión en alta: sus fotos
+  de producto son 900×442, exactamente las mismas que ya estaban en el bucket del sitio.
+- **5 placas ML generadas** en `marketing/placas-ml/vulk-the-trial-mdemi/ml/` (01-perfil,
+  02-frente, 03-callouts, 05-lentes, 06-garantía) y **subidas a ML**; los picture ids quedaron en
+  `scripts/tmp/pictures.json`. **Sin la placa 04-medidas, a propósito** (ver abajo).
+- **Payload validado** con `POST /items/validate`: 0 errores, 4 warnings — los mismos cuatro que
+  tienen las publicaciones hermanas (FILTRABLE_GENDER y AGE_GROUP los deriva ML, la cuenta no usa
+  me1, y el envío gratis lo agrega ML solo por el precio).
+
+**Decisiones técnicas y por qué:**
+
+- **El título se controla mandando UN SOLO atributo concatenable.** Se manda `DESIGN` con todo el
+  color adentro y NO se mandan LENS_COLOR / FRAME_COLOR / TEMPLE_COLOR, porque el orden de
+  concatenación de ML no es estable entre publicaciones y el título se congela con la primera
+  venta. Con un solo campo el título es exactamente predecible. Detalle en `LEARNINGS.md`.
+  Resultado: `Anteojos De Sol Polarizados Vulk The Trial Liviano Uv400 MDEMI-068/UPG15 - Frente
+  Carey con Lentes Verdes` (family_name de 56 de 60 caracteres).
+- **Publicación nueva y no variación de la hermana S10**, aunque el S10 tenga 0 ventas y su título
+  todavía sea editable: las variaciones del mismo User Product **comparten el pozo de stock**, que
+  es el único riesgo con daño real (vender dos veces las mismas unidades).
+- **Sin atributos de medida del armazón** (regla dura 7). Se confirmó que la categoría MLA417128 no
+  los exige: obligatorios son sólo BRAND, MODEL y GENDER.
+- **Paquete declarado igual que la hermana polarizada** (90 g, 5×19×20 cm) y no como la MBLK
+  (60 g, 5×7×17): mismo producto físico, pero las dos hermanas declaran distinto y conviene el
+  valor conservador para que ML no cobre diferencias en el despacho.
+- **Se sacó "flexible" de la placa de callouts**: el fabricante nombra el material G-Flex pero no
+  declara flexibilidad. Es el mismo claim que el founder ya había corregido una vez.
+- **La placa de lentes lleva aclaración explícita** (`Lente verde G15 · policarbonato · UV 400 ·
+  categoría 3 · polarizada`). Sin eso, en un anteojo polarizado el "se pueden adaptar lentes" deja
+  entender que la lente graduada también vendría polarizada y verde.
+
+**Problema encontrado — las medidas del Trial no son confiables.** La cabecera del seed 71 dice
+*"Medidas (de la FOTO)"*: no las midió el founder. El fabricante publica 47-20-145 y en el mismo
+widget dice frente 144, mientras el sitio muestra 50-15-150 y frente 147. Cinco milímetros de
+diferencia en el puente. Cargado en `DATOS_PENDIENTES.md` y en `MISTAKES.md` — el error de fondo
+fue haber declarado el catálogo "sin datos faltantes" contando campos llenos en vez de verificar la
+procedencia de cada dato.
+
+**Pendiente para cuando llegue la mercadería (2 decisiones del founder):**
+
+1. **Unidades reales en mano.** Sin el número no se publica (regla dura 1).
+2. **Precio.** El sitio tiene $86.082 provisional, puesto en junio "igualado al S10". El S10 hoy
+   está en $96.428, o sea que la carey figura $10.346 más barata que su gemela polarizada sin
+   ninguna razón. Recomendado igualar a $96.428. **Ojo**: ese precio viejo está vivo en el sitio
+   hoy, aunque la variante figure sin stock.
+
+**Próximo paso exacto cuando llegue**: con stock y precio definidos, `POST /items` con el payload de
+`scripts/tmp/payload.json`, después `GET /items/{id}` para **leer el título real antes de que se
+venda una unidad** (última ventana para corregirlo), verificar que el `user_product_id` nuevo sea
+independiente de MLAU3771804742 / MLAU1024074957, escribir la descripción con
+`POST /items/{id}/description?api_version=2`, mapear la variante en la base vía admin action (no
+SQL crudo), forzar el sync para que baje el precio real, y sincronizar el seed 71 + `BACKLOG.md:70`.
+
+### Verificado: la sincronización de stock y precio con Mercado Libre
+
+El founder preguntó, antes de seguir cargando modelos, si todo lo subido hasta ahora quedó
+realmente vinculado con ML en las dos direcciones. Se verificó en vez de responder de memoria.
+
+**Resultado: sí, está sincronizado.**
+
+- **Comparación empírica**: las 21 variantes de los seis productos cargados en esta tanda (Bruice
+  sol, Bruice receta, Malice, Blozon, Le Groupie, Zion) coinciden con ML en stock y precio.
+  Cero diferencias.
+- **Entrante (ML → sitio)**: `marketplace_webhook_events` tiene 15.936 eventos de topic `items` en
+  estado `processed`, el último del mismo día. `syncStockFromMLItem` parchea **stock y precio**.
+  Los topics `orders_v2` y `stock-locations` figuran `ignored` a propósito.
+- **Saliente (sitio → ML)**: `syncVariantStockToML` resuelve los dos formatos —
+  `PUT /items/{id}` para publicación simple y `PUT /items/{id}/variations/{var}` para
+  multi-variación. Se dispara desde `lib/checkout/orders.ts:199` al reservar stock.
+- **Red de seguridad**: el cron `/api/cron/ml-reconcile-stock` corre cada hora y corrige el drift
+  si el webhook pierde un evento.
+
+**Duda que se despejó — las publicaciones gemelas.** Varios modelos están publicados dos veces
+(Malice, Blozon, Le Groupie) y sólo una de cada par está mapeada. Se comprobó contra los eventos
+reales que **ML dispara la notificación por las dos publicaciones**, con ~2 segundos de diferencia
+(ej. MLA1529925840 a las 13:35:04 y su gemela MLA1529964724 a las 13:35:06). Sumado a que comparten
+el mismo `user_product_id`, o sea el mismo pozo de stock, una venta en la gemela llega igual.
+
+### Vulk The Trial: la variante suelta no es un link roto
+
+El founder pidió linkear el Trial. Se revisó y **no hay nada que linkear**: la carey / verde G15
+(MDEMI-068/UPG15, **SKU 968279**) no tiene publicación en ML. Se barrieron los 983 items de la
+cuenta buscando ese SKU y no aparece en ninguno.
+
+No es un olvido: el seed `71_vulk_the_trial_sol.sql` ya lo dejó anotado en su cabecera como
+*"SIN MLA — stock 0 (pedido, aún no en ML)"*. Es una colorway pedida al proveedor que todavía no
+había llegado cuando se cargó el producto, y por eso nunca se publicó.
+
+- **Trial sol**: 3 de 4 variantes mapeadas. La cuarta es ésta.
+- **Trial Optics (receta)**: 3 de 3 mapeadas.
+- **Falso positivo descartado**: el 125721 figura en el sitio como `celeste-transparente` y en ML
+  como "gris oscuro 670-056". Es el mismo armazón — el código de color de Vulk (670-056) coincide y
+  el seed lo describe como "frente celeste/gris translúcido". Distinta forma de nombrar el color,
+  no un mapeo cruzado.
+
+**Próximo paso exacto**: preguntarle al founder si ya le llegó el carey / verde G15 del Trial. Si
+llegó, se crea la publicación de ML igual que se hizo con el Bruice MDEMI (`POST /items/validate`
+primero, después `POST /items` con `family_name` propio) y se mapea. Si no llegó, queda como está —
+stock 0 y sin mapear es el estado correcto. Después de eso, cargar el **Vulk Cinema**
+(6 colorways, 24 unidades, 46 ventas), que es el modelo que sigue en la lista de faltantes.
 
 ### Cerrado: alta del Rusty Bruice MBLK/ORANGE
 
@@ -799,6 +1333,333 @@ Los cuatro reales, todos en el mismo lugar:
 - Los 12 diseños mirados uno por uno en historia y en post, sobre tres productos con
   características opuestas (nombre largo / nombre de una palabra / sin sello de stock).
 
+### Catálogo de Instagram: NO se puede en Argentina. Es geografía, no configuración
+
+El founder preguntó cómo activar el catálogo de productos en Instagram. **La respuesta es que hoy no
+se puede**, y el motivo no se destraba con código ni con permisos.
+
+**Argentina no figura en la lista oficial de países admitidos para tiendas en Facebook e
+Instagram.** Verificado en vivo el 2026-08-26 sobre `help.instagram.com/321000045119159`, que trae
+tres listas:
+
+- Experiencia completa: **Estados Unidos**.
+- Beta abierta: Canadá, **México**, Francia, Alemania, Italia, España, Reino Unido, Australia,
+  Japón, Corea, Taiwán, Tailandia.
+- Funcionalidad limitada: **Brasil**, Dinamarca, Países Bajos, Noruega, Suecia, Suiza, Ucrania,
+  Indonesia.
+
+En toda Latinoamérica sólo están México y Brasil. Y el mismo artículo une explícitamente el
+etiquetado al gate de país: *«Para usar las tiendas en Facebook e Instagram, y funciones asociadas
+como el etiquetado de productos en Instagram, tu negocio debe cumplir con nuestros requisitos de
+elegibilidad de comercio y estar en un país que admita estas funciones»*. O sea que no hay
+consuelo de "tienda no, pero etiquetar sí".
+
+**Checkout dentro de Instagram no existe para nadie**: Meta lo discontinuó y hoy las tiendas mandan
+a la URL del sitio propio. No es un pendiente de Argentina, es un producto muerto.
+
+**El workaround de declarar México o Brasil como país de la cuenta de comercio queda DESCARTADO**:
+viola los requisitos de elegibilidad y pone en riesgo la cuenta y la página.
+
+**Lo que sí se puede con un catálogo de Meta**, y no necesita tienda ni aprobación de Shopping:
+
+1. **Catálogo en Commerce Manager para ANUNCIOS** (Advantage+ catálogo, anuncios de colección). Es
+   canal pago: sin presupuesto de Meta Ads no se activa nada.
+2. **Catálogo de WhatsApp**, que sí funciona en Argentina y encaja con el handoff que el proyecto ya
+   usa.
+
+**Contradicción entre agentes, resuelta**: uno afirmó que la política de comercio prohíbe
+explícitamente "lentes de contacto y gafas de lectura y recetadas". Se verificó la política pública
+y **no es así**: dice sólo *«productos o servicios médicos o de salud, como los dispositivos médicos
+o los suplementos ingeribles»*, sin nombrar anteojos. Los de sol no tienen problema; los armazones
+de receta quedan en **zona gris interpretable**, no prohibidos por texto. Es académico mientras
+Argentina no esté habilitada, pero queda asentado para no repetir la búsqueda.
+
+**Trabajo de código, si algún día se hace el feed** (para anuncios o WhatsApp): es chico y conocido.
+`app/sitemap.ts` ya implementa la consulta y el filtro de qué producto es publicable;
+`lib/storage/product-image-url.ts` da el `image_link`; el JSON-LD de la ficha ya resuelve precio y
+disponibilidad. Faltaría un route handler que emita el feed, tres campos derivados (`availability`,
+`condition`, `item_group_id`) y **reprocesar las fotos**: 27 de las 80 primarias tienen menos de
+500 px de alto y Meta rechaza cualquier imagen por debajo de 500×500. Es el mismo problema de
+resolución que ya está en `BACKLOG.md`.
+
+### ⚠️ Hallazgo aparte y más urgente que Instagram: falta el CUIT
+
+Salió de la misma investigación y **no tiene nada que ver con Meta**: el sitio publica precios pero
+no identifica al vendedor con su CUIT. En `app/(storefront)/terminos-y-condiciones/page.tsx` figura
+literalmente `**CUIT**: [A CONFIRMAR]`. El art. 8 de la Ley 24.240 lo exige para ventas por catálogo
+publicadas por cualquier medio. Anotado en `DATOS_PENDIENTES.md`: lo tiene que pasar el founder.
+
+### Próximo paso EXACTO (Instagram / catálogo)
+
+**Decisión del founder**, no hay trabajo técnico pendiente hasta que elija:
+
+1. ¿Va a poner presupuesto de Meta Ads? Si sí, el catálogo para anuncios se justifica y ahí sí vale
+   hacer el feed. Si no, no hay nada que activar.
+2. ¿Le interesa el **catálogo de WhatsApp**, que sí anda en Argentina?
+3. **Pasar el CUIT** (esto sí o sí, independiente de todo lo demás).
+
+### PUBLICADO: el Rusty Zion en `minimal`
+
+Primera placa del sistema nuevo que sale al aire.
+
+- **Historia**: https://www.instagram.com/stories/optica.carballo/3972245959083033994
+- **Media ID**: `18125653159775521` · publicada 2026-08-26 12:50 UTC
+- Registrada en `social_posts` con `source: product` y `source_ref: rusty-zion`, o sea que se ve en
+  `/admin/social`. `attempts: 0`, sin error.
+- Imagen en el bucket: `2026/08/rusty-zion-minimal-story-2dfb1e3472.jpg` (1080×1920, 83 KB).
+
+**Flag nuevo `--si`**: el script pide confirmación por teclado antes de publicar y una consola no
+interactiva la respondía siempre que no, así que `--publicar` se cancelaba solo. `--si` da esa
+confirmación por adelantado, para cuando ya se dio por otro canal. **El default no cambió**: sin
+`--si` y sin TTY sigue sin publicar, que es lo correcto para algo que sale al aire — el silencio no
+puede significar "dale".
+
+### Próximo paso EXACTO (placas)
+
+**Esperando al founder**: (1) si el precio de `minimal` baja a 40 para que el nombre domine —hoy
+quedaron en 66 y 56, casi iguales—; (2) cuál de las tres claras se adopta; (3) si encara las fotos
+de más resolución para los 68 productos que las necesitan, que es lo que más limita al set.
+
+### `minimal`: nombre al triple y precio al doble
+
+A pedido del founder sobre la placa del Zion. El nombre pasó de 22 a **66 px** y el precio de 28 a
+**56 px**. Dos cosas que hubo que resolver de paso:
+
+- **El tracking bajó de 10 a 4.** El espaciado que hace respirar a un rótulo chico, al triple de
+  cuerpo desarma la palabra.
+- **El nombre pasó a usar `ajustarMedido`.** A 66 px fijos, "VULK 53&3 MARKY RAMONE" se salía del
+  margen; ahora corta en dos líneas y baja de cuerpo sólo si hace falta. Verificado con nombre corto
+  (Zion), largo (53&3 Marky Ramone) y con `desde` (Blozon).
+
+⚠️ **Tensión que hay que decidir**: 3× y 2× aplicados a 22 y 28 dan 66 y 56, o sea que el nombre y
+el precio quedan casi del mismo tamaño (ratio 1,18) y se leen como un solo bloque. Se sostienen
+como jerarquía sólo por el peso y el color. **Si el founder quiere que el nombre domine de verdad,
+el precio tiene que bajar** — con el precio en 40 el ratio sería 1,65 y la jerarquía se leería sola.
+Queda planteado, no se cambió por las dudas: él pidió el doble.
+
+### rustyoptical NO tiene fotos mejores: publica todo a 900 px
+
+El founder pidió tres historias y autorizó bajar fotos de rustyoptical.com para mejorar la
+resolución. **Se verificó y la premisa no se sostiene.**
+
+Se bajaron las fotos de fábrica de los modelos con foto chica y salen del mismo tamaño que las que
+ya están cargadas:
+
+| Modelo | En rustyoptical | En nuestro bucket |
+|---|---|---|
+| Misty (L ROSE GS9B, SKU 125739) | 900×442 | 900×442 |
+| Patien (SBLK S15, SKU 126092) | 1200×589 | 1200 px |
+| Gresent (SS26, la colección más nueva) | 900×442 | 900 px |
+
+Se revisó también el HTML crudo de las fichas buscando una versión grande —`srcset`, zoom, `_big`,
+`original`—: **no existe**. El sitio estandariza en 900 px de ancho, y sólo algunas colecciones
+viejas están en 1200. Verificado en tres colecciones distintas, incluida SS26.
+
+**De dónde salen entonces las de 1400+**: son las que pasó el founder (`marketing/fotos/`) o las que
+se bajaron de las galerías de Mercado Libre con `GET /pictures/{id}`. **La única fuente de fotos
+grandes es él.**
+
+**Las tres historias se armaron con productos que YA tienen foto buena**, para que el estilo se
+juzgue sin el handicap de la resolución:
+
+| Historia | Producto | Foto | Stock |
+|---|---|---|---|
+| `estudio` | Vulk The Sil | 1500 px | 56 |
+| `vitrina` | Rusty Malice | 2000 px | 54 |
+| `minimal` | Rusty Zion | 2000 px | 26 |
+
+Las tres pasan el verificador. Están en `marketing/placas-producto/<slug>/`.
+
+⚠️ **Ojo con la métrica de nitidez**: sirve para comparar el MISMO diseño entre productos (que es
+como se detectó el problema, todos en `vitrina`), pero NO entre diseños distintos — cada uno pone el
+producto a otra altura y la medición cae sobre zonas distintas. Los números de la tabla de arriba no
+son comparables entre sí.
+
+### El "borde suave": era la resolución de la foto, y afecta al 87% del catálogo
+
+El founder miró `vitrina` y dijo: *"se nota como un suave borde en la imagen del producto"*. Tenía
+razón. **El primer diagnóstico —que era el grano— estaba MAL** y se corrigió con una verificación
+adversarial de cinco hipótesis medidas sobre el píxel. Ver MISTAKES.
+
+**Lo que NO era:**
+
+| Hipótesis | Por qué se descartó, medido |
+|---|---|
+| Fleco del recorte de rembg | Sobre 1.000 cruces del contorno, exceso de luminancia 0,00 ± 0,05. Cualquier fleco blanco queda acotado a alfa < 2,8%. |
+| El grano | Existe la discontinuidad (ratio 4,3×) pero la amplitud es ±1 nivel sobre 243 = 0,42% de contraste. Sintetizado el escalón aislado, es invisible a 1:1. Y a JPEG q80 cae un 94%: en Instagram el grano no existe. |
+| Halo de reescalado (ringing) | Sobredisparo de +0,1 niveles con lanczos3. Por debajo del piso de ruido. |
+| La sombra de contacto | A lo largo de su huella el fondo mide 240,5-244,3: plano. No genera borde. |
+| Costura del bitmap | El borde sigue el contorno del anteojo, no un rectángulo. |
+
+**Lo que SÍ era: la foto es de baja resolución y hay que agrandarla.** La primaria del `vulk-53-3`
+—el producto de todas las hojas de contactos— mide **900×442**. El producto útil queda en 766 px y
+en la placa ocupa 1058: se agranda **1,38×**, y agrandar reparte el salto del borde entre más
+píxeles. Medido, la pendiente máxima del contorno:
+
+| Producto | Foto | Pendiente del borde |
+|---|---|---|
+| `vulk-53-3` | 900 px | **79,6** ← el que miró el founder |
+| `rusty-blozon` | 2000 px | 91,9 |
+| `vulk-the-sil` | 1500 px | 97,0 |
+
+**El alcance es grande: 68 de 78 productos activos (87%) tienen la foto primaria por debajo de los
+1400 px** que hacen falta para una placa de 1080 sin agrandar. 60 están en 900 px y 8 en 1200. Sólo
+10 llegan.
+
+**Qué se hizo:**
+
+1. **Enfoque proporcional al estiramiento** (`afilarSiSeAgranda`): nada si la foto se reduce, y
+   creciente cuanto más se agrandó. No inventa detalle —eso no se puede— pero devuelve el contraste
+   local del borde. El `vulk-53-3` pasó de 79,6 a **84,9**, o sea un tercio de la brecha.
+2. **Aviso por producto** cuando la foto baja de 1400 px, al lado de los otros avisos de carga.
+3. **El grano igual se movió a la capa de arriba.** No era la causa, pero un tratamiento global que
+   no cubre todas las capas está mal igual. Queda como estaba.
+
+**Pendiente de decidir con el founder**: el arreglo de verdad es subir fotos de más resolución. Las
+de 900 px vienen del histórico de Mercado Libre; para los Rusty existe `rustyoptical.com` con fotos
+de fábrica, que es de donde salieron las de 2000 px. **Y una pregunta aparte**: si el grano se borra
+al comprimir a JPEG, hay que decidir si vale la pena mantenerlo — hoy cuesta 1,5 MB por PNG.
+
+### La dirección se corrigió sola: fondo claro y el armazón ENTERO
+
+Viendo `macro` y `minimal` profundizados, el founder dijo: *"Las blancas me gustan mas quizas, me
+gusta que el anteojo se vea completo"*.
+
+Eso es mejor dato que "me gusta X": son **dos criterios**, no una preferencia por una placa. Y el
+segundo choca de frente con la premisa de `macro`, que justamente muestra un fragmento. `macro`
+queda como pieza suelta para un posteo de detalle, no como la línea.
+
+**La línea clara quedó en tres, todas con el armazón completo:**
+
+| Diseño | Fondo | Qué la distingue |
+|---|---|---|
+| `minimal` | blanco puro | Todo el peso lo lleva el aire. Una sola línea, precio en cuerpo de texto, sin pastilla de stock. La más radical y la que menos se lee de lejos. |
+| `estudio` | blanco puro | El nombre en cuerpo de titular abajo. Conserva el fondo claro y el producto entero pero se lee a la distancia, que es lo que una historia necesita. |
+| `vitrina` | hueso | El anteojo APOYADO sobre una línea de horizonte dorada. La línea le da suelo al recorte y parte la placa en dos zonas de lectura. |
+
+Las tres llevan **sombra de contacto**, que es lo que las saca de "recorte pegado" (ver LEARNINGS).
+
+**Verificado**: 18 placas (3 diseños × 3 productos × 2 formatos), cero problemas.
+
+### Próximo paso (superado — quedó resuelto arriba)
+
+**Esperando al founder**: cuál de las tres claras. Después de eso hay que decidir qué se hace con
+los 7 de promoción y las 5 direcciones de exploración restantes —descartarlos o dejar alguno para
+variar el feed— y recién ahí correr el catálogo con `pnpm ig:producto --todos` + `PLACAS_SVG`.
+
+### El founder eligió `macro` y `minimal`, y se profundizaron
+
+De las seis direcciones nuevas eligió dos. En los dos casos lo que había que resolver no era mover
+cosas de lugar sino un problema de fondo.
+
+**`macro` — era "una foto grande", ahora es un primer plano.**
+
+- **La foto va a sangre completa** con el texto encima sobre un fundido. Antes tenía que arrancar
+  debajo del logo, porque las fotos se componen DESPUÉS del SVG y le tapaban el encabezado. Se
+  destrabó con una **capa de texto por encima de los bitmaps** (`svgEncima` en `componer`), que
+  queda disponible para cualquier diseño que quiera imagen de borde a borde.
+- **El recorte se centra en la BISAGRA real**, vía `detectarPartes` + `pegarAlProducto` — la misma
+  maquinaria de los callouts. Antes era una fracción fija del ancho (0.42) que acertaba en las fotos
+  de perfil y erraba en cuanto cambiaba el ángulo. Verificado en tres armazones de forma y material
+  distintos: en los tres encontró la zona con el detalle.
+- **La línea de texto es el callout que habla de la pieza que quedó en el encuadre.** Una placa
+  macro sostiene UNA afirmación, no una ficha. Si ningún callout habla de esa parte, va sin línea:
+  no se inventa.
+- **El bloque de texto se ancla al pie y se construye de abajo hacia arriba**: se mide cuánto ocupa
+  y recién después se decide dónde arranca. Con la foto ocupando todo el lienzo no hay presupuesto
+  que alcance encadenando desde arriba, y así no puede desbordar por construcción.
+
+**`minimal` — el problema no era la tipografía, era que el producto era chico.**
+
+- **El anteojo ocupa casi todo el ancho.** Antes era la mitad: eso no es minimalismo, es una placa
+  con un hueco.
+- **Sombra de contacto** (`sombraContacto` + `DEFS_SOMBRA`). Es lo que más cambia. Ver LEARNINGS.
+- **Sin pastilla de stock y sin precio en Anton dorado**: son exactamente el gesto que este diseño
+  evita. El precio va en cuerpo de texto y en navy. La urgencia, si hace falta, va en el caption.
+
+**Bug propio encontrado y corregido en el camino**: al mudar el texto de `macro` a la capa de
+arriba, el verificador **dejó de ver una sola palabra de esa placa** y siguió dando verde. Es el
+mismo punto ciego de los recuadros, reaparecido por otro lado el mismo día. Ahora el volcado fusiona
+las dos capas. Ver MISTAKES.
+
+**Verificado**: 12 placas (2 diseños × 3 productos × 2 formatos), cero problemas.
+
+### Próximo paso (superado — quedó resuelto arriba)
+
+**Esperando al founder**: si se queda con los dos o con uno, y qué pasa con los otros 11 diseños
+(los 7 de promoción y las 4 direcciones restantes de exploración) — si se descartan o se dejan para
+variar el feed. **Recién después correr el catálogo**, con `pnpm ig:producto --todos` y
+`PLACAS_SVG` para verificar en la misma pasada.
+
+### Seis direcciones nuevas en exploración
+
+El founder pidió ver otros diseños. Lo que faltaba no eran variantes sino una **retícula distinta**:
+los siete de promoción comparten alineación a la izquierda, apilado de arriba abajo y todo
+ortogonal, así que el ojo hace el mismo recorrido siempre.
+
+Las seis nuevas viven en `EXPLORACION`, aparte de `DISENOS`: se piden con `--tipo`, **no entran en
+la tanda por default**.
+
+| Diseño | Qué rompe |
+|---|---|
+| `arco` | Ventana de tope redondeado. Encuadra sin encajonar y le da eje vertical a una foto horizontal. |
+| `diagonal` | Corte oblicuo: lo único del set que no es ni horizontal ni vertical. |
+| `macro` | Primerísimo plano de la bisagra. No muestra el producto, muestra que está bien hecho. |
+| `duotono` | El producto en dos tintas de la marca. Se lee como afiche, no como foto de catálogo. |
+| `repeticion` | El anteojo en trama al tresbolillo, con una fila viva. |
+| `minimal` | Blanco puro, producto enorme, una sola línea de texto. |
+
+**⚠️ Reserva sobre `duotono`, para decidir con el founder**: el anteojo sale dorado y es plateado.
+Como recurso gráfico funciona, pero en óptica **el color ES un atributo del producto** y alguien
+puede llegar esperando un armazón dorado — roza la regla dura de no generar expectativas falsas. Se
+le ofreció volverlo a dos tintas frías, o reservarlo para modelos negros, donde no miente.
+
+**Cuatro cosas que hubo que corregir antes de mostrarlas:**
+
+1. **El duotono salía como un rectángulo dorado** con el fantasma del anteojo adentro. Los blends de
+   `sharp` (`screen` contra un rectángulo de color) pintan también el fondo transparente y se comen
+   el alfa. Se rehizo sobre los píxeles crudos: cada uno se interpola entre navy y dorado según su
+   luminancia, y el alfa original se respeta. Ver LEARNINGS.
+2. **El arco no contenía al producto**: al 0.88 del ancho el anteojo salía por los dos costados y la
+   ventana dejaba de leerse como ventana. Bajó a 0.78.
+3. **El macro tapaba el encabezado**: arrancaba en `y=0` y, como las fotos las compone `sharp`
+   DESPUÉS del SVG, le pasaba por encima a "ÓPTICA CARBALLO". Ahora arranca en
+   `m.yTop + RESERVA_HEADER`. Y su banda bajó de 0.52 a 0.42 del alto porque **el verificador
+   detectó** que el precio y el sello se montaban sobre el pie.
+4. **La trama de `repeticion`** dejaba un hueco a la izquierda y se cortaba a la derecha (el
+   corrimiento al tresbolillo necesita una columna de más a cada lado), y la banda de contraste
+   estaba corrida respecto de la fila viva.
+
+Las 12 (seis × dos formatos) pasan `pnpm placas:verificar`.
+
+### ⛔ El founder frenó la producción: seguimos eligiendo estilo
+
+**Estado real al cerrar: NO estamos en producción, estamos eligiendo el diseño.** El founder cortó
+la segunda tanda a mitad de camino: *"todavía no quiero que me hagas de todos los productos…
+estamos buscando el stilo que mas me gusta"*.
+
+Yo venía tratando la tanda completa como el objetivo —la corrí, encontré un bug, la arreglé y la
+volví a lanzar— cuando el "corré la tanda completa" que la había disparado era anterior a la poda y
+lo que él necesitaba era **comparar diseños**, no 1.532 archivos. Ver MISTAKES.
+
+**Consecuencia práctica, para no confundirse al retomar**: de los 78 productos, **23 tienen las
+placas con el arreglo del sello y 55 con la versión anterior** (donde en `split` de feed el borde de
+la pastilla cruza el pie). Todas son regenerables; no hay que rescatar nada.
+
+**Lo que SÍ queda firme y no hay que rehacer**: la escala tipográfica y de espaciado, la medición
+real de texto, el sello con su regla única, el verificador con `<rect>` y `<line>`, el `--todos`, y
+la poda de `cartel` y `detalle`. Eso es infraestructura del generador y vale para cualquier estilo
+que se elija.
+
+### Próximo paso (superado — quedó resuelto arriba)
+
+**Esperando al founder**: cuáles de los 13 diseños le interesan —los 7 de promoción más las 6
+direcciones nuevas en exploración—. **No correr nada sobre el catálogo hasta que elija.** Cuando
+elija, hay que decidir también qué pasa con `duotono` (ver la reserva de color más arriba).
+
+La lectura que se le dio: `tipografia`, `halo` y `full` son los que menos se parecen a una placa de
+e-commerce genérica; `tarjeta` y `split` son los más convencionales.
+
 ### El set quedó en 7 diseños + 3 extras, y la tanda se corrió entera
 
 El founder resolvió la poda: **fuera `cartel` y `detalle`**. Los dos se borraron del código, no se
@@ -868,6 +1729,32 @@ un dato para un ángulo extra y lo saltea en vez de rellenarlo:
   `vulk-biller`, `vulk-deserve`, `vulk-kirt-receta`, `vulk-ready-receta`).
 - **1 sin `medidas`**: `vulk-le-groupie` no tiene medidas cargadas. Es la regla dura 7 funcionando —
   si no las midió el founder, la ficha va sin el bloque.
+
+### El verificador tenía un punto ciego, y lo destapó mirar las placas a ojo
+
+Con la corrida del catálogo a mitad de camino y dando verde, armé una hoja de contactos del formato
+feed para mirarla. **En `split` de feed el borde de la pastilla del sello cruzaba justo por el medio
+de "EN LA WEB Y EN EL LOCAL".** El verificador había dado ✓ sobre ese mismo archivo.
+
+**Por qué se le escapó**: sólo miraba elementos `<text>`. El TEXTO del sello no pisaba nada; lo que
+pisaba era el `<rect>` de su pastilla. Toda una clase de choques quedaba fuera del alcance —
+pastillas, la tarjeta de `tarjeta`, las líneas divisorias, los paneles de `incluye`—, y es
+justamente la clase más visible, porque un recuadro tapa igual que una palabra.
+
+**Tres cambios, en este orden:**
+
+1. **El verificador mide también `<rect>` y `<line>`**, contra el pie y contra cada texto. Descarta
+   los que van a sangre a propósito (ancho completo, o más de 300 px de alto: los bloques de color
+   de `split` y `full`) y no marca el caso legítimo de un rótulo centrado DENTRO de su propia
+   pastilla, que es diseño y no choque. Contraprueba: con el chequeo viejo `rusty-blozon` daba ✓;
+   con el nuevo canta `un recuadro (y=1217–1269) cruza "EN LA WEB Y EN EL LOCAL"`.
+2. **El layout**: `cerrarColumna` apilaba el sello bajo el precio sin comprobar que entrara. En
+   historia entra; en feed, con 570 px menos de alto y el mismo contenido, no. Ahora, si no entra
+   abajo, **va al lado del precio**, centrado con él. Ahí siempre hay lugar: el número más largo del
+   catálogo mide ~230 px sobre un lienzo de 1080.
+3. **`pnpm ig:producto --todos`**, en vez de rearmar el script temporal que se había perdido.
+   Recorre el catálogo activo en UN solo proceso de Node —no cuatro por producto— y acepta
+   `PLACAS_SVG`, así que la tanda y su verificación comparten la pasada cara.
 
 ⚠️ **El script de la tanda vivía en el scratchpad y se perdió al reiniciar la sesión.** Los PNG
 quedaron, pero para volver a correr el catálogo entero hoy hay que rearmarlo: `pnpm ig:producto`

@@ -14,6 +14,61 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ---
 
+## 🟡 Dos cosas de SEO que salieron cargando el Rusty Ardigan (2026-08-26)
+
+**1. Colisión viva entre Blinded y Zion, hoy en producción.** `SEO_STRATEGY.md` le asigna al Rusty
+Blinded el carril `lentes de sol redondos` (320/mes), pero su `meta_title` real, en el seed 68, es
+**"Anteojos de Sol Rusty Blinded Redondos"** — o sea que ataca `anteojos de sol redondos` (210), que
+es la keyword asignada al Zion. Dos fichas de la misma marca peleando la misma cadena.
+Fix de una línea: cambiar el title del Blinded a `Lentes de Sol Rusty Blinded Redondos | Óptica
+Carballo` (54 caracteres). Eso alinea el title con el carril que el doc ya le dio y le deja la
+variante "anteojos" limpia al Zion.
+
+**2. La faceta `redondo` no existe, y ya son 3 redondos de sol sólo en Rusty** (Blinded, Zion,
+Ardigan). En todo el catálogo hay **16 productos redondos huérfanos** y **530 búsquedas/mes**
+(320 + 210) que ninguna página del sitio consolida, mientras tres fichas se las disputan entre ellas.
+`/anteojos-de-sol/rusty/redondo` arrancaría con 3 productos, arriba del umbral que dispara el
+`noindex` automático por thin content.
+Es el mismo argumento que ya se usó para la faceta aviador con el Bruice: el valor no está en la
+ficha nueva, está en que la faceta pase a ser un ranker creíble.
+Va junto con la decisión más grande de facetas de forma que está abierta en `DATOS_PENDIENTES.md`
+(cuadrado 24 productos, redondo 15, envolvente 7 — el 63% del catálogo sin página de forma).
+
+---
+
+## 🔴 Sacar el claim "G-Flex = flexible" de 51 productos (regla escalada por el founder 2026-08-26)
+
+**Regla**: que un armazón sea de **G-Flex** NO autoriza a decir que es **flexible**. Es el nombre
+comercial del polímero de Vulk, no una propiedad declarada — el fabricante no afirma flexibilidad
+en ninguna ficha. Textual del founder: *"que sea G-Flex no indica que sea flexible… puede llevar a
+una confusión para el comprador, debes recordar esto si o si"*. Segunda vez que lo corrige. Cae
+bajo la regla dura 3 del negocio (no prometer lo que no se puede cumplir).
+
+**Alcance medido contra la base el 2026-08-26**: **51 productos activos**, los 51 en la descripción
+y **25 además en los callouts** de la ficha. Rusty y Vulk, sol y receta. Ejemplos: `rusty-beason`,
+`rusty-cccp`, `rusty-play`, `vulk-dieven`, `vulk-katleen`, `vulk-my-crew-receta`,
+`vulk-strewn-receta`.
+
+**También en Mercado Libre** (descripciones vivas): MLA1905026356 (*"un material flexible y
+resistente"*), MLA2824914416 (*"G-Flex (Polímero flexible y ligero)"*), MLA2035140957, el Bruice
+recién publicado (*"es un polímero flexible que aguanta la torsión del uso diario"*), y
+MLA1820759867 del Vulk Cinema (*"un polímero de alta resistencia mecánica y flexibilidad"*),
+encontrado el 2026-08-26 al revisar las descripciones buscando códigos de color.
+
+**Cómo reemplazarlo**: nombrar el material y apoyarse en un dato medible al lado, como el peso —
+*"Frente de G-Flex. Todo el anteojo pesa 19,5 g"*. Es lo que se hizo en la placa del Trial MDEMI.
+
+**Query para reencontrarlos**:
+```sql
+SELECT slug FROM products WHERE is_active
+  AND (description ILIKE '%g-flex%' OR attributes::text ILIKE '%g-flex%')
+  AND (description ILIKE '%flexib%' OR short_description ILIKE '%flexib%' OR attributes::text ILIKE '%flexib%');
+```
+
+**Falta el OK del founder** para hacer el barrido: son 51 fichas y toca texto de venta publicado.
+
+---
+
 ## 🟡 Hallazgos de Google Search Console (2026-08-01, addendum al audit) — decisiones pendientes del founder
 
 - [x] ~~**Canonical duplicado en `/sobre-la-marca` sol vs. receta**~~ — **Hecho 2026-08-01**. Founder eligió (b) canonical cruzado explícito. `buildBrandAboutMetadata` hace que receta apunte su canonical/hreflang a la versión de sol del mismo brand. Ver detalle en `AUDIT_2026-08-01.md` addendum.
@@ -132,6 +187,9 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 
 ## 🟡 Pendiente — data real (acción del founder)
 
+- [ ] **Fotos de más resolución para 68 de los 78 productos** (detectado 2026-08-26). La foto primaria de 60 productos mide 900 px de ancho y la de 8 mide 1200; para una placa de Instagram de 1080 hacen falta 1400+, y por debajo de eso hay que agrandar el recorte y el contorno del anteojo sale más blando (el founder lo detectó a ojo). Ya se verificó que **rustyoptical.com no sirve**: publica todo a 900×442, incluida la colección SS26, y no tiene versión grande escondida en el HTML. Las galerías de Mercado Libre dan 1100-1200 con `GET /pictures/{id}`, o sea que tampoco alcanzan. **La única fuente son fotos propias del founder.** Mitigación aplicada mientras tanto: enfoque proporcional al estiramiento en el generador, que recupera un tercio de la nitidez perdida. Prioridad por stock: los 10 productos con más unidades cubren la mayor parte del valor.
+
+
 - [ ] **Cargar productos de las otras 4 marcas** (Vulk, Reef, Mormaii,
   Paula Cahen D'Anvers) — actualmente solo Rusty tiene productos cargados.
 - [ ] **Reemplazar `[PENDIENTE]` en páginas legales**: plazos de
@@ -148,6 +206,18 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 - [ ] **CUIT del negocio** para facturación AFIP futura.
 
 ## 🟢 Mejoras técnicas (sin urgencia)
+
+- [ ] **`pnpm ig:producto --todos` para correr el catálogo entero** (detectado 2026-08-25). Hoy el script trabaja de a un producto, y la tanda completa de las 1.532 placas se corrió con un shell script armado a mano en un directorio temporal, que se perdió al reiniciar la sesión. Los PNG quedaron, pero la corrida no es reproducible. El flag tiene que recorrer los productos activos, generar los 7 diseños + los 3 extras en los dos formatos, y —importante— aceptar `PLACAS_SVG` para dejar los SVG y que `pnpm placas:verificar --svg` los revise sin regenerar nada (ver LEARNINGS 2026-08-25 sobre generar y verificar en una sola pasada). Sin eso, verificar el catálogo entero cuesta 1,5 h de recorte con rembg que ya se pagó.
+
+
+- [ ] **Sacar el `?` del `storage_path` del Vulk Ready?** (detectado 2026-08-25 en la tanda de placas). Su carpeta en el bucket es `vulk-ready?-receta/`, con el signo de pregunta literal, porque salió del nombre del modelo. **La web anda bien** —Next Image escapa el `?` solo y la ficha sirve las fotos con HTTP 200— pero **el SDK de Supabase NO lo escapa en `.download()`**: corta el path ahí y devuelve "Object not found" aunque el archivo esté. Ya rompió el generador de placas (arreglado escapando cada segmento del path) y va a romper cualquier script nuevo que baje por path. Limpieza de fondo: renombrar los 3 objetos del bucket a `vulk-ready-receta/` y actualizar `storage_path` en `product_images`. ⚠️ Renombrar invalida el cache de 31 días de la imagen optimizada de Next para ese producto, así que las fotos van a tardar un rato en volver a servirse rápido. Es una migración de datos del catálogo: pedir OK al founder antes.
+
+
+- [ ] **Tipografía del esquema de medidas** (detectado 2026-08-25 en la revisión visual de las placas de Instagram). El esquema que se ve en la placa `medidas` NO lo genera `placa-producto.ts`: es la imagen que quedó guardada en `product_images` cuando se corrió `pnpm placas` para Mercado Libre. Dos defectos suyos: (a) en algunos productos la cota se parte —el número queda arriba de la línea de medida y el "mm" cae abajo, huérfano—, y (b) los números salen con tracking abierto y se leen como dígitos sueltos ("1 4 5"), justo al revés de las filas de la placa, que van ajustadas. Se arregla en `scripts/lib/placas-medidas.ts` y obliga a regenerar y volver a subir el esquema de cada producto (nombre de archivo nuevo obligatorio: la imagen optimizada de Next se cachea 31 días por path). Caso de control: `vulk-53-3`, la cota del puente.
+
+
+- [ ] **Terminar de unificar las placas de guías con las primitivas compartidas** (2026-08-25). `scripts/lib/placa-articulo.ts` ya usa `ajustarMedido` en sus tres titulares (pregunta, respuesta, titular) — eso arregló un desborde real de 64 px. Lo que queda es que **no importa nada de `placa-base.ts`**: tiene su propia copia de `enLineas()` y de `ajustar()` con el estimador de 0,52 px por carácter, todavía usado en los `enLineas` de temario, autoridad y la bajada del titular. Ojo con cuatro cosas al migrar: (a) los ítems del temario se dibujan en `x = MARGEN + 44`, así que su columna real es **884, no 928**; (b) medir cada ítem por separado da un cuerpo distinto por ítem y la lista sale despareja — hay que medir los N y quedarse con el mínimo; (c) el `kicker` de base no recibe `ctx`; (d) importar de base **cambia el render** de las 10 combinaciones (encabezado 25→22, pie 500/23→600/22, tracking del rótulo 7→8, el brillo pasa a círculo de 6 cortes), así que va con OK visual del founder. Verificación: `pnpm placas:verificar --guias` (cubre los 5 tipos × 2 formatos × cada FAQ, 166 placas) más una mirada a `como-leer-receta-anteojos` en `temario` story y `presbicia` en `autoridad` feed, que son los casos visualmente más apretados.
+
 
 - [ ] **Fotos de modelo sin usar en el catálogo** (detectado 2026-08-01 al cargar Vulk Vartis). `PRODUCT_SCHEMA.md` menciona "imagen contexto (modelo usando los lentes)" como campo 🔴 recomendado, pero ningún seed real del catálogo lo usa hoy — todos van solo perfil+frente+medidas. El founder subió `modelo-vartis-LPink.jpg`/`Modelo-vartis-mdemi.jpg` (foto de una persona usando el armazón) pero quedaron sin insertar en `product_images` por falta de precedente/convención de dónde mostrarlas en la PDP. Evaluar si vale la pena definir el patrón (sort_order reservado, posición en la galería) para futuras cargas, o descartar el campo del schema si no se va a usar nunca.
 
@@ -198,6 +268,27 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
   versión inexistente sería más explícito.
 
 ## 🟢 Features menores futuras
+
+- [ ] **Threads para Óptica Carballo** (habilitado 2026-08-25): la app de Meta ya tiene el caso
+  de uso de la Threads API prendido. En productosvirales Threads rinde ~12x las vistas de X, así
+  que vale probarlo acá. Sería una integración aparte (`lib/integrations/threads/`), pero puede
+  reusar entera la cola de `social_posts` — la tabla ya tiene la columna `platform` justamente
+  para esto; hoy el CHECK solo acepta `'instagram'` y habría que ampliarlo.
+- [ ] **Instagram Shopping vía Catalog API** (habilitado 2026-08-25): el caso de uso está
+  prendido y no se usa. Permitiría etiquetar productos en los posts y que el precio salga del
+  catálogo. Para un e-commerce con 60+ productos cargados es la mejora con más upside de las que
+  desbloquea la app de Meta. Requiere verificación del negocio y aprobación de compras en
+  Instagram — no es un fin de semana.
+- [ ] **Evaluar pasar el token de Instagram a un *page access token***: hoy se guarda un token de
+  usuario de larga duración (60 días) que `token.ts` renueva solo. Un page token derivado de un
+  token de usuario de larga duración **no vence nunca**, lo que sacaría de encima el único modo de
+  falla silenciosa que le queda a la integración (que la renovación falle y el feed quede mudo).
+  Implica cambiar el flujo de `seedToken`: token de usuario corto → largo → `GET /me/accounts` →
+  guardar el token de la página. No urgente: la renovación anticipada de 7 días + el aviso por
+  mail ya cubren el caso.
+- [ ] **Apagar los casos de uso de la app de Meta que no se usan** (Marketing API, ads MCP,
+  oEmbed, WhatsApp): no molestan, pero son los que hacen que Meta pida verificación del negocio.
+  Si aparece ese cartel y traba algo, desactivarlos es lo primero a probar.
 
 - [ ] **Página `/sucursales`** o sección con mapa cuando se confirme la
   dirección exacta (Virasoro, Corrientes).
