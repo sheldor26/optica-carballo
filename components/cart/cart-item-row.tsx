@@ -5,19 +5,13 @@ import { useState, useTransition } from 'react';
 import { Loader2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatPriceCents } from '@/lib/format/currency';
+import { describeVariant } from '@/lib/catalog/variant-label';
+import { isPolarizedVariant } from '@/lib/catalog/polarized';
 import { removeFromCart, updateCartItem } from '@/lib/cart/actions';
 import {
   MAX_QUANTITY_PER_ITEM,
   type ResolvedCartItem,
 } from '@/lib/cart/types';
-
-function variantLabel(attrs: Record<string, unknown>): string {
-  const frame = typeof attrs.frame_color === 'string' ? attrs.frame_color : null;
-  const lens = typeof attrs.lens_color === 'string' ? attrs.lens_color : null;
-  const size = typeof attrs.size === 'string' ? attrs.size : null;
-  const parts = [frame, lens, size].filter((v): v is string => Boolean(v));
-  return parts.length > 0 ? parts.join(' / ') : 'Variante';
-}
 
 function issueLabel(issue: ResolvedCartItem['issue']): string | null {
   if (issue === 'unavailable') return 'Ya no está disponible';
@@ -74,7 +68,11 @@ export function CartItemRow({ item }: { item: ResolvedCartItem }) {
           <span className="text-foreground font-medium">{item.product.name}</span>
         )}
         <p className="text-muted-foreground text-xs">
-          {item.brand.name} · {variantLabel(item.variant.attributes)} · SKU{' '}
+          {item.brand.name} · {describeVariant(item.variant.attributes)}
+          {isPolarizedVariant(item.variant.attributes) && (
+            <span className="text-blue-700"> · Polarizado</span>
+          )}{' '}
+          · SKU{' '}
           {item.variant.sku}
         </p>
         {broken && (

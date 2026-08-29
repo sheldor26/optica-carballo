@@ -71,7 +71,14 @@ export function describeVariant(attrs: VariantAttributesJson): string {
   const frame = lookup(FRAME_COLOR_LABELS, attrs.frame_color);
   const lens = lookup(LENS_COLOR_LABELS, attrs.lens_color);
   const size = typeof attrs.size === 'string' ? attrs.size : null;
-  const parts = [frame, lens, size].filter((v): v is string => Boolean(v));
+  // Cuarto slot, opcional: para cuando dos variantes comparten frente Y lente y
+  // sólo las separa un tratamiento. Sin esto, el Vulk The Guardian mostraría dos
+  // filas idénticas ("Negro mate / Gris oscuro") con $8.720 de diferencia entre
+  // ellas — el comprador no tiene con qué elegir. `size` NO sirve para esto: es
+  // el slot de talle y ensuciarlo hace que después alguien lea "polarizada" como
+  // si fuera un talle.
+  const note = typeof attrs.variant_note === 'string' ? attrs.variant_note : null;
+  const parts = [frame, lens, size, note].filter((v): v is string => Boolean(v));
   return parts.length > 0 ? parts.join(' / ') : 'Variante';
 }
 
