@@ -22,6 +22,69 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-08-29 — Marco de placa en Canva sin insetear el path: dejar que el borde se recorte en el canto
+
+**El caso**: armando la placa de sponsor (fuera del catálogo, ver CURRENT_STATE.md), Juan pidió un
+marco blanco alrededor de toda la pieza para que se lea como unidad cerrada. La forma "obvia" hubiera
+sido redibujar el rect de fondo con un margen (ej. de 0,0–1600,900 a 10,10–1590,890) para que el
+stroke quedara íntegro adentro del canvas.
+
+**Qué se hizo en cambio**: se dejó el rect de fondo pegado exactamente al borde del canvas
+(0,0–1600,900) y se le aplicó `update_stroke_properties` con un stroke centrado en el borde
+(`weight: 24`). La mitad del grosor cae afuera del canvas y se recorta sola en el export; la mitad
+que queda adentro (~12px) es el marco visible. Mismo truco para el borde del isotipo: en vez de
+armar un rectángulo blanco detrás y pelearse con el orden de capas (z-index) para que quede visible
+solo como anillo, se aplicó `update_stroke_properties` directo sobre el rect del logo — un borde
+sobre un elemento existente no exige gestionar capas, uno nuevo (`insert_shape`) sí.
+
+**Por qué funciona y cuándo usarlo**: el motor de renderizado de Canva centra el stroke sobre el
+borde del path, no lo dibuja hacia adentro. Aprovechar eso ahorra el cálculo de inset a mano y el
+riesgo de desalinear proporciones. Sirve para cualquier "marco de placa" futuro con este MCP:
+duplicar el weight que se quiere ver (12px visibles → weight 24) y dejar que el canvas recorte el
+resto. Sólo hay que confirmar con el thumbnail que no quedó demasiado fino o grueso — no hay fórmula
+exacta, se ajusta a ojo una vez.
+
+---
+
+## 2026-08-29 — Dos agentes discreparon en un hecho verificable: se verifica, no se elige
+
+**El caso**: cargando el Rusty Bad Card se invocaron `seo-strategist` y `catalog-loader` en paralelo.
+Volvieron contradiciéndose en el dato central de la ficha: **la forma**. SEO dijo `rectangular`
+(siguiendo a ML, que declara "Rectangular doble puente"); el de carga dijo `aviador escuadrado de
+doble puente, misma familia que The Take, Yeah, Bruice`.
+
+**Qué se hizo**: no se eligió el informe más largo ni el más convincente. Se bajaron las fotos
+primarias de dos productos **del propio catálogo** que ya están clasificados —el **Rusty Bruice**
+(`aviador`) y el **Rusty Rew** (`rectangular`)— y se compararon contra las del Bad Card. El Bruice
+tiene puente doble, barra recta arriba y lente trapezoidal que se afina: **idéntica familia al Bad
+Card**. El Rew tiene lente plana, puente simple y sin barra. Es `aviador`, sin ambigüedad. Costó dos
+`curl` y dos imágenes.
+
+**Por qué importaba tanto**: el informe de SEO **se contradecía solo y no se notaba sin verificar**.
+Justificaba "no hay colisión con el Bruice" con el argumento *"las formas son distintas: Bruice =
+aviador, Bad Card = rectangular"* — o sea que su propia conclusión dependía de la premisa que estaba
+mal. Y toda su valuación colgaba de ahí: vendía que la ficha hacía crecer
+`/anteojos-de-sol/rusty/rectangular` de 1 a 2 productos. Como aviador eso no pasa: es el 4º aviador
+Rusty y los dos carriles de forma ya están tomados. Si se aceptaba el informe por venir de un
+especialista, se publicaba una forma falsa **y** una estrategia construida sobre ella.
+
+**La regla, en dos partes**:
+1. **Cuando dos agentes discrepan en un hecho verificable, el desempate es la verificación, nunca la
+   calidad retórica del informe.** Un informe largo, con tablas y archivo:línea, se siente
+   autoritativo y es exactamente por eso que hay que chequear su premisa.
+2. **El mejor patrón de verificación es contra el propio catálogo, no contra una definición.**
+   "¿Esto es aviador o rectangular?" en abstracto no tiene respuesta limpia — el Bad Card es
+   objetivamente un navigator, que está en el medio. Pero "¿se parece más al que YA llamamos aviador
+   o al que YA llamamos rectangular?" sí la tiene, y además garantiza que la faceta quede coherente,
+   que es lo que el comprador ve. El catálogo cargado es el patrón de referencia.
+
+**Corolario que ya venía apareciendo**: el mismo gesto de abrir la imagen resolvió las tres cosas de
+esta carga — la forma, los dos colores mal declarados por ML (el lente del C6 es gris a celeste y no
+degradé marrón), y la placa de medidas trucha dibujada sobre un wayfarer. Abrir las fotos no es un
+paso de QA al final: es la fuente primaria.
+
+---
+
 ## 2026-08-29 — Preguntarle al experto POR QUÉ no, y aceptar "no lo sabemos" como respuesta
 
 **El caso**: el founder pasó un dato del Rusty Dunsert que no había aparecido nunca así: dos de los
