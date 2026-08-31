@@ -59,6 +59,36 @@ subidos a opticacarballo.com.ar, ya fueron verificados por mi personalmente"*.
 **No hay medidas que re-tomar.** Lo que faltaba era el registro de la procedencia, no la
 verificación. La regla de declarar la fuente en cada seed nuevo sigue vigente (ver `MISTAKES.md`).
 
+## 🔴 Superlativos de peso FALSOS en 10 productos vivos (2026-08-31)
+
+Salió cargando el Rusty Gover, que pesa 23 g igual que el Bruice. Query sobre los 65 productos
+activos con `weight_grams`, ordenados por peso: **10 productos afirman "ultraliviano" o "de los más
+livianos" estando en la mitad PESADA del catálogo.** Viola la regla dura 8 (trust signals reales) y
+es exactamente lo que el seed del Ardigan advirtió: *"ningún comparativo sin query"*.
+
+| Producto | Peso | Puesto | Percentil | Dónde lo dice |
+|---|---|---|---|---|
+| **rusty-dileri** | 31,8 g | 59/65 | 91 | **en el `meta_title`** ← el peor |
+| **vulk-yamain** | 30,9 g | 56/65 | 86 | "de los más livianos" |
+| vulk-dieven (sol) | 28,5 g | 53/65 | 80 | "ultraliviano" |
+| vulk-dieven-receta | 28,5 g | 52/65 | 80 | "ultraliviano" |
+| vulk-the-sil | 28 g | 51/65 | 78 | "ultraliviano" |
+| vulk-katleen (sol) | 26,3 g | 49/65 | 73 | "ultraliviano" |
+| vulk-katleen-receta | 26,3 g | 48/65 | 73 | "ultraliviano" |
+| rusty-feeled | 25 g | 39/65 | 56 | "de los más livianos" |
+| rusty-bruice (sol) | 23 g | 32/65 | 47 | "de los más livianos" |
+| rusty-bruice-receta | 23 g | 31/65 | 47 | "de los más livianos" |
+
+Los que SÍ pueden decirlo con verdad: `rusty-r-cy-02-receta` (11,3 g, puesto 1),
+`rusty-spell-receta` (12,6 g, 3º), `vulk-clems-receta` (14,3 g, 5º), `rusty-invig-receta` (14,7 g, 7º).
+
+**El arreglo es sacar el adjetivo, no re-medir**: los pesos están bien, lo que está mal es el
+comparativo. La frase honesta es "Pesa X g" y nada más, salvo que el producto esté de verdad en el
+cuarto más liviano. El Gover se cargó así a propósito.
+
+**Regla que queda**: antes de escribir cualquier comparativo de peso, correr la query de ranking.
+Está en el seed 106 y en el del Ardigan.
+
 ## 🔴 Sacar el claim "G-Flex = flexible" de 51 productos (regla escalada por el founder 2026-08-26)
 
 **Regla**: que un armazón sea de **G-Flex** NO autoriza a decir que es **flexible**. Es el nombre

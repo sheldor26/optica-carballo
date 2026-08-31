@@ -144,7 +144,7 @@ multi-variación el `user_product_id` está a nivel VARIACIÓN, no del padre.
 
 ---
 
-### 🔵 En carga: Rusty Gover (armazón de receta)
+### ✅ Cargado y live: Rusty Gover Optics (`/anteojos-de-receta/rusty/rusty-gover-receta`)
 
 Undécimo producto del cruce. Fotos bajadas (`marketing/fotos/rusty-gover/`, 20 en 5 subcarpetas).
 
@@ -203,8 +203,47 @@ sharp y **no se lee con esa resolución — no se afirma nada sobre lo que dice*
 tiene **0 unidades**, se carga la variante (el stock sincroniza solo) pero sin imágenes propias, que
 es la única opción honesta con lo que se puede verificar. Anotado para el founder.
 
-**⬜ Bloqueado por el founder**: medidas (alto y ancho totales + confirmar 53-18-143), la forma, y
-si quiere que el SBLK use las fotos del MBLK o quede sin foto propia.
+**✅ CARGADO Y VERIFICADO EN PRODUCCIÓN** (seed 106, commit `6bcc129`). La ficha salió **sin bloque
+de medidas**, que es lo que corresponde mientras el founder no las pase (regla dura 7).
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 5 / 17 | 5 / 17 ✓ |
+| `variation_code` en NULL | 0 (la trampa) | **0** ✓ |
+| `measurements` | ausente | ✓ ausente |
+| Imágenes / primarias | 8 / 1 (SBLK sin fotos) | 8 / 1 ✓ |
+| meta_title / meta_description | ≤60 / 150-160 | 54 / **158** ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| Facetas de receta (6) | aparece en todas | ✓ |
+| "flexible" · "blue cut" · superlativo de peso | **0 apariciones** | **0** ✓ |
+| Encuadre (regla 15) | 79-93% | 92% con scale 1.00 ✓ |
+
+**Lo que la verificación adversarial de los agentes corrigió antes de escribir el seed** — los dos
+informes tenían la recomendación bien y la evidencia mal:
+- El SEO decía que el L.GREY no era transparente: **es transparente entero**, más que el CRY (que
+  tiene patillas negras). Son 2 de 5, no 1 de 5. La conclusión (sin carril de color) sobrevivía igual.
+- Prescribía como obligatorios **dos links que son 404**: `/marcas/rusty` (no existe `[slug]`) y
+  `/guias/anteojos-segun-forma-de-cara` (`content/guias/` sólo tiene 4 guías, y no es ésa).
+- Decía que el cross-link sol↔receta "resuelve null": **falso**, `fetchCompanionModality` tiene
+  fallback por similitud (misma marca + forma + precio ±25%), así que la PDP renderiza sola una
+  tarjeta "modelo similar de sol". No rompe nada, pero no era como decía.
+- Y su meta_description medía 149, por debajo del rango 150-160 de `PRODUCT_SCHEMA.md`.
+
+---
+
+### 🔴 Hallazgo grande, y NO es del Gover: 10 productos con superlativos de peso FALSOS
+
+Salió porque el Gover pesa 23 g igual que el Bruice, cuya ficha dice *"de los más livianos del
+catálogo"*. Query sobre los 65 productos activos con peso: **10 afirman "ultraliviano" o "de los más
+livianos" estando en la mitad pesada**. El peor es el **Rusty Dileri, que a 31,8 g (puesto 59 de 65)
+lo dice en el `meta_title`**, y el **Vulk Yamain a 30,9 g (56/65)** dice "de los más livianos".
+Viola la regla dura 8 y es justo lo que el seed del Ardigan advirtió: *"ningún comparativo sin query"*.
+Tabla completa y los 4 que SÍ pueden decirlo en `BACKLOG.md`. **El arreglo es sacar el adjetivo, no
+re-medir**: los pesos están bien.
+
+**⬜ Pendiente del founder**: las medidas del Gover (alto y ancho + confirmar 53-18-143), la
+confirmación de la forma, si el SBLK debe usar las fotos del MBLK, y el OK para corregir los 10
+superlativos.
 
 **Próximo paso exacto**: con esos datos, generar placas, subir fotos y escribir
 `supabase/seeds/106_rusty_gover_receta.sql`. Es MULTI-variación → `mercadolibre_variation_code` con

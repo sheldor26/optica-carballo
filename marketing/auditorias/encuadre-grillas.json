@@ -263,58 +263,6 @@
       "seCorta": false
     },
     {
-      "slug": "rusty-blozon",
-      "marca": "Rusty",
-      "storage_path": "rusty-blozon/perfil-mblk-s10-v2.jpg",
-      "width": 2000,
-      "height": 1333,
-      "stock": null,
-      "scale": 1,
-      "ocupacionEnFoto": 0.92,
-      "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.5722499999999999,
-      "seCorta": false
-    },
-    {
-      "slug": "rusty-rew",
-      "marca": "Rusty",
-      "storage_path": "rusty-rew/perfil-s10.jpg",
-      "width": 2000,
-      "height": 1333,
-      "stock": null,
-      "scale": 1,
-      "ocupacionEnFoto": 0.92,
-      "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.6277499999999999,
-      "seCorta": false
-    },
-    {
-      "slug": "vulk-cinema",
-      "marca": "Vulk",
-      "storage_path": "vulk-cinema/perfil-mblk-grey.jpg",
-      "width": 2000,
-      "height": 1333,
-      "stock": null,
-      "scale": 1,
-      "ocupacionEnFoto": 0.92,
-      "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.48524999999999996,
-      "seCorta": false
-    },
-    {
-      "slug": "rusty-malice",
-      "marca": "Rusty",
-      "storage_path": "rusty-malice/perfil-mblk-s10.jpg",
-      "width": 2000,
-      "height": 1333,
-      "stock": null,
-      "scale": 1,
-      "ocupacionEnFoto": 0.92,
-      "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.5805,
-      "seCorta": false
-    },
-    {
       "slug": "rusty-ardigan",
       "marca": "Rusty",
       "storage_path": "rusty-ardigan/perfil-carey.jpg",
@@ -341,29 +289,29 @@
       "seCorta": false
     },
     {
-      "slug": "vulk-le-groupie",
+      "slug": "vulk-cinema",
       "marca": "Vulk",
-      "storage_path": "vulk-le-groupie/perfil-mblk-s10.jpg",
+      "storage_path": "vulk-cinema/perfil-mblk-grey.jpg",
       "width": 2000,
       "height": 1333,
       "stock": null,
       "scale": 1,
       "ocupacionEnFoto": 0.92,
       "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.63825,
+      "ocupacionAltoEnCard": 0.48524999999999996,
       "seCorta": false
     },
     {
-      "slug": "vulk-the-sil",
-      "marca": "Vulk",
-      "storage_path": "vulk-the-sil/THESIL-SBLK-S10-POL--20260825.jpg",
-      "width": 1500,
-      "height": 1000,
+      "slug": "rusty-blozon",
+      "marca": "Rusty",
+      "storage_path": "rusty-blozon/perfil-mblk-s10-v2.jpg",
+      "width": 2000,
+      "height": 1333,
       "stock": null,
       "scale": 1,
       "ocupacionEnFoto": 0.92,
       "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.684,
+      "ocupacionAltoEnCard": 0.5722499999999999,
       "seCorta": false
     },
     {
@@ -380,16 +328,29 @@
       "seCorta": false
     },
     {
-      "slug": "vulk-katleen",
-      "marca": "Vulk",
-      "storage_path": "vulk-katleen/KATLEEN SDEMI-SBLK GB27 -Perfil-20260825.jpg",
-      "width": 1500,
-      "height": 1000,
+      "slug": "rusty-rew",
+      "marca": "Rusty",
+      "storage_path": "rusty-rew/perfil-s10.jpg",
+      "width": 2000,
+      "height": 1333,
       "stock": null,
       "scale": 1,
       "ocupacionEnFoto": 0.92,
       "ocupacionEnCard": 0.92,
-      "ocupacionAltoEnCard": 0.635,
+      "ocupacionAltoEnCard": 0.6277499999999999,
+      "seCorta": false
+    },
+    {
+      "slug": "rusty-malice",
+      "marca": "Rusty",
+      "storage_path": "rusty-malice/perfil-mblk-s10.jpg",
+      "width": 2000,
+      "height": 1333,
+      "stock": null,
+      "scale": 1,
+      "ocupacionEnFoto": 0.92,
+      "ocupacionEnCard": 0.92,
+      "ocupacionAltoEnCard": 0.5805,
       "seCorta": false
     },
     {
@@ -403,6 +364,58 @@
       "ocupacionEnFoto": 0.92,
       "ocupacionEnCard": 0.92,
       "ocupacionAltoEnCard": 0.67575,
+      "seCorta": false
+    },
+    {
+      "slug": "vulk-le-groupie",
+      "marca": "Vulk",
+      "storage_path": "vulk-le-groupie/perfil-mblk-s10.jpg",
+      "width": 2000,
+      "height": 1333,
+      "stock": null,
+      "scale": 1,
+      "ocupacionEnFoto": 0.92,
+      "ocupacionEnCard": 0.92,
+      "ocupacionAltoEnCard": 0.63825,
+      "seCorta": false
+    },
+    {
+      "slug": "rusty-gover-receta",
+      "marca": "Rusty",
+      "storage_path": "rusty-gover/perfil-cry.jpg",
+      "width": 2000,
+      "height": 1333,
+      "stock": null,
+      "scale": 1,
+      "ocupacionEnFoto": 0.92,
+      "ocupacionEnCard": 0.92,
+      "ocupacionAltoEnCard": 0.6014999999999999,
+      "seCorta": false
+    },
+    {
+      "slug": "vulk-the-sil",
+      "marca": "Vulk",
+      "storage_path": "vulk-the-sil/THESIL-SBLK-S10-POL--20260825.jpg",
+      "width": 1500,
+      "height": 1000,
+      "stock": null,
+      "scale": 1,
+      "ocupacionEnFoto": 0.92,
+      "ocupacionEnCard": 0.92,
+      "ocupacionAltoEnCard": 0.684,
+      "seCorta": false
+    },
+    {
+      "slug": "vulk-katleen",
+      "marca": "Vulk",
+      "storage_path": "vulk-katleen/KATLEEN SDEMI-SBLK GB27 -Perfil-20260825.jpg",
+      "width": 1500,
+      "height": 1000,
+      "stock": null,
+      "scale": 1,
+      "ocupacionEnFoto": 0.92,
+      "ocupacionEnCard": 0.92,
+      "ocupacionAltoEnCard": 0.635,
       "seCorta": false
     },
     {
@@ -718,19 +731,6 @@
       "seCorta": false
     },
     {
-      "slug": "vulk-biller",
-      "marca": "Vulk",
-      "storage_path": "vulk-biller/BILLER AQ31 PERFIL.webp",
-      "width": 1500,
-      "height": 1000,
-      "stock": null,
-      "scale": 1.4,
-      "ocupacionEnFoto": 1,
-      "ocupacionEnCard": 0.9333333333333332,
-      "ocupacionAltoEnCard": 0.5823999999999999,
-      "seCorta": false
-    },
-    {
       "slug": "rusty-spell",
       "marca": "Rusty",
       "storage_path": "rusty-spell/SPELL SBLK - S10 POL perfil.jpg",
@@ -741,6 +741,19 @@
       "ocupacionEnFoto": 0.6666666666666666,
       "ocupacionEnCard": 0.9333333333333332,
       "ocupacionAltoEnCard": 0.65975,
+      "seCorta": false
+    },
+    {
+      "slug": "vulk-biller",
+      "marca": "Vulk",
+      "storage_path": "vulk-biller/BILLER AQ31 PERFIL.webp",
+      "width": 1500,
+      "height": 1000,
+      "stock": null,
+      "scale": 1.4,
+      "ocupacionEnFoto": 1,
+      "ocupacionEnCard": 0.9333333333333332,
+      "ocupacionAltoEnCard": 0.5823999999999999,
       "seCorta": false
     },
     {
@@ -887,19 +900,6 @@
       "seCorta": false
     },
     {
-      "slug": "rusty-misty",
-      "marca": "Rusty",
-      "storage_path": "rusty-misty/MISTY_L.ROSEGS9B-pefil.jpg",
-      "width": 1500,
-      "height": 1000,
-      "stock": null,
-      "scale": 1.15,
-      "ocupacionEnFoto": 0.8255555555555556,
-      "ocupacionEnCard": 0.9493888888888888,
-      "ocupacionAltoEnCard": 0.6133333333333333,
-      "seCorta": false
-    },
-    {
       "slug": "vulk-deserve",
       "marca": "Vulk",
       "storage_path": "vulk-deserve/DESERVE-MBLK S10 POL- P.jpg",
@@ -910,6 +910,19 @@
       "ocupacionEnFoto": 0.8255555555555556,
       "ocupacionEnCard": 0.9493888888888888,
       "ocupacionAltoEnCard": 0.6919166666666666,
+      "seCorta": false
+    },
+    {
+      "slug": "rusty-misty",
+      "marca": "Rusty",
+      "storage_path": "rusty-misty/MISTY_L.ROSEGS9B-pefil.jpg",
+      "width": 1500,
+      "height": 1000,
+      "stock": null,
+      "scale": 1.15,
+      "ocupacionEnFoto": 0.8255555555555556,
+      "ocupacionEnCard": 0.9493888888888888,
+      "ocupacionAltoEnCard": 0.6133333333333333,
       "seCorta": false
     },
     {
@@ -939,19 +952,6 @@
       "seCorta": false
     },
     {
-      "slug": "vulk-disarn",
-      "marca": "Vulk",
-      "storage_path": "vulk-disarn/DISARN SBLK-MDEMI G15 POL-perfil.jpg",
-      "width": 1500,
-      "height": 1000,
-      "stock": null,
-      "scale": 1.15,
-      "ocupacionEnFoto": 0.8266666666666667,
-      "ocupacionEnCard": 0.9506666666666665,
-      "ocupacionAltoEnCard": 0.6765833333333333,
-      "seCorta": false
-    },
-    {
       "slug": "vulk-reporter",
       "marca": "Vulk",
       "storage_path": "vulk-reporter/REPORTER MBLK G GREEN PERFIL.jpg",
@@ -962,6 +962,19 @@
       "ocupacionEnFoto": 0.8266666666666667,
       "ocupacionEnCard": 0.9506666666666665,
       "ocupacionAltoEnCard": 0.6190833333333333,
+      "seCorta": false
+    },
+    {
+      "slug": "vulk-disarn",
+      "marca": "Vulk",
+      "storage_path": "vulk-disarn/DISARN SBLK-MDEMI G15 POL-perfil.jpg",
+      "width": 1500,
+      "height": 1000,
+      "stock": null,
+      "scale": 1.15,
+      "ocupacionEnFoto": 0.8266666666666667,
+      "ocupacionEnCard": 0.9506666666666665,
+      "ocupacionAltoEnCard": 0.6765833333333333,
       "seCorta": false
     },
     {
