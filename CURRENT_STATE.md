@@ -231,19 +231,40 @@ informes tenían la recomendación bien y la evidencia mal:
 
 ---
 
-### 🔴 Hallazgo grande, y NO es del Gover: 10 productos con superlativos de peso FALSOS
+### ✅ Corregidos: 10 productos con superlativos de peso FALSOS (hallazgo del mismo turno)
 
 Salió porque el Gover pesa 23 g igual que el Bruice, cuya ficha dice *"de los más livianos del
 catálogo"*. Query sobre los 65 productos activos con peso: **10 afirman "ultraliviano" o "de los más
 livianos" estando en la mitad pesada**. El peor es el **Rusty Dileri, que a 31,8 g (puesto 59 de 65)
 lo dice en el `meta_title`**, y el **Vulk Yamain a 30,9 g (56/65)** dice "de los más livianos".
 Viola la regla dura 8 y es justo lo que el seed del Ardigan advirtió: *"ningún comparativo sin query"*.
-Tabla completa y los 4 que SÍ pueden decirlo en `BACKLOG.md`. **El arreglo es sacar el adjetivo, no
-re-medir**: los pesos están bien.
+**Corregidos el mismo día con el OK del founder**: **26 reemplazos en 4 campos** (`meta_title`,
+`meta_description`, `short_description`, `description`), aplicados a la base **y a los 10 seeds**
+para que un re-run no los reintroduzca. Verificado por SQL (cero superlativos en la mitad pesada) y
+en producción (las 10 PDP limpias). Criterio: **sacar el adjetivo y dejar el número** — "Pesa 23 g"
+y punto. Los pesos estaban bien; lo falso era el comparativo. De paso se arreglaron 3 títulos que
+pasaban los 60 caracteres y 2 meta descripciones fuera del rango 150-160, porque ya se editaban esos
+campos.
+
+⚠️ **LO MÁS IMPORTANTE DE ESTE ARREGLO: dos frases que el regex marcaba igual y NO se tocaron,
+porque son ciertas.** El Yamain dice *"El policarbonato es más liviano que el cristal"* y el Feeled
+*"la lente es de policarbonato, un material liviano"*: las dos hablan del **material de la lente**,
+no del peso del armazón. Un reemplazo por patrón habría roto texto correcto para arreglar texto
+falso. **Hubo que abrir cada frase en contexto, una por una.** Siguen pudiendo afirmarlo con verdad
+los 4 del cuarto más liviano: R-CY 02 (11,3 g, puesto 1 de 65), Spell (12,6), Clems (14,3) e Invig
+(14,7). Ítem cerrado en `BACKLOG.md`.
+
+⚠️ **Nota de verificación**: la primera pasada dio 5 páginas "sucias" y la segunda dio otras
+distintas — era el cache ISR devolviendo versiones viejas según el nodo. Se insistió hasta que las
+10 dieron limpio de verdad. Es la tercera vez en la semana que una lectura única de producción da un
+falso resultado; **una sola request nunca alcanza para verificar después de un cambio**.
 
 **⬜ Pendiente del founder**: las medidas del Gover (alto y ancho + confirmar 53-18-143), la
-confirmación de la forma, si el SBLK debe usar las fotos del MBLK, y el OK para corregir los 10
-superlativos.
+confirmación de la forma, y si el SBLK debe usar las fotos del MBLK.
+
+**Próximo paso exacto**: cuando lleguen las medidas del Gover, agregar el bloque `measurements` +
+`medidas.jpg` con `pnpm placas --solo 4`. Si no, seguir con el cruce: el tope es el **Vulk Harry**
+(sol, 1 color, 19 u, 20 ventas), después **stately** (3 colores, 15 u, 16 ventas).
 
 **Próximo paso exacto**: con esos datos, generar placas, subir fotos y escribir
 `supabase/seeds/106_rusty_gover_receta.sql`. Es MULTI-variación → `mercadolibre_variation_code` con
