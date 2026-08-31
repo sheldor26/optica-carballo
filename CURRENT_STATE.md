@@ -110,6 +110,40 @@ correcto sin procedencia registrada es indistinguible de uno inventado y cuesta 
 Se perdió medio turno levantando una alarma sobre datos sanos. **Regla vigente**: todo seed que
 cargue `measurements` declara la fuente. Ítem de BACKLOG cancelado.
 
+### ✅ Regla nueva del founder: ignorar las publicaciones de CATÁLOGO de ML
+
+Textual el 2026-08-31: *"evita estas publicaciones catalog_listing: true - siempre basate en las que
+yo cree"*. Guardado en memoria del proyecto. Consecuencias, todas aplicadas:
+
+**1. Auditoría del catálogo ya cargado.** De **197 publicaciones mapeadas, 18 eran de catálogo**, en
+**12 productos** — incluidas las **4 del Guardian** y las **2 del Dunsert**, que había mapeado yo en
+las cargas de esta semana. **Nada estaba roto hoy**: los 18 precios coincidían con los de la
+tradicional equivalente. El riesgo era a futuro, porque `syncStockFromMLItem` trae `price_cents`
+además de stock, así que el precio del sitio quedaba en manos de un canal distinto.
+
+**15 remapeadas a la publicación tradicional del mismo `user_product_id`**, verificando ANTES que
+stock y precio coincidieran exacto en los 15 — el remapeo no movió un solo número. Las tres cuyas
+tradicionales están **pausadas con stock 0** (Bruk, Eslav, Way Back) ya tenían stock 0 en el sitio,
+así que también fue neutro.
+
+**3 quedan en catálogo porque NO existe tradicional equivalente**: `vulk-biller` SKU 125189,
+`vulk-the-sil` SKU 128301 y `rusty-terdey` SKU 128820. No hay alternativa; si el founder crea la
+tradicional, se remapean.
+
+**2. `ml-faltantes.ts` ahora las descarta**, con el motivo escrito en el tipo. El efecto es enorme:
+**200 de 493 publicaciones eran de catálogo**. El reporte pasó de *344 colores / 1.322 unidades*
+(antes de todo) a *310 / 1.190* (tras arreglar la deduplicación) a **189 colores / 509 unidades**
+ahora. La caída grande de este último paso tiene una explicación propia: **el chequeo de "ya está
+cargado" es por `item_id`, no por pozo**, así que una publicación de catálogo cuyo gemelo tradicional
+YA estaba en el sitio aparecía igual como faltante. Eran ~680 unidades que ya estaban cargadas.
+Cambió también el orden de la lista y algunos contadores de ventas, que venían del canal de catálogo.
+
+**3. Regla para las próximas cargas**: al elegir qué publicación mapear, descartar toda
+`catalog_listing: true` y quedarse con la tradicional del mismo `user_product_id`. En un item
+multi-variación el `user_product_id` está a nivel VARIACIÓN, no del padre.
+
+---
+
 ### 🔵 En carga: Rusty Gover (armazón de receta)
 
 Undécimo producto del cruce. Fotos bajadas (`marketing/fotos/rusty-gover/`, 20 en 5 subcarpetas).

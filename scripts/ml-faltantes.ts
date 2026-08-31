@@ -57,6 +57,14 @@ type Item = {
   permalink: string;
   /** Mismo User Product = mismo pozo de stock, aunque sean items distintos. */
   user_product_id?: string | null;
+  /**
+   * Publicación de CATÁLOGO. El founder pidió el 2026-08-31 basarse SIEMPRE en
+   * las publicaciones tradicionales que creó él y **ignorar estas**: cuelgan del
+   * mismo User Product, así que no aportan stock, y como el sync entrante trae
+   * `price_cents` además de stock, mapearlas dejaría el precio del sitio en manos
+   * de un canal que él no controla igual.
+   */
+  catalog_listing?: boolean;
   attributes?: Array<{ id: string; value_name: string | null }>;
   variations?: Variacion[];
 };
@@ -155,13 +163,21 @@ async function main(): Promise<void> {
   }
   console.log('');
 
-  const deInteres = items.filter((it) => {
+  const enCategoria = items.filter((it) => {
     if (!CATEGORIAS.has(it.category_id)) return false;
     const m = marcaDe(it);
     if (!m || !MARCAS.includes(m)) return false;
     return !soloMarca || m === soloMarca;
   });
-  console.log(`  ${deInteres.length} son de Vulk o Rusty en las categorías del catálogo\n`);
+
+  // Regla del founder (2026-08-31): basarse SIEMPRE en las publicaciones que creó
+  // él e ignorar las de CATÁLOGO. Cuelgan del mismo User Product que una variación
+  // de su publicación tradicional, así que no aportan una sola unidad de stock; lo
+  // único que hacían era inflar el reporte y ofrecer un destino de mapeo peor.
+  const deInteres = enCategoria.filter((it) => it.catalog_listing !== true);
+  const catalogo = enCategoria.length - deInteres.length;
+  console.log(`  ${enCategoria.length} son de Vulk o Rusty en las categorías del catálogo`);
+  console.log(`  ${catalogo} descartadas por ser de CATÁLOGO (catalog_listing) → quedan ${deInteres.length}\n`);
 
   const supabase = crearClienteAdmin();
   const { data: variantes } = await supabase
