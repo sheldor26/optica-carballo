@@ -126,9 +126,17 @@ con variaciones de la multi — los stocks coinciden exacto, que es la firma del
 
 La propia multi **MLA1388506289** reporta `available_quantity: 17`. Estado real, precio uniforme
 $82.745,69, 6 ventas: **Cry 5 u · MBLU 4 · MBLK 4 · L.GREY 4 · SBLK 0**.
-Ya son Zion, Cinema, Ardigan, Dunsert y Gover: el bug tiene reproducción confiable y sería momento
-de arreglar `ml-faltantes.ts` para que resuelva el `user_product_id` de las variaciones de un item
-multi, que es donde el script se queda ciego.
+**✅ ARREGLADO EL 2026-08-31.** El `type Variacion` no declaraba `user_product_id`, así que el campo
+no se leía nunca aunque la API lo manda; el pozo se heredaba del padre (null en un multi → fallback
+al `item_id`) y la clave de agrupación concatenaba `${pozo}::${variacion}`, con lo cual nunca podía
+colisionar con la de su gemela. **Efecto sobre la cuenta real: el reporte pasó de 344 colores /
+1.322 unidades a 310 / 1.190 — había 34 colorways y 132 unidades fantasma**, no sólo en el Gover.
+
+**⚠️ Y EL FOUNDER CORRIGIÓ EL ENCUADRE, que era lo más importante**: las gemelas NO son duplicados
+descuidados. La multi es su publicación **tradicional** y las sueltas son de **CATÁLOGO**
+(`catalog_listing: true`, verificado en la API). Es un canal de venta deliberado sobre el mismo User
+Product. El script decía "publicaciones DUPLICADAS que compiten entre sí — oportunidad de limpieza",
+o sea que **le recomendaba borrar publicaciones que él creó a propósito**. Texto corregido.
 
 **🏷️ Datos del fabricante** (`rustyoptical.com/optical/fw22/gover`): SKU **CRY-SBLK 113104 ·
 MBLK 113106 · LGREY 113107 · MBLU 113109** (el SBLK no figura en esa página y además está en 0),

@@ -35,6 +35,15 @@ type Variacion = {
   available_quantity: number;
   price?: number;
   attribute_combinations?: Array<{ id: string; value_name: string | null }>;
+  /**
+   * El pozo de stock de ESTA variación. Es la clave de deduplicación real:
+   * una publicación de CATÁLOGO cuelga del mismo User Product que una variación
+   * de la publicación tradicional, y comparten unidades.
+   * Ojo: en un item multi-variación el `user_product_id` del PADRE viene null,
+   * así que hay que leerlo acá y no arriba (fue el bug que hizo contar doble el
+   * stock en Zion, Cinema, Ardigan, Dunsert y Gover).
+   */
+  user_product_id?: string | null;
 };
 
 type Item = {
@@ -216,6 +225,10 @@ async function main(): Promise<void> {
     for (const v of sinCargar) {
       faltan.push({
         ...base,
+        // El pozo NO se hereda del padre: en un multi-variación el padre no
+        // tiene `user_product_id`. Cada variación trae el suyo, y es el que
+        // colisiona con el de su publicación de catálogo.
+        pozo: v.user_product_id ?? `${it.id}::${v.id}`,
         precio: v.price ?? it.price,
         stock: v.available_quantity,
         variacion: String(v.id),
@@ -261,8 +274,9 @@ async function main(): Promise<void> {
     g.categorias.add(f.categoria);
     g.items.add(f.item);
     // Un pozo cuenta una sola vez, con el stock que declara.
-    const clavePozo = f.variacion ? `${f.pozo}::${f.variacion}` : f.pozo;
-    if (!g.pozos.has(clavePozo)) g.pozos.set(clavePozo, f.stock);
+    // `pozo` ya identifica el User Product, tanto en items simples como en
+    // variaciones. Concatenar la variación acá rompía la deduplicación.
+    if (!g.pozos.has(f.pozo)) g.pozos.set(f.pozo, f.stock);
     g.precios.push(f.precio);
     g.vendidos = Math.max(g.vendidos, f.vendidos);
     if (f.parcial) g.parcial = true;
@@ -319,18 +333,19 @@ async function main(): Promise<void> {
   console.log('\n' + '='.repeat(88));
   console.log('MODELOS YA CARGADOS CON PUBLICACIONES SIN VINCULAR');
   console.log('='.repeat(88));
-  console.log('⚠️  Acá NO faltan colores: son publicaciones DUPLICADAS del mismo anteojo, con otro');
-  console.log('    título, que compiten entre sí en ML. Verificado sobre Beason, Terdey y The Sil:');
+  console.log('⚠️  Acá NO faltan colores: son OTRAS publicaciones sobre el MISMO pozo de stock.');
+  console.log('    Suelen ser publicaciones de CATÁLOGO (catalog_listing=true), que son un canal');
+  console.log('    de venta legítimo y deliberado sobre el mismo User Product — NO son un error');
+  console.log('    ni algo para limpiar. Verificado sobre Beason, Terdey, The Sil y Gover:');
   console.log('    coinciden hasta en el número de stock con las que ya están vinculadas.');
   console.log('    Su stock NO se suma al inventario: es el mismo, contado dos veces.');
-  console.log(`    ${incompletos.length} modelos afectados. Oportunidad de limpieza en ML, no de carga.`);
+  console.log(`    ${incompletos.length} modelos afectados. No hay nada que cargar ni que limpiar acá.`);
 
   console.log('\n' + '='.repeat(88));
   console.log(`${porItem.size} publicaciones con algo sin cargar · ${faltan.length} variantes`);
   const pozosUnicos = new Map<string, number>();
   for (const f of faltan) {
-    const k = f.variacion ? `${f.pozo}::${f.variacion}` : f.pozo;
-    if (!pozosUnicos.has(k)) pozosUnicos.set(k, f.stock);
+    if (!pozosUnicos.has(f.pozo)) pozosUnicos.set(f.pozo, f.stock);
   }
   const unidades = [...pozosUnicos.values()].reduce((a, b) => a + b, 0);
   console.log(`${pozosUnicos.size} colores distintos · ${unidades} unidades reales`);

@@ -60,8 +60,7 @@ a auditar es un archivo binario/imagen referenciado por ruta en vez de pegado co
 
 ## 2026-08-31 — El fix del doble conteo de ML quedó a medias y reincidió 5 veces sin que se notara
 
-**Estado**: 🔴 Abierto — diagnosticado con la línea exacta; el founder está verificando a mano antes
-de que se toque el script.
+**Estado**: ✅ Cerrado el 2026-08-31 — arreglado y verificado contra la cuenta real.
 
 **Qué pasó**: `pnpm ml:faltantes` informó que el Rusty Gover tiene **8 colores y 30 unidades**.
 Son **5 y 17**. Tres publicaciones "sueltas" comparten `user_product_id` con tres variaciones de la
@@ -86,8 +85,27 @@ variación.
   el campo no se lee nunca, aunque la API lo devuelve en cada variación. El bug es invisible en
   TypeScript porque el dato ni siquiera está tipado.
 
-**El fix son 3 líneas**: agregar `user_product_id?: string | null` al `type Variacion`, y en el loop
-de variaciones usar `pozo: v.user_product_id ?? \`${it.id}::${v.id}\`` en vez de heredar el del padre.
+**El fix, aplicado**: se agregó `user_product_id` al `type Variacion`, el loop de variaciones ahora
+usa `pozo: v.user_product_id ?? \`${it.id}::${v.id}\`` en vez de heredar el del padre, y se sacó la
+concatenación `${pozo}::${variacion}` de las dos claves de agrupación, que era lo que impedía la
+colisión. **Resultado sobre la cuenta real**: el total pasó de 344 colores / 1.322 unidades a
+**310 / 1.190** — o sea que había **34 colorways y 132 unidades fantasma** en todo el reporte, no
+sólo en el Gover (8/30 → 5/17, Vulk Vulk 8/18 → 5/11, Yenosid 5/21 → 3/13).
+
+**⚠️ Y UNA CORRECCIÓN DE FONDO QUE APORTÓ EL FOUNDER, más importante que el bug**: yo describí a las
+publicaciones gemelas como *"duplicadas que compiten contra vos mismo"* y sugerí limpiarlas. **Está
+mal.** Él explicó el modelo real: la multi-variación es su publicación **tradicional**, y las
+sueltas son publicaciones de **CATÁLOGO**. Verificado en la API: las tres traen
+`catalog_listing: true` con su propio `catalog_product_id`. Son **un canal de venta legítimo y
+deliberado sobre el mismo User Product**, no un descuido. Que tengan 0 ventas y `health` null es
+normal en catálogo, no un síntoma de nada.
+El script decía literal *"publicaciones DUPLICADAS... que compiten entre sí en ML. Oportunidad de
+limpieza en ML"* — le estaba recomendando al founder borrar publicaciones que creó a propósito.
+Ese texto también se corrigió.
+
+**Regla preventiva 4**: **antes de calificar una configuración del founder como un error, preguntar
+qué es.** Dos publicaciones sobre el mismo stock parecen un descuido y son un canal. El costo de
+preguntar es una línea; el de asumir es un consejo que destruye ventas.
 
 **Reglas preventivas**:
 1. **No escribir "ya está aplicado" en un MISTAKES sin un caso de prueba que lo demuestre.** Esa
