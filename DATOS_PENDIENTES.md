@@ -117,6 +117,25 @@ receta del catálogo con **varilla de 150 mm**, así que la recomendación depen
 **El founder confirmó que verificó personalmente todos los modelos del sitio**, así que el 150 vale
 y no hay nada que medir. La ficha se puede recomendar por la varilla sin asterisco.
 
+## 🔵 Rusty Gover (armazón) — en carga, faltan 2 datos tuyos (2026-08-31)
+
+**5 colores, 17 unidades** (el cruce decía 8/30: tres publicaciones sueltas comparten pozo de stock
+con variaciones de la multi). Cry 5 · MBLU 4 · MBLK 4 · L.GREY 4 · SBLK 0. Precio uniforme $82.745.
+
+✅ **Ya resuelto sin vos, de `rustyoptical.com/optical/fw22/gover`**: SKU CRY-SBLK 113104, MBLK
+113106, LGREY 113107, MBLU 113109 · **peso 23 g** · frente y patillas **G-Flex** · **bisagras con
+sistema flexo**. ML no declara absolutamente nada de este modelo.
+
+- [ ] **Alto y ancho totales.** El fabricante declara **53-18-143** (calibre-puente-varilla) pero
+  las medidas las pasás vos. Confirmame esos tres y pasame los dos que faltan.
+  ⚠️ Un revendedor publica **50-22-145**, que contradice al fabricante — otra razón para que midas.
+- [ ] **La forma.** En las fotos es un **cuadrado de esquinas redondeadas** con remaches metálicos
+  en la bisagra; ML titula "Cuadrado". Confirmalo con el armazón en la mano.
+
+⚠️ **Aviso**: la ficha del fabricante dice **"Lentes: Blue Cut"**. Son lentes demo y **no se va a
+vender como beneficio** — el filtro azul no tiene evidencia clínica robusta y la regla dura 4 obliga
+a decirlo. Si querés que la ficha lo mencione, se menciona como dato del armazón, no como ventaja.
+
 ## ✅ El resto del catálogo
 
 Los otros 77 productos activos tienen **material de patillas completo**. Sobre las medidas, ojo con

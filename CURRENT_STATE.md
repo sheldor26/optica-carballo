@@ -5,11 +5,6 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-## Última actualización
-
-**Fecha**: 2026-08-29
-**Por**: Claude Code (a pedido de Juan)
-
 ### ✅ Placa de sponsor para torneo de fútbol (fuera del catálogo)
 
 Juan pidió una placa de auspiciante (logo + nombre + Instagram + sitio web) para presentar en un
@@ -95,6 +90,63 @@ está guardada aparte.
 
 **Próximo paso exacto**: ninguno pendiente — Juan tiene las dos versiones para elegir. Si pide la
 variante con sangrado para imprenta física, retomar desde acá.
+
+---
+
+## Última actualización
+
+**Fecha**: 2026-08-31
+**Por**: Claude Code (a pedido de Juan)
+
+### ✅ Cerrado por el founder: las medidas del catálogo SÍ están verificadas
+
+Zanjó la auditoría del 2026-08-29, textual: *"todos los modelos subidos a opticacarballo.com.ar, ya
+fueron verificados por mi personalmente"*. Los **20 seeds que decían "de la FOTO"** y los **44 sin
+procedencia** tienen los datos bien: **la placa fue el vehículo del número, no la fuente**, y su
+verificación nunca quedó escrita. **No hay nada que re-medir**, y el Vulk The Trial se puede
+recomendar por su varilla de 150 mm sin asterisco — el asterisco que se le puso no correspondía.
+La entrada de `MISTAKES.md` se cierra pero **no se borra**, porque la lección sobrevive: un dato
+correcto sin procedencia registrada es indistinguible de uno inventado y cuesta lo mismo auditarlo.
+Se perdió medio turno levantando una alarma sobre datos sanos. **Regla vigente**: todo seed que
+cargue `measurements` declara la fuente. Ítem de BACKLOG cancelado.
+
+### 🔵 En carga: Rusty Gover (armazón de receta)
+
+Undécimo producto del cruce. Fotos bajadas (`marketing/fotos/rusty-gover/`, 20 en 5 subcarpetas).
+
+**⚠️ QUINTA VEZ DEL DOBLE CONTEO DE `ml:faltantes`, y la más grande hasta ahora: el cruce dice
+8 colores / 30 unidades y son 5 / 17.** Las tres publicaciones "sueltas" comparten `user_product_id`
+con variaciones de la multi — los stocks coinciden exacto, que es la firma del patrón:
+
+| Publicación suelta | Pozo | Duplica a |
+|---|---|---|
+| MLA1820631085 negro mate (4 u) | `MLAU162369272` | var 179922407963 MBLK |
+| MLA1820631089 cry-sblk (5 u) | `MLAU415613430` | var 183829439783 Cry |
+| MLA3427756626 gris traslúcido (4 u) | `MLAU162369298` | var 180348482155 L.GREY |
+
+La propia multi **MLA1388506289** reporta `available_quantity: 17`. Estado real, precio uniforme
+$82.745,69, 6 ventas: **Cry 5 u · MBLU 4 · MBLK 4 · L.GREY 4 · SBLK 0**.
+Ya son Zion, Cinema, Ardigan, Dunsert y Gover: el bug tiene reproducción confiable y sería momento
+de arreglar `ml-faltantes.ts` para que resuelva el `user_product_id` de las variaciones de un item
+multi, que es donde el script se queda ciego.
+
+**🏷️ Datos del fabricante** (`rustyoptical.com/optical/fw22/gover`): SKU **CRY-SBLK 113104 ·
+MBLK 113106 · LGREY 113107 · MBLU 113109** (el SBLK no figura en esa página y además está en 0),
+**peso 23 g**, frente y patillas **G-Flex**, **sistema de bisagras flexo**.
+⚠️ **ML no declara NADA**: ni material, ni forma, ni medidas, ni SKU, ni género ("Sin género").
+⚠️ La ficha dice **"Lentes: Blue Cut"**. Son lentes demo y **no se vende como beneficio**: el
+proyecto exige honestidad sobre la evidencia clínica del filtro azul (regla dura 4).
+⚠️ El fabricante declara **53-18-143**, pero **las medidas las pasa el founder** (regla dura 7);
+ese número va sólo como contraste. Ojo que un revendedor publica 50-22-145, que contradice.
+
+**Forma**: en las fotos es un **cuadrado de esquinas redondeadas** con remaches metálicos en la
+bisagra. ML titula "Cuadrado". Falta que lo confirme el founder.
+
+**⬜ Bloqueado por el founder**: medidas (alto y ancho totales + confirmar 53-18-143) y la forma.
+
+**Próximo paso exacto**: con esos datos, generar placas, subir fotos y escribir
+`supabase/seeds/106_rusty_gover_receta.sql`. Es MULTI-variación → `mercadolibre_variation_code` con
+el ID numérico (la trampa del skip silencioso del Bad Card). Las 3 publicaciones gemelas NO se mapean.
 
 ---
 
