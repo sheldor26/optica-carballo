@@ -51,26 +51,13 @@ de decidir.
 
 ---
 
-## 🔴 Medidas sin verificar: 20 productos cargados "de la FOTO" y 44 sin procedencia (2026-08-29)
+## ✅ CERRADO — Medidas sin verificar (abierto y cerrado 2026-08-29 → 2026-08-31)
 
-Auditoría de los 74 seeds que cargan `measurements`: **10** declaran al founder como fuente,
-**20** dicen textual "Medidas (de la FOTO)" —violación directa de la regla dura 7— y **44** no
-declaran nada. Ver `MISTAKES.md` 2026-08-29.
-
-**La exposición está acotada y se sabe dónde**: contrastando la placa vieja del Bad Card contra lo
-que midió el founder, esas placas **aciertan calibre, puente y varilla** (van impresos en la
-varilla) **y erran alto y ancho**. Así que lo dudoso es `frame_width_mm` y `lens_height_mm`, no las
-cinco medidas.
-
-**Los 20 con placa declarada** (seeds 60-78 + 92): Opposit, My Crew, Tour 81, Play, Terdey, Patien
-(sol y receta), The Sil, Blinded, And Now, Raven, **The Trial (sol y receta)**, Bennie 51, Woxi,
-Ther, The Take (sol y receta), Zinz, Yeah.
-
-**Prioridad 1 — The Trial**: es el único armazón de receta del catálogo con varilla de 150 mm, o sea
-que si alguien lo pide por eso, la recomendación depende de un número no verificado. 5 unidades en
-stock, es un minuto.
-
-Después, por stock. Y para los 44 sin procedencia, decidir si se re-miden o se aceptan como están.
+Se había abierto tras auditar los 74 seeds con `measurements`: 10 declaraban al founder, 20 decían
+"de la FOTO" y 44 no declaraban nada. **El founder lo cerró el 2026-08-31**: *"todos los modelos
+subidos a opticacarballo.com.ar, ya fueron verificados por mi personalmente"*.
+**No hay medidas que re-tomar.** Lo que faltaba era el registro de la procedencia, no la
+verificación. La regla de declarar la fuente en cada seed nuevo sigue vigente (ver `MISTAKES.md`).
 
 ## 🔴 Sacar el claim "G-Flex = flexible" de 51 productos (regla escalada por el founder 2026-08-26)
 

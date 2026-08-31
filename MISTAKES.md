@@ -60,7 +60,16 @@ a auditar es un archivo binario/imagen referenciado por ruta en vez de pegado co
 
 ## 2026-08-29 — 20 seeds cargaron medidas "de la FOTO", violando la regla dura 7
 
-**Estado**: 🔴 Abierto (auditoría hecha, corrección pendiente del founder)
+**Estado**: ✅ Cerrado el 2026-08-31 — **los DATOS estaban bien; lo que faltaba era el registro.**
+El founder lo zanjó, textual: *"todos los modelos subidos a opticacarballo.com.ar, ya fueron
+verificados por mi personalmente"*. O sea que las medidas del catálogo SÍ pasaron por él, incluidas
+las de los 20 seeds que dicen "de la FOTO" y las de los 44 sin procedencia: la placa fue el
+**vehículo** del número, no la fuente, y su verificación no quedó escrita.
+**Lo que este mistake sigue enseñando, y por eso no se borra**: un dato correcto sin procedencia
+registrada es indistinguible de uno inventado, y cuesta lo mismo auditarlo. Se perdió medio turno
+levantando una alarma sobre datos que estaban bien, y peor, la recomendación del Vulk The Trial se
+le entregó al founder con un asterisco que no correspondía. **La regla preventiva 1 queda vigente y
+es la única que importaba**: todo seed que cargue `measurements` declara la procedencia.
 
 **Qué pasó**: buscando un armazón de receta con varilla de 150 mm apareció que el **Vulk The Trial**
 es el único del catálogo que llega, y que sus dos seeds (`71_vulk_the_trial_sol.sql:27` y
@@ -102,7 +111,8 @@ mal"; es un campo y medio, en un subconjunto identificado.
 3. **Al auditar, distinguir los tres estados** (founder / foto / sin declarar). Agrupar "no-founder"
    esconde que los 44 sin declarar son el grupo más incierto.
 
-**Backlog**: medir los 20 con placa declarada, priorizando por stock. Está en `BACKLOG.md`.
+**Backlog**: **cancelado** — no hay nada que medir. La confirmación del founder cubre el catálogo
+entero.
 
 ---
 

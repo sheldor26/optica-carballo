@@ -110,23 +110,12 @@ carga lo correcto):
   vira a celeste abajo**, no marrón.
 - **C1**: ML lo llama "Azul Metálico". Es un **azul humo translúcido**, no un metalizado.
 
-## ⚠️ Vulk The Trial — las medidas NO las pasó el founder (detectado 2026-08-29)
+## ✅ Vulk The Trial — CERRADO el 2026-08-31
 
-Salió al buscar un armazón de receta con varilla de 150 mm: **es el único del catálogo que llega**
-(el resto se corta en 145), así que la recomendación depende de ese número. Y los dos seeds del
-modelo dicen textual **"Medidas (de la FOTO)"** —
-`supabase/seeds/71_vulk_the_trial_sol.sql:27` y `72_vulk_the_trial_receta.sql:21` — o sea que
-**147 / 50×49 / 15 / 150 nunca las midió el founder**. Viola la regla dura 7, y encima el Trial es
-justo el modelo donde una fuente externa ya erró antes sobre medidas.
-
-- [ ] **Medir el Vulk The Trial** (hay 5 unidades de receta en stock, es un minuto).
-  Lo que más importa es la **varilla**, porque es el dato por el que se lo recomendaría.
-
-📌 **Matiz a favor, que salió del Bad Card**: contrastando la placa vieja del Bad Card contra lo que
-midió el founder, esas placas **aciertan calibre, puente y varilla** —los tres números que vienen
-IMPRESOS en la varilla del armazón— **y erran el alto y el ancho**, que son los que hay que medir.
-La varilla del Trial cae en el grupo confiable. Pero sigue sin verificar, y afecta a los DOS
-productos (sol y receta) que comparten esas medidas.
+Se había anotado porque los seeds decían "Medidas (de la FOTO)" y el Trial es el único armazón de
+receta del catálogo con **varilla de 150 mm**, así que la recomendación dependía de ese número.
+**El founder confirmó que verificó personalmente todos los modelos del sitio**, así que el 150 vale
+y no hay nada que medir. La ficha se puede recomendar por la varilla sin asterisco.
 
 ## ✅ El resto del catálogo
 
