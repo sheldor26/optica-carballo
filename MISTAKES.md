@@ -58,6 +58,49 @@ a auditar es un archivo binario/imagen referenciado por ruta en vez de pegado co
 
 ---
 
+## 2026-08-31 — El fix del doble conteo de ML quedó a medias y reincidió 5 veces sin que se notara
+
+**Estado**: 🔴 Abierto — diagnosticado con la línea exacta; el founder está verificando a mano antes
+de que se toque el script.
+
+**Qué pasó**: `pnpm ml:faltantes` informó que el Rusty Gover tiene **8 colores y 30 unidades**.
+Son **5 y 17**. Tres publicaciones "sueltas" comparten `user_product_id` con tres variaciones de la
+publicación multi, o sea el mismo pozo de stock contado dos veces. La propia multi
+(`MLA1388506289`) reporta `available_quantity: 17`, que es el número real.
+
+**Lo incómodo es que esto YA tenía entrada y regla preventiva** (ver arriba, 2026-08-25, el caso del
+Rusty Malice), y esa entrada cierra diciendo: *"el `user_product_id` es la clave de deduplicación de
+stock... **Ya está aplicado en `scripts/ml-faltantes.ts`**"*. **No estaba aplicado del todo**, y esa
+frase es lo que hizo que nadie volviera a mirar. Reincidió en **Zion, Cinema, Ardigan, Dunsert y
+Gover** — cinco cargas — y cada vez se detectó a mano, se anotó en el seed como una curiosidad de
+ese producto, y no se subió a la conclusión de que el fix estaba incompleto.
+
+**Causa raíz, con la línea**: el fix dedupea por `user_product_id` **a nivel ITEM** y no a nivel
+variación.
+- `scripts/ml-faltantes.ts:198` → `pozo: it.user_product_id ?? it.id`. En un item MULTI-variación
+  el `user_product_id` del padre viene **null**, así que cae al fallback `it.id`.
+- Las variaciones heredan ese `pozo` del `...base` (líneas 216-220).
+- `scripts/ml-faltantes.ts:264` → la clave termina siendo `MLA1388506289::183829439783`, que **nunca
+  puede colisionar** con la de su gemela simple, `MLAU415613430`.
+- Y la raíz de la raíz: **el `type Variacion` (líneas ~30-38) no declara `user_product_id`**, así que
+  el campo no se lee nunca, aunque la API lo devuelve en cada variación. El bug es invisible en
+  TypeScript porque el dato ni siquiera está tipado.
+
+**El fix son 3 líneas**: agregar `user_product_id?: string | null` al `type Variacion`, y en el loop
+de variaciones usar `pozo: v.user_product_id ?? \`${it.id}::${v.id}\`` en vez de heredar el del padre.
+
+**Reglas preventivas**:
+1. **No escribir "ya está aplicado" en un MISTAKES sin un caso de prueba que lo demuestre.** Esa
+   frase apaga la revisión futura. Si el fix no tiene test, se escribe "aplicado, sin verificar".
+2. **Una discrepancia que reaparece en cargas distintas no es una curiosidad del producto: es un bug
+   de la herramienta.** Se anotó cinco veces en cinco seeds distintos como si fuera propiedad del
+   Zion, del Cinema, del Ardigan, del Dunsert y del Gover. **A la segunda repetición hay que subir
+   el hallazgo de la ficha a la herramienta.**
+3. **Cuando un fix de deduplicación toca una entidad que tiene niveles** (item → variación),
+   verificar el fix en AMBOS niveles. Acá el nivel item quedó bien y el de variación nunca se tocó.
+
+---
+
 ## 2026-08-29 — 20 seeds cargaron medidas "de la FOTO", violando la regla dura 7
 
 **Estado**: ✅ Cerrado el 2026-08-31 — **los DATOS estaban bien; lo que faltaba era el registro.**
