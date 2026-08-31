@@ -38,8 +38,14 @@ import type { SyncResult } from '@/lib/integrations/mercadolibre/types';
  * venta salía a nombre de nadie y la pantalla de la óptica mostraba
  * "(sin nombre)" para siempre. Así que se paga: una llamada más por venta.
  *
- * Lo que NO se pide es `/orders/{id}/billing_info` —contesta 403 con los
- * permisos de esta aplicación— ni `/shipments/{id}`. Ver la migración.
+ * Y una TERCERA por venta cuando hay envío: `/shipments/{id}`, por la dirección.
+ * Tampoco viene en la orden —`receiver_address` es `undefined` en las 18
+ * verificadas— y Juan la pidió para dejarla anotada en el cliente. Es a lo
+ * sumo el mismo trabajo que ya se hace: con dos ventas por día, son unas pocas
+ * llamadas por corrida.
+ *
+ * Lo que NO se pide es `/orders/{id}/billing_info`: contesta 403 con los
+ * permisos de esta aplicación.
  *
  * IDEMPOTENTE POR CONSTRUCCIÓN
  *
@@ -95,6 +101,67 @@ type MLOrder = {
 };
 
 type MLBusqueda = { results?: MLOrder[]; paging?: { total?: number } };
+
+/** Lo poco que hace falta del envío: a dónde va el paquete. */
+type MLEnvio = {
+  destination?: {
+    shipping_address?: {
+      address_line?: string | null;
+      street_name?: string | null;
+      street_number?: string | null;
+      zip_code?: string | null;
+      city?: { name?: string | null } | null;
+      state?: { name?: string | null; id?: string | null } | null;
+    } | null;
+  } | null;
+};
+
+type Direccion = {
+  calle: string | null;
+  localidad: string | null;
+  provincia: string | null;
+  cp: string | null;
+};
+
+const SIN_DIRECCION: Direccion = { calle: null, localidad: null, provincia: null, cp: null };
+
+/**
+ * A dónde va el paquete.
+ *
+ * Best effort a propósito: si el envío no contesta se sigue con la venta sin
+ * dirección. Es un dato para dejar anotado, no algo sin lo cual la venta no se
+ * pueda cargar — el paquete lo despacha Mercado Envíos con su etiqueta, que no
+ * depende de esto.
+ *
+ * `x-format-new` porque sin esa cabecera el recurso viene en el formato viejo,
+ * donde la dirección está en otro lugar.
+ */
+async function traerDireccion(shipmentId: string | null): Promise<Direccion> {
+  if (!shipmentId) return SIN_DIRECCION;
+
+  const r = await mlFetch<MLEnvio>(`/shipments/${encodeURIComponent(shipmentId)}`, {
+    operation: 'traer_envio',
+    headers: { 'x-format-new': 'true' },
+  });
+  if (!r.ok) return SIN_DIRECCION;
+
+  const d = r.data.destination?.shipping_address ?? null;
+  if (!d) return SIN_DIRECCION;
+
+  // `address_line` ya viene armada ("Pellegrini 1234"); si falta, se arma con
+  // la calle y el número, que es lo mismo escrito en dos campos.
+  const calle =
+    comoTexto(d.address_line) ??
+    [comoTexto(d.street_name), comoTexto(d.street_number)].filter(Boolean).join(' ') ??
+    null;
+
+  return {
+    calle: calle && calle.length > 0 ? calle : null,
+    localidad: comoTexto(d.city?.name),
+    provincia: comoTexto(d.state?.name) ?? comoTexto(d.state?.id),
+    cp: comoTexto(d.zip_code),
+  };
+}
 
 /** Los pesos con decimales que manda ML, a centavos enteros. */
 function aCentavos(valor: number | undefined | null): number {
@@ -170,6 +237,7 @@ export type ResumenVentas = {
   renglones: number;
   sin_variante: number;
   sin_nombre: number;
+  sin_direccion: number;
   errores: string[];
 };
 
@@ -189,6 +257,7 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
     renglones: 0,
     sin_variante: 0,
     sin_nombre: 0,
+    sin_direccion: 0,
     errores: [],
   };
 
@@ -237,6 +306,10 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
       const apellido = comoTexto(venta.buyer?.last_name);
       if (!nombre && !apellido) resumen.sin_nombre++;
 
+      const envioId = comoTexto(venta.shipping?.id);
+      const direccion = await traerDireccion(envioId);
+      if (envioId && !direccion.localidad) resumen.sin_direccion++;
+
       const { data: fila, error } = await supabase
         .from('marketplace_orders')
         .upsert(
@@ -250,7 +323,11 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
             buyer_nickname: comoTexto(venta.buyer?.nickname),
             buyer_nombre: nombre,
             buyer_apellido: apellido,
-            shipment_id: comoTexto(venta.shipping?.id),
+            shipment_id: envioId,
+            buyer_direccion: direccion.calle,
+            buyer_localidad: direccion.localidad,
+            buyer_provincia: direccion.provincia,
+            buyer_cp: direccion.cp,
             payload: venta as unknown as Record<string, unknown>,
             updated_at: new Date().toISOString(),
           },
