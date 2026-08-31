@@ -28,8 +28,22 @@ alter table public.marketplace_orders
   add column if not exists buyer_direccion  text,
   add column if not exists buyer_localidad  text,
   add column if not exists buyer_provincia  text,
-  add column if not exists buyer_cp         text;
+  add column if not exists buyer_cp         text,
+  -- EN QUÉ ANDA EL ENVÍO. Sale de la misma llamada que la dirección, así que es
+  -- gratis, y hace falta: Mercado Libre NO entrega la etiqueta de un envío ya
+  -- despachado. Contesta 400 con cause NOT_PRINTABLE_STATUS.
+  --
+  -- Sin esto la óptica ofrecía "Imprimir etiqueta" en las 22 ventas y las 22
+  -- fallaban, porque las 22 ya estaban despachadas —14 shipped, 5 delivered, 2
+  -- out_for_delivery, 1 waiting_for_withdrawal, medido el 31/08/2026—. Un botón
+  -- que nunca puede funcionar es peor que no tener el botón.
+  add column if not exists shipping_estado    text,
+  add column if not exists shipping_subestado text;
 
 comment on column public.marketplace_orders.buyer_direccion is
   'Calle y número del envío, de /shipments/{id}. La usa la óptica para dejarla '
   'anotada en el cliente; el paquete lo despacha Mercado Envíos.';
+
+comment on column public.marketplace_orders.shipping_estado is
+  'Estado del envío en Mercado Libre: ready_to_ship, shipped, delivered... La '
+  'etiqueta sólo se puede pedir en ready_to_ship.';
