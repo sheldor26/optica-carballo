@@ -15,6 +15,17 @@ export const runtime = 'nodejs';
  * y pide por el primero, a propósito: el id de orden es la clave estable, el
  * pack puede venir vacío.
  *
+ * VARIAS DE UNA, SEPARADAS POR COMA
+ *
+ * "2000018203163044,2000018192883664,2000018189156770" devuelve UNA hoja con las
+ * tres etiquetas. No lo componemos nosotros: `/shipment_labels` acepta varios
+ * `shipment_ids` y arma la hoja él. Verificado contra la API el 31/08/2026 —tres
+ * envíos reales dieron una sola página A4 apaisada (297 x 210 mm) con las tres
+ * etiquetas lado a lado, que es exactamente como Juan las viene pegando.
+ *
+ * Es también el motivo de que se pidan TODAS en una llamada y no una por una:
+ * pidiéndolas de a una salen tres hojas con una etiqueta cada una.
+ *
  * POR QUÉ NO USA `mlFetch`
  *
  * Porque mlFetch no puede traerla. Escribe `Accept: application/json` DESPUÉS
@@ -42,14 +53,20 @@ export async function GET(
   if (rechazo) return rechazo;
 
   const { ventaId } = await params;
+
+  // Un tope, para que un link armado a mano no le pida cien etiquetas a ML.
+  const ordenes = ventaId.split(',').map((x) => x.trim()).filter((x) => /^\d{1,20}$/.test(x));
+  if (ordenes.length === 0 || ordenes.length > 20) {
+    return NextResponse.json({ ok: false, error: 'ventas_invalidas' }, { status: 400 });
+  }
+
   const supabase = createAdminClient();
 
-  const { data: venta, error } = await supabase
+  const { data: ventas, error } = await supabase
     .from('marketplace_orders')
     .select('shipment_id, external_id')
     .eq('marketplace', 'mercadolibre')
-    .eq('external_id', ventaId)
-    .maybeSingle();
+    .in('external_id', ordenes);
 
   // El error de Supabase se mira antes que el dato. Sin esto, una base caída o
   // una clave vencida se contestaban con 404 'venta_no_encontrada', y del otro
@@ -58,12 +75,20 @@ export async function GET(
     console.error('etiqueta ML: no se pudo leer la venta', ventaId, error.message);
     return NextResponse.json({ ok: false, error: 'base_no_disponible' }, { status: 503 });
   }
-  if (!venta) {
+  if (!ventas || ventas.length === 0) {
     return NextResponse.json({ ok: false, error: 'venta_no_encontrada' }, { status: 404 });
   }
-  if (!venta.shipment_id) {
+
+  /*
+   * Las que no tienen envío se dejan afuera en vez de tirar todo abajo.
+   *
+   * Pidiendo diez etiquetas, que una sea de una venta sin Mercado Envíos no es
+   * motivo para no imprimir las otras nueve. Sólo se corta si NINGUNA tiene.
+   */
+  const envios = ventas.map((v) => v.shipment_id).filter((x): x is string => !!x);
+  if (envios.length === 0) {
     return NextResponse.json(
-      { ok: false, error: 'sin_envio', detalle: 'La venta no tiene envío de Mercado Envíos.' },
+      { ok: false, error: 'sin_envio', detalle: 'Ninguna de esas ventas tiene envío de Mercado Envíos.' },
       { status: 409 },
     );
   }
@@ -76,7 +101,7 @@ export async function GET(
   const config = getMLConfig();
   const url =
     `${config.apiBase}/shipment_labels` +
-    `?shipment_ids=${encodeURIComponent(venta.shipment_id)}&response_type=pdf`;
+    `?shipment_ids=${encodeURIComponent(envios.join(','))}&response_type=pdf`;
 
   let respuesta: Response;
   try {
@@ -101,7 +126,7 @@ export async function GET(
       // `inline` y no `attachment`: se abre en una pestaña y se imprime desde
       // ahí, que es lo que se hace con una etiqueta. Bajarla a la carpeta de
       // Descargas para después buscarla es un paso de más en el mostrador.
-      'Content-Disposition': `inline; filename="etiqueta-${venta.external_id}.pdf"`,
+      'Content-Disposition': `inline; filename="etiquetas-${envios.length}.pdf"`,
       'Cache-Control': 'no-store',
     },
   });
