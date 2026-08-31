@@ -31,8 +31,8 @@ WITH
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
   (SELECT id FROM vulk), (SELECT id FROM receta), 'vulk-katleen-receta', 'Vulk Katleen Receta',
-  'Armazón de receta Vulk Katleen: cuadrado femenino, G-Flex ultra liviano (26,3g), talle medium. Apto monofocal, bifocal y progresivo. Viene con lentes demo.',
-  E'Es un armazón de receta **cuadrado femenino**, moderno y versátil. El frente y las patillas son de **G-Flex** —flexible y **ultra liviano** (26,3 g)— con bisagras plásticas, para usarlo todo el día sin que marque.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 4 colores:\n\n• MBLK (SKU 125901): negro mate.\n• M0292 (SKU 125906): caramelo mate.\n• 0292 (SKU 125902): caramelo brillo transparente.\n• MDEMI: carey mate.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  'Armazón de receta Vulk Katleen: cuadrado femenino de G-Flex, 26,3 g, talle medium. Apto monofocal, bifocal y progresivo. Viene con lentes demo.',
+  E'Es un armazón de receta **cuadrado femenino**, moderno y versátil. El frente y las patillas son de **G-Flex** (26,3 g) con bisagras plásticas.\n\nViene con lentes demo (sin graduación). Acepta tu receta: monofocales, bifocales y progresivos.\n\nDisponible en 4 colores:\n\n• MBLK (SKU 125901): negro mate.\n• M0292 (SKU 125906): caramelo mate.\n• 0292 (SKU 125902): caramelo brillo transparente.\n• MDEMI: carey mate.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "cuadrado",
@@ -53,8 +53,8 @@ VALUES (
     "imported_from": {"marketplace": "mercadolibre", "item_ids": ["MLA2013975658", "MLA2014157548"], "imported_at": "2026-06-04"}
   }'::jsonb,
   true, false,
-  'Vulk Katleen Armazón de Receta Cuadrado Mujer Ultra Liviano | Óptica Carballo',
-  'Armazón de receta Vulk Katleen: cuadrado femenino, G-Flex ultra liviano (26,3g), talle medium, apto monofocal/bifocal/progresivo. 3 colores. Envíos a toda Argentina.'
+  'Armazón de Receta Vulk Katleen Cuadrado Mujer | Carballo',
+  'Armazón de receta Vulk Katleen: cuadrado femenino de G-Flex, 26,3 g, talle medium, apto monofocal/bifocal/progresivo. 3 colores. Envíos a toda Argentina.'
 )
 ON CONFLICT (slug) DO UPDATE SET
   name=EXCLUDED.name, short_description=EXCLUDED.short_description, description=EXCLUDED.description,

@@ -53,8 +53,8 @@ WITH
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
   (SELECT id FROM vulk), (SELECT id FROM receta), 'vulk-dieven-receta', 'Vulk Dieven Unisex',
-  'Vulk Dieven: anteojos recetados rectangulares unisex, ultra livianos (28,5g), bisagras plásticas reforzadas. Envío a todo el país y cuotas sin interés.',
-  E'El **Vulk Dieven** es un armazón de receta **rectangular de bordes anchos, unisex**, ultra liviano (28,5 g), talle medium. Frente y patillas de **G-Flex** —flexible y resistente— con **bisagras plásticas reforzadas** para un calce cómodo y durable.\n\nMedidas: frente 142 mm · lente 55 mm de ancho × 48 mm de alto · puente 17 mm · varilla 145 mm.\n\nViene con lentes demo (sin graduación). Sumale tus cristales con receta: monofocales, bifocales, progresivos o multifocales.\n\nDisponible en 3 colores:\n\n• MBLK — negro mate.\n• SBLK — negro brillo.\n• L.ROSE — rosa pálido.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  'Vulk Dieven: anteojos recetados rectangulares unisex de 28,5 g, con bisagras plásticas reforzadas. Vienen con lentes demo. Envío a todo el país y cuotas.',
+  E'El **Vulk Dieven** es un armazón de receta **rectangular de bordes anchos, unisex**, de 28,5 g, talle medium. Frente y patillas de **G-Flex** —flexible y resistente— con **bisagras plásticas reforzadas** para un calce cómodo y durable.\n\nMedidas: frente 142 mm · lente 55 mm de ancho × 48 mm de alto · puente 17 mm · varilla 145 mm.\n\nViene con lentes demo (sin graduación). Sumale tus cristales con receta: monofocales, bifocales, progresivos o multifocales.\n\nDisponible en 3 colores:\n\n• MBLK — negro mate.\n• SBLK — negro brillo.\n• L.ROSE — rosa pálido.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "rectangular",
@@ -76,7 +76,7 @@ VALUES (
   }'::jsonb,
   true, false,
   'Vulk Dieven Unisex | Anteojos de receta - Óptica Carballo',
-  'Vulk Dieven: anteojos recetados rectangulares unisex, ultra livianos (28,5g), bisagras plásticas reforzadas. Envío a todo el país y cuotas sin interés.'
+  'Vulk Dieven: anteojos recetados rectangulares unisex de 28,5 g, con bisagras plásticas reforzadas. Vienen con lentes demo. Envío a todo el país y cuotas.'
 )
 ON CONFLICT (slug) DO UPDATE SET
   name=EXCLUDED.name, short_description=EXCLUDED.short_description, description=EXCLUDED.description,

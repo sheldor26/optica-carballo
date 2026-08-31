@@ -28,8 +28,8 @@ WITH
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM sol), 'rusty-dileri', 'Rusty Dileri',
-  'Anteojos de sol Rusty Dileri: cuadrados femeninos y livianos, frente de G-Flex, patillas Flex Temple y lentes de policarbonato UV400 categoría 3. Una variante con lente polarizada.',
-  E'Los Rusty Dileri son anteojos de sol **cuadrados femeninos**, modernos y livianos para uso diario. El frente es de **G-Flex** —flexible y resistente— y las patillas son **Flex Temple**, que ceden sin marcar para un calce cómodo todo el día.\n\nLas lentes son de policarbonato con protección **UV400 categoría 3** (100% UVA/UVB). El modelo **SBLK/S10 (POL) es polarizado**, lo que elimina los reflejos del asfalto, el agua y la nieve para una visión más nítida y descansada.\n\nDisponible en 2 variantes:\n\n• SBLK/S10 POL (SKU 127042): negro brillo con lente gris oscuro POLARIZADA.\n• SIENNA/G.GREEN (SKU 127043): marrón sienna con lente verde degradé.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  'Anteojos de sol Rusty Dileri: cuadrados femeninos, frente de G-Flex, patillas Flex Temple y lentes de policarbonato UV400 categoría 3. Una variante con lente polarizada.',
+  E'Los Rusty Dileri son anteojos de sol **cuadrados femeninos**, modernos y versátiles para uso diario. El frente es de **G-Flex** —flexible y resistente— y las patillas son **Flex Temple**, que ceden sin marcar para un calce cómodo todo el día.\n\nLas lentes son de policarbonato con protección **UV400 categoría 3** (100% UVA/UVB). El modelo **SBLK/S10 (POL) es polarizado**, lo que elimina los reflejos del asfalto, el agua y la nieve para una visión más nítida y descansada.\n\nDisponible en 2 variantes:\n\n• SBLK/S10 POL (SKU 127042): negro brillo con lente gris oscuro POLARIZADA.\n• SIENNA/G.GREEN (SKU 127043): marrón sienna con lente verde degradé.\n\nIncluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "cuadrado",
@@ -52,8 +52,8 @@ VALUES (
     "imported_from": {"marketplace": "mercadolibre", "item_ids": ["MLA1575782743", "MLA1480729607"], "imported_at": "2026-06-04"}
   }'::jsonb,
   true, false,
-  'Rusty Dileri Anteojos de Sol Cuadrados Mujer Livianos | Óptica Carballo',
-  'Anteojos Rusty Dileri cuadrados femeninos livianos: G-Flex, patillas Flex Temple, policarbonato UV400. 2 variantes (una polarizada). Stock real y envíos a toda Argentina.'
+  'Rusty Dileri Anteojos de Sol Cuadrados Mujer | Carballo',
+  'Anteojos Rusty Dileri cuadrados femeninos: G-Flex, patillas Flex Temple y policarbonato UV400. 2 variantes, una polarizada. Envíos a toda la Argentina.'
 )
 ON CONFLICT (slug) DO UPDATE SET
   name=EXCLUDED.name, short_description=EXCLUDED.short_description, description=EXCLUDED.description,

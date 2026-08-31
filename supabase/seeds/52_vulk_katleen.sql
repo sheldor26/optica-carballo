@@ -33,8 +33,8 @@ WITH
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
   (SELECT id FROM vulk), (SELECT id FROM sol), 'vulk-katleen', 'Vulk Katleen',
-  'Anteojos de sol Vulk Katleen: cuadrados femeninos, armazón y patillas de G-Flex ultra liviano y lentes de policarbonato UV400 categoría 3. Talle medium. Una variante con lente polarizada.',
-  E'Los Vulk Katleen son anteojos de sol **cuadrados femeninos**, modernos y versátiles para uso diario. El armazón y las patillas son de **G-Flex** —flexible y **ultra liviano** (26,3 g)— con bisagras plásticas, para que casi no los sientas puestos.\n\nLas lentes son de policarbonato con protección **UV400 categoría 3** (100% UVA/UVB). El modelo **MBLK/S10 (POL) es polarizado**, lo que elimina los reflejos del asfalto, el agua y la nieve para una visión más nítida y descansada. La variante **MSIENNA/HGG1** suma una capa antirreflejo para reducir los reflejos que llegan desde atrás.\n\nDisponible en 4 variantes:\n\n• SDEMI-SBLK/GB27 (SKU 968265): frente carey brillo con lente marrón degradé.\n• MBLK/S10 POL (SKU 125907): negro mate con lente gris oscuro POLARIZADA.\n• MBLK/C8B15 (SKU 125905): negro mate con lente naranja claro.\n• MSIENNA/HGG1 (SKU 125909): marrón claro mate con lente G15 degradé y antirreflejo.\n\nTalle medium. Incluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  'Anteojos de sol Vulk Katleen: cuadrados femeninos, armazón y patillas de G-Flex y lentes de policarbonato UV400 categoría 3. Talle medium. Una variante con lente polarizada.',
+  E'Los Vulk Katleen son anteojos de sol **cuadrados femeninos**, modernos y versátiles para uso diario. El armazón y las patillas son de **G-Flex** (26,3 g) con bisagras plásticas.\n\nLas lentes son de policarbonato con protección **UV400 categoría 3** (100% UVA/UVB). El modelo **MBLK/S10 (POL) es polarizado**, lo que elimina los reflejos del asfalto, el agua y la nieve para una visión más nítida y descansada. La variante **MSIENNA/HGG1** suma una capa antirreflejo para reducir los reflejos que llegan desde atrás.\n\nDisponible en 4 variantes:\n\n• SDEMI-SBLK/GB27 (SKU 968265): frente carey brillo con lente marrón degradé.\n• MBLK/S10 POL (SKU 125907): negro mate con lente gris oscuro POLARIZADA.\n• MBLK/C8B15 (SKU 125905): negro mate con lente naranja claro.\n• MSIENNA/HGG1 (SKU 125909): marrón claro mate con lente G15 degradé y antirreflejo.\n\nTalle medium. Incluye estuche original, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "cuadrado",
@@ -57,8 +57,8 @@ VALUES (
     "imported_from": {"marketplace": "mercadolibre", "item_ids": ["MLA1549858831", "MLA1423906891", "MLA1423907621", "MLA1802789252"], "imported_at": "2026-06-04"}
   }'::jsonb,
   true, false,
-  'Vulk Katleen Anteojos de Sol Cuadrados Mujer Ultra Livianos | Óptica Carballo',
-  'Anteojos Vulk Katleen cuadrados femeninos: G-Flex ultra liviano (26,3g), policarbonato UV400, talle medium. 4 variantes (una polarizada). Stock real y envíos a toda Argentina.'
+  'Vulk Katleen Anteojos de Sol Cuadrados Mujer | Carballo',
+  'Anteojos Vulk Katleen cuadrados femeninos: G-Flex de 26,3 g, policarbonato UV400, talle medium. 4 variantes, una polarizada. Envíos a toda la Argentina.'
 )
 ON CONFLICT (slug) DO UPDATE SET
   name=EXCLUDED.name, short_description=EXCLUDED.short_description, description=EXCLUDED.description,
