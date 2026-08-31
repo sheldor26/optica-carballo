@@ -113,8 +113,35 @@ export async function GET(
   }
 
   if (!respuesta.ok) {
+    /*
+     * EL MOTIVO DE ML SE PASA, NO SE TAPA.
+     *
+     * Devolvía sólo 'ml_rechazo' y del otro lado eso se mostraba como "probá de
+     * nuevo en un rato", que en el caso más común es mentira: Mercado Libre no
+     * entrega la etiqueta de un envío ya despachado y no la va a entregar nunca
+     * más. Contesta 400 con un `failed_shipments` que dice exactamente eso:
+     *
+     *   { "cause": "NOT_PRINTABLE_STATUS",
+     *     "message": "Shipment 47895472625 status is shipped" }
+     *
+     * Con la causa a mano, la óptica puede decir "ya está despachada" en vez de
+     * mandar a alguien a reintentar algo que no depende de él.
+     */
+    const cuerpo = await respuesta.text().catch(() => '');
+    let causas: string[] = [];
+    try {
+      const j = JSON.parse(cuerpo) as {
+        failed_shipments?: { cause?: string; message?: string }[];
+      };
+      causas = [
+        ...new Set((j.failed_shipments ?? []).map((f) => f.cause ?? '').filter(Boolean)),
+      ];
+    } catch {
+      // ML no siempre contesta json. El status alcanza para el que mira el log.
+    }
+    console.error('etiqueta ML: rechazo', respuesta.status, cuerpo.slice(0, 300));
     return NextResponse.json(
-      { ok: false, error: 'ml_rechazo', status: respuesta.status },
+      { ok: false, error: 'ml_rechazo', status: respuesta.status, causas },
       { status: 502 },
     );
   }

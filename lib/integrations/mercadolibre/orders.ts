@@ -38,7 +38,9 @@ import type { SyncResult } from '@/lib/integrations/mercadolibre/types';
  * venta salía a nombre de nadie y la pantalla de la óptica mostraba
  * "(sin nombre)" para siempre. Así que se paga: una llamada más por venta.
  *
- * Y una TERCERA por venta cuando hay envío: `/shipments/{id}`, por la dirección.
+ * Y una TERCERA por venta cuando hay envío: `/shipments/{id}`, por la dirección
+ * Y por el estado — Mercado Libre no entrega la etiqueta de un envío ya
+ * despachado, así que sin el estado la óptica ofrece imprimir algo imposible.
  * Tampoco viene en la orden —`receiver_address` es `undefined` en las 18
  * verificadas— y Juan la pidió para dejarla anotada en el cliente. Es a lo
  * sumo el mismo trabajo que ya se hace: con dos ventas por día, son unas pocas
@@ -102,8 +104,10 @@ type MLOrder = {
 
 type MLBusqueda = { results?: MLOrder[]; paging?: { total?: number } };
 
-/** Lo poco que hace falta del envío: a dónde va el paquete. */
+/** Lo poco que hace falta del envío: en qué anda y a dónde va el paquete. */
 type MLEnvio = {
+  status?: string | null;
+  substatus?: string | null;
   destination?: {
     shipping_address?: {
       address_line?: string | null;
@@ -116,37 +120,47 @@ type MLEnvio = {
   } | null;
 };
 
-type Direccion = {
+type Envio = {
+  estado: string | null;
+  subestado: string | null;
   calle: string | null;
   localidad: string | null;
   provincia: string | null;
   cp: string | null;
 };
 
-const SIN_DIRECCION: Direccion = { calle: null, localidad: null, provincia: null, cp: null };
+const SIN_ENVIO: Envio = {
+  estado: null, subestado: null,
+  calle: null, localidad: null, provincia: null, cp: null,
+};
 
 /**
- * A dónde va el paquete.
+ * En qué anda el envío y a dónde va el paquete.
+ *
+ * Dos datos de una sola llamada. El estado importa tanto como la dirección: la
+ * etiqueta sólo se puede pedir mientras el envío esté `ready_to_ship`, y sin
+ * saberlo la óptica ofrece imprimir algo que Mercado Libre va a rechazar.
  *
  * Best effort a propósito: si el envío no contesta se sigue con la venta sin
- * dirección. Es un dato para dejar anotado, no algo sin lo cual la venta no se
- * pueda cargar — el paquete lo despacha Mercado Envíos con su etiqueta, que no
- * depende de esto.
+ * estos datos. Son para saber, no algo sin lo cual la venta no se pueda cargar.
  *
  * `x-format-new` porque sin esa cabecera el recurso viene en el formato viejo,
  * donde la dirección está en otro lugar.
  */
-async function traerDireccion(shipmentId: string | null): Promise<Direccion> {
-  if (!shipmentId) return SIN_DIRECCION;
+async function traerEnvio(shipmentId: string | null): Promise<Envio> {
+  if (!shipmentId) return SIN_ENVIO;
 
   const r = await mlFetch<MLEnvio>(`/shipments/${encodeURIComponent(shipmentId)}`, {
     operation: 'traer_envio',
     headers: { 'x-format-new': 'true' },
   });
-  if (!r.ok) return SIN_DIRECCION;
+  if (!r.ok) return SIN_ENVIO;
+
+  const estado = comoTexto(r.data.status);
+  const subestado = comoTexto(r.data.substatus);
 
   const d = r.data.destination?.shipping_address ?? null;
-  if (!d) return SIN_DIRECCION;
+  if (!d) return { ...SIN_ENVIO, estado, subestado };
 
   // `address_line` ya viene armada ("Pellegrini 1234"); si falta, se arma con
   // la calle y el número, que es lo mismo escrito en dos campos.
@@ -156,6 +170,8 @@ async function traerDireccion(shipmentId: string | null): Promise<Direccion> {
     null;
 
   return {
+    estado,
+    subestado,
     calle: calle && calle.length > 0 ? calle : null,
     localidad: comoTexto(d.city?.name),
     provincia: comoTexto(d.state?.name) ?? comoTexto(d.state?.id),
@@ -307,8 +323,8 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
       if (!nombre && !apellido) resumen.sin_nombre++;
 
       const envioId = comoTexto(venta.shipping?.id);
-      const direccion = await traerDireccion(envioId);
-      if (envioId && !direccion.localidad) resumen.sin_direccion++;
+      const envio = await traerEnvio(envioId);
+      if (envioId && !envio.localidad) resumen.sin_direccion++;
 
       const { data: fila, error } = await supabase
         .from('marketplace_orders')
@@ -324,10 +340,12 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
             buyer_nombre: nombre,
             buyer_apellido: apellido,
             shipment_id: envioId,
-            buyer_direccion: direccion.calle,
-            buyer_localidad: direccion.localidad,
-            buyer_provincia: direccion.provincia,
-            buyer_cp: direccion.cp,
+            buyer_direccion: envio.calle,
+            buyer_localidad: envio.localidad,
+            buyer_provincia: envio.provincia,
+            buyer_cp: envio.cp,
+            shipping_estado: envio.estado,
+            shipping_subestado: envio.subestado,
             payload: venta as unknown as Record<string, unknown>,
             updated_at: new Date().toISOString(),
           },
