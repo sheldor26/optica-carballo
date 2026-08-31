@@ -17,6 +17,8 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'negro-brillo-carey': 'Frente negro brillo / patillas carey',
   'steelblue-negro-mate': 'Frente azul acero / patillas negro mate',
   transparente: 'Transparente',
+  'transparente-patillas-negras': 'Frente transparente / patillas negras',
+  'gris-transparente': 'Gris transparente',
   'azul-mate': 'Azul mate',
   'gris-oscuro-transparente': 'Gris oscuro transparente',
   'azul-metalico': 'Azul metálico',
