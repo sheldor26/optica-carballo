@@ -129,8 +129,12 @@ sistema flexo**. ML no declara absolutamente nada de este modelo.
 - [ ] **Alto y ancho totales.** El fabricante declara **53-18-143** (calibre-puente-varilla) pero
   las medidas las pasás vos. Confirmame esos tres y pasame los dos que faltan.
   ⚠️ Un revendedor publica **50-22-145**, que contradice al fabricante — otra razón para que midas.
-- [ ] **La forma.** En las fotos es un **cuadrado de esquinas redondeadas** con remaches metálicos
-  en la bisagra; ML titula "Cuadrado". Confirmalo con el armazón en la mano.
+- [ ] **La forma.** Comparado contra el Peating (cuadrado), el Woxi (rectangular) y el Patien
+  (wayfarer) del propio catálogo, es un **cuadrado de esquinas redondeadas**; tu título de ML también
+  dice "Cuadrado". Confirmalo con el armazón en la mano.
+- [ ] **Las fotos del SBLK negro brillo.** Las dos que trae tu publicación se ven **mate, iguales a
+  las del MBLK**, y el SBLK debería ser brillo. Como está en 0 unidades, lo voy a cargar **sin fotos
+  propias** salvo que me digas otra cosa. Si tenés fotos del brillo de verdad, pasámelas.
 
 ⚠️ **Aviso**: la ficha del fabricante dice **"Lentes: Blue Cut"**. Son lentes demo y **no se va a
 vender como beneficio** — el filtro azul no tiene evidencia clínica robusta y la regla dura 4 obliga

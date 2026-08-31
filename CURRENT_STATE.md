@@ -181,10 +181,30 @@ proyecto exige honestidad sobre la evidencia clínica del filtro azul (regla dur
 ⚠️ El fabricante declara **53-18-143**, pero **las medidas las pasa el founder** (regla dura 7);
 ese número va sólo como contraste. Ojo que un revendedor publica 50-22-145, que contradice.
 
-**Forma**: en las fotos es un **cuadrado de esquinas redondeadas** con remaches metálicos en la
-bisagra. ML titula "Cuadrado". Falta que lo confirme el founder.
+**Forma**: comparada contra el catálogo con el método del Bad Card (bajar las primarias de productos
+ya clasificados y mirarlas al lado). Contra el **Peating** (`cuadrado`, esquinas filosas y angulosas),
+el **Woxi** (`rectangular`, netamente más ancho que alto, lente baja) y el **Patien** (`wayfarer`,
+trapecio con el ángulo superior externo abierto): el Gover es un **cuadrado de esquinas redondeadas**,
+proporción equilibrada, puente tipo llave y remaches metálicos. Más cerca del Peating que de los
+otros dos, y el título de ML también dice "Cuadrado" → `cuadrado`. Falta el OK del founder.
+⚠️ Sin ganancia de faceta: `cuadrado` ya es la forma más poblada de receta (**9 productos**), así que
+el SEO va por otro lado.
 
-**⬜ Bloqueado por el founder**: medidas (alto y ancho totales + confirmar 53-18-143) y la forma.
+**📸 FOTOS — DOS COLORWAYS VENÍAN CRUZADAS, agarradas ANTES de generar nada** (en el Dunsert se
+detectó recién después de subirlas). Se abrieron las 10 y se compararon entre sí:
+| Colorway | 01 | 02 | |
+|---|---|---|---|
+| cry · mblu · lgrey | perfil | frente | ✓ |
+| **mblk** · **sblk** | **frente** | **perfil** | ⚠️ invertidas, corregidas |
+
+**⚠️ Y EL SBLK VA A IR SIN FOTOS PROPIAS.** Sus dos imágenes se ven **mate, iguales a las del MBLK**,
+cuando el SBLK debería ser negro **brillo**. Se intentó leer el grabado de la varilla ampliándolo con
+sharp y **no se lee con esa resolución — no se afirma nada sobre lo que dice**. Como además el SBLK
+tiene **0 unidades**, se carga la variante (el stock sincroniza solo) pero sin imágenes propias, que
+es la única opción honesta con lo que se puede verificar. Anotado para el founder.
+
+**⬜ Bloqueado por el founder**: medidas (alto y ancho totales + confirmar 53-18-143), la forma, y
+si quiere que el SBLK use las fotos del MBLK o quede sin foto propia.
 
 **Próximo paso exacto**: con esos datos, generar placas, subir fotos y escribir
 `supabase/seeds/106_rusty_gover_receta.sql`. Es MULTI-variación → `mercadolibre_variation_code` con
