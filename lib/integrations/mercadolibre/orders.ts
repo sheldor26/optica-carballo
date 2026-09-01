@@ -108,8 +108,20 @@ type MLBusqueda = { results?: MLOrder[]; paging?: { total?: number } };
 type MLEnvio = {
   status?: string | null;
   substatus?: string | null;
+  /*
+   * EL NOMBRE DE QUIEN RECIBE, QUE NO ES SIEMPRE EL DEL COMPRADOR.
+   *
+   * Se declaran los tres lugares donde puede venir porque no está documentado
+   * cuál usa el formato nuevo, y adivinar uno solo es quedarse sin nombre sin
+   * enterarse. Los docs dicen que `receiver_address` del formato viejo equivale
+   * a `destination.shipping_address`, así que el nombre puede haber quedado en
+   * cualquiera de los dos, o colgando de `destination`.
+   */
+  receiver_address?: { receiver_name?: string | null } | null;
   destination?: {
+    receiver_name?: string | null;
     shipping_address?: {
+      receiver_name?: string | null;
       address_line?: string | null;
       street_name?: string | null;
       street_number?: string | null;
@@ -123,6 +135,8 @@ type MLEnvio = {
 type Envio = {
   estado: string | null;
   subestado: string | null;
+  /** Quien recibe el paquete, tal como lo imprime la etiqueta. */
+  destinatario: string | null;
   calle: string | null;
   localidad: string | null;
   provincia: string | null;
@@ -130,7 +144,7 @@ type Envio = {
 };
 
 const SIN_ENVIO: Envio = {
-  estado: null, subestado: null,
+  estado: null, subestado: null, destinatario: null,
   calle: null, localidad: null, provincia: null, cp: null,
 };
 
@@ -159,8 +173,31 @@ async function traerEnvio(shipmentId: string | null): Promise<Envio> {
   const estado = comoTexto(r.data.status);
   const subestado = comoTexto(r.data.substatus);
 
+  /*
+   * EL NOMBRE DE QUIEN RECIBE.
+   *
+   * Va antes del corte de abajo a propósito: puede venir colgando de
+   * `destination` y no de la dirección, y ahí lo perderíamos por un motivo que
+   * no tiene nada que ver.
+   *
+   * POR QUÉ HACE FALTA, SI LA ORDEN YA TRAE UN COMPRADOR
+   *
+   * Porque el que trae la orden no siempre es un nombre. Cuando Mercado Libre
+   * no comparte los datos del comprador manda algo derivado del apodo y el
+   * apellido vacío: el 31/08/2026, la venta 2000018216295754 llegó como
+   * "Sanariasdundo" sin apellido, y la etiqueta del mismo envío decía "Gustavo
+   * orgeira". Juan imprimió la ficha con el nombre equivocado.
+   *
+   * Éste es el nombre que va en la etiqueta, o sea el de quien abre la puerta
+   * cuando llega el paquete. Es el que sirve.
+   */
+  const destinatario =
+    comoTexto(r.data.destination?.receiver_name) ??
+    comoTexto(r.data.destination?.shipping_address?.receiver_name) ??
+    comoTexto(r.data.receiver_address?.receiver_name);
+
   const d = r.data.destination?.shipping_address ?? null;
-  if (!d) return { ...SIN_ENVIO, estado, subestado };
+  if (!d) return { ...SIN_ENVIO, estado, subestado, destinatario };
 
   // `address_line` ya viene armada ("Pellegrini 1234"); si falta, se arma con
   // la calle y el número, que es lo mismo escrito en dos campos.
@@ -172,6 +209,7 @@ async function traerEnvio(shipmentId: string | null): Promise<Envio> {
   return {
     estado,
     subestado,
+    destinatario,
     calle: calle && calle.length > 0 ? calle : null,
     localidad: comoTexto(d.city?.name),
     provincia: comoTexto(d.state?.name) ?? comoTexto(d.state?.id),
@@ -340,6 +378,9 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
             buyer_nombre: nombre,
             buyer_apellido: apellido,
             shipment_id: envioId,
+            // Quien recibe. Ver `traerEnvio`: cuando ML no comparte el nombre
+            // del comprador, éste es el único nombre real que hay.
+            buyer_destinatario: envio.destinatario,
             buyer_direccion: envio.calle,
             buyer_localidad: envio.localidad,
             buyer_provincia: envio.provincia,
