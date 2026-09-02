@@ -98,6 +98,71 @@ variante con sangrado para imprenta física, retomar desde acá.
 **Fecha**: 2026-08-31
 **Por**: Claude Code (a pedido de Juan)
 
+### ✅ Cargado y live: Vulk Harry (`/anteojos-de-sol/vulk/vulk-harry`)
+
+Duodécimo producto del cruce y **el tope de la lista de stock parado que ya vendió**: 1 solo color,
+**19 unidades y 20 ventas**. Seed `107_vulk_harry_sol.sql`, commit `59683ea`.
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes / stock | 1 / 19 | 1 / 19 ✓ |
+| `variation_code` | **NULL** (item simple) | NULL ✓ |
+| `measurements` | 142 / 57×54 / 14 / 140 | ✓ (geometría 57×2+14=128 ≤ 142) |
+| `weight_grams` | ausente | ✓ → `PESOS_A_MEDIR.md` (van 20) |
+| Imágenes / primarias | 3 / 1 | 3 / 1 ✓ |
+| meta_title / meta_description | ≤60 / 150-160 | 57 / 155 ✓ |
+| PDP en producción | 200 | 200 ✓ |
+| Facetas (aviador, vulk/aviador, hombre, vulk/hombre, vulk) | aparece en las 5 | ✓ |
+| `/anteojos-de-sol/polarizados` | **NO** aparece | ✓ (no es polarizado) |
+| "flexible" · "cara interna" · superlativo de peso | **0** | **0** ✓ |
+
+**🎯 El carril de SEO estaba reservado para este producto, por escrito.** `SEO_STRATEGY.md:385`, en
+el bloque del Bruice, dice que como el Bruice es unisex y no puede pelear género,
+`lentes de sol aviador hombre` (**90/mes, dificultad 16**) *"sigue libre para un modelo masculino
+futuro"*. El Harry es ese: ML lo declara `GENDER = Hombre` y es aviador doble puente. **Primer
+producto del catálogo con carril de forma + género**, sin pisar a The Take (`lentes de sol aviador`
+170/12) ni a Yeah (`anteojos de sol aviador` 110/10). Descartada `anteojos de sol aviador hombre`
+(70, dificultad **36**), mismo perfil ya rechazado en el Bruice.
+
+**🔺 Forma `aviador` contra ML — quinta vez seguida que la declara mal.** Dice "Anteojo Cuadrado".
+Resuelto con el método de siempre: se bajaron las primarias del **Malice** (`cuadrado` de verdad:
+puente simple, lente rectangular) y del **Bad Card** (`aviador`: barra recta arriba, puente doble) y
+se compararon al lado. El Harry es familia Bad Card. **Patrón que ya se puede nombrar: las 5 fallas
+de ML fueron todas armazones de doble puente o de esquina redondeada** — ahí se le rompe la taxonomía.
+
+**⭐ Pero ML acertó las medidas, y es la primera vez en la tanda.** Declaraba `LENS_WIDTH 5.7`,
+`LENS_HEIGHT 5.4` y `BRIDGE_LENGTH 1.4`, y coinciden **exacto** con lo que midió el founder. No
+cambia la regla dura 7 —las medidas las sigue pasando él— pero corrige una generalización que se
+venía arrastrando: **ML yerra la FORMA, no necesariamente los NÚMEROS.** Encaja con el hallazgo del
+Bad Card: calibre/puente/varilla salen del grabado de la varilla y suelen estar bien; lo que se
+completa a ojo es el alto y el ancho totales, que acá ML directamente no declaraba.
+
+**🔎 Antirreflex sin hedgear, a diferencia de las dos fichas anteriores.** El Dunsert era 2 de 3 y el
+Bad Card 4 de 6, así que ahí hubo que decir el ratio. El Harry **tiene un solo color**, así que el
+antirreflex es del producto entero y va en la meta sin "X de Y". Lo que **no** se dice es "en la cara
+interna": eso lo confirmó el founder en el Dunsert, pero acá el dato sale de su placa vieja (foto 03
+de la publicación), que no aclara la posición de la capa. Esa misma placa confirmó la **bisagra
+metálica flex**, que el founder ratificó — dos fuentes independientes.
+
+**⚠️ Existe un Vulk Harry de RECETA sin cargar**: 3 publicaciones, 3 colores, 11 unidades. Cuando
+entre, `fetchCompanionModality` los cross-linkea solo por convención de slug.
+
+---
+
+### ✅ Gover completado: las medidas ya estaban en la base pero faltaban en la ficha
+
+El founder las pasó (**143 / 50×47 / 22 / 145**) y quedaron a medias: estaban en el jsonb de
+`measurements`, pero **la descripción no tenía la línea de medidas y no existía `medidas.jpg`**. O
+sea que la tabla de atributos las mostraba y el texto no, y no había placa. Corregido: línea
+agregada a la descripción, placa generada con `pnpm placas --solo 4` y subida, imagen enlazada en
+`sort_order 99`. Verificado en producción.
+
+**Lección de método**: cargar medidas no es un solo campo. Son **tres superficies** — el jsonb, la
+línea de la descripción y la placa — y actualizar sólo la primera deja la ficha inconsistente sin
+que ningún control lo marque.
+
+---
+
 ### ✅ Cerrado por el founder: las medidas del catálogo SÍ están verificadas
 
 Zanjó la auditoría del 2026-08-29, textual: *"todos los modelos subidos a opticacarballo.com.ar, ya
@@ -262,9 +327,10 @@ falso resultado; **una sola request nunca alcanza para verificar después de un 
 **⬜ Pendiente del founder**: las medidas del Gover (alto y ancho + confirmar 53-18-143), la
 confirmación de la forma, y si el SBLK debe usar las fotos del MBLK.
 
-**Próximo paso exacto**: cuando lleguen las medidas del Gover, agregar el bloque `measurements` +
-`medidas.jpg` con `pnpm placas --solo 4`. Si no, seguir con el cruce: el tope es el **Vulk Harry**
-(sol, 1 color, 19 u, 20 ventas), después **stately** (3 colores, 15 u, 16 ventas).
+**Próximo paso exacto**: seguir con el cruce `pnpm ml:faltantes`. Con el Gover y el Harry ya
+cargados, el tope pasa a ser el **Vulk stately** (sol, 3 colores, 15 u, 16 ventas), y después el
+**Rusty Society MBLK/S10 POL** (2 colores, 9 u, 23 ventas). Dedupear por `user_product_id` y
+descartar `catalog_listing` como siempre.
 
 **Próximo paso exacto**: con esos datos, generar placas, subir fotos y escribir
 `supabase/seeds/106_rusty_gover_receta.sql`. Es MULTI-variación → `mercadolibre_variation_code` con
@@ -1965,6 +2031,23 @@ Los cuatro reales, todos en el mismo lugar:
   encontrado.
 - Los 12 diseños mirados uno por uno en historia y en post, sobre tres productos con
   características opuestas (nombre largo / nombre de una palabra / sin sello de stock).
+
+### Recibido del founder: medidas del Gover y el CUIT
+
+**Medidas del Rusty Gover Optics** (2026-08-26): 50-22-145, alto total 47 mm, frente 143 mm.
+Cargadas en la base y en el seed 106, y **resolvieron la contradicción** que el propio seed
+documentaba: el fabricante declaraba 53-18-143 y un revendedor 50-22-145. La medición del founder
+coincide con el revendedor en calibre/puente/varilla y con el fabricante en el frente — cada fuente
+tenía razón en una parte y ninguna estaba completa. Es un caso más a favor de la regla dura 7.
+Geometría verificada: 50×2 + 22 = 122 ≤ 143. La placa `medidas` ya se genera.
+⏳ En producción todavía no se ven: la PDP está cacheada y aparecen en la próxima revalidación.
+
+**CUIT** (2026-08-26): **20-16852182-1**, validado por dígito verificador (suma 153, resto 10,
+dígito 1 ✓). Cargado en `app/(storefront)/terminos-y-condiciones/page.tsx`.
+⚠️ **Sigue faltando razón social y domicilio fiscal**, así que la página mantiene su flag de
+incompleta. Y un dato que hay que confirmar con el founder: el prefijo **20 es de persona física
+masculina**, no de sociedad — si la óptica factura a nombre de una persona, la "razón social" es su
+nombre y apellido. Anotado en `DATOS_PENDIENTES.md`.
 
 ### Catálogo de Instagram: NO se puede en Argentina. Es geografía, no configuración
 
