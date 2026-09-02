@@ -24,9 +24,11 @@
 -- Card). Un NULL **no da error**: `sync-stock.ts:296-298` hace SKIP SILENCIOSO sin escribir en
 -- `marketplace_sync_errors`, y la variante queda congelada en stock y precio para siempre.
 --
--- 🚫 SIN BLOQUE DE MEDIDAS. El fabricante declara 53-18-143 y un revendedor 50-22-145 —se
--- contradicen— pero da igual: **la regla dura 7 dice que las medidas sólo las pasa el founder**, y
--- todavía no las pasó. La ficha va sin `measurements` y sin `medidas.jpg`. En DATOS_PENDIENTES.md.
+-- 📏 MEDIDAS: las pasó el founder el 2026-08-26 → **50-22-145, alto total 47, frente 143**.
+-- Resuelven la contradicción que había: el fabricante declaraba 53-18-143 y un revendedor
+-- 50-22-145. La medición del founder coincide con el revendedor en calibre/puente/varilla y con el
+-- fabricante en el frente, o sea que cada fuente tenía razón en una parte. Geometría consistente:
+-- 50×2 + 22 = 122 ≤ 143. Aplicadas también con UPDATE sobre la base ese mismo día.
 --
 -- 🏷️ SKU, PESO, MATERIAL Y BISAGRAS DEL FABRICANTE (`rustyoptical.com/optical/fw22/gover`), que la
 -- regla dura 7 sí habilita (veta medidas, permite material/peso/color/precio/stock).
@@ -126,6 +128,7 @@ VALUES (
     "gender": "unisex",
     "line": "urbana",
     "weight_grams": 23,
+    "measurements": {"frame_width_mm": 143, "lens_width_mm": 50, "lens_height_mm": 47, "bridge_mm": 22, "temple_length_mm": 145},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "new_until": "2026-09-30",
