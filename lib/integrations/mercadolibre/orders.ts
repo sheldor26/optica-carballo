@@ -46,8 +46,17 @@ import type { SyncResult } from '@/lib/integrations/mercadolibre/types';
  * sumo el mismo trabajo que ya se hace: con dos ventas por día, son unas pocas
  * llamadas por corrida.
  *
- * Lo que NO se pide es `/orders/{id}/billing_info`: contesta 403 con los
- * permisos de esta aplicación.
+ * Antes acá decía "lo que NO se pide es /orders/{id}/billing_info: contesta
+ * 403 con los permisos de esta aplicación" — así fue hasta el 07/09/2026. Ese
+ * día se activó el permiso "Facturación" (Lectura) en la app y se reautorizó.
+ * Ahora SÍ se pide `/users/{seller_id}/invoices/orders/{order_id}` (ver
+ * `traerFacturacion` más abajo): trae el Punto de Venta y número de
+ * comprobante de ARCA que le corresponde a la venta, para que el Facturador
+ * (la app de escritorio, que ya trae esos mismos comprobantes por WSFE) pueda
+ * cruzar uno con el otro y completar el detalle real de productos. Best-effort
+ * a propósito, iguel que el envío: si la venta todavía no tiene comprobante
+ * autorizado (pago pendiente, por ejemplo), sigue sin esos tres campos y no
+ * corta nada. Igual que con el envío.
  *
  * IDEMPOTENTE POR CONSTRUCCIÓN
  *
@@ -217,6 +226,46 @@ async function traerEnvio(shipmentId: string | null): Promise<Envio> {
   };
 }
 
+/** Lo poco que hace falta de `GET /users/{seller_id}/invoices/orders/{order_id}`. */
+type MLFacturacion = {
+  invoice_series?: string | number | null;
+  invoice_number?: number | string | null;
+  attributes?: { document_type?: string | null } | null;
+};
+
+type Facturacion = {
+  ptovta: string | null;
+  numero: number | null;
+  documentType: string | null;
+};
+
+const SIN_FACTURACION: Facturacion = { ptovta: null, numero: null, documentType: null };
+
+/**
+ * El comprobante de ARCA que le corresponde a esta venta, si ya lo autorizaron.
+ *
+ * Best effort: si todavía no hay comprobante (pago pendiente, por ejemplo) o el
+ * endpoint no contesta, se sigue con la venta sin estos tres datos — no es un
+ * motivo para dejarla afuera. Ver la nota grande al principio del archivo.
+ */
+async function traerFacturacion(sellerId: string, orderId: string): Promise<Facturacion> {
+  const r = await mlFetch<MLFacturacion>(
+    `/users/${encodeURIComponent(sellerId)}/invoices/orders/${encodeURIComponent(orderId)}`,
+    { operation: 'traer_facturacion' },
+  );
+  if (!r.ok) return SIN_FACTURACION;
+
+  const numero = typeof r.data.invoice_number === 'number'
+    ? r.data.invoice_number
+    : Number(r.data.invoice_number);
+
+  return {
+    ptovta: comoTexto(r.data.invoice_series),
+    numero: Number.isFinite(numero) ? numero : null,
+    documentType: comoTexto(r.data.attributes?.document_type),
+  };
+}
+
 /** Los pesos con decimales que manda ML, a centavos enteros. */
 function aCentavos(valor: number | undefined | null): number {
   if (typeof valor !== 'number' || !isFinite(valor)) return 0;
@@ -364,6 +413,8 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
       const envio = await traerEnvio(envioId);
       if (envioId && !envio.localidad) resumen.sin_direccion++;
 
+      const facturacion = await traerFacturacion(token.data.externalUserId, externalId);
+
       const { data: fila, error } = await supabase
         .from('marketplace_orders')
         .upsert(
@@ -387,6 +438,11 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
             buyer_cp: envio.cp,
             shipping_estado: envio.estado,
             shipping_subestado: envio.subestado,
+            // El comprobante de ARCA que le corresponde, si ya lo autorizaron. Ver
+            // `traerFacturacion`: null los tres si la venta todavía no lo tiene.
+            invoice_ptovta: facturacion.ptovta,
+            invoice_numero: facturacion.numero,
+            invoice_document_type: facturacion.documentType,
             payload: venta as unknown as Record<string, unknown>,
             updated_at: new Date().toISOString(),
           },
