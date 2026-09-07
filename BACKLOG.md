@@ -59,6 +59,20 @@ subidos a opticacarballo.com.ar, ya fueron verificados por mi personalmente"*.
 **No hay medidas que re-tomar.** Lo que faltaba era el registro de la procedencia, no la
 verificación. La regla de declarar la fuente en cada seed nuevo sigue vigente (ver `MISTAKES.md`).
 
+## 🟡 Fila muerta: integración de ML `revoked` desde mayo (2026-09-07)
+
+Salió chequeando la salud de la API. `marketplace_integrations` tiene **dos filas de mercadolibre**:
+
+| external_user_id | status | token_expires_at |
+|---|---|---|
+| **81654493** | `active` | vigente, se refresca solo |
+| 1975674 | **`revoked`** | 2026-05-29 — hace más de 3 meses |
+
+**No rompe nada**: el código toma la activa. Pero es una fila muerta que puede confundir a quien lea
+la tabla, y en un incidente hace perder tiempo. Conviene borrarla o marcarla mejor.
+⚠️ Antes de borrar, confirmar con el founder que esa cuenta no se va a reusar: si la fila se elimina
+se pierde el `refresh_token` cifrado y habría que rehacer el OAuth desde cero.
+
 ## ✅ CERRADO — Superlativos de peso falsos en 10 productos (abierto y cerrado 2026-08-31)
 
 Corregidos los 10 el mismo día, con el OK del founder: **26 reemplazos en 4 campos**

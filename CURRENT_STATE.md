@@ -98,6 +98,29 @@ variante con sangrado para imprenta física, retomar desde acá.
 **Fecha**: 2026-08-31
 **Por**: Claude Code (a pedido de Juan)
 
+### ✅ Chequeo de salud de la API de Mercado Libre (2026-09-07, a pedido del founder)
+
+**Está activa.** Las 4 llamadas autenticadas responden: `/users/me` 200 (ÓPTICACARBALLO, 289 ms),
+lectura de item 200, y `/orders/search` —lo que usa el cron— 200 con **2.311 órdenes**. El token se
+refresca solo; la última renovación fue 4 horas antes del chequeo.
+
+Dos falsas alarmas del propio diagnóstico, las dos aclaradas antes de reportar:
+- **`/sites/MLA` devolvió 403.** No es un problema de la cuenta: **ML cerró ese endpoint**, que antes
+  era público. Hoy casi todo pide token. Con token, todo responde.
+- **"Token vencido en 1970"** era **un bug de mi script de diagnóstico**: leí `expiresAt` /
+  `token_expires_at` y el helper devuelve `expiraEn`, así que el campo venía vacío y `new Date(0)`
+  daba la época Unix. Se verificó contra la tabla antes de decir nada. **Lección: un chequeo de salud
+  que reporta un fallo tiene que verificarse igual que uno que reporta éxito** — un diagnóstico roto
+  que grita "vencido" cuesta más que no tenerlo.
+
+**Hallazgo real**: hay una segunda fila de mercadolibre en `marketplace_integrations` con
+`status = revoked` desde el 2026-05-29 (usuario 1975674). No rompe nada porque el código toma la
+activa, pero es una fila muerta hace 3 meses. Anotada en `BACKLOG.md` con la advertencia de no
+borrarla sin confirmar, porque se perdería el `refresh_token` cifrado.
+De paso: **la integración de Instagram también está activa**, con token hasta el 24 de octubre.
+
+---
+
 ### ✅ Cargado y live: Vulk Harry (`/anteojos-de-sol/vulk/vulk-harry`)
 
 Duodécimo producto del cruce y **el tope de la lista de stock parado que ya vendió**: 1 solo color,
