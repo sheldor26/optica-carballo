@@ -98,7 +98,7 @@ variante con sangrado para imprenta física, retomar desde acá.
 **Fecha**: 2026-09-22
 **Por**: Claude Code (a pedido de Juan)
 
-### 🔵 Rusty Vriviant — producto NUEVO en curso, placas entregadas
+### ✅ Rusty Vriviant — producto NUEVO cargado con 1 de sus 2 colorways
 
 Alta de producto con **2 colorways**, y el segundo caso del flujo invertido (sitio primero, ML
 después) para una de las dos variantes.
@@ -143,9 +143,26 @@ del fabricante son inconsistentes y hay que probar variantes antes de darlos por
 con datos verificados, **sin usar los defaults** — es la regla que salió del Bruice 669K, donde la
 plantilla reinyectaba "ARMAZÓN LIVIANO" y "se pueden adaptar lentes graduadas".
 
-**⬜ Bloqueado**: del MBLK faltan número de publicación, stock y precio. El SBLK ya se puede cargar.
-**🔄 SEO en curso**: workflow lanzado. El Vriviant es un sol **cuadrado femenino** y ese carril está
-disputado (Zinz y The Sil se pelean `anteojos de sol cuadrados`, colisión abierta en BACKLOG).
+**✅ SBLK CARGADO** (seed `109_rusty_vriviant_sol.sql`): $78.869,25, 2 u, mapeado a la tradicional.
+Controles: forma `cuadrado`, género `female`, medidas OK, 3 imágenes / 1 primaria, title 57,
+meta 158, **0 apariciones de "flexible" y 0 superlativos de peso**.
+**📝 Descripción de ML del MBLK entregada** en `marketing/ml-descripciones/` (archivo .txt, no chat).
+
+**🔴 EL HALLAZGO: una colisión de CUATRO que ya existía, y el Vriviant iba a ser el quinto.**
+El workflow de SEO seguía corriendo, así que se verificó a mano antes de elegir title — y apareció
+que hay **4 productos de sol cuadrados femeninos** y **3 dicen literalmente "Cuadrados Mujer" en el
+meta_title**: Dearly, Dileri, Vorez y Katleen. Es peor que las dos colisiones ya anotadas
+(Blinded↔Zion, The Sil↔Zinz), que son de a dos. **El Vriviant NO se sumó**: va branded con
+"Polarizados" como diferenciador, que ninguno de los otros cuatro lleva. La colisión de los cuatro
+quedó en `BACKLOG.md` — no se arregla de a uno, hay que mirarlos juntos.
+
+**🔻 DEUDA ANOTADA EN EL SEED, para no olvidarla**: hoy la única variante cargada es la polarizada,
+así que `lens_treatment` lleva `["uv400","polarized"]` y el title lo afirma con razón. **Cuando entre
+el MBLK pasa a ser 1 de 2 y "Polarizados" tiene que salir del title y del `lens_treatment` del
+producto**, quedando sólo como flag de variante (criterio Rew 1/2, Dunsert 1/3). Es el mismo
+movimiento que hizo falta en el Bruice al pasar de 4 a 5 colores.
+
+**⬜ Bloqueado**: del MBLK faltan número de publicación, stock y precio.
 
 **Próximo paso exacto**: con el SEO resuelto, escribir el seed 109 con el SBLK mapeado a
 MLA1388018629 (item simple → `variation_code` NULL) y el MBLK sin mapeo hasta que el founder

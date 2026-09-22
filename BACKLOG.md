@@ -73,6 +73,28 @@ la tabla, y en un incidente hace perder tiempo. Conviene borrarla o marcarla mej
 ⚠️ Antes de borrar, confirmar con el founder que esa cuenta no se va a reusar: si la fila se elimina
 se pierde el `refresh_token` cifrado y habría que rehacer el OAuth desde cero.
 
+## 🔴 Colisión de CUATRO en "anteojos de sol cuadrados mujer" (2026-09-22)
+
+Salió cargando el Rusty Vriviant, que iba a ser el quinto. Hay **4 productos de sol cuadrados
+femeninos** y **3 dicen literalmente "Cuadrados Mujer" en el `meta_title`**:
+
+| Producto | meta_title actual |
+|---|---|
+| `rusty-dearly` | Rusty Dearly Anteojos de Sol Cuadrados **Femeninos** \| Óptica Carballo |
+| `rusty-dileri` | Rusty Dileri Anteojos de Sol Cuadrados **Mujer** \| Carballo |
+| `rusty-vorez` | Rusty Vorez Anteojos de Sol Cuadrados **Mujer** G-Flex \| Óptica Carballo |
+| `vulk-katleen` | Vulk Katleen Anteojos de Sol Cuadrados **Mujer** \| Carballo |
+
+Es **peor que las dos colisiones ya anotadas** (Blinded↔Zion, The Sil↔Zinz), que son de a dos.
+Los cuatro compiten por la misma query y se reparten el CTR entre ellos.
+
+**El Vriviant NO se sumó**: fue branded con "Polarizados" como diferenciador (ninguno de los otros
+cuatro lo lleva en el title). Pero eso no arregla a los cuatro que ya están.
+
+**Arreglo**: repartir carriles como se hizo en los cuadrados de receta (Spell masculino / Katleen
+femenino / Zinz neutro). Acá los cuatro son femeninos, así que el corte tiene que ser por **otro
+eje**: color, tamaño, polarizado o branded. Requiere mirar los cuatro juntos, no de a uno.
+
 ## 🔴 Los defaults de `pnpm placas` tienen claims falsos quemados (2026-09-22)
 
 `scripts/ml-placas.ts` genera, cuando no se le pasan textos, callouts que dicen **"ARMAZÓN
