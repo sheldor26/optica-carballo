@@ -32,13 +32,34 @@ otros 6 colores que tiene el distribuidor (col01,03,06,08,09,11) no están en la
 - stock 3, MLAU166232255 → col10, negro mate / verde G15
 - stock 2, MLAU3650180599 → col12, negro mate c/ detalles marrones / marrones (C12 en ambas fuentes)
 
-**Medidas — todavía no las pasó Juan.** interoptica.com.ar muestra 135/16/57/124 (Base 8) pero,
-mismo criterio que Moorea, no se carga sin que él lo confirme con el armazón en la mano.
+**⚠️ Medidas — excepción explícita a la regla dura 7, decisión de Juan, no mía.** Juan mandó una
+imagen con el mismo diagrama que ya se había visto en interoptica.com.ar (57/16/135/124, Base 8) —
+se le preguntó directo si era su propia medición o el gráfico del fabricante, porque es exactamente
+el mismo tipo de fuente que en el Moorea resultó tener un dato mal (ancho 135 vs real 139) y otro
+directamente ausente (alto). Juan confirmó que **es de la página del fabricante, no una medición
+física suya**, y autorizó usarla igual con el argumento explícito de que "para Mormaii esa fuente
+suele ser más precisa que Vulk/Rusty". Es una excepción consciente e informada a la regla dura 7,
+tomada por el dueño de la regla — no una decisión unilateral mía. Se carga con esa salvedad
+documentada en el seed. **Sigue faltando el alto total** (`lens_height_mm`): ni el fabricante ni
+Juan lo dieron — el `measurements` del jsonb va con 4 de 5 claves, sin inventar la quinta.
+Confirmado además por Juan (no es medida, es spec): lente base curve 8, categoría 3, UV400.
 
-**Próximo paso exacto**: esperando que Juan confirme si seguimos preparando fotos/placas mientras
-tanto o si prefiere mandar las medidas primero. Con las fotos: bajar perfil+frente de los 6 colores
-confirmados del ZIP ya descargado (`/tmp/storm_full`), generar placas `--tipo sol`, escribir el seed
-(sin measurements hasta que las pase), invocar `seo-strategist` + `catalog-loader` como en Moorea.
+**Fotos y placas ya generadas** para las 6 colorways confirmadas, en
+`marketing/fotos/mormaii-storm/<color>/` y `marketing/placas-producto/mormaii-storm/<color>/`
+(`pnpm placas --tipo sol --sin-vision --solo 1,2,3,5,6` — se excluyó la placa de medidas por el
+mismo motivo que el Moorea, falta un dato). Callouts verificados a mano, sin usar los defaults;
+se evitó un primer intento de callout de bisagras ("inyectadas") porque no hay ninguna fuente que
+confirme el tipo de bisagra de este modelo — se reemplazó por un callout de diseño (envolvente
+deportivo, base 8) que sí está 100% confirmado.
+
+**Lanzados en paralelo (background, sin resultado todavía)**: `seo-strategist` (slug `mormaii-storm`
+tentativo, canibalización contra los envolventes deportivos de Rusty ya cargados, title/meta/H1) y
+`catalog-loader` (measurements parciales — ¿hay precedente?, qué SKU usar dado que ML no declara
+`seller_sku` para ninguna de las 6, patrón de columnas, scale override inicial).
+
+**Próximo paso exacto**: con el resultado de los dos agentes, escribir el seed SQL completo (7→6
+variantes, sin `lens_height_mm`), subir fotos al bucket, aplicar con OK explícito de Juan, verificar
+producción (con la lección nueva sobre el 404 cacheado si hace falta) y `auditar:encuadre`.
 
 ### ✅ Cargado y live: Mormaii Moorea RX — PRIMER producto de la marca Mormaii
 

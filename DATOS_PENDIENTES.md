@@ -118,6 +118,17 @@ receta del catálogo con **varilla de 150 mm**, así que la recomendación depen
 **El founder confirmó que verificó personalmente todos los modelos del sitio**, así que el 150 vale
 y no hay nada que medir. La ficha se puede recomendar por la varilla sin asterisco.
 
+## 🔵 Mormaii Storm (sol) — en carga, falta 1 dato (2026-09-22)
+
+Segundo producto Mormaii. 6 colorways identificadas contra `MLA1538614840`, $116.024,04, todas
+polarizadas UV400 cat 3, envolvente deportivo, hombre. Calibre 57 / puente 16 / ancho 135 / varilla
+124 y lente base 8 **confirmados por vos**, con la salvedad de que me dijiste que la fuente es la
+ficha del fabricante (no tu propia medición) y que para Mormaii la considerás más confiable que
+Vulk/Rusty — excepción a la regla dura 7 que tomaste vos explícitamente, no algo que yo asumí.
+
+- [ ] **Alto total del frente.** Ni el fabricante ni tu mensaje lo tienen — no está en ningún lado
+  todavía. El bloque de medidas se carga con las otras 4 claves nomás, sin este dato.
+
 ## ✅ Mormaii Moorea Rx (armazón) — CERRADO el 2026-09-22
 
 **Primer producto de la marca Mormaii en el catálogo.** 7 colorways, publicación de ML
