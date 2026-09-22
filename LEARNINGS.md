@@ -11597,6 +11597,33 @@ o es el producto entero el que no tiene ninguna? En el primer caso, el flujo inv
 aplica sin cambios. En el segundo, se prepara todo el material pero NO se toca la base hasta tener
 precio y stock reales — no hay ficha "a medias" válida para un producto que no existía.
 
+## 2026-09-22 — Tres fuentes que parecen independientes pueden compartir el mismo error de origen
+
+**Contexto**: cargando el Mormaii Moorea (primer producto de la marca), se armó una primera versión
+de la ficha con `frame_material: grilamid`, `gender: unisex` y `frame_shape: rectangular`, cada uno
+respaldado por una fuente distinta: una placa de callouts que el propio Juan ya usaba en su
+publicación de ML ("ARMAZÓN DE GRILAMIDA"), el atributo `GENDER=Sin género` de Mercado Libre, y el
+atributo `SHAPE=Rectangular` de Mercado Libre más una lectura visual propia de las fotos. Tres
+fuentes, tres ejes distintos (material, género, forma), ningún conflicto entre ellas — parecía un
+caso sólido. Cuando Juan mandó los datos reales con el armazón en la mano, **las tres estaban mal**:
+es "Inyección" (no grilamid), es para hombre (no unisex) y es semi envolvente (no rectangular puro).
+
+**Por qué pasó**: no eran tres fuentes independientes disfrazadas de tres — eran, en el fondo, dos.
+ML describe el producto con atributos genéricos de catálogo que no siempre reflejan el diseño real
+(mismo patrón ya visto con `SHAPE` en Zion/Ardigan/Dunsert/Vriviant, sólo que esta vez con género y
+material también). Y la placa de callouts "propia" de Juan tampoco era una fuente nueva: es
+plausible que él mismo la haya armado en algún momento copiando el lenguaje genérico de una ficha de
+distribuidor, sin que eso implique que la validó personalmente contra el armazón físico. Ninguna de
+las tres fuentes había pasado por el filtro real: "¿esto lo confirmó alguien con el producto en la
+mano, ahora?".
+
+**Regla / cuándo aplicar**: cuando una carga se apoya en varias fuentes que apuntan al mismo lugar
+(ML + un material de marketing + una lectura visual propia), no tratarlas como si sumaran
+certeza automáticamente. Preguntarse si de verdad son independientes o si todas heredan el mismo
+dato de catálogo genérico aguas arriba. La única fuente que rompe ese empate es el founder con el
+producto físico — y vale la pena pedirla temprano en cargas con atributos "blandos" (material,
+género, forma) que no tienen la trazabilidad dura de una medida grabada en la varilla.
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

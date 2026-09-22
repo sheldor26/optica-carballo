@@ -118,25 +118,42 @@ receta del catálogo con **varilla de 150 mm**, así que la recomendación depen
 **El founder confirmó que verificó personalmente todos los modelos del sitio**, así que el 150 vale
 y no hay nada que medir. La ficha se puede recomendar por la varilla sin asterisco.
 
-## 🔵 Mormaii Moorea Rx (armazón) — en carga, falta 1 dato tuyo (2026-09-22)
+## ✅ Mormaii Moorea Rx (armazón) — CERRADO el 2026-09-22
 
 **Primer producto de la marca Mormaii en el catálogo.** 7 colorways, publicación de ML
 multivariación ya viva (MLA1550157394): 01 negro brillo (stock 2), 02 negro mate/gris (0), 06
 negro-azul/turquesa (0), 05 transparente/negro jaspeado (0), 08 negro mate/celeste (1), 04
 gris degradé turquesa (0), 09 gris mate/naranja (1). Precio uniforme $111.030.
 
-✅ **Ya resuelto sin vos**: material grilamid (frente y patillas) y bisagras metálicas con flex —
-confirmado por una placa de callouts que ya usás en tu propia publicación de ML, más
-`MATERIAL=Inyección` de la ficha de ML. Forma rectangular (`SHAPE=Rectangular` en ML, confirmado
-visualmente en las 7 fotos oficiales). Género unisex explícito (`GENDER=Sin género`,
-`FILTRABLE_GENDER=Mujer,Hombre`). Fotos perfil+frente de las 7 colorways en alta resolución, del
-Dropbox oficial de Interoptica Andina que pasaste.
-
-- [ ] **Medidas y peso.** Ni ML ni el fabricante los tienen confiables para cargar (regla dura 7):
-  hay un grabado en la varilla del propio armazón que dice "55 □17-131" (visible en la foto del
-  C08) y coincide con un diagrama de interoptica.com.ar (135/17/55/131), pero **ninguno de los dos
-  es una medición tuya** — no se cargan. El armazón va sin bloque de medidas hasta que lo tengas en
-  la mano y confirmes: calibre, puente, varilla, ancho total del frente, alto total, y peso.
+- [x] **Medidas — RECIBIDAS el 2026-09-22: 55-17-131, ancho total 139mm, alto total 43mm.**
+  Confirma otra vez el patrón ya visto en Bad Card/Blozon/Zion: el grabado de la varilla y el
+  diagrama del distribuidor acertaban calibre/puente/varilla (55-17-131) pero erraban los dos
+  números que hay que medir de verdad — el diagrama decía ancho 135 (real 139) y no declaraba alto
+  (real 43). Geometría: 55×2 + 17 = 127 ≤ 139 ✓.
+- [x] **Material — CORREGIDO: "Inyección" (`frame_material: injected`), no grilamid.** Juan lo
+  llamó explícito "Inyección" — coincide con el atributo `MATERIAL` de ML, pero **contradice** lo
+  que se había inferido de una placa de callouts vieja del founder que decía "ARMAZÓN DE
+  GRILAMIDA". Se descarta esa placa vieja como fuente y se usa la palabra que dio Juan ahora,
+  que además coincide con un valor de enum real (`injected` → "Inyectado") nunca antes usado en el
+  catálogo.
+- [x] **Bisagras — CONFIRMADO: metálicas con flex, sistema "Visyfit"** (nombre de marca del
+  mecanismo, dato nuevo que no tenía ninguna fuente previa).
+- [x] **Género — CORREGIDO: hombre, no unisex.** Juan lo describió como "diseño semi envolvente
+  deportivo masculino" — contradice `GENDER=Sin género` / `FILTRABLE_GENDER=Mujer,Hombre` de ML.
+  Gana la palabra de Juan (mismo criterio que el Harry, donde ML también se ignoró a favor del
+  founder).
+- [x] **Forma — CORREGIDA: envolvente (semi), no rectangular puro.** Juan dijo "semi envolvente
+  deportivo" — contradice `SHAPE=Rectangular` de ML y la lectura visual inicial (que había leído
+  el lente como rectangular clásico sin curva). Es el primer armazón de RECETA envolvente del
+  catálogo (hasta ahora esa forma sólo existía en sol — ver comentario en `brand-filters.ts`).
+- [x] **Compatibilidad de receta — CONFIRMADA: monofocal, bifocal y progresivo.** Con la advertencia
+  aparte de que en graduaciones positivas altas o con astigmatismo relevante la curvatura del
+  armazón puede generar molestias — va como callout de advertencia, redactado con `optical-expert`
+  antes de publicar (trigger automático del CLAUDE.md, afirmación técnica óptica).
+- [x] **Regla de marca para TODO Mormaii, no sólo este producto**: incluye estuche **semi rígido**
+  (no el genérico), franela **de Mormaii** (con logo/marca, no franela genérica), y 1 año de
+  garantía del fabricante. Guardado en `BRANDS.md` para que no haya que repetirlo en la próxima
+  carga Mormaii.
 
 ## 🔵 Rusty Gover (armazón) — en carga, faltan 2 datos tuyos (2026-08-31)
 

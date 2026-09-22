@@ -33,6 +33,12 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   blanco: 'Blanco',
   rojo: 'Rojo',
   verde: 'Verde',
+  'negro-mate-y-gris-translucido': 'Frente negro mate / patillas gris translúcido',
+  'azul-mate-y-turquesa': 'Frente azul mate / patillas turquesa',
+  'transparente-y-negro-blanco': 'Frente transparente / patillas negro y blanco jaspeado',
+  'azul-oscuro-mate-y-celeste': 'Frente azul oscuro mate / patillas celeste',
+  'gris-turquesa-degrade': 'Gris a turquesa degradé',
+  'gris-mate-y-naranja': 'Frente gris mate / patillas naranja',
 };
 
 const LENS_COLOR_LABELS: Record<string, string> = {

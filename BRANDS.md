@@ -80,6 +80,10 @@ Las 5 marcas que **Óptica Carballo trabaja efectivamente HOY**, confirmadas por
 - **Segmento**: Medio. Surf / outdoor lifestyle.
 - **Categorías**: Sol + receta
 - **Estado**: 🟢 Activa — stock confirmado 2026-05-28. Sol Y receta.
+- **Regla de marca (founder, 2026-09-22, aplica a TODOS los productos Mormaii)**: incluyen estuche
+  **semi rígido** (no el estuche genérico blando del resto del catálogo), franela **de Mormaii**
+  (con marca propia, no franela genérica de la óptica), y 1 año de garantía del fabricante. Usar
+  este `includes` en vez del default `["estuche","franela"]` en cualquier carga Mormaii nueva.
 
 ## Paula Cahen D'Anvers
 

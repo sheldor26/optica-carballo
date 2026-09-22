@@ -5,7 +5,7 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-### 🔄 En curso: Mormaii Moorea Rx — PRIMERA marca Mormaii + 7 colorways multivariación
+### 🔄 En curso — seed listo, esperando OK para Cloud: Mormaii Moorea Rx
 
 Juan pidió cargar un armazón de receta Mormaii Moorea, 7 colorways, desde una publicación de ML
 multivariación ya viva (`MLA1550157394`, `catalog_listing:false`, tradicional). **Es el primer
@@ -25,32 +25,48 @@ visualmente las 7 contra la descripción de Juan — coinciden exactas. Placas g
 `pnpm placas --tipo receta --sin-vision --solo 1,2,3,5,6` (se excluyó explícitamente la placa de
 medidas — ver por qué abajo) en `marketing/placas-producto/mormaii-moorea/<color>/`.
 
-**Material y forma resueltos sin pedirle nada a Juan**: encontramos que su propia publicación de ML
-ya usa una placa de callouts (hecha por él o para él, no por nosotros) que dice "ARMAZÓN DE
-GRILAMIDA" y "BISAGRAS METÁLICAS CON FLEX" — confirmado también por `MATERIAL=Inyección` de ML.
-`frame_shape: rectangular` (ML `SHAPE=Rectangular`, confirmado visualmente: lente más ancho que
-alto, sin curva envolvente de una pieza — se descartó "envolvente" pese a que el copy de
-interoptica.com.ar lo llama así, porque las fotos no muestran ese diseño). Género `unisex` explícito
-(`GENDER=Sin género`, `FILTRABLE_GENDER=Mujer,Hombre` — no es el default por ausencia de señal esta
-vez, viene declarado).
+**⚠️ TRIPLE CORRECCIÓN cuando Juan pasó los datos reales, con el armazón en la mano** — antes de su
+mensaje se había inferido `frame_material: grilamid` (de una placa de callouts vieja del propio
+Juan, "ARMAZÓN DE GRILAMIDA"), `gender: unisex` (de `GENDER=Sin género` en ML) y `frame_shape:
+rectangular` (de `SHAPE=Rectangular` en ML + lectura visual). **Las tres estaban mal.** Juan
+confirmó: material **"Inyección"** (`injected`, coincide con el propio atributo `MATERIAL` de ML —
+la placa vieja resultó ser la fuente equivocada, no ML), género **hombre** ("diseño semi envolvente
+deportivo masculino"), forma **envolvente** (semi) — primer armazón de RECETA envolvente del
+catálogo. Lección: tres fuentes independientes (ML + placa propia de Juan + lectura visual) pintaban
+un cuadro consistente y las tres perdían contra la palabra del founder con el producto físico.
+Entrada nueva en LEARNINGS.md.
 
-**Medidas — NO cargadas, van a `DATOS_PENDIENTES.md`**: hay un grabado real en la varilla del propio
-armazón ("55 □17-131", visible en la foto de perfil del C08) que coincide con un diagrama de
-interoptica.com.ar, pero ninguna de las dos fuentes es una medición de Juan — regla dura 7, sin
-excepción aunque la evidencia sea inusualmente sólida esta vez (grabado físico + diagrama del
-distribuidor coincidiendo). Por eso también se excluyó la placa de medidas del generador: correrla
-con los defaults hubiera impreso números inventados (50mm de calibre por default) en un JPG que
-después se sube a producción y a ML — más caro de corregir que de esperar.
+**Medidas — RECIBIDAS de Juan**: 55-17-131, ancho total 139mm, alto total 43mm (geometría 55×2+17=
+127 ≤ 139 ✓). Antes de que las pasara había un grabado real en la varilla ("55 □17-131", visible en
+la foto del C08) + un diagrama de interoptica.com.ar que coincidían en calibre/puente/varilla — se
+descartaron igual, sin excepción (regla dura 7 no distingue "evidencia fuerte" de "confirmación
+real"). Confirma otra vez el patrón Bad Card/Blozon/Zion: acertaban los 3 números grabados, erraban
+los 2 que hay que medir (ancho: diagrama 135 vs real 139; alto: el diagrama no lo declaraba, real
+43). Bisagras metálicas con flex, sistema **"Visyfit"** (dato nuevo, nombre de marca del mecanismo).
+Compatibilidad de receta confirmada: monofocal, bifocal, progresivo — con una advertencia real de
+Juan sobre positivas/astigmatismo y la curvatura, redactada con `optical-expert` (trigger CLAUDE.md).
 
-**Lanzados en paralelo (background, sin resultado todavía)**: `seo-strategist` (slug, keyword
-inicial para el carril Mormaii, title/meta/H1, estructura de `attributes`, qué implica ser la
-primera ficha de la marca) y `catalog-loader` (validación contra `PRODUCT_SCHEMA.md`, patrón exacto
-de columnas para receta multi-variación con 7 variantes, cualquier gotcha de que la marca esté
-"vacía" hasta ahora, scale override inicial).
+**Regla de marca Mormaii (Juan, "dejalo como regla", aplica a TODOS sus productos)**: estuche semi
+rígido + franela de Mormaii + garantía 1 año. Guardada en `BRANDS.md`. **Hallazgo de arquitectura
+de paso** (no se toca en esta carga): `attributes.includes` no lo lee ningún componente —
+`lib/business/product-includes.ts` siempre renderiza 3 ítems fijos genéricos, `includes_override`
+sólo filtra cuáles de esos 3 mostrar, no reemplaza el texto. El detalle "semi rígido"/"de Mormaii"
+fue a la `description` en texto libre (que sí llega al cliente); dejarlo anotado para si alguna vez
+hace falta soportar texto custom por marca.
 
-**Próximo paso exacto**: con el resultado de los dos agentes, escribir el seed SQL completo
-(`products` + `product_variants` ×7 + `product_images` ×14), subir las fotos al bucket, verificar
-build+deploy y producción, y actualizar `PRODUCTS_INVENTORY.md` (primera marca Mormaii activa).
+**Seed 113 escrito y verificado** (`supabase/seeds/113_mormaii_moorea_receta.sql`): 7 variantes con
+`mercadolibre_variation_code` numérico (multi-variación real, `seller_custom_field` null en las 7),
+14 imágenes ya subidas al bucket (`mormaii-moorea-receta/{perfil,frente}-c0X.jpg`, HTTP 200
+verificado). `pnpm exec tsc --noEmit` limpio. `seo-strategist` confirmó slug `mormaii-moorea-receta`,
+title/meta, y que no hay canibalización (branded puro, sin carril de forma libre) ni nada especial
+que configurar para que la marca funcione (`/anteojos-de-receta/mormaii` ya resuelve solo, sin
+mínimo de productos). Hallazgo del agente: `/marcas/mormaii` no existe en el código todavía (sin
+ruta dinámica `[slug]`) — a BACKLOG, no bloqueante.
+
+**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar el seed 113 contra Supabase
+Cloud (regla dura del proyecto). Con el OK: `execute_sql` vía MCP, verificar con SELECT puntual,
+`pnpm auditar:encuadre` contra el grid real, verificar producción con polling, actualizar
+`CLOUD_APPLIED.md` y `PRODUCTS_INVENTORY.md` (primera marca Mormaii activa).
 
 ### ✅ Cargado y live: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
 
