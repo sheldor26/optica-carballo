@@ -96,6 +96,9 @@ Política DEFINITIVA (confirmada por founder 2026-06-11 + verificación legal de
 
 - Toda venta genera factura electrónica AFIP.
 - Cliente puede pedir factura A si tiene CUIT (formulario adicional en checkout).
+- **Copy de cara al cliente** (descripciones de ML, fichas, respuestas): la frase estándar es
+  **"Factura A o B según corresponda"**, nunca "factura" a secas ni "según corresponda" sin nombrar
+  las dos letras. Regla del founder, 2026-09-22.
 
 ---
 

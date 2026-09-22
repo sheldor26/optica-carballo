@@ -469,6 +469,74 @@ Le Groupie, Yamain); (2) la SERP de `rusty dunsert` hoy son la ficha de catálog
 Tienda de Anteojos), todos titulando "Gafas Antirreflejo" sin explicar cuáles la traen y sin medidas
 propias. Es ganable con una PDP de verdad.
 
+*Rusty Vriviant (SOL, CUADRADO de esquinas redondeadas, FEMENINO, G-Flex frente y patillas,
+bisagras metálicas con flex, policarbonato UV400 cat 3, 138 / 50x50 / 17 / 145 mm, sin peso
+declarado, 2 colorways: SBLK/S10 POL negro brillo + lente negro pleno POLARIZADA (SKU 112844,
+MLA1388018629), MBLK/G. BROWN negro mate + marrón degradé NO polarizada (SKU 112845,
+MLA3981541946)) — slug `rusty-vriviant` en `/anteojos-de-sol/rusty/rusty-vriviant`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| anteojos/lentes de sol rusty vriviant | sin medir | ~4 | **primaria branded** — name, H1, slug, alt |
+| lentes de sol cuadrados para mujer | 70 | 18 | **secundaria, único string libre de la intención** → title, H2, copy |
+| lentes de sol rusty | 1.300 | 9 | head de marca (soporte, NO primaria) |
+| anteojos de sol rusty | 880 | 10 | head de marca (soporte, NO primaria) |
+| anteojos de sol cuadrados mujer | 110 | 14 | **PROHIBIDA** — ya la pelean Dileri, Vorez, Dearly y Katleen |
+
+`vriviant` NO aparece en el autocompletado de Ubersuggest (barrido completo de los CSV de
+`KEYWORDS OPTICA/`, cero matches), a diferencia del Bruice y el Bad Card. Esta ficha no va a traer
+tráfico orgánico propio: sirve para convertir a quien ya llegó desde ML o redes, y para darle
+profundidad a `/anteojos-de-sol/rusty/mujer`.
+
+**El hallazgo grande de esta carga: el carril cuadrado-femenino está OCUPADO CUATRO VECES.**
+`anteojos de sol cuadrados mujer` (110/14) la atacan Dileri (seed 55), Vorez (seed 45), Dearly
+(seed 24) y Vulk Katleen (seed 52) — tres Rusty entre ellos. Es la tercera colisión de esta clase
+después de Blinded↔Zion y The Sil↔Zinz, y la más grande. **Vriviant no se suma**: toma
+`lentes de sol cuadrados para mujer` (70/18), el string adyacente sin dueño, con el mismo corte
+"lentes vs anteojos" que ya separa a The Take↔Yeah, Dunsert↔Le Groupie y Malice↔Blozon. El arreglo
+real de las otras cuatro NO es de este producto: es la faceta `/anteojos-de-sol/cuadrado`, decisión
+abierta del founder en DATOS_PENDIENTES.md — con el Vriviant son **27 productos cuadrados sin
+página** (24 hasta el Cinema + Guardian + Gover + Vriviant), ~990 búsquedas/mes de intención sol
+sin consolidar. Y el problema es más grave de lo que muestran los 4 titles: como `unisex` también
+califica para la faceta de mujer, `/anteojos-de-sol/rusty/mujer` ya reúne 6 cuadrados Rusty
+(Dileri, Vorez, Dearly, Zinz, Peating, Bruk), 7 con Vriviant.
+
+**Anti-canibalización**: (A) vs **Dileri**, el gemelo (cuadrado femenino Rusty, 140/52x53/15/135,
+1 de 2 pol): string split + bisagra metálica con flex vs patillas Flex Temple. (B) vs **Vorez**
+(141/51x52/17/145): bisagras metálicas vs plásticas. (C) vs **Dearly**: su `meta_title` reclama el
+mismo string en disputa (17,3 g es diferenciador de copy, no de keyword). (D) vs **Katleen sol**
+(Vulk): otra marca y otro armazón (53x42 ancho-bajo vs 50x50 casi 1:1). (E) vs **Zinz/The Sil**
+(`unisex`, no "sin género"): son el cuadrado neutro y compiten en la faceta de mujer por el
+`unisex`, no por keyword propia. (F) vs **Blozon/Malice**: cuadrados HOMBRE, y Vriviant es
+`female`. (G) vs **Guardian** (`anteojos de sol negros`): el string ya lo tiene el Guardian, y
+además acá los dos armazones son negros (brillo y mate) — lo que cambia es la lente, no alcanza a
+diferenciar. (H) vs **Ardigan** (`lentes de sol polarizados`): 1 de 2, no se reclama.
+
+**Honestidad — 1 de 2 polarizadas**: "polarizado" NO va en title, H1 ni `name`/`short_description`
+(criterio Rew 1/2, Dunsert 1/3, Bad Card 2/6; precedente directo el Rew, único 1-de-2 real del
+catálogo, que sí lo pone en meta_description). Va con número a `meta_description`, callout
+`warning`, descripción y alt de esa variante. `lens_treatment` de producto queda `["uv400"]`; el
+flag `polarized` va a nivel variante, sólo en la SBLK. **G-Flex es el nombre del material y NO
+autoriza a decir que el armazón sea flexible** — el flex es de la BISAGRA. **Sin comparativo de
+peso**: no hay peso declarado, va a la lista de pesos pendientes.
+
+**Facetas (verificado en código)**: SÍ entra a `/anteojos-de-sol/polarizados` (`toPolarizedCatalog`
+en `lib/catalog/polarized.ts` resuelve por variante). NO entra a `/anteojos-de-sol/rusty/polarizados`
+(`lib/catalog/brand-filters.ts` filtra a nivel producto). `gender: "female"` → entra a
+`/anteojos-de-sol/mujer` y `/anteojos-de-sol/rusty/mujer`, y queda fuera de las de hombre
+(`fetchCategoryByGender` / `fetchBrandPageByGender` en `lib/catalog/queries.ts`).
+
+Title: `Lentes de Sol Rusty Vriviant Cuadrados Mujer | Carballo` (55).
+Meta: `Lentes de sol Rusty Vriviant: cuadrados femeninos de G-Flex y lente UV400, con bisagras
+metálicas flex. Uno de los dos colores polariza. Envío a todo el país.` (158).
+H1 = name = `Rusty Vriviant`.
+Linking: `/anteojos-de-sol/rusty` + `/anteojos-de-sol/mujer` + `/anteojos-de-sol/rusty/mujer` +
+`/anteojos-de-sol/polarizados` + related (dileri, vorez, dearly, katleen, zinz, beason).
+NO `/marcas/rusty` (404), NO `/guias/anteojos-segun-forma-de-cara` (404), NO
+`/anteojos-de-sol/rusty/polarizados`, NO `/acetato`, NO `/metal`. Sin link a guía: ninguna de las
+guías publicadas es de intención sol. Sin cross-link sol↔receta (no hay Vriviant de receta).
+
+
 Title: `Lentes de Sol Rusty Dunsert Cat Eye | Óptica Carballo` (53).
 Meta: `Lentes de sol Rusty Dunsert: cat eye unisex de G-Flex, policarbonato UV400 categoría 3. Dos
 de los tres colores traen antirreflex interno. Envío a todo el país.` (160).
