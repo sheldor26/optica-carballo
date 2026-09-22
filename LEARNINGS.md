@@ -11571,6 +11571,32 @@ anteojo se iba a otro lado. Tiene que ir en la misma capa que se mueve — en es
 necesita, y cuanto más limpio y más grande el fondo, más se nota la falta. El primitivo quedó en
 `placa-base.ts` (`DEFS_SOMBRA` + `sombraContacto`) disponible para todos los diseños.
 
+## 2026-09-22 — El "flujo invertido" tiene un límite: sirve para una variante nueva, no para un producto sin ninguna variante viva
+
+**Contexto**: cargando el Rusty EYSY (producto 100% nuevo, sin nada cargado antes), a punto de
+escribir el seed con el mismo patrón que Bruice/Vriviant/The Take esta misma sesión —preparar
+sitio y placas primero, mapear ML cuando exista la publicación—, me di cuenta de una
+diferencia real antes de escribir el `INSERT`.
+
+**Qué es "el flujo invertido" en realidad**: en los tres casos anteriores, la variante nueva se
+agregaba a un producto que YA tenía otra(s) variante(s) `product_variants` con precio y stock
+reales. El producto, como ficha pública, nunca dejaba de tener una oferta válida — sólo crecía el
+selector de variantes cuando la nueva se publicaba. El patrón funciona porque siempre hay un
+`price_cents`/`stock_qty` real detrás de la ficha en todo momento.
+
+**Por qué no aplica igual a un producto nuevo**: si el producto no tiene NINGUNA variante todavía,
+insertar la fila de `products` sin una fila de `product_variants` con precio/stock real (o
+insertarla con un precio/stock inventado sólo para "no dejarlo vacío") viola la regla dura 1 del
+negocio — nada de pre-order, nada de disponibilidad ficticia. La única opción honesta es preparar
+TODO lo que no depende del precio (fotos, placas, copy, SEO, atributos) y posponer el `INSERT`
+completo hasta que exista una publicación real de la que leer esos dos datos.
+
+**Regla / cuándo aplicar**: antes de reusar el patrón "cargo el sitio primero, mapeo ML después"
+en una carga nueva, preguntar: ¿esto es una variante de un producto que YA tiene otra oferta viva,
+o es el producto entero el que no tiene ninguna? En el primer caso, el flujo invertido normal
+aplica sin cambios. En el segundo, se prepara todo el material pero NO se toca la base hasta tener
+precio y stock reales — no hay ficha "a medias" válida para un producto que no existía.
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

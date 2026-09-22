@@ -5,46 +5,62 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-### 🔄 En curso: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
+### 🔄 En curso — bloqueado en Juan: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
 
 Juan pidió dar de alta un modelo que todavía no existe en el catálogo (no es variante de uno
 cargado): Rusty EYSY, primera colorway C2/SKU 103431 — armazón metálico dorado, patillas de
 acetato violeta/vinotinto marmolado, lente policarbonato degradé gris oscuro, UV400 (NO polarizado,
 no mencionado; sin antirreflejo, no mencionado — no se afirma ninguno de los dos). Medidas
-46-16-145, ancho total 134mm, alto total 41mm, peso 28,3g. Diseño ovalado. El fabricante tiene C1 a
-C6 pero por ahora solo se carga C2.
+46-16-145, ancho total 134mm, alto total 41mm, peso 28,3g. Diseño ovalado, unisex. El fabricante
+tiene C1 a C6 pero por ahora solo se carga C2.
 
-**Decisión técnica pendiente de confirmar, ya resuelta provisoriamente**: la ficha del fabricante
-(rustyoptical.com) trae un texto genérico "Frente: Armazón de acetato" para TODO el modelo EYSY,
-pero Juan describió el frente como "Dorado metálico" y la foto oficial de la colorway C2 muestra
-un aro fino consistente con metal (no acetato). Se está tomando la descripción de Juan + evidencia
-visual sobre el texto boilerplate del fabricante (mismo criterio que ya se usó con las fotos
-cruzadas de The Take: cuando hay conflicto, gana lo que Juan confirma + lo que se ve en la foto
-real de ESA colorway, no el texto genérico de familia de producto).
+**Decisión ya resuelta — material del frente**: la ficha del fabricante (rustyoptical.com) trae un
+texto genérico "Frente: Armazón de acetato" para TODO el modelo EYSY, pero Juan describió el frente
+como "Dorado metálico" y la foto oficial de la colorway C2 muestra un aro fino consistente con
+metal. `seo-strategist` y `catalog-loader` confirmaron el mismo criterio: se toma lo que dice Juan +
+la evidencia visual de ESA colorway sobre el texto boilerplate de familia (mismo patrón que las
+fotos cruzadas de The Take y el blurb "LENTE: POLARIZADAS" del Bad Card). `frame_material: metal`,
+`temple_material: acetate`.
 
-**Género**: Juan no especificó esta vez (a diferencia de Vriviant, donde sí dijo "diseño
-femenino/mujer" explícito). Se va a evaluar `unisex` por default siguiendo el precedente ya
-documentado de Rusty Dunsert en `SEO_STRATEGY.md` (unisex entra a `/mujer` Y `/hombre` vía
-`fetchCategoryByGender`/`fetchBrandPageByGender`, es "estrictamente dominante" para SEO ante
-ausencia de señal) — a confirmar con el resultado del agente `seo-strategist`.
+**Decisión ya resuelta — género**: `unisex`, confirmado por `seo-strategist` con el mismo precedente
+de Rusty Dunsert (sin señal explícita de Juan ni de ML, unisex entra a `/mujer` Y `/hombre` —
+"estrictamente dominante" para SEO).
 
-**Hecho en este turno**: fotos oficiales de la colorway C2 descargadas y verificadas visualmente en
-`marketing/fotos/rusty-eysy/103431-c2/{01-perfil,02-frente}.jpg`. Lanzados en paralelo (background,
-sin resultado todavía): `seo-strategist` (slug, keyword de forma sin canibalizar otros Rusty
-ovalados/metálicos, title/meta/H1, estructura de `attributes`) y `catalog-loader` (validación contra
-`PRODUCT_SCHEMA.md`, patrón exacto de columnas de 2-3 seeds recientes, scale override inicial
-comparado contra el grid, chequeo de duplicado).
+**SEO confirmado**: slug `rusty-eysy` (sin colisión), `frame_shape: ovalado`. Primaria de forma
+`anteojos de sol ovalados` (70/36) — el carril `lentes de sol ovalados` (140/13) ya lo tiene Vulk
+Nova, único otro ovalado del catálogo (split lentes/anteojos, mismo criterio que The Take↔Yeah).
+Title: `Anteojos de Sol Rusty EYSY Ovalados | Óptica Carballo` (53c). H1 = `name` = `Rusty EYSY`.
+Cero colisión real con Vulk Nova (marca, keyword, género y honestidad de lente — Nova sí polariza
+3/3, EYSY no — ya lo separan solos). Cross-link manual sugerido Nova↔EYSY (únicos ovalados).
+Pendiente en BACKLOG (no bloqueante): evaluar facetar `/anteojos-de-sol/ovalados` si se suman más.
 
-**Precio y stock**: todavía no definidos — Juan no tiene la publicación de ML lista todavía. Flujo
-invertido (mismo patrón que Bruice/Vriviant/The Take esta sesión): se preparan sitio + placas
-primero, se mapea ML cuando Juan pase el link.
+**Hecho en este turno**:
+- Fotos oficiales de la colorway C2 descargadas y verificadas visualmente en
+  `marketing/fotos/rusty-eysy/103431-c2/{01-perfil,02-frente}.jpg`.
+- Placas generadas con `pnpm placas` (callouts verificados a mano, sin usar los defaults —
+  especialmente se **reemplazó el ítem 3 default de la placa de garantía** porque decía "Apto para
+  adaptar lentes graduadas", un claim no confirmado para este modelo de sol, trampa ya documentada
+  con el Bruice de sol) en `marketing/placas-producto/rusty-eysy/103431-c2/{ml,web}/`.
+- Descripción de ML redactada y entregada en
+  `marketing/ml-descripciones/rusty-eysy-c2-dorado-violeta.txt`, título 52 caracteres, cierra con
+  "Factura A o B según corresponda" (regla del founder 2026-09-22).
 
-**Próximo paso exacto**: al volver el resultado de los dos agentes, escribir el seed SQL
-(`products` + `product_variants` + `product_images`), generar las placas con `pnpm placas`
-(callouts verificados, sin defaults), agregar el override de escala en
-`lib/catalog/image-scale-overrides.ts` comparado contra el grid, verificar build+deploy, y redactar
-la descripción de ML (cerrando con "Factura A o B según corresponda", regla del founder
-2026-09-22 — ver `BUSINESS_POLICIES.md` §7).
+**Por qué NO se escribió el seed SQL todavía, a diferencia de otras cargas de esta sesión**: en
+Bruice/Vriviant/The Take el flujo invertido aplicaba a una VARIANTE nueva de un producto que ya
+tenía otra(s) variante(s) live con precio/stock real — el producto nunca quedaba sin oferta. Acá
+EYSY es un producto 100% nuevo: no existe ninguna variante suya con precio ni stock todavía. Insertar
+`products` sin ninguna fila en `product_variants` (o con precio/stock inventado) deja una ficha
+incompleta o inventada, contra la regla dura 1 del negocio (nada de pre-order / stock ficticio). Por
+eso se preparó TODO lo demás (fotos, placas, copy, atributos, SEO) pero el `INSERT` se posterga
+hasta que exista la publicación real.
+
+**Próximo paso exacto**: Juan publica la colorway C2 en ML con la descripción ya redactada, y pasa
+el link + precio + stock reales. Con eso: escribir seed `112_rusty_eysy_sol.sql` (`products` +
+`product_variants` + `product_images`), subir las placas `web/` al bucket, correr
+`pnpm auditar:encuadre` contra el grid real antes de fijar cualquier override en
+`lib/catalog/image-scale-overrides.ts` (punto de partida sugerido si hiciera falta: Vulk Nova perfil
+1.1 / frente 1.0, único comparable ovalado+metal — a verificar, no a copiar a ojo), verificar
+build+deploy, y confirmar en producción.
 
 ### ✅ Placa de sponsor para torneo de fútbol (fuera del catálogo)
 
