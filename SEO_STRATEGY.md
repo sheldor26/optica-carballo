@@ -830,6 +830,49 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 
 > **name = "Vulk Ready?"** (con el signo de pregunta literal — nombre real del modelo, sin agregar "Unisex" porque no coexiste con versión de sol homónima, mismo criterio Be Again). **ANTI-CANIBALIZACIÓN cluster transparente**: Ready es el PRIMER Vulk receta 100% transparente (1/1 variante, no 2/3 como Strewn ni 1/3 como Be Again ni 1/2 como Vartis) y UNISEX → única ficha que puede reclamar el head genérico `anteojos transparentes` sin matizarlo (no aplica el criterio de "mayoría de variantes"). Cierra el cluster: mujer (Strewn) + hombre (Rusty PRO 30) + unisex genérico (Ready). Cross-link obligatorio Ready↔Strewn↔PRO 30 ("elegí tu transparente: mujer/hombre/unisex") + Ready↔Be Again↔Dieven Unisex (Vulk receta unisex) + `/anteojos-de-receta/vulk` + `/guias/como-leer-receta-anteojos`. Cross-link sol↔receta NO (Ready sol no existe en el catálogo). ⚠️ **frame_shape="cuadrado" es hipótesis no confirmada** (lente 54×42mm ratio 1.29:1, precedente más cercano Katleen 1.26:1) — confirmar con founder al ver la foto real. Title (auto): `Vulk Ready? | Anteojos de Receta - Óptica Carballo` (50). H1/name: `Vulk Ready?`.
 
+### Cluster: MORMAII (septiembre 2026 — CSV `KEYWORDS OPTICA/`)
+
+**Primer producto cargado**: Mormaii Moorea RX (receta), seed 113. **Segundo**: Mormaii Storm (sol),
+seed 115. Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
+
+**Keyword head crítica**: `lentes de sol mormaii` — **90 vol/mes, difficulty 8**. Es específica de
+sol y queda libre para Storm por ser el primer y único producto de sol de la marca. La receta no
+tiene un head propio con volumen medible: Moorea quedó branded puro.
+
+**Insight crítico**: las cabeceras de marca genéricas (`mormaii lentes` 390/7, `lentes mormaii`
+170/7, `anteojos mormaii` 170/7) son **mixtas sol+receta** y van al hub (`/anteojos-de-receta/mormaii`,
+`/anteojos-de-sol/mormaii`, futuro `/marcas/mormaii`), nunca a una PDP puntual — mismo criterio que
+Vulk/Rusty. La única cabecera que SÍ es específica de una categoría es `lentes de sol mormaii`
+(90/8), que Storm capturó como primaria.
+
+**Keywords primarias**:
+| Keyword | Vol/mes | Difficulty | Intent | Dónde usar |
+|---|---|---|---|---|
+| lentes de sol mormaii | 90 | 8 | commercial | title/H1 de Storm (único sol Mormaii hoy) |
+| mormaii moorea / mormaii storm (branded) | 0 medido | ~7 | navigational | slug, alt, name de cada producto |
+
+**Keywords secundarias**:
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii lentes | 390 | 7 | hub-only, mención 1 vez en `seo_intro` de marca, NO en PDP |
+| lentes mormaii / anteojos mormaii | 170 | 7 | hub-only, igual que arriba |
+| anteojos recetados | 720 | 9 | head de intención receta compartido → copy de Moorea |
+| anteojos/lentes rectangulares | 480/15, 880/10 | ya tomadas por Rusty R-CY 02 como primaria → Moorea las usa sólo en copy/H2, nunca title/H1 |
+| anteojos/lentes de sol deportivos | 110-210 | 10-17 | ya reclamadas por 3-5 Rusty envolventes → Storm NO pelea esta primaria, sólo entra a la faceta compartida |
+
+**Long-tails branded**:
+- mormaii moorea rx (armazón de receta) → slug `mormaii-moorea-receta`
+- mormaii storm polarizados (sol) → slug `mormaii-storm`
+
+**No usar**:
+- "armazón de receta" como cabecera de Moorea (0 vol, mismo vicio ya descartado en otros clusters).
+- "deportivos"/"envolvente" como primaria de Storm — sexto reclamo del mismo string que ya usan 3-5
+  Rusty, cero ROI incremental. Va en copy/alt/`frame_shape`, no en title/H1.
+
+**Regla de marca (no es SEO, pero aplica a todo copy Mormaii)**: TODOS los productos incluyen estuche
+semi rígido + franela de Mormaii + 1 año de garantía — usar esa frase exacta en descripción, no el
+"estuche y franela" genérico del resto del catálogo (founder, 2026-09-22, ver `BRANDS.md`).
+
 ### Reglas para futuros productos
 
 Cuando se cargue un producto nuevo, ANTES de escribir copy:

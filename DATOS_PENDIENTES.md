@@ -128,6 +128,11 @@ Vulk/Rusty — excepción a la regla dura 7 que tomaste vos explícitamente, no 
 
 - [ ] **Alto total del frente.** Ni el fabricante ni tu mensaje lo tienen — no está en ningún lado
   todavía. El bloque de medidas se carga con las otras 4 claves nomás, sin este dato.
+- [ ] **SKUs reales de fábrica, si los tenés.** Ninguna de las 6 variantes trae `seller_sku` en ML,
+  así que se cargaron con SKU de casa (`STORM-NBR-GRIS`, `STORM-C05-AZUL`, etc. — patrón ya usado en
+  Rusty Rew). No bloquea la carga, pero si tenés los códigos reales del fabricante, pasámelos antes
+  de que haya ventas — después hay que hacer un `UPDATE` con cuidado porque el SKU es la llave de
+  idempotencia del seed.
 
 ## ✅ Mormaii Moorea Rx (armazón) — CERRADO el 2026-09-22
 

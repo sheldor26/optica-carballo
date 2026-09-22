@@ -39,6 +39,8 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'azul-oscuro-mate-y-celeste': 'Frente azul oscuro mate / patillas celeste',
   'gris-turquesa-degrade': 'Gris a turquesa degradé',
   'gris-mate-y-naranja': 'Frente gris mate / patillas naranja',
+  'azul-translucido': 'Azul translúcido',
+  'negro-mate-detalles-marron': 'Negro mate con detalles marrón',
 };
 
 const LENS_COLOR_LABELS: Record<string, string> = {
@@ -63,6 +65,8 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   // fallback de title-case y renderizaba "Espejado Rojo" en vez de "Rojo espejado".
   'espejado-rojo': 'Rojo espejado',
   'espejado-dorado': 'Dorado espejado',
+  'espejado-naranja': 'Naranja espejado',
+  'verde-g15': 'Verde G15',
 };
 
 function toTitleCase(s: string): string {
