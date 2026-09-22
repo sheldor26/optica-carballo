@@ -5,6 +5,41 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### 🔄 En curso: Mormaii Storm (sol, segundo producto Mormaii) — variantes identificadas, esperando medidas
+
+Juan pidió cargar Mormaii Storm (anteojo de sol polarizado envolvente), desde `MLA1538614840`
+(`catalog_listing:false`, tradicional, $116.024,04 uniforme, `WITH_POLARIZED_LENS:Sí` en las 6
+variantes, `FRAME_SHAPE:Envolvente` — esta vez ML no se equivocó de forma). Pidió explícitamente que
+determine yo cuál foto del distribuidor corresponde a cuál variante de ML, sin darme el mapeo hecho
+(a diferencia del Moorea, donde ya traía los SKUs con el número de color incluido).
+
+**Las 6 variantes de ML NO traen todas un número de color explícito** (a diferencia de Moorea) —
+sólo 2 de las 6 (`C05`, `C12`) lo declaran en el propio `value_name` de ML. Para las otras 4 hubo
+que emparejar por color/lente descriptos + comparar contra los 12 colores reales que tiene el
+distribuidor (Dropbox de Interoptica Andina, mismo mecanismo que Moorea: ZIP completo bajado con
+`dl=1`, sin que Juan mueva nada). **Dos de las cuatro se confirmaron leyendo el grabado físico en
+la propia foto de perfil** ("Storm SN col. 02", "Storm SN col. 07") — no sólo por color, por dato
+duro impreso en el armazón. Las otras dos (`col04` azul translúcido, `col10` verde G15) no tenían
+otro candidato posible entre los 12 colores del distribuidor, así que quedaron sin ambigüedad. Los
+otros 6 colores que tiene el distribuidor (col01,03,06,08,09,11) no están en la publicación de Juan
+— no se cargan.
+
+**Mapeo final** (var ML stock → color real):
+- stock 4, MLAU166230283 → col02, negro brillo / gris oscuro
+- stock 1, MLAU3524786980 → col05, negro mate / espejado azul (C05 en ambas fuentes)
+- stock 0, MLAU167217590 → col04, azul translúcido / gris oscuro
+- stock 2, MLAU166232237 → col07, negro mate / espejada naranja
+- stock 3, MLAU166232255 → col10, negro mate / verde G15
+- stock 2, MLAU3650180599 → col12, negro mate c/ detalles marrones / marrones (C12 en ambas fuentes)
+
+**Medidas — todavía no las pasó Juan.** interoptica.com.ar muestra 135/16/57/124 (Base 8) pero,
+mismo criterio que Moorea, no se carga sin que él lo confirme con el armazón en la mano.
+
+**Próximo paso exacto**: esperando que Juan confirme si seguimos preparando fotos/placas mientras
+tanto o si prefiere mandar las medidas primero. Con las fotos: bajar perfil+frente de los 6 colores
+confirmados del ZIP ya descargado (`/tmp/storm_full`), generar placas `--tipo sol`, escribir el seed
+(sin measurements hasta que las pase), invocar `seo-strategist` + `catalog-loader` como en Moorea.
+
 ### ✅ Cargado y live: Mormaii Moorea RX — PRIMER producto de la marca Mormaii
 
 Juan pidió cargar un armazón de receta Mormaii Moorea, 7 colorways, desde una publicación de ML

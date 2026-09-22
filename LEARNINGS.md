@@ -11653,6 +11653,30 @@ y `x-matched-path: /404`, hay que esperar el `revalidate` completo de esa ruta (
 nueva inmediatamente después de aplicar el seed si se puede: mejor esperar unos segundos antes del
 primer hit, para no ser uno mismo quien cachea el 404.
 
+## 2026-09-22 — El grabado en la foto de perfil resuelve el emparejamiento variante↔color cuando ML no da el número
+
+**Contexto**: cargando Mormaii Storm, sólo 2 de las 6 variantes de ML traían el número de colorway
+explícito en su `value_name` (`C05`, `C12`). Para las otras 4 había que emparejar por descripción de
+color/lente contra los 12 colores reales que tiene el distribuidor en Dropbox — con margen real de
+error, porque varios colores del distribuidor son parecidos entre sí (varios negro mate con lente
+oscuro liso).
+
+**Qué funcionó**: las fotos de PERFIL de este distribuidor (a diferencia de las de frente) suelen
+traer el modelo y el número de color grabado o impreso directamente en la varilla —
+"Storm SN col. 02", "Storm SN col. 07" son legibles a simple vista en la imagen en alta resolución.
+Cuando el color por sí solo alcanzaba para desambiguar (un solo candidato posible entre los 12,
+ej. "azul translúcido" o "verde G15 liso") no hizo falta leer el grabado. Pero para dos casos
+ambiguos, el grabado sacó la duda sin apoyarse en interpretación visual del color, que siempre tiene
+margen de error (fotografía, iluminación, compresión JPG).
+
+**Regla / cuándo aplicar**: al emparejar variantes de ML contra fotos de un distribuidor cuando el
+número de color no viene declarado en ambas fuentes, antes de resolver por color a ojo, revisar si
+la foto de PERFIL (no la de frente) tiene algún grabado o impresión legible con el modelo/color —
+mirar en zoom si hace falta. Es más confiable que cualquier comparación visual de tono de color, y
+además es exactamente el mismo lugar donde suelen venir los números de medida (calibre-puente-
+varilla) que tampoco se pueden usar sin confirmación del founder, pero que sí sirven para
+desambiguar EMPAREJAMIENTOS (que no es una medida, es una identidad).
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
