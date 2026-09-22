@@ -22,6 +22,34 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-09-22 — Asumí "negro mate" para dos patillas sin leer el propio código SBLK/MBLK
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: cargando las placas de las 2 variantes nuevas del Rusty The Take (SKU 129237 lente
+marrón, SKU 129236 lente verde), puse "patillas de acetato negro mate" en las dos, en las placas de
+ML y en la descripción combinada. El founder corrigió dos veces seguidas: primero que las patillas
+eran "negro mate" (no lo tenía puesto), después que la del **marrón** en realidad es **negro
+brillo**.
+
+**La segunda corrección era evitable con datos que ya tenía delante.** Los propios model codes de
+Rusty son **`L.GREY-SBLK/L.BROWN`** y **`L.GREY-MBLK/G.GREEN`** — y **SBLK/MBLK son la convención
+del fabricante para Shiny Black / Matte Black**, usada en decenas de productos ya cargados del
+catálogo (Bad Card, Dunsert, Bruice, Harry...). La información de qué acabado tiene cada color
+estaba **en el propio SKU**, no hacía falta preguntarla ni adivinarla.
+
+**Causa raíz**: al enfocarme en el color de la LENTE (que era el dato que había que resolver, por
+las fotos cruzadas), dejé de leer el resto del model code con el mismo cuidado. Traté "SBLK" y
+"MBLK" como dos strings arbitrarios del nombre del modelo, en vez de decodificarlos.
+
+**Regla preventiva**: cuando un model code de Rusty contiene `SBLK` o `MBLK`, **decodificarlo
+siempre** como Shiny Black / Matte Black antes de escribir cualquier acabado de armazón o patilla —
+no copiar un valor único "a ojo" cuando hay dos colorways con codes distintos. Es la misma clase de
+error que las fotos cruzadas del propio turno: el dato correcto estaba disponible, sólo había que
+leerlo con el mismo rigor en todos los campos, no sólo en el que parecía el problema del momento.
+
+---
+
 ## 2026-09-22 — La plantilla de `pnpm placas` reinyecta el claim de peso que acabábamos de borrar
 
 **Estado**: 🟡 Mitigado

@@ -112,6 +112,14 @@ founder avisó de entrada: la carpeta que el sitio marcaba "129237" tenía la le
 "129236" la marrón — al revés de su mapeo. Se reorganizaron según **su** asignación, que es la
 fuente que manda cuando contradice al sitio del fabricante.
 
+**⚠️ Las patillas NO son del mismo acabado en las dos, y se corrigió dos veces.** El founder aclaró
+primero que eran "negro mate" (no estaba puesto en las placas), y después que la del **marrón
+(129237) es negro BRILLO**, no mate — la del verde (129236) sí es mate. Lo evitable: los propios
+model codes ya lo decían — **`L.GREY-SBLK/L.BROWN`** (SBLK = Shiny Black) y
+**`L.GREY-MBLK/G.GREEN`** (MBLK = Matte Black), la misma convención que usan Bad Card, Dunsert,
+Bruice y Harry. Entrada en `MISTAKES.md` con la regla: decodificar siempre SBLK/MBLK del model code
+en vez de asumir un acabado único. Placas y descripción ya corregidas y reenviadas.
+
 **Placas generadas y entregadas para los DOS canales**, por color: `web/` (perfil, frente, medidas)
 y el set completo de ML (perfil, frente, callouts con datos verificados —nunca los defaults—,
 medidas, garantía). Hubo una vuelta de corrección a mitad de turno: las placas se regeneraron
