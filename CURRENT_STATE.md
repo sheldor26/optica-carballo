@@ -5,7 +5,7 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-### 🔄 En curso — seed listo, esperando OK para Cloud: Mormaii Moorea Rx
+### ✅ Cargado y live: Mormaii Moorea RX — PRIMER producto de la marca Mormaii
 
 Juan pidió cargar un armazón de receta Mormaii Moorea, 7 colorways, desde una publicación de ML
 multivariación ya viva (`MLA1550157394`, `catalog_listing:false`, tradicional). **Es el primer
@@ -71,10 +71,26 @@ cada producto — es brand-wide, así que también aplicaría a un futuro Mormai
 a `brands-shared/mormaii-includes.jpg` (720×720, HTTP 200 verificado). `includes_image_alt`
 explícito para no heredar el default que menciona "stickers" (no confirmado para esta marca).
 
-**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar los seeds 113 + 114 contra Supabase
-Cloud (regla dura del proyecto). Con el OK: `execute_sql` vía MCP, verificar con SELECT puntual,
-`pnpm auditar:encuadre` contra el grid real, verificar producción con polling, actualizar
-`CLOUD_APPLIED.md` y `PRODUCTS_INVENTORY.md` (primera marca Mormaii activa).
+**Aplicado a Cloud con OK explícito de Juan** (2026-09-22): seeds 113 + 114 vía `execute_sql`,
+verificados con SELECT puntual (`variantes=7, stock_total=4, imgs=14, variation_codes_distintos=7`,
+`brands.includes_image_path='mormaii-includes.jpg'`). `CLOUD_APPLIED.md` actualizado.
+
+**Verificado en producción** — con un hallazgo de método nuevo sobre ISR: la primera pasada a la PDP
+(`/anteojos-de-receta/mormaii/mormaii-moorea-receta`) dio **404 durante ~3 minutos**, no sólo
+contenido viejo. Diagnóstico por headers (`x-vercel-cache: HIT`, `age: 181`, `x-matched-path:
+/404`): la primera consulta a esa ruta (hecha apenas después de aplicar el seed, antes de que el
+row terminara de propagarse) cacheó un 404 negativo por la ventana completa de `revalidate=300` de
+la página — a diferencia de la lección ya conocida ("pollear 2-3 veces"), acá **cualquier poll
+dentro de esos 5 minutos repite el mismo 404 cacheado**, no alcanza con esperar unos segundos más.
+Hubo que esperar a que `age` superara los 300s. Con eso resuelto: PDP 200, JSON-LD `price:111030,
+availability:InStock`, título correcto, "7 colores", imagen `mormaii-includes.jpg` presente en la
+galería. Aparece en `/anteojos-de-receta/mormaii`, `/anteojos-de-receta/mormaii/hombre` (confirma
+`gender: male` funcionando) y en `/anteojos-de-receta` general. `auditar:encuadre`: 92%, sin
+necesitar override. Entrada nueva sugerida en LEARNINGS.md sobre este matiz del 404 cacheado.
+
+**Próximo paso exacto**: ninguno pendiente de esta carga. Pendiente del founder (no bloqueante):
+medir el peso del armazón (`DATOS_PENDIENTES.md` ya no lo tiene bloqueando porque no bloqueaba
+publicar, pero falta para completar `weight_grams`). Seguir con el cruce `pnpm ml:faltantes`.
 
 ### ✅ Cargado y live: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
 

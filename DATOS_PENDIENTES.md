@@ -146,6 +146,9 @@ gris degradé turquesa (0), 09 gris mate/naranja (1). Precio uniforme $111.030.
   deportivo" — contradice `SHAPE=Rectangular` de ML y la lectura visual inicial (que había leído
   el lente como rectangular clásico sin curva). Es el primer armazón de RECETA envolvente del
   catálogo (hasta ahora esa forma sólo existía en sol — ver comentario en `brand-filters.ts`).
+- [ ] **Peso — no lo pasó.** No bloqueó la carga (mismo criterio que Vriviant, cargado "sin peso"
+  esta misma sesión): `weight_grams` queda ausente del jsonb hasta que lo pese. Sin comparativos de
+  peso en la ficha hasta entonces.
 - [x] **Compatibilidad de receta — CONFIRMADA: monofocal, bifocal y progresivo.** Con la advertencia
   aparte de que en graduaciones positivas altas o con astigmatismo relevante la curvatura del
   armazón puede generar molestias — va como callout de advertencia, redactado con `optical-expert`

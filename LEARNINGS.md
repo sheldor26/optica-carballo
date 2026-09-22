@@ -11624,6 +11624,35 @@ dato de catálogo genérico aguas arriba. La única fuente que rompe ese empate 
 producto físico — y vale la pena pedirla temprano en cargas con atributos "blandos" (material,
 género, forma) que no tienen la trazabilidad dura de una medida grabada en la varilla.
 
+## 2026-09-22 — Un 404 también se cachea por la ventana completa de `revalidate`, no sólo el contenido viejo
+
+**Contexto**: verificando en producción el Mormaii Moorea recién cargado, la PDP devolvía 404
+incluso después de 2-3 pasadas con unos segundos de espera entre cada una — la técnica ya conocida
+de "pollear varias veces" (documentada en sesiones anteriores para contenido *desactualizado*) no
+lo resolvía.
+
+**Qué pasaba en realidad**: la primera visita a esa URL ocurrió apenas después de aplicar el seed,
+en una ventana muy chica donde el row todavía no estaba disponible para esa request puntual. La
+página tiene `revalidate = 300`, y Next.js cachea el resultado de esa primera visita **tal cual
+salió** — en este caso, un 404. Los headers lo confirman: `x-vercel-cache: HIT`, `x-matched-path:
+/404`, y `age` creciendo con cada poll sin volver a intentarlo contra la base. No importa cuántas
+veces se repita la consulta dentro de esos 5 minutos: siempre va a servir el mismo 404 guardado.
+
+**La diferencia con la lección anterior**: "pollear 2-3 veces separadas por unos segundos" funciona
+para contenido *viejo pero válido* que va a refrescarse pronto porque el `revalidate` ya venció o
+está por vencer. Acá el problema era otro: el propio 404 arrancó el contador de su propio
+`revalidate` en el momento equivocado. La solución no es pollear más rápido, es esperar el
+`revalidate` COMPLETO de esa página (waited hasta que `age` superó 300) antes de que la siguiente
+visita dispare la regeneración.
+
+**Regla / cuándo aplicar**: al verificar en producción un producto/página recién creada (no
+actualizada), si la primera visita da 404, mirar los headers (`x-vercel-cache`, `age`,
+`x-matched-path`) antes de asumir que hace falta más paciencia genérica. Si `x-vercel-cache: HIT`
+y `x-matched-path: /404`, hay que esperar el `revalidate` completo de esa ruta (chequear el
+`export const revalidate` del archivo de la página), no unos segundos. Evitar pegarle a una URL
+nueva inmediatamente después de aplicar el seed si se puede: mejor esperar unos segundos antes del
+primer hit, para no ser uno mismo quien cachea el 404.
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
