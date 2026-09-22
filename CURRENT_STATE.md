@@ -63,7 +63,15 @@ que configurar para que la marca funcione (`/anteojos-de-receta/mormaii` ya resu
 mínimo de productos). Hallazgo del agente: `/marcas/mormaii` no existe en el código todavía (sin
 ruta dinámica `[slug]`) — a BACKLOG, no bloqueante.
 
-**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar el seed 113 contra Supabase
+**Seed 114 sumado** (`supabase/seeds/114_mormaii_includes_image.sql`): Juan pasó una foto real del
+estuche semi rígido Mormaii (`marketing/estuche-mormaii.jpg`) para sumar a la galería de sus
+productos de receta. Se reusó el mecanismo `brands.includes_image_path` que ya existía para Vulk
+desde 2026-05-30 (`buildGalleryImages()` en `components/catalog/product-page.tsx`) en vez de tocar
+cada producto — es brand-wide, así que también aplicaría a un futuro Mormaii de sol. Imagen subida
+a `brands-shared/mormaii-includes.jpg` (720×720, HTTP 200 verificado). `includes_image_alt`
+explícito para no heredar el default que menciona "stickers" (no confirmado para esta marca).
+
+**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar los seeds 113 + 114 contra Supabase
 Cloud (regla dura del proyecto). Con el OK: `execute_sql` vía MCP, verificar con SELECT puntual,
 `pnpm auditar:encuadre` contra el grid real, verificar producción con polling, actualizar
 `CLOUD_APPLIED.md` y `PRODUCTS_INVENTORY.md` (primera marca Mormaii activa).
