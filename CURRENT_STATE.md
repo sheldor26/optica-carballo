@@ -52,14 +52,25 @@ se evitó un primer intento de callout de bisagras ("inyectadas") porque no hay 
 confirme el tipo de bisagra de este modelo — se reemplazó por un callout de diseño (envolvente
 deportivo, base 8) que sí está 100% confirmado.
 
-**Lanzados en paralelo (background, sin resultado todavía)**: `seo-strategist` (slug `mormaii-storm`
-tentativo, canibalización contra los envolventes deportivos de Rusty ya cargados, title/meta/H1) y
-`catalog-loader` (measurements parciales — ¿hay precedente?, qué SKU usar dado que ML no declara
-`seller_sku` para ninguna de las 6, patrón de columnas, scale override inicial).
+**`seo-strategist` y `catalog-loader` terminaron**: slug `mormaii-storm` confirmado (sol nunca lleva
+sufijo), primaria `lentes de sol mormaii` (90/8, cabecera de marca específica de sol, libre — se
+descartó "deportivos/envolvente" por ser el sexto reclamo del mismo string entre los Rusty
+envolventes ya cargados), SKUs de casa sugeridos (patrón Rusty Rew, ML no declara `seller_sku`),
+`lens_treatment` con "polarized" a nivel producto + `"polarized":true` explícito en las 6 variantes
+(evita la trampa del regex `\bPOL\b`), sin override de escala fijado a ciegas (pendiente
+`auditar:encuadre` post-deploy). Cluster Mormaii documentado en `SEO_STRATEGY.md` (Moorea + Storm
+juntos, gap que había quedado pendiente del seed 113).
 
-**Próximo paso exacto**: con el resultado de los dos agentes, escribir el seed SQL completo (7→6
-variantes, sin `lens_height_mm`), subir fotos al bucket, aplicar con OK explícito de Juan, verificar
-producción (con la lección nueva sobre el 404 cacheado si hace falta) y `auditar:encuadre`.
+**Seed 115 escrito y verificado** (`supabase/seeds/115_mormaii_storm_sol.sql`): 6 variantes con
+`mercadolibre_variation_code` numérico, 12 imágenes ya subidas al bucket
+(`mormaii-storm/{perfil,frente}-c0X.jpg`, HTTP 200 verificado). `pnpm exec tsc --noEmit` limpio.
+2 slugs nuevos agregados a `lib/catalog/variant-label.ts` (`azul-translucido`,
+`negro-mate-detalles-marron`, `espejado-naranja`, `verde-g15`).
+
+**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar el seed 115 contra Supabase
+Cloud. Con el OK: `execute_sql` vía MCP, verificar con SELECT puntual, `pnpm auditar:encuadre`,
+verificar producción (ojo con el 404 cacheado si se pega a la URL apenas se aplica el seed —
+lección de LEARNINGS.md 2026-09-22), actualizar `CLOUD_APPLIED.md` y `PRODUCTS_INVENTORY.md`.
 
 ### ✅ Cargado y live: Mormaii Moorea RX — PRIMER producto de la marca Mormaii
 
