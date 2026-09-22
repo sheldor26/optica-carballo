@@ -5,7 +5,7 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-### 🔄 En curso: Mormaii Storm (sol, segundo producto Mormaii) — variantes identificadas, esperando medidas
+### ✅ Cargado y live: Mormaii Storm — SEGUNDO producto de la marca Mormaii
 
 Juan pidió cargar Mormaii Storm (anteojo de sol polarizado envolvente), desde `MLA1538614840`
 (`catalog_listing:false`, tradicional, $116.024,04 uniforme, `WITH_POLARIZED_LENS:Sí` en las 6
@@ -67,10 +67,21 @@ juntos, gap que había quedado pendiente del seed 113).
 2 slugs nuevos agregados a `lib/catalog/variant-label.ts` (`azul-translucido`,
 `negro-mate-detalles-marron`, `espejado-naranja`, `verde-g15`).
 
-**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar el seed 115 contra Supabase
-Cloud. Con el OK: `execute_sql` vía MCP, verificar con SELECT puntual, `pnpm auditar:encuadre`,
-verificar producción (ojo con el 404 cacheado si se pega a la URL apenas se aplica el seed —
-lección de LEARNINGS.md 2026-09-22), actualizar `CLOUD_APPLIED.md` y `PRODUCTS_INVENTORY.md`.
+**Aplicado a Cloud con OK explícito de Juan** (2026-09-22): `execute_sql` vía MCP, verificado con
+SELECT puntual (`variantes=6, stock_total=12, imgs=12, variation_codes_distintos=6, polarizadas=6`
+— coincide 1:1 con `available_quantity:12` de ML). `CLOUD_APPLIED.md` actualizado.
+
+**Verificado en producción con `until`-loop** (aplicando la lección del 404 cacheado: se esperó a
+que cada ruta devolviera 200 en vez de pegarle una sola vez): PDP `/anteojos-de-sol/mormaii/
+mormaii-storm` 200, JSON-LD `price:116024.04, availability:InStock`, "6 colores", imagen
+`mormaii-includes.jpg` presente (confirma que el mecanismo brand-wide funciona automáticamente
+también para el segundo producto Mormaii, sin tocar nada). Aparece en `/anteojos-de-sol/deportivos`
+(pasa de 5 a 6 envolventes deportivos), en `/anteojos-de-sol/mormaii` y en `/anteojos-de-sol/hombre`.
+`auditar:encuadre`: 92%, sin override necesario — igual que Moorea y EYSY.
+
+**Próximo paso exacto**: ninguno pendiente de esta carga. Pendientes del founder, no bloqueantes
+(en `DATOS_PENDIENTES.md`): alto total del frente, SKUs reales de fábrica si los tiene. Seguir con
+`pnpm ml:faltantes` para la próxima publicación sin mapear.
 
 ### ✅ Cargado y live: Mormaii Moorea RX — PRIMER producto de la marca Mormaii
 
