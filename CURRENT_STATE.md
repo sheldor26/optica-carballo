@@ -5,7 +5,7 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
-### 🔄 En curso — bloqueado en Juan: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
+### ✅ Cargado y live: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
 
 Juan pidió dar de alta un modelo que todavía no existe en el catálogo (no es variante de uno
 cargado): Rusty EYSY, primera colorway C2/SKU 103431 — armazón metálico dorado, patillas de
@@ -67,13 +67,23 @@ precio **$100.823**, stock **3 unidades**. La ficha técnica de ML confirma 1:1 
 `rusty-eysy/{perfil-c2,frente-c2,medidas-c2}.jpg`), seed completo escrito en
 `supabase/seeds/112_rusty_eysy_sol.sql` (`products` + `product_variants` + `product_images`).
 
-**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar el seed contra Supabase
-Cloud (regla dura del proyecto: nunca se corre SQL contra producción sin mostrarlo antes y esperar
-confirmación). Con el OK: `execute_sql` vía MCP de Supabase, verificar con SELECT puntual, correr
-`pnpm auditar:encuadre` contra el grid real antes de fijar cualquier override en
-`lib/catalog/image-scale-overrides.ts` (punto de partida sugerido si hiciera falta: Vulk Nova perfil
-1.1 / frente 1.0, único comparable ovalado+metal), verificar en producción (polling, no un solo
-`curl` — regla de ISR ya conocida), y actualizar `CLOUD_APPLIED.md`.
+**Aplicado a Cloud con OK explícito de Juan** (2026-09-22): `execute_sql` vía MCP de Supabase,
+verificado con SELECT puntual (`sku=103431, price_cents=10082300, stock_qty=3, imgs=3`).
+`CLOUD_APPLIED.md` actualizado con la entry completa. **Verificado en producción con 3 pasadas**
+(regla ISR ya conocida — la primera pasada de los grids `/mujer`, `/hombre` y `/rusty` no lo tenía,
+recién apareció después de ~8-16s de polling): PDP `/anteojos-de-sol/rusty/rusty-eysy` 200, JSON-LD
+`price:100823, availability:InStock`, título `Anteojos de Sol Rusty EYSY Ovalados | Óptica
+Carballo`, 3 imágenes correctas. Aparece en `/anteojos-de-sol`, `/anteojos-de-sol/mujer`,
+`/anteojos-de-sol/hombre` y `/anteojos-de-sol/rusty` — confirma en producción que `unisex` entra a
+ambos targets de género, tal como predijo el criterio de `seo-strategist`.
+
+**Regla dura 15 cumplida**: se comparó visualmente contra el grid `/anteojos-de-sol/rusty`
+(screenshot) y se corrió `pnpm auditar:encuadre` para confirmar en vez de a ojo: **92% de
+ocupación**, justo en la mediana del catálogo (93%). Sin override necesario en
+`lib/catalog/image-scale-overrides.ts`, igual que las últimas 4 cargas Rusty de sol.
+
+**Próximo paso exacto**: ninguno pendiente de esta carga. Seguir con el cruce `pnpm ml:faltantes`
+para la próxima publicación sin mapear.
 
 ### ✅ Placa de sponsor para torneo de fútbol (fuera del catálogo)
 
