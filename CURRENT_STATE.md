@@ -5,6 +5,47 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### 🔄 En curso: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
+
+Juan pidió dar de alta un modelo que todavía no existe en el catálogo (no es variante de uno
+cargado): Rusty EYSY, primera colorway C2/SKU 103431 — armazón metálico dorado, patillas de
+acetato violeta/vinotinto marmolado, lente policarbonato degradé gris oscuro, UV400 (NO polarizado,
+no mencionado; sin antirreflejo, no mencionado — no se afirma ninguno de los dos). Medidas
+46-16-145, ancho total 134mm, alto total 41mm, peso 28,3g. Diseño ovalado. El fabricante tiene C1 a
+C6 pero por ahora solo se carga C2.
+
+**Decisión técnica pendiente de confirmar, ya resuelta provisoriamente**: la ficha del fabricante
+(rustyoptical.com) trae un texto genérico "Frente: Armazón de acetato" para TODO el modelo EYSY,
+pero Juan describió el frente como "Dorado metálico" y la foto oficial de la colorway C2 muestra
+un aro fino consistente con metal (no acetato). Se está tomando la descripción de Juan + evidencia
+visual sobre el texto boilerplate del fabricante (mismo criterio que ya se usó con las fotos
+cruzadas de The Take: cuando hay conflicto, gana lo que Juan confirma + lo que se ve en la foto
+real de ESA colorway, no el texto genérico de familia de producto).
+
+**Género**: Juan no especificó esta vez (a diferencia de Vriviant, donde sí dijo "diseño
+femenino/mujer" explícito). Se va a evaluar `unisex` por default siguiendo el precedente ya
+documentado de Rusty Dunsert en `SEO_STRATEGY.md` (unisex entra a `/mujer` Y `/hombre` vía
+`fetchCategoryByGender`/`fetchBrandPageByGender`, es "estrictamente dominante" para SEO ante
+ausencia de señal) — a confirmar con el resultado del agente `seo-strategist`.
+
+**Hecho en este turno**: fotos oficiales de la colorway C2 descargadas y verificadas visualmente en
+`marketing/fotos/rusty-eysy/103431-c2/{01-perfil,02-frente}.jpg`. Lanzados en paralelo (background,
+sin resultado todavía): `seo-strategist` (slug, keyword de forma sin canibalizar otros Rusty
+ovalados/metálicos, title/meta/H1, estructura de `attributes`) y `catalog-loader` (validación contra
+`PRODUCT_SCHEMA.md`, patrón exacto de columnas de 2-3 seeds recientes, scale override inicial
+comparado contra el grid, chequeo de duplicado).
+
+**Precio y stock**: todavía no definidos — Juan no tiene la publicación de ML lista todavía. Flujo
+invertido (mismo patrón que Bruice/Vriviant/The Take esta sesión): se preparan sitio + placas
+primero, se mapea ML cuando Juan pase el link.
+
+**Próximo paso exacto**: al volver el resultado de los dos agentes, escribir el seed SQL
+(`products` + `product_variants` + `product_images`), generar las placas con `pnpm placas`
+(callouts verificados, sin defaults), agregar el override de escala en
+`lib/catalog/image-scale-overrides.ts` comparado contra el grid, verificar build+deploy, y redactar
+la descripción de ML (cerrando con "Factura A o B según corresponda", regla del founder
+2026-09-22 — ver `BUSINESS_POLICIES.md` §7).
+
 ### ✅ Placa de sponsor para torneo de fútbol (fuera del catálogo)
 
 Juan pidió una placa de auspiciante (logo + nombre + Instagram + sitio web) para presentar en un
