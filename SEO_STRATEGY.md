@@ -334,16 +334,36 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 
 **Anti-canibalización**: hay DOS aviadores de receta, **ambos doble puente** — The Take (Rusty) y Vulk The Trial. Comparten primaria `anteojos recetados` + forma `anteojos aviador` pero NO canibalizan: **marcas distintas + branded distinto** (`rusty the take` vs `vulk the trial`) → titles/H1/slug separados; las SERP de marca-head las resuelven los hubs respectivos. **Cross-link** "otros aviadores de receta" entre ambas. The Take es el ÚNICO aviador de receta dentro del cluster Rusty (Opposit/Patien=wayfarer, R-CY 02/Woxi=rectangular, Ther=redondo). Title: `Armazón de Receta Rusty The Take Aviador | Óptica Carballo`. H1: `Armazón de receta Rusty The Take — aviador unisex`. Hermano de sol: `rusty-the-take` (cross-link sol↔receta).
 
-*Rusty The Take (SOL, AVIADOR doble puente, UNISEX, 1/1 polarizado, G-Flex + patillas acetato, policarbonato UV400 cat3, 18g) — slug `rusty-the-take` en `/anteojos-de-sol/rusty/rusty-the-take`*
+*Rusty The Take (SOL, AVIADOR doble puente, UNISEX, 1/3 polarizado, G-Flex + patillas acetato,
+policarbonato UV400 cat3, 18g, 3 colores — MBLK/S10 POL negro mate/gris POLARIZADA (SKU 129234),
+L.GREY-SBLK/L.BROWN gris transp./patillas negro brillo/lente marrón degradé NO pol (SKU 129237),
+L.GREY-MBLK/G.GREEN gris transp./patillas negro mate/lente verde degradé NO pol (SKU 129236)) —
+slug `rusty-the-take` en `/anteojos-de-sol/rusty/rusty-the-take`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
-| lentes de sol aviador | 170 | — | **primaria forma** — the take usa esta variante; Yeah (2026-08-04) usa `anteojos de sol aviador` (110) para no pisarla, ya NO es carril único |
+| lentes de sol aviador | 170 | — | **primaria forma** — the take usa esta variante; Yeah (2026-08-04) usa `anteojos de sol aviador` (110) para no pisarla |
 | lentes de sol rusty | 1.300 | 9 | head de marca, soporte (1er párrafo/H2, no primaria — saturada) |
 | anteojos de sol rusty | 880 | 10 | variante "anteojos" → copy |
-| lentes/anteojos de sol polarizados | 260/170 | 12/10 | atributo (1/1 → afirmable) → H1/copy |
+| lentes/anteojos de sol polarizados | 260/170 | 12/10 | atributo, **1/3 → NO afirmable** para el modelo; sólo linkea `/anteojos-de-sol/polarizados` (criterio "≥1 variante") |
 | rusty the take (branded) | 0 medido | ~4 | title/H1/slug |
 
-**Honestidad**: 1/1 polarizado → SÍ se afirma "Polarizado" en title/H1 (criterio Terdey/The Sil 3/3). Unisex → NO targetear `aviador hombre`. **Anti-canibalización**: (A) vs Vulk The Trial sol (también aviador doble puente): marca distinta + The Trial 2/4 pol (destaca "Unisex") vs The Take 1/1 pol (afirma "Polarizado") + cross-link "otros aviadores de sol" + ambos → `/anteojos-de-sol/aviador`. (B) vs The Take receta: intención sol vs receta + cross-link sol↔receta. (C) vs **Rusty Yeah** (2026-08-04, también aviador doble puente Rusty-sol): The Take mantiene `lentes de sol aviador` (170/12, 1/1 pol afirmado); Yeah toma `anteojos de sol aviador` (110/10, 2/3 pol acotado) — diferenciador real acetato full+32,9g (Yeah) vs G-Flex+acetato 18g (The Take) + 3 colores vs 1 + cross-link obligatorio. Title: `Lentes de Sol Rusty The Take Aviador | Óptica Carballo`. H1: `Lentes de Sol Rusty The Take — Aviador Polarizado Unisex`.
+**⚠️ CAMBIO 2026-09-22: pasó de 1/1 a 1/3 polarizado al sumar 2 colores nuevos, y la honestidad se
+invierte.** Ya NO se afirma "Polarizado" en title/H1/`name`/`short_description`/`lens_treatment` de
+producto (criterio Rew 1/2, Dunsert 1/3, Bad Card 2/6). Va con número en `meta_description`, callout
+`warning` y descripción, igual que el resto del catálogo con esta proporción. `lens_treatment` de
+producto queda `["uv400"]`; el flag `polarized` sólo en la variante MBLK/S10 POL. **NO linkear a
+`/anteojos-de-sol/rusty/polarizados`** (filtra por producto, ya no calificaría). SÍ sigue entrando a
+`/anteojos-de-sol/polarizados` (por variante, la POL sigue ahí). Unisex → NO targetear
+`aviador hombre`. **Anti-canibalización**: (A) vs Vulk The Trial sol (también aviador doble puente):
+marca distinta + The Trial 2/4 pol vs The Take ahora 1/3 pol, los dos acotan + cross-link "otros
+aviadores de sol" + ambos → `/anteojos-de-sol/aviador`. (B) vs The Take receta: intención sol vs
+receta + cross-link sol↔receta. (C) vs **Rusty Yeah** (también aviador doble puente Rusty-sol): The
+Take sigue con `lentes de sol aviador` (170/12, ahora 1/3 pol acotado, ya no afirmado); Yeah toma
+`anteojos de sol aviador` (110/10, 2/3 pol acotado) — diferenciador real acetato full+32,9g (Yeah)
+vs G-Flex+acetato 18g (The Take) + 3 colores cada uno, ya no "3 vs 1" + cross-link obligatorio.
+Title: `Lentes de Sol Rusty The Take Aviador | Óptica Carballo` (54, sin cambios: nunca dijo
+"Polarizado" en el campo real, sólo en esta doc). H1 = name = `Rusty The Take` (corrige el H1
+aspiracional viejo, que nunca coincidió con el código: H1 siempre es `product.name`).
 
 *Rusty Yeah (SOL, AVIADOR doble puente, UNISEX, acetato bio-based, policarbonato UV400 cat3, 32,9g, 3 colores — C1 negro mate/gris oscuro POL, C2 negro brillo/verde degradé POL, C3 carey/marrón degradé NO pol) — slug `rusty-yeah` en `/anteojos-de-sol/rusty/rusty-yeah`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
@@ -354,7 +374,7 @@ Respaldo (copy/alt): `anteojos vulk mujer` (320/8) + `anteojos vulk hombre` (260
 | lentes/anteojos de sol polarizados | 260/170 | 12/10 | atributo, 2/3 variantes → se acota, NO se afirma modelo completo |
 | rusty yeah (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug |
 
-**Honestidad**: 2 de 3 variantes polarizadas (C1, C2 — C3 carey NO polariza) → NUNCA afirmar "polarizado" para el modelo entero en title/H1; se acota "en 2 de 3 colores" (criterio Play/Patien 2/4, NO el de Terdey/Zinz 100%). **Anti-canibalización vs Rusty The Take** (también aviador doble puente Rusty-sol): NO comparten keyword primaria — The Take usa `lentes de sol aviador` (170/12, 1/1 pol afirmado), Yeah usa `anteojos de sol aviador` (110/10, 2/3 pol acotado). Diferenciador físico real: acetato bio-based + 32,9g (Yeah) vs G-Flex+acetato 18g (The Take) + 3 colores vs 1. Cross-link obligatorio Yeah↔The Take ("otro aviador de sol Rusty"). Sin versión de receta cargada — sin cross-link sol↔receta por ahora. **NO linkear a `/anteojos-de-sol/rusty/polarizados`** mientras esa faceta siga con el criterio viejo "todas las variantes" (BACKLOG.md), Yeah no calificaría honestamente ahí; SÍ linkear a `/anteojos-de-sol/polarizados` (criterio correcto "≥1 variante"). Title: `Anteojos de Sol Rusty Yeah Aviador | Óptica Carballo`. H1 = name = `Rusty Yeah`.
+**Honestidad**: 2 de 3 variantes polarizadas (C1, C2 — C3 carey NO polariza) → NUNCA afirmar "polarizado" para el modelo entero en title/H1; se acota "en 2 de 3 colores" (criterio Play/Patien 2/4, NO el de Terdey/Zinz 100%). **Anti-canibalización vs Rusty The Take** (también aviador doble puente Rusty-sol): NO comparten keyword primaria — The Take usa `lentes de sol aviador` (170/12, 1/3 pol acotado desde el 2026-09-22, antes 1/1 afirmado), Yeah usa `anteojos de sol aviador` (110/10, 2/3 pol acotado). Diferenciador físico real: acetato bio-based + 32,9g (Yeah) vs G-Flex+acetato 18g (The Take) + 3 colores vs 1. Cross-link obligatorio Yeah↔The Take ("otro aviador de sol Rusty"). Sin versión de receta cargada — sin cross-link sol↔receta por ahora. **NO linkear a `/anteojos-de-sol/rusty/polarizados`** mientras esa faceta siga con el criterio viejo "todas las variantes" (BACKLOG.md), Yeah no calificaría honestamente ahí; SÍ linkear a `/anteojos-de-sol/polarizados` (criterio correcto "≥1 variante"). Title: `Anteojos de Sol Rusty Yeah Aviador | Óptica Carballo`. H1 = name = `Rusty Yeah`.
 
 *Rusty Bruice (SOL, AVIADOR doble puente, UNISEX, G-Flex, policarbonato UV400 cat3, 23g, 2 colores cargados — MBLK/ORANGE negro mate/naranja y MDEMI HD-GG47 carey mate con patillas negras/verde degradé, NINGUNO polarizado) — slug `rusty-bruice` en `/anteojos-de-sol/rusty/rusty-bruice`*
 
