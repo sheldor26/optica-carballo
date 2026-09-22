@@ -14,13 +14,15 @@ no mencionado; sin antirreflejo, no mencionado — no se afirma ninguno de los d
 46-16-145, ancho total 134mm, alto total 41mm, peso 28,3g. Diseño ovalado, unisex. El fabricante
 tiene C1 a C6 pero por ahora solo se carga C2.
 
-**Decisión ya resuelta — material del frente**: la ficha del fabricante (rustyoptical.com) trae un
-texto genérico "Frente: Armazón de acetato" para TODO el modelo EYSY, pero Juan describió el frente
-como "Dorado metálico" y la foto oficial de la colorway C2 muestra un aro fino consistente con
-metal. `seo-strategist` y `catalog-loader` confirmaron el mismo criterio: se toma lo que dice Juan +
-la evidencia visual de ESA colorway sobre el texto boilerplate de familia (mismo patrón que las
-fotos cruzadas de The Take y el blurb "LENTE: POLARIZADAS" del Bad Card). `frame_material: metal`,
-`temple_material: acetate`.
+**Material del frente — CONFIRMADO por Juan de vuelta**: la ficha del fabricante (rustyoptical.com)
+trae un texto genérico "Frente: Armazón de acetato" para TODO el modelo EYSY, pero Juan describió el
+frente como "Dorado metálico" y la foto oficial de la colorway C2 muestra un aro fino consistente
+con metal — se le señaló la discrepancia con el boilerplate del fabricante y Juan la confirmó
+explícito ("El frente es metálico, las patillas son de acetato", 2026-09-22). `seo-strategist` y
+`catalog-loader` ya habían recomendado el mismo criterio antes de la confirmación: se toma lo que
+dice Juan + la evidencia visual de ESA colorway sobre el texto boilerplate de familia (mismo patrón
+que las fotos cruzadas de The Take y el blurb "LENTE: POLARIZADAS" del Bad Card). Sin cambios en los
+atributos ya preparados: `frame_material: metal`, `temple_material: acetate`.
 
 **Decisión ya resuelta — género**: `unisex`, confirmado por `seo-strategist` con el mismo precedente
 de Rusty Dunsert (sin señal explícita de Juan ni de ML, unisex entra a `/mujer` Y `/hombre` —
