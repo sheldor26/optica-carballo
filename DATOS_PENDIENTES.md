@@ -20,16 +20,17 @@ stock sí se pueden tomar de esas fuentes.
 
 ## 🔴 Bloqueando ahora
 
-- [ ] **CUIT, razón social y domicilio fiscal de la óptica.** Descubierto el 2026-08-26 investigando
-  el catálogo de Instagram, pero **no tiene nada que ver con Meta**: es una obligación legal del
-  sitio tal como está hoy. En `app/(storefront)/terminos-y-condiciones/page.tsx` el dato figura
-  literalmente como `**CUIT**: [A CONFIRMAR]`.
+- [ ] **Razón social y domicilio fiscal.** El **CUIT ya lo pasaste** el 2026-08-26
+  (20-16852182-1, cargado y validado por dígito verificador), pero los términos y condiciones
+  siguen con `[A CONFIRMAR]` en estos dos.
 
-  **Qué bloquea**: el art. 8 de la Ley 24.240 exige identificar al vendedor con su CUIT en las
-  ventas por catálogo publicadas por cualquier medio, y el sitio ya publica precios. No bloquea una
-  carga de producto: bloquea estar en regla.
+  ⚠️ **Dato para confirmar**: el CUIT arranca en **20**, o sea que es de una **persona física
+  masculina**, no de una sociedad. Si la óptica factura a nombre de una persona, la "razón social"
+  es el nombre y apellido de esa persona — confirmame cuál es. Y el domicilio fiscal puede no ser el
+  del local.
 
-  Con el dato se completan los términos y condiciones y se evalúa si además va en el pie del sitio.
+  **Qué bloquea**: el art. 8 de la Ley 24.240 exige identificar al vendedor en las ventas por
+  catálogo publicadas por cualquier medio, y el sitio ya publica precios.
 
 
 - [ ] **Vulk The Trial — medir el armazón.** Descubierto el 2026-08-26 preparando el alta en ML de
@@ -126,9 +127,11 @@ con variaciones de la multi). Cry 5 · MBLU 4 · MBLK 4 · L.GREY 4 · SBLK 0. P
 113106, LGREY 113107, MBLU 113109 · **peso 23 g** · frente y patillas **G-Flex** · **bisagras con
 sistema flexo**. ML no declara absolutamente nada de este modelo.
 
-- [ ] **Alto y ancho totales.** El fabricante declara **53-18-143** (calibre-puente-varilla) pero
-  las medidas las pasás vos. Confirmame esos tres y pasame los dos que faltan.
-  ⚠️ Un revendedor publica **50-22-145**, que contradice al fabricante — otra razón para que midas.
+- [x] **Medidas — RECIBIDAS el 2026-08-26**: **50-22-145**, alto total **47 mm**, frente **143 mm**.
+  Cargadas en la base y en el seed 106. Resolvieron la contradicción que había: tu medición coincide
+  con el revendedor en calibre/puente/varilla y con el fabricante en el frente, o sea que cada
+  fuente tenía razón en una parte y ninguna estaba completa. Geometría consistente: 50×2 + 22 = 122
+  ≤ 143. La placa de medidas ya se genera.
 - [ ] **La forma.** Comparado contra el Peating (cuadrado), el Woxi (rectangular) y el Patien
   (wayfarer) del propio catálogo, es un **cuadrado de esquinas redondeadas**; tu título de ML también
   dice "Cuadrado". Confirmalo con el armazón en la mano.
@@ -139,6 +142,28 @@ sistema flexo**. ML no declara absolutamente nada de este modelo.
 ⚠️ **Aviso**: la ficha del fabricante dice **"Lentes: Blue Cut"**. Son lentes demo y **no se va a
 vender como beneficio** — el filtro azul no tiene evidencia clínica robusta y la regla dura 4 obliga
 a decirlo. Si querés que la ficha lo mencione, se menciona como dato del armazón, no como ventaja.
+
+## 🔵 Rusty Bruice 669K/UV-N40 — placas listas, bloqueado por datos tuyos (2026-09-22)
+
+Quinta variante del Bruice (ya hay 4 cargadas). SKU **968191**, armazón **gris transparente**, lente
+**celeste degradé**, **no polarizado**. Fotos del fabricante bajadas y verificadas; set completo de
+placas generado para **ML (1500×1500)** y para el **sitio (2000×1333)** en
+`marketing/placas-producto/rusty-bruice-669k/`.
+
+- [ ] **Stock.** No existe publicación en ML para este color (verificado contra las 977
+  publicaciones de la cuenta, incluidas pausadas y cerradas), así que **no hay de dónde sacarlo**.
+- [ ] **Precio.** Los otros dos no polarizados del Bruice están a **$84.354** y los polarizados a
+  $96.251. Si va igual que los no polarizados, con que lo confirmes alcanza.
+- [ ] **¿El Bruice de sol acepta lentes graduadas?** La plantilla de placas lo afirmaba por defecto
+  y **lo saqué**: la ficha del Bruice no lo dice en ningún lado y el único producto del catálogo que
+  lo afirma es el Vulk Biller. Es promesa de compra y depende de la curva base. Si me confirmás que
+  sí, regenero la placa 05 que quedó fuera del set.
+- [ ] **⚠️ Cuando crees la publicación en ML, pasame el número.** Hasta entonces la variante queda
+  **sin sincronización de stock ni precio** (`mercadolibre_item_id` en NULL).
+
+**Dato aparte**: la página del fabricante lista una **sexta variante** que tampoco está cargada —
+`STEELBLUE/CRY-GS16`, SKU **957007**. No tiene fotos publicadas (404). Si la tenés en la óptica,
+avisá.
 
 ## ✅ El resto del catálogo
 

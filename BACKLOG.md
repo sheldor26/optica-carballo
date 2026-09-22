@@ -73,6 +73,23 @@ la tabla, y en un incidente hace perder tiempo. Conviene borrarla o marcarla mej
 ⚠️ Antes de borrar, confirmar con el founder que esa cuenta no se va a reusar: si la fila se elimina
 se pierde el `refresh_token` cifrado y habría que rehacer el OAuth desde cero.
 
+## 🔴 Los defaults de `pnpm placas` tienen claims falsos quemados (2026-09-22)
+
+`scripts/ml-placas.ts` genera, cuando no se le pasan textos, callouts que dicen **"ARMAZÓN
+LIVIANO"** y una placa de garantía con **"Armazón liviano y cómodo"** y **"Apto para adaptar lentes
+graduadas"**. Los tres son claims de producto que el generador **no puede saber**, y salieron en el
+set del Bruice 669K que iba a publicarse en ML.
+
+- "liviano" es falso para cualquier producto de la mitad pesada — la mitad del catálogo.
+- "apto para adaptar lentes graduadas" depende de la curva base y **sólo el Biller lo afirma** hoy.
+
+**Es peor que el caso de las fichas** porque el texto queda **quemado en una imagen**: ninguna query
+lo encuentra y termina en la galería de Mercado Libre.
+
+**Arreglo**: sacar esos textos de los defaults y hacer que el generador **falle o deje el callout
+vacío** si no recibe el dato, en vez de rellenar con marketing. Mientras tanto, la regla es no usar
+nunca los defaults (MISTAKES 2026-09-22).
+
 ## ✅ CERRADO — Superlativos de peso falsos en 10 productos (abierto y cerrado 2026-08-31)
 
 Corregidos los 10 el mismo día, con el OK del founder: **26 reemplazos en 4 campos**

@@ -22,6 +22,44 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-09-22 — La plantilla de `pnpm placas` reinyecta el claim de peso que acabábamos de borrar
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: generando las placas del Rusty Bruice 669K para publicar en Mercado Libre, el set por
+defecto de `scripts/ml-placas.ts` salió con **"ARMAZÓN LIVIANO"** en los callouts y
+**"Armazón liviano y cómodo"** en la placa de garantía. El Bruice pesa **23 g — puesto 31 de 65,
+mitad de tabla**. Es exactamente el claim falso que se había limpiado de 10 productos tres semanas
+antes (BACKLOG, 2026-08-31), y la herramienta lo iba a devolver a producción por otro canal.
+
+**Por qué es peor que el caso original**: aquella limpieza fue sobre texto de la BASE, que se audita
+con una query. Esto es **texto quemado en una imagen** que se sube a Mercado Libre. No hay grep que
+lo encuentre, no lo ve ninguna query de control, y una vez publicado vive en la galería de ML.
+
+**Segundo claim sin respaldo en el mismo set**: la placa 05 dice *"SE PUEDEN ADAPTAR LENTES
+MONOFOCALES, BIFOCALES Y PROGRESIVOS"* y la 06 *"Apto para adaptar lentes graduadas"*. **La ficha
+del Bruice de sol no afirma eso en ningún lado** — el único producto del catálogo que lo dice es el
+Vulk Biller. Es una promesa de compra (regla dura 3) sobre un armazón de sol, y depende de la curva
+base. Se sacó la placa 05 entera y el ítem de la 06, y quedó preguntado al founder.
+
+**Causa raíz**: los textos por defecto del generador son **marketing genérico escrito una vez**, no
+datos del producto. Son cómodos justamente porque no hay que pensarlos, y por eso nadie los mira.
+La limpieza de superlativos trató el síntoma (las fichas) y no la fuente (la plantilla).
+
+**Regla preventiva**:
+1. **Nunca aceptar los textos por defecto de `pnpm placas`.** Pasar siempre `--c1..--c4`,
+   `--titulo6` e `--item` con datos verificados del producto. Si un dato no se tiene, se omite el
+   callout, no se deja el default.
+2. **Abrir las placas generadas antes de entregarlas**, las 6. El generador no falla ruidosamente:
+   rellena.
+3. **Las reglas de copy valen para el texto dentro de las imágenes**, no sólo para la base. Es la
+   misma lección que el `alt` del estuche de cuero (MISTAKES 2026-08-29): el claim se cuela por el
+   canal que nadie audita.
+4. **Pendiente de fondo**: los defaults de `scripts/ml-placas.ts` siguen teniendo el claim. Anotado
+   en `BACKLOG.md` — mientras estén ahí, esto se puede repetir con cualquier producto.
+
+---
+
 ## 2026-08-29 — `agy` en modo headless no puede abrir un PNG sin permiso explícito, y devolvió texto vacío sin que se notara al toque
 
 **Estado**: 🟡 Mitigado

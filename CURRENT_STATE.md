@@ -95,8 +95,48 @@ variante con sangrado para imprenta física, retomar desde acá.
 
 ## Última actualización
 
-**Fecha**: 2026-08-31
+**Fecha**: 2026-09-22
 **Por**: Claude Code (a pedido de Juan)
+
+### 🔵 Rusty Bruice 669K/UV-N40 — placas entregadas, carga bloqueada por datos del founder
+
+Quinta variante del Bruice (el producto ya tenía **4 cargadas**, no 2 como decía el bloque viejo de
+`SEO_STRATEGY.md`). SKU 968191, armazón gris transparente, lente celeste degradé, **no polarizado**.
+
+**Fotos**: el founder pasó la URL del fabricante. La página sólo sirve el color por defecto, así que
+las otras variantes se sacaron del patrón de rutas del HTML
+(`productos/ss24/bruice/669k-uv-n40-sku-968191/`). El **perfil existía sólo con la `p` minúscula**
+(`BRUICE_669_k_-_perfil.jpg`); con mayúscula da 404. Verificadas abriéndolas: armazón gris
+translúcido y lente celeste que se aclara hacia abajo, perfil y frente bien asignados.
+
+**Entregado**: set completo en `marketing/placas-producto/rusty-bruice-669k/` — `ml/` 1500×1500
+(01 perfil, 02 frente, 03 callouts, 04 medidas, 06 incluye) y `web/` 2000×1333. El founder va a
+crear la publicación de ML, por eso se generaron los dos sets.
+
+**⚠️ EL HALLAZGO DEL TURNO: la plantilla de placas reinyectaba el claim de peso que se había
+limpiado hace tres semanas.** El set por defecto salió con **"ARMAZÓN LIVIANO"** y
+**"Armazón liviano y cómodo"**, y el Bruice pesa 23 g — puesto 31 de 65. Peor que el caso original,
+porque acá el texto queda **quemado en una imagen** que se sube a ML: ninguna query lo encuentra.
+Se reemplazó por datos verificados. Entrada en `MISTAKES.md` y el arreglo de fondo (sacar esos
+textos de los defaults del generador) en `BACKLOG.md`.
+**Segundo claim sin respaldo en el mismo set**: *"se pueden adaptar lentes graduadas"*. La ficha del
+Bruice no lo afirma y el único del catálogo que lo dice es el Biller. **Se sacó la placa 05 entera**
+y quedó preguntado al founder.
+
+**Correcciones del founder sobre las placas, ya aplicadas**: "Bisagras" → **"Bisagras metálicas
+Flex"**, "Color a definir" → **"Gris transparente"**, y "Frente" → **"Armazón"**. Las dos primeras
+ya estaban hechas al revisar el set; la tercera destapó que quedaban dos carteles hablando del
+armazón, así que el de material quedó como **"MATERIAL / G-FLEX"** para no repetir palabra.
+
+**⬜ Bloqueado**: stock y precio (no hay publicación de ML de donde sacarlos — verificado contra las
+977 publicaciones de la cuenta), y si el Bruice de sol acepta graduadas. Todo en
+`DATOS_PENDIENTES.md`.
+
+**Próximo paso exacto**: con stock y precio, cargar la variante como `sort_order 5` del producto
+`rusty-bruice` con `mercadolibre_item_id` en NULL (no sincroniza hasta que exista la publicación),
+subir `perfil-669k.jpg` y `frente-669k.jpg`, y actualizar la descripción que hoy lista 4 colores.
+
+---
 
 ### ✅ Chequeo de salud de la API de Mercado Libre (2026-09-07, a pedido del founder)
 
