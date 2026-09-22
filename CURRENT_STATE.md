@@ -128,6 +128,16 @@ Flex"**, "Color a definir" → **"Gris transparente"**, y "Frente" → **"Armaz�
 ya estaban hechas al revisar el set; la tercera destapó que quedaban dos carteles hablando del
 armazón, así que el de material quedó como **"MATERIAL / G-FLEX"** para no repetir palabra.
 
+**📝 Copy de ML entregado** (skill `optimizador-ml-optica`): título de 60 caracteres, ficha de
+atributos y descripción completa. El SERP real de ML mostró que **todos los competidores titulan el
+Bruice con "Polarizado"** — que es justo lo que esta variante NO tiene, así que el diferenciador del
+título pasa a ser el color (`gris transparente`), que además es el más distinto de la línea. La
+descripción **niega el polarizado de entrada** en vez de omitirlo: un comprador que busca "Bruice"
+llega esperando polarizado por lo que ve en la competencia, y descubrirlo después de comprar es un
+reclamo. Mismo criterio que el callout del Dunsert.
+La duda "¿le puedo poner mi graduación?" se responde **sin prometer**: invita a consultar con la
+receta a mano, que es la respuesta honesta de óptico y además protege contra la curva base.
+
 **⬜ Bloqueado**: stock y precio (no hay publicación de ML de donde sacarlos — verificado contra las
 977 publicaciones de la cuenta), y si el Bruice de sol acepta graduadas. Todo en
 `DATOS_PENDIENTES.md`.
