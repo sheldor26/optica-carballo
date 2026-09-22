@@ -98,6 +98,46 @@ variante con sangrado para imprenta física, retomar desde acá.
 **Fecha**: 2026-09-22
 **Por**: Claude Code (a pedido de Juan)
 
+### 🔵 Rusty The Take — 2 variantes nuevas de sol, materiales entregados
+
+El producto ya existe con 1 variante (SBLK/S10 POL, seed 77). El founder pidió sumar dos colores
+más de la misma familia, **tanto al sitio como a ML** (todavía sin publicar en ML):
+- **129237** L.GREY-SBLK/L.BROWN — armazón gris transparente, lente marrón degradé.
+- **129236** L.GREY-MBLK/G.GREEN — armazón gris transparente, lente verde degradé.
+Ninguna es polarizada, ninguna tiene antirreflex. Patillas de acetato **negro mate** (corrección
+del founder a mitad de turno).
+
+**⚠️ Las fotos del fabricante venían físicamente cruzadas entre las dos carpetas**, tal como el
+founder avisó de entrada: la carpeta que el sitio marcaba "129237" tenía la lente verde, y la
+"129236" la marrón — al revés de su mapeo. Se reorganizaron según **su** asignación, que es la
+fuente que manda cuando contradice al sitio del fabricante.
+
+**Placas generadas y entregadas para los DOS canales**, por color: `web/` (perfil, frente, medidas)
+y el set completo de ML (perfil, frente, callouts con datos verificados —nunca los defaults—,
+medidas, garantía). Hubo una vuelta de corrección a mitad de turno: las placas se regeneraron
+después de que el founder aclarara "negro mate" para las patillas.
+
+**⚠️ Cambio de plan a mitad de turno**: el founder va a publicar las 2 colorways como **UNA sola
+publicación multivariante** en ML, no dos separadas. Se rehizo la descripción: de dos archivos
+individuales a **una sola** (`rusty-the-take-l-grey.txt`) que cubre ambos SKU. Los sets de fotos de
+ML siguen siendo por color, porque ML pide fotos por variación aunque la publicación sea una.
+
+**⬜ Aviso dejado para cuando publique**: si ML arma un item multivariante, el mapeo necesita el
+**código numérico de cada variación** en `mercadolibre_variation_code`, no NULL — es la misma
+trampa del Ardigan y el Bad Card (un NULL ahí es skip silencioso, no error).
+
+**⬜ Bloqueado**: número/link de la publicación de ML, y stock + precio de cada color. Nada se tocó
+en la base todavía. Referencia: la variante polarizada ya cargada sale a $96.244.
+
+**Próximo paso exacto**: cuando el founder publique y pase los datos, mapear con
+`mercadolibre_variation_code` correcto (numérico si es multivariante), cargar las 2 filas de
+`product_variants` + 4 imágenes web, y revisar el honesty check del producto: pasa de 1/1 a 1/3
+polarizada, así que "Polarizado" tiene que salir del title/H1/`lens_treatment` de producto si
+todavía estuviera ahí (verificar contra el seed 77, que no lo tenía en `lens_treatment` pero sí en
+la prosa de la descripción).
+
+---
+
 ### ✅ Rusty Vriviant — producto NUEVO cargado con 1 de sus 2 colorways
 
 Alta de producto con **2 colorways**, y el segundo caso del flujo invertido (sitio primero, ML
