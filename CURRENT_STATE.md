@@ -98,6 +98,61 @@ variante con sangrado para imprenta física, retomar desde acá.
 **Fecha**: 2026-09-22
 **Por**: Claude Code (a pedido de Juan)
 
+### 🔵 Rusty Vriviant — producto NUEVO en curso, placas entregadas
+
+Alta de producto con **2 colorways**, y el segundo caso del flujo invertido (sitio primero, ML
+después) para una de las dos variantes.
+
+| Colorway | SKU | Estado |
+|---|---|---|
+| SBLK/S10 POL — negro brillo / lente negro pleno, **polarizada** | 112844 | Publicada. **MLA1388018629**, $78.869,25, 2 u. |
+| MBLK/G. BROWN — negro mate / lente marrón degradé, **no polarizada** | 112845 | **Sin publicar.** El founder la publica con las placas de este turno. |
+
+⚠️ **El founder pasó el link de la publicación de CATÁLOGO** (MLA1388016281, 9 ventas). Se mapea la
+**tradicional** (MLA1388018629, `catalog_listing: false`), que cuelga del **mismo** UP MLAU181022989
+y por lo tanto del mismo pozo de 2 unidades. Es la regla que él mismo fijó el 2026-08-31, y ya lo
+reconoció en el chat. El caso muestra que la regla necesita aplicarse **aunque el link lo mande él**:
+desde la UI de ML las dos publicaciones se ven igual.
+
+**🔺 FORMA `cuadrado` CONTRA ML — SEXTA VEZ SEGUIDA QUE LA DECLARA MAL.** ML dice "Redondo". Se
+resolvió con el método de siempre, bajando primarias del propio catálogo y comparándolas al lado:
+- **Zion** (`redondo`): círculo puro, sin un solo lado recto.
+- **Biller** (`hexagonal`): seis lados rectos bien marcados.
+- **Katleen** (`cuadrado`): cuadrado de esquinas redondeadas.
+El Vriviant tiene lado superior plano, laterales angulados y base redondeada → familia Katleen.
+**Y las medidas del founder lo confirman de forma independiente: calibre 50 con alto 50, casi 1:1**,
+que es lo contrario de la proporción de un redondo. Racha de ML: Zion/Ardigan/Dunsert "Ovalada",
+Bad Card "Rectangular", Harry "Cuadrado", Vriviant "Redondo" — **las seis fueron formas geométricas
+suaves o de doble puente**, que es donde su taxonomía se rompe.
+
+**📏 Medidas del founder** (regla dura 7): 138 / 50×50 / 17 / 145. Geometría 50×2+17=117 ≤ 138 ✓.
+⚠️ ML declaraba `LENS_WIDTH 14 cm`, que son 140 mm: **es el ancho del FRENTE mal cargado en el campo
+del calibre**. Sus otros dos números (alto 5 cm, puente 1.7 cm) sí coinciden con lo medido.
+
+**👤 Género `female`**: lo define el founder. ML declara "Sin género" pero su propio título dice
+"Mujer". Precedente inverso al Harry, donde ML decía "Hombre" y se respetó.
+
+**📸 Fotos del fabricante** (`rustyoptical.com/sunglasses/ss22/vriviant`). Otra vez la página sirve
+sólo el color por defecto y hubo que sacar las rutas del HTML. ⚠️ **Los nombres del SBLK llevan un
+punto de más** (`VRIVIANT_SBLK_S10_POL.-frente.jpg`); sin ese punto da 404. Sumado al caso del
+Bruice —donde el perfil existía sólo con la `p` minúscula— el patrón es que **los nombres de archivo
+del fabricante son inconsistentes y hay que probar variantes antes de darlos por inexistentes**.
+
+**Placas generadas**: `sblk/web` (ya publicado en ML, no necesita el set de ML) y `mblk/` con
+`web/` + el **set completo de ML** entregado al founder. Los callouts y los ítems se pasaron a mano
+con datos verificados, **sin usar los defaults** — es la regla que salió del Bruice 669K, donde la
+plantilla reinyectaba "ARMAZÓN LIVIANO" y "se pueden adaptar lentes graduadas".
+
+**⬜ Bloqueado**: del MBLK faltan número de publicación, stock y precio. El SBLK ya se puede cargar.
+**🔄 SEO en curso**: workflow lanzado. El Vriviant es un sol **cuadrado femenino** y ese carril está
+disputado (Zinz y The Sil se pelean `anteojos de sol cuadrados`, colisión abierta en BACKLOG).
+
+**Próximo paso exacto**: con el SEO resuelto, escribir el seed 109 con el SBLK mapeado a
+MLA1388018629 (item simple → `variation_code` NULL) y el MBLK sin mapeo hasta que el founder
+publique. Subir 4 fotos web + 1 placa de medidas del modelo.
+
+---
+
 ### ✅ Cargada y live: 5ta variante del Rusty Bruice (669K/UV-N40)
 
 Quinta variante del Bruice (el producto ya tenía **4 cargadas**, no 2 como decía el bloque viejo de
