@@ -143,23 +143,21 @@ sistema flexo**. ML no declara absolutamente nada de este modelo.
 vender como beneficio** — el filtro azul no tiene evidencia clínica robusta y la regla dura 4 obliga
 a decirlo. Si querés que la ficha lo mencione, se menciona como dato del armazón, no como ventaja.
 
-## 🔵 Rusty Bruice 669K/UV-N40 — placas listas, bloqueado por datos tuyos (2026-09-22)
+## ✅ Rusty Bruice 669K/UV-N40 — CARGADA el 2026-09-22
 
 Quinta variante del Bruice (ya hay 4 cargadas). SKU **968191**, armazón **gris transparente**, lente
 **celeste degradé**, **no polarizado**. Fotos del fabricante bajadas y verificadas; set completo de
 placas generado para **ML (1500×1500)** y para el **sitio (2000×1333)** en
 `marketing/placas-producto/rusty-bruice-669k/`.
 
-- [ ] **Stock.** No existe publicación en ML para este color (verificado contra las 977
-  publicaciones de la cuenta, incluidas pausadas y cerradas), así que **no hay de dónde sacarlo**.
-- [ ] **Precio.** Los otros dos no polarizados del Bruice están a **$84.354** y los polarizados a
-  $96.251. Si va igual que los no polarizados, con que lo confirmes alcanza.
+- [x] **Stock y precio** — resueltos: publicaste MLA3981448012 y de ahí salieron **3 unidades** y
+  **$84.354**.
+
 - [ ] **¿El Bruice de sol acepta lentes graduadas?** La plantilla de placas lo afirmaba por defecto
   y **lo saqué**: la ficha del Bruice no lo dice en ningún lado y el único producto del catálogo que
   lo afirma es el Vulk Biller. Es promesa de compra y depende de la curva base. Si me confirmás que
   sí, regenero la placa 05 que quedó fuera del set.
-- [ ] **⚠️ Cuando crees la publicación en ML, pasame el número.** Hasta entonces la variante queda
-  **sin sincronización de stock ni precio** (`mercadolibre_item_id` en NULL).
+- [x] **Publicación mapeada** — MLA3981448012, sincroniza stock y precio normalmente.
 
 **Dato aparte**: la página del fabricante lista una **sexta variante** que tampoco está cargada —
 `STEELBLUE/CRY-GS16`, SKU **957007**. No tiene fotos publicadas (404). Si la tenés en la óptica,

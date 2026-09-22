@@ -98,7 +98,7 @@ variante con sangrado para imprenta física, retomar desde acá.
 **Fecha**: 2026-09-22
 **Por**: Claude Code (a pedido de Juan)
 
-### 🔵 Rusty Bruice 669K/UV-N40 — placas entregadas, carga bloqueada por datos del founder
+### ✅ Cargada y live: 5ta variante del Rusty Bruice (669K/UV-N40)
 
 Quinta variante del Bruice (el producto ya tenía **4 cargadas**, no 2 como decía el bloque viejo de
 `SEO_STRATEGY.md`). SKU 968191, armazón gris transparente, lente celeste degradé, **no polarizado**.
@@ -147,10 +147,43 @@ de ML). 1.946 caracteres de los 50.000 que permite ML.
 **Regla que sale de acá**: todo texto que el founder va a COPIAR Y PEGAR se entrega en archivo, no
 en el chat. Vale para descripciones de ML, respuestas a compradores y cualquier copy largo.
 
-**⬜ Bloqueado**: stock y precio (no hay publicación de ML de donde sacarlos — verificado contra las
-977 publicaciones de la cuenta), y si el Bruice de sol acepta graduadas. Los tres datos, más la
-sexta variante `STEELBLUE/CRY-GS16` (SKU 957007) que tampoco está cargada, están en
-`DATOS_PENDIENTES.md`.
+**✅ CERRADO.** El founder creó la publicación con las placas generadas acá
+(**MLA3981448012**, UP MLAU5237881811) y pasó el link. Datos leídos de ahí: **$84.354** (igual que
+los otros dos no polarizados) y **3 unidades**. Seed `108_rusty_bruice_669k.sql`, commit `0b83915`.
+
+| Control | Esperado | Real |
+|---|---|---|
+| Variantes del Bruice | 4 → **5** | 5 ✓ |
+| `catalog_listing` de la publicación | **false** (regla del founder) | false ✓ |
+| Item simple → `variation_code` | NULL | NULL ✓ |
+| Polarizada | **No** | `polarized: false` ✓ |
+| `AggregateOffer` | low 84354 / high 96251 / **5** | ✓ |
+| Copy actualizado a 5 colores | 3 campos | ✓ description, short y meta (157 chars) |
+| PDP en producción | refleja los 5 | ✓ |
+
+**⭐ Primer caso del proyecto con el flujo invertido: el sitio primero y ML después.** En las 13
+cargas anteriores ML ya existía y era la fuente; acá no había de dónde leer stock ni precio. El
+orden que funcionó —fotos del fabricante → placas para los dos canales → el founder publica →
+mapear— quedó en `LEARNINGS.md`.
+**Y ML acertó la forma** (`FRAME_SHAPE: Aviador`) después de errarla 5 veces seguidas, con medidas
+que coinciden con las ya medidas. Refuerza el matiz del Harry: yerra la forma, no los números, y
+menos todavía cuando la publicación la carga el founder.
+
+**📝 Una variante nueva no es sólo una fila.** El producto decía **"4 colores" en TRES campos**
+(`description` con su lista de bullets y la línea "2 de los 4 colores", `short_description` y
+`meta_description`). Además las dos polarizadas se corrieron a sort 4-5 y sus fotos a 8-11, para que
+los tres no polarizados queden juntos y el salto de $84.354 a $96.251 se lea como **una** decisión
+(criterio Dunsert/Bad Card).
+⚠️ Se subió de más una `medidas-669k.jpg`: el Bruice ya tenía `medidas-18mm.jpg` en sort 99. Se
+borró del bucket antes de referenciarla — **la placa de medidas es del MODELO, no de la variante**.
+
+**⬜ Sigue pendiente del founder**: si el Bruice de sol **acepta lentes graduadas**. Con eso se
+cambia esa respuesta de la descripción de ML por una afirmación directa y se regenera la placa 05
+que quedó afuera. Y la **sexta variante** `STEELBLUE/CRY-GS16` (SKU 957007), que figura en el
+fabricante sin fotos publicadas. Los dos en `DATOS_PENDIENTES.md`.
+
+**Próximo paso exacto**: seguir con el cruce `pnpm ml:faltantes`. El tope es el **Vulk stately**
+(sol, 3 colores, 15 u, 16 ventas), después **Rusty Society MBLK/S10 POL** (2 colores, 9 u, 23 ventas).
 
 **Próximo paso exacto**: con stock y precio, cargar la variante como `sort_order 5` del producto
 `rusty-bruice` con `mercadolibre_item_id` en NULL (no sincroniza hasta que exista la publicación),

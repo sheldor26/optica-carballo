@@ -22,6 +22,38 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-09-22 — El flujo invertido: el sitio primero y Mercado Libre después
+
+**El caso**: el founder quiso cargar la 5ta variante del Rusty Bruice (669K/UV-N40) y **no existía
+publicación de ML**. En las 13 cargas anteriores ML siempre había ido primero y era la fuente de
+stock, precio y a veces SKU. Acá no había de dónde leer.
+
+**Qué se hizo, y el orden importa**:
+1. **Fotos del fabricante**, no de ML. La página de Rusty sólo sirve el color por defecto, así que
+   las otras salen del patrón de rutas del HTML. ⚠️ El perfil existía **sólo con la `p` minúscula**;
+   con mayúscula daba 404. Vale la pena probar variantes de capitalización antes de dar por perdida
+   una foto.
+2. **Generar el set completo de placas** —el de ML (1500×1500) y el del sitio (2000×1333)— y
+   entregárselo ANTES de que publique, para que arme la publicación con material propio.
+3. **Esperar a que publique** y recién ahí mapear. No inventar el `mercadolibre_item_id`.
+4. **Verificar la publicación reción creada** como cualquier otra fuente: `catalog_listing: false`,
+   si es item simple o multi, y contrastar lo que declara contra lo que ya sabíamos.
+
+**Por qué funcionó**: el founder publicó con las placas correctas de entrada, en vez de publicar con
+lo que tuviera a mano y después tener que corregir la galería de ML (que es cara de arreglar). Y el
+mapeo quedó bien desde el minuto uno, sin ventana en que el stock del sitio estuviera desconectado.
+
+**El bonus de verificar igual**: la publicación nueva declaró `FRAME_SHAPE: Aviador` — **ML acertó la
+forma por primera vez después de errarla 5 veces seguidas** (Zion, Ardigan, Dunsert, Bad Card, Harry).
+Y sus medidas coincidían con las ya medidas. Confirma el matiz del Harry: **ML yerra la forma, no
+necesariamente los números**, y cuando la publicación la carga el founder con datos buenos, acierta.
+
+**Cuándo repetirlo**: cada vez que el founder tenga stock físico de algo que no publicó todavía. El
+orden correcto es fotos → placas → él publica → mapear, y **no** cargar al sitio sin mapeo
+esperando conectarlo después (la variante queda sin sincronizar y nadie se acuerda).
+
+---
+
 ## 2026-08-29 — Marco de placa en Canva sin insetear el path: dejar que el borde se recorte en el canto
 
 **El caso**: armando la placa de sponsor (fuera del catálogo, ver CURRENT_STATE.md), Juan pidió un
