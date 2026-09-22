@@ -56,13 +56,24 @@ incompleta o inventada, contra la regla dura 1 del negocio (nada de pre-order / 
 eso se preparó TODO lo demás (fotos, placas, copy, atributos, SEO) pero el `INSERT` se posterga
 hasta que exista la publicación real.
 
-**Próximo paso exacto**: Juan publica la colorway C2 en ML con la descripción ya redactada, y pasa
-el link + precio + stock reales. Con eso: escribir seed `112_rusty_eysy_sol.sql` (`products` +
-`product_variants` + `product_images`), subir las placas `web/` al bucket, correr
+**Publicado y resuelto**: Juan pasó el link de ML (`MLA2116068851`, `/up/MLAU5276497052`).
+Verificado con `scripts/ml-item.ts` + consulta directa a la API: `catalog_listing: false`
+(tradicional, correcto mapear), item simple (0 variaciones → `mercadolibre_variation_code` NULL),
+precio **$100.823**, stock **3 unidades**. La ficha técnica de ML confirma 1:1 todo lo ya cargado
+(`FRAME_MATERIAL: Metal`, `TEMPLE_MATERIAL: Acetato`, `FRAME_SHAPE: Ovalado`, `GENDER: Sin género`,
+`WITH_POLARIZED_LENS: No`, medidas 16/41/46/145mm) — sin ningún conflicto nuevo esta vez.
+
+**Hecho en este turno**: fotos web subidas al bucket con `pnpm fotos:subir` (verificadas con HEAD,
+`rusty-eysy/{perfil-c2,frente-c2,medidas-c2}.jpg`), seed completo escrito en
+`supabase/seeds/112_rusty_eysy_sol.sql` (`products` + `product_variants` + `product_images`).
+
+**Próximo paso exacto**: esperando el OK explícito de Juan para aplicar el seed contra Supabase
+Cloud (regla dura del proyecto: nunca se corre SQL contra producción sin mostrarlo antes y esperar
+confirmación). Con el OK: `execute_sql` vía MCP de Supabase, verificar con SELECT puntual, correr
 `pnpm auditar:encuadre` contra el grid real antes de fijar cualquier override en
 `lib/catalog/image-scale-overrides.ts` (punto de partida sugerido si hiciera falta: Vulk Nova perfil
-1.1 / frente 1.0, único comparable ovalado+metal — a verificar, no a copiar a ojo), verificar
-build+deploy, y confirmar en producción.
+1.1 / frente 1.0, único comparable ovalado+metal), verificar en producción (polling, no un solo
+`curl` — regla de ISR ya conocida), y actualizar `CLOUD_APPLIED.md`.
 
 ### ✅ Placa de sponsor para torneo de fútbol (fuera del catálogo)
 
