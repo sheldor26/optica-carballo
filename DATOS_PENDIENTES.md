@@ -118,6 +118,26 @@ receta del catálogo con **varilla de 150 mm**, así que la recomendación depen
 **El founder confirmó que verificó personalmente todos los modelos del sitio**, así que el 150 vale
 y no hay nada que medir. La ficha se puede recomendar por la varilla sin asterisco.
 
+## 🔵 Mormaii Moorea Rx (armazón) — en carga, falta 1 dato tuyo (2026-09-22)
+
+**Primer producto de la marca Mormaii en el catálogo.** 7 colorways, publicación de ML
+multivariación ya viva (MLA1550157394): 01 negro brillo (stock 2), 02 negro mate/gris (0), 06
+negro-azul/turquesa (0), 05 transparente/negro jaspeado (0), 08 negro mate/celeste (1), 04
+gris degradé turquesa (0), 09 gris mate/naranja (1). Precio uniforme $111.030.
+
+✅ **Ya resuelto sin vos**: material grilamid (frente y patillas) y bisagras metálicas con flex —
+confirmado por una placa de callouts que ya usás en tu propia publicación de ML, más
+`MATERIAL=Inyección` de la ficha de ML. Forma rectangular (`SHAPE=Rectangular` en ML, confirmado
+visualmente en las 7 fotos oficiales). Género unisex explícito (`GENDER=Sin género`,
+`FILTRABLE_GENDER=Mujer,Hombre`). Fotos perfil+frente de las 7 colorways en alta resolución, del
+Dropbox oficial de Interoptica Andina que pasaste.
+
+- [ ] **Medidas y peso.** Ni ML ni el fabricante los tienen confiables para cargar (regla dura 7):
+  hay un grabado en la varilla del propio armazón que dice "55 □17-131" (visible en la foto del
+  C08) y coincide con un diagrama de interoptica.com.ar (135/17/55/131), pero **ninguno de los dos
+  es una medición tuya** — no se cargan. El armazón va sin bloque de medidas hasta que lo tengas en
+  la mano y confirmes: calibre, puente, varilla, ancho total del frente, alto total, y peso.
+
 ## 🔵 Rusty Gover (armazón) — en carga, faltan 2 datos tuyos (2026-08-31)
 
 **5 colores, 17 unidades** (el cruce decía 8/30: tres publicaciones sueltas comparten pozo de stock

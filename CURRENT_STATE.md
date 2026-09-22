@@ -5,6 +5,53 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### 🔄 En curso: Mormaii Moorea Rx — PRIMERA marca Mormaii + 7 colorways multivariación
+
+Juan pidió cargar un armazón de receta Mormaii Moorea, 7 colorways, desde una publicación de ML
+multivariación ya viva (`MLA1550157394`, `catalog_listing:false`, tradicional). **Es el primer
+producto real de la marca Mormaii** — hasta ahora sólo existía la fila de `brands` (seed 01/09),
+sin ningún producto cargado.
+
+**Verificado vía API de ML** (7 variaciones, todas con `seller_custom_field: null` →
+`mercadolibre_variation_code` va con el ID NUMÉRICO de cada variación, no NULL — item multi-
+variación real): SKUs, colores, stock y precio uniforme $111.030 confirmados 1:1 contra lo que pasó
+Juan (ver tabla completa en el seed cuando se escriba). 4 de 7 sin stock — se cargan igual (regla
+"stock = siempre el de ML").
+
+**Fotos**: Juan pasó un link de interoptica.com.ar (revendedor) y, al preguntarle por la foto de
+frente faltante en 6 de las 7 colorways, compartió el Dropbox oficial del distribuidor (Interoptica
+Andina) con las 14 fotos (perfil+frente × 7 colores) en alta resolución (5000×3300). Confirmadas
+visualmente las 7 contra la descripción de Juan — coinciden exactas. Placas generadas con
+`pnpm placas --tipo receta --sin-vision --solo 1,2,3,5,6` (se excluyó explícitamente la placa de
+medidas — ver por qué abajo) en `marketing/placas-producto/mormaii-moorea/<color>/`.
+
+**Material y forma resueltos sin pedirle nada a Juan**: encontramos que su propia publicación de ML
+ya usa una placa de callouts (hecha por él o para él, no por nosotros) que dice "ARMAZÓN DE
+GRILAMIDA" y "BISAGRAS METÁLICAS CON FLEX" — confirmado también por `MATERIAL=Inyección` de ML.
+`frame_shape: rectangular` (ML `SHAPE=Rectangular`, confirmado visualmente: lente más ancho que
+alto, sin curva envolvente de una pieza — se descartó "envolvente" pese a que el copy de
+interoptica.com.ar lo llama así, porque las fotos no muestran ese diseño). Género `unisex` explícito
+(`GENDER=Sin género`, `FILTRABLE_GENDER=Mujer,Hombre` — no es el default por ausencia de señal esta
+vez, viene declarado).
+
+**Medidas — NO cargadas, van a `DATOS_PENDIENTES.md`**: hay un grabado real en la varilla del propio
+armazón ("55 □17-131", visible en la foto de perfil del C08) que coincide con un diagrama de
+interoptica.com.ar, pero ninguna de las dos fuentes es una medición de Juan — regla dura 7, sin
+excepción aunque la evidencia sea inusualmente sólida esta vez (grabado físico + diagrama del
+distribuidor coincidiendo). Por eso también se excluyó la placa de medidas del generador: correrla
+con los defaults hubiera impreso números inventados (50mm de calibre por default) en un JPG que
+después se sube a producción y a ML — más caro de corregir que de esperar.
+
+**Lanzados en paralelo (background, sin resultado todavía)**: `seo-strategist` (slug, keyword
+inicial para el carril Mormaii, title/meta/H1, estructura de `attributes`, qué implica ser la
+primera ficha de la marca) y `catalog-loader` (validación contra `PRODUCT_SCHEMA.md`, patrón exacto
+de columnas para receta multi-variación con 7 variantes, cualquier gotcha de que la marca esté
+"vacía" hasta ahora, scale override inicial).
+
+**Próximo paso exacto**: con el resultado de los dos agentes, escribir el seed SQL completo
+(`products` + `product_variants` ×7 + `product_images` ×14), subir las fotos al bucket, verificar
+build+deploy y producción, y actualizar `PRODUCTS_INVENTORY.md` (primera marca Mormaii activa).
+
 ### ✅ Cargado y live: Rusty EYSY, producto NUEVO (colorway C2, SKU 103431)
 
 Juan pidió dar de alta un modelo que todavía no existe en el catálogo (no es variante de uno
