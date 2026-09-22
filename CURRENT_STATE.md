@@ -138,8 +138,18 @@ reclamo. Mismo criterio que el callout del Dunsert.
 La duda "¿le puedo poner mi graduación?" se responde **sin prometer**: invita a consultar con la
 receta a mano, que es la respuesta honesta de óptico y además protege contra la curva base.
 
+⚠️ **Error de entrega, corregido en el mismo turno**: la descripción se entregó primero en el chat
+con las líneas envueltas a mano para que se leyera prolija. **Esos saltos son caracteres reales**, así
+que al pegarlos en el campo de ML cortaron las oraciones a la mitad (el founder lo mostró con una
+captura). Rehecha con **cada párrafo en una sola línea continua** y entregada como archivo:
+`marketing/ml-descripciones/rusty-bruice-669k.txt` (carpeta nueva, para versionar las descripciones
+de ML). 1.946 caracteres de los 50.000 que permite ML.
+**Regla que sale de acá**: todo texto que el founder va a COPIAR Y PEGAR se entrega en archivo, no
+en el chat. Vale para descripciones de ML, respuestas a compradores y cualquier copy largo.
+
 **⬜ Bloqueado**: stock y precio (no hay publicación de ML de donde sacarlos — verificado contra las
-977 publicaciones de la cuenta), y si el Bruice de sol acepta graduadas. Todo en
+977 publicaciones de la cuenta), y si el Bruice de sol acepta graduadas. Los tres datos, más la
+sexta variante `STEELBLUE/CRY-GS16` (SKU 957007) que tampoco está cargada, están en
 `DATOS_PENDIENTES.md`.
 
 **Próximo paso exacto**: con stock y precio, cargar la variante como `sort_order 5` del producto
