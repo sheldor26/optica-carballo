@@ -37,6 +37,7 @@ const FRAME_MATERIAL_LABELS: Record<string, string> = {
   titanium: 'Titanio',
   'g-flex': 'G-Flex',
   'tr-90': 'TR-90',
+  poliamida: 'Poliamida',
 };
 
 const FRAME_SHAPE_LABELS: Record<string, string> = {
