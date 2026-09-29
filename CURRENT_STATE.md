@@ -5,6 +5,701 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### ✅ Cargado y live: Rusty K13 (receta infantil) — CERRADO, segundo producto infantil del catálogo
+
+Segundo producto infantil del catálogo, casi gemelo del K12 (ver entry abajo). Juan pasó ficha del
+fabricante (rustyoptical.com/optical/fw26/k13), variantes C2 (azul oscuro, SKU 969521) y C3 (rosa
+translúcido, SKU 969522), 2 unidades cada una, $101.778, peso 15,7g.
+
+**Medidas**: Juan pasó 45-14-132, alto 32mm, ancho 119mm. La web del fabricante decía puente 16 (no
+14) — CONFIRMADO como error de la web haciendo zoom al grabado físico real: "K13 C3 B.CUT 45 14 132".
+Mismo patrón que el K12 (ver `medidas-las-mide-el-founder.md`). Geometría sana: 2×45+14=104mm vs
+119mm, 15mm de margen, sin alerta.
+
+**Bug propio detectado y corregido en esta carga (y retroactivo a K12)**: Juan señaló que la foto de
+estuche cambia de color por variante (accesorios a tono con el armazón), no es una foto genérica del
+modelo — mismo error ya cometido con la correa de Ancara 2. Verificado navegando la página real del
+fabricante y mirando qué request de red dispara cada tab de color (adivinar nombres de archivo dio
+falsos positivos HTTP 200 con contenido duplicado/placeholder — ver `LEARNINGS.md`). Mapeo real: K12
+C1→estuche azul, C3→estuche **violeta** (no azul, corregido); K13 C1→violeta, C2→**azul** (no violeta,
+corregido), C3→violeta. **K12 ya corregido en Cloud** (DELETE de la fila genérica + 2 filas nuevas
+por variante, bucket limpiado, seed 129 actualizado). Entry en `MISTAKES.md` (3ra vez que pasa este
+tipo de error en la sesión — escalar si se repite una 4ta).
+
+**Fotos K13**: 7 imágenes subidas (perfil+frente × C2/C3 + estuche-c2-azul + estuche-c3-violeta +
+medidas), todas HTTP 200. Callouts corregidos desde el vamos con color real (no placeholder) y
+`--lentes` override (sin mención bifocal/progresivo, lección ya aplicada del K12). También corregido
+en esta carga: el badge "KIDS" superpuesto en las fotos de frente del fabricante, tapado con blanco
+ANTES de generar las placas (en K13 me olvidé al principio y tuve que regenerar 01/02/03 de C2 y C3
+después de notarlo yo mismo).
+
+**Cierre 2026-09-29**: `optical-expert` sin objeción (alto 32mm sano para monofocal, variación de
+talle normal dentro de la línea). `seo-strategist` confirmó mismo territorio de keyword que K12 (sin
+volumen medible receta+infantil) y aportó el diferenciador honesto contra K12 (K13 = el más compacto
+de los dos, medidas objetivas menores en las 4 dimensiones). El founder había confirmado explícito en
+el mensaje original que K13 comparte todas las features del K12 (TR-90, nasal goma, bisagra flex,
+patillas con alma de metal, lente demo bluecut) — no fue una asunción, cerró el pendiente que había
+dejado abierto `seo-strategist`.
+
+Seed 130 aplicado con OK del founder ("si dale"). Verificación SELECT: `variantes=2, stock_total=4,
+imgs=7`. Producción confirmada HTTP 200. Fondo de las 7 imágenes: 0 píxeles no-blancos (contraste
+15x). `pnpm auditar:encuadre`: 92%, scale 1.00, sin override. Entry SEO agregada a
+`SEO_STRATEGY.md` como sub-entry de K12. Set completo de 14 placas de ML (7 por color, incluyendo
+estuche correcto por variante desde el arranque) armado en
+`marketing/placas-producto/rusty-k13/PARA-ML/`, revelado en Finder para el founder.
+
+**Cierre final**: descripción de ML escrita directo con la plantilla corta ya validada (sin trío
+auditor completo — es aplicación literal de un patrón ya aprobado dos veces, no una reescritura).
+Juan publicó las 2 variantes en ML (`MLA4010416358` C2 azul, `MLA4010416356` C3 rosa) y sincronizó
+enseguida — `mercadolibre_item_id` actualizado en las 2 filas de `product_variants` + seed fuente
+130 corregido para reflejar el estado real. K13 queda 100% cerrado en los dos canales.
+
+**Actualización 2026-09-29 — bug de escala en el grid detectado post-cierre**: Juan mandó 2 capturas
+del grid (`/anteojos-de-receta/rusty`) mostrando el K12 y el K13 visiblemente más grandes que sus
+vecinos adultos (Bruice/Gover/Invig y Misty/Opposit/Patien respectivamente): "es desproporcionalmente
+muy grande". Causa: las fotos de K12/K13 salen del mismo pipeline `pnpm placas` que Rusty Bruice
+(2000×1333, ~92% de fill nativo — por eso `auditar:encuadre` dio 92%/1.00 en ambos sin marcar nada,
+es justo la mediana del catálogo). El problema real es que son los DOS PRIMEROS productos infantiles
+(calibre 45-46mm) renderizados al mismo fill% que armazones de adulto (calibre 50-54mm+) — se leen
+del mismo tamaño visual que un adulto en vez de verse "chicos" en el grid mixto. Mismo patrón de
+fondo que Yau/Vrast (regla 15 de CLAUDE.md), pero por diferencia de talle real, no por bug de
+encuadre — la sub-regla obligatoria de comparar contra vecinos del grid al cierre se saltó en las dos
+cargas (K12 y K13), es la causa raíz directa. Fix aplicado en código: 8 entries nuevas en
+`lib/catalog/image-scale-overrides.ts` (perfil 0.75 / frente 0.78, las 2 variantes × K12/K13) —
+arranque conservador, sub-regla 15 + counter-learning Booping/Arvin, sin verificar visualmente
+todavía (el dev server local pide login, no hay credenciales de test; requiere deploy para ver el
+efecto en prod). **Esperando OK explícito de Juan para commitear y pushear** (archivo único,
+`image-scale-overrides.ts`) — después reverificar el grid en vivo y ajustar si sigue grande o si
+quedó demasiado chico.
+
+**Próximo paso exacto**: si Juan ya dio el OK, commitear+pushear `image-scale-overrides.ts`, esperar
+el deploy de Vercel, y volver a capturar el grid `/anteojos-de-receta/rusty` (y el grid donde vive el
+K13) para confirmar que ahora se ven proporcionalmente más chicos que los vecinos adultos — ajustar
+escalonado (subir hacia 0.85 si quedó muy chico, bajar hacia 0.65 si sigue grande) según lo que se
+vea. Si todavía no respondió, no tocar el repo — el diff ya está armado y descrito arriba, sólo falta
+confirmación. Una vez cerrado esto sí queda 100% cerrado K12/K13 en los dos canales, y recién ahí
+aplica lo de siempre: cuando Juan traiga el próximo producto, arrancar por leer
+`CURRENT_STATE.md`/`MISTAKES.md` y aplicar directo las plantillas y lecciones ya guardadas en memoria
+de esta sesión (badge infantil, plantilla ML corta, estuche por variante, no adivinar nombres de
+archivo, **y esta vez sí comparar el scale contra el grid ANTES de declarar el cierre**).
+
+### 🔄 En curso: Rusty K12 (receta infantil) — sitio CERRADO, publicación ML lista con GO del trío auditor, falta que Juan la publique
+
+**PRIMER PRODUCTO INFANTIL del catálogo.** Juan pidió dar de alta el modelo en los DOS canales a la
+vez (ML nuevo + sitio) — a diferencia de todas las cargas anteriores de esta sesión, no viene de una
+publicación de ML existente. Datos: rustyoptical.com/optical/fw26/k12 (ficha oficial) + Juan
+(medidas, precio, stock, restricción de copy). 2 colores con stock (C1 celeste/azul translúcido, C3
+rosa/frambuesa translúcido, 2 unidades cada uno, $101.778).
+
+**Medidas**: 46-15-132, alto 35mm, ancho 123mm — Juan las pasó así; la web del fabricante decía
+calibre 45 (no 46), CONFIRMADO como error de la web haciendo zoom al grabado físico de la propia
+patilla en la foto de alta resolución del fabricante ("K12 C1 B.CUT 46 15 132"). Geometría sana
+(2×46+15=107 vs 123, 16mm de margen). Juan reconfirmó espontáneamente su preferencia de siempre: el
+grabado de la patilla (lo que el cliente recibe) gana sobre la ficha web — reforzado en la memoria
+del proyecto `medidas-las-mide-el-founder.md`.
+
+**Cambios de código nuevos (necesarios, no de relleno)**:
+- `blue_light` agregado como valor válido de `lens_treatment` (primer producto con filtro Bluecut) —
+  mapeado en los 3 lugares que necesitan label: `product-attributes.tsx`, `comparar/page.tsx`,
+  `product-highlights.tsx`. `PRODUCT_SCHEMA.md` actualizado.
+- Badge nuevo `size_fit: "infantil"` → label "Para niños/as", ícono `Baby` (antes sólo existían
+  `junior`/`chico`, nunca usados para infantil real — `seo-strategist` marcó que el comentario del
+  código sobre "junior" era ambiguo; se le preguntó a Juan directo y pidió un badge nuevo en vez de
+  reusar "junior" a ciegas). `lib/catalog/size-fit.ts` + `size-fit-badge.tsx`.
+
+**Restricción explícita de Juan (no negociable)**: la descripción NO menciona bifocales/progresivos/
+multifocales ni "uso de cerca" — armazón infantil, no aplica. `optical-expert` confirmó que es
+correcto técnicamente (presbicia es condición de adultos), no sólo preferencia de marketing.
+Reemplazada por: "armamos este armazón con el cristal graduado según la receta de tu hijo/a".
+`optical-expert` también pidió aclarar que el filtro Bluecut es de la LENTE DEMO (no necesariamente
+del cristal definitivo) y sumar nota de que el ajuste de patillas con alma de metal se hace en la
+óptica o con supervisión de un adulto — ambas incorporadas.
+
+**Fotos**: 5 imágenes bajadas de rustyoptical.com (perfil+frente × 2 colores + la foto del estuche
+especial que Juan pidió agregar) + 1 placa de medidas, procesadas con `pnpm placas` (trim — fotos de
+estudio ya limpias). Las fotos de frente del fabricante traían un badge "KIDS" superpuesto, tapado
+con blanco vía PIL antes de procesar. Todas HTTP 200.
+
+**SEO** (`seo-strategist`): sin volumen medible para receta+infantil en ningún CSV — primaria queda
+branded (`rusty k12`) + `anteojos infantiles` de soporte (vol real pero difficulty alta, no
+primaria). Entry agregada dentro de Cluster RUSTY en `SEO_STRATEGY.md` (no cluster nuevo, por
+recomendación del agente). NO se abre facet `/anteojos-de-receta/ninos` todavía (sin volumen, un
+solo producto infantil) — anotado en `BACKLOG.md` como idea a revisar cuando haya 3-4 productos más
+(Juan mencionó espontáneamente la idea).
+
+**Publicación ML**: armada con `optimizador-ml-optica` + auditoría completa `trio-auditor`
+(Codex + Gemini/agy en paralelo, primera pasada). Gemini dio GO con una mejora de título aplicada
+(swap "Grilamid"→"Infantil", mismo largo). Codex dio NO-GO en la primera pasada: investigó en vivo
+contra ML y encontró un comparable real de la misma marca (Rusty Kids K14) — la categoría real
+parece ser "Accesorios > Anteojos > Armazones y lentes sin graduar" con filtro de edad infantil (no
+"Armazones > Infantil" como se había asumido), género normalizado "Sin género infantil" (no
+"Niño/Niña" como texto libre), y sugirió agregar Línea=Kids / Modelo alfanumérico=K12 si el
+formulario los ofrece. No se corrió una segunda pasada del trío (el hallazgo es un dato concreto de
+taxonomía ML, no una discrepancia de estilo a resolver por ida y vuelta) — se le entregó el ajuste a
+Juan directo, con la salvedad de que la categoría/género exactos hay que confirmarlos en el
+desplegable real de ML al publicar (sin acceso a su cuenta no se puede verificar más).
+
+**Actualización 2026-09-29, post-OK ("dale, aplicalo")**: seed 129 aplicado a Cloud, verificado con
+SELECT (`variantes=2, stock_total=4, imgs=6, size_fit=infantil, lens_treatment=[blue_light]`),
+producción confirmada (HTTP 200), fondo limpio (0 píxeles no-blancos en las 6 imágenes),
+`auditar:encuadre` 92%/scale 1.00. **Pero el badge "Para niños/as" no se veía en la página real** —
+los cambios de código (`blue_light` + badge `infantil`, 7 archivos) nunca se comitearon ni pushearon,
+así que Vercel seguía sirviendo la versión vieja. Mismo patrón que el bug de "poliamida" del
+2026-09-28 (ver `MISTAKES.md`, ahora 2 ocurrencias). Esperando confirmación explícita de Juan para
+comitear y pushear esos 7 archivos (`git status` limpio de todo lo demás, sólo esos).
+
+**Cierre 2026-09-29**: los 7 archivos comiteados y pusheados (commit `e4b7ba6`, con OK explícito de
+Juan "dale, subilo"), deploy de Vercel confirmado. Verificado en producción con `find` sobre la
+página real: badge "Para niños/as" presente (5 instancias, galería + overlay) y label "Filtro luz
+azul" presente (ficha técnica + highlights + descripción). K12 queda 100% cerrado en el sitio.
+
+**Pendiente, fuera del sitio**: Juan publica la ficha de ML él mismo con el texto ya armado (título,
+atributos corregidos con los hallazgos de Codex, descripción) — cuando tenga el `item_id` real,
+actualizar `mercadolibre_item_id` en las 2 filas de `product_variants` (hoy en NULL).
+
+**Publicación ML — 2da pasada del trío auditor, GO de los dos**: Juan pidió corregir la ficha con los
+3 hallazgos de la primera pasada de Codex (categoría real "Accesorios > Anteojos > Armazones y
+lentes sin graduar" con filtro infantil, género normalizado "Sin género infantil", agregar Línea=Kids
++ Modelo alfanumérico=K12) y volver a auditar. Segunda pasada: Codex confirmó los 3 puntos resueltos
+contra el comparable real Rusty Kids K14, sin bloqueantes nuevos. Gemini/agy confirmó que el swap de
+título ("Infantil" en vez de "Grilamid") y los atributos nuevos mejoran el match de filtros de ML.
+**Veredicto final: GO de los dos.** Título final (52 car.): "Armazón Receta Rusty K12 Infantil Niño
+Niña Flexible". Ficha, descripción y categoría entregadas a Juan, listas para publicar. 6 fotos
+1500×1500 consolidadas en `marketing/placas-producto/rusty-k12/PARA-ML/` (Finder, revelada para
+Juan): perfil+frente × 2 colores, estuche especial (generado ML-ready en esta pasada, faltaba), placa
+de medidas.
+
+**Set completo de placas de ML**: Juan pidió el set completo (yo había generado sólo perfil+frente
+recortados). Al generar las 3 placas restantes (callouts, lentes, garantía) aparecieron 2 problemas
+reales, corregidos antes de entregar: la placa "lentes" traía por default "monofocales, bifocales y
+progresivos" (violaba la restricción explícita del founder) — corregida con `--lentes "según la
+receta de tu hijo/a"`; la placa de callouts tenía el placeholder "color a definir" sin completar —
+corregida con `--c3` explícito por color (Celeste translúcido / Rosa frambuesa translúcido). Entry
+en `LEARNINGS.md`. Set final: 7 placas × 2 colores en
+`marketing/placas-producto/rusty-k12/PARA-ML/{c1-celeste,c3-rosa}/` (perfil, frente, callouts,
+medidas, lentes, estuche con accesorios, institucional Óptica Carballo) — Finder revelado para Juan.
+
+**SKUs reales**: Juan pasó los códigos de fábrica de Rusty (C1=969510, C3=969512) — actualizados en
+DB (UPDATE directo) y en el seed fuente 129, reemplazando los house SKU K12-C1-AZUL/K12-C3-ROSA
+usados al principio.
+
+**Descripción larga para ML**: Juan pidió una descripción de 1000-1500 palabras (aclaró que es para
+ML, no para el sitio, que sigue con la descripción corta de 300-600 que ya tenía). Primera versión
+(1342 palabras) pasó dos rondas de trío auditor con GO, pero tenía 2 problemas de compliance reales
+que ninguno de los dos auditores detectó porque nunca se les pidió chequearlos: (1) mencionaba
+"escribinos por WhatsApp" varias veces — ML prohíbe contacto externo en el texto de una publicación;
+(2) ofrecía el servicio de armado con receta ("armamos... 7 a 10 días hábiles") — el founder no puede
+prestar ese servicio a través de ML. Juan corrigió los dos puntos. Reescritas ambas versiones (corta
+379→459→final, larga 1071 palabras) posicionando el producto como el ARMAZÓN SOLO con lente demo,
+sin ofrecer armado ni mencionar ningún canal. Nueva ronda de trío auditor: GO de los dos en las dos
+versiones. Entry en `MISTAKES.md`: las reglas de copy no son universales entre canales (el patrón
+"escribinos por WhatsApp, te cotizamos la receta" es válido en el SITIO propio pero no en un
+marketplace de terceros) — para el próximo canal externo, preguntar explícito qué está prohibido
+antes de escribir, y sumarlo como regla de base al prompt del trío auditor.
+
+**Sincronización final con ML**: Juan publicó (2 publicaciones separadas, mismo patrón que Vulk
+Anima/San Juan, no multivariante) — `MLA4009073990` (C1 celeste) y `MLA4009060952` (C3 rosa).
+Sincronizado con `mercadolibre_item_id` en las 2 filas de `product_variants` vía UPDATE directo +
+seed fuente 129 actualizado para reflejar el estado real. K12 queda 100% cerrado en los dos canales.
+
+**Plantilla de descripción corta para ML validada por Juan**: tomó mi borrador, lo recortó a una
+estructura de 9 bloques más ajustada (sin la frase "el armado se hace en una óptica", garantía en 1
+línea sin matices, cierre institucional mínimo "Somos Optica Carballo - Hacemos Factura A o B -") y
+dijo explícito que así deberían ser los próximos modelos. Guardado en memoria del proyecto
+(`plantilla-descripcion-ml-corta.md`) para aplicar directo la próxima vez, sin iterar de nuevo.
+
+**Próximo paso exacto**: no queda ninguna tarea abierta de Rusty K12 en ningún canal. Cuando Juan
+traiga el próximo producto, arrancar por leer `CURRENT_STATE.md`/`MISTAKES.md` como de costumbre y
+aplicar directo la plantilla de descripción corta de ML guardada en memoria.
+
+### ✅ Cargado y live: Mormaii San Juan (sol, cuadrado deportivo, 3 colores) — CERRADO, séptimo producto Mormaii
+
+Séptimo producto Mormaii, quinto de sol. Juan pasó un link de búsqueda del panel de ML (no un link
+directo — 3 publicaciones SEPARADAS, no multivariante: `MLA1909972574`/`MLA1450200223`/`MLA1450123453`),
+Dropbox de fotos (6 colorways, sólo 3 con stock real), ficha del fabricante, imagen de medidas y
+material/bisagra/categoría.
+
+**Mapeo variante↔color confirmado por grabado físico** en la propia foto de perfil de cada color
+("San Juan SN Col.0X Cat.03 UV400"), cruzado contra `FRAME_COLOR`/`LENS_COLOR`/`LENS_TREATMENT` de
+cada publicación: Col.01 (negro mate/gris oscuro clásica), Col.02 (negro mate detalle amarillo/gris
+semi-espejada), Col.04 (azul mate/espejado azul, el único item sin número en el título de ML).
+
+**Caso de medidas más ajustado del catálogo hasta ahora**: la imagen de referencia que mandó primero
+tenía un ancho total (144mm) que no cerraba geométricamente contra calibre+puente (145mm necesarios,
+negativo). Le pregunté, corrigió a mano ancho 145/alto 46 — pero eso dejó el margen en EXACTAMENTE
+0mm. Consulté a `optical-expert`: determinó que 0mm no es físicamente plausible (ni el precedente
+Borneo con bisagra plana llegaba a 0, su piso era 2mm). Le pregunté al founder si el método de
+medición era correcto (confirmó que sí, punta a punta externa) y le pedí remedir calibre/puente
+específicamente — remidió y CONFIRMÓ los mismos números dos veces. Se carga tal cual su medición
+(regla dura del proyecto: gana su medición física), documentado como caso atípico en el comentario
+del seed. Entry nueva en `LEARNINGS.md` sobre el protocolo a seguir en este tipo de caso.
+
+**SEO**: `seo-strategist` — caso más difícil del cluster hasta ahora junto con Curazao (misma forma
+CUADRADO + mismo género HOMBRE, sin mecanismo de separación por forma/género disponible). Resuelto
+con split léxico "anteojos de sol cuadrados hombre" (San Juan, 70/35, libre) vs "lentes de sol
+cuadrados hombre" (Curazao, ya asignado) — mismo mecanismo ya usado 3 veces en el catálogo — más el
+diferenciador real de colorway (2/3 variantes con lente espejada vs 1/3 de Curazao). Hallazgo
+crítico: "san juan" suelto tiene volumen real pero 100% geográfico (óptica en la provincia de San
+Juan) — nunca se usa sin "mormaii" pegado. Entry completa en `SEO_STRATEGY.md`, cluster MORMAII.
+
+**Cierre 2026-09-28**: seed 128 aplicado a Supabase Cloud vía `execute_sql`, con OK del founder
+("si, aplicalo"). Verificación SELECT: `variantes=3, stock_total=5, imgs=7, items_ml_distintos=3,
+polarizadas=3` (coincide con ML). Producción confirmada (HTTP 200). Fondo de las 7 imágenes
+verificado con test de contraste 15x + esquinas puras: 0 píxeles no-blancos. `pnpm auditar:encuadre`:
+92% ocupación, scale 1.00, sin override. Fila agregada a `CLOUD_APPLIED.md`.
+
+**Próximo paso exacto**: no queda ninguna tarea abierta de esta sesión. Cuando Juan traiga el
+próximo producto o pedido, arrancar por leer `CURRENT_STATE.md`/`MISTAKES.md` como de costumbre.
+
+### ✅ Cargado y live: fix Moorea (seed 124) + Mormaii Ancara 2 RX (seed 125) — CERRADO, sexto producto Mormaii
+
+**Cierre 2026-09-28**: los 2 seeds aplicados a Supabase Cloud vía `execute_sql`, con OK del founder
+("dale, aplicá los dos"). Verificación completa: Moorea tiene su placa de medidas (bug cerrado);
+Ancara 2 con `variantes=4, stock_total=3, imgs=10, var_codes_distintos=4` (coincide con ML). Ambas
+páginas confirmadas en producción (HTTP 200). Fondo de las 10 imágenes de Ancara 2 verificado con
+test de contraste 15x + esquinas puras: 0 píxeles no-blancos. `pnpm auditar:encuadre`: 92% ocupación,
+scale 1.00, sin override. Filas agregadas a `CLOUD_APPLIED.md` con el detalle completo de cada seed.
+
+**Fix post-cierre (seed 126)**: Juan notó que la foto de "correa incluida" usaba siempre la del
+Col 01 (negro mate) como imagen genérica para las 4 variantes. La carpeta "Con elástico" del
+Dropbox en realidad tenía una foto propia por cada uno de los 4 colores cargados — se generalizó
+sin necesidad. Corregido: se borró la fila genérica y se subieron+insertaron las 4 fotos, cada una
+con su `variant_id` correcto. Verificado con SELECT (4 filas, cada SKU con su propia foto) y la fila
+genérica vieja ya no existe en `product_images`. Entry en `MISTAKES.md`.
+
+**Fix post-cierre 2 (seed 127)**: Juan pidió que la correa aparezca 3ra en la galería de cada
+variante (perfil, frente, correa), no después de medidas. La galería filtra por variante + fotos
+compartidas (medidas) y ordena por `sort_order` dentro de ese subset — se bajó el `sort_order` de
+las 4 fotos de correa de 10-13 a 8 (entre frente y medidas). Verificado con SELECT: orden resultante
+perfil→frente→correa→medidas para la variante Negro Mate (las otras 3 nunca comparten subset, mismo
+criterio aplica igual).
+
+**Próximo paso exacto**: no queda ninguna tarea abierta de esta sesión. Cuando Juan traiga el
+próximo producto o pedido, arrancar por leer `CURRENT_STATE.md`/`MISTAKES.md` como de costumbre.
+
+Juan reportó en el mismo mensaje que aprobó aplicar Borneo: (a) falta la placa de medidas en el PDP
+live de Mormaii Moorea, y (b) pasó el brief completo del sexto Mormaii, **Ancara 2 RX** (receta,
+deportivo cuadrado hombre, con correa elástica incluida).
+
+**Bug Moorea — causa raíz encontrada**: las medidas llegaron el 2026-09-22 (mismo día del seed 113)
+y se marcaron `[x]` en `DATOS_PENDIENTES.md`, pero el seed original excluyó a propósito la placa de
+medidas (`--solo 1,2,3,5,6`) porque en el momento de generarla las medidas todavía no estaban
+confirmadas — el paso de seguimiento (generar+subir+insertar la placa una vez llegaron) nunca se
+hizo, a diferencia de Vulk Anima (seed 117) que sí tuvo su UPDATE de medidas. Placa generada con
+`pnpm placas --solo 4` sobre las fotos ya limpias de la variante C01, subida a
+`mormaii-moorea-receta/medidas.jpg` (⚠️ el slug real NO es "mormaii-moorea", es
+"mormaii-moorea-receta" — primer intento de subida falló silenciosamente al path equivocado, corregido
+antes de escribir el seed). Seed 124: una sola fila INSERT en `product_images`, geometría sana
+(2×55+17=127mm vs 139mm, 12mm de margen).
+
+**Mormaii Ancara 2 RX**: publicación ML `MLA2089737444` (multivariante, $133.500, `catalog_listing:false`).
+Datos de ML sin ambigüedad esta vez: `GENDER=Hombre` directo, `SHAPE=Anteojos de Receta Cuadrados`,
+`MATERIAL=Inyección` (founder confirmó poliamida, mismo patrón que Daito/Curazao/Borneo). 4 colorways
+con stock real de las 8 que trae el Dropbox del fabricante (Col 01 Negro Mate, Col 03 Azul Oscuro,
+Col 05 Azul Mate Translúcido, Col 06 Negro Mate con Gris) — mapeo variante↔color directo por número
+de colorway (mismo número en fotos y en atributos ML). Bisagras plásticas reforzadas (founder).
+Medidas: calibre 55/puente 16/varilla 131/ancho 142/alto 46mm, geometría sana (126mm vs 142mm, 16mm
+de margen).
+
+**Diferenciador real: correa elástica deportiva desmontable incluida** (foto oficial del fabricante,
+carpeta "Con elástico" del Dropbox) — único producto de receta del catálogo que la tiene. Subida como
+imagen genérica adicional de la ficha (`perfil-correa-incluida.jpg`).
+
+**`optical-expert` y `seo-strategist` corridos en paralelo, background, ya volvieron**:
+- `optical-expert`: sin objeción a poliamida/bisagra/medidas. Pidió (1) confirmar visualmente que el
+  frente NO tiene curvatura wrap pronunciada antes de afirmar "apto para progresivos" sin matiz —
+  chequeado con la foto real, el Ancara 2 es plano/rectangular (a diferencia del semi envolvente de
+  Moorea), sin objeción; (2) aclarar que la correa es accesorio de sujeción, no protección de
+  impacto certificada — texto agregado a descripción y callout.
+- `seo-strategist`: primaria `mormaii ancara 2` (branded) + secundaria `anteojos deportivos con
+  aumento` (260 vol/mes, territorio 100% libre en todo el catálogo). Anti-canibalización contra
+  Moorea (mismo brand+receta+deportivo+hombre, el caso más ajustado del sub-cluster receta) resuelta
+  en 4 capas: forma real distinta (cuadrado vs envolvente, confirmado por ML sin ambigüedad), Moorea
+  quedó branded puro y nunca reclamó "deportivo", bisagra distinta y honesta, correa exclusiva. NO se
+  usa "cuadrado"/"cuadrados hombre" en title/H1/meta — ya es primaria de Rusty Spell en receta. Entry
+  completa agregada a `SEO_STRATEGY.md`, cluster MORMAII.
+
+**Lección de fotos (nueva, ver LEARNINGS.md)**: estas son fotos de estudio del fabricante, ya limpias
+sobre blanco — probé `foto:limpia`/rembg primero por hábito (última carga lo necesitó para Daito/
+Curazao/Borneo) y metió un artefacto de segmentación feo en el frente de Col 03 que NO estaba en el
+archivo original. Cambié a `pnpm placas` (trim, el pipeline estándar pre-Daito) y salió limpio. rembg
+es para fotos de celular con sombra, no para renders de estudio ya limpios — no es la herramienta
+default, es la herramienta para UN problema específico.
+
+**Seed 125 escrito, JSON validado, `tsc --noEmit` limpio, las 10 imágenes verificadas HTTP 200
+contra el bucket exacto de los paths del seed.** `variant-label.ts` actualizado con 3 slugs nuevos
+(`azul-oscuro`, `azul-mate-translucido`, `negro-mate-gris`).
+
+**Próximo paso exacto**: con el OK de Juan, aplicar seed 124 y seed 125 vía `execute_sql` (MCP
+Supabase), verificar con SELECT puntual + producción (until-loop) + test de contraste 15x sobre el
+fondo de las 8 fotos de Ancara 2 + `pnpm auditar:encuadre`, actualizar `CLOUD_APPLIED.md`.
+
+### ✅ Cargado y live: Mormaii Borneo (sol, envolvente deportivo, 2 colores) — CERRADO, quinto producto Mormaii
+
+Quinto producto Mormaii. Juan pasó publicación de ML (`MLA1568739035`, multivariante, $122.290,
+stock total 1), Dropbox de fotos, medidas a mano (calibre 59/puente 18/ancho 138/varilla 115, alto
+60mm aparte), ficha del fabricante (interoptica.com.ar/producto/borneo-sn/) y material/bisagra —
+esta vez sin aclarar género espontáneamente.
+
+**Datos de ML más limpios que de costumbre**: `FRAME_MATERIAL=Poliamida` directo (sin el
+"Inyección" ambiguo de las cargas anteriores), `FRAME_SHAPE=Envolvente` y
+`LENS_TREATMENT=Polarizado UV400` explícitos en los atributos — casi no hubo que resolver nada por
+inferencia. **2 variantes confirmadas por grabado físico** ("Borneo SN Col.XX Cat.3 UV400", mismo
+método que el Curazao): Col.01 (negro brillo/gris oscuro, stock 0, 3 vendidas) y Col.02 (negro
+mate/verde, stock 1, 2 vendidas) — ambas se cargan, regla "stock siempre el de ML".
+
+**Género preguntado, no asumido**: el fabricante declara "Masculino" en su ficha oficial pero ML
+dice "Sin género" y Juan no lo aclaró esta vez — se lo pregunté explícito, confirmó Hombre (mismo
+patrón que Storm, el otro envolvente deportivo Mormaii).
+
+**⚠️ Alerta geométrica del propio script de placas — RESUELTA**: 2×calibre+puente = 136mm contra
+138mm de ancho total → sólo 2mm de margen total, mucho más ajustado que el resto del catálogo
+(típico 10-15mm). `optical-expert` explicó que es geométricamente plausible SI la bisagra es
+plana/integrada (sin tab que sobresalga) — en ese caso desaparecen las dos fuentes habituales de
+margen (grosor de aro + protrusión de bisagra). Hice zoom a la propia foto de perfil del Col.01 y
+confirmé visualmente: bisagra flush, sin protrusión. No hace falta re-medir. Las medidas se cargan
+tal cual (confirmadas por 2 fuentes independientes, Juan + fabricante, coinciden exacto).
+
+**Fotos generadas directo con `pnpm foto:limpia --p50 0 --sin-sombra`**, verificadas visualmente
+(color correcto, sin distorsión pese al paso de balance de blancos que corre igual con `--p50 0`).
+4 fotos + 1 placa de medidas subidas al bucket, HTTP 200.
+
+**SEO y validación técnica**: lancé `seo-strategist` (caso más difícil del cluster hasta ahora —
+Borneo comparte FORMA envolvente Y género hombre con Mormaii Storm, ya cargado) y `optical-expert`
+(con la pregunta del margen geométrico) en paralelo, en background. Todavía no vuelven.
+
+Peso: ni ML ni el fabricante lo dan esta vez (ni siquiera del paquete) — anotado en `BACKLOG.md`.
+
+**`optical-expert` confirmó sin objeciones** poliamida+bisagra plástica+polarizado/UV400/cat3, y
+avaló el margen geométrico ajustado (2mm) condicionado a que la bisagra sea plana — confirmado por
+zoom a la foto real.
+
+**`seo-strategist` terminó**: keyword primaria `mormaii borneo` (branded) + "Hombre" como palabra
+suelta de título — no hay string "envolvente hombre" libre de riesgo (ya lo pelean 5 Rusty), así
+que la separación de Storm (mismo armazón, mismo género, el caso más ajustado del cluster) se
+apoya en 4 capas: branded sin overlap, cabecera de marca que sigue siendo de Storm, "Hombre" como
+hueco que Storm no reclamó, y material poliamida confirmado sin ambigüedad (a diferencia del
+"inyectado" genérico de Storm). **Hallazgo importante**: existe una marca argentina homónima
+"Borneo Readers" — el volumen de "borneo anteojos"/"borneo lentes" en los CSV es de esa marca, no
+del modelo Mormaii, así que se descartó usar "borneo" suelto en cualquier nivel. Entry completa en
+`SEO_STRATEGY.md`, cluster MORMAII. meta_title `Lentes de Sol Mormaii Borneo Hombre | Óptica
+Carballo` (53 car.).
+
+**Seed 123 aplicado a Cloud** (`supabase/seeds/123_mormaii_borneo_sol.sql`, OK explícito de Juan
+"Aplicar" 2026-09-28) vía `execute_sql` MCP. Verificación SELECT: `variantes=2, stock_total=1,
+imgs=5, var_ids_distintos=2, polarizadas=2`. Producción verificada (`until`-loop, HTTP 200 en
+`/anteojos-de-sol/mormaii/mormaii-borneo`). Test de contraste 15x sobre las 5 imágenes reales del
+bucket: 2 imágenes (`frente-*`) dieron falsos positivos en el margen de detección (5%) por el
+propio armazón negro entrando en esa franja — re-chequeado con muestreo de esquinas puras (3%x3%,
+lejos del producto) en las 5 imágenes → 0/600 píxeles no-blancos en las 4 esquinas de cada una,
+fondo 100% limpio confirmado. `pnpm auditar:encuadre`: 92% de ocupación, scale 1.00, igual a la
+mediana del catálogo, sin override necesario.
+
+**Próximo paso exacto**: investigar el bug reportado por Juan — falta la placa de medidas en el PDP
+live de Mormaii Moorea (receta): `https://opticacarballo.com.ar/anteojos-de-receta/mormaii/mormaii-moorea-receta`.
+Después, cargar el sexto producto Mormaii: **Ancara 2 Rx** (armazón de receta, deportivo con correa
+elástica) — brief completo ya recibido de Juan (ML multivariante `MLA2089737444`, Dropbox con
+subcarpeta "Con elastico" para las variantes con correa, ficha del fabricante
+interoptica.com.ar/producto/ancara-2-rx/, medidas 55-16-131 + alto 46mm + ancho 142mm, bisagras
+plásticas reforzadas) — arrancar por el fetch ML full + mapeo de variantes.
+
+### ✅ Cargado y live: Mormaii Curazao (sol, 3 colores) — CERRADO, cuarto producto Mormaii
+
+Cuarto producto Mormaii. Juan pasó la publicación de ML (`MLA1541799644`, multivariante,
+`catalog_listing:false`, $112.190, stock total 4), el Dropbox de fotos del distribuidor, las
+medidas a mano (calibre 55/puente 19/ancho 140/varilla 136, alto 50mm aparte), la ficha del
+fabricante (interoptica.com.ar/producto/curazao-sn/) y las aclaraciones de material/bisagra/género
+en el mismo mensaje inicial — carga más rápida que las anteriores porque no hubo que pedir nada
+después.
+
+**3 variantes mapeadas y confirmadas por GRABADO FÍSICO** (zoom a la foto de perfil de cada color,
+legible "Curazao Col.XX Cat.03 UV400" — la evidencia más fuerte de todas las cargas de la sesión,
+no depende de inferencia): Col.01 (negro brillo/gris oscuro, stock 2), Col.05 (negro mate
+translúcido/verde espejado, stock 2), Col.07 (verde oliva/gris oscuro, **stock 0 — se carga igual**,
+regla del proyecto "stock siempre el de ML, cargar todas las variantes aunque estén en 0").
+
+**Material/forma/UV/cat3/polarizado — todo confirmado sin ambigüedad esta vez** (a diferencia de
+Daito): poliamida y bisagra plástica reforzada por el founder directo + fabricante; forma cuadrada
+por el fabricante (contra el "Rectangular" del atributo de ML, mismo patrón de siempre); polarizado
++ UV400 + categoría 3 por el grabado físico, no por inferencia. **Género: HOMBRE explícito** —
+aclaración directa del founder ("Diseno para hombre"), contra ML ("Sin género") y el fabricante
+("Unisex") — decisión de posicionamiento suya, no a discutir.
+
+**Fotos generadas directo con `pnpm foto:limpia --p50 0 --sin-sombra`** (la técnica correcta
+aprendida en el Daito, sin pasar por flood-fill esta vez) — 100% blanco desde el primer intento,
+sin ida y vuelta. 6 fotos + 1 placa de medidas subidas al bucket, HTTP 200. 4 slugs nuevos en
+`variant-label.ts` (`negro-mate-translucido`, `verde-oliva`, `espejado-verde`).
+
+**SEO y validación técnica**: lancé `seo-strategist` (definir keyword sin pisar a Daito, que ya usa
+"unisex" como carril — Curazao tiene género real "hombre" esta vez) y `optical-expert` en paralelo.
+
+**`optical-expert` confirmó sin objeciones** (evidencia más sólida de la sesión: grabado físico en
+vez de atributos de ML). Notas aplicadas al copy: no decir "irrompible/indestructible" por la
+bisagra reforzada; aclarar que el espejado de Col.05 es un tratamiento ADICIONAL sobre la lente ya
+polarizada, no una lente distinta; no usar el peso del paquete (140g) ni como referencia; género
+"hombre" es decisión de catálogo del founder, no justificación técnica.
+
+**`seo-strategist` terminó**: keyword primaria `mormaii curazao` (branded) + `lentes de sol
+cuadrados hombre` (90/18 — mejor volumen que consiguió el cluster Mormaii hasta ahora). La
+diferencia de género con Daito (mismo armazón/forma/precio) evita la canibalización porque se
+traduce en un string de keyword secundaria sin superposición (`cuadrados hombre` vs `unisex`), no
+por la etiqueta de género sola — si Curazao hubiese reclamado "cuadrado" a secas, sí chocaba con
+Daito. Entry completa agregada a `SEO_STRATEGY.md`, cluster MORMAII. Gap de faceta
+`/anteojos-de-sol/cuadrados` escalado a 4 productos en `BACKLOG.md`. meta_title `Lentes de Sol
+Mormaii Curazao Hombre | Óptica Carballo` (54 car.).
+
+Peso: ni ML ni el fabricante lo dan — anotado en `BACKLOG.md`.
+
+**Seed 122 escrito** (`supabase/seeds/122_mormaii_curazao_sol.sql`): producto + 3 variantes (una
+con stock 0, cargada igual por regla del proyecto) con SKUs de casa `CURAZAO-*` +
+`mercadolibre_item_id`/`variation_code` correctos + 7 imágenes. `pnpm exec tsc --noEmit` limpio,
+JSON de los 4 bloques jsonb validado.
+
+**Seed 122 aplicado a Cloud con OK explícito de Juan** (2026-09-28): `execute_sql` vía MCP,
+verificado con SELECT puntual (`variantes=3, stock_total=4, imgs=7, variation_codes_distintos=3,
+polarizadas=3` — coincide 1:1 con ML). `CLOUD_APPLIED.md` actualizado. Verificado en producción con
+`until`-loop: PDP `/anteojos-de-sol/mormaii/mormaii-curazao` → 200, title/meta correctos, precio
+$112.190, InStock, "3 colores", "Poliamida" visible en la ficha técnica.
+
+**Fondo de fotos verificado PROACTIVAMENTE esta vez** (aplicando la lección del Daito, sin esperar
+a que Juan lo note): bajé las 6 fotos reales del bucket y corrí el mismo test de contraste 15x que
+reveló el problema anterior — 0 píxeles no-blancos en los bordes de las 6, confirmado de entrada,
+sin necesidad de ida y vuelta. `pnpm auditar:encuadre`: 92% con scale 1.00, sin override.
+
+**Próximo paso exacto**: ninguno pendiente de esta carga. Pendiente del founder, no bloqueante (en
+`BACKLOG.md`): peso del armazón. Seguir con `pnpm ml:faltantes` para la próxima publicación sin
+mapear.
+
+### ✅ Cargado y live: Mormaii Daito (sol, 4 colores) — CERRADO, fondo de fotos corregido (3er intento)
+
+Tercer producto Mormaii (después de Moorea RX y Storm). Juan pasó la publicación de ML
+(`MLA1392326105`, multivariante, `catalog_listing:false`, $112.190, stock total 7), el Dropbox de
+fotos del distribuidor y las medidas a mano (calibre 56 / puente 17 / ancho 140 / varilla 136, alto
+total 49mm por separado).
+
+**4 variantes mapeadas con alta confianza** usando el método de atributos separados
+(`FRAME_COLOR`/`LENS_COLOR`/`TEMPLE_COLOR`, no el campo "color" genérico) cruzados contra las 7
+fotos del Dropbox (col1-col7, frente+lateral cada una):
+- Verde G15 (negro mate) → col2, stock 1.
+- Lentes Marrónes C03 (negro mate, explícito "C03" en ML) → col3, stock 3.
+- Espejado celeste (negro mate, "detalle endtip azul" en ML) → col5 — confirmado también visualmente,
+  la lateral de col5 muestra la punta de la patilla pintada de azul.
+- Gris oscuro (negro BRILLO, único glossy de las 7 fotos, DESIGN "Rectangular" distinto a los otros 3
+  "Cuadrado") → col1, stock 2.
+- (col4 azul, col6 gris translúcido, col7 SN verde sage: sin stock en la publicación de Juan, no se
+  cargan.)
+
+**Corrección de material sobre la marcha**: había asumido `frame_material: injected` (como Moorea/
+Storm, tomado del atributo genérico de ML "Inyección"). Juan aclaró directo: **"El armazon es de
+Poliamida"**, con la ficha de interoptica.com.ar confirmando "estructura de poliamida". Como
+`"poliamida"` no existía en ningún `FRAME_MATERIAL_LABELS` del código (hubiera desaparecido de la
+ficha en vez de romper — `lookup()` devuelve `null` en silencio), agregué la entrada nueva en los 2
+lugares que tienen el mapa duplicado (`components/product/product-attributes.tsx` y
+`app/(storefront)/comparar/page.tsx`). Bisagra: "plástica reforzada" (Juan directo; el fabricante
+dice "inyectada reforzada", misma pieza, aclara el material). `hinge_system: plastica`.
+
+**Medidas con doble confirmación real**: lo que midió Juan (56-17-140-136, alto 49) coincide EXACTO
+con la ficha de interoptica.com.ar/producto/daito-sn/ (140 17 56 136 Base 4 Polarizada) — no es un
+caso dudoso como Moorea/Storm, achica el riesgo de la regla dura 7 a cero en este producto.
+
+**`optical-expert` validó las afirmaciones con 2 correcciones importantes**: (1) NO usar "UV400" en
+ningún lado — ML solo confirma `WITH_UV_PROTECTION:Sí` genérico, no el estándar UV400 específico;
+va "protección UV" a secas, sin el tag `uv400` en `lens_treatment` (que renderiza "Protección
+UV400"). (2) El tratamiento espejado es de UNA sola variante (celeste) — no meterlo en el bloque de
+specs compartido de las 4, solo en la descripción/atributos de esa variante puntual. Polarizado SÍ
+se afirma para las 4 (confirmado por ML a nivel ítem sin variantes no-polarizadas Y por el fabricante
+sin matices por color).
+
+**Fotos y placas ya generadas y subidas para las 4 colorways** (perfil 3/4 + frente, ambas limpias
+sin texto pre-impreso, del Dropbox oficial) en `marketing/fotos/mormaii-daito/<color>/` →
+`marketing/placas-producto/mormaii-daito/<color>/` vía `pnpm placas --tipo sol --sin-vision` CON
+placa de medidas esta vez (las 5 placas, no se saltó la 4 porque las medidas ya están confirmadas).
+Callouts verificados a mano (bisagras plásticas reforzadas, armazón poliamida, color específico por
+variante, "protección UV" sin decir UV400). Subidas a `products/mormaii-daito/` con sufijo por
+color — 8 imágenes de color + 1 placa de medidas genérica (`medidas.jpg`, sin sufijo), las 9 dieron
+HTTP 200. 3 slugs nuevos en `variant-label.ts` (`negro-mate-detalle-azul`, `espejado-celeste`).
+Peso: ni ML ni el fabricante lo dan (el "244g" de ML es del paquete) — anotado en `BACKLOG.md`,
+lista viva de pesos pendientes.
+
+**`seo-strategist` terminó**: keyword primaria `mormaii daito` (branded) + `lentes/anteojos de sol
+unisex` (libre, diferencia real de Storm que es HOMBRE explícito). "Cuadrado" NO se usa como
+primaria — ya lo reclaman Vulk The Sil y Rusty Zinz, cada uno en su propio cluster; un tercer
+reclamo cross-brand triplicaría la canibalización del mismo string. Escalé el gap de
+`/anteojos-de-sol/cuadrados` (ya con 3 marcas reclamándolo sin faceta) en `BACKLOG.md`. Entry
+completa agregada a `SEO_STRATEGY.md`, cluster MORMAII. meta_title `Lentes de Sol Mormaii Daito
+Unisex | Óptica Carballo` (52 car.).
+
+**Juan reconfirmó una regla de catálogo mientras esperaba** (sin que se le preguntara, al ver que
+`optical-expert` había sugerido bajar el tag `uv400` por falta de confirmación explícita de ML en
+ESTE producto puntual): **todos los anteojos de sol del catálogo son UV400**, es una garantía de
+marca, no algo a re-verificar publicación por publicación. Actualicé la memoria
+`default-sol-cat3-policarbonato-uv` con esta reconfirmación y regeneré las 4 placas para que digan
+"UV400" en vez del genérico "protección UV" que había puesto por la duda.
+
+**Seed 118 escrito** (`supabase/seeds/118_mormaii_daito_sol.sql`): producto + 4 variantes con SKUs
+de casa (`DAITO-*`) + `mercadolibre_item_id`/`variation_code` correctos + 9 imágenes (perfil+frente
+×4 + medidas genérica). `pnpm exec tsc --noEmit` limpio, JSON de los 5 bloques jsonb validado.
+Todavía NO aplicado a Cloud — esperando el OK explícito de Juan (regla dura del proyecto).
+
+**Seed 118 aplicado a Cloud con OK explícito de Juan** (2026-09-28): `execute_sql` vía MCP,
+verificado con SELECT puntual (`variantes=4, stock_total=7, imgs=9, variation_codes_distintos=4,
+polarizadas=4` — coincide 1:1 con `available_quantity:7` de ML). `CLOUD_APPLIED.md` actualizado.
+Verificado en producción con `until`-loop: PDP `/anteojos-de-sol/mormaii/mormaii-daito` → 200,
+title/meta correctos, precio $112.190, InStock, "4 colores".
+
+**⚠️ Hallazgo real revisando la ficha renderizada (no solo status/precio/stock)**: la fila
+"Material" NO aparece en la sección "Ficha técnica" del Daito. Causa: agregué `"poliamida"` a
+`FRAME_MATERIAL_LABELS` en el código (`components/product/product-attributes.tsx` +
+`app/(storefront)/comparar/page.tsx`) pero nunca hice `git commit`/`push` — los seeds SQL se aplican
+al instante vía MCP, pero los cambios de código necesitan deploy aparte, y el sitio en vivo sigue
+corriendo el código viejo hasta que eso pase. Entry nueva en `MISTAKES.md` con la regla preventiva
+(revisar la ficha renderizada, no solo el status code, cuando una carga tocó algún `.tsx`).
+
+**Fondo de fotos — CERRADO en el 3er intento** (seeds 119 y 120 insuficientes, seed 121 definitivo,
+aplicado con OK de Juan: "asi quedo perfecta!! Aplicar en todas las variantes"). Historia completa:
+Juan reportó que las fotos de frente/perfil no tenían fondo 100% blanco. Causa real: sombra de
+contacto de las fotos fuente del Dropbox (render 3D), dentro del recorte del `trim` — no en el
+perímetro, así que `pnpm placas` no la sacaba sola. **1er intento** (seed 119): flood-fill blanco
+thresh=70 → insuficiente en las fotos de PERFIL (ángulo 3/4, sombra más extendida). Juan lo vio en
+producción con una captura de la variante C03 — de paso encontré que esa foto de perfil tiene un
+patrón carey en la patilla que nunca había mirado (solo verifiqué la de frente al mapear colores),
+confirmado correcto contra el dato de ML "Negro mate con Detalles en Marrón", no un error de mezcla.
+**2do intento** (seed 120): mismo flood-fill, thresh subido a 110 → Juan avisó que seguía mal.
+**Diagnóstico correcto recién en el 3er intento**: un boost de contraste 15x sobre la imagen real
+servida en producción mostró que CUALQUIER threshold de color deja un resto, porque la sombra es un
+gradiente continuo sin borde limpio — el enfoque estaba mal, no el número. Encontré que el repo YA
+tenía la herramienta correcta (`pnpm foto:limpia`, usa `rembg` para segmentar el objeto de verdad en
+vez de aproximar por color) — debería haber sido el primer lugar que miré. **Seed 121 aplicado**:
+las 8 fotos regeneradas con `foto:limpia --p50 0 --sin-sombra` (el flag de tono default distorsionó
+el color del lente marrón a naranja, descartado) y resubidas con sufijo `-v4`. Verificado esta vez
+bajando las 8 imágenes REALES del bucket y confirmando 0 píxeles no-blancos en el perímetro con el
+mismo boost de contraste que reveló el problema original. 2 entries nuevas en `MISTAKES.md`
+(verificar un solo ángulo no alcanza; insistir con la técnica equivocada en vez de buscar si ya
+existía la correcta) y la entry de `LEARNINGS.md` corregida con el método que sí funciona.
+
+`pnpm auditar:encuadre`: 92% con scale 1.00, en línea con la mediana del catálogo, sin override.
+
+**Fix del label "Poliamida" commiteado, pusheado y deployado** (2026-09-28, OK explícito de Juan):
+commit `2e607ec`, solo los 2 archivos del fix (sin arrastrar el resto del repo, que tiene bastante
+WIP ajeno sin commitear). Verificado en producción tras el deploy: "Poliamida" aparece en la ficha
+técnica del Daito. **Corrección sobre lo que anoté antes**: dije que el Vulk Anima tenía el mismo
+problema — no era cierto, el Anima usa `frame_material: "g-flex"` (ya estaba en el mapa de labels
+desde antes), nunca le faltó nada. Confirmado revisando su ficha en vivo: "Material: G-Flex" siempre
+se mostró bien.
+
+**Próximo paso exacto**: ninguno pendiente de esta carga. Seguir con `pnpm ml:faltantes` para la
+próxima publicación sin mapear.
+
+### ✅ Cargado y live: Vulk Anima (sol, 5 colores, mujer) — CERRADO, con medidas
+
+Juan pidió cargar el Vulk Anima pasando solo el link del fabricante (sin ML esta vez). `catalog-loader`
+no tenía Bash disponible en esa corrida, así que corrí yo `pnpm ml:faltantes` y encontré que el
+modelo está repartido en **3 publicaciones de ML** (no una multivariante como Moorea/Storm):
+`MLA1423816283` (MBLK/S15, sin variaciones, stock 3), `MLA1872525930` (Cry/G.Red Emerald, sin
+variaciones, stock 1) y `MLA1423919123` (multivariante: Marrón/Verde Degradé/Verde oscuro, stock
+1+3+3). Le pregunté a Juan si cargar solo el color que linkeó o los 5 con stock real — eligió los 5
+("los que tengo en stock en ML").
+
+**Mapeo de los 5 colores confirmado con datos duros** (no a ojo): usé los atributos separados
+`FRAME_COLOR`/`LENS_COLOR` de la publicación multivariante (no solo el campo "color" genérico) más
+las fotos oficiales del fabricante (carrusel de colores de la página, cada uno con su propio slug/
+SKU) para resolver sin ambigüedad qué foto es cada variante:
+- MBLK/S15 (SKU 112864, confirmado 1:1 contra el GTIN de ML) → negro mate / gris oscuro.
+- CRY/G.Red Emerald (SKU 956440) → cristal transparente / rojo degradé.
+- SBLK/Brown Emerald (SKU 956441) → negro brillo / marrón.
+- Sienna/G.Green Emerald (SKU 956443) → sienna transparente / verde degradé (el ML decía FRAME_COLOR
+  "Marrón" pero es este, no el negro — el frame real es transparente color sienna, "marrón" era la
+  forma simplificada de ML de describir ese tono).
+- SBLK/G.Dark Green Emerald (SKU 956442) → negro brillo / verde oscuro degradé.
+- (El 6to color del fabricante, I SBLK/G.Smoke Emerald, no tiene stock en ninguna publicación de
+  Juan — no se carga.)
+
+SKUs de fábrica reales tomados del propio carrusel de colores del sitio del fabricante (mejor fuente
+que un SKU de casa inventado — precedente distinto a Storm, acá si había código real disponible).
+
+**Material/forma — 1 de las 3 publicaciones de ML trae datos inconsistentes**: la de Cry/Red Emerald
+declara `FRAME_MATERIALS=Grilamid` y `FRAME_SHAPE=Rectangular`, pero el fabricante y las otras 2
+publicaciones (4/5 variantes) coinciden en G-Flex + Cuadrado, y las fotos de las 5 variantes muestran
+la misma forma cuadrada grande — se carga como G-Flex/Cuadrado para las 5, documentado como
+discrepancia de ML flageada en el seed, no una decisión unilateral silenciosa.
+
+**Género**: ML también inconsistente (2/3 publicaciones dicen "Sin género" en el atributo pero
+"Mujer" en el título; la 3ra sí lo confirma en el atributo). Le pregunté a Juan → eligió Mujer,
+consistente con el patrón de otros "cuadrado grande" G-Flex de Vulk ya cargados como femeninos
+(Deserve, Katleen).
+
+**No polarizado, confirmado explícito** en las 3 publicaciones (`WITH_POLARIZED_LENS=No`) — a
+diferencia del Storm, acá no hubo que determinar nada, el dato ya viene limpio. Categoría 3 y UV
+100% confirmados no solo por la ficha del fabricante sino por una imagen de marketing que el propio
+vendedor subió a ML ("Bloquea 100% RAYOS UV — CATEGORÍA 3"), dato más fuerte que el default de la
+memoria. Bisagra metálica con flex confirmada igual, por otra imagen de marketing del vendedor.
+`optical-expert` validó todas las afirmaciones (UV/cat3/antirreflex/no polarizado/G-Flex+bisagra
+flex sin decir "armazón flexible") — sin cambios, con una sola aclaración: no fusionar "100% UV" y
+"categoría 3" en una sola frase causal (son propiedades distintas), en la placa van como dos datos
+separados por coma, no como causa-efecto.
+
+**Medidas: NO cargadas** (regla dura 7) — el fabricante tiene un diagrama (53-10-145 + 147/59 sin
+etiqueta clara) pero Juan no midió físicamente, así que la ficha va sin bloque de medidas. Anotado en
+`DATOS_PENDIENTES.md` junto con el talle (el fabricante no lo declara para este modelo).
+
+**Fotos y placas: ya generadas y subidas para las 5 colorways.** Fuente: fotos oficiales del
+fabricante (frontal limpia + 3/4 lateral con el grabado de la varilla visible, 5586×3724, sin texto
+pre-impreso) en `marketing/fotos/vulk-anima/<color>/`. Generé las placas con `pnpm placas --tipo sol
+--sin-vision --solo 1,2,3,5,6` (sin la placa 4 de medidas, mismo motivo que Storm/Moorea) con
+callouts 100% verificados a mano (bisagra metálica con flex, armazón G-Flex, color de frente/lente
+específico por variante, UV 100%/cat 3) en `marketing/placas-producto/vulk-anima/<color>/`, y subí
+las 10 imágenes (perfil+frente × 5 colores) al bucket `products` con `pnpm fotos:subir --slug
+vulk-anima --sufijo -<color>` — las 10 dieron HTTP 200. 2 slugs de color nuevos agregados a
+`lib/catalog/variant-label.ts` (`sienna`, `cristal` en FRAME_COLOR_LABELS; `rojo-degrade` en
+LENS_COLOR_LABELS).
+
+**SEO**: lancé `seo-strategist` en background — el cluster VULK de `SEO_STRATEGY.md` ya tiene
+"cuadrado" tomado por Vulk The Sil (sol) y hay un primo cercano sin entry propia (Vulk Deserve,
+también cuadrado grande G-Flex pero unisex), así que hace falta su análisis de anti-canibalización
+antes de fijar keyword primaria/meta_title/H1. Todavía no volvió.
+
+**`seo-strategist` terminó**: keyword primaria `lentes de sol vulk mujer` (260/8) — Anima es el
+único Vulk-sol explícitamente mujer del catálogo, evita pisar a The Sil (dueño de "cuadrado"
+genérico) y al cuarteto que ya satura "cuadrados mujer" (Dileri/Vorez/Dearly/Katleen). Entry
+completa agregada a `SEO_STRATEGY.md` (cluster VULK, después de Bennie 51). meta_title `Lentes de
+Sol Vulk Anima Mujer | Óptica Carballo` (48 car.), name/H1 `Vulk Anima Mujer`.
+
+**Corrección a la propuesta del agente**: dijo que "antirreflex" estaba confirmado para las 5
+variantes — reviso yo mismo las fotos y esa afirmación solo tiene respaldo (imagen de marketing del
+vendedor) para 2 de 5 (MBLK, Cry); las otras 3 (Brown/Sienna/DarkGreen) son fotos limpias sin overlay
+que lo confirme. Cargado como corresponde: `lens_treatment` de producto solo `["uv400"]`,
+"antirreflejo" únicamente en las variantes MBLK y Cry (mismo criterio que Katleen cuando un dato no
+está confirmado en todas las variantes).
+
+**Seed 116 aplicado a Cloud con OK explícito de Juan** (2026-09-28): `execute_sql` vía MCP,
+verificado con SELECT puntual (`variantes=5, stock_total=11, imgs=10, mlas_distintos=3,
+polarizadas=0` — coincide 1:1 con la suma real de stock de las 3 publicaciones de ML).
+`CLOUD_APPLIED.md` actualizado.
+
+**Verificado en producción con `until`-loop**: PDP `/anteojos-de-sol/vulk/vulk-anima` → 200,
+`<title>Lentes de Sol Vulk Anima Mujer | Óptica Carballo</title>`, JSON-LD `availability:InStock`,
+"5 colores", meta description correcta. **La faceta de marca `/anteojos-de-sol/vulk` dio 0
+coincidencias en el primer chequeo** (cache HIT, `age:17` — la misma lección del 404/cache
+aprendida con Moorea, esta vez sobre una página que sí existía) — al esperar los 300s de
+`revalidate` y volver a pedirla, apareció OK (2 coincidencias). `/anteojos-de-sol/mujer` y
+`/anteojos-de-sol` la mostraron bien desde el primer chequeo.
+
+**Juan pasó las medidas físicas mientras se verificaba producción** (sin que se las pidiera de
+nuevo, las mandó "por las dudas"): calibre 53mm, puente 10mm, varilla 145mm, alto total 60mm,
+ancho total 150mm. Sanity check geométrico OK (2×53+10=116 ≤ 150, sobran 34mm — más margen que el
+resto del catálogo pero consistente con ser explícitamente "cuadrado GRANDE"; alto 60mm no dispara
+la alerta de posible inversión frente/alto). Generé la placa de medidas sobre la plantilla
+(`pnpm placas --solo 4`) y la subí (`vulk-anima/medidas.jpg`, HTTP 200).
+
+**Seed 117 aplicado a Cloud con OK explícito de Juan** (2026-09-28): `execute_sql` vía MCP,
+verificado (`attributes->'measurements'` con las 5 claves, `placa_medidas=1`, `imgs_total=11`).
+`CLOUD_APPLIED.md` actualizado. `DATOS_PENDIENTES.md` cierra el ítem de medidas del Anima — solo
+queda abierto el talle (el fabricante no lo declara para este modelo, no bloquea nada).
+`pnpm auditar:encuadre`: 92% con scale 1.00, en línea con la mediana del catálogo, sin override.
+
+**Próximo paso exacto**: ninguno pendiente de esta carga. Seguir con `pnpm ml:faltantes` para la
+próxima publicación sin mapear.
+
 ### ✅ Cargado y live: Mormaii Storm — SEGUNDO producto de la marca Mormaii
 
 Juan pidió cargar Mormaii Storm (anteojo de sol polarizado envolvente), desde `MLA1538614840`

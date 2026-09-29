@@ -22,6 +22,269 @@ El sistema lee este archivo al inicio de cada sesión para **no repetir errores 
 
 ---
 
+## 2026-09-28 — Usé la foto de correa de UNA sola variante como imagen genérica para las 4, cuando el Dropbox tenía una foto por variante
+
+**Estado**: 🟡 Mitigado (fix aplicado el mismo día, seed 126)
+
+**Qué pasó**: al cargar Mormaii Ancara 2 RX (seed 125), vi la carpeta "Con elástico" del Dropbox del
+fabricante, tomé la foto del Col 01 (negro mate) para mostrar el armazón con la correa incluida, y
+la subí como UNA imagen genérica (`variant_id = NULL`) compartida por las 4 variantes. Recién cuando
+Juan lo notó en la ficha ("Usas la misma foto de la variante Col 01 con el elástico en todas las
+variantes") revisé de nuevo la carpeta y encontré que en realidad SÍ había una foto de la correa
+para cada uno de los 4 colores cargados (`col01`, `col03`, `col05`, `col06`) — la data completa
+estaba ahí desde el principio, la until_ generalicé sin necesidad.
+
+**Por qué no lo agarré antes**: al ver que una sola foto "alcanzaba" para transmitir el mensaje
+("incluye correa"), no volví a listar el contenido completo de la carpeta fuente para confirmar si
+había granularidad por variante disponible — resolví el problema de comunicación (mostrar que trae
+correa) sin optimizar por fidelidad de datos (mostrar CADA color con SU correa), cuando ambas cosas
+eran gratis: la carpeta ya tenía las 4 fotos, sólo faltaba usarlas.
+
+**Regla preventiva**: cuando se sube una foto "genérica" (sin `variant_id`) para representar un
+atributo o accesorio compartido por varias variantes (kit incluido, correa, estuche), antes de
+generalizar a una sola imagen, listar el contenido COMPLETO de la carpeta fuente (`ls`) para
+confirmar si el fabricante ya proveyó una foto por variante — si existen, cargar una por variante
+(con su `variant_id`), nunca una sola genérica cuando la granularidad está disponible sin costo
+extra. Generalizar a "una imagen para todos" es el fallback cuando NO hay fotos por variante, no el
+default.
+
+## 2026-09-28 — Subí fotos al slug asumido del bucket ("mormaii-moorea") en vez del slug real ("mormaii-moorea-receta")
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: al generar la placa de medidas faltante de Mormaii Moorea (fix del seed 124), subí el
+archivo a `mormaii-moorea/medidas.jpg` — asumí el slug por el nombre corto que uso en la conversación
+("Moorea"), sin chequear el slug REAL del producto en la base. El producto en realidad usa
+`mormaii-moorea-receta` (la convención "sol nunca lleva sufijo, receta sí" que yo mismo tengo
+documentada). La subida "funcionó" (HTTP 200, sin error) porque el bucket no valida que el path
+corresponda a un producto existente — quedó un archivo huérfano silencioso, no conectado a ningún
+`product_images`, hasta que hice el SELECT de verificación previo al seed y noté que la tabla estaba
+vacía para ese slug.
+
+**Por qué no lo agarré antes**: dí por sentado que el slug corto que uso al hablar del producto
+("Moorea") coincide con el slug real de la URL/DB, sin correr el SELECT de chequeo ANTES de subir —
+lo corrí después, cuando ya tenía el archivo mal ubicado. El costo de verificar primero es un SELECT
+de 2 segundos; el costo de no hacerlo fue una subida, una detección tardía, un borrado y una
+resubida.
+
+**Regla preventiva**: antes de subir la PRIMERA foto de un fix/ajuste a un producto ya cargado
+(no una carga nueva, donde el slug lo defino yo mismo en el momento), correr
+`SELECT slug FROM products WHERE slug ILIKE '%<nombre-corto>%'` o revisar el `storage_path` de una
+fila existente en `product_images` para confirmar el slug real — nunca asumirlo por el apodo corto
+que uso en la conversación o en el brief del founder.
+
+## 2026-09-29 — Usé la misma foto de estuche para todas las variantes de K12, sin verificar si el fabricante tenía una por color
+
+**Estado**: 🟡 Mitigado — corregido el mismo día (Cloud actualizado, bucket limpiado, seed fuente
+corregido) apenas el founder lo señaló, y aplicada la lección directo en la carga del K13 siguiente.
+
+**Qué pasó**: al cargar Rusty K12, bajé UNA sola foto de estuche (la que aparecía en la carpeta del
+Col.01/C1 del fabricante) y la usé como imagen genérica compartida por las 2 variantes de color. El
+founder señaló que en la página real del fabricante, cada variante de color tiene su PROPIA foto de
+estuche, con los accesorios (gancho + cintas) del mismo color que el armazón — no es una foto
+genérica del modelo, es específica por color. Mismo patrón de error que ya había cometido con la
+correa de Ancara 2 (ver entry "Usé la foto de correa de UNA sola variante..." más abajo) — la tercera
+vez que pasa esto exacto (foto por-variante tratada como genérica) en la sesión.
+
+**Por qué no lo agarré antes**: al ver UNA foto de estuche en la carpeta del fabricante que
+encontraba primero, asumí que era la única y that alcanzaba para representar "el estuche que trae el
+modelo" sin verificar si el resto de las variantes de color tenían la suya propia — mismo patrón
+exacto que la entry de Ancara 2, pese a que esa lección ya estaba escrita en este archivo.
+
+**Regla preventiva (reforzada, tercera vez)**: cuando un producto tiene un accesorio/imagen que
+podría variar por color (correa, estuche, cualquier accesorio con acabado de color), la pregunta por
+default tiene que ser "¿el fabricante tiene una versión de esta foto por cada variante?" — nunca
+asumir que una foto encontrada es la única. Verificar SIEMPRE navegando cada variante de color en la
+página real del fabricante (ver [[LEARNINGS.md]] entry sobre no adivinar nombres de archivo) ANTES de
+subir cualquier foto de accesorio como "genérica sin variant_id". Si esto se repite una cuarta vez,
+escalar a regla dura documentada en CLAUDE.md, no sólo en MISTAKES.md.
+
+## 2026-09-29 — Escribí una descripción de ML con "escribinos por WhatsApp" y ofreciendo un servicio (armado con receta) que el founder no puede prestar por esa plataforma
+
+**Estado**: 🟡 Mitigado — corregido en la misma sesión antes de publicar, pero el trío auditor
+(Codex+Gemini) le dio GO dos veces seguidas sin detectarlo, porque yo nunca se lo pedí revisar.
+
+**Qué pasó**: al armar la descripción de ML para Rusty K12, escribí varias veces "escribinos por
+WhatsApp" (para dudas de talle, para mandar la receta, como cierre) y prometí un servicio de armado
+con cristales graduados ("armamos este armazón con la receta de tu hijo/a... 7 a 10 días hábiles").
+El founder corrigió las dos cosas: (1) Mercado Libre prohíbe cualquier información de contacto fuera
+de la plataforma en el texto de una publicación, (2) su óptica específicamente no puede ofrecer el
+servicio de armado con receta a través de ML (restricción propia del vendedor). Las dos versiones ya
+habían pasado dos rondas completas de trío auditor con GO, porque el prompt que les mandé nunca
+incluyó esas dos reglas como algo a chequear — auditaron exactamente lo que les pedí (bifocales/
+progresivos, datos técnicos, formato), no lo que no les pedí.
+
+**Por qué no lo agarré antes**: escribí la descripción replicando el patrón de "cómo cotizar tu
+receta, escribinos por WhatsApp" que se usa en la DESCRIPCIÓN DEL SITIO de todos los productos de
+receta de este catálogo (Moorea, Ancara2, etc.) — es una fórmula ya validada y repetida muchas veces
+esta sesión. El error fue copiar un patrón de un canal (el sitio propio, donde SÍ corresponde y SÍ
+se puede ofrecer el servicio) a otro canal con reglas distintas (Mercado Libre, marketplace de
+terceros con sus propias reglas de plataforma) sin pararme a pensar si las reglas eran las mismas.
+
+**Regla preventiva**: las reglas de copy no son universales entre canales. Antes de escribir CUALQUIER
+texto para un marketplace de terceros (Mercado Libre, y cualquier otro que se sume en el futuro),
+preguntar explícitamente (al founder, o buscarlo) qué está PROHIBIDO en ese canal específico —
+información de contacto externo y ofertas de servicios que el vendedor no puede prestar ahí son las
+dos categorías más comunes de este tipo de regla, pero no asumir que son las únicas. Cuando se arme
+el prompt de auditoría para `trio-auditor`, incluir explícitamente "reglas de plataforma sin contacto
+externo / sin servicios no ofrecibles" como parte de las reglas de base a chequear, no confiar en que
+el auditor externo las va a inferir solo.
+
+## 2026-09-29 — Segunda vez en la sesión: cambié código (labels/badge) y no lo deployé antes de verificar en producción
+
+**Estado**: 🟡 Mitigado — **patrón que ya se repitió 2 veces en la misma sesión** (ver entry hermana
+del 2026-09-28 más abajo, "Arreglé un label en el código pero no lo deployé"), escalar si pasa una
+tercera vez.
+
+**Qué pasó**: al cargar Rusty K12, agregué `blue_light` como valor nuevo de `lens_treatment` (3
+archivos con su label) y un badge nuevo `size_fit: "infantil"` (2 archivos: el tipo + el componente
+del badge). Apliqué el seed a Cloud, verifiqué DB (`size_fit=infantil`, `lens_treatment=[blue_light]`
+correctos) y pasé el test de fondo + `auditar:encuadre` — pero no volví a abrir la página real en el
+browser para mirarla, sólo confié en los chequeos automáticos (SELECT, HTTP 200, contraste). Recién
+cuando fui a mostrarle a Juan el badge nuevo con una captura, no aparecía: el código vivía sólo en el
+working tree local, nunca comiteado ni pusheado, así que Vercel seguía sirviendo la versión vieja sin
+`infantil` en el enum ni el ícono `Baby`.
+
+**Por qué se repitió pese a la regla ya escrita**: la entry anterior (mismo mes, mismo tipo de bug)
+ya decía "verificar con SELECT no alcanza, hay que abrir la página real" — pero la apliqué sólo a
+DB/backend (SELECT, HTTP 200 del bucket), no volví a mirar la UI renderizada con el ojo puesto
+específicamente en el elemento de código nuevo (el badge). Verificar "la página carga" (HTTP 200) no
+es lo mismo que verificar "el elemento nuevo se ve" — son dos afirmaciones distintas y sólo la
+primera formaba parte de mi checklist automático.
+
+**Regla preventiva (más específica que la anterior, para que no se repita una tercera vez)**: cuando
+un seed depende de un cambio de código nuevo (enum agregado, label nuevo, componente nuevo — no sólo
+data), el checklist de cierre tiene que incluir explícitamente "¿este cambio requiere deploy? →
+¿ya se commiteó y pusheó?" ANTES de dar el seed por verificado, no después. Si la respuesta es "sí,
+requiere deploy" y todavía no se pidió confirmación de push, el seed no está cerrado aunque el SELECT
+y el HTTP 200 den bien — son verificaciones de DB, no de UI. Señal de alarma a chequear siempre:
+`git status --short <archivos de código tocados>` antes de declarar cualquier feature "verificada en
+producción".
+
+## 2026-09-29 — Salteé la sub-regla 15 (comparar scale contra el grid) en las 2 cargas infantiles seguidas, K12 y K13
+
+**Estado**: 🟡 Mitigado — fix en código armado, pendiente de deploy + verificación visual en prod.
+
+**Qué pasó**: al cerrar tanto Rusty K12 (seed 129) como Rusty K13 (seed 130) declaré el turno cerrado
+sin proponer un scale override inicial en `lib/catalog/image-scale-overrides.ts`, pese a que la
+sub-regla obligatoria de la regla 15 de CLAUDE.md dice explícitamente que hay que comparar la imagen
+del producto nuevo contra sus vecinos del mismo grid ANTES de cerrar. `pnpm auditar:encuadre` dio
+92%/1.00 en ambos — igual a la mediana del catálogo — y con ese dato solo (sin abrir el grid real)
+di por bueno el encuadre. Juan mandó 2 capturas del grid en vivo mostrando el K12 y el K13
+visiblemente más grandes que sus vecinos adultos: "es desproporcionalmente muy grande".
+
+**Por qué la métrica automática no lo agarró**: `auditar:encuadre` mide el % de relleno de la foto
+propia contra la mediana del catálogo, no el tamaño relativo REAL entre productos de talle muy
+distinto puestos lado a lado. K12/K13 son los dos primeros productos infantiles (calibre 45-46mm)
+del catálogo — al mismo fill% que un armazón de adulto (calibre 50-54mm+), un anteojo físicamente
+más chico se ve del mismo tamaño visual que uno de adulto en la foto (no hay referencia de escala
+dentro de la imagen), rompiendo la expectativa de que en el grid un producto infantil se lea como
+"chico/delicado" frente a sus vecinos adultos. Es la MISMA causa de fondo que los incidentes previos
+de Yau/Vrast (que motivaron escalar la regla 15) — la métrica automática nunca la va a agarrar sola,
+necesita el ojo humano comparando el grid real.
+
+**Por qué se repitió pese a que la regla ya estaba escalada dos veces antes**: en ninguna de las dos
+cargas abrí el grid en el browser al cerrar — confié en `auditar:encuadre` como sustituto de la
+comparación visual, cuando la regla pide explícitamente comparar contra los vecinos, no contra una
+mediana agregada del catálogo entero.
+
+**Regla preventiva (más específica)**: `auditar:encuadre` en verde NO cierra la sub-regla 15. El
+cierre de cualquier carga tiene que incluir SIEMPRE un screenshot del grid real donde va a convivir
+el producto nuevo, mirado con la pregunta puntual "¿se ve más grande o más chico que el vecino de al
+lado?" — no alcanza con el número agregado. Si el producto nuevo es de un talle/categoría que no
+tiene precedente en el catálogo (como "infantil" acá), el riesgo es más alto todavía porque no hay
+ningún override histórico de referencia para copiar — ahí el screenshot del grid real deja de ser
+opcional.
+
+## 2026-09-28 — Insistí 2 veces con la técnica equivocada (threshold de color) cuando ya existía la herramienta correcta en el repo
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: al notar que las fotos del Daito no tenían fondo 100% blanco (sombra de contacto de
+un render 3D), mi primer instinto fue programar un fix manual: flood-fill/threshold de color con
+PIL. Falló dos veces seguidas (thresh 70, después thresh 110) — Juan tuvo que decirme DOS veces
+"sigue mal" antes de que yo cambiara de enfoque. Recién en el segundo aviso, en vez de subir el
+threshold una tercera vez, revisé si el repo ya tenía algo mejor — y sí: `scripts/foto-limpia.ts`
+existe hace tiempo, usa `rembg` (segmentación real, no heurística de color), y su propio comentario
+en el código describe EXACTAMENTE este problema ("un umbral no distingue sombra de producto").
+Debería haber sido el primer lugar que miré, no el tercero.
+
+**Por qué no lo agarré antes**: asumí que el problema era "encontrar el número correcto de
+threshold" en vez de preguntarme si el ENFOQUE (aproximar sombra vs. producto por brillo de color)
+era el correcto para el tipo de imagen que tenía (un render 3D con gradiente continuo, sin borde
+duro entre sombra y fondo — el peor caso posible para un threshold fijo). Un síntoma que reincide
+tras un primer arreglo (en vez de desaparecer) es una señal de que el ENFOQUE está mal, no solo el
+parámetro — subir el número una vez más rara vez es la respuesta correcta la segunda vez que falla.
+
+**Regla preventiva**: antes de escribir una solución ad-hoc para un problema de procesamiento de
+imagen (fondo, recorte, color), grepear el repo por scripts existentes relacionados
+(`grep -rn "foto\|imagen\|placa" scripts/*.ts` o similar) — es un catálogo con 100+ productos
+cargados, es MUY probable que alguien ya haya resuelto una variante del mismo problema. Si un fix
+falla una segunda vez seguida con la misma técnica, es la señal de parar y buscar otro enfoque, no
+ajustar el parámetro de nuevo.
+
+## 2026-09-28 — Verifiqué el arreglo del fondo en un solo ángulo (frente) y di por cerrado el otro (perfil) sin mirarlo
+
+**Estado**: 🟡 Mitigado
+
+**Qué pasó**: Juan reportó que las fotos del Mormaii Daito no tenían fondo 100% blanco (una sombra
+de contacto de las fotos fuente del distribuidor, que el `trim` de `pnpm placas` no saca porque
+queda DENTRO del recorte). Limpié las 8 fotos con flood-fill blanco (thresh=70), verifiqué UNA sola
+—la de frente del marrón/C03— vi fondo perfecto, y di el fix por bueno para las 8 sin revisar el
+resto. Las subí, actualicé la base, verifiqué con `until`-loop que la PDP servía los paths nuevos, y
+cerré el turno. **El thresh que alcanzaba para la foto de frente se quedaba corto en las de
+perfil** (ángulo 3/4, sombra más extendida) — mínimo 181/255 contra el piso ~185 que cubría ese
+thresh. Juan lo vio en producción y mandó una captura.
+
+**Por qué no lo agarré yo**: verificar "una imagen representativa" y generalizar el resultado a las
+otras 7 fue un atajo — asumí que si el fix funcionaba en un ángulo, funcionaba en todos, cuando la
+intensidad de la sombra varía justamente POR ángulo (la de perfil, en 3/4, proyecta una sombra de
+contacto más larga que la de frente, de frente derecho). El `until`-loop que corrí solo confirma que
+la ruta cambió (`x-vercel-cache`, el path en el HTML) — no mira el contenido de la imagen en sí.
+
+**Regla preventiva**: cuando un fix de imagen se aplica a un LOTE (8 fotos, 4 colores × 2 ángulos),
+verificar al menos una muestra de CADA ángulo distinto, no solo una foto del lote entero — un fix
+por threshold/umbral no es necesariamente uniforme entre fotos con diferente encuadre o intensidad
+de sombra. "Verifiqué una y compiló/se ve bien" no es lo mismo que "verifiqué el lote". Mismo
+principio que la sub-regla de encuadre (regla dura 15): comparar contra una muestra
+representativa de la variación real, no contra un solo caso.
+
+## 2026-09-28 — Arreglé un label en el código pero no lo deployé: el material vivió invisible en producción unas horas
+
+**Estado**: ✅ Cerrado (commiteado, pusheado y deployado el mismo día con OK del founder — commit `2e607ec`)
+
+**Qué pasó**: cargando Mormaii Daito apareció un material nuevo para el catálogo ("poliamida") que
+no estaba en `FRAME_MATERIAL_LABELS` (`components/product/product-attributes.tsx` y
+`app/(storefront)/comparar/page.tsx`). Agregué la entrada al código, corrí `tsc --noEmit` limpio, y
+seguí de largo con la carga — apliqué el seed a Supabase Cloud con el OK del founder, verifiqué
+stock/precio/imágenes en producción, y di el producto por cerrado. **Nunca hice `git commit` ni
+`git push`.** El cambio de código quedó local, sin deployar. Recién al revisar visualmente la ficha
+en vivo del Daito se notó: la sección "Ficha técnica" no tenía fila "Material". (Nota: en el momento
+pensé que el Vulk Anima tenía el mismo problema — no era así, Anima usa `frame_material: "g-flex"`,
+que ya estaba mapeado desde antes; confundí los dos productos al escribir esto la primera vez.)
+
+**Por qué no se vio antes**: la app y la base de datos son dos sistemas separados con velocidades de
+despliegue distintas. Un `UPDATE`/`INSERT` vía `execute_sql` (MCP Supabase) es instantáneo — se
+verifica con un SELECT y ya está en producción. Un cambio de código (`.tsx`) necesita
+commit + push + build de Vercel para llegar a producción; hasta ese momento, el sitio en vivo sigue
+corriendo el código viejo. El checklist de cierre de esta sesión (SELECT puntual + `until`-loop de
+producción + `auditar:encuadre`) verifica TODO lo que sale de la base, pero nada de eso toca el
+código del frontend — un label nuevo puede fallar en silencio (ver LEARNINGS.md 2026-09-28) y encima
+el arreglo puede quedar sin publicar, y ninguna de las dos cosas la agarra el checklist actual.
+
+**Causa raíz**: traté el fix de código como "ya resuelto" en el momento de escribirlo, sin
+diferenciar mentalmente que un cambio de `.tsx` no es efectivo hasta el deploy — a diferencia de un
+`execute_sql`, que sí lo es al instante. La sesión no tiene un paso explícito de "¿hay cambios de
+código sin commitear que afecten lo que acabo de cargar?" antes de cerrar un producto.
+
+**Regla preventiva**: cuando una carga de producto obliga a tocar código del frontend (un label
+nuevo, un enum nuevo, cualquier archivo fuera de `supabase/seeds/`), el cierre del producto no está
+completo con el SELECT + verificación de producción — falta preguntar explícitamente si se commitea
+y deploya ese código, y decírselo al founder en el mismo mensaje en el que se declara el producto
+"live" (no asumir que porque el PDP da 200 y el precio es correcto, todo lo demás también está
+andando). Revisar visualmente la ficha renderizada (no solo status code / precio / stock) antes de
+dar por cerrada cualquier carga que haya tocado un archivo `.tsx`.
+
 ## 2026-09-22 — Asumí "negro mate" para dos patillas sin leer el propio código SBLK/MBLK
 
 **Estado**: 🟡 Mitigado

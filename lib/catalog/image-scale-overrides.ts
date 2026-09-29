@@ -562,6 +562,29 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-lady-piny/SBLK-UQ0178 BG26 pol perfil.jpg': 1.15,
   'vulk-lady-piny/SBLK-UQ0178 BG26 pol frente.jpg': 1.0,
 
+  // Rusty K12 Infantil / K13 Infantil — fotos 2000×1333, mismo pipeline `pnpm placas`
+  // que Rusty Bruice (92% de fill nativo). Founder reportó 2026-09-29, con captura del
+  // grid /anteojos-de-receta/rusty: "es desproporcionalmente muy grande" — el K12 se ve
+  // más grande que sus vecinos adultos (Bruice, Gover, Invig), y el K13 más grande que
+  // sus vecinos (Misty, Opposit, Patien). `pnpm auditar:encuadre` midió 92%/1.00 en
+  // ambos — igual a la mediana del catálogo — pero esa métrica no captura el problema
+  // real: son los DOS primeros productos infantiles del catálogo (calibre 45-46mm) al
+  // mismo fill% que armazones de adulto (calibre 50-54mm+), entonces se ven del mismo
+  // tamaño visual que un adulto en vez de leerse como "chico" en el grid mixto — mismo
+  // patrón de fondo que Yau/Vrast (CLAUDE.md regla 15), pero por diferencia de talle real,
+  // no por bug de encuadre. Fix: achicar ambos modelos para que lean como "delicados/
+  // chicos" frente a los vecinos adultos. Arranco conservador (0.75/0.78, sub-regla 15 +
+  // counter-learning Booping/Arvin) — reverificar en el grid deployado y ajustar si sigue
+  // grande o si quedó demasiado chico.
+  'rusty-k12-receta/perfil-c1-azul.jpg': 0.75,
+  'rusty-k12-receta/frente-c1-azul.jpg': 0.78,
+  'rusty-k12-receta/perfil-c3-rosa.jpg': 0.75,
+  'rusty-k12-receta/frente-c3-rosa.jpg': 0.78,
+  'rusty-k13-receta/perfil-c2-azul.jpg': 0.75,
+  'rusty-k13-receta/frente-c2-azul.jpg': 0.78,
+  'rusty-k13-receta/perfil-c3-rosa.jpg': 0.75,
+  'rusty-k13-receta/frente-c3-rosa.jpg': 0.78,
+
   // Vulk Clems Receta — armazón ovalado ultra liviano. MBLK queda 1.15/1.0; founder
   // 2026-06-05 reportó que CRY y SBLK se veían más chicas (sus fotos tienen el
   // anteojo más chico en el frame) → CRY/SBLK perfil 1.25 / frente 1.10 para emparejar.
