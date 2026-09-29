@@ -62,6 +62,7 @@ const LENS_TREATMENT_LABELS: Record<string, string> = {
   gradient: 'Degradé',
   mirrored: 'Espejado',
   photochromic: 'Fotocromático',
+  blue_light: 'Filtro luz azul',
 };
 
 /** Mapper de keys de `attributes.includes` a labels legibles para mostrar

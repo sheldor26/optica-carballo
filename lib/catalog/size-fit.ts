@@ -7,17 +7,24 @@
  * tanto en la PDP como en las cards del catálogo (pipeline central, regla 15).
  */
 
-export type SizeFit = 'junior' | 'chico';
+export type SizeFit = 'junior' | 'chico' | 'infantil';
 
-const SIZE_FIT_VALUES: readonly SizeFit[] = ['junior', 'chico'];
+const SIZE_FIT_VALUES: readonly SizeFit[] = ['junior', 'chico', 'infantil'];
 
 /** Label visible del badge por talle. Español argentino de óptica.
  * `chico`: armazón pequeño para rostros chicos (NO infantil, a diferencia de
  * "junior") — agregado para Rusty Misty (founder pidió énfasis fuerte por
- * reclamos de talle). */
+ * reclamos de talle).
+ * `infantil`: agregado 2026-09-29 para Rusty K12, primer armazón realmente
+ * para niños/as del catálogo — el founder pidió explícito un badge nuevo
+ * ("para niños") en vez de reusar "junior" (que hasta ahora sólo se había
+ * definido en el tipo, nunca asignado a un producto real, y el propio
+ * comentario de `chico` lo dejaba ambiguo si "junior" ya implicaba infantil
+ * o no — mejor no asumir). */
 export const SIZE_FIT_LABELS: Record<SizeFit, string> = {
   junior: 'Talle Junior',
   chico: 'Talle chico',
+  infantil: 'Para niños/as',
 };
 
 /**

@@ -5,6 +5,7 @@ import {
   Sparkles,
   CircleCheck,
   Sun,
+  Monitor,
 } from 'lucide-react';
 
 type AttributesJson = Record<string, unknown>;
@@ -40,6 +41,11 @@ const TREATMENT_HIGHLIGHTS: Record<string, Highlight> = {
     key: 'photochromic',
     label: 'Fotocromáticas',
     icon: Sun,
+  },
+  blue_light: {
+    key: 'blue_light',
+    label: 'Filtro luz azul',
+    icon: Monitor,
   },
 };
 

@@ -1,6 +1,12 @@
-import { Ruler } from 'lucide-react';
+import { Ruler, Baby } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SIZE_FIT_LABELS, type SizeFit } from '@/lib/catalog/size-fit';
+
+const SIZE_FIT_ICONS: Record<SizeFit, typeof Ruler> = {
+  junior: Ruler,
+  chico: Ruler,
+  infantil: Baby,
+};
 
 /**
  * Badge de talle del armazón ("Talle Junior", etc.). Identifica modelos de
@@ -21,6 +27,7 @@ export function SizeFitBadge({
 }) {
   if (!sizeFit || !(sizeFit in SIZE_FIT_LABELS)) return null;
   const label = SIZE_FIT_LABELS[sizeFit as SizeFit];
+  const Icon = SIZE_FIT_ICONS[sizeFit as SizeFit];
 
   const sizeClasses =
     size === 'sm'
@@ -37,7 +44,7 @@ export function SizeFitBadge({
         className,
       )}
     >
-      <Ruler className={size === 'sm' ? 'size-2.5' : 'size-3'} />
+      <Icon className={size === 'sm' ? 'size-2.5' : 'size-3'} />
       {label}
     </span>
   );

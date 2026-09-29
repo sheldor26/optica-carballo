@@ -41,6 +41,15 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'gris-mate-y-naranja': 'Frente gris mate / patillas naranja',
   'azul-translucido': 'Azul translúcido',
   'negro-mate-detalles-marron': 'Negro mate con detalles marrón',
+  sienna: 'Sienna transparente',
+  cristal: 'Cristal transparente',
+  'negro-mate-detalle-azul': 'Negro mate con detalle en varilla azul',
+  'negro-mate-translucido': 'Negro mate translúcido',
+  'verde-oliva': 'Verde oliva',
+  'azul-oscuro': 'Azul oscuro',
+  'azul-mate-translucido': 'Azul mate translúcido',
+  'negro-mate-gris': 'Negro mate con gris',
+  'rosa-translucido': 'Rosa translúcido',
 };
 
 const LENS_COLOR_LABELS: Record<string, string> = {
@@ -67,6 +76,10 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'espejado-dorado': 'Dorado espejado',
   'espejado-naranja': 'Naranja espejado',
   'verde-g15': 'Verde G15',
+  'rojo-degrade': 'Rojo degradé',
+  'espejado-celeste': 'Celeste espejado',
+  'espejado-verde': 'Verde espejado',
+  'gris-semi-espejado': 'Gris semi-espejado',
 };
 
 function toTitleCase(s: string): string {

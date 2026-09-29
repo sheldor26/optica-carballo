@@ -38,6 +38,7 @@ const LENS_TREATMENT_LABELS: Record<string, string> = {
   gradient: 'Lente degradé',
   mirrored: 'Espejado',
   photochromic: 'Fotocromático',
+  blue_light: 'Filtro luz azul',
 };
 
 const GENDER_LABELS: Record<string, string> = {
