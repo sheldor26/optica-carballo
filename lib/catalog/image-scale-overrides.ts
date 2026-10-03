@@ -762,15 +762,15 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 95-97%, así que el Bruice se veía más chico. 1.05 lo lleva a 96,6%.
   // Medido reproduciendo el render de la card (object-contain 3:2 + transform
   // scale), no a ojo. 1.10 quedaba en 101% y se recortaba.
-  // Reef 128 Yin (seed 156): valor inicial 1.05, a comparar contra el grid de sol (regla 15).
-  'reef-128-yin/perfil-c011.jpg': 1.05,
-  'reef-128-yin/perfil-c014.jpg': 1.05,
-  'reef-128-yin/perfil-c015.jpg': 1.05,
-  'reef-128-yin/perfil-c016.jpg': 1.05,
-  'reef-128-yin/perfil-c017.jpg': 1.05,
-  'reef-128-yin/perfil-c018.jpg': 1.05,
-  'reef-128-yin/perfil-c019.jpg': 1.05,
-  'reef-128-yin/perfil-c020.jpg': 1.05,
+  // Reef 128 Yin (seed 156): valor 0.93 tras auditar:encuadre (1.05 daba 97% del card; objetivo 86% ±7).
+  'reef-128-yin/perfil-c011.jpg': 0.93,
+  'reef-128-yin/perfil-c014.jpg': 0.93,
+  'reef-128-yin/perfil-c015.jpg': 0.93,
+  'reef-128-yin/perfil-c016.jpg': 0.93,
+  'reef-128-yin/perfil-c017.jpg': 0.93,
+  'reef-128-yin/perfil-c018.jpg': 0.93,
+  'reef-128-yin/perfil-c019.jpg': 0.93,
+  'reef-128-yin/perfil-c020.jpg': 0.93,
   'rusty-bruice/perfil.jpg': 1.05,
   'rusty-bruice/frente.jpg': 1.05,
   'rusty-bruice/perfil-mdemi.jpg': 1.05,
