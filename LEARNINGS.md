@@ -12140,6 +12140,16 @@ unas flechas bien apuntadas porque eran largas y atravesaban el lente. Marcar ca
 (frente = borde de abajo del aro para la burbuja de abajo; lente = zona alta del cristal para la burbuja de arriba) y mirar
 que ninguna flecha cruce el producto.
 
+## Fotos de la marca Reef: la URL sin estilo (`/<id>/129.jpg`) devuelve el ORIGINAL (1200 px, recortado al ras), no la miniatura `thickbox` 1100×1422 con aire; y una foto con la punta pegada al borde necesita margen blanco para que `trim` funcione
+
+Para Reef 128 se bajaron las fotos con `-thickbox_default` (1100×1422, mucho blanco alrededor). Para el 129 Yang se probó la URL sin estilo
+(`https://reefeyewear.com/<id_imagen>/129.jpg`, el `id` sale de la respuesta ajax `group[1]` como el `*-large_default`) y trae el original: 1200 px de ancho y recortado
+al ras, o sea más resolución útil para las placas (las actuales de ML se veían de baja calidad). Problema asociado: la 016 llegó con la punta de la patilla pegada al borde
+derecho, `trim` no encontró fondo uniforme y `recortarAnteojo` cayó a Claude Vision, que falló por falta de créditos de la API. Solución: agregarle 24 px de margen blanco a esa foto
+antes de recortar (`sharp.extend`). **Cómo aplicar a futuro:** (1) bajar siempre el original sin estilo; (2) si `pnpm placas` avisa "trim no encontró fondo uniforme", agregar margen blanco
+en vez de depender de Vision; (3) las marcas manuales (`pnpm anclas`) de UNA foto se trasladan al resto de colores, y una foto con otro encuadre (calce < 0.35) hay que revisarla a ojo.
+(Pendiente de decisión del founder: rehacer las placas de Reef 128 con los originales.)
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

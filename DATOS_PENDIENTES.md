@@ -412,3 +412,11 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] GTIN de la 011: sin unidad física, sólo figura en ML.
 - [ ] En ML (lado del founder): re-subir las placas 03, 04 y 06 de los 8 colores; ficha "policarbonato"→TAC y "armazón de aluminio"→patillas de aluminio; ancho total 140→138; fotos propias de frentes (hoy sólo laterales de la marca).
 - [ ] Confirmar de quién es la garantía de 1 año (fabricante u óptica) para el copy.
+
+## Reef 129 Yang (sol, seed 157, 2026-10-03)
+
+- [x] **2026-10-03 — Confirmado por el founder:** envolvente, UV400, categoría 3, bisagras metálicas con sistema flex, género hombre, medidas 66-16-110, alto de lente 43, ancho total 140.
+- [ ] **GTIN de las cajas 011 a 016** (no hay en ningún doc; no derivarlos del 128). Bloquea: `gtin` por variante y schema.org.
+- [ ] **Confirmar los nombres de color** (deducidos de las fotos de la marca): sobre todo si 013 y 014 son realmente distintas (ML dice 014 = frente gris oscuro mate) y si 012 es "plateado mate".
+- [ ] **Peso** (balanza). Bloquea: `weight_grams` y cualquier claim de liviano.
+- [ ] En ML (lado del founder): re-subir las placas de las 6 variaciones (`marketing/placas-ml/RESUBIR-reef-129/`); revisar que la ficha diga TAC y no "policarbonato"; fotos propias de frentes.

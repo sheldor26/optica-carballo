@@ -986,6 +986,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 29. Mormaii Recife (receta, cuadrado grande, hombre), seed 153
 30. Mormaii Vesubio (receta, aviador doble puente), seed 155
 31. Reef 128 Yin (sol, envolvente deportivo), seed 156
+32. Reef 129 Yang (sol, envolvente), seed 157
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2448,7 +2449,7 @@ Rectangular / Redonda.
 
 ### REEF (octubre 2026, CSV `KEYWORDS OPTICA/`; volúmenes verificados por el agente, no por mí)
 Productos cargados, en orden de seed: 1. Reef 128 Yin (sol), seed 156. Marca de origen californiano con fundadores argentinos (no decir "marca argentina" en fichas). El hub de la marca es `/anteojos-de-sol/reef` (no existe `/marcas/[slug]`).
-Keyword head: `lentes de sol reef` (210/7), de la ficha del 128 mientras sea el único sol Reef. Cabeceras mixtas sol y receta (`anteojos reef` 590/11, `reef anteojos` 590/7, `lentes reef` 390/10) van al hub, no a la PDP. El "Reef 3.400" de marca no se reproduce en los CSV.
+Keyword head: `lentes de sol reef` (210/7) y `anteojos de sol reef` (170/9) son del HUB `/anteojos-de-sol/reef` desde que hay dos soles Reef (antes eran de la ficha del 128); cada ficha se separa por modelo y familia léxica (128 = "lentes de sol", 129 = "anteojos de sol"). Cabeceras mixtas sol y receta (`anteojos reef` 590/11, `reef anteojos` 590/7, `lentes reef` 390/10) van al hub, no a la PDP. El "Reef 3.400" de marca no se reproduce en los CSV.
 
 *Reef 128 Yin (sol, HOMBRE, ENVOLVENTE DEPORTIVO, frente de metal con puente doble, patillas de aluminio, bisagras con sistema flex, lente TAC POLARIZADA UV400 en las 8 variantes) · slug `reef-128-yin` en `/anteojos-de-sol/reef/reef-128-yin`. Seed 156 aplicado 2026-10-03; publicación tradicional MLA1751925814*
 | Keyword | Vol/mes | Dif | Uso |
@@ -2462,6 +2463,19 @@ Keyword head: `lentes de sol reef` (210/7), de la ficha del 128 mientras sea el 
 Sin dato: "reef 128", "reef 128 yin/ying" (el founder pidió "Yin" en el nombre porque hay gente que lo busca así; sin volumen medido). Hay un hermano 129 Yang: cruzar 128↔129 cuando exista.
 Title: `Lentes de Sol Reef 128 Yin Polarizados | Óptica Carballo` (56). H1 = `Reef 128 Yin`. Meta (149): `Lentes de sol Reef 128 Yin para hombre: polarizados UV400, frente de metal y patillas de aluminio. Envío a todo el país, estuche, franela y garantía.`
 No usar: "128" suelto, "178", liviano, flexible (la flexibilidad se dice sólo como "bisagras con sistema flex"), policarbonato, "armazón de aluminio" (sólo patillas), colores o cantidad, "marca argentina", "resistente a rayones".
+
+*Reef 129 Yang (sol, ENVOLVENTE, HOMBRE, frente de metal, patillas de aluminio, bisagras metálicas con sistema flex, lente TAC POLARIZADA UV400 cat 3, 66-16-110, ancho 140, alto de lente 43, 6 colores) · slug `reef-129-yang` en `/anteojos-de-sol/reef/reef-129-yang`. Seed 157 aplicado 2026-10-03; publicación tradicional MLA1423304199*
+| Keyword | Vol/mes | Dif | Uso |
+|---|---|---|---|
+| reef 129 yang | sin medir | - | primaria (modelo, title, H1) |
+| anteojos de sol reef 129 yang polarizado | 0 | 4 | frase natural en copy y alt |
+| anteojos de sol reef | 170 | 9 | copy (la lidera el hub) |
+| anteojos de sol polarizados | 170 | 10 | copy |
+| anteojos de sol hombre reef | 170 | 7 | copy (género hombre confirmado) |
+| lentes de sol reef | 210 | 7 | NO en esta PDP (hub + 128) |
+Sin dato en los CSV: "reef 129", "reef yang", "reef yin yang". Title: `Anteojos de Sol Reef 129 Yang Polarizados | Óptica Carballo` (59). H1 = `Reef 129 Yang`. Meta (154): `Anteojos de sol Reef 129 Yang polarizados UV400, con frente de metal y patillas de aluminio. Lente de 66 x 43 mm. Envío a todo el país y garantía oficial.`
+Anti-canibalización vs 128: familia léxica distinta, token de modelo distinto, meta distinta; cross-link 128↔129 (related automático + una frase en el copy del 129; falta la del 128). Cabeceras genéricas al hub.
+No usar en el 129: liviano, flexible (sólo "bisagras metálicas con sistema flex"), "armazón de aluminio" (sólo patillas), policarbonato (es TAC), deportivo, grande/oversized, colores o cantidad, "marca argentina", "resistente a rayones", "128"/"129" sueltos, género o "envolvente" en title/H1/meta.
 
 
 ### Reglas para futuros productos

@@ -5,6 +5,44 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### 🔄 En curso (2026-10-03): Reef 129 Yang (sol), placas nuevas hechas, falta cargarlo al catálogo
+
+El founder pidió el modelo **Reef 129 Yang** (marca: "129 Reef"): publicación tradicional **MLA1423304199** (`catalog_listing:false`, $157.955,64, 5 variaciones hoy,
+stock 4) y **placas nuevas** para todas las variantes de ML (las actuales son de baja calidad). **Variaciones de ML:** 011 `182580521475` (lente marrón, patillas
+plateadas, stock 1, 3 vendidos), 012 `182580521477` (gris oscuro/plateado, 1, 6 vend.), 013 `182580521479` (gris oscuro/plateado, 1, 4 vend.), 016 `182580521481`
+(gris oscuro, patillas negras detalles naranjas, 1, 6 vend.), 015 `182580521483` (gris oscuro, patillas negras detalles plateados, 0, 1 vend.). En ML el campo
+Color del armazón lleva el código (011...). **La 014 todavía NO está en ML** (el founder la va a agregar; sin `variation_id` no se puede cargar). Datos del
+founder: **envolvente, UV400, categoría 3, bisagras metálicas con sistema flex**; medidas **66-16-110, alto de lente 43, ancho total 140** (la marca da 66/16/114,
+alto 38, diagonal 69, base 10/4.5: manda lo del founder). Brand page `reefeyewear.com/solares/1037-4336-129.html` (12 colores 011-023; sólo se usan 011-016).
+**Fotos:** originales de la marca (1200 px de ancho, más resolución que las 1100×1422 de Reef 128) en `marketing/fotos/reef-129/reef129_colXXX_lateral.jpg`
+(cover id por color via ajax `group[1]`: 011=4520, 012=4519, 013=4521, 014=4522, 015=4523, 016=4524); una sola lateral por color, sin frentes. La 016 llegaba con la
+punta de la patilla pegada al borde y `trim` no la recortaba (caía a Vision, que falla: ver abajo): se le agregó 24 px de margen blanco (original en el
+scratchpad). **Placas:** `marketing/placas-ml/reef-129-cXXX/ml/` con 01 perfil, 03 callouts (marcas a mano sólo en la 012, el resto se alinea solo, calce 0.33-0.66;
+ver `reef129_col012_lateral.jpg.anclas.json`), 04 medidas (66/16/140/43/110) y 06 garantía; callouts: "LENTES POLARIZADAS UV400 categoría 3", "PATILLAS de aluminio",
+"FRENTE de metal", "BISAGRAS metálicas con sistema flex". `pnpm ml:diag`: 4/4 limpias. Carpeta lista para subir: `marketing/placas-ml/RESUBIR-reef-129/` (6 subcarpetas).
+**⚠️ La API de Anthropic respondió "credit balance is too low"** al intentar usar Vision desde los scripts (`.env.local`): el modo automático de partes y el recorte por Vision no funcionan
+hasta recargar créditos; revisar si esa misma key alimenta funciones del sitio (chat, lector de receta, copy). **ACTUALIZACIÓN (2026-10-03, tarde): el founder agregó la 014 en ML.** MLA1423304199 ahora tiene **6 variaciones** (stock total 6, $157.955,64): la nueva
+014 = `207644455301` (lente "Gris oscuro - C14", patillas Plateado, frente "Gris oscuro Mate", stock 2, 0 vendidos). Se generaron las 6 fotos web 2000×1333 (perímetro
+100% blanco) en el scratchpad (`yang-web/cXXX/web/perfil.jpg` y `medidas.jpg`), aún NO subidas al bucket. Se lanzaron en background `seo-strategist` y `catalog-loader` para el
+seed 157 (slug previsto `reef-129-yang`, nombre "Reef 129 Yang"); sus reportes llegan por notificación. Nada escrito en el seed todavía.
+**Dato del founder (2026-10-03): género del Reef 129 Yang = HOMBRE** (`gender:"male"`). Pendiente: reportes de `seo-strategist` y `catalog-loader` para escribir el seed 157.
+**✅ SEED 157 (Reef 129 Yang) ESCRITO, fotos SUBIDAS, NADA APLICADO (2026-10-03):** reportes de `seo-strategist` y `catalog-loader` recibidos y reconciliados.
+`supabase/seeds/157_reef_129_yang_sol.sql`: producto `reef-129-yang` ("Reef 129 Yang"), envolvente, `gender:"male"` (founder), TAC, `uv400`+`polarized`, `lens_category:3` (founder),
+hinge flex, medidas 140/66/16/110/lente 43 (founder), SIN `line` (el founder sólo dijo envolvente; seo-strategist prohíbe "deportivo"), sin GTIN ni peso. 6 variantes de MLA1423304199
+con variation_id reales y stock de ML (014 `207644455301`=2 primaria, 016 `182580521481`=1, 013 `…479`=1, 012 `…477`=1, 011 `…475`=1, 015 `…483`=0), $157.955,64 = 15795564 centavos.
+Colores por deducción visual (catalog-loader): 014 gris oscuro mate/patillas plateadas (slug NUEVO), 016 plateado/patillas negras logo naranja, 013 peltre/patillas plateadas,
+012 plateado mate/patillas plateadas (slug NUEVO), 011 dorado mate/patillas plateadas, 015 peltre/patillas negras (los 4 restantes reutilizan slugs del 128). SEO: title
+`Anteojos de Sol Reef 129 Yang Polarizados | Óptica Carballo` (59), familia léxica "anteojos de sol" (el 128 es "lentes de sol"), primaria `reef 129 yang`, cabeceras genéricas al hub;
+meta 154 caracteres; cross-link 128↔129 con una frase en copy + related automático. Código: `variant-label.ts` (+2 labels), `image-scale-overrides.ts` (+6 entradas 0.93, a verificar con
+`pnpm auditar:encuadre`). Bucket: `reef-129-yang/perfil-c0XX.jpg` ×6 y `medidas.jpg`, todas HTTP 200. **Pendiente de OK del founder para aplicar + commit/push.** Dudas para el founder:
+013 vs 014 se ven casi iguales (ML dice 014 = frente gris oscuro mate); colores nombrados a partir de fotos; GTIN de las cajas. Después de aplicar: SELECTs, PDP viva, grillas, scale, y los
+docs (CLOUD_APPLIED, PRODUCTS_INVENTORY, SEO_STRATEGY con el bloque del agente, cambio de la línea de cabecera a "del hub"). Opcional: agregar la frase de cross-link al seed 156 (UPSERT).
+**✅ APLICADO a Cloud (2026-10-03, OK "Aplicá el seed y commiteá y subí")**: SELECT OK (6 variantes, 6 `variation_code` 1:1 con ML, stock 6 = ML, 7 imágenes, 1 primaria, cat 3, hombre, envolvente). Docs: CLOUD_APPLIED, PRODUCTS_INVENTORY, SEO_STRATEGY, DATOS_PENDIENTES. Falta tras el deploy: PDP viva, grillas, `pnpm auditar:encuadre` (scale 0.93 a validar).
+**ESTADO ANTERIOR (ya resuelto en lo de la 014): PAUSADA / BLOQUEADA ESPERANDO AL FOUNDER** (placas del 129 entregadas; la carga al catálogo no puede seguir sin la 014 en ML). Pregunta abierta: ¿rehacer las placas del Reef 128 Yin con los originales de 1200 px?
+**Próximo paso exacto:** (1) el founder agrega la 014 en ML y
+re-sube las placas; (2) con la 014 creada, consultar `catalog-loader` + `seo-strategist`, escribir el seed 157 (slug `reef-129-yang`, nombre "Reef 129 Yang", 6 variantes con
+`variation_id`, colores por partes, UV400 + cat 3, TAC, medidas 66/16/110/140/43) y pedir OK para aplicar; (3) generar fotos web (`pnpm placas --solo 1` → web/perfil.jpg) y subirlas.
+
 ### 🔄 En curso (2026-10-03): precisión de las flechas de los callouts de las placas
 
 El founder vio que las flechas de `03-callouts` (Reef 128) no apuntan con precisión y aprobó la opción **A + F**.
@@ -148,7 +186,13 @@ código (`lib/catalog/variant-label.ts` con 8 labels, `lib/catalog/image-scale-o
 SIN COMMIT (regla: sin auto-commits). Hasta deployar no se ve el nombre descriptivo ni el scale 1.05. **Placas para resubir a ML:** carpeta
 `marketing/placas-ml/RESUBIR-reef-128/` con 8 subcarpetas (una por color, con 1 perfil, 2 callouts, 3 medidas, 4 garantía); `pnpm ml:diag` sobre la 019:
 4/4 limpias para ML. Docs actualizados: CLOUD_APPLIED, PRODUCTS_INVENTORY, SEO_STRATEGY (bloque REEF + lista), DATOS_PENDIENTES.
-**Próximo paso exacto:** (1) el founder decide si commitear y pushear los cambios de código (para que los colores se vean bien y el scale aplique);
+**✅ DEPLOYADO (2026-10-03):** commit `af5c365` (seed 156, labels, scale, prompt, docs) + `4ad1f37` (scale 1.05→0.93: `pnpm auditar:encuadre` daba 97% del card, objetivo
+86% ±7) pusheados a `main`. Producción verificada: los 8 colores se ven con nombre descriptivo ("Peltre con patillas gris claro mate / Gris oscuro", etc.), H1 "Reef 128 Yin",
+UV400 visible, sin "policarbonato"; el producto aparece en `/anteojos-de-sol`, `/anteojos-de-sol/reef`, `/anteojos-de-sol/hombre` y `/anteojos-de-sol/polarizados`
+(HTTP 200). El commit incluyó las versiones de los docs de estado acumuladas (CURRENT_STATE, SEO_STRATEGY, LEARNINGS, MISTAKES, CLOUD_APPLIED, PRODUCTS_INVENTORY,
+DATOS_PENDIENTES); NO incluyó las herramientas de placas (`scripts/ml-anclas.ts`, `scripts/lib/placas-alinear.ts`, `placas-anclas.ts`, cambios en `ml-placas.ts`/`placas-svg.ts`/
+`placas-frame.ts`/`placas-partes.ts`, `package.json`) ni los seeds 116-155, que siguen SIN COMMIT (los seeds 116-155 ya están aplicados a Cloud pero no versionados).
+**Próximo paso exacto (histórico, resuelto arriba salvo 3-4):** (1) ~~commitear y pushear~~ hecho (para que los colores se vean bien y el scale aplique);
 (2) tras el deploy, comparar el scale contra el grid de sol (`/anteojos-de-sol`, `/anteojos-de-sol/reef`, `/anteojos-de-sol/hombre`) y cerrar la regla 15;
 (3) el founder re-sube las placas a ML y corrige su ficha; (4) comprobar el hub `/anteojos-de-sol/reef` (sitemap, sin noindex) y `/comparar`.
 **Pendiente del founder (ML + datos):** subir 016→4 y 019→4; corregir variación 015 (armazón Plateado, diseño "Envolvente - 015");
