@@ -9,6 +9,15 @@ export type VariantAttributesJson = Record<string, unknown>;
 
 const FRAME_COLOR_LABELS: Record<string, string> = {
   negro: 'Negro',
+  // Reef 128 Yin (seed 156): el color se nombra por frente + patillas porque cambian juntos.
+  'peltre-patillas-plateadas': 'Peltre con patillas plateadas',
+  'peltre-patillas-gris-claro-mate': 'Peltre con patillas gris claro mate',
+  'peltre-patillas-negras': 'Peltre con patillas negras',
+  'negro-patillas-negro-azul': 'Negro con patillas negro y azul',
+  'plateado-patillas-negras': 'Plateado con patillas negras',
+  'plateado-patillas-negras-logo-naranja': 'Plateado con patillas negras y logo naranja',
+  'dorado-brillo-patillas-plateadas': 'Dorado brillo con patillas plateadas',
+  'dorado-mate-patillas-plateadas': 'Dorado mate con patillas plateadas',
   'negro-mate': 'Negro mate',
   'negro-brillo': 'Negro brillo',
   'negro-satinado': 'Negro satinado',

@@ -22,6 +22,135 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-09-29 — El listado paginado de una carpeta de Dropbox puede omitir archivos reales — bajar la carpeta completa como ZIP es la forma confiable de auditarla
+
+**El caso**: en Mormaii Hover, el founder encontró un archivo (`MO_Hover_col05_RX_Lateral.jpg`) que mi
+escaneo de la carpeta (vía `get_page_text` / `read_page` sobre la página de Dropbox) nunca había
+mostrado — parecía no existir. Al cargar Mormaii Traful, pasó lo mismo pero a mayor escala: el
+listado de la carpeta mostraba colores col01 a col13 (13 archivos), pero la publicación real de ML
+del founder tenía un color "C016" que no encajaba en ese rango. Bajando la carpeta ENTERA como ZIP
+(`curl -L "<url-de-la-carpeta>?dl=1" -o carpeta.zip`, sin necesitar login) aparecieron col14, col15,
+col16 y col17 — 4 archivos más que el listado paginado nunca mostró. La carpeta de Dropbox usa algún
+tipo de virtualización/lazy-load en su listado web que el scraping por texto no dispara por completo,
+pero el export a ZIP trae todo sin ese problema.
+
+**Qué usar en su lugar**: cuando haga falta confirmar qué fotos tiene REALMENTE una carpeta de
+Dropbox del distribuidor (sobre todo si los códigos de color de ML/founder no coinciden con lo que
+muestra el listado web), bajar la carpeta completa como ZIP desde el arranque, no confiar en el
+listado paginado. `unzip` puede tirar un warning de "stripped absolute path spec" con archivos
+`._nombre.jpg` (metadata de macOS) — ignorable, los archivos reales igual se extraen bien.
+
+**Cómo aplica**: antes de decirle al founder "no encontré la foto de tal color" o de asumir que un
+color no tiene fotos disponibles, bajar el ZIP completo de la carpeta y recién ahí confirmar. Esto
+generaliza el mismo principio de "no confiar en un solo método de scraping" que ya se documentó para
+adivinar nombres de archivo (ver entry de K12/K13 sobre no adivinar rutas).
+
+## 2026-09-29 — La API pública de ML bloquea accesos anónimos (403), pero el repo tiene acceso autenticado real y ya activo — usarlo antes de rendirse
+
+**El caso**: para verificar/completar datos de ML (item real detrás de un link de catálogo, colores,
+variaciones, stock real) probé la API pública de ML (`api.mercadolibre.com`) tanto con `curl` como
+con `WebFetch`, ambos devolvieron 403 `PA_UNAUTHORIZED_RESULT_FROM_POLICIES` — un bloqueo de ML a
+requests anónimos, no algo puntual de esta sesión. Varias veces di por cerrada la investigación ahí
+("no tengo acceso, hace falta que el founder me pase X"), cuando en realidad el propio repo YA TIENE
+una integración OAuth completa y activa (`marketplace_integrations`, status=active, token
+refrescándose solo — ver ADR-024 en `DECISIONS.md`, corregido este mismo día porque decía
+"pendiente" estando en realidad completo).
+
+**Qué usar en su lugar**: `pnpm exec tsx --env-file=.env.local scripts/ml-item.ts <MLA...>` trae
+CUALQUIER item real con el token autenticado del sitio (self-contained, no importa los módulos
+`server-only` de `lib/integrations/mercadolibre/` — replica el decrypt AES-256-GCM inline, ver
+comentario del propio archivo). Para buscar publicaciones del vendedor por texto cuando no se tiene
+ningún link (ej. "¿existe una publicación de Joaca 4 en algún lado?"), se puede pegar el mismo patrón
+de auth y pegarle a `/users/{seller_id}/items/search?status=active` + multiget `/items?ids=` — no
+hace falta que el founder pase nada, encuentra publicaciones reales por título en menos de un minuto.
+Los archivos `lib/integrations/mercadolibre/*.ts` NO se pueden importar directo con `tsx` (llevan
+`import 'server-only'`, que tira error fuera de Next) — para scripts de terminal hay que replicar el
+decrypt (ya hecho en `scripts/lib/ml-auth.ts` y `scripts/ml-item.ts`) en vez de importar esos módulos.
+
+**Cómo aplica**: antes de decirle al founder "no puedo verificar esto sin que me pases un link/dato
+de ML", probar primero si el acceso autenticado del propio sitio lo resuelve. Sirve para: traer el
+item real detrás de un link de catálogo, listar variaciones reales de un item multi-variación (y sus
+`var_id` para el `mercadolibre_variation_code`), buscar publicaciones del vendedor sin link, auditar
+el catálogo completo comparando DB vs ML real (ver `scripts/tmp/ml-auditoria-completa.ts`, replica el
+algoritmo de matching de 3 formatos que usa `sync-stock.ts` en producción).
+
+## 2026-09-29 — Link de ML "articulo.mercadolibre.com.ar/MLA-XXXXXXX-..." trae el item_id directo en la URL; el de catálogo ("up") no
+
+**El caso**: para Mormaii Joaca 4, el founder pasó un link tipo
+`mercadolibre.com.ar/.../up/MLAU1172914382` — es la página de CATÁLOGO (producto genérico con Buy
+Box entre vendedores), pide login para ver el item real, y no tiene el `MLA...` numérico en la URL.
+Para Mormaii Hover, en cambio, pasó `articulo.mercadolibre.com.ar/MLA-1499575251-armazon-...` — un
+link de ITEM directo, con el código real (`MLA1499575251`) ya presente en la propia URL, sin
+necesidad de abrir la página ni loguearse.
+
+**Cómo aplica**: antes de asumir que hay que pedirle al founder el item MLA por separado (como pasó
+con Joaca 4), revisar el formato del link que ya mandó. Si empieza con `articulo.mercadolibre.com.ar`
+y tiene `MLA-` seguido de números en la URL, ese ES el item_id (sacarle el guion:
+`MLA-1499575251` → `MLA1499575251`) — no hace falta acceso a ML para nada. Si es `/up/MLAU...`
+(catálogo), ahí sí hace falta pedirle el link del item real.
+
+## 2026-09-29 — Cuando falta una foto de "sólo el producto" pero existe una foto compuesta (producto + accesorio) del mismo distribuidor, se puede recortar
+
+**El caso**: para Mormaii Hover (armazón + clip-on), el Dropbox del distribuidor no tenía la foto de
+perfil del armazón SOLO (sin el clip puesto) para la única variante con stock real — sólo tenía
+frente-solo y lateral-con-clip. La ficha pública de interoptica.com.ar sí tenía una foto compuesta
+(el armazón solo Y el clip por separado, ambos en la misma imagen, para mostrar las dos piezas) para
+esa misma variante.
+
+**Qué se hizo**: se bajó esa foto compuesta (más baja resolución que las del Dropbox — 1080px vs
+2000-3400px, pero real del distribuidor) y se recortó con PIL sólo la porción del armazón solo,
+tapando con blanco cualquier borde del clip que se colara en el recorte. El resultado, procesado por
+`pnpm placas` igual que las demás fotos, se ve bien en la PDP pese a la menor resolución de origen.
+
+**Cómo aplica**: antes de darle a un founder la mala noticia de "falta esta foto, hay que pedirla" o
+de usar una foto que no es la que corresponde (ej. la versión con accesorio puesto cuando se pidió
+"sólo el producto"), revisar si la ficha pública del distribuidor tiene una foto compuesta o de
+contexto de la que se pueda recortar la pieza faltante. No reemplaza una foto nativa de mejor calidad
+si en algún momento aparece, pero evita bloquear la carga o usar una foto que no corresponde.
+
+## 2026-09-29 — `pnpm placas --solo web` no existe: el equivalente real es `--solo 1,2,4`
+
+**El caso**: al cargar Mormaii Joaca 4 (6 colores, sólo sincronizar el sitio, sin publicar nada nuevo
+en ML) quise generar sólo perfil+frente+medidas usando `--solo web`, tal como lo describe el propio
+`--help` del script ("Genera sólo algunas placas: '1,4' o 'web'"). No tiró error, pero generó 0
+archivos — la carpeta `web/` quedó vacía y el log igual decía "Listo".
+
+**Causa real**: el código de `hacer(id)` en `scripts/ml-placas.ts` sólo reconoce los IDs `'1'` a
+`'6'` (cada uno una placa numerada). `'web'` no es un ID válido, así que `solo.includes('1')` etc.
+da `false` para TODAS las placas y no genera nada — la documentación del flag quedó desactualizada
+respecto al código, nadie lo notó porque nadie había usado esa forma antes.
+
+**Qué usar en su lugar**: `--solo 1,2,4` — id 1 = perfil (ML+web), 2 = frente (ML+web), 4 = medidas
+(ML+web). Genera exactamente perfil.jpg/frente.jpg/medidas.jpg en `web/` sin tocar los plates 3
+(callouts), 5 (lentes — ojo que ese trae texto tipo "monofocales/bifocales/progresivos" que no
+aplica a sol) ni 6 (garantía), que sólo escriben a `ml/`.
+
+**Cómo aplica**: cualquier carga que sólo necesite sincronizar el sitio (sin publicación nueva de ML)
+debería usar `--solo 1,2,4`, no `--solo web`. Si se corrige el bug del script en el futuro, borrar
+este learning.
+
+## 2026-09-29 — Mapeo color→SKU→stock→foto confiable en un sitio WooCommerce: leer `data-product_variations`, no simular clicks
+
+**El caso**: para saber qué colores del Mormaii Joaca 4 tenían stock/SKU real en el distribuidor
+(interoptica.com.ar, WooCommerce), probé seleccionar cada color del dropdown vía jQuery + `trigger
+('change')` y leer la imagen resultante. Los primeros intentos dieron resultados **inconsistentes
+entre corridas** (mismo color mapeaba a fotos distintas en corridas separadas) — carrera de AJAX,
+mismo tipo de falso positivo que adivinar nombres de archivo (ver entry del 2026-09-29 de la sesión
+K12/K13 sobre estuches).
+
+**La solución real**: los productos variables de WooCommerce embeben TODA la data de variaciones
+(SKU, stock, imagen, atributos) como JSON en el atributo `data-product_variations` del propio
+`<form class="variations_form">`. Leerlo directo con
+`JSON.parse(document.querySelector('.variations_form').dataset.product_variations)` da la data
+completa y estable de una sola pasada — sin simular ninguna interacción de usuario. De paso reveló
+que sólo 6 de los 8 colores del selector tienen variación real (2 están discontinuados pero siguen
+en el dropdown, sin data — por eso el "change" a esos 2 reseteaba el form a vacío).
+
+**Cómo aplica**: para cualquier sitio de distribuidor en WooCommerce (probable que varios de
+Mormaii/Rusty/Vulk lo usen), preferir leer `data-product_variations` del formulario ANTES de simular
+clicks en el selector de color/variante. Generaliza el patrón ya documentado de "verificar navegando
+la página real" — acá ni hace falta navegar, con un solo `querySelector` alcanza.
+
 ## 2026-09-22 — El flujo invertido: el sitio primero y Mercado Libre después
 
 **El caso**: el founder quiso cargar la 5ta variante del Rusty Bruice (669K/UV-N40) y **no existía
@@ -11161,6 +11290,59 @@ La validación obliga a **comparar dos fuentes de verdad** (doc vs disco). Sin e
 
 ---
 
+## 2026-10-02 — Placas de ML con `pnpm placas`: cuando Vision falla, fijar a mano textos y flechas sobre una grilla (y mapear cada burbuja a la parte MÁS CERCANA)
+
+**El caso**: en la placa de callouts del Mormaii Vesubio, el detector de partes devolvió 400 (pasa
+en todas las cargas) y el script cayó a textos y flechas por defecto: "Armazón liviano", "Cómodos" y
+un "Color a definir" literal, con flechas que no apuntaban a nada. Esos textos por defecto incluyen
+claims que NO se pueden afirmar (liviano sin gramaje medido, comodidad), así que la placa no se podía
+usar tal cual. Una primera corrección a mano dejó las flechas cruzadas entre sí, y el founder lo vio
+antes que yo.
+
+**Qué funcionó**:
+- Fijar todo a mano con las flags del script: `--c1..--c4 "TITULO|subtítulo"`, `--a1..--a4 "fx,fy"`,
+  `--lentes`, `--aclaracion` y `--item` (repetible, reemplaza los 5 ítems de la placa de garantía).
+  La placa de garantía y la de lentes también traen frases por defecto con claims ("Armazón liviano y
+  cómodo"): hay que revisarlas SIEMPRE antes de entregarlas.
+- Para apuntar con precisión: superponer una grilla de coordenadas sobre la propia `03-callouts.jpg`
+  (con sharp: renderizar el SVG de líneas a PNG, `composite` y recién después `extract`; hacerlo en
+  ese orden, si no sharp tira "Image to composite must have same dimensions or smaller"), leer los
+  píxeles reales de cada parte y convertirlos a fracciones del armazón. Calibración medida en esta
+  carga: `x = 42 + fx*1413`, `y = 479 + fy*574` en la placa de 1500×1500 (depende del recorte de cada
+  foto, recalibrar con una flecha de prueba).
+- Las 4 burbujas tienen posiciones fijas (arriba izq., arriba der., abajo izq., abajo der.) y el
+  `--c1..--c4` las llena en ese orden. Para que las flechas no se crucen, asignar a cada burbuja la
+  parte del armazón que le queda más cerca (en un perfil con el frente a la izquierda y la patilla a
+  la derecha: frente/puente a las burbujas de la izquierda, patilla y bisagra a las de la derecha).
+
+**Cuándo aplicar**: en toda carga con `pnpm placas` (hoy `--sin-vision` / Vision falla siempre).
+Ver MISTAKES.md 2026-10-02 (placas entregadas sin chequear cruces).
+
+---
+
+## 2026-10-03 — Para identificar los colores de una variante multi-color: tabla maestra con "confirmado por el founder" vs "pista de ML", y cruce por píxeles contra las fotos de la marca
+
+**El caso**: Reef 128 tiene 19 colores en la página de la marca (una sola foto lateral por color, sin frentes) y una
+publicación de ML con 6 variaciones. Había que saber qué color era cada variación sin mezclar modelos ni variantes.
+
+**Qué funcionó**:
+- Bajar las fotos de la marca por el pedido interno de la página (PrestaShop: POST `index.php?controller=product&id_product=N`
+  con `ajax=1&action=refresh&group[1]=ID`), porque hacer clic en cada opción re-renderiza el DOM y las siguientes quedan
+  obsoletas. Devuelve la imagen y la referencia de cada color.
+- Comparar por píxeles las fotos que el founder ya usa en ML contra las de la marca (recorte con `trim`, redimensionar a
+  240×100 en gris y diferencia media): dio 0,8 a 2,1 para las que son la misma foto y 13 a 30 para las que no. Sirvió para
+  confirmar 016 y 020, y para ver que hay colores casi gemelos (014=017 es literalmente la misma imagen).
+- Los productos de catálogo de ML que cuelgan de cada User Product traen `DETAILED_MODEL` (a veces con el código de color) y
+  el GTIN (código de barras). Útiles como PISTA, pero pueden estar mal enlazados: ver MISTAKES.md 2026-10-03.
+- Armar una tabla maestra (variación de ML, color, descripción, stock, GTIN, estado) y marcar ✅ sólo lo que confirma el founder
+  contra la unidad física; ir actualizándola a medida que pasa cada código de barras. Se descubrieron así diferencias de stock
+  (ML vs real) y una variación con el color del armazón mal cargado.
+
+**Cuándo aplicar**: cualquier marca con muchos colores y fotos escasas (Reef, y lo que venga). El stock del sitio sale de ML:
+si el real no coincide, el founder lo corrige en ML, nunca por SQL.
+
+---
+
 # Template para agregar learnings
 
 ```markdown
@@ -11676,6 +11858,287 @@ mirar en zoom si hace falta. Es más confiable que cualquier comparación visual
 además es exactamente el mismo lugar donde suelen venir los números de medida (calibre-puente-
 varilla) que tampoco se pueden usar sin confirmación del founder, pero que sí sirven para
 desambiguar EMPAREJAMIENTOS (que no es una medida, es una identidad).
+
+## 2026-09-25 — Los atributos separados de ML (FRAME_COLOR/LENS_COLOR) desambiguan mejor que el campo "color" genérico o que comparar fotos a ojo
+
+**Contexto**: cargando Vulk Anima, la publicación multivariante de ML traía 3 variantes con colores
+"Marrón", "Verde Degradé" y "Verde oscuro" (el campo genérico que usa `scripts/ml-item.ts` para
+mostrar resumen). El fabricante tenía 6 fotos de colorways distintas y a simple color no alcanzaba
+para saber cuál foto era cuál — dos de las seis eran verdes gradientes muy parecidos entre sí
+(uno con frente negro, otro con frente sienna transparente), y "Marrón" como color de variante no
+calzaba obviamente con ninguna foto a primera vista (había un frame negro con lente marrón Y un
+frame sienna con reflejo marrón-ish).
+
+**Qué funcionó**: pedirle a la API de ML el JSON completo del item (no sólo el resumen que imprime
+`ml-item.ts`) y mirar `attribute_combinations` de cada variación por separado: `FRAME_COLOR` y
+`LENS_COLOR` vienen como dos atributos distintos, no combinados. El campo "color" que usan los
+scripts de resumen sólo toma el primero que matchea `/color/i` — que puede ser CUALQUIERA de los dos
+según el orden en que ML los devuelve, y termina reportando a veces el color del LENTE como si fuera
+"el color" de la variante. Con `FRAME_COLOR` y `LENS_COLOR` por separado el emparejamiento se volvió
+determinístico: la variante con `FRAME_COLOR=Marrón` (no "Negro") sólo podía ser el frame sienna
+transparente (que ML redondea a "Marrón" por ser un tono cálido), no el frame negro — sin necesidad
+de comparar fotos a ojo ni de tener un grabado legible como en el caso Storm.
+
+**Regla / cuándo aplicar**: antes de emparejar variantes de un item multivariante de ML contra fotos
+de fabricante/distribuidor por "color", pedir el JSON completo del item (no el resumen) y revisar
+TODOS los `attribute_combinations` de cada variación — especialmente si hay `FRAME_COLOR` y
+`LENS_COLOR` (u otros pares similares) por separado. Es más barato y más confiable que el método del
+grabado en la foto de perfil (Storm) porque no depende de que la foto tenga buena resolución o de que
+el grabado sea legible — el dato ya está estructurado en la respuesta de la API, sólo hay que no
+quedarse con el resumen de un solo campo "color".
+
+## 2026-09-28 — Un valor de enum nuevo no rompe nada: desaparece en silencio de la ficha
+
+**El caso**: cargando Mormaii Daito, el founder corrigió el material del armazón de "injected"
+(genérico, tomado del atributo de ML) a "poliamida" (el material real, confirmado por él y por el
+fabricante). Al ir a cargar `frame_material: "poliamida"` en el seed, no hubo ningún error de
+`tsc` ni de la base — el campo es `jsonb`, acepta cualquier string.
+
+**El problema real estaba en el frontend, no en la base**: `components/product/product-attributes.tsx`
+y `app/(storefront)/comparar/page.tsx` tienen cada uno su propio `FRAME_MATERIAL_LABELS: Record<string,
+string>`, y el primero usa un `lookup()` que devuelve `null` si la clave no está — sin warning, sin
+excepción. Un valor de enum que no está en el mapa **no rompe el build ni la carga: el campo
+"Material del armazón" directamente no se renderiza en la ficha**, como si el dato no existiera.
+Se hubiera notado recién mirando la PDP en producción, no antes.
+
+**Regla / cuándo aplicar**: antes de cargar cualquier atributo tipo enum que sea NUEVO para el
+catálogo (no solo `frame_material` — mismo riesgo aplica a `frame_shape`, `lens_treatment`, `gender`,
+cualquier campo con su propio `_LABELS` map), grepear `grep -rn "_LABELS" components/ lib/ app/` y
+agregar la entrada en TODOS los mapas que la tengan duplicada antes de escribir el seed, no después.
+El síntoma de "me olvidé" es mudo: la ficha se ve normal, solo le falta una línea.
+
+## 2026-09-28 — Sombra de contacto en fotos de catálogo: `pnpm foto:limpia --sin-sombra` es el fix, no flood-fill/threshold (2 intentos fallidos antes de encontrarlo)
+
+**El caso**: Juan notó que las fotos de frente/perfil del Mormaii Daito no tenían fondo 100%
+blanco. Las fotos fuente del distribuidor (Dropbox) venían con una sombra de contacto suave
+(gradiente gris) bajo el armazón, típica de un render 3D. El `trim` de sharp que usa `pnpm placas`
+recorta el PERÍMETRO de la foto por color dominante, pero no toca lo que queda DENTRO del recorte —
+la sombra, al estar pegada al producto, sobrevive intacta a la placa terminada.
+
+**Los primeros 2 intentos (flood-fill/threshold) NO alcanzaron, aunque cada uno pareció resolverlo
+en la verificación del momento** — entry original de este archivo, corregida acá porque llevaba a
+error: (1) `PIL.ImageDraw.floodfill` desde las 4 esquinas, thresh 70 → dejaba resto hasta 181/255 en
+las fotos de PERFIL (ángulo 3/4, sombra más extendida que en frente). (2) Mismo flood-fill con
+thresh 110 → mejor, pero un boost de contraste 15x sobre la imagen servida en producción (ver
+técnica de verificación abajo) seguía mostrando una sombra tenue y difusa. **La razón de fondo**:
+aproximar "qué es sombra" por un umbral de color nunca es exacto porque la sombra es un GRADIENTE
+continuo sin borde limpio contra el blanco — cualquier corte fijo deja un resto en algún punto de
+la transición, y ese resto, aunque parezca imperceptible en una revisión rápida, se nota al lado de
+blanco puro real.
+
+**Qué funcionó de verdad**: `pnpm foto:limpia` — herramienta que YA existe en el repo (pensada
+originalmente para fotos de celular tomadas en el local), con un comentario propio en el código que
+literalmente describe este problema: *"las fotos del catálogo tienen sombra suave sobre el blanco,
+y un umbral no distingue sombra de producto"*. Usa `rembg` (modelo `isnet-general-use`) para
+SEGMENTAR el objeto de verdad (red entrenada, no heurística de color) y lo compone sobre un blanco
+generado de cero — no hay sombra que pueda sobrevivir porque el nuevo fondo no viene de la foto
+original en absoluto. Dos flags necesarios para este caso (no son el default de la herramienta):
+- `--p50 0`: sin esto, la herramienta remapea el tono para normalizar exposición (pensado para fotos
+  de celular con mala luz) — probado sin el flag, DISTORSIONÓ el color de la lente marrón a un
+  naranja/rojizo que no existe en el producto real. `--p50 0` = no tocar la exposición.
+- `--sin-sombra`: sin esto, la herramienta DIBUJA una sombra de contacto sintética propia por
+  default (deliberada, buena práctica de foto de producto) — pero Juan pidió 100% blanco sin nada,
+  así que hay que desactivarla explícitamente.
+
+**Cómo verificar de verdad (no repetir el error de los 2 primeros intentos)**: comparar "se ve bien"
+a ojo en una miniatura no alcanza. Aplicar un boost de contraste agresivo (`ImageEnhance.Contrast(im
+).enhance(15.0)`) sobre la imagen REAL servida en producción (bajada del bucket, no el archivo local
+recién generado) revela cualquier gradiente residual como una silueta oscura bien visible, incluso
+cuando a contraste normal parece imperceptible. Es el mismo principio que un vúmetro: amplificar la
+señal chica para que dejar de adivinar si "ya está" o no.
+
+**Regla / cuándo aplicar**: si una carga de fotos muestra fondo no-100%-blanco (sombra de contacto
+de un render 3D, gradiente suave bajo el producto), ir directo a `pnpm foto:limpia --p50 0
+--sin-sombra --dir <carpeta con frente.jpg/perfil.jpg>` sobre las fotos FUENTE originales (no sobre
+la placa ya generada) — no perder tiempo con flood-fill/threshold, ya está probado que no alcanza.
+Verificar con el boost de contraste antes de resubir. Recordar resubir con sufijo nuevo y actualizar
+`storage_path` en `product_images`: Next.js cachea imágenes optimizadas 31 días por path, pisar el
+mismo nombre no sirve.
+
+## `foto:limpia`/rembg no es el default — es la herramienta para UN problema (sombra), no para toda foto de fabricante
+
+**Contexto**: cargando Mormaii Ancara 2 RX (seed 125), con fotos de estudio del Dropbox oficial del
+fabricante (ya sobre blanco puro, sin sombra visible al ojo). Por hábito de las últimas 3 cargas
+(Daito/Curazao/Borneo, donde `foto:limpia --p50 0 --sin-sombra` fue la solución correcta a un
+problema real de sombra baked-in), corrí `foto:limpia` de entrada en las 4 colorways — sin verificar
+primero si hacía falta.
+
+**Qué pasó**: en Col 03 (azul oscuro), rembg (`isnet-general-use`) segmentó mal el frente y dejó un
+artefacto de ruido tipo "papel roto" en los bordes del armazón — visible a simple vista, NO estaba en
+el archivo original (confirmado comparando contra el JPG crudo, que estaba perfectamente limpio).
+Las otras 3 colorways salieron bien con rembg, pero una de cuatro ya es motivo suficiente para no
+confiar en el resultado sin revisar cada imagen.
+
+**Causa**: `rembg` SEGMENTA el objeto con una red entrenada — es la herramienta correcta cuando el
+fondo NO es limpio (sombra de contacto, fondo con textura, foto de celular). Cuando el fondo YA es
+blanco puro (estudio, sin sombra), la segmentación es trabajo innecesario que puede fallar sin que
+haya nada que arreglar — un riesgo que `pnpm placas` con `trim` (recorte por color dominante del
+perímetro, sin tocar el interior) no tiene, porque no intenta segmentar nada.
+
+**Regla / cuándo aplicar cada uno**:
+- Fondo con sombra/gradiente/textura real (fotos de celular del founder, o renders con sombra baked-in
+  tipo Daito) → `pnpm foto:limpia --p50 0 --sin-sombra`.
+- Fondo ya blanco puro (fotos de estudio oficiales del fabricante/distribuidor, confirmado mirando el
+  archivo crudo ANTES de procesar) → `pnpm placas --solo 1,2` (trim), el pipeline estándar. Más
+  rápido y sin el riesgo de artefactos de segmentación que rembg puede introducir sobre una imagen que
+  no los tenía.
+- Si hay duda, mirar el archivo crudo primero (Read del JPG) en vez de asumir por el origen de la
+  foto ("es del fabricante" no garantiza que esté ya limpia, ni que rembg vaya a mejorarla).
+
+## Cuando `optical-expert` objeta una medida pero el founder la remidió y la confirma: gana su medición, documentar el caso atípico
+
+**Contexto**: Mormaii San Juan (seed 128) llegó con una alerta geométrica del script de placas más
+fuerte que cualquier caso anterior: margen de EXACTAMENTE 0mm (2×64+17=145, igual al ancho total de
+145mm). Consulté a `optical-expert`, que fue categórico: un margen de 0 no es físicamente posible
+(el aro tiene grosor propio, ni siquiera el precedente Borneo con bisagra plana llegaba a 0 — su
+margen era 2mm). Le pregunté al founder si midió el ancho correctamente (punta a punta externa) —
+confirmó que sí, con la técnica correcta — y le pedí específicamente remedir calibre y puente (los
+más fáciles de pasarse por 1mm en un armazón cuadrado). Remidió y **confirmó los mismos números**.
+
+**Qué se hizo**: se cargó igual, con calibre 64/puente 17/ancho 145 tal cual el founder los confirmó
+dos veces, documentando el caso como atípico en el comentario del seed — no se bloqueó la carga ni
+se inventó un número "que cierre matemáticamente".
+
+**Regla / cuándo aplicar**: el chequeo geométrico del script y la opinión de `optical-expert` son
+señales de alerta para VOLVER A PREGUNTAR, no autoridad para sobrescribir la medición física directa
+del founder sobre el objeto real que tiene en la mano (regla dura 7 del proyecto: las medidas sólo
+las carga él). El protocolo correcto es: (1) alertar con el número exacto de la inconsistencia, (2)
+pedir que confirme el método de medición (a veces el error está ahí, como pasó con Borneo/Moorea
+donde el ancho declarado en un diagrama no coincidía con la medición real), (3) si confirma el
+método Y remide y los números se sostienen, cargar tal cual y dejar el caso documentado en el
+comentario del seed para que quien lo lea después entienda el porqué — no inventar un valor "más
+razonable" ni negarse a cargar. La agencia final sobre la medida física es del founder, no del
+modelo ni del chequeo automático.
+
+## `pnpm placas` con `--solo 1,2` no alcanza — el set completo tiene defaults que pueden violar restricciones del founder
+
+**Contexto**: al generar las placas de ML para Rusty K12 (armazón infantil), corrí `pnpm placas
+--solo 1,2` pensando que sólo necesitaba perfil+frente recortados. El founder pidió el set completo
+("faltan las demás placas... la que ponemos a lo último de la óptica") y al generar las 3 placas que
+me había salteado (03 callouts, 05 lentes, 06 garantía) aparecieron dos problemas reales:
+
+1. **La placa 05 ("lentes") trae por default el texto "monofocales, bifocales y progresivos"** —
+   exactamente la restricción explícita que el founder había pedido no mencionar para este producto
+   infantil. El default del script asume un producto de receta genérico (adulto), no contempla la
+   excepción infantil.
+2. **La placa 03 (callouts) tiene un callout "Frente" con subtítulo placeholder "color a definir"**
+   si no se pasa `--c3` explícito — un texto que jamás debería salir en una placa real, pero el
+   script no avisa, simplemente lo deja así.
+
+**Por qué no lo agarré antes**: al usar `--solo 1,2` para ahorrar generación innecesaria (sólo
+necesitaba los crops de foto en ese momento), nunca llegué a ver el resto del set completo ni sus
+defaults — los descubrí recién cuando generé el set entero a pedido del founder.
+
+**Regla preventiva**: cuando un producto tiene restricciones de copy no estándar (como "no mencionar
+bifocales/progresivos" en infantiles, o cualquier claim que no aplique), y se va a generar el SET
+COMPLETO de placas de ML (no sólo 1,2), correr primero con `--lentes` explícito (nunca confiar en el
+default "monofocales, bifocales y progresivos") y siempre pasar `--c3 "Frente|<color real>"` — nunca
+dejar que el placeholder "color a definir" llegue a una placa final. Revisar las 6 placas generadas
+una por una antes de entregarlas, no asumir que sólo perfil/frente necesitan revisión visual.
+
+## No adivinar nombres de archivo de fotos del fabricante — verificar navegando la página real y mirando qué request dispara cada variante
+
+**Contexto**: para Rusty K12 y K13, cada variante de color tiene su propia foto de estuche (los
+accesorios vienen del mismo color que el armazón). Al principio usé la MISMA foto de estuche para
+todas las variantes de un modelo (la de la primera carpeta que encontré), sin buscar si había una
+por color — error que el founder detectó y corrigió. Al ir a buscar la foto correcta, mi primer
+intento fue adivinar nombres de archivo por patrón (`z-estuche_rosa.jpg`, `z-estuche_azul.jpg`, etc.
+contra la carpeta de cada SKU) y verificar con `curl -o /dev/null -w "%{http_code}"` — **la mayoría
+de esos nombres adivinados devolvió HTTP 200 igual, pero con contenido FALSO**: o un archivo de
+~2.8KB (placeholder/error genérico del servidor) o, peor, el contenido real de OTRA carpeta distinta
+servido por error (confirmado comparando MD5: la respuesta a una URL inventada era byte-a-byte
+idéntica a la foto real de otra variante/modelo). HTTP 200 no significa "el archivo que pediste
+existe" en este servidor — significa "algo respondió", puede ser un fallback silencioso.
+
+**Cómo se resolvió**: en vez de seguir adivinando, navegué la página real del producto en el browser
+(`mcp__Claude_Browser__navigate`), hice clic en la miniatura de cada variante de color, y leí
+`read_network_requests` filtrando por `estuche` para ver la URL EXACTA que el propio sitio pidió al
+cambiar de variante — esa es la única fuente confiable, porque es el sitio mismo revelando su propia
+estructura de archivos, no una suposición mía sobre el patrón de nombres.
+
+**Regla / cuándo aplicar**: cuando un fabricante tiene una foto que varía por variante y hace falta
+encontrar la URL exacta (no está en el HTML inicial, sólo se carga al cambiar de tab/color), NO
+adivinar el nombre de archivo por patrón y confiar en el código HTTP. Navegar la página real, hacer
+clic en cada variante, y leer las network requests que dispara ese clic — es más lento que adivinar
+pero es la única forma de tener certeza. Si de todas formas se prueban nombres por patrón (por
+velocidad), verificar SIEMPRE el tamaño de archivo y/o el MD5 contra un archivo ya confirmado antes
+de asumir que es correcto — un archivo sospechosamente chico (unos pocos KB en vez de 40-80KB+ típico
+de estas fotos) es la señal de que es un placeholder, no la foto real.
+
+## El "404/producto ausente" recién aplicado un seed es 100% caché de ISR (`revalidate=300`), nunca un bug de datos — confirmado con timing exacto
+
+Patrón visto repetidas veces esta sesión (Hover, Traful, Maceio, Monterrey 2): después de aplicar un
+seed nuevo, la primera navegación directa a la PDP (o incluso el grid de marca) puede dar 404 o no
+listar el producto, aunque un SELECT confirme que `is_active=true` en `products`/`brand`/`category`.
+Hasta ahora se documentaba como "sospecha de caché de Vercel/CDN, se resuelve solo" sin confirmación
+dura.
+
+**Confirmación definitiva (Monterrey 2, 2026-09-29)**: Juan reportó "no aparece el Monterrey" — en vez
+de asumir, medí el tiempo exacto con SQL (`now() - products.created_at`): dio `00:05:01`, es decir,
+justo en el borde de `export const revalidate = 300` (Next.js ISR) que usan TODAS las rutas de
+categoría/marca/producto del storefront. Al reintentar la navegación inmediatamente después de cruzar
+esa ventana de 300s, el producto apareció andando perfecto (grid + PDP), sin ningún cambio de código
+ni de datos de por medio.
+
+**Regla / cómo aplicar**: cuando un producto recién aplicado no aparece en vivo:
+1. Verificar PRIMERO con SELECT que `is_active=true` en products/brand/category (nunca asumir que es
+   un bug sin chequear datos primero).
+2. Si los datos están bien, calcular cuánto tiempo pasó desde el `created_at`/`updated_at` del seed.
+   Si es menos de 5 minutos, es 100% esperable — no hay nada que arreglar, sólo esperar a que venza la
+   ventana de `revalidate=300`.
+3. Recién si pasaron varios minutos (5-10+) y sigue sin aparecer, ahí sí investigar más a fondo (puede
+   ser un problema real).
+4. No hace falta ningún workaround (navegar por el grid en vez de la URL directa, etc.) — alcanza con
+   esperar la ventana y reintentar.
+
+## `lens_category` (y cualquier campo técnico "uniforme") puede variar por variante — modelarlo como override en `product_variants.attributes`, no forzar el mismo valor a todo el producto
+
+Hasta Mormaii Fortaleza (seed 141), todo el catálogo asumía que campos como `lens_category` son
+uniformes para las 4-5 variantes de color de un mismo producto — se cargan una sola vez en
+`products.attributes` y listo. El founder reportó, después de aplicado el seed, que UNA sola variante
+(Col.07, Negro Mate/Lentes Rosadas) es categoría 1, mientras las otras 3 son categoría 3 — la lente
+rosa es de tinte más claro, dato real del fabricante, no un error de carga.
+
+**Cómo se resolvió**: se agregó `lens_category` DENTRO del `attributes` de esa variante puntual en
+`product_variants` (mismo patrón ya usado para `polarized`, que también es boolean por variante) —
+funciona como override sobre el valor por defecto del producto. Las otras 3 variantes no necesitan
+tocarse, siguen heredando el `lens_category: 3` de `products.attributes`.
+
+**Por qué importa**: el copy de cara al cliente (description/short_description/meta_description +
+callouts) NO puede afirmar un dato técnico "para las 4 variantes" cuando en realidad varía — se tuvo
+que reescribir para especificar cuál variante es cuál categoría, por honestidad de negocio (rubro
+sensible, categoría de lente afecta cuánta luz visible filtra, no es un detalle cosmético).
+
+**Cómo aplicar a futuro**: cuando el founder dé un dato técnico "distinto para una variante puntual"
+(pasó ya con `lens_category`, podría pasar con `lens_material`, `weight_grams`, etc.), no asumir que
+hay que migrar todo el producto a un modelo más complejo — alcanza con el override a nivel de esa
+variante en `product_variants.attributes`, y ajustar el copy para que hable con precisión de cuál
+variante tiene cuál valor.
+
+## Flechas de callouts: marcar las partes a mano UNA vez (`pnpm anclas`) y copiarlas al resto de colores en pixeles absolutos; el punto más cercano a la burbuja cruza flechas
+
+Las flechas de `03-callouts` salían imprecisas por dos motivos: coordenadas a ojo (`--a1..--a4`) o pedidas a
+Claude Vision (±3-6% en partes chicas). Ningún modelo local publica precisión en pixeles para una bisagra, así que se
+resolvió con una persona: `pnpm anclas <foto>` abre un clicker con lupa, y `pnpm placas` lee el `<foto>.anclas.json`
+resultante (sin Vision, sin mover los puntos). Para las variantes de color de un mismo modelo alcanza con marcar UNA
+foto y correr `pnpm anclas --copiar-de ref.jpg otras...`: la copia es en pixeles de la foto ORIGINAL (usando el offset
+del trim), no en fracciones, porque cada recorte mide distinto (en Reef 128: alto 416-450). Reef 128: 7 de 8 colores
+quedaron bien; el 016 está encuadrado un poco distinto y el punto del lente cayó afuera: **verificar con una hoja de
+contacto de las 8 placas antes de dar por buena la copia**. Segundo hallazgo: si se marcaron las dos bisagras/lentes/
+frentes, dejar que cada burbuja elija su punto más cercano cruza las flechas de un mismo lado; `asignarExactas` prueba
+todas las combinaciones y gana la de flechas más cortas sin cruces. Y las flechas azul marino con borde blanco
+(`halo`) se leen sobre lentes oscuros.
+
+**Actualización el mismo día — se eliminó el paso de copiar y de re-marcar:** copiar en pixeles absolutos falló en 1 de 8
+(la 016 estaba encuadrada con otra escala) y el founder pidió menos pasos. Se estima escala y corrimiento comparando los
+BORDES de las dos fotos (`placas-alinear.ts`: correlación normalizada, búsqueda gruesa y fina, determinista, sin modelos)
+y `pnpm placas` lo hace solo contra cualquier foto de la misma carpeta que tenga marcas. Calce típico 0.38-0.44 entre
+colores (los bordes de lente/logo difieren); se avisa debajo de 0.35. Con eso la regla es: **marcar una foto por modelo,
+correr `pnpm placas` por color, y mirar igual la hoja de contacto.** Los puntos que caen en el fondo se pegan al armazón.
+**Criterio de calidad de una flecha (aprendido el 2026-10-03):** que la punta caiga sobre la parte NO alcanza; el founder rechazó
+unas flechas bien apuntadas porque eran largas y atravesaban el lente. Marcar cada parte del lado más cercano a su burbuja
+(frente = borde de abajo del aro para la burbuja de abajo; lente = zona alta del cristal para la burbuja de arriba) y mirar
+que ninguna flecha cruce el producto.
 
 ## Notas finales
 

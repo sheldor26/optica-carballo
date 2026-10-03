@@ -226,6 +226,69 @@ Atributo de respaldo (copy/alt, NO primaria): `lentes de sol polarizados` (260),
 
 **Honestidad**: solo **1/3 polarizada** → NO afirmar "polarizados" del modelo en title/H1 (el claim pol va SOLO en la variante S10). NO targetear género (unisex). **ANTI-CANIBALIZACIÓN vs Rusty Blinded (también redondo sol)**: clave — NO comparten primaria. **Blinded = forma-first** (su marca-head Rusty-sol está saturada → la forma redonda es su único diferenciador). **Bennie = marca-first** (`lentes de sol vulk` 1.300, y es el ÚNICO redondo del cluster Vulk-sol). El query genérico `lentes de sol redondos` lo consolida la CATEGORÍA `/anteojos-de-sol/redondos`, no los productos. **Cross-link obligatorio Bennie↔Blinded** ("otros anteojos de sol redondos") + ambos → `/anteojos-de-sol/redondos`. Title: `Lentes de Sol Vulk Bennie 51 Redondos | Óptica Carballo`. H1: `Lentes de Sol Vulk Bennie 51 — Redondos Unisex`.
 
+*Vulk Anima (SOL, CUADRADO grande, MUJER explícita, G-Flex frente y patillas, bisagras metálicas
+con sistema flex, policarbonato antirreflex 100% UV cat 3, 32 g, 5 colorways — MBLK/S10 negro
+mate/gris oscuro, SBLK/G.BROWN negro brillo/marrón degradé, SBLK/G.GREEN negro brillo/verde oscuro
+degradé, SIENNA/G.GREEN sienna transparente/verde degradé, CRY/RED cristal transparente/rojo
+degradé, NINGUNA polarizada) — slug `vulk-anima` en `/anteojos-de-sol/vulk/vulk-anima`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| lentes de sol vulk mujer | 260 | 8 | **primaria** — marca+género, variante "lentes" (mayor volumen) → meta_title, H1, 1er párrafo |
+| anteojos de sol vulk mujer | 210 | 8 | primaria alt, variante "anteojos" (intención navigational) → copy, alt text |
+| lentes de sol vulk | 1.300 | 8 | head de marca (soporte, NO primaria — saturada en el cluster) → H2/copy |
+| anteojos de sol vulk | 880 | 10 | head de marca variante "anteojos" (soporte) → copy |
+| anteojos de sol mujer | 5.400 | 10 | head de categoría amplia, demasiado competitiva para PDP → soporte, apunta a `/anteojos-de-sol/mujer` |
+| vulk anima (branded) | 0 medido | ~4 | long-tail exacto → title/H1/slug/alt |
+
+**El carril elegido es marca+género, no forma.** Anima comparte forma real ("cuadrado grande" G-Flex)
+con **Deserve** y comparte marca+línea con **The Sil**, que ya tiene tomado el genérico
+`anteojos/lentes de sol cuadrados` (cuadrado forma-first, unisex, 3/3 polarizadas). Reclamar
+"cuadrado" ahí sería pisarlo dos veces: adentro del cluster Vulk (vs The Sil) y afuera (vs el cuarteto
+que ya ocupa `anteojos de sol cuadrados mujer` 110/14 — Rusty Dileri, Vorez, Dearly + Vulk Katleen,
+documentado en la entrada de Vriviant más arriba). Anima no necesita competir ahí: es el único
+Vulk-sol explícitamente MUJER del catálogo (The Sil, Raven, The Trial, Bennie 51 y Deserve son
+unisex y por regla no pueden reclamar género), así que `lentes/anteojos de sol vulk mujer` queda
+libre — mismo criterio que usó Bennie 51 para tomar el head de marca por ser "el único redondo".
+
+**Anti-canibalización**: (A) vs **Vulk Deserve** (mismo armazón real, cuadrado grande G-Flex,
+unisex, 1/3 pol, sin entry propia todavía en este archivo): Deserve es unisex y no puede pelear
+género; si más adelante se le da keyword primaria, no puede ser `vulk mujer` — queda abierto para
+forma o branded. Cross-link obligatorio Anima↔Deserve ("mismo armazón, otro género/colores").
+(B) vs **Vulk The Sil** (mismo brand+línea, cuadrado forma-first, unisex, 3/3 pol): The Sil se queda
+con el genérico `anteojos/lentes de sol cuadrados`; Anima no lo reclama en ningún nivel (title, H1,
+meta ni alt). Diferenciador real: The Sil es Grilamid/TR-90 y 100% polarizado; Anima es G-Flex y
+0% polarizado — cero solapamiento de claims. (C) vs el cuarteto cuadrado-femenino cross-brand
+(Rusty Dileri/Vorez/Dearly + Vulk Katleen, todos con `anteojos de sol cuadrados mujer` 110/14):
+Anima ni compite ahí — es otra marca (Vulk vs Rusty en 3/4 casos) y ni siquiera intenta la forma como
+keyword, así que el carril queda intacto para ellos. (D) vs **Vulk Vartis** (receta, `anteojos vulk
+mujer` 320/8): strings distintas (con "de sol" vs sin calificador) + intención distinta (sol vs
+receta) + categorías separadas — mismo criterio de split usado en el resto del cluster (Woxi↔R-CY 02,
+Kirt↔Ther). Sin receta hermana de Anima hoy → sin cross-link sol↔receta.
+
+**Honestidad**: 0 de 5 variantes polarizada → "polarizado" NO aparece en title, H1, `name` ni
+`short_description`; si se agrega un warning explícito en la ficha (patrón Bruice/Dunsert), aclarar
+que ninguna colorway polariza. `lens_treatment` de producto queda `["uv400", "antirreflejo"]`
+(antirreflex confirmado para las 5 variantes, no es un atributo parcial como en Dunsert). **G-Flex es
+el nombre del material y NO autoriza a decir que el armazón es flexible** (regla del proyecto) — el
+flex vive en la bisagra metálica.
+
+**Facetas esperadas**: `gender: "female"` → entra a `/anteojos-de-sol/mujer` y
+`/anteojos-de-sol/vulk/mujer` (si esa subcategoría se activa; hoy Anima sería su único producto,
+por debajo del umbral de 4 para promoverla activamente en SEO — regla usada en Rusty). NO entra a
+`/anteojos-de-sol/polarizados` (0 variantes califican). NO entra a `/anteojos-de-sol/vulk/polarizados`
+(0 variantes a nivel producto).
+
+Title: `Lentes de Sol Vulk Anima Mujer | Óptica Carballo` (48). Alternativa: `Anteojos de Sol Vulk
+Anima Mujer | Óptica Carballo` (50, intención navigational, mismo volumen relativo) — se recomienda
+la primera por mayor volumen (260 vs 210) y porque respeta la convención del cluster (head crítica:
+"lentes de sol" gana en Vulk). H1 = name = `Vulk Anima Mujer` (con "Mujer" explícito — mismo
+criterio que Vartis, ya que acá SÍ hay keyword primaria de género real, a diferencia de los unisex
+del cluster). Meta: `Lentes de sol Vulk Anima para mujer: cuadrado grande en 5 colores, UV400 cat. 3
+y antirreflex. Envío a todo el país, 30+ años de experiencia en óptica.` (151). Linking:
+`/anteojos-de-sol/vulk` + `/marcas/vulk` + `/anteojos-de-sol/mujer` + related (deserve, the-sil,
+otros Vulk sol) + cross-link Anima↔Deserve.
+
 *Vulk The Trial Optics — RECETA (armazón, aviador doble puente, UNISEX, lentes demo, G-Flex + patillas Monel/acetato hecho a mano, 19,5g, large) — slug `vulk-the-trial-receta` en `/anteojos-de-receta/vulk/vulk-the-trial-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
@@ -775,6 +838,64 @@ De respaldo (copy/alt, NO primaria): `anteojos de sol cuadrados mujer` (110/14),
 - `lentes rusty` (2.400 pero dif 49), `armazones rusty` (50/49), `armazones rusty mujer` (20/44) — difficulty prohibitiva y/o término muerto.
 - `anteojos rusty` como primaria de un PRODUCTO individual (es del hub `/marcas/rusty` y de las categorías marca; los productos targetean modelo + forma + género para no canibalizar).
 
+*Rusty K12 (receta, INFANTIL — primer producto realmente para niños/as del catálogo, badge nuevo
+`size_fit: "infantil"` en vez de reusar "junior" — Grilamid TR-90, patillas de goma con alma de
+metal ajustable, bisagra goma flex, lente demo con filtro Bluecut, 2 colores: C1 celeste/azul
+translúcido y C3 rosa/frambuesa translúcido) — slug `rusty-k12-receta` en
+`/anteojos-de-receta/rusty/rusty-k12-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| rusty k12 (branded) | 0 medido | ~4 | long-tail exacto, conversión alta cuando el comprador ya conoce el modelo → **primaria**, title/H1/slug/alt |
+| anteojos recetados | 720 | 9 | head de intención genérico ya usado por el resto del cluster receta Rusty → soporte, copy |
+| anteojos infantiles | 70 | 48 | única keyword de audiencia infantil con volumen real en TODO el catálogo, pero difficulty demasiado alta para title/H1 con cero autoridad en el segmento → copy/H2 únicamente, nunca primaria |
+| anteojos de sol niñas / anteojos de sol infantiles / armazones infantiles | 50/30/10 | 36/36/49 | genéricas o de SOL (no receta) → sin uso directo, referencia de campo léxico |
+
+**Hallazgo del research**: barrido completo de los 35 CSV de `KEYWORDS OPTICA/` (incluyendo variantes
+con "niños"/"para niños") confirma **volumen 0 medido** para el cruce receta+infantil en Argentina,
+sin una sola excepción — ninguna combinación específica de "armazón/anteojos receta niños/infantil"
+tiene tracción medible todavía. Cuando hay algo de tracción es con la palabra "infantil", nunca con
+"para niños" (esta forma dio 0 en absolutamente todas sus variantes, incluso en long-tails de salud
+tipo "miopía en niños"). Por eso el copy usa siempre "infantil", nunca "para niños" como string de
+búsqueda (aunque el badge de UI sí diga "Para niños/as" — es texto de interfaz, no keyword).
+
+**Facet `/anteojos-de-receta/ninos` — NO se abre todavía**: sin volumen que lo justifique. Con K13 ya
+son **2 productos infantiles** (por debajo del umbral interno de 3-4 que el sitio usa para promover
+una faceta activamente, mismo criterio que Vulk Anima/mujer). Founder mencionó como idea a futuro
+("quizás hacemos una categoría especial para niños") — anotado en `BACKLOG.md` para revisar cuando
+haya 3-4 productos infantiles más.
+
+---
+
+*Rusty K13 (receta, INFANTIL — segundo producto del catálogo para chicos/as, mismo badge
+`size_fit: "infantil"` que K12 — Grilamid TR-90, calibre más chico que K12 (45mm vs 46mm, alto
+32mm vs 35mm, ancho total 119mm vs 123mm, puente 14mm vs 15mm) → modelo más compacto, 2 colores:
+C2 azul oscuro y C3 rosa translúcido) — slug `rusty-k13-receta` en
+`/anteojos-de-receta/rusty/rusty-k13-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| rusty k13 (branded) | 0 medido | ~4 | long-tail exacto, misma lógica que K12 → **primaria**, title/H1/slug/alt |
+| anteojos recetados | 720 | 9 | head genérico del cluster receta Rusty → soporte, copy |
+| anteojos infantiles | 70 | 48 | soporte léxico, copy/H2, nunca primaria (mismo criterio que K12) |
+
+**Research heredado de K12, sin cambios**: mismo barrido de los 35 CSV de `KEYWORDS OPTICA/`
+(líneas 854-860), volumen 0 medido para receta+infantil en Argentina. No se repite el research
+completo — aplica el hallazgo ya documentado para el K12.
+
+**Anti-canibalización K12 vs K13**: mismo brand/categoría/talle → sin riesgo de SERP (ambos branded
+vol 0). El riesgo real es contenido casi-duplicado: se resuelve con número de modelo en
+title/H1/slug, medidas objetivas distintas como diferenciador (K13 = el más compacto de los dos,
+usado en el copy: "el más compacto de los dos armazones infantiles Rusty"), y copy de color 100%
+propio por producto (el C3 "rosa translúcido" de K13 es textualmente parecido al C3 "rosa/frambuesa
+translúcido" de K12 — no se reciclaron oraciones, cada ficha tiene su propio texto). Cross-link
+obligatorio K12 ↔ K13 en relacionados + ambos → `/marcas/rusty` + `/anteojos-de-receta/rusty`.
+
+**Title** (auto): `Armazón de Receta Rusty K13 Infantil | Óptica Carballo` (54). **H1** = name =
+`Rusty K13 Infantil`. **Meta**: `Armazón de receta infantil Rusty K13, en azul oscuro y rosa
+translúcido, Grilamid TR-90 liviano y resistente. Envío a todo el país, 30+ años en óptica
+familiar.` (160)
+
 **Internal linking del cluster**:
 - Hub `/marcas/rusty` → `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty` + top productos Rusty + guía de forma. Mantenerlo navegacional (no compite la SERP transaccional de las categorías).
 - `/anteojos-de-sol/rusty` ↔ `/anteojos-de-receta/rusty` (cross-link sol↔receta de la misma marca).
@@ -832,8 +953,41 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 
 ### Cluster: MORMAII (septiembre 2026 — CSV `KEYWORDS OPTICA/`)
 
-**Primer producto cargado**: Mormaii Moorea RX (receta), seed 113. **Segundo**: Mormaii Storm (sol),
-seed 115. Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
+**Productos cargados, en orden de seed** (lista convertida a formato compacto 2026-09-30 — la prosa
+"Primer/Segundo/Tercero..." se volvió inmanejable a partir del producto #10):
+1. Mormaii Moorea RX (receta), seed 113
+2. Mormaii Storm (sol), seed 115
+3. Mormaii Daito (sol), seed 118
+4. Mormaii Curazao (sol), seed 122
+5. Mormaii Borneo (sol), seed 123
+6. Mormaii Ancara 2 RX (receta), seed 125
+7. Mormaii San Juan (sol), seed 128
+8. Mormaii Joaca 4 (sol), seed 131
+9. Mormaii Hover (receta, clip-on), seed 132
+10. Mormaii Traful (receta), seed 133
+11. Mormaii Leñas (receta), seed 135
+12. Mormaii Maceio (receta), seed 136
+13. Mormaii Monterrey 2 (sol), seed 137
+14. Mormaii Madri (sol), seed 138
+15. Mormaii Kona MAG (receta), seed 139
+16. Mormaii Leñas 2 MAG (receta), seed 140
+17. Mormaii Fortaleza (sol), seed 141
+18. Mormaii Barcelona (receta), seed 142
+19. Mormaii Doha (sol), seed 143
+20. Mormaii Macau (sol), seed 144
+21. Mormaii Swap NG2 MAG (receta, clip-on 2-en-1 magnético), seed 145
+22. Mormaii Tokio (sol), seed 146
+23. Mormaii Leñas 3 MAG (receta, con imán sólo-colgar), seed 147
+24. Mormaii Miami (sol), seed 148
+25. Mormaii Frey (receta, ovalado), seed 149
+26. Mormaii 178 (sol, acetato, no polarizado), seed 150
+27. Mormaii High 4 (receta, rectangular tipo wayfarer), seed 151
+28. Mormaii Sevilha (receta, redondo tipo panto), seed 152
+29. Mormaii Recife (receta, cuadrado grande, hombre), seed 153
+30. Mormaii Vesubio (receta, aviador doble puente), seed 155
+31. Reef 128 Yin (sol, envolvente deportivo), seed 156
+
+Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
 **Keyword head crítica**: `lentes de sol mormaii` — **90 vol/mes, difficulty 8**. Es específica de
 sol y queda libre para Storm por ser el primer y único producto de sol de la marca. La receta no
@@ -872,6 +1026,1443 @@ Vulk/Rusty. La única cabecera que SÍ es específica de una categoría es `lent
 **Regla de marca (no es SEO, pero aplica a todo copy Mormaii)**: TODOS los productos incluyen estuche
 semi rígido + franela de Mormaii + 1 año de garantía — usar esa frase exacta en descripción, no el
 "estuche y franela" genérico del resto del catálogo (founder, 2026-09-22, ver `BRANDS.md`).
+
+*Mormaii Daito (sol, CUADRADO, UNISEX, armazón/frente/patilla de poliamida, bisagra plástica
+reforzada, lente de policarbonato POLARIZADA en las 4 variantes, UV400 confirmado, base curve 4,
+4 colores — negro mate/verde G15, negro mate/marrón C03, negro mate/endtip azul-celeste espejado,
+negro brillo/gris oscuro) — slug `mormaii-daito` en `/anteojos-de-sol/mormaii/mormaii-daito`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii daito (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol unisex | 20/20 | 36/36 | libre, nadie la reclama en el catálogo, 100% honesto, diferenciador real vs Storm (HOMBRE explícito) → **primaria secundaria**, title, H1, copy |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — **NO primaria** (ya la tiene Storm) → soporte, H2/copy, cross-link a Storm y a `/anteojos-de-sol/mormaii` |
+| lentes/anteojos de sol cuadrados | 390/170 | 11/14 | forma real del modelo — **NO primaria** (ya la reclaman Vulk The Sil y Rusty Zinz, cada uno como primaria en su propio cluster; un tercer reclamo cross-brand triplicaría la auto-canibalización del mismo string dentro del propio sitio) → mención honesta en copy/1er párrafo/alt/`frame_shape`, nunca en meta_title ni H1 |
+| polarizado lentes de sol | 260 | 36 | atributo genérico, dif. alta = soporte, no primaria; 4/4 variantes son polarizadas → se afirma "polarizadas" para todo el modelo en copy/H2 (mismo criterio Terdey/Zinz) |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-sol/mormaii`, futuro `/marcas/mormaii`), NUNCA en esta PDP — mismo criterio ya fijado para Moorea/Storm |
+
+**Anti-canibalización (Daito vs Storm, mismo brand)**: Storm es el único dueño de `lentes de sol
+mormaii` (90/8, el único head específico-de-sol de la marca) — Daito NO lo reclama como primaria en
+ningún nivel (title, H1, slug). El carril real de Daito es forma + género: CUADRADO (vs el
+ENVOLVENTE de Storm) y UNISEX (vs el HOMBRE explícito de Storm) — cero solapamiento de intención de
+búsqueda. Cross-link obligatorio Daito↔Storm ("otros lentes de sol Mormaii") + ambos →
+`/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (Daito vs "cuadrados" cross-brand — Vulk The Sil / Rusty Zinz)**: ambos ya
+reclaman `anteojos/lentes de sol cuadrados` (170/390) como PRIMARIA cada uno dentro de su propio
+cluster — gap de infraestructura ya señalado (falta la faceta `/anteojos-de-sol/cuadrados`, nota
+bajo Rusty Peating). Sumar un tercer reclamo cross-brand del mismo string en meta_title/H1 pondría a
+3 páginas del propio sitio compitiendo por la misma SERP, violando la regla de no-canibalización.
+Decisión: Daito usa "cuadrado" solo como atributo descriptivo (copy, `frame_shape`, alt text), nunca
+como keyword objetivo en title/H1. Este gap ahora tiene 3 marcas reclamando el mismo string sin
+facet — escalar prioridad de crear `/anteojos-de-sol/cuadrados` en `BACKLOG.md`.
+
+**Anti-canibalización (Daito vs color — Rusty Peating)**: Peating (Rusty, sol, cuadrado 100% negro)
+ya ocupa el carril color-forma `negros cuadrados` (10-20/29-35). Los 4 colores de Daito también son
+variaciones sobre negro (mate/verde G15, mate/marrón, mate/endtip azul-celeste, brillo/gris oscuro)
+— mismo carril, volumen mínimo, sin ROI en disputarlo. Los colores van en copy/alt, sin intención de
+rankear por "negros cuadrados".
+
+**Long-tails branded**: `mormaii daito` (slug, title, H1, alt de cada variante) — vol 0 medido, alta
+intención cuando el comprador ya conoce el nombre del modelo (viene de ML, boca en boca o redes).
+
+**No usar**: "cuadrados" / "lentes de sol cuadrados" / "anteojos de sol cuadrados" como
+meta_title/H1 (cross-canibalización 3-way, ver arriba). "Lentes de sol mormaii" como meta_title/H1
+(ya es de Storm). "Polarizados" como diferenciador único en title — Storm ya lo usa idéntico para su
+propio modelo (ambos 100% polarizados, no diferencia nada entre los dos); usar "Unisex" en su lugar,
+que además es 100% verdadero y sí diferencia de Storm (HOMBRE).
+
+**Title** (auto): `Lentes de Sol Mormaii Daito Unisex | Óptica Carballo` (52). **H1**: `Mormaii
+Daito — Unisex, 100% Polarizados`. **Meta**: `Lentes de sol Mormaii Daito: armazón de poliamida
+liviana, unisex, 100% polarizadas y UV400 cat. 3. 4 colores, envío a todo el país y garantía
+oficial de 1 año.` (160).
+
+*Mormaii Curazao (sol, CUADRADO, HOMBRE explícito, armazón/frente/patilla de poliamida, bisagra
+plástica reforzada, lente de policarbonato POLARIZADA en las 3 variantes, UV400 y categoría 3
+confirmados por grabado físico en la varilla ("Curazao Col.XX Cat.03 UV400"), base curve 4, 3
+colores — negro brillo/gris oscuro (Col.01, stock), negro mate translúcido/verde espejado (Col.05,
+stock), verde oliva/gris oscuro (Col.07, sin stock)) — slug `mormaii-curazao` en
+`/anteojos-de-sol/mormaii/mormaii-curazao`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii curazao (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes de sol cuadrados hombre | 90 | 18 | forma+género en SOL, libre en todo el catálogo (Zinz/The Sil son unisex y no usan "hombre"; Rusty Spell usa "anteojos cuadrados hombre" pero en RECETA, otra categoría) → **primaria secundaria**, copy/H2/alt/1er párrafo (NO title/H1) |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — **NO primaria** (ya la tiene Storm) → soporte, H2/copy, cross-link a Storm y a `/anteojos-de-sol/mormaii` |
+| lentes/anteojos de sol cuadrados | 390/170 | 11/14 | forma genérica — **NO primaria** (ya la reclaman Vulk The Sil y Rusty Zinz; sumar a Curazao la volvería la tercera reclamación del mismo string) → mención honesta en copy/1er párrafo/alt/`frame_shape`, nunca title/H1 |
+| polarizado lentes de sol | 260 | 36 | atributo genérico, dif. alta = soporte; 3/3 variantes son polarizadas → se afirma "polarizadas" para todo el modelo en copy/H2 (mismo criterio Daito/Terdey/Zinz) |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-sol/mormaii`, futuro `/marcas/mormaii`), NUNCA en esta PDP |
+
+**Anti-canibalización (Curazao vs Daito, mismo armazón/forma/precio, mismo brand)**: la diferencia de
+género (HOMBRE explícito vs UNISEX de Daito) no evita la canibalización por sí sola como *etiqueta* —
+la evita porque se traduce en un STRING de keyword secundaria distinto y sin superposición: Daito usa
+`lentes/anteojos de sol unisex` (20/36) y Curazao usa `lentes de sol cuadrados hombre` (90/18) — cero
+términos compartidos entre ambas cadenas de búsqueda. Si Curazao hubiese intentado reclamar "cuadrado"
+a secas (la forma, no el género), sí colisionaría directo con Daito (mismo string, mismo cluster) — por
+eso el género tiene que ir SOLDADO al string de la keyword secundaria (`cuadrados hombre`, no
+`cuadrado` suelto), no alcanza con mencionarlo aparte en el copy. El nombre branded (`mormaii curazao`
+vs `mormaii daito`) tampoco solapa: cero riesgo ahí. Cross-link obligatorio Curazao↔Daito ("el mismo
+armazón cuadrado, en versión hombre / unisex") + ambos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (Curazao vs Storm, mismo brand, ambos HOMBRE)**: comparten género pero no forma
+(Curazao CUADRADO vs Storm ENVOLVENTE) — mismo mecanismo que ya separa a Daito de Storm. Storm no
+reclama "hombre" como keyword en ningún nivel (su único primaria es `lentes de sol mormaii` 90/8), así
+que no hay string en disputa. Cross-link obligatorio Curazao↔Storm ("otros lentes de sol Mormaii para
+hombre") + ambos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (Curazao vs "cuadrados" cross-brand — Vulk The Sil / Rusty Zinz)**: mismo gap ya
+señalado en Daito — The Sil y Zinz ya reclaman `lentes/anteojos de sol cuadrados` (390/170) como
+primaria cada uno en su propio cluster. Curazao suma su tercer producto "cuadrado" al catálogo sin
+facet propia (`/anteojos-de-sol/cuadrados` sigue sin existir) pero, igual que Daito, NO pelea esa
+primaria: usa "cuadrado" solo como atributo descriptivo (copy, `frame_shape`, alt), nunca como keyword
+objetivo en title/H1. Gap ahora con 4 productos (Zinz, The Sil, Daito, Curazao) reclamando el mismo
+string sin facet — reforzar prioridad de `/anteojos-de-sol/cuadrados` en `BACKLOG.md`.
+
+**Anti-canibalización (Curazao vs Rusty Spell, "cuadrados hombre" cross-categoría)**: Spell reclama
+`anteojos cuadrados hombre` (210/14) pero en RECETA (`/anteojos-de-receta/rusty/rusty-spell-receta`),
+sin "de sol". Curazao reclama `lentes de sol cuadrados hombre` (90/18), con "de sol". Categorías e
+intención de compra distintas (receta vs sol) — mismo criterio ya usado para separar Zinz sol de Zinz
+receta. Sin solapamiento real.
+
+**Anti-canibalización (Curazao vs color — Rusty Peating)**: igual que Daito, ninguno de los 3 colores
+de Curazao es 100% negro puro (negro brillo/gris oscuro, negro mate/verde espejado, verde oliva/gris
+oscuro) — el carril `negros cuadrados` (20/35) sigue siendo de Peating. Colores van en copy/alt, sin
+intención de rankear ahí.
+
+**Long-tails branded**: `mormaii curazao` (slug, title, H1, alt de cada variante) — vol 0 medido, alta
+intención cuando el comprador ya conoce el nombre del modelo (viene de ML, boca en boca o redes).
+
+**No usar**: "cuadrado"/"cuadrados" a secas como meta_title/H1 (mismo riesgo 3-way, ahora 4-way, ver
+arriba) — usar "Hombre" como palabra de título/H1, no "Cuadrado". "Lentes de sol mormaii" como
+meta_title/H1 (ya es de Storm). "Unisex" obviamente no aplica (Daito la tiene, además sería falso).
+
+**Title** (auto): `Lentes de Sol Mormaii Curazao Hombre | Óptica Carballo` (54). **H1**: `Mormaii
+Curazao — Hombre, 100% Polarizados`. **Meta**: `Lentes de sol Mormaii Curazao: poliamida liviana,
+diseño para hombre, 100% polarizadas y UV400 cat. 3. 3 colores, envío a todo el país y garantía de 1
+año.` (155).
+
+*Mormaii Borneo (sol, ENVOLVENTE deportivo base 8 — mismo tipo de armazón que Storm, HOMBRE
+explícito, armazón/frente/patilla de poliamida confirmada sin ambigüedad por atributo ML (a
+diferencia del "inyectado" genérico con el que quedó cargado Storm), bisagra plástica reforzada,
+lente de policarbonato POLARIZADA en las 2 variantes, UV400 y categoría 3 confirmados por grabado
+físico en la varilla ("Borneo SN Col.XX Cat.3 UV400"), 2 colores — negro brillo/gris oscuro (Col.01,
+sin stock), negro mate/verde (Col.02, stock 1)) — slug `mormaii-borneo` en
+`/anteojos-de-sol/mormaii/mormaii-borneo`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii borneo (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — **NO primaria** (ya la tiene Storm) → soporte, H2/copy, cross-link a Storm y a `/anteojos-de-sol/mormaii` |
+| lentes de sol envolventes hombre | 70 | 36 | forma+género REAL del modelo (idéntico a Storm) — dif. altísima + sería el 6°-7° reclamo de "envolvente/deportivo" ya usado por 5 Rusty → soporte honesto en copy/1er párrafo/alt/`frame_shape`, nunca title/H1 |
+| anteojos de sol envolventes hombre | 50 | 36 | idem arriba |
+| polarizado lentes de sol | 260 | 36 | atributo genérico, dif. alta = soporte; 2/2 variantes son polarizadas → se afirma "polarizadas" en copy/H2 (mismo criterio Daito/Curazao/Storm) — **no** diferenciador de título, Storm ya lo usa idéntico y no distingue nada entre ambos |
+| lentes de sol hombre / anteojos de sol hombre | 5.400/3.600 | 14/11 | heads genéricos multi-marca de altísimo volumen — pertenecen a un futuro hub de género (`/anteojos-de-sol/hombre`), no a la PDP de una marca chica → mención honesta en copy/alt, jamás title/H1 |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-sol/mormaii`, futuro `/marcas/mormaii`), NUNCA en esta PDP |
+
+**Anti-canibalización (Borneo vs Storm, MISMA forma ENVOLVENTE + MISMO género HOMBRE + misma marca —
+el caso más ajustado del cluster hasta hoy)**: a diferencia de Daito/Curazao (que se separan de Storm
+por forma o por género), Borneo comparte con Storm las dos variables a la vez, así que el mecanismo de
+Daito/Curazao (soldar forma+género en un string libre) no aplica acá — no existe un string
+"envolvente hombre" libre de riesgo cross-brand para reclamar como primaria (difficulty 36, y sería el
+6°-7° reclamo de "envolvente/deportivo" en todo el catálogo, ver nota original de Storm sobre los 5
+Rusty envolventes). La separación real se apoya en cuatro capas, ninguna disponible en los casos
+anteriores:
+1. **Branded, cero riesgo**: `mormaii borneo` vs `mormaii storm` — strings totalmente distintos, sin
+   overlap posible.
+2. **La cabecera de sol de marca (`lentes de sol mormaii`, 90/8) sigue siendo 100% de Storm** por ser
+   el primer producto de sol de la marca — Borneo no la reclama en ningún nivel, solo la menciona en
+   copy/H2 con cross-link a Storm.
+3. **"Hombre" como string de título queda abierto por diseño**: Storm deliberadamente no reclamó
+   "hombre" en ningún nivel (usó "Polarizados" como palabra de cierre del title, que no diferencia
+   nada porque ambos modelos son 100% polarizados) — ese hueco es justo el que cierra Borneo, primer
+   Mormaii en usar "Hombre" explícito en title/H1 (mismo mecanismo que ya usa Curazao frente a Daito,
+   aplicado acá contra Storm). Es honesto (el fabricante declara "Género: Masculino") y no compite con
+   ningún string ya tomado.
+4. **Diferenciador técnico real de copy (no SEO, pero refuerza E-E-A-T)**: el material de Borneo está
+   confirmado sin ambigüedad como Poliamida por el propio atributo de ML; el de Storm quedó cargado
+   como "inyectado" genérico (ML no lo declaró con la misma precisión en su momento) — se puede
+   nombrar la diferencia real de material en el copy sin inventar nada.
+
+Cross-link obligatorio Borneo↔Storm ("otros lentes de sol Mormaii para hombre") + ambos →
+`/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (Borneo vs Daito, forma y género opuestos)**: Daito es CUADRADO + UNISEX,
+Borneo es ENVOLVENTE + HOMBRE — cero solapamiento de forma y de género, el caso más simple del
+cluster. El secundario de Daito (`lentes/anteojos de sol unisex`, 20/36) y el diferenciador de
+Borneo ("Hombre") son términos opuestos, sin riesgo. Cross-link Borneo↔Daito ("otros lentes de sol
+Mormaii") + ambos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (Borneo vs Curazao, mismo género HOMBRE, forma distinta)**: Curazao es CUADRADO
++ HOMBRE, con secundaria soldada `lentes de sol cuadrados hombre` (90/18). Borneo es ENVOLVENTE +
+HOMBRE, con "Hombre" como palabra suelta de título (no soldada a una forma, porque su forma real ya
+está saturada como string, ver arriba). Las dos cadenas de búsqueda completas no coinciden
+(`cuadrados hombre` ≠ título con "Hombre" solo) y la combinación específica "mormaii + hombre" no
+tiene volumen medido en Ubersuggest (0 en `KEYWORDS OPTICA/`), así que no hay una keyword real en
+disputa — el riesgo es solo estructural (dos títulos del mismo brand con la palabra "Hombre"),
+aceptable porque el target real de cada página sigue siendo el nombre branded único. A vigilar: si el
+catálogo suma un 3er-4to Mormaii hombre, revisar si conviene diferenciar el modificador de título (ya
+son 2: Curazao y Borneo). Cross-link Borneo↔Curazao ("otros lentes de sol Mormaii para hombre") +
+ambos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (Borneo vs "borneo anteojos"/"borneo lentes" — HALLAZGO CRÍTICO, marca
+homónima)**: `borneo anteojos` (390/26) y `borneo lentes` (140/10) aparecen con volumen real en el
+CSV, pero **NO son de Mormaii Borneo**. Búsqueda de verificación confirmó que existe una marca
+argentina independiente, **Borneo Readers** (`borneo.com.ar`), especializada en anteojos de lectura,
+sol y pantalla, con presencia fuerte en Mercado Libre y redes — casi con certeza esos dos volúmenes
+están dominados por su intención de búsqueda, no por el modelo de Mormaii. Reclamarlos sería captar
+tráfico con intención ajena (mal CTR, bounce alto, cero relevancia real) y viola el principio de
+honestidad del framework. **NO USAR en ningún nivel** (ni title/H1 ni soporte/copy) — el único string
+"Borneo" que se reclama es el compuesto `mormaii borneo`, nunca "borneo" suelto.
+
+**Long-tails branded**: `mormaii borneo` (slug, title, H1, alt de cada variante) — vol 0 medido, alta
+intención cuando el comprador ya conoce el nombre del modelo (viene de ML, boca en boca o redes).
+
+**No usar**: "borneo" suelto (ver hallazgo crítico arriba — pertenece a Borneo Readers, marca
+distinta). "Envolvente"/"deportivo" como meta_title/H1 (6°-7° reclamo del mismo string, ya usado por
+5 Rusty + implícito en Storm). "Polarizados" como diferenciador de título — Storm ya lo usa idéntico
+y ambos modelos son 100% polarizados, no diferencia nada. "Cuadrado"/"cuadrados" — no aplica, Borneo
+es envolvente. "Unisex" — no aplica y sería falso (Borneo es HOMBRE explícito, ya lo tiene Daito).
+
+**Title** (auto): `Lentes de Sol Mormaii Borneo Hombre | Óptica Carballo` (53). **H1**: `Mormaii
+Borneo — Hombre, 100% Polarizados`. **Meta**: `Lentes de sol Mormaii Borneo: armazón envolvente de
+poliamida para hombre, 100% polarizadas y UV400 cat. 3. 2 colores, envío a todo el país y garantía de
+1 año.` (160)
+
+---
+
+*Mormaii Ancara 2 RX (receta, CUADRADO — confirmado sin ambigüedad por `SHAPE=Anteojos de Receta
+Cuadrados` de ML, a diferencia del envolvente semi de Moorea —, HOMBRE explícito, armazón/frente/
+patilla de poliamida, bisagras PLÁSTICAS reforzadas (vs las metálicas flex "Visyfit" de Moorea),
+incluye correa elástica desmontable Mormaii — diferenciador único en todo el catálogo de receta —,
+4 colores con stock real: Col 01 Negro Mate, Col 03 Azul Oscuro, Col 05 Azul Mate Translúcido, Col 06
+Negro Mate con Gris) — slug `mormaii-ancara2-receta` en
+`/anteojos-de-receta/mormaii/mormaii-ancara2-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii ancara 2 (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** slug/title/H1/alt |
+| anteojos deportivos con aumento | 260 | 20 | LIBRE en todo el catálogo (0 menciones previas) — intención exacta del producto, desambigua 100% contra sol → **primaria secundaria**, meta_description, H2, copy |
+| anteojos deportivos hombre | 140 | 8 | difficulty bajísima, LIBRE en receta (Moorea nunca la reclamó, quedó branded puro) → soporte fuerte, H1/copy |
+| correa para anteojos / correa para lentes | 140/110 | 21/16 | diferenciador ÚNICO y verificable (única correa desmontable incluida del catálogo) → copy, alt de la foto de correa, H2 dedicado |
+| lentes deportivos con aumento / anteojos para deportes con aumento | 320/110 | 18/18 | variantes de respaldo de la primaria secundaria → copy, FAQ si se arma |
+| anteojos deportivos | 590 | 9 | genérico sin género/receta, alto volumen pero compartido con toda la categoría → mención honesta en copy, no primaria |
+| anteojos con aumento | 480 | 18 | head genérico de toda la categoría receta → hub-only (`/anteojos-de-receta`), 1 mención copy, nunca title/H1 |
+| anteojos cuadrados hombre | 210 | 14 | **BLOQUEADA — ya es primaria de Rusty Spell** (`/anteojos-de-receta/rusty/rusty-spell-receta`) → NO usar en ningún nivel |
+| lentes/anteojos cuadrados | 320/480 | 18/10 | forma bare, riesgo cross-brand (Spell/Katleen/Daito/Curazao ya la comparten) → solo copy/alt/`frame_shape`, nunca title/H1 |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-receta/mormaii`), NUNCA en esta PDP |
+
+**Anti-canibalización (Ancara 2 vs Moorea, mismo brand + misma categoría + mismo género — el caso más
+ajustado del sub-cluster de receta)**: ambos son RX + deportivo + hombre + Mormaii, pero se separan por
+cuatro capas simultáneas:
+1. **Forma real, confirmada sin ambigüedad por ML**: Ancara 2 es CUADRADO (`SHAPE=Anteojos de Receta
+   Cuadrados`), Moorea es ENVOLVENTE semi (corregido por el founder en seed 113) — mismo mecanismo
+   forma-real que ya separa Daito de Storm.
+2. **Moorea es branded puro por diseño de origen**: al cargarse no había volumen medible para
+   "deportivo"/"envolvente", así que su primaria quedó 100% `mormaii moorea` y nunca reclamó ningún
+   string de "deportivo" en title/H1/meta. Ancara 2 es el PRIMER RX Mormaii en reclamar
+   `anteojos deportivos con aumento` (260/20) como keyword real — cero string compartido.
+3. **Bisagra distinta y honesta**: plásticas reforzadas (Ancara 2) vs metálicas flex "Visyfit"
+   (Moorea) — diferenciador de copy/E-E-A-T, no de keyword, pero evita que ambas fichas suenen
+   calcadas.
+4. **Correa elástica desmontable incluida — exclusiva de Ancara 2 en todo el catálogo de receta**,
+   verificable en las fotos del fabricante. Habilita `correa para anteojos`/`correa para lentes`
+   (140/110, diff 21/16) sin ningún riesgo de canibalización, ni con Moorea ni con ningún otro
+   producto.
+
+No se soldó "cuadrado" a "hombre" como ruta de diferenciación (a diferencia de Daito/Curazao en sol)
+porque `anteojos cuadrados hombre` (210/14) ya es la primaria de Rusty Spell en RECETA — usar esa
+combinación exacta hubiera colisionado de lleno. La ruta elegida (deportivo + aumento + correa) es un
+campo léxico totalmente distinto, sin overlap con Spell ni con Moorea.
+
+Cross-link obligatorio Ancara 2↔Moorea ("otro armazón de receta deportivo Mormaii para hombre, en
+versión cuadrada") + ambos → `/anteojos-de-receta/mormaii`. Cross-link secundario hacia
+`/anteojos-de-sol/mormaii` ("también tenemos lentes de sol Mormaii para hombre") por ser la misma
+marca, distinta categoría.
+
+**Anti-canibalización (Ancara 2 vs Rusty Spell, "cuadrados hombre" cross-brand mismo categoría)**:
+Spell reclama `anteojos cuadrados hombre` (210/14) como primaria en receta — Ancara 2 NO reclama ese
+string en ningún nivel (title/H1/meta), lo usa solo como atributo descriptivo (`frame_shape: cuadrado`,
+copy, alt). Mismo criterio que ya aplica el cluster completo para "cuadrado" cross-brand.
+
+**Anti-canibalización (Ancara 2 vs Rusty And Now, sol, deportivo unisex)**: And Now reclama
+`anteojos/lentes de sol deportivos` (110-210) con "de sol" explícito en el string — Ancara 2 nunca usa
+"de sol" en ningún nivel. Categorías y cadenas de búsqueda completas no coinciden, sin riesgo.
+
+**A vigilar**: si el catálogo suma un tercer RX Mormaii deportivo, revisar si "deportivo" necesita
+soldarse a un segundo atributo (mismo tipo de vigilancia ya dejado por Borneo/Curazao con "hombre").
+
+**Long-tails branded**: `mormaii ancara 2` (slug, title, H1, alt de cada variante) — vol 0 medido, alta
+intención cuando el comprador ya conoce el modelo (viene de ML, boca en boca o redes).
+
+**No usar**: "cuadrado"/"cuadrados hombre" como meta_title/H1 (colisión directa con Rusty Spell, ver
+arriba). "Anteojos con aumento" a secas como primaria (head genérico de toda la categoría receta,
+hub-only). "Envolvente" (no aplica, Ancara 2 es cuadrado, ese es el de Moorea).
+
+**Title** (auto): `Armazón Rx Mormaii Ancara 2 Deportivo | Óptica Carballo` (55). **H1**: `Mormaii
+Ancara 2 RX — Deportivo para Hombre, con Correa Incluida`. **Meta**: `Mormaii Ancara 2: anteojos
+deportivos con aumento para hombre, incluye correa elástica Mormaii. Poliamida liviana, envío a todo
+el país y garantía de 1 año.` (156)
+
+---
+
+*Mormaii Hover (receta, RECTANGULAR, HOMBRE según ficha técnica de interoptica.com.ar — el founder
+no lo aclaró espontáneamente esta vez —, armazón/frente/patilla de poliamida confirmada por el
+founder, bisagra plástica reforzada, apto monofocales/bifocales/progresivos, **PRIMER producto
+clip-on del catálogo**: viene con un clip-on abatible que se engancha por la zona nasal, polarizado/
+UV400/cat.3, 5 colores de armazón con clip a tono — sólo Negro-Azul (clip espejado celeste) con stock
+real) — slug `mormaii-hover` en `/anteojos-de-receta/mormaii/mormaii-hover`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii hover (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** slug/title/H1/alt |
+| clip on para anteojos recetados | 260 | 6 | difficulty bajísima, intención EXACTA del producto (receta + clip-on), LIBRE en todo el catálogo → **primaria secundaria**, title, H1, meta_description, H2, copy |
+| lentes clip on | 1.000 | 5 | cabecera del campo léxico (mixta sol/receta, alto volumen) — NO primaria (demasiado genérica, no distingue que es armazón de receta) → soporte, H2, copy |
+| anteojos clip on hombre / anteojos clip on mujer | 390/590 | 4/6 | género+producto — Hover es masculino explícito (ficha del distribuidor) → soporte, copy, no title (ya "hombre" no suma mucho sobre el branded + "clip on") |
+| anteojos con clipon / clip on anteojos / clipones anteojos | 260/140/110 | 7/8/6 | variantes ortográficas de respaldo de la primaria secundaria → 1 mención de "clipon" (una palabra) en el body, cubre la variante sin espacio/guion |
+| anteojos con aumento | 480 | 18 | head genérico de toda la categoría receta → hub-only (`/anteojos-de-receta`), 1 mención copy, nunca title/H1 |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-receta/mormaii`), NUNCA en esta PDP |
+
+**Anti-canibalización (Hover vs Moorea/Ancara 2, mismo brand + misma categoría RECETA + mismo
+género HOMBRE)**: sin riesgo real — ninguno de los dos usa "clip-on"/"clip on" en ningún nivel
+(confirmado releyendo sus 2 entries completas en este documento). El campo léxico de Hover
+("clip on para anteojos recetados", "lentes clip on") es 100% propio, cero overlap con
+"anteojos deportivos con aumento" (Ancara 2) ni con el posicionamiento branded puro de Moorea. No
+hace falta ningún mecanismo de separación forma/género — el clip-on ya es la separación.
+
+Cross-link obligatorio Hover↔Ancara2↔Moorea ("otros armazones de receta Mormaii para hombre") +
+los 3 → `/anteojos-de-receta/mormaii`.
+
+**No usar**: "anteojos deportivos con aumento" (ya es de Ancara 2, y Hover no es explícitamente
+deportivo). "Cuadrado"/"cuadrados" (Hover es rectangular, no cuadrado — distinción visual real, no
+forzar la keyword saturada de Spell/Katleen/Daito/Curazao). "Clip magnético" (sin volumen medido en
+el CSV, descartado por `seo-strategist`). No mencionar "5 colores" en meta/title mientras sólo 1
+tenga stock real (regla de negocio).
+
+**Title** (auto): `Anteojos de Receta Mormaii Hover Clip-On | Óptica Carballo` (58). **H1**: `Mormaii
+Hover` (plano — mismo criterio que Joaca 4, ver hallazgo del H1 no implementado en `BACKLOG.md`).
+**Meta**: `Mormaii Hover: armazón de receta con clip-on polarizado, UV400 y cat.3 incluido. Apto
+mono, bifocal y progresivo. Envío a todo el país, garantía 1 año.` (150)
+
+---
+
+*Mormaii San Juan (sol, CUADRADO, HOMBRE explícito — GENDER de ML da "Sin género" en las 3
+publicaciones, override por criterio explícito del founder, mismo precedente ya usado en
+Curazao/Borneo/Ancara2 —, armazón/frente/patilla de poliamida, bisagra plástica reforzada, lente de
+policarbonato POLARIZADA en las 3 variantes, UV400 y categoría 3, 3 colores con stock real — Col 01
+negro mate/lente gris oscuro clásica (1/3, no espejada), Col 02 negro mate con detalle amarillo/lente
+semi-espejada gris (1/3), Col 04 azul mate/lente espejada azul (1/3)) — slug `mormaii-san-juan` en
+`/anteojos-de-sol/mormaii/mormaii-san-juan`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii san juan (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| anteojos de sol cuadrados hombre | 70 | 35 | forma+género en SOL, LIBRE (distinto de `lentes de sol cuadrados hombre` 90/18 de Curazao por el corte lentes/anteojos, mismo mecanismo ya usado en The Take↔Yeah, Dunsert↔Le Groupie, Malice↔Blozon) → **primaria secundaria**, title (cabecera "Anteojos de Sol"), H1, copy/H2 |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — NO primaria (ya la tiene Storm) → soporte, cross-link a Storm y a `/anteojos-de-sol/mormaii` |
+| lentes de sol espejados | 90 | 16 | real pero fraccional (2/3 variantes: Col02 semi-espejada, Col04 espejada) — NO se afirma del modelo completo en title/H1 → copy/H2/alt, acotado a esas 2 variantes puntuales |
+| lentes de sol azules | 90 | 15 | real pero fraccional (1/3, solo Col04) — mismo criterio, copy/alt acotado a esa variante |
+| lentes/anteojos de sol cuadrados | 390/170 | 11/14 | 5° reclamo cross-brand del mismo string (Zinz, The Sil, Daito, Curazao, San Juan) sin facet propia → copy/alt/`frame_shape` únicamente, nunca title/H1 |
+| optica san juan | 1.600 | 20 | **NO USAR EN NINGÚN NIVEL** — intención 100% geográfica (óptica física en la provincia de San Juan), mismo vicio que "borneo" suelto (Borneo Readers). "San Juan" nunca va sin "Mormaii" pegado |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-sol/mormaii`), NUNCA en esta PDP |
+
+**Anti-canibalización (San Juan vs Curazao, mismo brand + misma forma CUADRADO + mismo género
+HOMBRE — el caso más difícil del cluster, sin diferencia de forma ni de género disponible)**: el
+mecanismo forma+género soldado que separó Curazao de Daito y Borneo de Curazao no aplica acá (ambas
+variables son idénticas). La separación se apoya en dos capas:
+1. **Split léxico "lentes vs anteojos" en la keyword secundaria soldada**: Curazao reclama
+   `lentes de sol cuadrados hombre` (90/18), San Juan reclama `anteojos de sol cuadrados hombre`
+   (70/35) — strings distintos, cero overlap de query, mismo mecanismo ya validado 3 veces en el
+   catálogo (The Take↔Yeah, Dunsert↔Le Groupie, Malice↔Blozon). El corte se traduce directo al title
+   tag: Curazao abre con "Lentes de Sol", San Juan abre con "Anteojos de Sol".
+2. **Colorway real y verificable**: San Juan tiene 2/3 variantes con lente espejada/semi-espejada
+   (Col02 gris semi-espejada, Col04 azul espejada); Curazao tiene 1/3 (verde espejado). Diferenciador
+   honesto de copy/E-E-A-T, acotado a las variantes puntuales, nunca afirmado del modelo completo en
+   title/H1 (mismo criterio 2/3 ya aplicado en Vulk Raven / Rusty Yeah / Rusty Play-Patien).
+
+Cross-link obligatorio San Juan↔Curazao ("el mismo armazón cuadrado Mormaii para hombre, otra
+paleta de color") + ambos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (San Juan vs Daito, mismo forma CUADRADO, género distinto)**: Daito es
+CUADRADO+UNISEX, San Juan es CUADRADO+HOMBRE — mismo mecanismo que ya separa Curazao de Daito
+(género soldado al string). Cross-link San Juan↔Daito ("otros lentes de sol Mormaii cuadrados") +
+ambos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (San Juan vs Storm/Borneo, mismo género HOMBRE, forma ENVOLVENTE distinta)**:
+mismo mecanismo que ya separa Curazao de Storm y de Borneo — forma distinta, cero string compartido
+(San Juan no reclama "hombre" suelto, va soldado a "cuadrados"). Cross-link San Juan↔Storm↔Borneo
+("otros lentes de sol Mormaii para hombre") + todos → `/anteojos-de-sol/mormaii`.
+
+**Anti-canibalización (San Juan vs "cuadrados" cross-brand — Vulk The Sil / Rusty Zinz)**: mismo gap
+ya señalado en Daito/Curazao — The Sil y Zinz reclaman `lentes/anteojos de sol cuadrados` (390/170)
+como primaria en sus propios clusters. San Juan es ahora el **5° producto** (Zinz, The Sil, Daito,
+Curazao, San Juan) que usa "cuadrado" solo como atributo descriptivo (copy/`frame_shape`/alt), nunca
+como keyword objetivo en title/H1 — escalar aún más la prioridad de `/anteojos-de-sol/cuadrados` en
+`BACKLOG.md`.
+
+**Anti-canibalización (San Juan vs "optica san juan" — HALLAZGO CRÍTICO, colisión geográfica)**:
+`optica san juan` (1.600/20) y variantes (`optica en san juan` 880/19, `optica barbieri/boschetti san
+juan`) tienen intención 100% geográfica — óptica física en la provincia de San Juan, Argentina. Mismo
+vicio que el hallazgo "Borneo Readers" ya documentado en este cluster. **NO USAR "San Juan" suelto en
+ningún nivel** (ni copy ni alt) — el único string que se reclama es el compuesto `mormaii san juan`.
+
+**Anti-canibalización (San Juan vs color — Rusty Peating)**: ningún colorway de San Juan es negro
+puro (Col01 tiene lente gris oscuro, no negro; Col02/04 no son negros) — el carril `negros cuadrados`
+sigue siendo de Peating, sin intención de disputarlo.
+
+**Long-tails branded**: `mormaii san juan` (slug, title, H1, alt de cada variante) — vol 0 medido.
+
+**No usar**: "san juan" suelto (hallazgo crítico geográfico, ver arriba). "Cuadrado"/"cuadrados" a
+secas en title/H1 (5° reclamo cross-brand). "Lentes de sol cuadrados hombre" (ya es de Curazao — usar
+"anteojos de sol cuadrados hombre"). "Espejados"/"azules" como claim del modelo completo en title/H1
+(fraccional, 1/3-2/3, va solo en copy/alt acotado). "Lentes de sol mormaii" en title/H1 (ya es de
+Storm).
+
+**Title** (auto): `Anteojos de Sol Mormaii San Juan Hombre | Óptica Carballo` (57). **H1**: `Mormaii
+San Juan — Hombre, 100% Polarizados`. **Meta**: `Anteojos de sol Mormaii San Juan: poliamida liviana,
+hombre, 100% polarizadas y UV400 cat. 3. Con lente espejada azul, envío a todo el país y garantía 1
+año.` (157)
+
+---
+
+*Mormaii Joaca 4 (sol, ENVOLVENTE deportivo base 8 — mismo tipo de armazón que Storm/Borneo, HOMBRE
+según ficha técnica del distribuidor (interoptica.com.ar; a diferencia de otras entries de este
+cluster, el founder no lo aclaró espontáneamente esta vez — se usó el dato del fabricante), armazón/
+frente/patilla de poliamida confirmada por el founder (interoptica sólo da "Inyección" como proceso),
+bisagra plástica reforzada, lente de policarbonato POLARIZADA en las 6 variantes, UV400 y categoría 3
+confirmados por grabado físico en 2/6 colores ("JOACA 4 Col.0X Cat.3 UV400"), 6 colores — BR Negro
+(Col.01, único con stock real: 1), MT Negro (Col.02), Negro-Rojo (Col.03), Negro-Azul (Col.04), Humo
+(Col.06), Gris (Col.08), todos en stock 0 salvo BR Negro) — slug `mormaii-joaca-4` en
+`/anteojos-de-sol/mormaii/mormaii-joaca-4`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii joaca 4 (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — NO primaria (ya la tiene Storm) → soporte, cross-link a Storm/Borneo y a `/anteojos-de-sol/mormaii` |
+| lentes de sol envolventes hombre / anteojos de sol envolventes hombre | 70/50 | 36/36 | forma+género real del modelo, pero sería el 8°-9° reclamo de "envolvente/deportivo" cross-catálogo (5 Rusty + Storm + Borneo) con difficulty alta → soporte honesto en copy/alt/`frame_shape`, nunca title/H1 |
+| polarizado lentes de sol | 260 | 36 | atributo genérico, dif. alta; 6/6 variantes son polarizadas → se afirma en copy/H2 (mismo criterio del resto del cluster), no diferenciador de título (Storm/Borneo ya lo usan idéntico) |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-sol/mormaii`), NUNCA en esta PDP |
+
+**Anti-canibalización (Joaca 4 vs Storm y Borneo, MISMA forma ENVOLVENTE + MISMO género HOMBRE +
+misma marca — 3er producto de esta combinación exacta, cruza el umbral de "a vigilar" que había
+quedado anotado en la entry de Borneo)**: no existe un string "envolvente hombre" libre de riesgo
+cross-brand para reclamar como primaria (mismo problema que ya tenía Borneo frente a Storm, ahora con
+un tercer competidor interno). La separación se apoya en:
+1. **Branded, cero riesgo**: `mormaii joaca 4` vs `mormaii storm` vs `mormaii borneo` — strings
+   totalmente distintos.
+2. **Split léxico ya validado**: el meta_title de Joaca 4 abre con "Anteojos de Sol" (no "Lentes de
+   Sol", que usan Storm y Borneo) — mismo mecanismo de San Juan↔Curazao, Dunsert↔Le Groupie, The
+   Take↔Yeah, aplicado acá sin buscarlo a propósito (ya estaba en el borrador).
+3. **Diferenciador real y verificable, honesto (no forzado)**: Joaca 4 es el modelo con MÁS colores
+   de toda la línea de sol Mormaii — 6, contra 3 de Curazao/San Juan y 2 de Borneo. Se usa en
+   meta_description y en una frase de la descripción del producto ("Dentro de la línea de sol de
+   Mormaii, el Joaca 4 es el que más colores tiene"), no en title/H1 (no hay presupuesto de
+   caracteres y el patrón de H1 con sufijo tipo "— Hombre, 6 Colores" documentado en las entries
+   anteriores de este cluster **nunca se implementó realmente** — ver hallazgo abajo).
+
+**Hallazgo (no introducido por Joaca 4, preexistente en todo el cluster)**: las entries de
+Storm/Daito/Curazao/Borneo/San Juan en este documento describen un "H1" con formato `Marca Modelo —
+Diferenciador` (ej. `Mormaii Borneo — Hombre, 100% Polarizados`), pero el campo real `products.name`
+de esos 5 productos en los seeds aplicados es el nombre plano ("Mormaii Borneo", sin sufijo) — y
+`product.name` es el único campo que alimenta `<h1>` en `components/catalog/product-page.tsx` (no
+hay campo H1 separado), así que ese H1 documentado nunca estuvo live en ninguno de los 5. Por
+consistencia con el estado REAL del resto del cluster, Joaca 4 también queda con `name` plano
+("Mormaii Joaca 4"). Entry en `BACKLOG.md` para que el founder decida si vale la pena implementar el
+sufijo de verdad (tocaría `name` en 6 productos, que también aparece en breadcrumbs/carrito/JSON-LD,
+no sólo en el H1) o si se corrige la documentación de este archivo para dejar de describir un H1 que
+no existe.
+
+Cross-link obligatorio Joaca 4↔Storm↔Borneo ("otros lentes de sol Mormaii envolventes para hombre")
++ los 3 → `/anteojos-de-sol/mormaii`.
+
+**Long-tails branded**: `mormaii joaca 4` (slug, title, H1, alt de cada variante) — vol 0 medido.
+
+**No usar**: "Envolvente"/"deportivo" como meta_title/H1 (8°-9° reclamo del mismo string en el
+catálogo). "Polarizados" como diferenciador de título (Storm/Borneo ya lo usan idéntico, no
+diferencia nada). "Cuadrado" — no aplica, Joaca 4 es envolvente.
+
+**Title** (auto): `Anteojos de Sol Mormaii Joaca 4 Hombre | Óptica Carballo` (56). **H1**: `Mormaii
+Joaca 4` (plano — ver hallazgo del H1 no implementado arriba). **Meta**: `Anteojos de sol Mormaii
+Joaca 4: envolvente deportivo, poliamida, hombre, 100% polarizadas y UV400 cat. 3. 6 colores, envío a
+todo el país y garantía 1 año.` (156)
+
+---
+
+*Mormaii Traful (receta, REDONDO tipo panto, UNISEX, frente inyectado delgado de Grilamid — primer
+precedente de este material en el catálogo, distinto de la "poliamida" genérica del resto de Mormaii,
+bisagra metálica flex "Visyfit" italiana, apto monofocal/bifocal/progresivo sin restricción, 5
+colores — Negro Brillo/Negro Mate/Azules/Azul Mate Turquesa/Transparente Cristal) — slug
+`mormaii-traful-receta` en `/anteojos-de-receta/mormaii/mormaii-traful-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii traful (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| anteojos redondos | 880 | 12 | forma real del modelo — **NO primaria** (ya es de Rusty Ther Optics) → Traful sería la 6ta ficha redonda del catálogo (3 marcas), forma como soporte de copy/alt, nunca primaria |
+| panto | — | — | término de industria, no de consumidor → sólo en descripción larga, nunca en title/meta |
+| anteojos recetados | 720 | 9 | head compartido de receta → copy, no exclusivo |
+
+**Diferenciador real**: primera ficha REDONDA de Mormaii RX (las otras 3 RX de la marca de ese momento
+eran envolvente/cuadrado/rectangular, cero solapamiento intra-marca) — se usa como diferenciador
+honesto de forma sin pelear "anteojos redondos" como keyword.
+
+Cross-link obligatorio Traful↔Moorea↔Ancara2↔Hover (familia receta Mormaii) + Traful↔Ther↔Kirt↔Misty
+(redondos cross-brand, sólo mención en copy, nunca keyword compartida).
+
+**No usar**: "anteojos redondos" en title/H1 (ya es de Rusty Ther). "Panto" en ningún nivel de cara al
+cliente (jerga de industria).
+
+**Title**: `Armazón de Receta Mormaii Traful Redondo | Óptica Carballo` (58). **H1**: `Mormaii Traful`
+(plano). **Meta**: `Armazón de receta Mormaii Traful: redondo unisex, Grilamid liviano con bisagra
+flex Visyfit. Apto monofocal, bifocal y progresivo. Envío a toda Argentina.`
+
+---
+
+*Mormaii Leñas (receta, CUADRADO, UNISEX, Grilamid — segundo precedente del catálogo tras Traful,
+bisagra metálica flex "Visyfit", apto monofocal/bifocal/progresivo sin restricción, 4 colores — Negro
+Brillo/Negro Mate/Gris Translúcido con Turquesa/Azul Brillo) — slug `mormaii-lenas-receta` en
+`/anteojos-de-receta/mormaii/mormaii-lenas-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii leñas (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomadas por Rusty Zinz Optics (dueño) y Rusty Peating Carey (soporte) dentro del mismo carril forma+género → Leñas NO reclama "cuadrado" en ningún nivel de título/H1 |
+
+**Diferenciador real de meta_title**: "Grilamid" (2do precedente del catálogo, sin competencia) en vez
+de "Cuadrado" — mismo criterio que Mormaii Ancara2 (mismo brand, misma categoría) ya aplicó antes:
+sacó "cuadrado" de su title/H1 por el mismo motivo. "Cuadrado" SÍ permitido en meta_description,
+description y `frame_shape` (la regla de exclusión es sólo meta_title/H1).
+
+Cross-links obligatorios: familia receta Mormaii (Traful, Moorea, Ancara2, Hover) + par específico
+Leñas↔Traful (única pareja Grilamid del catálogo en ese momento) + Leñas↔Ancara2 (ambos cuadrados
+Mormaii RX, género distinto) + similares cross-brand (Rusty Zinz Optics, Rusty Peating Carey) como
+"te puede interesar", sin anchor de keyword compartida.
+
+**Gap de infraestructura (no bloqueante, escalado a BACKLOG.md)**: no existe faceta
+`/anteojos-de-receta/cuadrados` — con Leñas ya son 4 productos de receta que usan "cuadrado" sólo como
+atributo sin URL propia donde consolidar ese tráfico.
+
+**No usar**: "cuadrado"/"cuadrados" en meta_title/H1 (ya tomado cross-brand). "Leñas" con acento
+distinto o sin "Mormaii" pegado.
+
+**Title**: `Armazón de Receta Mormaii Leñas Grilamid | Óptica Carballo` (58). **H1**: `Mormaii Leñas`
+(plano). **Meta**: `Armazón de receta Mormaii Leñas: cuadrado unisex, Grilamid liviano con bisagra
+flex Visyfit. Apto monofocal, bifocal y progresivo. Envío a toda Argentina.`
+
+---
+
+*Mormaii Maceio (receta, RECTANGULAR, UNISEX, talle CHICO — alto de lente 31mm, Grilamid — 3er
+precedente del material, bisagra flex Visyfit, SOLO monofocal por decisión explícita del founder ante
+consulta de `optical-expert` (alto reducido, no entra bien con progresivo/bifocal), 5 colores) — slug
+`mormaii-maceio-receta` en `/anteojos-de-receta/mormaii/mormaii-maceio-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii maceio (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes monofocales | 170 | 11 | carril libre real con volumen, sin dueño en el catálogo → **primaria secundaria** en meta_title, refleja la restricción real de compra |
+| anteojos/lentes rectangulares | 480/15, 880/10 | ya tomadas por Rusty R-CY 02 (primaria) y Rusty Woxi (secundaria) → Maceio NO pelea "rectangular" en título/H1 |
+
+**Diferenciador de honestidad**: "monofocal" gana sobre "chico"/"rectangular" porque es una
+RESTRICCIÓN de compra, no un extra — el comprador tiene que saberlo antes de entrar al funnel, mismo
+criterio ya validado en Rusty Woxi (seed 74, precedente directo del mismo patrón: armazón chico,
+monofocal-only).
+
+Cross-links obligatorios: familia receta Mormaii (Traful, Leñas, Ancara2, Hover, Moorea) + par
+específico Maceio↔Rusty Woxi (cross-brand, mismo uso real: armazón chico, sólo monofocal).
+
+**No usar**: "rectangular" en title/H1 (ya tomado por Rusty R-CY 02/Woxi). "Apto para todo tipo de
+lente" ni ninguna frase que sugiera bi/progresivo (falso — ver restricción de compatibilidad).
+
+**Title**: `Armazón Rx Mormaii Maceio Monofocal | Óptica Carballo` (58, "Rx" en vez de "de Receta" para
+que entre el diferenciador). **H1**: `Mormaii Maceio` (plano). **Meta**: `Armazón de receta Mormaii
+Maceio, talle chico en Grilamid, ideal para lentes monofocales de lectura. Envío a todo el país,
+estuche y garantía oficial de 1 año.`
+
+---
+
+*Mormaii Monterrey 2 (sol, CUADRADO — confirmado sin ambigüedad por `FRAME_SHAPE` de ML, HOMBRE
+(founder explícito, ML traía "Sin género" genérico), poliamida, bisagra plástica reforzada, lente
+polarizada UV400 cat.3 en las 3 variantes, 3 colores) — slug `mormaii-monterrey-2` en
+`/anteojos-de-sol/mormaii/mormaii-monterrey-2`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii monterrey 2 (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol cuadrados hombre | 90/70 | 18/35 | 3er Mormaii "cuadrado+hombre" en sol (Curazao, San Juan, Monterrey 2) → **NO primaria**, el nombre branded alcanza solo sin forzar diferenciador |
+
+**Anti-canibalización**: con Monterrey 2 son 3 Mormaii "cuadrado+hombre" de sol — las 2 strings de
+forma+género con volumen real ya las tienen Curazao y San Juan. Monterrey 2 va 100% branded en
+title/H1/meta, cero mención de forma como keyword objetivo (sí en copy/alt/`frame_shape`).
+
+Cross-link obligatorio Monterrey 2↔Curazao↔San Juan↔Borneo↔Joaca4↔Storm ("otros lentes de sol Mormaii
+para hombre") + todos → `/anteojos-de-sol/mormaii`.
+
+**No usar**: "cuadrado"/"cuadrados hombre" en title/H1 (3er reclamo, ya saturado).
+
+**Title**: `Lentes de Sol Mormaii Monterrey 2 Hombre | Óptica Carballo` (58). **H1**: `Mormaii
+Monterrey 2` (plano). **Meta**: `Anteojos de sol Mormaii Monterrey 2: armazón robusto de poliamida
+para hombre. Polarizados, UV400 cat. 3. Envío a todo el país, garantía de 1 año.`
+
+---
+
+*Mormaii Madri (sol, CUADRADO, HOMBRE (founder + ML `FILTRABLE_GENDER=Hombre` coinciden sin
+ambigüedad), poliamida, bisagra plástica reforzada, lente polarizada UV400 cat.3 en las 3 variantes,
+3 colores) — slug `mormaii-madri` en `/anteojos-de-sol/mormaii/mormaii-madri`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii madri (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol cuadrados hombre | 90/70 | 18/35 | 4to Mormaii "cuadrado+hombre" en sol → **NO primaria**, mismo criterio que Monterrey 2 |
+
+**Anti-canibalización**: 4to Mormaii "cuadrado+hombre" de sol (Curazao, San Juan, Monterrey 2, Madri)
+— el carril de forma+género ya está totalmente saturado dentro del propio cluster, Madri va 100%
+branded sin excepción. Contaminación geográfica de "Madri" vs "Madrid" (con D) confirmada BAJA — sin
+coincidencia exacta de grafía, más baja que el caso San Juan — igual, "Madri" nunca suelto sin
+"Mormaii" por consistencia de cluster.
+
+Cross-link obligatorio Madri↔Curazao↔San Juan↔Monterrey 2↔Borneo↔Joaca4↔Storm ("otros lentes de sol
+Mormaii para hombre") + todos → `/anteojos-de-sol/mormaii`.
+
+**No usar**: "cuadrado"/"cuadrados hombre" en title/H1 (4to reclamo, saturado). "Madri" suelto sin
+"Mormaii" (riesgo geográfico + fonético con "Madrid").
+
+**Title**: `Anteojos de Sol Mormaii Madri Hombre | Óptica Carballo` (54). **H1**: `Mormaii Madri`
+(plano). **Meta**: `Anteojos de sol Mormaii Madri: poliamida resistente y liviana para hombre, 100%
+polarizados y UV400 cat. 3. 3 colores, envío a todo el país y garantía 1 año.`
+
+---
+
+*Mormaii Kona MAG (receta, CUADRADO, UNISEX, poliamida, bisagra metálica inyectada reforzada (NO
+Visyfit flex), **PRIMER modelo de la línea MAG/magnética del catálogo** — imanes en la mitad de la
+patilla para colgar de la ropa o adherir a superficie metálica, apto monofocal/bifocal/progresivo sin
+restricción, 3 colores, cada uno publicación ML separada) — slug `mormaii-kona-mag-receta` en
+`/anteojos-de-receta/mormaii/mormaii-kona-mag-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii kona mag (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| anteojos/lentes con imán / imantados | 170-260 | 18-49 | volumen real PERO el SERP actual es de OTRO producto (lectura de kiosco plegable, clip-on 2-en-1 con imán en el PUENTE, no en la patilla) → **NO primaria**, atraería tráfico de intención equivocada |
+| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomado por Zinz/Peating Carey/Ancara2/Leñas → Kona MAG NO pelea "cuadrado" en título/H1 |
+
+**Criterio sentado para los PRÓXIMOS modelos MAG** (Traful Magnetic, Swap NG 2 Magnetic, Leñas 3
+Magnetic, Asana Magnetic — no re-auditar desde cero cada vez):
+1. "Magnético"/"imán"/"imantado" NUNCA como keyword primaria de title/H1 — SERP capturado por
+   productos de otra categoría (lectura de kiosco, clip-on 2-en-1).
+2. Chequear forma+género contra el resto del catálogo RX Mormaii antes de asumir que "magnético"
+   alcanza como diferenciador único — puede no alcanzar si dos MAG comparten forma+género.
+3. Siempre aclarar en H2/body qué hace el imán y que NO es sistema de cambio de lentes (regla de
+   negocio, no prometer de más).
+4. Distinguir siempre de sistemas de clip-on ya existentes (Hover) en el copy.
+5. Seguir la sigla/nombre real de ML + grabado físico para `name`/slug de cada modelo MAG.
+6. Ni bien haya 2+ productos MAG cargados, armar cross-link "línea magnética Mormaii" entre ellos.
+
+Cross-links obligatorios: familia receta Mormaii completa + Kona MAG↔Leñas (mismo cuadrado unisex,
+con/sin imán) + Kona MAG↔Hover (imán vs clip-on, para no confundir mecanismos).
+
+**No usar**: "magnético"/"imán" como keyword de title/H1 (intención equivocada de SERP). "Cuadrado" en
+title/H1 (ya saturado).
+
+**Title**: `Armazón de Receta Mormaii Kona Magnético | Óptica Carballo` (58). **H1**: `Mormaii Kona
+MAG` (plano, sigla real). **Meta**: `Mormaii Kona MAG: armazón de receta cuadrado en poliamida, con
+imanes en la patilla para colgar. Apto mono, bifocal y progresivo. Envío a todo el país.`
+
+---
+
+*Mormaii Leñas 2 MAG (receta, RECTANGULAR, talle CHICO, UNISEX, poliamida, bisagra metálica flex
+"Visyfit" (distinta de Kona MAG, que es sin flex), **segundo modelo MAG del catálogo**, SOLO
+monofocal por talle chico (alto de lente ~35mm), 3 colores, cada uno publicación ML separada) — slug
+`mormaii-lenas-2-mag-receta` en `/anteojos-de-receta/mormaii/mormaii-lenas-2-mag-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii leñas 2 mag (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes monofocales | 170 | 11 | carril libre real, sin dueño → **primaria secundaria**, misma lógica de honestidad que Maceio |
+| anteojos/lentes con imán | 170-260 | 18-49 | mismo criterio ya sentado en Kona MAG → NO primaria, SERP de intención equivocada |
+
+**Hallazgo clave (no canibalización de keyword, sí de claridad de copy)**: Leñas 2 MAG es casi un
+gemelo de Maceio dentro del catálogo (mismo segmento: RX Mormaii chico, rectangular, unisex,
+monofocal-only) — medidas casi calcadas. La diferencia real es material (poliamida vs Grilamid de
+Maceio) + el imán; los cross-links entre ambos deben nombrar esa diferencia explícita, no sólo
+linkear como "otro chico monofocal". Diferenciador de meta_title: "monofocal" gana sobre "magnético"
+(misma lógica de honestidad que Maceio: es una restricción de compra, no un extra). "MAG" sí queda
+literal en el título (a diferencia de Kona MAG que lo tradujo a "Magnético" por falta de espacio).
+
+**Desambiguación obligatoria de los 3 "Leñas"**: nunca escribir "Leñas" a secas en copy/anchors —
+`Mormaii Leñas` (original, cuadrado, sin imán) / `Mormaii Leñas 2 MAG` (éste, rectangular chico, con
+imán, sólo monofocal) / `Mormaii Leñas 3 Magnetic` (futuro, reservar el nombre completo también).
+
+Cross-links obligatorios: familia receta Mormaii completa + Leñas 2 MAG↔Kona MAG (ambos con imán,
+distinta forma) + Leñas 2 MAG↔Leñas original (aclarar forma siempre) + Leñas 2 MAG↔Maceio (mismo
+segmento chico monofocal, aclarar material+imán) + cross-brand Leñas 2 MAG↔Rusty Woxi.
+
+**No usar**: "magnético"/"imán" en title/H1. "Leñas" sin el "2 MAG" (ambigüedad con el original).
+
+**Title**: `Armazón Rx Mormaii Leñas 2 MAG Monofocal | Óptica Carballo` (58). **H1**: `Mormaii Leñas 2
+MAG` (plano). **Meta**: `Mormaii Leñas 2 MAG: armazón de receta rectangular chico, poliamida, con
+imán en la patilla. Sólo monofocal, ideal para lectura. Envío a todo el país.`
+
+---
+
+*Mormaii Fortaleza (sol, AVIADOR con doble puente — PRIMER Mormaii con esta forma (no el primero del
+catálogo: ya hay 11 de Rusty/Vulk), UNISEX, poliamida, bisagra flex Visyfit, lente polarizada UV400 en
+las 4 variantes — 3 son categoría 3, la variante Negro Mate/Rosa es categoría 1 (dato del founder
+post-carga), 4 colores) — slug `mormaii-fortaleza` en `/anteojos-de-sol/mormaii/mormaii-fortaleza`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii fortaleza (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol aviador | 170/110 | 12/10 | volumen real (Ray-Ban Aviator = ícono) pero YA TOMADO — `lentes de sol aviador` (170/12) es de Rusty The Take, `anteojos de sol aviador` (110/10) es de Rusty Yeah → mismo caso ya resuelto por Rusty Bruice (3er aviador de Rusty, también va branded) |
+
+**Corrección importante de premisa** (verificada antes de escribir el seed): Fortaleza NO es el
+primer aviador de TODO el catálogo — ya hay 11 productos aviador de Rusty y Vulk (The Take, Yeah,
+Bruice, Vrast, Gresent, Tulle, Bad Card, The Trial, 53-3, Harry). Es el primer aviador **MORMAII**,
+dato distinto y el único afirmable en copy (honestidad E-E-A-T). Fortaleza va 100% branded en
+meta_title/H1, sin pelear "aviador" como keyword objetivo — valor SEO real: suma credibilidad a la
+faceta `/anteojos-de-sol/aviador` y activa por primera vez `/anteojos-de-sol/mormaii/aviador` (ruta
+ya soportada, sin desarrollo nuevo). Contaminación geográfica de "Fortaleza" (ciudad brasileña)
+confirmada BAJA.
+
+**Nota de categoría por variante** (primer caso del catálogo): la variante Negro Mate/Rosa es
+categoría 1, no cat.3 como las otras 3 — el copy (description/short_description/meta_description +
+callouts) debe especificar cuál variante es cuál categoría, nunca afirmar "las 4 son cat.3" (dato de
+honestidad de negocio). Modelado como override en `product_variants.attributes.lens_category` de esa
+variante puntual, sin tocar el `lens_category:3` del producto. Ver `LEARNINGS.md` para el patrón
+general de campos técnicos que varían por variante.
+
+Cross-links obligatorios: familia sol Mormaii completa + productos similares con aviadores de otras
+marcas (Rusty The Take, Rusty Yeah, Vulk The Trial) ya que es el único aviador Mormaii, sin par
+interno de marca.
+
+**No usar**: "aviador" en title/H1 (ya tomado por Rusty The Take/Yeah). "Las 4 variantes son cat.3"
+(dato falso, una es cat.1).
+
+**Title**: `Anteojos de Sol Mormaii Fortaleza Aviador | Óptica Carballo` (59, "aviador" acá sí entra
+porque no compite con nadie DENTRO de Mormaii — el riesgo es cross-brand, no cross-título; se
+mantiene igual porque el string branded completo ya lo desambigua). **H1**: `Mormaii Fortaleza`
+(plano). **Meta**: `Anteojos de sol Mormaii Fortaleza: aviador doble puente unisex, poliamida.
+Polarizados UV400 — cat. 3 en 3 colores, cat. 1 en Rosa. Envío a todo el país.`
+
+---
+
+*Mormaii Barcelona (receta, RECTANGULAR, UNISEX, talle NORMAL (alto de lente 41mm, casi el doble que
+Maceio/Leñas 2 MAG), **primer acetato de la línea receta** (`frame_material: "acetate"`, en inglés —
+el filtro de la ruta `/acetato` matchea ese string literal), bisagra metálica SIN flex + patillas con
+alma metálica, apto monofocal/bifocal/progresivo SIN restricción, 2 colores) — slug
+`mormaii-barcelona-receta` en `/anteojos-de-receta/mormaii/mormaii-barcelona-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii barcelona (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes de acetato | 110 | 11 | volumen real, baja dificultad, PERO no alcanza el estándar del cluster para primaria (comparado con "monofocal" 170/11 en Maceio) → soporte en meta_description/copy, no title/H1 |
+| armazones de acetato | 30 | 39 | difficulty alta para la DA del sitio → soporte, no primaria |
+| anteojos/lentes rectangulares | 480/15, 880/10 | ya tomadas por Rusty R-CY 02/Woxi → Barcelona NO pelea "rectangular" en título/H1 |
+
+**Carril real libre**: la combinación "talle normal + sin restricción de lente + acetato" — ningún
+otro Mormaii RX rectangular la reclama (Hover=hombre+clip-on, Maceio/Leñas 2 MAG=chico+monofocal-
+only). "Acetato" tiene valor de conversión/E-E-A-T (primer acetato RX del catálogo + bisagra metálica
+sin flex + alma metálica), no de SEO puro — va en meta_description y primer párrafo, no como cabecera
+de title.
+
+**Riesgo geográfico/de marca**: "Barcelona" suelto colisiona con intención 100% geográfica (óptica
+física en Barcelona, España) Y con la marca española real "Etnia Barcelona" — regla dura, mismo
+mecanismo que San Juan (geo) y Borneo (marca homónima): "Barcelona" NUNCA suelto en ningún nivel,
+sólo el compuesto `mormaii barcelona` (0 riesgo medido).
+
+Cross-links obligatorios: familia receta Mormaii completa + par específico Barcelona↔Hover (mismo
+rectangular Mormaii, sin clip-on, en acetato) + trío Barcelona↔Maceio↔Leñas 2 MAG (mismo estilo
+rectangular en talle chico, para desambiguar tamaño+compatibilidad de lente).
+
+**No usar**: "rectangular" en title/H1 (ya tomado cross-brand). "Barcelona" suelto (geo + marca
+española). "Acetato" como keyword de título (volumen insuficiente para la dificultad).
+
+**Title**: `Armazón Rx Mormaii Barcelona Acetato | Óptica Carballo` (54). **H1**: `Mormaii Barcelona`
+(plano). **Meta**: `Mormaii Barcelona: armazón de receta rectangular en acetato con bisagra metálica.
+Apto mono, bifocal y progresivo. Envío a todo el país, garantía 1 año.`
+
+---
+
+*Mormaii Doha (sol, CUADRADO, HOMBRE explícito, poliamida, bisagra plástica reforzada, lente
+polarizada UV400 cat.3, 1 solo color en venta real — Col 03 Negro/Habano Mate con lente marrón) —
+slug `mormaii-doha` en `/anteojos-de-sol/mormaii/mormaii-doha`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii doha (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol cuadrados hombre | 90/70 | 18/35 | 5to Mormaii "cuadrado+hombre" en sol (Curazao, San Juan, Monterrey 2, Madri, Doha) → **NO primaria**, el nombre branded alcanza solo sin forzar diferenciador |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — ya es de Storm → soporte, cross-link |
+| doha (suelto) | — | — | **NO USAR** — Doha es la capital de Qatar, intención de búsqueda 100% geográfica/turística. Mismo vicio ya documentado con "Borneo" (Borneo Readers) y "San Juan" (óptica geográfica) — nunca "Doha" sin "Mormaii" pegado |
+
+**Anti-canibalización**: con Doha son 5 Mormaii "cuadrado+hombre" de sol — el carril de forma+género
+con volumen real (saturado en Curazao y San Juan) está tomado. Doha va 100% branded en
+title/H1/meta, cero mención de forma como keyword objetivo (sí en copy/alt/`frame_shape`).
+
+**Diferenciador evaluado y descartado como keyword**: color único en venta real (Negro/Habano Mate,
+lente marrón) — sin volumen medido para "habano"/"carey" en el CSV consultado en todo este cluster;
+se usa en copy/alt como dato honesto de transparencia (1 solo color disponible, no prometer variedad
+que no existe), nunca como keyword de title.
+
+**Nombre**: grabado físico "Doha SN · Col 03 · Cat.03 UV400" — "SN" es código interno de línea (lo
+graban en TODOS los Mormaii de sol, confirmado con grep de los 9 seeds previos), no entra al nombre
+comercial. `product.name` = "Mormaii Doha".
+
+Cross-link obligatorio Doha↔Curazao↔San Juan↔Monterrey 2↔Madri↔Borneo↔Joaca4↔Storm ("otros lentes de
+sol Mormaii para hombre") + todos → `/anteojos-de-sol/mormaii`.
+
+**No usar**: "cuadrado"/"cuadrados hombre" en title/H1 (5to reclamo, saturado). "Doha" suelto sin
+"Mormaii" (riesgo geográfico, capital de Qatar). "Varios colores"/plural de colores en
+meta_description (sólo 1 color con venta real).
+
+**Title**: `Lentes de Sol Mormaii Doha Hombre | Óptica Carballo` (51). **H1**: `Mormaii Doha` (plano,
+mismo criterio del resto del cluster). **Meta**: `Lentes de sol Mormaii Doha: poliamida liviana para
+hombre, negro/habano con lente marrón. Polarizados, UV400 cat. 3. Envío a todo el país, garantía de 1
+año.` (157)
+
+---
+
+*Mormaii Macau (sol, RECTANGULAR grande estilo urbano — primer Mormaii de sol con esta forma
+explícita, y primer "rectangular + hombre" de sol en todo el catálogo (cross-brand incluido: único
+rectangular de sol previo es Vulk Dieven, unisex, sin reclamar forma), poliamida, bisagra plástica
+reforzada, lente de policarbonato POLARIZADA UV400 cat.3, 2 colores cargados — Col.01 Negro Brillo
+(stock 0, no vigente para venta) y Col.05 Frente Negro Mate/Patillas Carey con lente marrón (stock 1,
+único color con venta real)) — slug `mormaii-macau` en `/anteojos-de-sol/mormaii/mormaii-macau`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii macau (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo, confirmado en SERP de competencia (Paesani, Frávega, MC Óptica) → **primaria** título+H1+slug+alt |
+| lentes de sol rectangulares hombre | 70 (+50/40 variantes) | 35-36 | forma real del modelo, **libre sitewide** en sol (nadie la reclamó antes, ni intra-Mormaii ni cross-brand) → secundaria honesta, copy/H2/alt/`frame_shape`, no en title por presupuesto de caracteres |
+| lentes/anteojos de sol rectangulares | 320/140 | 12/12 | genérico de forma, también libre en sol → soporte en copy, alimenta la faceta `/anteojos-de-sol/rectangulares` vía `frame_shape` |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — ya es de Storm → soporte, cross-link |
+| anteojos/lentes de sol deportivos | 110-210 | 10-17 | **NO USAR** — saturada por Rusty And Now como primaria, y además imprecisa: "deportivo" en el catálogo describe construcción envolvente (Storm/Borneo/Joaca4), Macau es rectangular plano. ML lo usa como relleno de título, no como dato técnico |
+| macau (suelto) | — | — | **NO USAR** sin "Mormaii" pegado — riesgo geográfico (Macau/Macao, región de China), atenuado vs. Doha porque el exónimo español dominante es "Macao" (con O), pero no nulo |
+
+**Anti-canibalización**: Macau NO es el 6to reclamo de "cuadrado+hombre" (ese carril sigue en 5:
+Curazao, San Juan, Monterrey 2, Madri, Doha, saturado). Es el primer Mormaii de sol con forma
+RECTANGULAR — carril propio, sin pelear con nadie del cluster. La primaria sigue siendo 100% branded
+en title/H1 (mismo criterio de todo el cluster), pero a diferencia de Doha/Madri/Monterrey 2, acá SÍ
+conviene declarar la forma en copy/H2/alt porque es territorio libre y honesto, no un reclamo débil.
+
+**Diferenciador evaluado y descartado como keyword**: color único en venta real (Negro Mate/Carey,
+lente marrón) — sin volumen medido para "carey" en el CSV de este cluster; se usa en copy/alt como
+dato honesto (Col.01 Negro Brillo está cargado con stock 0 pero NO se promociona como disponible).
+
+Cross-link obligatorio Macau↔Curazao↔San Juan↔Monterrey 2↔Madri↔Doha↔Borneo↔Joaca4↔Storm ("otros
+lentes de sol Mormaii para hombre") + todos → `/anteojos-de-sol/mormaii`. Opcional (mismo criterio
+que usó Fortaleza con los aviadores cross-brand): Macau↔Vulk Dieven ("otro armazón rectangular de
+sol"), único otro rectangular de sol del catálogo aunque de otra marca y unisex.
+
+**No usar**: "cuadrado" en ningún nivel (forma real es rectangular, confirmado por SERP de
+competencia y dimensiones 146mm/59mm). "Deportivo" (saturado por Rusty, impreciso para esta
+construcción). "Macau" suelto sin "Mormaii" (riesgo geográfico). "Varios colores"/plural en
+meta_description (1 solo color con venta real).
+
+**Nota**: si en algún momento se carga un segundo Mormaii de sol rectangular para hombre, reevaluar
+si "rectangular hombre" pasa a primaria en título — con uno solo no vale la pena forzar el
+presupuesto de 60 caracteres.
+
+**Title**: `Lentes de Sol Mormaii Macau Hombre | Óptica Carballo` (52). **H1**: `Mormaii Macau`
+(plano, mismo criterio reciente del cluster — Monterrey 2/Madri/Joaca 4/Doha). **Meta**: `Lentes de
+sol Mormaii Macau: poliamida para hombre, negro mate/carey con lente marrón. Polarizados, UV400 cat.
+3. Envío a todo el país, garantía de 1 año.` (154)
+
+---
+
+*Mormaii Swap NG2 MAG (receta, CUADRADO, HOMBRE, poliamida, bisagra "inyectada reforzada" sin flex
+(misma que Kona MAG), **TERCER modelo de la línea MAG y PRIMER clip-on 2-en-1 magnético real del
+catálogo** — imanes en las patillas + 2 clips solares intercambiables (uno oscuro polarizado cat.3
+UV400 color variable por variante, uno amarillo UV400 sin polarización confirmada), apto monofocal/
+bifocal/progresivo sin restricción, 3 colores: Col.01 Negro Mate/Detalles Gris, Col.02 Gris Mate/
+Detalles Rojos, Col.04 Negro Mate/Detalles Celestes, cada uno publicación ML separada) — slug
+`mormaii-swap-ng2-mag-receta` en `/anteojos-de-receta/mormaii/mormaii-swap-ng2-mag-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii swap ng2 mag (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** slug/title/H1/alt |
+| lentes de aumento y sol con imán | 90 | 21 | intención EXACTA (receta+sol+imán = 2-en-1 magnético real), LIBRE, validada con SERP real (Faleiao/Vola/Giorlent "3 en 1" con clips magnéticos dominan esta variante específica, verificado 2026-09-30) → **primaria secundaria**, meta_description, H2, copy |
+| lentes con iman para sol | 90 | 12 | mismo campo semántico, difficulty aún más baja, transactional → secundaria de apoyo, H2/copy |
+| clip on para anteojos recetados | 260 | 6 | YA es primaria secundaria de HOVER (mismo brand+receta+clip-on) → NO se reutiliza como target de título/H1 acá (cannibalización directa); libre para mención genérica de body/breadcrumb |
+| lentes/clip on lentes (genérico) | 1.000/880 | 5 | cabecera mixta sol+receta, ya clasificada soporte-no-primaria en Hover → mismo trato, soporte/H2, no título |
+| anteojos/lentes con imán (genérico, SIN "sol") | 170-260 | 18-44 | criterio Kona MAG/Leñas 2 MAG SIGUE VIGENTE para esta forma genérica — SERP real (verificado 2026-09-30) sigue dominado por lectura de kiosco plegable/imán-para-colgar (Dandy, Carezza) → NO primaria, intención equivocada |
+| anteojos/lentes 2 en 1 / 3 en 1 | 20-50 | 32-36 | volumen bajo, difficulty alta para el estándar del catálogo, sin intent comercial claro en Ubersuggest → no se persigue como keyword; "2 clips intercambiables" queda como lenguaje humano en copy, no SEO target |
+
+**Hallazgo clave (excepción real al criterio de Kona MAG, no lo invalida)**: el criterio "magnético/
+imán nunca primaria" sentado en Kona MAG sigue aplicando al 100% para el término GENÉRICO
+("anteojos con imán", "lentes con imán") — confirmado con búsqueda real, ese SERP sigue siendo de
+lectura de kiosco/colgar, no de este producto. La excepción es el COMPUESTO específico
+"[receta]+sol+imán" ("lentes de aumento y sol con imán"), que sí tiene volumen medido (90/21) y SERP
+real de la misma categoría de producto (Rx + clip solar magnético removible) — verificado con
+búsqueda 2026-09-30 (Faleiao, Vola, Giorlent). Es la única keyword de la familia imán que se activa
+como primaria secundaria en todo el catálogo, y queda exclusiva de Swap NG2 MAG mientras no haya otro
+Rx+clip-solar+imán cargado. Amendment al punto 1 del "Criterio sentado" de Kona MAG: agregar "— salvo
+el compuesto receta+sol+imán, cuando el producto es un clip-on removible real (no accesorio para
+colgar): ver Swap NG2 MAG" — aplica también a futuros Traful Magnetic/Leñas 3 Magnetic/Asana Magnetic
+SI y solo si tienen función de clip solar real (chequear caso por caso, no asumir).
+
+**Anti-canibalización vs Hover** (mismo brand+receta+HOMBRE+mecanismo "clip-on", pero forma distinta:
+CUADRADO vs RECTANGULAR de Hover): Swap NG2 MAG NO pelea "clip on para anteojos recetados" (queda
+100% de Hover). Diferenciador real y de copy: magnetismo + 2 clips intercambiables (oscuro polarizado
++ amarillo) vs el clip único abatible (no magnético, se engancha en la zona nasal) de Hover. Aclarar
+siempre en H2/body cuál mecanismo es cuál — no dejar que el lector asuma que son lo mismo.
+
+**Anti-canibalización vs Kona MAG / Leñas 2 MAG** (línea magnética, mismo mecanismo base de imán): la
+función es distinta — en Kona MAG/Leñas 2 MAG el imán es SOLO para colgar de la ropa o adherir a
+superficie metálica (no hay clip, no hay función solar); en Swap NG2 MAG el imán ES el sistema de
+sujeción de los 2 clips solares intercambiables. Por eso el término genérico "con imán" sigue sin ser
+primaria en ningún producto MAG, pero el compuesto "receta+sol+imán" solo se activa acá. Shape
+overlap con Kona MAG (ambos CUADRADO, Kona MAG unisex / Swap NG2 MAG hombre): no hay colisión de
+keyword real porque ninguno pelea "cuadrado" en título/H1.
+
+Cross-links obligatorios: familia receta Mormaii completa (hub `/anteojos-de-receta/mormaii`) + trío
+línea magnética Mormaii (Kona MAG ↔ Leñas 2 MAG ↔ Swap NG2 MAG, "otros armazones Mormaii con sistema
+magnético") + Swap NG2 MAG ↔ Hover ("otros sistemas de clip-on de Mormaii", aclarando magnético-
+removible-2-clips vs abatible-1-clip).
+
+**No usar**: "clip on para anteojos recetados" en title/H1 (es de Hover). "Cuadrado" en title/H1
+(saturado). "Magnético"/"imán" genérico como keyword primaria de title/H1. "3 en 1"/"2 en 1" como
+keyword SEO. No prometer "cambio de sistema de lentes de receta" — los 2 clips son SOLARES
+intercambiables, no lentes de aumento intercambiables. No afirmar polarización en el clip amarillo.
+
+**Title**: `Armazón Rx Mormaii Swap NG2 Mag Clip Solar | Óptica Carballo` (60). **H1**: `Mormaii Swap
+NG2 MAG` (plano, sigla real). **Meta**: `Mormaii Swap NG2 MAG: armazón de receta cuadrado en
+poliamida, con clip solar magnético polarizado y clip amarillo UV400 intercambiables. Envío a todo
+el país.` (159)
+
+---
+
+*Mormaii Tokio (sol, CUADRADO, HOMBRE explícito, poliamida, bisagra plástica reforzada, lente de
+policarbonato POLARIZADA UV400 cat.3, 3 colores cargados — Col.01 Negro Brillo/Lente Gris Oscuro
+(stock 0), Col.03 Negro Mate/Lente Espejada Celeste (stock 2, único color con venta real), Col.05
+Azul Mate/Lente Gris Oscuro Degradé (stock 0)) — slug `mormaii-tokio` en
+`/anteojos-de-sol/mormaii/mormaii-tokio`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii tokio (branded) | 0 medido en CSV, demanda real confirmada por SERP (5+ ópticas argentinas venden un modelo "Tokio" con esa grafía exacta, verificado 2026-09-30) | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol cuadrados hombre | 90/70 | 18/35 | 6to Mormaii "cuadrado+hombre" en sol (Curazao, San Juan, Monterrey 2, Madri, Doha, Tokio) → **NO primaria**, el nombre branded alcanza solo |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — ya es de Storm → soporte, cross-link |
+| tokio / tokyo (sueltos) | — | — | **NO USAR EN NINGÚN NIVEL** — riesgo geográfico MAYOR que Doha/Macau (ciudad global de altísimo reconocimiento). Hallazgo nuevo: colisión de RUBRO (no sólo geografía) con la óptica real "Tokio Visión" (La Plata) — `optica tokio la plata` mide 110 vol/30 diff — mismo tier que Borneo Readers/óptica San Juan. Nunca suelto sin "Mormaii" |
+
+**Evaluación del riesgo geográfico**: confirmado mayor en términos absolutos que Doha o Macau — Tokio
+es una ciudad mucho más buscada globalmente. Mitigado con el mismo mecanismo de todo el cluster
+(nunca reclamar el string solo, siempre compuesto con "Mormaii") — el compuesto "mormaii tokio"
+desambigua 100%, nadie que lo busca quiere vuelos a Japón. El hallazgo nuevo respecto a Doha/Macau es
+la colisión con **Tokio Visión** (óptica real en La Plata, mismo rubro) — documentado como riesgo de
+tier superior, pero tampoco compromete la página.
+
+**Nombre — ventaja SEO real de "Tokio" vs "Tokyo"**: el founder confirmó que el grabado físico dice
+"TOKIO" (interoptica.com.ar y el marketing del fabricante usan "Tokyo"). 3 ventajas reales de usar
+"Tokio": (1) coherencia producto-listing — evita reclamos de "pedí Tokyo y llegó Tokio"; (2)
+convención ya asentada: TODOS los competidores argentinos indexados para este modelo (Paesani,
+Amuchastegui, Magic Accesorios, Punto Devoto, Sandin) usan "Tokio", nunca "Tokyo"; (3) honestidad
+E-E-A-T — no reclamar una grafía que el producto físico no tiene (mismo principio ya aplicado con
+Curazao/Borneo/Joaca4).
+
+**Anti-canibalización**: con Tokio son 6 Mormaii "cuadrado+hombre" de sol — el carril de forma+género
+sigue saturado desde Curazao/San Juan. Tokio va 100% branded, cero mención de forma como keyword
+objetivo. Refuerza la prioridad ya escalada en BACKLOG.md de crear `/anteojos-de-sol/cuadrados`.
+
+**Diferenciador evaluado y descartado como keyword**: color con venta real (Negro Mate/Espejada
+Celeste) — sin volumen medido; sólo dato honesto en copy/alt (2 de 3 colores en stock 0, no se
+promocionan como disponibles).
+
+Cross-link obligatorio Tokio↔Curazao↔San Juan↔Monterrey 2↔Madri↔Doha↔Macau↔Borneo↔Joaca4↔Storm
+("otros lentes de sol Mormaii para hombre") + todos → `/anteojos-de-sol/mormaii`.
+
+**No usar**: "tokio"/"tokyo" sueltos sin "Mormaii" (riesgo geográfico + colisión de rubro con Tokio
+Visión/La Plata). "Cuadrado"/"cuadrados hombre" en title/H1 (6to reclamo, saturado). "Varios
+colores"/plural en meta_description (sólo 1 de 3 con venta real).
+
+**Title**: `Lentes de Sol Mormaii Tokio Hombre | Óptica Carballo` (52). **H1**: `Mormaii Tokio`
+(plano). **Meta**: `Lentes de sol Mormaii Tokio: poliamida para hombre, negro mate/lente espejada
+celeste. Polarizados, UV400 cat. 3, envío a todo el país y garantía de 1 año.` (155)
+
+---
+
+*Mormaii Leñas 3 MAG (receta, CUADRADO, HOMBRE explícito, poliamida, bisagra metálica flex "Visyfit"
+(misma que Leñas original/Leñas 2 MAG, distinta de Kona MAG/Swap NG2 MAG que son sin flex), **cuarto
+modelo de la línea MAG del catálogo, línea sólo-colgar** (mismo mecanismo que Kona MAG/Leñas 2 MAG,
+sin clip-on ni componente solar), apto monofocal/bifocal/progresivo sin restricción, 3 colores en
+venta real, todos con stock — Col.01 Negro Mate, Col.02 Azul Mate con Turquesa, Col.04 Transparente
+con Azul) — slug `mormaii-lenas-3-mag-receta` en `/anteojos-de-receta/mormaii/mormaii-lenas-3-mag-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii leñas 3 mag (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt. "MAG" queda literal (no se traduce a "Magnético"), mismo criterio que Leñas 2 MAG |
+| anteojos/lentes con imán / imantados (genérico) | 170-260 | 18-49 | criterio Kona MAG SIGUE VIGENTE sin excepción — no hay clip-on ni función solar acá, la excepción de Swap NG2 MAG NO aplica → **NO primaria**, SERP de intención equivocada (kiosco/colgar) |
+| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomado por Rusty Zinz Optics/Peating Carey y saturado dentro del propio catálogo Mormaii (Leñas original, Kona MAG, Swap NG2 MAG) → Leñas 3 MAG tampoco pelea "cuadrado" en título/H1 |
+
+**Confirmación explícita de criterio**: el amendment "salvo el compuesto receta+sol+imán" sentado en
+Swap NG2 MAG NO se activa en Leñas 3 MAG porque no hay clip solar removible — es el mismo patrón
+sólo-colgar de Kona MAG/Leñas 2 MAG.
+
+**Desambiguación obligatoria de los 3 "Leñas"** (actualiza la nota de Leñas 2 MAG, que reservaba el
+nombre placeholder "Leñas 3 Magnetic"): nunca escribir "Leñas" a secas en copy/anchors — `Mormaii
+Leñas` (original, seed 135, cuadrado UNISEX, Grilamid, sin imán) / `Mormaii Leñas 2 MAG` (seed 140,
+rectangular chico, UNISEX, poliamida, con imán sólo-colgar, monofocal-only) / `Mormaii Leñas 3 MAG`
+(seed 147, cuadrado HOMBRE explícito, poliamida, con imán sólo-colgar, SIN restricción de lente —
+nombre real confirmado en ML/grabado físico: "Leñas 3 MAG", no "Leñas 3 Magnetic" como se había
+reservado).
+
+**Anti-canibalización vs Kona MAG** (mismo mecanismo sólo-colgar, mismo CUADRADO): diferenciador real
+es género (Kona MAG unisex / Leñas 3 MAG hombre) + bisagra (Kona MAG rígida "inyectada reforzada" /
+Leñas 3 MAG flex Visyfit). Ninguno pelea "cuadrado" en título/H1 — sin colisión de keyword, pero el
+cross-link debe nombrar la diferencia de género+bisagra.
+
+**Anti-canibalización vs Leñas 2 MAG**: forma (cuadrado vs rectangular chico), talle (estándar vs
+chico ~35mm alto), género (hombre vs unisex) y restricción de lente (sin restricción vs monofocal-
+only) distinguen — reforzar siempre el "3 MAG" completo en anchors para no generar ambigüedad con
+"2 MAG".
+
+**Anti-canibalización vs Leñas original**: material (poliamida vs Grilamid), género (hombre explícito
+vs unisex) e imán (sí vs no) distinguen. Ninguno pelea "cuadrado" en título/H1.
+
+**Anti-canibalización vs Swap NG2 MAG** (la más relevante — mismo CUADRADO + mismo HOMBRE, único otro
+MAG que comparte forma y género): diferencia funcional no negociable en copy — Swap NG2 MAG tiene
+clip-on solar magnético removible real (2 clips intercambiables, capta "lentes de aumento y sol con
+imán" 90/21 en exclusiva); Leñas 3 MAG NO tiene clip ni función solar, el imán es sólo para colgar.
+Prohibido usar "clip"/"clip solar"/"2 en 1" en copy de Leñas 3 MAG — sería promesa falsa.
+
+Cross-links obligatorios: familia receta Mormaii completa (hub `/anteojos-de-receta/mormaii`) +
+cuarteto línea magnética Mormaii (Kona MAG ↔ Leñas 2 MAG ↔ Swap NG2 MAG ↔ Leñas 3 MAG, aclarando
+sólo-colgar vs clip-solar) + Leñas 3 MAG ↔ Leñas original (género+material+imán) + Leñas 3 MAG ↔
+Leñas 2 MAG (forma+talle+restricción).
+
+**No usar**: "magnético"/"imán" como keyword de title/H1. "Cuadrado" en title/H1 (saturado). "Leñas"
+sin el "3 MAG" completo. "Clip"/"clip solar"/"2 en 1"/función solar en ningún lado del copy.
+
+**Title**: `Armazón Rx Mormaii Leñas 3 MAG Hombre | Óptica Carballo` (55). **H1**: `Mormaii Leñas 3
+MAG` (plano, sigla real). **Meta**: `Mormaii Leñas 3 MAG: armazón de receta cuadrado hombre en
+poliamida, con imán en la patilla para colgar. Apto mono, bifocal y progresivo. Envío a todo el
+país.` (159)
+
+---
+
+*Mormaii Miami (sol, CUADRADO, HOMBRE explícito, poliamida, bisagra plástica reforzada, lente de
+policarbonato POLARIZADA UV400 cat.3, 3 colores cargados, **los 3 con stock real (2/2/2) — primer
+Mormaii "cuadrado+hombre" de sol del cluster con disponibilidad completa en las 3 variantes**, a
+diferencia de Doha/Macau/Tokio que sólo tuvieron 1 color vigente — Col.01 Negro Brillo/Lente Gris
+Oscuro, Col.03 Carey/Lente Marrón, Col.05 Azul Mate/Lente Gris Degradé) — slug `mormaii-miami` en
+`/anteojos-de-sol/mormaii/mormaii-miami`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii miami (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo de rubro → **primaria** título+H1+slug+alt |
+| lentes/anteojos de sol cuadrados hombre | 90/70 | 18/35 | 7mo Mormaii "cuadrado+hombre" en sol (Curazao, San Juan, Monterrey 2, Madri, Doha, Tokio, Miami) → **NO primaria**, el nombre branded alcanza solo |
+| lentes de sol mormaii | 90 | 8 | head de sol de marca — ya es de Storm → soporte, cross-link |
+| miami (suelto) | — | — | **NO USAR EN NINGÚN NIVEL** — el término geográfico de MAYOR riesgo reservado hasta ahora en el cluster |
+
+**Evaluación del riesgo geográfico**: confirmado alto, en la misma liga que Tokio pero por un
+mecanismo distinto. No hay "Óptica Miami" real operando en Argentina (a diferencia de Tokio Visión)
+pero el campo semántico "gafas de sol/comprar en Miami" está dominado en SERP por contenido de
+shopping-en-Miami (outlets, guías de compra) — intención 100% ajena al producto, con volumen de
+intención mayor por la relación particular Argentina↔Miami como destino de compras. Mitigación
+idéntica al resto del cluster: nunca "Miami" suelto, siempre "Mormaii Miami" compuesto. Con Miami son
+ya 4 nombres geográficos reservados del mismo modo (Doha, Macau, Tokio, Miami).
+
+**Anti-canibalización**: 7mo "cuadrado+hombre" de sol Mormaii — el carril satura desde Curazao/San
+Juan, Miami no lo reclama en ningún nivel (title/H1/meta), sólo como atributo en copy/alt/
+`frame_shape`. Refuerza la prioridad ya escalada en BACKLOG.md de crear `/anteojos-de-sol/cuadrados`.
+
+**Diferenciador real a explotar en copy (no keyword)**: primer Mormaii "cuadrado+hombre" reciente con
+los 3 colores efectivamente en stock — afirmable en meta_description/H2 ("3 colores disponibles"), a
+diferencia de Doha/Macau/Tokio que debían matizar con "único color vigente".
+
+Cross-link obligatorio Miami↔Curazao↔San Juan↔Monterrey 2↔Madri↔Doha↔Macau↔Tokio↔Borneo↔Joaca4↔Storm
+("otros lentes de sol Mormaii para hombre") + todos → `/anteojos-de-sol/mormaii`.
+
+**No usar**: "miami" suelto sin "Mormaii" (riesgo geográfico más alto del cluster). "Cuadrado"/
+"cuadrados hombre" en title/H1 (7mo reclamo, saturado). "Único color"/"1 solo color" en
+meta_description (sería falso, los 3 están disponibles).
+
+**Title**: `Lentes de Sol Mormaii Miami Hombre | Óptica Carballo` (52). **H1**: `Mormaii Miami`
+(plano). **Meta**: `Lentes de sol Mormaii Miami: poliamida liviana para hombre, 3 colores
+disponibles. Polarizados, UV400 cat. 3. Envío a todo el país y garantía de 1 año.` (151)
+
+---
+
+*Mormaii Frey (receta, OVALADO — primer Mormaii ovalado del catálogo, 12 RX previos son envolvente/
+cuadrado/redondo/rectangular —, UNISEX, poliamida, bisagra metálica flex Visyfit, apto monofocal/
+bifocal/progresivo sin restricción, 5 colores: Col.01 Negro Mate, Col.02 Azul Transparente, Col.04
+Transparente, Col.05 Marrón Carey, Col.06 Rojo Translúcido) — slug `mormaii-frey-receta` en
+`/anteojos-de-receta/mormaii/mormaii-frey-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii frey (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
+| lentes/anteojos ovalados | 390/260 | 11/10 | forma real y volumen real, PERO ya reclamada de facto por Vulk Clems Receta (seed 57, meta_title vivo) → **NO primaria de Frey**, ver anti-canibalización |
+| anteojos recetados | 720 | 9 | head de intención receta compartido (mismo criterio Moorea/Traful) → copy/1er párrafo, no exclusivo |
+
+**Hallazgo clave**: "ovalado" NO es territorio 100% libre dentro del catálogo — Vulk Clems Receta
+(cargado antes de la norma de `seo-strategist` obligatorio) ya tiene `frame_shape:"ovalado"` y su
+meta_title vivo dice "...Armazón de Receta Ovalado Ultra Liviano". Mismo carril RX+ovalado+unisex,
+sin atributo natural que los separe (ambos unisex, ningún material con keyword propia). Resolución:
+**Clems queda como dueño de facto** de la frase comercial "lentes/anteojos ovalados"; **Frey usa
+"Ovalado" como adjetivo PLANO en title/H1** (no como frase-objetivo), mismo mecanismo que Traful con
+"Redondo". Pendiente (fuera de esta carga): formalizar ficha retroactiva de Clems en este documento.
+
+**Anti-canibalización vs resto de Mormaii RX ("unisex")**: no hay carril que reclamar — 6 de los 11
+RX previos ya son unisex (Traful, Leñas, Kona MAG, Leñas 2 MAG, Barcelona, Maceio). "Unisex" NO se
+usa como palabra de título (sería el 7mo reclamo del mismo atributo, cero ROI incremental).
+
+Cross-link obligatorio Frey↔Vulk Clems Receta ("otro armazón ovalado, distinta marca y material") +
+familia receta Mormaii completa (Traful, Leñas, Maceio, Barcelona, Kona MAG, Leñas 2/3 MAG — "otros
+armazones de receta Mormaii") + `/anteojos-de-receta/mormaii` + `/marcas/mormaii`.
+
+**Gap en observación** (no bloqueante, anotado en BACKLOG.md): con Clems + Frey, el carril
+ovalado+receta tiene 2 productos — bajo el umbral de 4 que usa el proyecto para promover una faceta
+activa (`/anteojos-de-receta/ovalados`), mismo criterio que el gap ya escalado de
+`/anteojos-de-sol/cuadrados`.
+
+**No usar**: "lentes ovalados"/"anteojos ovalados" como frase exacta en meta_title o H1 (ya la tiene
+Clems viva en producción — crearía dos páginas del propio sitio compitiendo por el mismo SERP).
+"Unisex" como palabra de título (saturado, 6/11 RX Mormaii ya lo son).
+
+**Title**: `Armazón de Receta Mormaii Frey Ovalado | Óptica Carballo` (57). **H1**: `Mormaii Frey`
+(plano). **Meta**: `Mormaii Frey: armazón de receta ovalado y unisex, en poliamida con bisagra
+metálica flex Visyfit. 5 colores, envío a todo el país y garantía oficial de 1 año.` (158)
+
+---
+
+*Mormaii 178 (sol, CUADRADO/trapezoidal oversized statement, UNISEX — primer acetato de SOL de la
+marca (Barcelona fue el primer acetato RX, nunca antes en sol), bisagra metálica sin flex, lente de
+policarbonato UV400 cat.3, NO POLARIZADO en ninguna variante (primer Mormaii de sol del catálogo que
+confirma explícitamente esto — los otros 11 sí polarizan), 3 colores en venta real — Negro Brillo
+(stock 2), Carey (stock 2), Azul (stock 3)) — slug `mormaii-178` en
+`/anteojos-de-sol/mormaii/mormaii-178`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii 178 (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo de rubro → **primaria** título+H1+slug+alt |
+| lentes de sol grandes | 90 | 19 | libre en todo el catálogo, pero el ancho real (143mm) queda por debajo del umbral honesto (~145mm, mismo estándar que descartó a Rusty Dunsert) → **no usada**, título conservador |
+| lentes/acetato (atributo) | 110/11, 30/39 | genérico mixto receta/sol, mismo tratamiento que Barcelona (RX) → soporte en meta_description/copy, nunca cabecera |
+| lentes/anteojos de sol cuadrados | 390/170 | 11/14 | 9no reclamo del string en el cluster (7 Mormaii hombre + Daito unisex) → **NO primaria**, sólo atributo en copy/alt/`frame_shape` |
+| lentes/anteojos de sol unisex | 20/20 | 36/36 | **BLOQUEADA — ya es primaria secundaria de Daito**, mismo brand/carril → mención descriptiva en copy sin intención de ranking |
+| anteojos/lentes de sol sin polarizar | 0 medido | — | CERO volumen — disclosure de honestidad de negocio, nunca en title/H1/name |
+
+**Anti-canibalización (MO178 vs Daito — el caso realmente ajustado, no el grupo "cuadrado+hombre")**:
+MO178 no compite con los 7 Mormaii "cuadrado+hombre" de sol (todos HOMBRE explícito, cero overlap). El
+caso ajustado es contra **Daito**: mismo brand/sol/cuadrado/unisex — las variables que separan al
+resto del cluster (forma+género) acá no alcanzan. Separación real en 3 capas: (1) material — MO178
+acetato+bisagra metálica sin flex vs Daito poliamida+bisagra plástica reforzada; (2) polarización
+invertida — Daito 100% polarizado y dueño del claim, MO178 0%; (3) "unisex" como keyword secundaria
+queda 100% de Daito, MO178 no la persigue en título/H1.
+
+Cross-link obligatorio MO178↔Daito ("el otro cuadrado unisex de Mormaii, en acetato vs poliamida") +
+MO178↔Barcelona ("primer acetato de su categoría en Mormaii": Barcelona=RX, MO178=sol, opcional) +
+todos → `/anteojos-de-sol/mormaii`.
+
+**Hallazgo — colisión cross-brand de "178"**: existe un modelo "Reef 178" vendido en ML Argentina
+(Reef es marca top-priority del research, 3.400 vol, aún sin cargar). No es riesgo geográfico sino de
+código de modelo cross-brand dentro del mismo nicho. Sin riesgo de URL (slug prefijado por marca) pero
+sí de SERP débil/atención al cliente — "178" nunca suelto sin "Mormaii". Acción pendiente en
+BACKLOG.md: al cargar Reef, verificar si tiene un "178" propio.
+
+**Nota de honestidad — no polarizado**: 0/3 variantes polarizan, rompiendo un patrón de 11 Mormaii de
+sol previos que sí lo hacen. Mención explícita en short_description/callout ("No es polarizado"), no
+sólo omisión silenciosa — obligación de negocio, no jugada SEO (0 vol medido). Nunca "polarizado" en
+title/H1/name/`lens_treatment`. Queda fuera de `/anteojos-de-sol/polarizados` y
+`/anteojos-de-sol/mormaii/polarizados`.
+
+**No usar**: "178" suelto sin "Mormaii" (colisión cross-brand con Reef). "Cuadrado"/"cuadrados" en
+title/H1 (9no reclamo, saturadísimo). "Unisex" como keyword objetivo en título (ya es de Daito).
+"Polarizado" en cualquier campo. "Clásico femenino" como descriptor (contradice la decisión unisex,
+sin respaldo visual ni de volumen) — usar "moderno"/"statement". "Oversized" en inglés (sin volumen
+medido) — usar "grandes" sólo si se confirma honestamente la medida (acá no califica).
+
+**Title**: `Lentes de Sol Mormaii 178 Acetato | Óptica Carballo` (51). **H1**: `Mormaii 178` (plano).
+**Meta**: `Lentes de sol Mormaii 178: acetato, cuadrado oversized y unisex. UV400 cat. 3, no
+polarizados. 3 colores disponibles, envío a todo el país y garantía 1 año.` (156)
+
+*Mormaii High 4 (receta, RECTANGULAR tipo wayfarer — ancho total 140mm, calibre 54, puente 18,
+varilla 135, alto de lente 42mm, grabado físico confirma "High 4" sin sufijos de línea, UNISEX por
+decisión de posicionamiento del founder (el atributo estructurado de ML dice "hombre", no se
+cuestiona), acetato, bisagras metálicas SIN flex, apto monofocal/bifocal/progresivo sin restricción,
+2 colores — A14 Negro, DC0 Transparente/cristal con patillas negras) — slug `mormaii-high-4-receta`
+en `/anteojos-de-receta/mormaii/mormaii-high-4-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii high 4 (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo de rubro (confirmado: cero colisión con "high" en los CSV en español de `KEYWORDS OPTICA/`) → **primaria** título+H1+slug+alt |
+| lentes wayfarer | 590 | 14 | forma real (wayfarer), mayor volumen de todo el cluster Mormaii receta — ya usada por Rusty Opposit Optics (cross-brand, receta, mujer) → **NO primaria**, sólo palabra plana de cierre de título soldada al branded |
+| anteojos wayfarer | 260 | 9 | idem arriba, variante "anteojos" |
+| anteojos/lentes rectangulares | 480/15, 880/10 | ya tomadas por Rusty R-CY 02 (primaria cross-brand) y saturadas dentro de Mormaii (Hover, Barcelona, Leñas 2 MAG) → **NO primaria**, nunca título/H1, sólo `frame_shape`/copy/alt |
+| anteojos recetados | 720 | 9 | head de intención receta compartido (mismo criterio de todo el cluster) → copy/1er párrafo |
+| lentes/anteojos transparentes | 1.000/16, 720/16 | **TRAMPA, no usar** — sólo 1 de 2 colores (DC0) es transparente (50%, no alcanza el umbral de honestidad del proyecto, mismo criterio que descartó a Vulk Vartis frente a Strewn); además el genérico sin género ya es primaria de Vulk Ready? |
+| lentes/armazones de acetato | 110/11, 30/39 | atributo real, ya usado por Barcelona como soporte → soporte en copy, no diferenciador de título (evitar título gemelo a Barcelona) |
+| anteojos/lentes grandes | 210/13, 210/16 | **TRAMPA, no usar** — 140mm de ancho total no alcanza el umbral honesto de ~145mm que el proyecto aplicó dos veces (descartó a Rusty Dunsert sol 140mm y Mormaii 178 sol 143mm) |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-receta/mormaii`, `/marcas/mormaii`), NUNCA en esta PDP |
+
+**Hallazgo — riesgo de nombre "High"**: barrido completo de los CSV de `KEYWORDS OPTICA/` (incluido
+el de blue light, único lugar donde aparece "high" en inglés, sin relación con este producto) no
+devuelve ninguna colisión en español con "high" como moda ("high waist"), maquillaje
+("highlighter") ni ningún otro campo semántico ajeno a la óptica. Riesgo de keyword CONFIRMADO BAJO
+con datos reales — a diferencia de los riesgos geográficos de Doha/Macau/Tokio/Miami, que sí
+competían con volumen real. Se aplica igual la misma mitigación barata y ya estandarizada en el
+cluster: "High" NUNCA suelto en ningún nivel (title, H1, alt, anchors, redes) — siempre el compuesto
+"Mormaii High 4" completo, con el "4" pegado (el grabado físico no tiene sufijos de línea, el "4" es
+parte del nombre, no una talla ni una versión). Motivo adicional, no de SEO sino de marca: "high" es
+jerga real de moda argentina — no compite por tráfico, pero puede generar ruido de marca en redes si
+se usa suelto.
+
+**Anti-canibalización (High 4 vs Mormaii Barcelona — el caso más ajustado del cluster receta)**:
+ambos son RECTANGULAR + UNISEX + ACETATO + bisagra metálica SIN flex, de receta Mormaii — la
+combinación de atributos más parecida de todo el catálogo Mormaii hasta ahora (más cerrada incluso
+que San Juan vs Curazao, que al menos diferían en 1 variable visual). No hay forma+género que soldar
+(mismo mecanismo que separó Curazao/Daito) porque ambas variables son idénticas acá. La separación
+real se apoya en tres capas:
+1. **Branded, cero riesgo**: `mormaii barcelona` vs `mormaii high 4` — sin overlap posible.
+2. **Tamaño/estilo real y medible**: Barcelona es "talle NORMAL" (alto de lente 41mm) de corte
+   rectangular clásico; High 4 es un wayfarer bold de 140mm de ancho total y 42mm de alto de lente —
+   mismo orden de magnitud en el papel, pero el estilo wayfarer (aro superior más grueso, forma
+   trapezoidal) lo hace leer visualmente más grande y más statement que el rectangular plano de
+   Barcelona. Diferenciador de copy/conversión, NO de keyword (ver trampa "grandes" arriba).
+3. **Palabra de cierre de título distinta**: Barcelona cierra con "Acetato" (su primer acetato RX);
+   High 4 cierra con "Wayfarer" (su estilo real, que Barcelona no reclama) — evita que dos títulos
+   Mormaii terminen en la misma palabra.
+
+Cross-link obligatorio High4↔Barcelona ("el otro rectangular de receta en acetato, distinto estilo")
++ High4↔Hover↔Leñas 2 MAG (cuarteto rectangular Mormaii receta completo, aclarando mecanismo/talle/
+género en cada cruce) + familia receta Mormaii completa → `/anteojos-de-receta/mormaii`.
+
+**Anti-canibalización cross-brand (High 4 vs Rusty R-CY 02 / Rusty Woxi, "rectangular" genérico)**:
+mismo gap ya señalado en Barcelona — R-CY 02 es dueño de facto de `anteojos/lentes rectangulares`
+cross-brand. High 4 no lo pelea en ningún nivel. Con High 4 son ya 4 Mormaii + 2 Rusty = 6 productos
+"rectangular" de receta sin facet propia (`/anteojos-de-receta/rectangulares` no existe) — reforzar
+la prioridad ya escalada en BACKLOG.md (mismo patrón que `/anteojos-de-sol/cuadrados`).
+
+**Anti-canibalización cross-brand (High 4 vs Rusty Opposit Optics, "wayfarer")**: Opposit (receta,
+wayfarer, mujer) es el único otro armazón de receta del catálogo con esta forma. Es un entry de
+etapa temprana del cluster Rusty (anterior a la disciplina actual de anti-canibalización), su tabla
+no marca "wayfarer" como primaria explícita pero sí es el string de forma que usa en copy. High 4 no
+reclama la frase exacta "lentes wayfarer"/"anteojos wayfarer" como meta_title ni H1 — la usa sólo
+como palabra plana de cierre del title (mismo mecanismo que "Ovalado" en Frey), soldada siempre al
+branded "Mormaii High 4". Diferenciador real: Opposit es MUJER explícita, High 4 es UNISEX — géneros
+opuestos, sin overlap de intención real de búsqueda con calificador de género. Cross-link opcional
+High4↔Opposit ("otro armazón wayfarer de receta, distinta marca y género").
+
+**Honestidad — "transparente" descartado como keyword**: 1 de 2 colores (DC0) es transparente/
+cristal — 50%, no alcanza el umbral de mayoría que el proyecto exige para afirmar un atributo de
+color en title/H1/meta (mismo criterio que descartó "transparentes" en Vulk Vartis 50% frente a
+Strewn 66%). Se menciona como dato honesto SOLO en el alt text y la descripción de esa variante
+puntual (DC0), nunca como keyword de la ficha completa. Además el genérico sin género `anteojos
+transparentes` (720/16) ya es primaria de Vulk Ready? — doble motivo para no perseguirlo.
+
+**Honestidad — "grandes" descartado como keyword**: ancho total 140mm no alcanza el umbral de
+~145mm que el proyecto usa para afirmar "grande"/"oversized" (mismo estándar que descartó a Rusty
+Dunsert sol 140mm y Mormaii 178 sol 143mm). El tamaño real se comunica en copy como "wayfarer bold"/
+"statement", nunca con la palabra "grande" como target SEO.
+
+**Gender override**: `gender:"unisex"` por decisión de posicionamiento del founder — el atributo
+estructurado de ML dice "hombre" pero el producto se vende y se presenta como unisex (no se
+cuestiona). Con High 4 son 8 de 13 RX Mormaii unisex (saturadísimo) → "Unisex" NO va como palabra de
+título/H1 (mismo criterio Frey), sí puede ir en meta_description/copy como dato honesto.
+
+**No usar**: "rectangular"/"rectangulares" como keyword de título/H1 (saturado cross-brand y dentro
+de Mormaii). "Lentes/anteojos wayfarer" como frase exacta de meta_title o H1 (riesgo cross-brand con
+Opposit) — sólo "Wayfarer" como palabra plana pegada al branded. "Transparente"/"cristal" como
+keyword en ningún nivel (50%, no alcanza honestidad + ya tomado por Ready?). "Grande"/"oversized"
+como keyword (140mm no alcanza el umbral de 145mm). "Unisex" como palabra de título (8vo reclamo,
+saturado). "High" suelto sin "Mormaii" pegado (riesgo de marca, no de SEO).
+
+**Title**: `Armazón Rx Mormaii High 4 Wayfarer | Óptica Carballo` (52). **H1**: `Mormaii High 4`
+(plano, mismo criterio del resto del cluster desde Doha). **Meta**: `Mormaii High 4: armazón de
+receta rectangular tipo wayfarer, en acetato con bisagras metálicas. Unisex, 2 colores, envío a todo
+el país y garantía de 1 año.` (157)
+
+*Mormaii Sevilha (receta, REDONDO tipo panto — resuelto sobre "ovalado" que escribió el founder: 3
+fuentes independientes dicen redondo/redondeado (ML título "Lentes Redondos", ML atributo
+estructurado `SHAPE=Redondos`, interoptica.com.ar "frente redondeado") contra 1 sola palabra sin
+corroboración externa; 3.48x más volumen de búsqueda (3.480 vs 1.000 vol/mes); y cruza el umbral de 4
+productos que habilita `/anteojos-de-receta/redondos` como faceta activa — flaggeado explícitamente
+al founder antes de aplicar, confirmado. Calibre 52, puente 21, varilla 137, ancho total 140mm, alto
+de lente 45mm, UNISEX (sin conflicto, ML+founder coinciden), acetato, bisagras metálicas SIN flex,
+apto monofocal/bifocal/progresivo sin restricción, 3 colores — A14 Negro Mate, BB4 Rosa Transparente
+con Carey, DC0 Transparente con Negro Brillo) — slug `mormaii-sevilha-receta` en
+`/anteojos-de-receta/mormaii/mormaii-sevilha-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii sevilha (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo de rubro (único hit en CSV "optica online sevilla" con 0 vol) → **primaria** título+H1+slug+alt |
+| anteojos redondos | 880 | 12 | forma real — ya es de Rusty Ther Optics cross-brand → **NO primaria**, Sevilha es la 4ta-5ta ficha redonda del catálogo (Ther Optics, Kirt Optics, Traful, Sevilha) — **cruza el umbral de 4** que habilita `/anteojos-de-receta/redondos` como faceta activa (ver BACKLOG.md) |
+| lentes redondos | 1.000 | 18 | variante "lentes" del ítem anterior → body/alt |
+| anteojos recetados | 720 | 9 | head de intención receta compartido (mismo criterio de todo el cluster) → copy/1er párrafo, no exclusivo |
+| anteojos/lentes para cara redonda | 1.000/15 | **TRAMPA, no usar** — descartada por motivo ÓPTICO, no de SEO: la teoría de contraste de forma recomienda armazones ANGULARES para cara redonda, no armazones redondos; usarla sería una recomendación técnicamente incorrecta (YMYL), pendiente de validar con `optical-expert` antes de tocar el recomendador de forma de cara (anotado en BACKLOG.md) |
+
+**Resolución de forma (override del founder)**: el founder escribió "Unisex Ovalado" en su mensaje de
+carga, pero el seed quedó con `frame_shape:"redondo"`. Mecanismo: patrón INVERSO a High4 (donde el
+founder tenía respaldo independiente de interoptica) — acá las 3 fuentes externas (ML título, ML
+atributo estructurado, interoptica descripción) coinciden entre sí y contra el founder, sin ninguna
+corroborando "ovalado". Precedente de taxonomía interna: el único otro Mormaii panto ya cargado
+(Traful, seed 133) está clasificado "redondo" pese a no ser un círculo geométrico perfecto, mismo
+tipo de forma que Sevilha. `seo-strategist` sumó el desempate objetivo: 3.48x más volumen de cluster
+("redondo" 3.480 vs "ovalado" 1.000 vol/mes) y el umbral de 4 productos para faceta activa (redondo
+lo cruza, ovalado se queda en 3). Flaggeado explícitamente al founder en el mensaje de cierre antes de
+aplicar — confirmó con "publica el seed".
+
+**Anti-canibalización (Sevilha vs Mormaii Traful — mismo mecanismo que High4 vs Barcelona)**: mismo
+brand/receta/forma panto/unisex, la combinación más parecida del cluster tras High4↔Barcelona. Se
+separa por:
+1. **Branded, cero riesgo**: `mormaii traful` vs `mormaii sevilha`.
+2. **Material y bisagra real, no cosmética**: Traful = Grilamid inyectado + bisagra metálica flex
+   Visyfit italiana; Sevilha = acetato + bisagra metálica SIN flex.
+3. **Primer acetato panto de Mormaii**: Barcelona y High4 son los otros acetatos RX de la marca pero
+   ambos rectangulares/wayfarer — Sevilha es el primer acetato de Mormaii con forma redonda, hook de
+   posicionamiento propio sin pelear keyword.
+
+Cross-link obligatorio Sevilha↔Traful ("otro armazón panto de Mormaii, Grilamid vs acetato") +
+Sevilha↔Barcelona↔High4 ("los otros acetatos de receta de Mormaii, distinta forma") + familia receta
+Mormaii completa → `/anteojos-de-receta/mormaii` + `/marcas/mormaii`. Mención en copy sin keyword
+compartida: Rusty Ther Optics + Vulk Kirt Optics ("otro armazón redondo de receta, distinta marca").
+
+**Riesgo de nombre "Sevilha"**: bajo-moderado, mitigado por ortografía (mismo mecanismo que atenuó
+Macau vs el exónimo "Macao") — la grafía portuguesa "Sevilha" (con H) es distinta de "Sevilla" (con
+doble L) que usaría un argentino buscando la ciudad española. CSV de `KEYWORDS OPTICA/` sin colisión
+de rubro real en Argentina (a diferencia de "Tokio Visión"). Mitigación estándar: nunca
+"Sevilha"/"Sevilla" suelto sin "Mormaii" pegado.
+
+**No usar**: "anteojos/lentes redondos" como frase exacta en title/H1 (ya es de Rusty Ther Optics).
+"Anteojos/lentes para cara redonda" (1.000 vol) — descartada por motivo óptico, no de SEO (ver arriba).
+"Panto" en ningún nivel de cara al cliente (jerga de industria). "Sevilha"/"Sevilla" sueltos sin
+"Mormaii". "Unisex" como palabra de título (saturado, 9+/14 RX Mormaii ya lo son). "Acetato" como
+palabra de cierre del title (reservada de facto por Barcelona). "Flexible" para la bisagra (es
+bisagra metálica SIN flex).
+
+**Title**: `Armazón de Receta Mormaii Sevilha Redondo | Óptica Carballo` (59). **H1**: `Mormaii
+Sevilha` (plano). **Meta**: `Mormaii Sevilha: armazón de receta redondo y unisex, en acetato con
+bisagras metálicas. Apto para todo tipo de lentes, envío a todo el país y garantía de 1 año.` (160)
+
+*Mormaii Recife (receta, CUADRADO — resuelto sobre "Cuadrado / Rectangular": relación calibre/alto
+57/48 = 1,19, igual a los cuadrados Mormaii ya cargados (1,20-1,23) y lejos de los rectangulares
+(≥1,29); ML `SHAPE=Cuadrado` —, HOMBRE por decisión del founder (ML dice "Sin género"), poliamida
+inyectada, bisagra metálica flex Visyfit, apto monofocal/bifocal/progresivo, talle GRANDE: calibre 57,
+puente 19, varilla 136, ancho total 147mm, alto 48mm (override del founder; el distribuidor trae
+141/40). 3 colores con stock real, ninguno negro: C02 Azul Mate-Celeste (3), C04 Transparente con
+Terminales Azules (3), C05 Azul Brillo (2). El "RX" grabado nunca entra al nombre) — slug
+`mormaii-recife-receta` en `/anteojos-de-receta/mormaii/mormaii-recife-receta`*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii recife (branded) | 0 medido | ~4 | branded exacto, libre → **primaria** título+H1+slug+alt |
+| anteojos grandes / lentes grandes | 210/13, 210/16 | **secundaria honesta**: 147mm + calibre 57 cumplen el umbral de ~145mm y nadie la reclama en el catálogo. Palabra plana de cierre del title ("Grande"), H2 y copy; nunca frase-objetivo exacta. Techo bajo (demanda femenina), el valor real es diferenciar de Leñas 3 MAG |
+| anteojos recetados hombre / lentes recetados hombre | 210/8, 140/11 | carril del hub `/anteojos-de-receta/hombre` → 1 mención natural en el 1er párrafo |
+| anteojos recetados | 720/9 | head de intención receta compartido → copy |
+| anteojos azules / lentes azules | 110/15, 210/10 | 2/3 variantes con frente azul (66%) pasa el umbral; intención mixta (luz azul) → NO title/H1, sólo meta/copy/alt |
+| anteojos/lentes cuadrados | 480/10, 880/10 | 14 RX cuadrados con Recife (Rusty Zinz dueño de facto) → NO primaria, sólo `frame_shape`/copy/alt |
+| anteojos cuadrados hombre | 210/14 | **BLOQUEADA** — primaria de Rusty Spell receta |
+
+**Honestidad — "grande"**: primer producto del catálogo que cumple el umbral de ~145mm (147mm).
+Precedentes descartados: Rusty Dunsert 140, Mormaii 178 143, High 4 140. El claim se apoya en la medida
+del founder (147/48), no en la del distribuidor (141/40, que no pasaría). Si esa medida se revisa a
+la baja de 145, "Grande" se cae del title y entra el fallback `...Recife Azul`.
+
+**Honestidad — "azul"**: 2/3 variantes con frente azul. "Transparente" NO se reclama (1/3, y es
+primaria de Rusty PRO 30 y Vulk Ready?). Nunca mezclar con "luz azul": el producto no la ofrece.
+
+**Riesgo de nombre "Recife"**: bajo-moderado (ciudad de Pernambuco, Brasil / "arrecife"), cero hits en
+los CSV, por debajo de Miami/Tokio y comparable a Sevilha. Mitigación estándar: nunca "Recife" suelto.
+
+**Anti-canibalización (Recife vs Leñas 3 MAG — el caso más ajustado)**: mismo brand/receta/cuadrado/
+hombre/poliamida/flex Visyfit. Se separa por: (1) branded; (2) palabra de cierre distinta ("Grande"
+vs "Hombre"; Recife NO cierra con "Hombre"); (3) talle (+3mm calibre, +4mm alto, "el cuadrado más
+grande de Mormaii" sin exagerar); (4) sin imán y sin color negro (diferenciador de copy, no de
+keyword). Con Ancara 2 (deportivo con correa, bisagra plástica reforzada) y Frey (mismo calce 57x48,
+forma ovalada) la separación es por uso y forma. Cross-brand: Rusty Spell y PRO 30, sin pelear.
+
+Cross-link obligatorio Recife↔Leñas 3 MAG ("más compacto, con imán para colgar") + Recife↔Ancara 2 +
+Recife↔Frey ("mismo calce, forma ovalada") + `/anteojos-de-receta/mormaii` + `/marcas/mormaii` +
+`/anteojos-de-receta/hombre`.
+
+**No usar**: "cuadrado"/"rectangular" en title/H1; "anteojos cuadrados hombre" (de Spell);
+"transparente" como claim; "Recife"/"arrecife" sueltos; "oversized"; "grandes mujer"; "Grilamid" en
+title/H1; "flexible" para el armazón (la flex es sólo la bisagra); "imán"/"magnético"/"clip"; "luz
+azul"/"filtro azul"; "unisex"; "Azul" en title/H1; "mormaii lentes/anteojos" (hub-only).
+
+**Title**: `Armazón de Receta Mormaii Recife Grande | Óptica Carballo` (57). **H1**: `Mormaii Recife`
+(plano). **Meta**: `Mormaii Recife: armazón de receta cuadrado grande para hombre, en poliamida con
+bisagra metálica flex. Apto todo tipo de lente. Envío a todo el país y garantía de 1 año.`
+
+*Mormaii Vesubio (receta, AVIADOR con DOBLE PUENTE — primer aviador de receta de Mormaii del catálogo,
+UNISEX provisorio (interoptica unisex, otra óptica lo marca masculino; el founder no aclaró, ver
+DATOS_PENDIENTES), frente inyectado de poliamida, patillas de METAL con terminales de goma, bisagra
+"integrada" (palabra del founder; el distribuidor dice inyectada reforzada; NO flex, NO metálica).
+Calibre 54, puente 16, varilla 136, ancho total 142mm, alto 52mm (medidas del founder; los
+distribuidores publican 136-140 de ancho total, no ganan). Dos colores con stock, 3 unidades cada uno:
+Col.01 Negro Mate con patillas Gun (primaria por color clásico en el empate 3-3) y Col.03 frente
+transparente cristal brillante con patillas plateadas; la publicación de ML es multi-variación para
+sumar más colores. El "RX" grabado nunca entra al nombre. Sin `weight_grams`) — slug
+`mormaii-vesubio-receta` en `/anteojos-de-receta/mormaii/mormaii-vesubio-receta`. Seed 155 aplicado
+2026-10-02; las 2 publicaciones de ML son tradicionales (Col.01 MLA4021586886, Col.03 MLA4021560698)*
+
+| Keyword | Vol/mes | Difficulty | Por qué pega |
+|---|---|---|---|
+| mormaii vesubio (branded) | 0 medido | ~4 (convención; en la SERP compiten 4-5 ópticas con ficha del mismo modelo) | branded exacto → **primaria** title+H1+slug+alt. Siempre con "Mormaii" y "receta" cerca |
+| anteojos aviador / lentes aviador | 590/20, 1.300/21 | — | forma real, pero YA es primaria de The Take receta y The Trial receta y la intención es mayormente sol → **NO primaria**. "Aviador" sólo como palabra plana de cierre del title (criterio Fortaleza/Sevilha) |
+| anteojos recetados / lentes recetados | 720/9, 390/9 | — | head de intención receta compartido → copy, 1er párrafo, no exclusivo |
+| doble puente | 0 medido | — | ningún string con "puente" en los CSV; en ML hay páginas de listado propias → meta, callout, alt y título de ML. No va en el title del sitio (largo) |
+| anteojos aviador hombre / mujer | 260/14, 140/13 | — | **NO**: género sin confirmar, SERP dominada por sol |
+| armazones de lentes / de anteojos / armazones / anteojos marcos / anteojos de vista | 390/8, 320/8, 320/8, 720/9, 210/13 | — | sin dueño en el catálogo, son cabeceras de categoría → hub `/anteojos-de-receta`, no esta PDP |
+| anteojos/lentes de metal | 210/12, 260/10 | — | **NO**: primaria de Vulk Kirt; el frente es poliamida, sólo las patillas son metal |
+| mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only, nunca en esta PDP |
+
+**Honestidad — "grande"**: NO. 142mm no alcanza el umbral de ~145mm (precedentes descartados: High 4
+140, 178 143, Dunsert 140; sólo Recife 147 lo cumple). Se dan los números tal cual: lente 54x52mm. El alto
+de 52mm es el más alto de los RX Mormaii cargados al 2026-10-02 (Recife/Frey 48): se dice como número,
+nunca como superlativo. **"Liviano"/"ultrafino"**: NO (lo dice el distribuidor, sin gramaje medido; se
+habilita "liviano" si el founder pesa el armazón). "Terminales de goma" como dato, no como promesa
+antideslizante.
+
+**Compatibilidad de lentes** (`optical-expert`): NO escribir "se adapta a todo tipo de lentes" literal.
+El alto TOTAL de 52mm no es la altura útil del aro y el doble puente recorta la zona de cerca para
+progresivos. Se redacta como recomendación ("para progresivos, consultanos...", mismo criterio que
+Leñas 2 MAG) hasta confirmar con la regente (María Carlota) y medir la altura útil del aro.
+
+**Riesgo de nombre "Vesubio"**: bajo-moderado en Google, moderado en Mercado Libre (volcán Vesuvio,
+pizzerías Vesubio, calefactores/estufas y colchones en ML). Además existe un Mormaii Vesubio de SOL que
+venden otras ópticas y nosotros no cargamos: por eso el slug lleva `-receta` y el title arranca con
+"Armazón de Receta". Nunca "Vesubio" suelto ni "volcán"/"Pompeya".
+
+**Anti-canibalización**: vs Fortaleza (sol, aviador doble puente): intención distinta (sol vs receta),
+bisagra y patillas distintas; NO se presenta como "la versión de receta de Fortaleza". Cross-link
+manual Vesubio↔Fortaleza (`fetchCompanionModality` no los une por slug). Vs RX aviadores de otras
+marcas (Rusty The Take, Vulk The Trial, Rusty Bruice): marca + branded + material; Bruice es más grande
+(56x54, frente 146) → "más compacto" sólo con números. "Aviador" genérico lo debe liderar la faceta
+`/anteojos-de-receta/aviador` (con Vesubio suma su 4to producto), no una PDP; se activa
+`/anteojos-de-receta/mormaii/aviador` con 1 solo producto.
+
+**Cross-links obligatorios**: `/anteojos-de-receta/mormaii`, `/marcas/mormaii`,
+`/anteojos-de-receta/aviador`, `/anteojos-de-receta/mormaii/aviador`, Fortaleza (y reverso), Rusty The
+Take receta, Vulk The Trial receta, Rusty Bruice receta.
+
+**No usar**: "grande"/"oversized"/"XL"; "liviano"/"ultraliviano"/"ultrafino"; "flexible"/"flex";
+"metálico"/"de metal" para el armazón (sólo patillas); "Grilamid"; "transparente"/"cristal" como claim
+(1 de 2 hoy = 50%, no alcanza el umbral; sólo alt de la variante); "unisex"/"hombre"/"mujer" en title/H1 hasta que el
+founder confirme; "anteojos aviador" como frase-objetivo; "anteojos de sol aviador"; "para grandes";
+"sol"/"polarizado"/"UV"; "Vesubio" suelto; "mormaii lentes/anteojos".
+
+**Title**: `Armazón de Receta Mormaii Vesubio Aviador | Óptica Carballo` (59). **H1**: `Mormaii Vesubio`
+(plano). **Meta**: `Mormaii Vesubio: armazón de receta aviador con doble puente, frente de poliamida y
+patillas metálicas. Unisex. Envío a todo el país y garantía de 1 año.` (si el founder decide "hombre",
+sacar "Unisex" de la meta).
+
+**Mercado Libre** (la publicación se crea aparte): categoría MLA417127. Título (60):
+`Armazón Anteojos Receta Mormaii Vesubio Aviador Doble Puente` (opciones B: `Anteojos Armazón Marcos
+Receta Mormaii Vesubio Aviador`, 54; C: `Armazón Anteojos Recetados Mormaii Vesubio Aviador`, 50). Sin género ni
+color porque es multi-variación. La forma de ML (SHAPE) no tiene "Aviador": sólo Cuadrada / Ovalada /
+Rectangular / Redonda.
+
+### REEF (octubre 2026, CSV `KEYWORDS OPTICA/`; volúmenes verificados por el agente, no por mí)
+Productos cargados, en orden de seed: 1. Reef 128 Yin (sol), seed 156. Marca de origen californiano con fundadores argentinos (no decir "marca argentina" en fichas). El hub de la marca es `/anteojos-de-sol/reef` (no existe `/marcas/[slug]`).
+Keyword head: `lentes de sol reef` (210/7), de la ficha del 128 mientras sea el único sol Reef. Cabeceras mixtas sol y receta (`anteojos reef` 590/11, `reef anteojos` 590/7, `lentes reef` 390/10) van al hub, no a la PDP. El "Reef 3.400" de marca no se reproduce en los CSV.
+
+*Reef 128 Yin (sol, HOMBRE, ENVOLVENTE DEPORTIVO, frente de metal con puente doble, patillas de aluminio, bisagras con sistema flex, lente TAC POLARIZADA UV400 en las 8 variantes) · slug `reef-128-yin` en `/anteojos-de-sol/reef/reef-128-yin`. Seed 156 aplicado 2026-10-03; publicación tradicional MLA1751925814*
+| Keyword | Vol/mes | Dif | Uso |
+|---|---|---|---|
+| lentes de sol reef | 210 | 7 | primaria (title) |
+| anteojos de sol hombre reef / lentes de sol hombre reef | 170/170 | 7/11 | copy |
+| anteojos de sol reef / reef anteojos de sol | 170/170 | 9/8 | copy (el "Anteojos de Sol Reef" del title es del hub) |
+| anteojos reef / reef anteojos / lentes reef | 590/590/390 | 11/7/10 | hub, nunca PDP |
+| lentes de sol polarizados | 260 | 12 | copy |
+| lentes de sol envolventes / deportivos | 70 / 210 | 36 / 17 | sólo copy y alt (saturado por Rusty y Mormaii) |
+Sin dato: "reef 128", "reef 128 yin/ying" (el founder pidió "Yin" en el nombre porque hay gente que lo busca así; sin volumen medido). Hay un hermano 129 Yang: cruzar 128↔129 cuando exista.
+Title: `Lentes de Sol Reef 128 Yin Polarizados | Óptica Carballo` (56). H1 = `Reef 128 Yin`. Meta (149): `Lentes de sol Reef 128 Yin para hombre: polarizados UV400, frente de metal y patillas de aluminio. Envío a todo el país, estuche, franela y garantía.`
+No usar: "128" suelto, "178", liviano, flexible (la flexibilidad se dice sólo como "bisagras con sistema flex"), policarbonato, "armazón de aluminio" (sólo patillas), colores o cantidad, "marca argentina", "resistente a rayones".
+
 
 ### Reglas para futuros productos
 

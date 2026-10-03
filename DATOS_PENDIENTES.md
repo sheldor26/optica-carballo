@@ -93,6 +93,36 @@ stock sí se pueden tomar de esas fuentes.
   - 🔴 **Se encontró un claim de cuero VIVO**: el alt de esa imagen decía "estuche **de cuero**" y se
     mostraba en los **33 productos Vulk** desde el seed 17 (2026-05-30). Corregido. Ver MISTAKES.md.
 
+## 🔄 Mormaii Vesubio RX (receta aviador) — alta en ML + página, seed 155 escrito pero NO aplicado (2026-10-02)
+
+**Estado**: seed 155 APLICADO el 2026-10-02. Quedan sólo los datos que no bloquean la carga (peso, altura
+útil del aro, plaquetas, níquel, criterio de progresivos con la regente).
+
+- [x] **Link de ML**: pasado y cargado (Col.01 MLA4021586886, Col.03 MLA4021560698, 3 y 3 unidades).
+- [x] **Precio**: $118.843 (confirmado por el founder 2026-10-02).
+- [x] **Género**: unisex (confirmado por el founder 2026-10-02).
+- [x] **Lente demo**: trae lente demo de plástico, sin graduar (confirmado 2026-10-02).
+- [ ] **Peso del armazón** (balanza). No bloquea la carga. Sin peso no se puede decir "liviano" con
+  respaldo (sólo "poliamida") ni se carga el casillero.
+- [ ] **Altura útil real del aro** (sin la barra superior del doble puente), para saber si se puede
+  recomendar progresivos sin reparos. Hoy el sitio los menciona como recomendación (te asesoramos), no
+  como "cualquier lente".
+- [ ] **Confirmar con María Carlota (regente)** el criterio de armado de progresivos con bisagra
+  integrada y doble puente.
+- [ ] **Plaquetas del puente nasal** (ajustables o fijas) y **si las patillas de metal son libres de
+  níquel**. No se afirma nada de eso hasta tener el dato.
+
+## 🔄 Rusty K13 (receta infantil) — en carga, seed 130 pendiente
+
+Segundo producto infantil, casi gemelo del K12. Medidas confirmadas por grabado físico: calibre
+45mm, puente 14mm, varilla 132mm, alto 32mm, ancho total 119mm, peso 15,7g. 2 colores: C2 azul
+oscuro (SKU 969521), C3 rosa translúcido (SKU 969522).
+
+- [ ] **El grabado que confirma las medidas (45-14-132) se leyó en la unidad C3.** Se está asumiendo
+  que C2 comparte exactamente la misma geometría por ser el mismo molde con otro color (razonable,
+  `optical-expert` lo valida como asunción de manufactura normal) — pero si tenés la unidad C2 a
+  mano en algún momento, no estaría de más confirmar el grabado ahí también. No bloquea la carga.
+
 ## ✅ Rusty Bad Card — CERRADO el 2026-08-29
 
 El founder pasó **143 / 54×53 / 19 / 145**, **bisagras plásticas sin flex**, y confirmó la forma:
@@ -118,7 +148,16 @@ receta del catálogo con **varilla de 150 mm**, así que la recomendación depen
 **El founder confirmó que verificó personalmente todos los modelos del sitio**, así que el 150 vale
 y no hay nada que medir. La ficha se puede recomendar por la varilla sin asterisco.
 
-## 🔵 Mormaii Storm (sol) — en carga, falta 1 dato (2026-09-22)
+## ✅ Vulk Anima (sol) — CERRADO el 2026-09-28 (medidas)
+
+5 colorways con stock real, repartidas en 3 publicaciones de ML (`MLA1423816283`, `MLA1872525930`,
+`MLA1423919123`), $95.108 uniforme, cuadrado grande G-Flex, mujer, ninguna polarizada, cat 3 UV100%
+confirmado. Slug `vulk-anima`.
+
+- [x] **Medidas físicas.** Pasadas por vos el 2026-09-28: calibre 53 / puente 10 / varilla 145 /
+  alto 60 / ancho total 150mm. Cargadas (seed 117) + placa de medidas generada y subida.
+- [ ] **Talle.** El fabricante no lo declara para este modelo (otros "cuadrado grande" G-Flex como
+  Deserve sí dicen "large") — no se cargó dato de talle, no bloquea.
 
 Segundo producto Mormaii. 6 colorways identificadas contra `MLA1538614840`, $116.024,04, todas
 polarizadas UV400 cat 3, envolvente deportivo, hombre. Calibre 57 / puente 16 / ancho 135 / varilla
@@ -363,3 +402,13 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
   cargados así).
 - [x] **2026-08-25 — El STEELBLUE del Bruice se llama "azul metálico"**, no azul acero translúcido
   ni celeste.
+
+## Reef 128 Yin (sol, seed 156, 2026-10-03)
+
+- [x] **2026-10-03 — Medidas confirmadas por el founder: calibre 66, puente 17, patilla 110** (más ancho total 138 y alto total 46). Reemplazan las 67/114 de la marca.
+- [x] **2026-10-03 — Forma: envolvente deportivo. UV400 en todos los anteojos de sol Reef. Bisagras con sistema flex. Lente gris oscuro en 017 y 018.**
+- [ ] **Categoría del filtro del lente** (grabado de la varilla): sin dato, `lens_category` queda vacío. Bloquea: mostrar "categoría 3" y cualquier claim de categoría.
+- [ ] **Peso** (balanza). Bloquea: `weight_grams` y cualquier claim de liviano.
+- [ ] GTIN de la 011: sin unidad física, sólo figura en ML.
+- [ ] En ML (lado del founder): re-subir las placas 03, 04 y 06 de los 8 colores; ficha "policarbonato"→TAC y "armazón de aluminio"→patillas de aluminio; ancho total 140→138; fotos propias de frentes (hoy sólo laterales de la marca).
+- [ ] Confirmar de quién es la garantía de 1 año (fabricante u óptica) para el copy.

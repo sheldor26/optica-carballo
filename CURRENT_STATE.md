@@ -5,6 +5,1290 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### 🔄 En curso (2026-10-03): precisión de las flechas de los callouts de las placas
+
+El founder vio que las flechas de `03-callouts` (Reef 128) no apuntan con precisión y aprobó la opción **A + F**.
+**Diagnóstico** (`scripts/lib/placas-partes.ts`, `placas-svg.ts`): (1) las placas de Reef usaron `--a1..--a4` calibrados
+a ojo con grilla; (2) el modo automático le pide a Claude Vision coordenadas en % de grilla (±3-6% en partes chicas);
+(3) `pegarAlProducto` sólo corrige puntos en fondo blanco; (4) una flecha azul marino sobre un lente oscuro casi no se ve.
+**Investigación (agente, 2026-10-03):** ningún modelo publica precisión en píxeles para partes chicas. Mejores
+candidatos si algún día se automatiza: Moondream 2 `point()` local (Apache-2.0) y MolmoPoint-8B 4-bit con mlx-vlm;
+SAM3 en Mac depende de un fork y pesos gateados; Grounding DINO/Florence-2/OWLv2/YOLO-World dan cajas (malo para una
+bisagra). La Mac del founder es M5 con 16 GB: Moondream 3 local no entra. No hay repo que ponga flechas en partes de un
+anteojo. Decisión: **no se agrega ningún modelo**; el clicker manual es lo único con precisión garantizada.
+**Implementado:** (A) `scripts/ml-anclas.ts` + script `pnpm anclas <foto> [otras...]`: página local (node:http, sin
+librerías nuevas) con lupa 6x, ajuste con flechas del teclado y las marcas de la foto anterior como punto de partida;
+guarda `<foto>.anclas.json` (fracciones del recorte + tamaño del recorte). `pnpm placas` lo lee solo (o `--anclas`);
+con ese archivo NO llama a Vision, no mueve ni separa los puntos (`exactas`), y avisa si un callout habla de una parte
+que no se marcó o si el recorte cambió de tamaño. (F) `burbujaConFlecha` acepta `halo`; `ml-placas.ts` lo usa en blanco:
+la flecha tiene borde blanco y se lee sobre el lente oscuro. Probado de punta a punta con una foto de Reef (puntos de
+prueba, archivo de prueba borrado). `placa-producto.ts` (Instagram) usa la misma función pero NO activa el halo todavía.
+**Hecho en la misma tanda:** ancho total del armazón Reef 128 = **138 mm** (founder, 2026-10-03; antes 140 sin confirmar);
+`04-medidas.jpg` regenerado con 138/46 en las 8 carpetas `marketing/placas-ml/reef-128-cXXX/ml/`.
+**Actualización (mismo día):** el founder marcó las partes de la 015 y pidió reutilizarlas. Se agregó
+`pnpm anclas --copiar-de ref.jpg otras...` (copia en pixeles de la foto original con el offset del trim, no en
+fracciones) y `asignarExactas` en `ml-placas.ts` (elige entre los puntos de ambos lados probando todas las
+combinaciones: menor largo, cero cruces; antes las flechas de lente y frente se cruzaban). `03-callouts.jpg` regenerado
+y verificado en hoja de contacto para **011, 014, 015, 017, 018, 019, 020** (copiados a `marketing/placas-ml/reef-128-cXXX/ml/`).
+**016 NO se reemplazó**: su encuadre difiere (recorte -50 px a la izquierda) y el punto del lente cae afuera del cristal.
+**Aviso de medidas:** `pnpm placas` advierte que 2×67 + 17 = 151 mm > 138 mm de ancho total. Calibre 67, puente 17 y
+patilla 114 son de la marca (no los pasó el founder; regla dura #7), así que hay que confirmarlos antes del seed 156.
+**Pendiente del founder:** (1) re-marcar el lente de la 016 con `pnpm anclas marketing/fotos/reef-128/reef128_col016_lateral.jpg`
+(un click); (2) opcional: en la 015 marcar el FRENTE sobre el borde inferior del aro (hoy cruza el lente) y re-copiar;
+(3) confirmar calibre/puente/patilla.
+**Intento fallido de la 016 (10:45):** el founder dijo "ya marqué el lente de la 016" pero su marca no llegó al archivo
+(yo había matado el servidor del clicker con `pkill`; ver MISTAKES.md). Además el founder pidió algo más rápido: "mucho
+lío tener que marcar y regenerar".
+**Solución (mismo día): marcar UNA foto por modelo y nada más.** Nuevo `scripts/lib/placas-alinear.ts` (estima escala y
+corrimiento entre dos fotos comparando bordes, sin modelos externos, ~3 s por foto) y `scripts/lib/placas-anclas.ts`
+(`trasladarPartes`, `buscarReferencia`). `pnpm placas` ahora, si la foto no tiene `.anclas.json` propio, busca otra foto
+de la MISMA carpeta que sí lo tenga, se alinea contra ella y usa sus marcas (con `pegarAlProducto` para no caer en el
+fondo); avisa con ⚠️ si el calce es dudoso (<0.35). `pnpm anclas --copiar-de` quedó como alternativa explícita.
+Resultado Reef 128: en `marketing/fotos/reef-128/` queda SÓLO `reef128_col015_lateral.jpg.anclas.json` (las marcas del
+founder); los otros 7 colores se resuelven solos. `03-callouts.jpg` de los **8 colores** regenerado, verificado en hoja de
+contacto (todas las puntas sobre lente, aro, bisagra y patilla; la 016 ya cae dentro del cristal) y escrito en
+`marketing/placas-ml/reef-128-cXXX/ml/`. La 020 sale con calce 0.27 (⚠️ dudoso) pero se revisó a ojo y está bien.
+**Flujo para un modelo nuevo:** `pnpm anclas <una foto de perfil>` (4 clicks: lente, patilla, bisagra, frente; el resto
+es opcional) → `pnpm placas ...` por color, sin pasos extra. Si dos colores no son el mismo encuadre y sale ⚠️, marcar
+esa foto aparte.
+**Aviso de medidas (sigue abierto):** `pnpm placas` advierte 2×67 + 17 = 151 mm > 138 mm de ancho total. Calibre 67,
+puente 17 y patilla 114 son de la marca (regla dura #7: sólo valen las que pase el founder), a confirmar antes del seed 156.
+**Próximo paso exacto:** esperar que el founder cree 017/018 en ML y confirme calibre/puente/patilla → seed 156.
+**Correción por "están mal" (2026-10-03, después de las 10:55):** el founder mostró la placa de la 015 y dijo que las flechas
+estaban mal. Diagnóstico propio: eran técnicamente exactas pero LARGAS y cruzaban el producto (la de FRENTE atravesaba
+todo el lente derecho para tocar el borde de arriba; la de LENTES recorría el marco izquierdo). Se rehicieron las marcas de
+la 015 (la referencia) sobre el lado cercano a cada burbuja: lente izquierdo en la zona de arriba del cristal, frente en
+el borde de ABAJO del aro, y se dejaron sólo 4 puntos (bisagra y patilla del founder + esos dos nuevos). Backup de las marcas
+anteriores del founder en el scratchpad (`015.anclas.backup.json`). `03-callouts.jpg` de los 8 colores regenerado: ninguna
+flecha cruza lentes y cada punta cae sobre su parte (hoja de contacto revisada). Si el founder prefería las anteriores o
+sigue viendo algo mal, preguntarle QUÉ flecha puntual y por qué, no adivinar.
+**Revisión del founder (2026-10-03):** pidió "abrí de nuevo la carpeta" y se abrió en Finder `marketing/placas-ml/` (las 8
+carpetas `reef-128-cXXX`, cada una con `01-perfil`, `03-callouts` regenerado, `04-medidas` con 138/46 y `06-garantia`).
+Falta su veredicto sobre las flechas nuevas. **Próximo paso exacto:** el founder responde si las flechas quedaron bien (o
+cuál puntual está mal); con el OK, seguir con 017/018 en ML + confirmación de calibre/puente/patilla → seed 156.
+**Verificación en ML con 017/018 cargadas (2026-10-03, API de ML):** MLA1751925814 ahora está **`active`** con **8
+variaciones** y stock total 14. Las nuevas: **017 = `207683594185`** (LENS_COLOR "C017", varilla "Gris Claro Mate", armazón
+Peltre, stock 3) y **018 = `207683594187`** (LENS_COLOR "C018", varilla "Negro con Logo Gris", armazón Peltre, stock 3).
+El founder usó el campo Color del lente para poner el código (C017/C018): para la web el color se nombra por sus partes.
+Mapa completo variation_id → color: 014 `180372264010` (stock 3), 019 `186368365459` (0, real 4), 011 `180372264012` (0),
+015 `180372264014` (2 ✅), 016 `186368365461` (1, real 4), 020 `186368365463` (2), 017 `207683594185` (3), 018 `207683594187` (3).
+**Pendiente en ML (lado del founder):** subir 016→4 y 019→4; la variación 015 sigue con Color del armazón "Gris oscuro"
+y Diseño "Envolvente" (debería ser Plateado / "Envolvente - 015"). Los GTIN no vienen como atributo de la variación en la
+API: se usan los de la tabla maestra. **Próximo paso exacto:** consultar `catalog-loader` + `seo-strategist` (norma de carga)
+y escribir el seed 156 con las 8 variaciones (item_id + variation_id reales, 011 con stock 0, medidas sólo las que pasó el
+founder: alto total 46 y ancho total 138; calibre/puente/patilla a confirmar).
+**Cuadro de stock Reef 128 (ML, consultado de nuevo, 2026-10-03; el founder pidió el cuadro):** 011=0 (sin unidades), 014=3 ✅,
+015=2 ✅, 016=**1 (real 4)**, 017=3 ✅, 018=3 ✅, 019=**0 (real 4)**, 020=2 ✅; total 14. Vendidos: 015=1, 016=1. Las únicas diferencias
+son 016 y 019: las corrige el founder en ML (el sitio sincroniza solo, no se toca por SQL).
+**Agentes en curso para el seed 156 (lanzados en background, resultado pendiente):** `catalog-loader` (columnas, enums, mapeo de
+las 8 variantes, primaria, scale override, SELECT de verificación) y `seo-strategist` (slug, keyword con volumen real del CSV,
+meta, H1, claims permitidos, canibalización con "Reef 178"/Mormaii 178). Sus reportes llegan por notificación.
+**Reporte de `seo-strategist` recibido (2026-10-03; sin verificar por mí, volúmenes tomados de los CSV por el agente):** slug
+`reef-128` → `/anteojos-de-sol/reef/reef-128` (sin "yin"; `products.name` = "Reef 128"); NO crear `/marcas/reef` (el hub es
+`/anteojos-de-sol/reef`); primaria `lentes de sol reef` (210/7), secundarias "hombre reef" (170); title `Lentes de Sol Reef 128 Hombre
+Polarizados | Óptica Carballo` (59), meta `Lentes de sol Reef 128 para hombre: polarizadas, frente de metal y patillas de aluminio.
+Envío a todo el país, estuche, franela y 1 año de garantía.` (148); H1 "Reef 128"; el 128 no usa aviador/envolvente/deportivo en
+title/H1/meta. NO afirmar: liviano, flexible, policarbonato (es TAC), "armazón de aluminio" (sólo patillas), colores o cantidad,
+"marca argentina" (Reef es USA con fundadores argentinos), UV400/cat 3 hasta leer la varilla. **Hallazgos a resolver con el seed:**
+(a) `supabase/seeds/09_brands_seo_text.sql` línea 27: el `seo_intro` de Reef promete formas y materiales que con un solo producto
+son falsos → reescribir en el mismo turno; (b) `lib/product-copy/prompt.ts:26` dice Reef "nacional" y `lib/brands/copy.ts` dice
+origen USA → corregir el prompt; (c) el volumen "Reef 3.400" de SEO_STRATEGY no se reproduce en los CSV (head medible: "anteojos
+reef" 590); (d) hay un hermano 129 Yang. **Preguntas abiertas al founder:** (1) forma para la ficha: ¿aviador o envolvente?;
+(2) leer el grabado de la varilla de una unidad (Cat. y UV; el default cat 3 + UV asume policarbonato y éste es TAC);
+(3) confirmar calibre 67 / puente 17 / patilla 114.
+**Reporte de `catalog-loader` recibido (2026-10-03; el agente no tuvo Bash, no verificó ML ni código):** archivo
+`supabase/seeds/156_reef_128_sol.sql`; marca `reef` (0 productos), categoría `anteojos-de-sol`, slug `reef-128`, name "Reef 128" (sin
+Yin/Ying), `frame_material:"metal"`, `temple_material:"aluminio"`, `hinge_system:"flex"`, `lens_material:"tac"` (valor nuevo, NO
+policarbonato), `lens_treatment:["uv400","polarized"]` y `lens_category:3` SÓLO si la varilla lo confirma, `gender:"male"`,
+`line:"deportiva"`, `includes:["estuche","franela"]`, `warranty_months:12` (confirmar de quién es), sin `weight_grams`.
+Medidas parciales: `measurements:{frame_width_mm:138, lens_height_mm:46}` (omitir calibre/puente/patilla y NO subir la placa
+`04-medidas` al sitio mientras tenga 67/17/114). 8 variantes con `mercadolibre_item_id=MLA1751925814` y `variation_code` = var_id (un
+NULL en multi-variación = skip silencioso del sync), `polarized:true` explícito, SKU de casa `REEF128-<color>` si el de ML falta o se repite,
+`model_code` "Col. 0XX", nombres por partes ("Peltre con patillas plateadas", etc.); los 8 slugs de `frame_color` hay que agregarlos a
+`lib/catalog/variant-label.ts`. Orden: stock descendente (re-traer ML justo antes de aplicar); con el triple empate 3-3-3 se propuso 014 como
+primaria. Imágenes: 1 perfil por color (8), generar versión web 2000×1333 con `pnpm placas --solo web` (NO subir las placas ML), revisar fondo
+blanco (la 017 es la foto de la 014 con el lente desvanecido), `storage_path` `reef-128/perfil-<color>.jpg`, `pnpm fotos:subir`. Scale override
+inicial sugerido 1.05 en `lib/catalog/image-scale-overrides.ts`, a comparar contra el grid de sol. Validar con `optical-expert` los claims TAC/
+polarizado antes de publicar. Post-apply: SELECTs (8 variantes, 8 variation_code, stock vs ML), PDP viva, grillas, comparador, y docs
+(CLOUD_APPLIED, PRODUCTS_INVENTORY, DATOS_PENDIENTES, PESOS_A_MEDIR). Ambos reportes coinciden; no hay conflicto entre agentes.
+**ACTUALIZACIÓN (2026-10-03 ~11:45): seed 156 ESCRITO, fotos SUBIDAS, NADA APLICADO a Cloud todavía.**
+- El founder autorizó el nombre **"Reef 128 Yin"** (hay gente que lo busca así) → slug `reef-128-yin`, `storage_path` `reef-128-yin/perfil-cXXX.jpg`.
+- ML: el founder subió 016 y 019 a 4 (total 21) y **rehízo la variación 015 → nuevo `variation_id` `207669814467`** (la vieja
+  `180372264014` ya no existe, con su venta); ahora Plateado, patillas "Negras con Logo Plateado", lente "C015", stock 2.
+- `supabase/seeds/156_reef_128_yin_sol.sql`: 8 variantes (SKU `REEF128-0XX`, `variation_code` reales, $158.590 = 15859000 centavos, stock de ML:
+  019=4, 016=4, 018=3, 014=3, 017=3, 020=2, 015=2, 011=0; orden por stock con desempate clásico; primaria = perfil de la 019); producto con
+  frame_shape "aviador" (PROVISORIO), `lens_material:"tac"`, `lens_treatment:["polarized"]` SIN uv400 ni lens_category (falta leer el grabado),
+  medidas sólo `{frame_width_mm:138, lens_height_mm:46}`, `lens_color` omitido en 017/018, copy validado por `optical-expert` (sin UV, sin
+  "resistente a rayones", "no es para manejar de noche" como cualquier lente de sol, advertencia de pantallas). El mismo seed reescribe el
+  `seo_intro` de la marca Reef (prometía formas/materiales inexistentes).
+- 8 fotos web 2000×1333 subidas al bucket `products/reef-128-yin/perfil-cXXX.jpg` (HTTP 200, perímetro 100% blanco; 014 y 017 con el borde
+  izquierdo del lente algo desvanecido, es la foto original de la marca).
+- Código: `lib/catalog/variant-label.ts` (+8 labels de frame_color), `lib/catalog/image-scale-overrides.ts` (+8 entradas 1.05, a comparar contra
+  el grid de sol: regla 15), `lib/product-copy/prompt.ts` (Reef ya no se presenta como marca "nacional").
+- **Falta para cerrar:** OK del founder para aplicar el seed (+ sus 4 respuestas: forma, grabado Cat/UV, calibre/puente/patilla, lente de 017/018);
+  aplicar a Cloud, verificar con SELECT (8 variantes, 8 `variation_code`, stock vs ML), PDP viva (ISR 300 s), grillas, scale override; después
+  CLOUD_APPLIED, PRODUCTS_INVENTORY, SEO_STRATEGY (bloque REEF del agente), DATOS_PENDIENTES, y desplegar los cambios de código (commit pendiente,
+  sin auto-commits).
+- Placas de ML: la `04-medidas` y el resto ya están regeneradas; la 015 de ML con callouts nuevos.
+**RESPUESTAS DEL FOUNDER (2026-10-03, ~12:00) → seed 156 y placas ACTUALIZADOS:** forma **envolvente deportivo** (`frame_shape:"envolvente"`,
+`line:"deportiva"`); **UV400 en todos los anteojos de sol Reef** (`lens_treatment:["uv400","polarized"]`; sigue SIN `lens_category`, nadie leyó la
+categoría del filtro); bisagras **con sistema flex**; lente **gris oscuro** en 017 y 018; medidas **calibre 66 · puente 17 · patilla 110** (cambian
+las de la marca 67/114) más ancho total 138 y alto total 46 → `measurements` completo (5 de 5). Nota: 2×66+17 = 149 > 138, el founder confirmó igual
+(frente envolvente de lente tórica). Se regeneraron `03-callouts` ("BISAGRAS con sistema flex"), `04-medidas` (66/17/138/46/110) y `06-garantia`
+("Bisagras con sistema flex", "protección UV400") en las 8 carpetas `marketing/placas-ml/reef-128-cXXX/ml/`, y se subió al bucket la placa de medidas
+compartida `reef-128-yin/medidas.jpg` (sort 99 en el seed, variant_id NULL). El seed también quedó con descripción y callouts con UV400 y el
+sistema flex. **El founder tiene que RE-SUBIR a ML las placas 03, 04 y 06 de los 8 colores** (las que subió tenían 67/114 y "flex de metal"), y
+corregir su ficha ("policarbonato"→TAC, ancho 140→138, "armazón de aluminio"→patillas).
+**✅ SEED 156 APLICADO a Cloud (2026-10-03, vía MCP execute_sql, OK explícito "Aplicá el seed").** Verificado con SELECT: producto `reef-128-yin`
+activo, `frame_shape:"envolvente"`, `lens_material:"tac"`, `lens_treatment:["uv400","polarized"]`, medidas 5 de 5 (66/17/110/138/46), 8 variantes, 8
+`variation_code` 1:1 con ML, 8 polarizadas, stock 21 = ML (21), 9 imágenes, 1 primaria (`reef-128-yin/perfil-c019.jpg`), `seo_intro` de Reef reescrito.
+Producción: `https://opticacarballo.com.ar/anteojos-de-sol/reef/reef-128-yin` HTTP 200, H1 "Reef 128 Yin", badge Polarizado. Las fotos del bucket
+responden 200. **PROBLEMA ABIERTO: los labels de color se ven en title-case ("Peltre Patillas Gris Claro Mate / Gris oscuro")** porque los cambios de
+código (`lib/catalog/variant-label.ts` con 8 labels, `lib/catalog/image-scale-overrides.ts` con 9 entradas, `lib/product-copy/prompt.ts`) están
+SIN COMMIT (regla: sin auto-commits). Hasta deployar no se ve el nombre descriptivo ni el scale 1.05. **Placas para resubir a ML:** carpeta
+`marketing/placas-ml/RESUBIR-reef-128/` con 8 subcarpetas (una por color, con 1 perfil, 2 callouts, 3 medidas, 4 garantía); `pnpm ml:diag` sobre la 019:
+4/4 limpias para ML. Docs actualizados: CLOUD_APPLIED, PRODUCTS_INVENTORY, SEO_STRATEGY (bloque REEF + lista), DATOS_PENDIENTES.
+**Próximo paso exacto:** (1) el founder decide si commitear y pushear los cambios de código (para que los colores se vean bien y el scale aplique);
+(2) tras el deploy, comparar el scale contra el grid de sol (`/anteojos-de-sol`, `/anteojos-de-sol/reef`, `/anteojos-de-sol/hombre`) y cerrar la regla 15;
+(3) el founder re-sube las placas a ML y corrige su ficha; (4) comprobar el hub `/anteojos-de-sol/reef` (sitemap, sin noindex) y `/comparar`.
+**Pendiente del founder (ML + datos):** subir 016→4 y 019→4; corregir variación 015 (armazón Plateado, diseño "Envolvente - 015");
+confirmar calibre 67 / puente 17 / patilla 114 (sin eso la ficha sale sin bloque de medidas y se anota en DATOS_PENDIENTES.md).
+**Próximo paso exacto:** al llegar los dos agentes, escribir `supabase/seeds/156_reef_128.sql` (8 variantes con item_id +
+variation_id reales, alto total 46 y ancho total 138 sólo), subir fotos laterales + placas, mostrarle el seed al founder y,
+con su OK, aplicarlo a Cloud, verificar con SELECT y actualizar CLOUD_APPLIED/SEO_STRATEGY/DATOS_PENDIENTES.
+**Estado del clicker (2026-10-03, después de las 10:49):** el founder corrió `pnpm anclas` sobre la 016 en su propio
+terminal (http://127.0.0.1:56281/, sigue corriendo). Ya no hace falta: la 016 sale bien por alineación automática.
+**Riesgo:** si se toca Guardar/Terminar ahí se crea `reef128_col016_lateral.jpg.anclas.json` y `buscarReferencia` (elige el
+`.anclas.json` más reciente de la carpeta) lo tomaría como referencia de los otros colores. Se le indicó cerrarlo con
+Ctrl+C sin guardar. Verificado con `ls`: en `marketing/fotos/reef-128/` sólo existe el de la 015. **Mejora pendiente
+(chica):** que `buscarReferencia` prefiera siempre el archivo con más partes marcadas o que se pueda fijar la referencia
+con una marca, para que un guardado accidental no la cambie.
+
+### 🔄 En curso: Reef 128 Yin (sol) — primer producto de la marca Reef, relevamiento de variantes en ML hecho
+
+La marca `reef` ya existe en la base con 0 productos. El founder pidió ver qué variantes hay en ML del
+modelo "Reef 128 YIN" (en ML el atributo MODELO es "128 Ying", con g). Búsqueda en los items del
+vendedor: **una sola publicación tradicional**, MLA1751925814 ("Anteojos De Sol Reef 128 Yin Polarizado
+Deportivo Envolvente", activa, `catalog_listing:false`, $158.590, stock total 7, 2 vendidos), con **6
+variaciones** (todas polarizadas, hombre, envolvente, armazón de metal):
+| var_id | Lente | Varilla | Armazón | Stock | Notas |
+|---|---|---|---|---|---|
+| 180372264010 | Gris oscuro | Plateado | Peltre brillante | 3 | |
+| 186368365459 | Negro | Negro/Naranja | Plateado | 0 | "Color 019" |
+| 180372264012 | Marrón | Plateado | Dorado mate | 0 | "Color 011" |
+| 180372264014 | Negro | Negro | Gris oscuro | 1 | 1 vendido |
+| 186368365461 | Marrón | Plateado | Frente dorado brillo | 1 | C16, 1 vendido |
+| 186368365463 | Gris oscuro | Negro/Azul | Negro | 2 | C20 |
+Hay además 6 publicaciones de catálogo (`catalog_listing:true`: MLA3232212938, MLA3220821148, MLA1503085025,
+MLA1503046237, MLA3226621584, MLA1502893489) colgadas de los mismos User Products: se ignoran, no se mapean
+(regla `ml-nunca-mapear-catalog-listing`; ya no duplican nada). Según la regla de stock se cargan las 6
+variantes aunque 2 estén en 0 (se sincronizan solas). **Cruce con la página de la marca** (reefeyewear.com/solares/1036-3610-128.html, "128 Reef", ref 62-00128-00-00XX-000):
+19 colores (011, 014 a 031; 024 y 025 no polarizados), **una sola foto LATERAL por color, ningún frente**. Fotos
+bajadas en `marketing/fotos/reef-128/` (1100×1422) con 2 hojas de contacto. Datos de la marca: frente de metal
+envolvente con lentes tóricas, puente y barra; patillas y terminales de aluminio; bisagra flex de metal; lente
+CRX/TAC; base 10/4.5; calibre 67, puente 17, diagonal 66, alto de lente 42, patilla 114 (la marca NO da ancho total; el 140
+de la ML era del founder, **corregido a 138 el 2026-10-03**). **Altura TOTAL del armazón = 46 mm (la pasó el founder 2026-10-03)**: es la que va en
+`lens_height_mm` y en las placas; el 42 de la marca es sólo la altura de la lente. La marca lo llama "128 Reef" (sin "Yin"; "Ying" es el atributo MODELO de ML).
+Cruce de las 6 variantes de ML con las fotos (comparación por píxeles contra las fotos que el founder usó en ML):
+| ML (var) | Código marca | Seguridad |
+|---|---|---|
+| 186368365461 dorado brillo/marrón | **016** | confirmado (C16 en ML + foto idéntica) |
+| 186368365463 negro/gris oscuro | **020** | confirmado (C20 en ML + foto idéntica) |
+| 186368365459 plateado/negro-naranja | **019** | confirmado por el título ML "Color 019" (el 030 es casi gemelo) |
+| 180372264012 dorado mate/marrón | **011** | confirmado por el título ML "Color 011" |
+| 180372264010 gris oscuro/peltre, varilla plateada | **014** | confirmado por el founder (la publicación de catálogo MLA3226621584 dice C014; la 017 usa la misma foto) |
+| 180372264014 negro/gris oscuro, varilla negra | **018 ó 029** (la foto de la publicación de catálogo MLA1503046237 coincide con las dos, frente gris oscuro y varillas negras) | **NO resuelto**: falta que el founder lea el código en la unidad. OJO: la foto que el founder puso en ML para esta variación se parece a 028/015 (frente plateado), no a 018/029 |
+Para cerrar las 2 dudas el founder tiene que leer el código en las unidades físicas (stock 3 y 1). Hallazgos en la
+ficha de ML (a corregir por el founder): la descripción dice lentes de **policarbonato** pero el atributo y la
+marca dicen **TAC** (CRX/TAC), y dice "armazón y patillas de aluminio" cuando el frente es de metal y las patillas
+de aluminio; "ligereza" sin gramaje. **RESUELTO (2026-10-02): las 6 variantes tienen su código.** El founder confirmó que MLA3226621584 es C014; ML
+guarda además el código de barras (GTIN, todos EAN-13 válidos con prefijo 7790394) y el `DETAILED_MODEL` en las
+publicaciones de catálogo de cada User Product (sólo lectura, no se mapean):
+| var ML | Color marca | GTIN | Fuente del código |
+|---|---|---|---|
+| 180372264010 (stock 3) | 014 | 7790394208382 | "REEF 128 YING C014" |
+| 186368365459 (stock 0) | 019 | 7790394222210 | "128 Ying - 019" |
+| 180372264012 (stock 0) | 011 | 7790394208351 | título "Color 011" (DETAILED_MODEL sin código) |
+| 180372264014 (stock 1) | **015** (corrección del founder) | **probable 7790394208832** (sin confirmar con la caja) | el founder aclaró que es la 015. ML la enlazó por error al User Product de la 018 (MLAU364345034, GTIN 7790394208832 = 018, NO es el de ella); el producto de catálogo de la 015 existe (MLA69086384: plateado 015, lente negro, varillas negras) pero ML no expone su GTIN |
+| 186368365461 (stock 1) | 016 | 7790394216400 | "REEF 128 YIN C16" |
+| 186368365463 (stock 2) | 020 | 7790394234015 | "REEF 128 YIN C20" |
+Códigos que el founder pasó a mano (no están entre sus 6 variantes de ML, colores sin cargar): **017 = 7790394220735**,
+**018 = 7790394220742** (ambos EAN-13 válidos y consecutivos). Hipótesis alternativa para la 015: la serie 011 (…20835)
+y 014 (…20838) sube de a uno por color, así que la 015 podría ser …20839 → **7790394208399**; compite con la hipótesis
+…8832. SIN confirmar: se resuelve leyendo la caja de la 015.
+Los GTIN salen de ML, no de la caja: conviene que el founder compare los últimos dígitos con la caja de una unidad.
+La variación 180372264014 es **015** (frente plateado, lente negro, varillas negras; corrección del founder, yo había
+inferido 018): su foto en ML (frente plateado) estaba bien, lo que está mal es el atributo "Color del armazón: Gris
+oscuro" de la variación, que hizo que ML la enlazara al User Product de la 018. A corregir por el founder: Color del
+armazón → Plateado, Diseño "Envolvente - 015". Dato del founder: el GTIN de la **018** es **7790394220742** (EAN-13 válido), distinto del que ML muestra para el
+producto "018" (…8832); como la variación 015 del founder está enlazada a ese mismo User Product (MLAU364345034), lo más
+probable es que el …8832 sea en realidad el código de la 015 y que ML tenga mal rotulado ese producto como 018. SIN
+confirmar: hay que leerlo de la caja de la unidad 015.
+**⏸️ PAUSA FORMAL (2026-10-02, actualizada con los códigos 017/018 y las 2 hipótesis de la 015): fase de relevamiento de
+Reef 128 CERRADA. Qué se hizo en esta fase: relevamiento de las 6 variantes de ML, cruce con las 19 fotos de la marca
+(guardadas en `marketing/fotos/reef-128/`), identificación del código de color y GTIN de 5 variantes (011, 014, 016,
+019, 020), corrección del founder (la variación 180372264014 es la 015, no la 018) y detección de una mala asociación en
+ML (variación enlazada al User Product de otro color) y de errores en la ficha de ML (policarbonato vs TAC). Sin cambios
+en la base de datos ni en el sitio (no hay seed todavía).**
+**TABLA MAESTRA DE VARIANTES (2026-10-02, pedido del founder: "ir con calma para no mezclar modelos y variantes").**
+Reglas acordadas: (1) modelo = Reef 128 (un solo producto); variante = color; cada variante del sitio se ata a UNA variación
+de ML por su `variation_id`; (2) manda lo que dice el founder y la unidad física (color y código de barras de la caja), los
+datos de ML/catálogo son pistas (a veces mal enlazados, ver la 015); (3) NO se escribe el seed 156 hasta cerrar la tabla.
+| Variación ML | Color | Cómo es | Stock | GTIN | Estado |
+|---|---|---|---|---|---|
+| 180372264010 | 014 | frente peltre, lente gris, varillas plateadas | 3 | 7790394208382 | **confirmado por el founder** (color y GTIN, 2026-10-03) |
+| 186368365459 | 019 | plateado, lente negro, varillas negras logo naranja | ML=0, founder dice 4 (¡subir en ML!) | 7790394222210 | **confirmado por el founder** (color y GTIN, 2026-10-03) |
+| 180372264012 | 011 | dorado mate, lente marrón, varillas plateadas | 0 (el founder no tiene ninguna unidad) | 7790394208351 | sin unidad física para chequear; respaldado por el título de ML "Color 011" y el GTIN de ML |
+| (falta crear en ML) | 017 | frente peltre, varillas de aluminio gris (la marca usa la misma foto que la 014) | ? | 7790394220735 | **color y GTIN dados por el founder**; NO está en ML todavía |
+| (falta crear en ML) | 018 | frente peltre, varillas negras con logo REEF plateado (foto de la marca 018) | ? | 7790394220742 | **color y GTIN dados por el founder**; NO está en ML todavía |
+| 180372264014 | 015 | plateado, lente negro, varillas negras | ML=1, founder dice 2 (¡corregir en ML!) | 7790394208832 | **confirmado por el founder** (color y GTIN, 2026-10-03) |
+| 186368365461 | 016 | dorado brillo, lente marrón | ML=1, founder dice 4 (¡subir en ML!) | 7790394216400 | **confirmado por el founder** (color y GTIN, 2026-10-03) |
+| 186368365463 | 020 | negro, lente gris oscuro, varillas negro/azul | 2 (ML y real coinciden) | 7790394234015 | **confirmado por el founder** (color y GTIN, 2026-10-03) |
+**Stock de la 016 (2026-10-03)**: el founder dice 4 unidades, ML muestra 1 (1 vendida): subirlo a 4 en ML, el sitio copia.
+**Stock de la 019 (2026-10-03)**: el founder tiene 4 unidades pero ML muestra 0 (la publicación de catálogo de la 019 está pausada
+por falta de stock). Mismo criterio: lo sube a 4 en ML y el sitio lo copia (no se toca por SQL).
+**Stock de la 015 (2026-10-03)**: el founder dice que le quedan 2 unidades pero ML muestra stock 1 (1 vendida). El stock del sitio
+sale de ML (regla `stock-siempre-ml`, nunca se toca por SQL): el founder tiene que subirlo a 2 en ML y el sitio lo copia.
+**Actualización 2026-10-03**: el founder confirmó que el GTIN de la 015 es **7790394208832**, o sea el que ML tenía en el
+producto rotulado "128 Ying - 018" (MLA35874982): ese rótulo de ML es erróneo, el producto es la 015, y la 018 real es
+7790394220742. **Próximo paso exacto (ESTE reemplaza al de arriba)**: el founder me pasa el código de barras de las cajas de
+los 3 colores con stock que faltan (014, 016, 020), como número o foto; con eso se cierra la tabla. Los colores 011 y 019 no tienen
+unidad (stock 0), los respaldan los títulos de ML. Recién con la tabla cerrada se retoman medidas, fotos de frentes y el
+seed 156.
+**Actualización 2026-10-03 (cuadro cerrado para las 6 variantes de ML)**: confirmados por el founder 014, 015, 016, 019 y 020; la
+011 no tiene unidades físicas (queda respaldada por ML); el founder pasó además los colores **017** y **018** (con su GTIN y
+descripción) que todavía NO están en su publicación de ML. Regla: una variante entra al sitio sólo con su `variation_id`
+de ML, así que para sumar la 017 y la 018 el founder tiene que crearlas como variaciones de MLA1751925814 (con sus
+unidades) y pasarme el aviso. Pendientes del founder: subir stock en ML (015→2, 016→4, 019→4), crear 017 y 018 en ML (o
+decir que no se cargan), medidas, fotos de frentes, correcciones de la ficha de ML.
+**Placas para sumar la 017 y la 018 a ML (2026-10-03, pedido del founder)**: generadas en `marketing/placas-ml/reef-128-c017/ml/`
+y `reef-128-c018/ml/` (1500×1500): `01-perfil` (portada, foto lateral de la marca), `03-callouts`, `04-medidas`, `06-garantia`. No
+hay placas 02-frente ni 05-lentes porque la marca sólo tiene foto lateral (y la 05 es de receta). Callouts con textos de la
+ficha de la marca: lentes polarizadas (TAC), patillas de aluminio, frente de metal, bisagras flex de metal (se corrigió el
+"armazón de aluminio" de las placas viejas); flechas calibradas con grilla, sin cruces. Medidas 67-17-46 / 138 / 114 (alto total 46 y ancho total 138 del founder; placas 04-medidas regeneradas el 2026-10-03 en las 8 carpetas): el ancho
+total 138 YA está confirmado (la ficha de ML dice 140: corregirla). La foto de la marca de la 017 es la misma que la de la
+014 (frente peltre con patillas plateadas) y trae el lente izquierdo desvanecido en el borde. Para la banda de "100% UV" puede
+reutilizar la que ya tiene en sus otras variaciones.
+**✅ RESUELTO LA DUDA DE LA 018 (2026-10-03)**: el founder encontró el error: lo que tenía cargado como "018" era en realidad la
+**015** (son muy parecidas). Lectura A confirmada: la variación 180372264014 es la 015 (GTIN 7790394208832) y ML la había
+rotulado/enlazado mal como 018 (producto de catálogo MLA35874982). **La 018 SÍ es un color nuevo** (GTIN 7790394220742) y hay
+que crearla como variación nueva de MLA1751925814, igual que la 017 (GTIN 7790394220735). Placas listas en
+`marketing/placas-ml/reef-128-c017/ml/` y `reef-128-c018/ml/`. A corregir por el founder en la variación 015 de ML (…264014):
+Color del armazón → Plateado y Diseño → "Envolvente - 015" (hoy dice Gris oscuro, de ahí el enlace erróneo a la 018).
+**Próximo paso exacto**: el founder crea la 017 y la 018 como variaciones de MLA1751925814 (con stock y las placas) y me avisa;
+entonces las sumo a la tabla con su `variation_id`.
+Atributos sugeridos para crearlas en ML (según los productos de catálogo de ML para C17 y 018; confirmar con las unidades):
+017 → Lente Negro, Varilla Plateado, Armazón Peltre, Diseño "Envolvente - 017", GTIN 7790394220735;
+018 → Lente Negro, Varilla Negro, Armazón Gris oscuro (peltre), Diseño "Envolvente - 018", GTIN 7790394220742.
+**Placas de todos los colores de Reef 128 (2026-10-03, pedido del founder)**: además de la 017 y la 018, quedaron generadas la 011, 014,
+015, 016, 019 y 020 en `marketing/placas-ml/reef-128-c0XX/ml/` (01-perfil, 03-callouts, 04-medidas, 06-garantia; sin frente porque la
+marca sólo tiene lateral). Mismos textos verificados con la ficha de la marca, flechas revisadas una por una. La 015 va para
+reemplazar las fotos de su variación (…264014), que hoy tiene datos de otro color.
+**La carga queda en pausa esperando al founder (nada bloquea a Claude).** Pendientes del founder, en orden: (a) leer de la
+caja el código de barras de la unidad **015** (variación 180372264014; candidatos 7790394208832 o 7790394208399, ninguno
+confirmado; el de la 018 es 7790394220742) y comparar los otros GTIN con sus cajas; (b) en la
+variación 180372264014 de ML cambiar "Color del armazón: Gris oscuro" → Plateado y Diseño → "Envolvente - 015"
+(corregido: la variación es la 015, no la 018); (c) corregir en su ficha de ML "policarbonato"→TAC y "armazón de
+aluminio"; **Próximo paso exacto** al retomar: (1) el founder confirma las medidas (calibre 67, puente 17, alto total 46 ✅, ancho
+total 138 ✅, patilla 114); para los frentes tiene que fotografiar las unidades físicas (sólo hay lateral de la marca;
+`pnpm foto:limpia` limpia el fondo); luego `catalog-loader` + `seo-strategist` (ojo: colisión "Reef 178" ↔
+Mormaii 178, ver BACKLOG.md), seed 156, fotos y apply.
+
+### ✅ Cargado y live: Mormaii Vesubio RX (receta, seed 155) — CERRADO 2026-10-02, publicado en ML y aplicado a Cloud
+
+**Cierre**: el founder publicó en ML (2 publicaciones TRADICIONALES, una por color, `catalog_listing:false`; el link que pasó era
+la página de User Product `/up/MLAU…`, no catálogo — me corrigió porque lo llamé "de catálogo"): Col.01 MLA4021586886 y Col.03
+MLA4021560698, $118.843, stock 3 y 3, sin variaciones (`variation_code` NULL). Seed 155 aplicado con esos item_id. Verificación
+SELECT: `variantes=2, con_item_ml=2, imagenes=5, ultima_imagen=medidas, primaria=perfil-negro-gun, gender=unisex,
+material=poliamida, shape=aviador, hinge=integrada`. Corregida la memoria `ml-nunca-mapear-catalog-listing` (decidir por el
+campo `catalog_listing` del item, no por la forma de la URL). Pendiente del founder: el título de ML dice "Livianos" y el sitio no
+lo afirma (BACKLOG.md); peso, altura útil del aro y criterio de progresivos con la regente (DATOS_PENDIENTES.md). Verificado
+en vivo (2026-10-02): la ficha tardó unos minutos en aparecer (ISR de 300 s, 404 al principio y 200 después), con
+título, H1, precio $118.843, las 5 fotos y hreflang es-AR; aparece en `/anteojos-de-receta`, `/mormaii`, `/aviador` y
+`/mormaii/aviador`; en el grid la tarjeta ocupa el mismo ancho que Sevilha, Swap NG2 MAG y Traful, así que no
+hace falta scale override (regla 15). Registro histórico de la carga abajo:
+
+### (registro) Mormaii Vesubio RX — alta en ML + página (seed 155)
+
+Pedido distinto a los anteriores: el founder tiene que dar de alta el producto en Mercado Libre Y en la
+página; la publicación de ML todavía NO existe. Se prepara (a) el texto de ML genérico (título ≤60,
+atributos, descripción sin color ni variante para sumar variantes después, categoría), con segunda
+opinión externa (`trio-auditor`: Codex + Gemini) antes de entregarlo, y (b) el seed 155 de la página,
+que NO se aplica a Cloud hasta que el founder publique en ML y pase el link (sync obligatorio de
+item_id + variation_code reales).
+Datos: aviador de doble puente, frente de poliamida, patillas de metal con terminales de goma, bisagra
+"integrada" (interoptica: inyectada reforzada), unisex (interoptica; el founder no aclaró), 54-16-136
+(coincide con interoptica), ancho total 142mm y alto 52mm del founder (interoptica ancho frente 136, sin
+alto), un solo color con stock: Col.03 transparente con patillas plateadas, 3 unidades. Precio NO dado:
+se propone $118.890 (interoptica $45.534 mayorista = misma tarifa que Leñas 2/3 MAG a $118.890), a
+confirmar con el founder. Dropbox trae 9 colores (col01..col09), sólo la Col.03 con stock.
+**Confirmado por el founder (2026-10-02)**: precio **$118.843** (11884300 en el seed), género **unisex**, trae **lente demo de plástico** (agregado a la descripción de la página y al texto de ML). Falta sólo el link de ML.
+**Cambio (2026-10-02)**: el founder avisó que también tiene la **Col.01 con 3 unidades** (Negro Mate con
+patillas Gun, "MT NGRO GUN" en interoptica). El producto sale con 2 colores (Col.01 y Col.03, 3 unidades
+cada uno): la publicación de ML lleva 2 variaciones, el seed 155 tiene 2 variantes (`VESUBIO-NEGRO-GUN` y
+`VESUBIO-TRANSPARENTE-PLATA`), la Col.01 es la primaria por color clásico en el empate 3-3 y las fotos de
+la Col.01 ya están subidas (perfil+frente). Placas de ML de la Col.01 en
+`marketing/placas-ml/mormaii-vesubio-c01/ml/` (completo: las 6 placas; el founder pidió que cada color
+tenga su set propio). Los callouts de la Col.01 se recalibraron con grilla porque el armazón negro cae en
+otro lugar de la placa que el transparente (la primera pasada dejó dos flechas fuera de su parte).
+Las dos carpetas de placas (c01 y c03) están completas y listas para subir a ML.
+**Próximo paso exacto**: el founder publica en ML con título, atributos, descripción (ya con lente demo de
+plástico sin filtro), precio $118.843 y las 2 variaciones (`C01 - Negro Mate - Gun`, `C03 - Transparente con
+Plata`), y me pasa el link; entonces se completan `__ML_ITEM_ID__` y los dos `__ML_VAR_ID_*__` del seed 155
+con `scripts/ml-item.ts` (verificando `catalog_listing:false`), se borra el bloque `DO`, se pide OK, se
+aplica y se verifica (`variantes=2`, item y variation_code no nulos, imágenes=5, medidas última).
+**Estado (actualizado)**: los 3 agentes validaron. Hecho: fotos de la Col.03 subidas (3 imágenes),
+seed [supabase/seeds/155_mormaii_vesubio_receta.sql](supabase/seeds/155_mormaii_vesubio_receta.sql)
+escrito con placeholders de ML y un bloque `DO` que aborta si se aplica sin completarlos, ficha SEO en
+`SEO_STRATEGY.md`, pendientes en BACKLOG.md y DATOS_PENDIENTES.md. Decisiones: `frame_shape:"aviador"`,
+`frame_material:"poliamida"` + `temple_material:"metal"`, `hinge_system:"integrada"` (palabra del
+founder), `gender:"unisex"` provisorio, SIN "grande" (142mm < 145mm), SIN "liviano/ultrafino", y los
+progresivos como recomendación y no como "cualquier lente" (`optical-expert`: el alto total 52 no es la
+altura útil del aro con doble puente; pendiente de confirmar con la regente). ML: categoría MLA417127
+(forma sólo Cuadrada/Ovalada/Rectangular/Redonda, sin "Aviador"), título de 60 caracteres, descripción corta
+de 9 bloques. Auditoría externa (Codex + Gemini): ronda 1 con 1 bloqueante real de Codex (la frase
+"Elegí el color en las opciones de la publicación" contradecía la descripción genérica; sacada),
+ronda 2 GO de los dos sin bloqueantes. Paquete de ML entregado al founder.
+**Placas de ML** (pedido posterior del founder): las 6 placas quedaron en
+`marketing/placas-ml/mormaii-vesubio-c03/ml/` (1500×1500; la portada 01 sin texto). Las generadas por
+defecto no servían (callouts con "liviano", "cómodos" y "Color a definir", flechas sin detectar partes);
+se rehicieron con textos verificados (doble puente aviador, frente de poliamida, patillas de metal con
+terminales de goma, bisagras integradas), la placa de lentes alineada con la descripción (monofocales y
+bifocales, progresivos consultando) y la de garantía sin "liviano y cómodo". El founder marcó que las
+flechas de la v2 se cruzaban: la v3 las ubica con una grilla de coordenadas y asigna cada burbuja a la
+parte más cercana (ver LEARNINGS.md y MISTAKES.md 2026-10-02). Pendiente: el founder revisa las
+placas y publica en ML.
+**Próximo paso exacto**: recibir la auditoría externa, entregarle al founder el paquete de ML (título,
+atributos, descripción) para que publique, y esperar su link para completar el seed 155 (item_id,
+variation_code, precio y stock reales) y recién ahí aplicar. Preguntas al founder: precio, género, si el
+armazón trae lente demo, y la frase de progresivos.
+
+### ✅ Cargado y live: Mormaii Leñas — variante Col.20 Transparente Cristal (seed 154), aplicado con OK del founder ("aplicar seed")
+
+Aplicado y verificado: `variantes=5, con_item_ml=5, imagenes=7, ultima_imagen=medidas.jpg,
+sku_primaria=LENAS-NEGRO-BRILLO`, sin lista de colores en la descripción. Pendiente del founder: la
+publicación MLA1450640375 está pausada y con precio viejo en ML (BACKLOG.md). Detalle de la carga abajo
+(registro histórico):
+
+### (registro) Mormaii Leñas — variante faltante Col.20 Transparente Cristal (seed 154)
+
+El founder pasó un link de catálogo (`/up/MLAU1225561334`, se ignora). La variante faltante es la
+publicación propia MLA1450640375 (C20 Transparente Cristal, sin variaciones → `variation_code` NULL,
+`catalog_listing:false`). **Está PAUSADA en ML** (stock 1, precio $105.790 vs $111.030 del resto de
+Leñas). Seed [supabase/seeds/154_mormaii_lenas_col20_receta.sql](supabase/seeds/154_mormaii_lenas_col20_receta.sql)
+escrito, fotos (perfil+frente, grabado "Leñas Col. 20 51□18-135") subidas. Incluye: variante nueva
+(stock 1, precio $111.030 uniforme), corrida de la placa de medidas a sort_order 6 y descripción sin
+el párrafo "Disponible en 4 variantes" (desactualizado con la 5ta; política #8). **Próximo paso
+exacto**: OK del founder → aplicar, verificar (`variantes=5`, `con_item_ml=5`, imagenes 7, medidas
+última) y actualizar docs; anotar en BACKLOG.md el precio de MLA1450640375 a actualizar en ML.
+
+### ✅ Cargado y live: Mormaii Recife (receta, seed 153) — CERRADO, aplicado con OK previo del founder ("Aplicar Seed cuando termine")
+
+`catalog-loader` y `seo-strategist` validaron: `frame_shape:"cuadrado"` (calibre/alto 57/48=1,19 como los
+cuadrados Mormaii; ML dice Cuadrado), `gender:"male"`, `hinge_system:"flex"`, "Grande" califica en el
+title (147mm, primer producto sobre el umbral). Descripción SIN lista de colores (política #8, ver
+MISTAKES.md 2026-10-02). Verificación SELECT: `variantes=3, con_item_y_var_ml=3, imagenes=7,
+gender=male, material=poliamida, shape=cuadrado, hinge=flex, sku_primaria=RECIFE-AZUL-MATE-CELESTE`.
+Ficha SEO en `SEO_STRATEGY.md`, fila en `CLOUD_APPLIED.md`, peso en BACKLOG.md. Pendiente de
+verificación visual: contraste de Col.04 (transparente) en el grid, como Frey. Detalle original de la
+carga abajo (registro histórico):
+
+### (registro) Mormaii Recife — research y validación previos al seed 153
+
+Cuadrado/rectangular grande, poliamida, bisagra metálica flex Visyfit, hombre. ML MLA2526698624
+($111.030, `catalog_listing:false`), 3 colores reales: C02 Azul Mate-Celeste (stock 3), C04
+Transparente con Terminales Azules (stock 3), C05 Azul Brillo (stock 2). Dropbox trae 6 colores con
+nombres de archivo desordenados; mapeo por grabado físico: el archivo "col07_Lateral" lleva grabado
+"Col. 02" y es par del "col02_Frente" (no es una Col.07). col03/col06 sin variación ML → descartados.
+Medidas: calibre/puente/varilla 57-19-136 confirmadas por grabado + interoptica + founder; ancho
+147mm / alto 48mm por override del founder (interoptica 141/40). Material y bisagra sin conflicto.
+Pendiente de resolver por los agentes: `frame_shape` (founder "Cuadrado / Rectangular", ML Cuadrado),
+valor de enum de género hombre, desempate 3-3 entre C02 y C04 (ninguno negro), y anti-canibalización
+contra Leñas 3 MAG / Kona MAG. **Próximo paso exacto**: recibir validación, escribir seed 153,
+generar/subir placas (OJO: perfil de Col.02 = archivo col07_Lateral, frente = col02_Frente), pedir
+OK y aplicar.
+
+### ✅ Cargado y live: Mormaii Sevilha (receta) — CERRADO, override de forma (redondo, no ovalado) confirmado por el founder
+
+Redondo tipo panto, acetato, unisex, bisagra metálica sin flex. 3 colores con stock real en ML: A14
+Negro Mate (stock 2, primario por color clásico en empate 2-2), DC0 Transparente con Negro Brillo
+(stock 2), BB4 Rosa Transparente con Carey (stock 1) — J96 (4to color del Dropbox) descartado, sin
+variación ML real. `name`="Mormaii Sevilha" (grabado físico "Sevilha M6149"), slug=
+`mormaii-sevilha-receta`. Medidas confirmadas por grabado físico + interoptica: calibre=52, puente=21,
+varilla=137 (exacto con founder); ancho total=140mm y alto=45mm por override directo del founder.
+
+**Override de forma**: el founder escribió "Ovalado" pero el producto quedó cargado como
+`frame_shape:"redondo"`. `catalog-loader` y `seo-strategist` coincidieron en recomendarlo por 3
+fuentes independientes (ML título "Lentes Redondos", ML atributo estructurado `SHAPE=Redondos`,
+interoptica "frente redondeado") contra la palabra sola del founder — patrón inverso a High4. Además
+3.48x más volumen de búsqueda y cruza el umbral de 4 productos que habilita
+`/anteojos-de-receta/redondos` como faceta activa. Flaggeado explícitamente al founder antes de
+aplicar ("¿Confirmás redondo...?"); confirmó con "publica el seed". Anti-canibalización real: Mormaii
+Traful (mismo panto unisex, separado por material Grilamid vs acetato + bisagra flex vs rígida) —
+Sevilha es el primer acetato panto de la marca.
+
+Seed [supabase/seeds/152_mormaii_sevilha_receta.sql](supabase/seeds/152_mormaii_sevilha_receta.sql)
+aplicado a Cloud con OK del founder ("publica el seed"). Verificación SELECT: `variantes=3,
+con_item_y_var_ml=3, imagenes=7, gender=unisex, material=acetate, shape=redondo,
+sku_primaria=SEVILHA-NEGRO-MATE`. Ficha SEO agregada a `SEO_STRATEGY.md` con cross-link obligatorio
+Sevilha↔Traful↔Barcelona↔High4. Pendientes agregados a BACKLOG.md: `weight_grams`, gap de faceta
+`/anteojos-de-receta/redondos`, y validar con `optical-expert` que "cara redonda" no se use como
+keyword en armazones redondos (posible recomendación óptica incorrecta).
+
+### ✅ Cargado y live: Mormaii High 4 (receta) — CERRADO, colisión más ajustada del cluster receta con Barcelona
+
+Rectangular tipo wayfarer oversized (ancho total 140mm, alto de lente 42mm — el más grande del cluster
+RX), unisex, acetato, bisagra metálica sin flex. 2 colores con stock real en ML (Negro/A14,
+Transparente/DC0), ambos empatados 2/2 → Negro primario por color clásico. `name`="Mormaii High 4"
+(grabado físico sin sufijos de línea ni "RX"), slug=`mormaii-high-4-receta`.
+
+Tres conflictos de dato resueltos con `catalog-loader` (ML vs founder vs interoptica): material
+(ML dice Grilamid, founder+interoptica dicen Acetato → gana acetato), forma (ML dice Cuadrada,
+founder+interoptica dicen Rectangular → gana rectangular), género (atributo estructurado ML dice
+Hombre, founder explícito + título comercial ML dicen Unisex → gana unisex, mecanismo más fuerte que
+Mormaii 178 porque acá sí hay override explícito). `frame_material:"acetate"` (inglés, mismo chequeo
+de siempre contra el trap de Barcelona).
+
+`seo-strategist` encontró la colisión más ajustada del cluster receta: **High 4 vs Mormaii Barcelona**
+comparten rectangular+unisex+acetato+bisagra metálica sin flex con medidas casi idénticas — se separan
+por estilo real (Barcelona=clásico talle normal, High4=wayfarer bold) y palabra de cierre de título
+distinta ("Acetato" vs "Wayfarer"). Riesgo de nombre "High" descartado con datos reales (sin colisión
+en `KEYWORDS OPTICA/`). "Transparente" y "grande/oversized" descartados como keywords por umbrales de
+honestidad del proyecto (50% de colores, 140mm bajo el umbral de 145mm).
+
+Seed [supabase/seeds/151_mormaii_high_4_receta.sql](supabase/seeds/151_mormaii_high_4_receta.sql)
+aplicado a Cloud con OK del founder ("Aplicar Seed"). Verificación SELECT: `variantes=2,
+con_item_y_var_ml=2, imagenes=5, gender=unisex, material=acetate, shape=rectangular,
+sku_primaria=HIGH4-NEGRO`. Ficha SEO agregada a `SEO_STRATEGY.md` con cross-link obligatorio
+High4↔Barcelona↔Hover↔Leñas 2 MAG. Pendientes agregados a BACKLOG.md: `weight_grams` y refuerzo del
+gap de faceta `/anteojos-de-receta/rectangulares` (ya 6 productos: 4 Mormaii + Rusty R-CY 02 + Rusty
+Woxi).
+
+### ✅ Cargado y live: Mormaii 178 (sol) — CERRADO, primer Mormaii de sol en acetato y sin polarizar
+
+Primer Mormaii de SOL en acetato (Barcelona fue el primero en RX) y primer Mormaii de sol confirmado
+NO polarizado (ML: `WITH_POLARIZED_LENS=No`) — rompe el patrón de los 11 Mormaii de sol previos.
+Bisagra metálica sin flex, UV400, cat.3. 3 colores con stock, Azul primaria (más stock). `name`=
+"Mormaii 178" (sin "MO", mismo mecanismo que "RX" en Frey/Leñas 3 MAG). `frame_material:"acetate"`
+(inglés) — `catalog-loader` evitó el mismo error que Barcelona casi cometió. `"polarized":false`
+explícito en las 3 variantes. `gender:"unisex"` por default — la palabra "femenino" del founder fue
+sobre el formato visual, no una declaración de género; descripción usa "moderno/statement" en vez de
+"clásico femenino" para no generar mismatch con las fotos reales (diseño cuadrado/trapezoidal
+oversized). `seo-strategist` identificó la anti-canibalización real contra Mormaii Daito (mismo sol+
+cuadrado+unisex, separado por material/polarización/keyword "unisex") y un hallazgo cross-brand:
+existe "Reef 178" en ML Argentina (Reef, marca top-priority aún sin cargar) — "178" nunca suelto sin
+"Mormaii". Título usa la versión conservadora (sin "grandes") porque el ancho real (143mm) queda 2mm
+por debajo del umbral honesto de esa keyword.
+
+Seed [supabase/seeds/150_mormaii_178_sol.sql](supabase/seeds/150_mormaii_178_sol.sql) aplicado a
+Cloud con OK del founder. Verificación SELECT: `variantes=3, con_item_y_var_ml=3, imagenes=7,
+gender=unisex, material=acetate, lens_treatment=[uv400], todas_no_polarizadas=true,
+sku_primaria=MO178-AZUL`. Ficha SEO agregada a `SEO_STRATEGY.md`. Pendientes agregados a BACKLOG.md:
+`weight_grams` y verificar "Reef 178" cuando se cargue esa marca.
+
+### ✅ Cargado y live: Mormaii Frey (receta) — CERRADO, primer Mormaii ovalado del catálogo
+
+Primer Mormaii OVALADO (12 RX previos son envolvente/cuadrado/redondo/rectangular) y unisex sin
+decisión de posicionamiento "para hombre". Poliamida, bisagra metálica flex Visyfit, sin restricción
+de lente. 5 colores, Col.04 (Transparente) primaria por mayor stock (4) — criterio real del cluster
+es stock descendente puro, "color clásico" sólo desempata empates exactos (Col.01 ganó el empate 3-3
+vs Col.02 por ese motivo). `catalog-loader` corrigió mi premisa inicial: "RX" NUNCA entra al nombre
+comercial, esté grabado físicamente o no (mismo caso ya resuelto en Leñas 3 MAG) — `name`="Mormaii
+Frey", slug=`mormaii-frey-receta`. `seo-strategist` encontró que "ovalado" NO es territorio 100%
+libre: Vulk Clems Receta (seed 57, cargado antes de la norma seo-strategist obligatorio) ya reclama
+de facto la frase "lentes/anteojos ovalados" en su meta_title vivo — Frey usa "Ovalado" como adjetivo
+plano en title/H1 en vez de pelear la frase, mismo mecanismo que Traful con "Redondo". Nota pendiente
+de verificación visual: Col.04 (transparente) puede leer con bajo contraste en el grid.
+
+Seed [supabase/seeds/149_mormaii_frey_receta.sql](supabase/seeds/149_mormaii_frey_receta.sql) aplicado
+a Cloud con OK del founder ("applicalo"). Verificación SELECT: `variantes=5, con_item_y_var_ml=5,
+imagenes=11, gender=unisex, shape=ovalado, sku_primaria=FREY-TRANSPARENTE`. Ficha SEO agregada a
+`SEO_STRATEGY.md`. Pendientes agregados a BACKLOG.md: `weight_grams`, ficha retroactiva de Vulk Clems
+Receta, y gap de faceta `/anteojos-de-receta/ovalados` (2do producto del carril, bajo el umbral de 4).
+
+### ✅ Cargado y live: Mormaii Miami (sol) — CERRADO, primer Mormaii "cuadrado+hombre" con los 3 colores en stock
+
+Décimo tercer Mormaii de sol. Cuadrado, hombre, poliamida, bisagra plástica reforzada, polarizado
+UV400 cat.3. 3 colores, las 3 CON STOCK real (2/2/2) — primera vez que un Mormaii "cuadrado+hombre"
+reciente puede afirmar disponibilidad completa (Doha/Macau/Tokio tenían sólo 1 color vigente). Col.01
+(Negro Brillo) primaria por ser el color clásico, mismo criterio de desempate de Leñas 3 MAG.
+`lens_treatment:["gradient"]` a nivel variante en Col.05 (lente degradé, mismo patrón Tokio). Riesgo
+geográfico de "Miami" confirmado por `seo-strategist` como el más alto del cluster hasta ahora (SERP
+dominado por shopping/turismo argentino en Florida) — mitigado con el mismo mecanismo del cluster.
+
+Seed [supabase/seeds/148_mormaii_miami_sol.sql](supabase/seeds/148_mormaii_miami_sol.sql) aplicado a
+Cloud con OK del founder. Verificación SELECT: `variantes=3, con_item_y_var_ml=3, imagenes=7,
+gender=male, sku_primaria=MIAMI-NEGRO-BRILLO`. Ficha SEO agregada a `SEO_STRATEGY.md`. `weight_grams`
+pendiente — falta agregar a BACKLOG.md.
+
+### ✅ Cargado y live: Mormaii Leñas 3 MAG (receta) — CERRADO, cuarto modelo de la línea MAG, sólo-colgar
+
+Cuarto producto de la línea MAG (Kona MAG seed 139, Leñas 2 MAG seed 140, Swap NG2 MAG seed 145). SIN
+clip-on — sólo imanes en las patillas para colgar/adherir a metal, mismo mecanismo que Kona MAG/Leñas
+2 MAG. Cuadrado (founder+interoptica, contra el SHAPE="Rectangular" genérico de ML), hombre, poliamida,
+bisagra metálica flex "Visyfit" (coincide exacto founder+interoptica). Sin restricción de lente. 3
+colores, las 3 CON STOCK real (primera vez en varias cargas seguidas — Col.02 primaria por mayor
+stock, Col.01 segunda por desempate de color clásico, Col.04 tercera). Precio uniforme $118.890, sin
+el problema desparejo de Tokio.
+
+`catalog-loader` corrigió SKU de Col.02 a `LENAS3-MAG-AZUL-TURQUESA` (con S, consistencia con
+`LENAS2-MAG-AZUL-TURQUESA`) y confirmó plausible el margen geométrico de 17mm (armazón más grande de
+la sub-línea Leñas MAG). `seo-strategist` confirmó que el criterio genérico "imán nunca primaria" de
+Kona MAG aplica sin la excepción de Swap NG2 MAG (no hay clip solar acá) y actualizó la desambiguación
+de los 3 "Leñas" del catálogo.
+
+Seed [supabase/seeds/147_mormaii_lenas_3_mag_receta.sql](supabase/seeds/147_mormaii_lenas_3_mag_receta.sql)
+aplicado a Cloud con OK del founder ("aplica el seed", mid-turn). Verificación SELECT: `variantes=3,
+con_item_ml=3, imagenes=7, magnetic=true, gender=male, sku_primaria=LENAS3-MAG-AZUL-TURQUESA`. Ficha
+SEO agregada a `SEO_STRATEGY.md`. `weight_grams` pendiente — falta agregar a BACKLOG.md.
+
+### ✅ Cargado y live: Mormaii Tokio (sol) — CERRADO, "Tokio" (grabado real) no "Tokyo"
+
+Duodécimo Mormaii de sol. Cuadrado, hombre, poliamida, bisagra plástica reforzada, polarizado UV400
+cat.3. Nombre "Mormaii Tokio" (grabado físico, no "Tokyo" de interoptica/marketing) — 3 ventajas SEO
+reales confirmadas por `seo-strategist` (coherencia producto-listing, convención de mercado ya usada
+por todos los competidores argentinos, honestidad E-E-A-T). Riesgo geográfico mayor que Doha/Macau
+(ciudad global) + colisión de rubro nueva con "Tokio Visión" (óptica real, La Plata) — mitigado con
+el mismo mecanismo del cluster (nunca suelto sin "Mormaii"). 3 colores: Col.03 primaria (único con
+stock real, lente espejada celeste), Col.01 y Col.05 en stock 0. Precio uniforme $116.490 en las 3
+(se descartó el $78.400 desactualizado +1 año de la publicación pausada de Col.01).
+
+Seed [supabase/seeds/146_mormaii_tokio_sol.sql](supabase/seeds/146_mormaii_tokio_sol.sql) aplicado a
+Cloud con OK del founder. Verificación SELECT: `variantes=3, con_item_ml=3, imagenes=7,
+tiene_primaria=true, gender=male, precio_col03=11649000`. Ficha SEO agregada a `SEO_STRATEGY.md`.
+Pendientes agregados a BACKLOG.md: `weight_grams` + acción del founder en ML (actualizar precio de
+MLA1910636064/Col.01, desactualizado).
+
+### ✅ Cargado y live: Mormaii Swap NG2 MAG (receta, clip-on 2-en-1 magnético) — CERRADO, primer clip-on magnético real del catálogo
+
+Tercer producto de la línea MAG (Kona MAG seed 139, Leñas 2 MAG seed 140), primer clip-on 2-en-1 con
+imanes (Hover, seed 132, es clip-on sin imán). Cuadrado, hombre, poliamida, bisagra "plastica
+reforzada" (gana la palabra del founder sobre el sinónimo "inyectada reforzada" de interoptica, mismo
+criterio ya resuelto en Hover). Imanes en las patillas + 2 clips solares intercambiables: uno oscuro
+polarizado cat.3 UV400 (color según variante) + uno amarillo UV400 sin polarización confirmada (por
+pedido explícito del founder, nunca afirmada). `clip_on` modelado como objeto ANIDADO en
+`attributes` (nunca `lens_treatment`/`polarized` a nivel top) — bug evitado gracias a `catalog-loader`,
+que verificó en código que `lib/catalog/polarized.ts` sólo lee el nivel top; de haber quedado ahí, el
+cristal graduado base (sin filtro propio) hubiera entrado por error a `/polarizados`. 3 colores, cada
+uno con foto de perfil+frente+detalle de clips (pedido explícito del founder de incluir todas las
+fotos relacionadas) + 1 placa de medidas compartida — 10 fotos en total.
+
+Seed [supabase/seeds/145_mormaii_swap_ng2_mag_receta.sql](supabase/seeds/145_mormaii_swap_ng2_mag_receta.sql)
+aplicado a Cloud con OK del founder. Verificación SELECT: `variantes=3, con_item_ml=3, imagenes=10,
+tiene_primaria=true, gender=male`, `clip_on` anidado presente y `polarized`/`lens_treatment` NULL a
+nivel top (confirma que el bug se evitó). Ficha SEO agregada a `SEO_STRATEGY.md` (excepción
+documentada al criterio "magnético/imán nunca primaria" de Kona MAG: el compuesto "receta+sol+imán"
+sí tiene SERP real e intención exacta). `weight_grams` pendiente — falta agregar a BACKLOG.md.
+
+### ✅ Cargado y live: Mormaii Macau (sol) — CERRADO, primer Mormaii de sol rectangular del catálogo
+
+Undécimo Mormaii de sol. Rectangular grande, hombre, poliamida, bisagra plástica reforzada,
+polarizado UV400 cat.3. 2 colores: Col.05 (Frente Negro Mate/Patillas Carey, lente marrón, stock 1,
+primaria) y Col.01 (Negro Brillo, stock 0). `catalog-loader` y `seo-strategist` convergieron de forma
+independiente en `frame_shape="rectangular"` (no "cuadrado" como propuse inicialmente) — primer
+Mormaii de sol con esta forma y primer "rectangular+hombre" de sol de todo el catálogo, territorio
+libre de keyword (no el 6to reclamo saturado de "cuadrado+hombre" que se sospechaba). 1 de los 3
+items ML encontrados para "macau" se descartó por `catalog_listing:true` (MLA1830962199) — se usó el
+tradicional MLA3169456520 para Col.01. "Se pueden adaptar lentes graduadas" quedó afuera del seed
+(afirmación técnica sin campo estructurado, pendiente de `optical-expert` en turno aparte).
+
+Seed [supabase/seeds/144_mormaii_macau_sol.sql](supabase/seeds/144_mormaii_macau_sol.sql) aplicado a
+Cloud con OK del founder. Verificación SELECT: `variantes=2, con_item_ml=2, imagenes=5,
+tiene_primaria=true, gender=male, shape=rectangular`. Ficha SEO agregada a `SEO_STRATEGY.md`.
+`weight_grams` pendiente — falta agregar a BACKLOG.md. **PDP en vivo pendiente de verificación**
+(mismo caché ISR 5min ya documentado).
+
+### ✅ Cargado y live: Mormaii Doha (sol) — CERRADO, sincronizado con ML desde el arranque + fix de bug en 2 productos previos
+
+Décimo Mormaii de sol. Cuadrado, hombre, poliamida, bisagra plástica reforzada, polarizado UV400
+cat.3. Único color con publicación ML real: Col.03 Negro/Habano Mate con lente marrón (la carpeta de
+Dropbox trae 6 colores del catálogo completo de la marca, sólo Col.03 tiene venta real).
+
+**Veredictos de agentes recibidos (ambos GO)**:
+- `catalog-loader`: nombre="Mormaii Doha" (sin el "SN" del grabado, confirmado código interno de
+  línea en los 9 Mormaii sol previos). Medidas 56/17/143/143 confirmadas con el founder (el 143
+  repetido en varilla y ancho total sí es un valor medido aparte, no un artefacto de plantilla).
+  **Encontró y se corrigió un bug real en 2 productos ya publicados**: Madri y Monterrey2 tenían
+  `gender: "hombre"` en vez del enum real `"male"` que usa el filtro de
+  `/anteojos-de-sol/mormaii/hombre` — quedaban invisibles en esa ruta sin que nada lo mostrara. Fix
+  aplicado vía UPDATE puntual (JSONB, no toca stock/precio/órdenes), verificado con SELECT que no
+  queda ningún otro producto del catálogo con el enum roto. Detalle completo en MISTAKES.md
+  (2026-09-30, "gender hombre vs male").
+- `seo-strategist`: 5to Mormaii "cuadrado+hombre" de sol (Curazao, San Juan, Monterrey2, Madri, Doha)
+  — 100% branded en title/H1/meta, carril de forma+género saturado. Hallazgo: "Doha" es capital de
+  Qatar, mismo riesgo geográfico que Borneo/San Juan — nunca suelto sin "Mormaii".
+
+**Pipeline de fotos ejecutado**: `pnpm placas` (con el bug de `--solo web` no implementado pese a la
+documentación del script — se generó el set completo sin ese flag, no bloqueante) + `pnpm fotos:subir`
+verificado con HTTP 200 en las 3 (perfil/frente/medidas). Placas revisadas visualmente, medidas
+correctas en la placa generada.
+
+Seed [supabase/seeds/143_mormaii_doha_sol.sql](supabase/seeds/143_mormaii_doha_sol.sql) aplicado a
+Cloud con OK del founder ("Aplica el Seed"). Verificación SELECT: `variantes=1, con_item_ml=1,
+imagenes=3, gender=male`. Ficha SEO agregada a `SEO_STRATEGY.md` (cluster MORMAII). `weight_grams`
+pendiente, agregado a `BACKLOG.md`. **PDP en vivo, comparación de escala contra el grid y
+`pnpm auditar:encuadre` quedan pendientes** para la próxima vez que se toque el catálogo (mismo patrón
+de deuda ya acumulada con otros Mormaii recientes).
+
+### ✅ Documentación: SEO_STRATEGY.md actualizado con las 9 fichas Mormaii RX faltantes — CERRADO
+
+Pedido explícito del founder ("Actualizá SEO_STRATEGY.md con las 9 fichas Mormaii RX"), siguiendo la
+nota que `seo-strategist` había dejado pendiente al cerrar Barcelona (ver entry de abajo). Se agregó:
+
+1. Reemplazo del intro-paragraph de la sección "Cluster: MORMAII" (formato prosa "Primer/Segundo/...
+   Séptimo", que sólo cubría 7 productos y ya era inmanejable) por una lista numerada compacta de los
+   18 Mormaii cargados a la fecha, en orden de seed.
+2. Las 9 fichas deep-dive faltantes, en el mismo formato ya usado por Daito/Curazao/Borneo/Ancara2/
+   Hover/San Juan/Joaca4 (tabla de keywords con Vol/mes+Difficulty+rationale, anti-canibalización,
+   cross-links obligatorios, "no usar", resumen title/H1/meta): Traful, Leñas, Maceio, Monterrey 2,
+   Madri, Kona MAG, Leñas 2 MAG, Fortaleza, Barcelona — insertadas antes de "### Reglas para futuros
+   productos".
+
+Contenido armado a partir de: SELECT en vivo de `meta_title`/`meta_description` de los 9 productos +
+grep de los comentarios `seo-strategist` ya escritos en cada seed SQL original (nunca inventado de
+cero). Incluye un criterio nuevo documentado en la ficha de Kona MAG para los próximos modelos de la
+línea MAG/magnética (Traful Magnetic, Swap NG 2 Magnetic, etc.): nunca usar "magnético"/"imán" como
+keyword de title/H1 porque el SERP real de esos términos está capturado por otra categoría de producto
+(lectura de kiosco, clip-on 2-en-1).
+
+Sin cambios de código ni de datos — sólo documentación. **Próximo paso exacto**: ninguno pendiente de
+esta tarea; retomar el próximo pedido del founder (próxima carga de producto o lo que indique).
+
+### ✅ Cargado y live: Mormaii Barcelona (receta) — CERRADO, sincronizado con ML desde el arranque
+
+Décimo Mormaii RX. Rectangular, unisex, talle normal (alto de lente 41mm), acetato, bisagra metálica
+SIN flex (a diferencia de todo el resto que usa Visyfit flex) + patillas con alma metálica (dato
+agregado por el founder a mitad de turno). Admite cualquier tipo de lente, sin restricción (a
+diferencia de Maceio/Leñas 2 MAG).
+
+Item real de ML (MLA2100796328) traído vía `scripts/ml-item.ts` ANTES de research: 2 variaciones —
+Papaia/Amarillo Oscuro (183798318138, stock 2), Verde Petróleo/Transparente (183798318140, stock 0).
+Precio $141.222,84 con centavos.
+
+Medidas: founder dio "53-19-142" + por separado "altura total: 41mm, ancho total: 139mm". Grabado
+físico "Barcelona M6123 JB2 53  53□19 142 (4" confirma calibre=53/puente=19/varilla=142 EXACTO (el
+142 es varilla, no ancho total — el founder ya había dado 139 como ancho total, un número distinto).
+Por la regla actualizada (`altura-founder-siempre-total-armazon.md`): `lens_height_mm`=41 directo, sin
+inferir. interoptica.com.ar trae sus propios números pero inconsistentes/scrambled con el resto — no
+se usan, gana founder+grabado.
+
+**Fotos**: Dropbox tenía 3 colores (códigos de archivo tipo M6123J8253, no col01/02 como el resto),
+sólo 2 activos en ML — el 3ro (Negro) se descarta. Placas generadas y subidas a Storage sin alertas
+geométricas.
+
+**`catalog-loader` + `seo-strategist` consultados (ambos GO)**: **corrección importante verificada en
+código** — `frame_material` debe ser `"acetate"` (inglés, no "acetato"), porque el filtro de la ruta
+`/anteojos-de-receta/mormaii/acetato` matchea ese string literal (`lib/catalog/brand-filters.ts:82`);
+confirmado con grep directo, no se aceptó de palabra. Tampoco es el primer acetato del catálogo (ya
+lo usa Rusty Yeah, seed 92, sol) — sí el primero en RX. `hinge_system: "metalica"` confirmado
+(convención ya usada en 4 seeds RX previos). `temple_material` como texto libre ("acetato con alma
+metálica"), mismo patrón que Rusty K12. SEO: carril libre real es "talle normal + sin restricción de
+lente + acetato" (ningún otro Mormaii RX rectangular lo reclama); "acetato" no alcanza volumen para
+meta_title, va como señal de calidad en copy; "Barcelona" nunca suelto (geo + colisión con marca
+española "Etnia Barcelona").
+
+Seed 142 escrito: [supabase/seeds/142_mormaii_barcelona_receta.sql](supabase/seeds/142_mormaii_barcelona_receta.sql).
+Peso agregado a BACKLOG.md junto con el resto de la lista.
+
+**Nota de `seo-strategist` para el founder**: `SEO_STRATEGY.md` (sección Cluster MORMAII) quedó
+desactualizada — 8 productos Mormaii RX ya viven en producción (Traful, Leñas, Maceio, Monterrey 2,
+Madri, Kona MAG, Leñas 2 MAG, Fortaleza) sin su sub-sección de keywords documentada ahí. No bloquea
+esta carga, pero conviene una pasada para volcarlas antes de que el doc deje de servir como fuente de
+verdad para futuras auditorías.
+
+Seed 142 aplicado con OK del founder ("si aplica"). Verificación SELECT: `variantes=2,
+con_item_y_var_ml=2/2`. **PDP en vivo pendiente de verificación** (mismo caché ISR de 5 minutos ya
+documentado). **Próximo paso exacto**: la próxima vez que se toque el catálogo, chequear PDP + grid
+`/anteojos-de-receta/mormaii` en vivo, comparar escala de imagen contra el resto del grid, y considerar
+la sugerencia de `seo-strategist` de actualizar `SEO_STRATEGY.md` con las 9 entries Mormaii RX
+faltantes (Traful a Barcelona).
+
+### ✅ Cargado y live: Mormaii Fortaleza (sol) — CERRADO, sincronizado con ML, + corrección retroactiva de altura/copy (Leñas 2 MAG/Maceio) + categoría por variante (Fortaleza Col.07)
+
+Noveno Mormaii de sol. PRIMER anteojo estilo aviador/piloto con doble puente del catálogo (a
+confirmar con `seo-strategist` si es el primero de TODO el catálogo, no sólo Mormaii). Unisex,
+poliamida, bisagra Visyfit flex, polarizado UV400 cat.3.
+
+Item real de ML (MLA1566234869) traído vía `scripts/ml-item.ts` ANTES de research: 4 variaciones,
+todas stock 2 — Negro Mate/Gris Oscuro (192217997123), Caramelo/Marrón (192217997125), Negro-Habano/
+Marrones (192217997127), Negro Mate/Lentes Rosadas (192217997129). Precio $127.400 uniforme. Mismo
+hallazgo técnico que Monterrey2/Madri: `ml-item.ts` no detectó colores porque el atributo es `DESIGN`.
+
+**Conflicto de forma resuelto**: ML trae `FRAME_SHAPE=Rectangular` (su bucket genérico, sin opción
+"aviador" en el filtro) pero interoptica.com.ar dice "Tipo Pilot" y las fotos confirman clarísimo
+doble puente triangular — mismo patrón de conflicto título-vs-atributo ya resuelto con Curazao antes,
+gana la fuente más específica. Founder también lo confirmó explícito.
+
+Medidas 149/15/59/46/136 (founder, de la imagen) + founder aclaró espontáneamente "altura total:
+53mm" es la del ARMAZÓN completo, no la del lente — aplicando la regla ya guardada en memoria
+(`altura-founder-siempre-total-armazon.md`) sin que yo tuviera que preguntarle esta vez. Grabado
+físico: "Fortaleza SN Col.01 Cat.03 UV400" confirma cat.3/UV400 (sin medidas numéricas engravadas esta
+vez, igual que Monterrey2).
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP — 7 colores (col01-07), sólo 4 activos en ML (01,05,06,07).
+Placas generadas y subidas a Storage sin alertas geométricas. Nota: Col.01 y Col.07 comparten el mismo
+color de ARMAZÓN (Negro Mate), sólo cambia el color de lente (gris oscuro vs rosa) — el SKU necesita
+distinguir por lente, no sólo por armazón.
+
+**`catalog-loader` + `seo-strategist` consultados (ambos GO)**: SKU simétrico para Col.01/Col.07
+incluyendo el lente (`FORTALEZA-NEGRO-MATE-GRIS`/`FORTALEZA-NEGRO-MATE-ROSA`). `frame_shape:
+"aviador"` confirmado como valor canónico ya en el enum, con scaffolding de rutas ya wireado — no
+requiere tocar código. **Corrección importante de `seo-strategist`**: Fortaleza NO es el primer
+aviador de TODO el catálogo (ya hay 11 de Rusty/Vulk) — es el primer aviador MORMAII, dato distinto.
+El carril de keyword "aviador" en sol ya está tomado (Rusty The Take/Yeah) — mismo caso ya resuelto
+antes con Rusty Bruice, Fortaleza va 100% branded en meta_title/H1. Contaminación geográfica de
+"Fortaleza" confirmada baja.
+
+Seed 141 aplicado con OK del founder. Verificación SELECT: `variantes=4, con_item_y_var_ml=4/4`.
+
+**⚠️ CORRECCIÓN IMPORTANTE post-aprobación, aplicada retroactivamente a 2 productos live**: el
+founder señaló, en el mismo mensaje donde aprobó Fortaleza, que había generalizado mal la regla de
+altura de Kona MAG (ver `altura-founder-siempre-total-armazon.md`, reescrita): **cualquier altura que
+da el founder va directa al campo `lens_height_mm`, sin estimar/inferir un valor de "solo lente"
+distinto** — salvo que él mismo distinga explícito dos valores para ESE producto puntual (como sí
+hizo únicamente en Kona MAG). Corregido:
+- **Fortaleza** (antes de aplicar): `lens_height_mm` 46→53. Placa de medidas regenerada y resubida.
+- **Leñas 2 MAG** (live, UPDATE post-aplicación): `lens_height_mm` 30 (mi estimación por foto,
+  descartada)→35 (el valor "altura total" que el founder ya había dado). Placa de medidas regenerada
+  y resubida, alt_text corregido.
+- **Maceio** (live): la medida (31) ya era correcta (dato directo del founder, no una estimación mía)
+  — sin cambio numérico.
+
+**También corregido en los 3 (Leñas 2 MAG, Maceio, y el copy de Fortaleza no llevaba esta frase)**:
+el texto "apto SOLO para lentes monofocales — no admite bifocales ni progresivos" (sonaba a
+restricción técnica dura) se suavizó a "recomendado para monofocales... por su tamaño" — una
+recomendación, no una afirmación categórica. El campo estructurado `lens_compatibility` se mantiene
+`["monofocal"]` sin cambios (confirmado explícito por el founder que sólo el TEXTO cambia). Aplicado
+con UPDATE directo a `products.description`/`short_description`/`attributes.callouts` en Leñas 2 MAG
+y Maceio, y a los 2 seeds fuente (136, 140) para mantener consistencia. Verificado en vivo en ambas
+PDPs. Entry completa con causa raíz en `MISTAKES.md` (2026-09-30).
+
+**Ajuste adicional en Fortaleza (dato nuevo del founder tras la carga)**: la variante Col.07 (Negro
+Mate/Lentes Rosadas) es **categoría 1**, no cat.3 como las otras 3 — primer caso del catálogo con un
+campo técnico que varía por variante. Se agregó `lens_category: 1` DENTRO de `attributes` de esa
+variante puntual (override sobre el `lens_category: 3` del producto, mismo patrón ya usado para
+`polarized` por variante) y se reescribió description/short_description/meta_description/callouts
+para no afirmar "las 4 son cat.3" (dato de honestidad de negocio, no cosmético). Patrón general
+documentado en `LEARNINGS.md` para la próxima vez que un dato técnico varíe por color.
+
+Peso de Fortaleza agregado a BACKLOG.md junto con el resto de la lista.
+
+**Próximo paso exacto**: la próxima vez que se toque el catálogo, verificar visualmente la PDP de
+Fortaleza + grid (margen de caché ISR ya aplicado, se verificó en vivo en este mismo turno) y comparar
+escala de imagen contra el resto del grid de sol (la forma aviador con patillas puede necesitar
+override, según advirtió `catalog-loader` citando el precedente de Vrast — no se hizo esta verificación
+todavía).
+
+### ✅ Cargado y live: Mormaii Leñas 2 MAG (receta) — CERRADO, sincronizado con ML desde el arranque
+
+Segundo modelo MAG del catálogo (después de Kona MAG, seed 139). Armazón chico rectangular, aro
+completo, unisex, poliamida, bisagra Visyfit flex, con imanes en la patilla.
+
+**2 hallazgos importantes de esta carga, guardados en memoria**:
+1. El founder dijo "es medio lente" — investigué y le pregunté, porque las fotos reales mostraban
+   claramente aro completo (contradiciendo lo que sonaba a "rimless"). Aclaró: en Argentina "medio
+   lente" es jerga para armazón CHICO de lectura, no un tipo de construcción. Guardado en
+   `medio-lente-argentina-tamano-no-construccion.md`.
+2. El founder dio "altura total 35mm" — le pregunté si era de lente o de armazón (como distinguió en
+   Kona MAG) y confirmó: **siempre da la altura TOTAL salvo que aclare lo contrario** (en Kona sólo
+   aclaró porque la imagen ya traía las dos). Regla general guardada en
+   `altura-founder-siempre-total-armazon.md`. Medí la altura de LENTE por proporción de píxeles contra
+   el ancho total conocido (133mm): dio ~30mm (3 mediciones, 29.6-30.6mm). Founder confirmó usar esa
+   estimación.
+3. Dado el lente chico (~30mm, comparable a Maceio 31mm), el founder confirmó explícito: **solo
+   monofocal**, mismo criterio que Maceio — `lens_compatibility: ["monofocal"]`.
+
+**Link de ML era un catálogo (`/up/MLAU...`), ignorado** — encontré las 3 publicaciones tradicionales
+reales buscando "leñas" por título (ojo: también aparecieron 3 de "Leñas 3 Magnetico", OTRO modelo
+distinto que vendrá después, no confundir): Negro Mate (MLA3167711332, stock 2), Azul Mate/Turquesa
+(MLA3167788510, stock 2), Transparente/Gris (MLA3167853198, stock 3). Precio $118.890 uniforme, cada
+una publicación separada (variation_code NULL en las 3, mismo patrón que Kona MAG).
+
+Grabado físico: "Leñas2 MAG RX Col.01 52□18-140" confirma calibre/puente/varilla exacto.
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP — 6 colores (col01-06), sólo 3 activos en ML (01,02,05).
+Placas generadas y subidas a Storage sin alertas geométricas.
+
+**`catalog-loader` + `seo-strategist` consultados (ambos GO)**: SKU `LENAS2-MAG-...` pegado.
+sort_order = criterio combinado Maceio+Kona MAG (stock descendente, color clásico como desempate en
+empate — primer caso mixto del catálogo). `hinge_system: "flex"` (Visyfit, no el de Kona MAG).
+`"magnetic": true` + callout, mismo patrón. SEO: sin canibalización real contra Leñas original/Hover/
+Woxi; hallazgo clave: Leñas 2 MAG es casi un gemelo de Maceio (mismo segmento chico monofocal RX
+Mormaii) — diferencia real es material (poliamida vs Grilamid) + imán, hay que nombrarla explícita en
+cross-links. Diferenciador de meta_title: "monofocal" gana sobre "magnético" (misma lógica de
+honestidad que Maceio). Nota de desambiguación: nunca "Leñas" a secas, siempre "Leñas 2 MAG" completo
+(para no confundir con el original ni con el futuro "Leñas 3 Magnetic").
+
+Seed 140 aplicado con OK del founder ("si aplica"). Verificación SELECT: `variantes=3,
+con_item_ml=3/3`, cada SKU con su propio `mercadolibre_item_id` y `variation_code` NULL correcto (3
+publicaciones separadas). Peso agregado a BACKLOG.md junto con el resto de la lista.
+
+**PDP en vivo**: no verificada todavía en esta sesión (misma ventana de caché ISR de 5 minutos ya
+documentada en LEARNINGS.md). **Próximo paso exacto**: la próxima vez que se toque el catálogo,
+chequear la PDP + grid `/anteojos-de-receta/mormaii` en vivo y comparar escala de imagen contra el
+resto del grid (el sync con ML y los datos ya están 100% confirmados).
+
+**Estado de la línea MAG hasta ahora**: 2 de 3 modelos anticipados por el founder ya cargados (Kona
+MAG seed 139, Leñas 2 MAG seed 140). Falta "Leñas 3 Magnetic" — ya se vio su publicación de ML de
+pasada durante la búsqueda de Leñas 2 (3 colores: 01 Negro Mate, 02 Azul Mate/Turquesa, 04
+Transparente/Azul, precio $118.890), pero no se cargó todavía — es un modelo DISTINTO a Leñas 2 MAG,
+no asumir que ya está resuelto.
+
+### ✅ Cargado y live: Mormaii Kona MAG (receta) — CERRADO, sincronizado con ML desde el arranque
+
+Primer modelo MAG (magnético) del catálogo. Investigué qué significa "MAG" en Mormaii (imanes en la
+patilla para colgar de la ropa o adherir a superficies metálicas — NO es sistema de cambio de lentes)
+y lo guardé en memoria persistente (`mormaii-mag-magnetico.md`) porque el founder avisó que van a
+venir más modelos MAG y no quiere tener que re-explicarlo.
+
+**Link de ML era un catálogo (`/up/MLAU...`), ignorado per regla `ml-nunca-mapear-catalog-listing`** —
+encontré las 3 publicaciones tradicionales reales del vendedor buscando "kona" por título (API
+autenticada): son 3 ítems SEPARADOS de 1 color cada uno (no multi-variación, `variation_code` va NULL
+en los 3): Negro Mate (MLA3164052828, stock 2), Azul Mate (MLA1739231257, stock 2), Transparente/Azul
+(MLA1739218673, stock 1). Precio $110.030 uniforme, sin centavos.
+
+Medidas 134/17/55/40or47/140 — el founder distinguió explícito alto de LENTE (40mm) vs alto TOTAL del
+armazón (47mm), algo que no había pasado antes. Confirmé contra PRODUCT_SCHEMA.md que `lens_height_mm`
+es la altura de la APERTURA del lente (línea 78), así que usé 40, no 47 — a validar con
+`catalog-loader`. Grabado físico: "Kona MAG RX Col.01 55□17-140" confirma calibre/puente/varilla
+exacto, sin conflicto. interoptica.com.ar confirma los mismos valores con su mislabeling habitual
+(rotación de 3 campos esta vez, no sólo 2 — Calibre/Ancho total/Largo de patilla todos corridos).
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP — 6 colores (col01-06), sólo 3 activos en ML (01,02,05).
+Placas generadas y subidas a Storage sin alertas geométricas (2×55+17=127 vs 134, 7mm de margen). Se
+alcanza a ver el imán de la patilla en las fotos de frente.
+
+**`catalog-loader` + `seo-strategist` consultados (ambos GO)**: `"magnetic": true` a nivel producto +
+callout propio explicando qué hace el imán (no reemplaza el sistema de cambio de lentes de otras
+marcas). `lens_height_mm`=40 confirmado (apertura del lente, no alto total del armazón). SEO: "anteojos
+con imán" tiene volumen real (170-260/mes) pero el SERP actual es de OTRO producto (lectura de kiosco
+plegable, clip-on 2-en-1 con imán en el puente) — usarlo como keyword primaria traería tráfico de
+intención equivocada; va como diferenciador honesto en meta_title/copy, nunca "cuadrado" (ya lo tienen
+Ancara2 y Leñas). Cross-links específicos: Kona MAG↔Leñas (mismo cuadrado unisex, con/sin imán) y Kona
+MAG↔Hover (imán vs clip-on, para no confundir mecanismos). **Criterio sentado para los próximos MAG**
+(Traful Magnetic, Swap NG 2 Magnetic, Leñas 3 Magnetic, Asana Magnetic) documentado en el propio seed
+139 — no hace falta re-auditar desde cero la próxima vez.
+
+Seed 139 aplicado con OK del founder ("si aplica"). Verificación SELECT: `variantes=3,
+con_item_ml=3/3`, cada SKU con su propio `mercadolibre_item_id` distinto y `variation_code` NULL
+correcto (3 publicaciones separadas, no multi-variación — confirmado, no es un NULL por error). Peso
+agregado a BACKLOG.md junto con el resto de la lista.
+
+**PDP en vivo**: no verificada todavía en esta sesión (misma ventana de caché ISR de 5 minutos ya
+documentada en LEARNINGS.md con Monterrey 2/Madri — no hace falta perseguirla activamente).
+**Próximo paso exacto**: la próxima vez que se toque el catálogo, chequear la PDP + grid
+`/anteojos-de-receta/mormaii` en vivo y comparar escala de imagen contra el resto del grid antes de
+dar por cerrada la verificación visual (el sync con ML y los datos ya están 100% confirmados).
+
+### ✅ Cargado y live: Mormaii Madri (sol) — CERRADO, sincronizado con ML desde el arranque
+
+Octavo Mormaii de sol. Cuadrado, HOMBRE (esta vez sin conflicto — founder Y el atributo GENDER/
+FILTRABLE_GENDER de ML coinciden en "Hombre", a diferencia de Monterrey 2). Poliamida (founder + ML
+FRAME_MATERIAL coinciden). Item real de ML (MLA1450215419) traído vía `scripts/ml-item.ts` ANTES de
+research: 3 variaciones — Negro Brillo/Gris Oscuro (184887337283, stock 1), Negro Mate/Gris Oscuro
+(184887337285, stock 2), Negro Mate-Caqui/Marrones (184887337287, stock 1). Mismo hallazgo que
+Monterrey 2: `ml-item.ts` no distingue bien el color cuando hay varios atributos de color separados
+(acá `LENS_COLOR`/`TEMPLE_COLOR`/`FRAME_COLOR`) — usé de nuevo un script one-off
+(`scripts/tmp/ml-detalle-madri.ts`, ya borrado) para desambiguar Negro Brillo vs Negro Mate (ambos
+"Lentes gris oscuro" en el color que sí detecta el script base).
+
+Medidas 145/19/53/48/135 (founder, faltaba alto en la imagen) sin conflicto de VALORES con
+interoptica.com.ar (mismos 4 valores que sí trae, con "Calibre"/"Ancho total" invertidos — mismo
+patrón de mislabeling ya visto en Maceio/Monterrey2). Grabado físico: "Madri SN Col.06 Cat.03 UV400"
+confirma cat.3/UV400. Precio $116.024,04 con centavos (mismo patrón ya visto en San Juan/Monterrey2).
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP — 7 colores (col01-07), sólo 3 activos en ML (01,02,06 →
+confirmado por comparación visual, incluido zoom al grabado del color 06). Placas generadas y subidas
+a Storage sin alertas geométricas (2×53+19=125 vs 145, 20mm de margen).
+
+**`catalog-loader` + `seo-strategist` consultados (ambos GO)**: SKU/frame_color de Col.06 completo
+("negro-mate-caqui", no abreviado). `SELLER_PACKAGE_WEIGHT=155g` de ML confirmado como peso de
+paquete, no de armazón — descartado, va a BACKLOG.md. Agregados `lens_material`, `temple_material`,
+`hinge_system`, `includes` Mormaii, `lens_category` top-level, `warranty_months` al JSONB (faltaban en
+mi borrador inicial). SEO: 4to Mormaii "cuadrado+hombre" en sol (Curazao, San Juan, Monterrey2, Madri)
+— mismo criterio que Monterrey2, "cuadrado" fuera de meta_title/H1, el nombre branded alcanza sin
+forzar diferenciador (medidas casi idénticas a Monterrey2, sin ángulo real distinto). "Madri" vs
+"Madrid": contaminación geográfica mínima (sin coincidencia exacta de grafía, a diferencia de San
+Juan), pero igual nunca suelto sin "Mormaii" por consistencia.
+
+Seed 138 aplicado con OK del founder ("si aplica"). Verificación SELECT: `variantes=3,
+con_item_y_var_ml=3/3`, precio/stock correctos por variante. Peso agregado a BACKLOG.md junto con el
+resto de la lista.
+
+**PDP en vivo**: no verificada todavía en esta sesión — a los 24 segundos de aplicado seguía dando la
+página 404 genérica, esperable dentro de la ventana de ISR de 5 minutos ya confirmada y documentada en
+LEARNINGS.md (no se re-chequeó para no repetir la espera activa turno a turno). **Próximo paso
+exacto**: la próxima vez que se toque el catálogo, chequear la PDP + grid `/anteojos-de-sol/mormaii`
+en vivo y comparar escala de imagen contra el resto del grid antes de dar por cerrada la verificación
+visual (el sync con ML y los datos ya están 100% confirmados por SELECT, sólo falta el chequeo
+visual).
+
+### ✅ Cargado y live: Mormaii Monterrey 2 (sol) — CERRADO, sincronizado con ML y verificado en vivo
+
+Anteojo de sol cuadrado/robusto para HOMBRE (founder explícito), poliamida genérica (NO Grilamid),
+bisagra plástica reforzada, polarizado + UV400 cat.3 (default del catálogo, confirmado también por
+founder). Item real de ML (MLA1566300299) traído vía `scripts/ml-item.ts` ANTES de research: 3
+variaciones activas — Negro Mate/Lentes Gris Oscuro (186523847106, stock 1), Azul Mate/Espejadas
+Celeste (186523847108, stock 2), Negro Mate-Habano/Lentes Marrones (186523847110, stock 2).
+
+**Hallazgo técnico**: `ml-item.ts` no mostró el color de ninguna variación ("sin color") porque el
+atributo de ML para este ítem se llama `DESIGN` no `COLOR` — el regex del script sólo busca `/color/i`
+en `id`/`name`. Tuve que escribir un script one-off (`scripts/tmp/ml-detalle-monterrey.ts`, ya
+borrado) para traer `attribute_combinations` completo y sacar el color real. Posible mejora futura del
+script (no aplicada ahora): ampliar el regex a `/color|diseñ|design/i`.
+
+Precio ML con CENTAVOS ($120.904,44) — inusual, el resto del catálogo siempre tuvo precios redondos.
+No lo redondeé, cargo el valor exacto de la API (12090444 centavos) — a confirmar con `catalog-loader`
+si hay algún precedente de redondeo que no conozca.
+
+Medidas 141/16/58/44/129 (founder, faltaba ancho total en la imagen, lo pasó a mano) sin conflicto de
+VALORES con interoptica.com.ar (mismos 4 valores que sí trae, con "ancho total" mal etiquetado —
+mismo patrón de mislabeling ya visto con Maceio). Grabado físico en la patilla: "Monterrey2 SN Col.02
+Cat.03 UV400" — confirma cat.3/UV400 y también confirma la grafía "Monterrey" con doble r (igual que
+ML y el founder; interoptica usa "Monterey" con una sola r SOLO en su URL, probable typo de ellos).
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP — 6 colores (col01-06), sólo 3 con variación activa en ML
+(02, 04, 06 → confirmado por comparación visual). Placas generadas y subidas a Storage sin alertas
+geométricas (2×58+16=132 vs 141, 9mm de margen).
+
+**`catalog-loader` + `seo-strategist` consultados (ambos GO con ajustes)**: slug corregido de
+`mormaii-monterrey-2-sol` a `mormaii-monterrey-2` (0/6 Mormaii de sol usan sufijo `-sol` en este
+catálogo — tuve que borrar y resubir las 7 fotos que ya había subido con el slug malo). sort_order
+ascendente por Col.0X (Negro/Gris primero pese a tener menos stock, criterio maduro de Traful/Leñas).
+Precio con centavos ($120.904,44) re-confirmado 2 veces con la API — coincide exacto con San Juan
+(seed 128), no es error de copia, se carga literal. `seo-strategist` había propuesto reclasificar la
+forma a "rectangular" para evitar canibalizar "cuadrado hombre" (ya reclamado por Curazao/San Juan) —
+verifiqué el atributo `FRAME_SHAPE` real de ML (script one-off `scripts/tmp/ml-attrs-monterrey.ts`, ya
+borrado) y es "Cuadrado" sin ambigüedad, así que se respeta; el meta_title/H1 igual no menciona la
+forma, evitando la canibalización sin forzar una reclasificación no confirmada. Género "hombre" del
+founder gana sobre el "Sin género" genérico de ML (mismo criterio que Moorea).
+
+Seed 137 aplicado con OK del founder ("si aplica"). Verificación SELECT: `variantes=3,
+con_item_y_var_ml=3/3`, precio/stock correctos por variante. Peso no disponible (ni ML ni interoptica)
+— agregado a `BACKLOG.md` junto con Traful/Leñas/Maceio (que también habían quedado sin esa entry en
+su momento, ya corregido).
+
+**Confirmación del patrón de caché (dato nuevo, útil para la próxima vez)**: Juan reportó "no aparece
+el Monterrey" ~5 minutos después de aplicado el seed — confirmé por SELECT que el producto seguía
+100% correcto en DB (no era un bug de datos), medí el tiempo exacto transcurrido
+(`now() - created_at` = 00:05:01, justo en el borde de `revalidate=300` de Next.js ISR) y al reintentar
+la navegación INMEDIATAMENTE después de cruzar esa ventana, apareció andando perfecto (grid + PDP,
+ambos verificados con screenshot). Confirma que el patrón "404/ausente en el primer rato post-seed" de
+esta sesión (Hover, Traful, Maceio) es 100% caché de ISR de 5 minutos, nunca un bug real — con
+paciencia (o esperando el ISR window) se resuelve solo. Verificación visual completa: PDP con foto,
+precio, ficha técnica correctos; grid con escala de imagen consistente contra Daito/Joaca4/San Juan
+(sin necesidad de entry en `image-scale-overrides.ts`).
+
+### ✅ Cargado y live: Mormaii Maceio RX — CERRADO, sincronizado con ML desde el arranque (PDP pendiente de verificación visual por caché)
+
+Armazón de receta rectangular, unisex, talle CHICO orientado a lectura (founder: "ideal para anteojo
+de cerca lectura, por su tamaño"). Item real de ML (MLA1450571981) traído vía `scripts/ml-item.ts`
+ANTES de escribir el seed: 5 variaciones — Verde Mate (184928710047, stock 2, única con stock real),
+Negro Mate/Azul Brillo/Transparente Cristal/Gris Translúcido-Azul (las 4 en stock 0, se sincronizan
+solas con el cron horario). Precio $111.030.
+
+Medidas 137/19/55/31/136 (imagen del founder) confirmadas por interoptica.com.ar (mismos 5 valores,
+con "Calibre"/"Ancho total" invertidos en sus labels — no conflicto de VALORES) y por grabado físico
+en la patilla: "Macelo RX Col.01 55□19-136" (typo de fábrica, dice "Macelo" con L — el nombre real del
+modelo sigue siendo Maceio en ML/interoptica/founder, no se cambió).
+
+**Compatibilidad de lentes — decisión del founder, no asumida**: alto de lente 31mm (25-30% menos que
+el resto del catálogo Mormaii RX). `optical-expert` consultado: no es bloqueo tan tajante como Woxi,
+pero está en el límite para progresivos (mínimo recomendado ~30-33mm). Se le preguntó explícito al
+founder cómo cargarlo — eligió el criterio más restrictivo: **sólo monofocal, sin mencionar
+alternativa** (mismo patrón categórico que Rusty Woxi). `lens_compatibility: ["monofocal"]`.
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP — carpeta limpia, sin duplicados/legacy (a diferencia de
+Leñas). 5 colores activos con perfil+frente reales ~2300×2300px cada uno; el 6to color del Dropbox
+(col05, Durazno/beige) no tiene variación activa en ML, se descartó del seed.
+
+**`optical-expert` + `catalog-loader` + `seo-strategist` consultados antes de aplicar (los 3 GO)**:
+`frame_material: "grilamid"` (3er precedente del catálogo). "Rectangular" fuera de meta_title/H1 —
+`seo-strategist` corrigió una premisa mía (Ancara2 es cuadrado y Moorea envolvente, no rectangulares;
+el carril real lo tienen Rusty R-CY 02/Woxi) y usó "monofocal" (170/mes, sin dueño) como diferenciador
+real en su lugar. `weight_grams` no disponible (ni ML ni interoptica) — anotado en BACKLOG.md junto
+con Traful y Leñas (que también habían quedado sin esa entry, corregido en este turno).
+
+Seed 136 aplicado con OK del founder ("si aplica"). Verificación SELECT: `variantes=5,
+con_item_y_var_ml=5/5`. **PDP en vivo pendiente**: 4 intentos de navegación directa dieron 404 pese a
+confirmar por SELECT que `products.is_active=true`, `brand.is_active=true`, `category.is_active=true`
+— mismo patrón de caché de Vercel/CDN en primer hit ya documentado esta sesión (Hover, Traful), pero
+esta vez más persistente que las otras veces (no se resolvió en ~10min de reintentos). Reintentar la
+verificación visual en la próxima sesión o cuando pase más tiempo — la carga en sí está completa y
+verificada por los medios que sí están bajo control (DB + sync ML).
+
+### ✅ Bug corregido: galería de Mormaii Borneo mostraba medidas primero en las 2 variantes espejadas — CERRADO
+
+Juan reportó que, al elegir Espejada Celeste o Espejada Verde (variantes agregadas en el seed 134) en
+la PDP, la galería mostraba la placa de MEDIDAS primero. Causa raíz (confirmada por agente `Explore`
+leyendo `components/product/product-gallery.tsx`): la lógica de `sortImages()` es correcta (ordena por
+`sort_order` global dentro del subconjunto filtrado por variante) — el dato mal ubicado fue `medidas.jpg`
+en `sort_order=4`, MENOR que el de las 2 variantes nuevas (5-8), así que caía primero dentro de SU
+subconjunto filtrado. Fix aplicado: `UPDATE product_images SET sort_order=9` (al final de toda la
+secuencia del producto). Verificado en vivo con la variante Espejada Celeste — perfil aparece primero.
+Entry completa en `MISTAKES.md` con la regla preventiva: cualquier imagen compartida (`variant_id
+NULL`) debe recalcularse al `sort_order` MÁS ALTO del producto cada vez que se agregan variantes
+nuevas después, nunca "dejarla donde está".
+
+### ✅ Cargado y live: Mormaii Leñas (receta) — CERRADO, sincronizado con ML desde el arranque
+
+Armazón de receta cuadrado, unisex, mismo material/bisagra que Traful (Grilamid, bisagra "Visyfit"
+flex). Item real de ML (MLA1566528083) traído vía `scripts/ml-item.ts` ANTES de escribir el seed
+(lección `feedback-ml-sync-obligatorio-siempre.md`): 4 variantes con var_id reales desde el arranque —
+Negro Brillo (192245239355, stock 1), Negro Mate (192245239357, stock 1), Gris Translúcido/Turquesa
+(192245239359, stock 1), Azul Brillo (192245239361, stock 3). Precio uniforme $111.030.
+
+Medidas 135/18/51/42/140 (alto 42 lo pasó Juan a mano, faltaba en la imagen) sin conflicto con
+interoptica.com.ar ni con el grabado físico leído en la foto de mayor resolución del color 01
+("Leñas col.01 51□18-135 (4").
+
+**Fotos**: Dropbox bajado COMPLETO como ZIP desde el arranque (mismo patrón que Traful/Borneo) —
+carpeta desordenada con subcarpetas duplicadas/legacy, se identificaron los 4 archivos raíz de mayor
+resolución (6123×4082px) como canónicos. Ninguno de los 4 colores tiene foto de frente (gap real del
+distribuidor, mismo caso que 3 de los 5 colores de Traful). 1 sola imagen (perfil) por color + 1 placa
+de medidas compartida en `sort_order=4` (última de la secuencia — no reproduce el bug de Borneo de
+arriba, porque acá ninguna variante tiene `sort_order` mayor al de la imagen compartida).
+
+**`catalog-loader` + `seo-strategist` consultados antes de aplicar (GO ambos)**: sort_order=1 se quedó
+en Negro Brillo (color neutro por defecto, mismo criterio que Traful, no por cantidad de stock).
+`frame_color` del color 03 = "gris-translucido-turquesa" completo. SEO: "mormaii lenas" primaria sin
+riesgo; el carril "cuadrado unisex/hombre receta" ya lo tienen Rusty Zinz Optics/Peating Carey y
+Mormaii Ancara2 lo sacó de su title/H1 por el mismo motivo — mismo criterio acá: meta_title usa
+"Grilamid" como diferenciador en vez de "Cuadrado" (que sí queda en meta_description/frame_shape).
+
+Seed 135 aplicado con OK explícito del founder ("si aplicar"). Verificación SELECT: `variantes=4,
+con_item_y_var_ml=4/4`. Verificado en vivo: PDP completa (ficha técnica, 4 variantes con stock/precio
+correctos, breadcrumb, cross-links a familia receta Mormaii + similares). Grid de marca tardó el
+ISR window habitual (revalidate=300s) en mostrarlo — mismo patrón transitorio ya documentado con
+Hover/Traful, no es bug.
+
+### ✅ Cargado y live: Mormaii Borneo — 2 variantes espejadas agregadas (Celeste, Verde), CERRADO
+
+Juan pidió agregar 2 colores nuevos al Borneo ya cargado (seed 123: BR Negro, MT Negro). Publicación
+de ML nueva y separada (MLA1538574018, multi-variación) — item real traído ANTES de escribir el seed
+(lección aplicada sin que Juan tuviera que pedirlo esta vez): Espejada Celeste (stock 3) y Espejada
+Verde (stock 2), mismo precio ($122.290) que las 2 originales. Mapeo confirmado por grabado físico en
+fotos 5000×3300 ("Col.04"/"Col.07"). Medidas reusadas del producto existente (mismo molde) — la
+alerta geométrica de 2mm de margen es la misma ya avalada por `optical-expert` en la carga original,
+no se re-investigó. Reescribí `description`/`short_description` completos (el texto original decía
+"2 variantes" en 2 lugares) y también corregí un callout viejo que había quedado sin actualizar
+("Las 2 variantes son polarizadas" → "Las 4"). Seed 134 aplicado con OK del founder, verificado con
+SELECT (`variantes=4, stock_total=6, imgs=9, con_item_y_var_ml=4`) y en vivo (grid proporcionado,
+las 4 variantes con precio/stock correctos).
+
+### ✅ Cargado y live: Mormaii Traful (receta) — CERRADO, sincronizado con ML desde el arranque
+
+Armazón de receta redondo tipo "panto", unisex, Grilamid, bisagra metálica flex "Visyfit" italiana.
+Medidas 135/21/48/44/140 confirmadas por 3 fuentes sin conflicto: founder (imagen + alto=44 a mano),
+interoptica.com.ar (mismos 4 valores) y grabado físico legible en la foto de mayor resolución de toda
+la sesión (6123×4082px): "Traful col.01 48□21-135 (4" (el "(4" es Base 4, coincide con interoptica).
+
+**Lección de Hover aplicada desde el arranque**: se trajo el item real de ML (MLA1502989751) vía
+`scripts/ml-item.ts` ANTES de escribir el seed — multi-variación (5 colores), con stock/precio/var_id
+reales de cada uno. Las 5 variantes quedaron con `mercadolibre_item_id` + `mercadolibre_variation_code`
+correctos desde la primera aplicación, verificado con SELECT antes de mostrarle la ficha a Juan
+(`con_item_y_var_ml=5`). Juan insistió en este punto ("SI O SI, paso extremadamente importante") —
+guardado como memoria permanente (`feedback-ml-sync-obligatorio-siempre.md`).
+
+**Colores — 5 con stock real de ML** (interoptica.com.ar sólo tiene 1 color publicado, "Humo", que no
+coincide con ninguno de los 5 de ML — se usa ML como fuente de verdad de qué cargar): Negro Brillo
+(stock 3, primario), Negro Mate (stock 3), Azules (stock 3), Azul Mate Turquesa (stock 2),
+Transparente Cristal (stock 0). Precio $111.030 los 5.
+
+**Hallazgo de research, resuelto proactivamente**: el listado paginado de la carpeta de Dropbox
+mostraba sólo col01-13, pero ML tenía un color "C016" que no encajaba ahí — se bajó la carpeta
+COMPLETA como ZIP (sin login) y aparecieron col14-17. Mismo problema que la foto perdida de Hover,
+esta vez resuelto sin que Juan tuviera que intervenir. Entry en `LEARNINGS.md`.
+
+**Fotos**: reales de cámara, muy alta resolución (hasta 6123×4082px). 3 de los 5 colores (Negro
+Brillo, Negro Mate, Azules) sólo tienen foto de PERFIL en el Dropbox del distribuidor — confirmado
+con el ZIP completo, gap real de contenido, no de research; `catalog-loader` confirmó no inventar un
+frente que no existe. Los otros 2 (Transparente, Azul Mate Turquesa) tienen perfil+frente completos.
+
+**`catalog-loader` + `seo-strategist` consultados antes de aplicar**: `frame_material: "grilamid"`
+(primer precedente del catálogo, distinto de "poliamida" genérica — Grilamid es material de marca
+EMS-Grivory), `hinge_system: "flex"` con "Visyfit" en el texto. SEO: GO, sin volumen medible para
+"mormaii traful"/"panto"; riesgo de canibalización con "anteojos redondos" (ya reclamada por Rusty
+Ther) evitado usando forma como soporte de copy, nunca primaria — mismo criterio que Misty/Kirt.
+
+Seed 133 aplicado con OK del founder ("dale, aplicalo"). Verificación SELECT: `variantes=5,
+stock_total=11, imgs=8, con_item_y_var_ml=5`. Verificado en vivo: PDP completa, ficha técnica
+correcta, precio $111.030 (el "$109.484" visto en un primer read era un frame intermedio de la
+animación de conteo del precio, no un bug — confirmado que estabiliza al valor real). Grid
+proporcionado contra Moorea/Ancara2/Hover, sin necesidad de scale override.
+
+**Próximo paso exacto**: no queda tarea abierta de Traful.
+
+### ✅ Auditoría completa de sync ML + 3 fixes reales (2026-09-29, a pedido de Juan)
+
+Juan reportó 3 cosas después del cierre de Hover: foto de mala calidad, "tampoco está sincronizado
+con ML", y pidió explícito auditar TODOS los productos. Se hizo con un script propio
+(`scripts/tmp/ml-auditoria-completa.ts`) que usa el token OAuth real ya guardado en
+`marketplace_integrations` (la API pública de ML bloquea accesos anónimos con 403 `PolicyAgent` —
+confirmado, no es específico de este entorno) para traer el estado REAL de cada item mapeado y
+compararlo contra la DB, replicando el mismo algoritmo de matching de variaciones que usa
+`sync-stock.ts` en producción (3 formatos: `id`, `seller_custom_field`, `DESIGN/COLOR` parseado).
+
+**Resultado de los 321 variantes activas con `mercadolibre_item_id`**: 286 sincronizando perfecto, 0
+drift de stock/precio. 29 con el item ML pausado por stock=0 (comportamiento normal de ML, pausa
+sola, no es bug). 5 con el item pausado pero CON stock disponible en ML (raro — venta potencialmente
+perdida, no es bug de sync, es una decisión pendiente de Juan sobre esas publicaciones puntuales,
+anotado en `BACKLOG.md`). **1 bug real de mapping: Mormaii Hover.**
+
+**Bug real encontrado**: el item `MLA1499575251` de Hover resultó ser MULTI-VARIACIÓN (2 colores
+publicados bajo la misma publicación: Col.05 Negro-Azul y Col.01 MT Negro-Gris) — al cargar el
+producto se asumió que era una publicación single-item (mismo patrón que el resto de esta sesión) y
+se dejó `mercadolibre_variation_code = NULL`. Sin ese código, el sync SIEMPRE salteaba la fila (no
+matchea ninguna rama del algoritmo). Corregido: `188079985365` para Negro-Azul, `188079985363` para
+MT Negro-Gris (agregado como variante mapeada nueva, stock 0 en ML).
+
+**Joaca 4 — resuelto, contra lo que yo mismo había dicho antes**: había dicho que no se podía
+sincronizar porque el único link que dio Juan era de catálogo ("up", pide login). Con acceso
+autenticado (mismo mecanismo de arriba) se pudo BUSCAR las publicaciones reales del vendedor por
+título ("joaca") sin necesitar que Juan pase ningún link — aparecieron 2 activas: BR Negro
+(`MLA1909865590`) y Gris (`MLA1909839706`, confirmada por foto — mismo armazón mate que ya tenía
+cargado). Gris tenía stock=0 en el sitio pero stock=1 real en ML — corregido (regla: gana el stock de
+ML). Las otras 4 variantes de Joaca 4 siguen sin publicación real en ML (no aparecieron en la
+búsqueda), coincide con lo que dijo Juan originalmente.
+
+**Foto de Hover Negro-Azul corregida**: Juan pasó el link directo a `MO_Hover_col05_RX_Lateral.jpg`
+en el Dropbox — el archivo SÍ existe (nunca se supo por qué no apareció en el listado de la carpeta
+la primera vez que se escaneó, posible virtualización de la página). Reemplazada la placa de perfil
+por la versión limpia.
+
+**Medidas corregidas, hallazgo nuevo**: con la foto limpia se pudo leer el grabado físico de la
+patilla por primera vez con claridad — "Hover Col.05 54⬜16-142" — calibre 54 (no 58) y varilla 142
+(no 132); el puente 16 sí coincide con lo que había dicho Juan y con interoptica.com.ar. Confirmado
+con 3 zooms independientes, lectura consistente. Geometría más sana con 54 (14mm de margen) que con
+58 (6mm). **Consultado con Juan antes de aplicar** (contradecía lo que él mismo había pasado) —
+confirmó actualizar. `products.attributes.measurements` + alt_text de la placa de medidas + seed
+fuente, los 3 corregidos y verificados en vivo.
+
+**3 entries nuevas en `MISTAKES.md`**: (1) asumir que el item de Hover era single-item sin verificar
+contra la API real antes de aplicar; (2) decirle a Juan que Joaca 4 "no se podía sincronizar" sin
+haber probado la búsqueda por título con el acceso autenticado que ya tenía disponible; (3) dar por
+buena una lectura de grabado ambigua/borrosa en vez de conseguir una foto que permitiera leerla bien
+antes de cargar las medidas.
+
+### ✅ Cargado y live: Mormaii Hover (receta + clip-on) — CERRADO, primer producto clip-on del catálogo
+
+Armazón de receta con clip-on que se engancha por la zona nasal (mecanismo "abatible" con tapa flip
+integrada). Medidas 138/16/58/39/132 — imagen del founder coincide exacto con la ficha de
+interoptica.com.ar, sin conflicto entre fuentes (intenté un cruce por grabado físico en una foto
+compuesta de baja resolución del distribuidor, lectura ambigua, descartado frente a las 2 fuentes que
+sí coinciden). Precio $133.500 (founder). Material poliamida confirmado por Juan.
+
+**Colores**: 5 variantes reales (MT Negro-Gris, Gris, Azul, Negro-Rojo, Negro-Azul), confirmadas por
+`data-product_variations` de interoptica.com.ar — sólo Negro-Azul (clip espejado celeste) con stock
+real, coincide con lo que dijo Juan. Mismo patrón de "6 colores en el texto, 5 con SKU real" que
+Joaca 4.
+
+**Primer clip-on del catálogo — modelado según `catalog-loader`**: `clip_on` anidado en `attributes`
+(no `polarized`/`lens_treatment` a nivel top, que hubiera disparado por error el filtro `/polarizados`
+y el comparador) + callout de separación armazón/clip-on con la frase de `optical-expert` ("el
+armazón es 100% de receta, el cristal graduado no lleva filtro solar propio — la protección solar es
+exclusiva del clip-on"). Cero código nuevo (mismo criterio que infantil/blue_light).
+
+**`seo-strategist`**: GO, sin canibalización con Moorea/Ancara2. Hallazgo: "clip on para anteojos
+recetados" tiene volumen real (260/mes, diff 6) sin nadie reclamándolo — territorio propio. Slug
+`mormaii-hover`, meta ya aplicados.
+
+**Decisión de presentación consultada con Juan**: le pregunté si la foto primaria debía mostrar el
+armazón CON el clip puesto (diferenciador, pero la única foto disponible para Negro-Azul) o el
+armazón SOLO (consistente con el resto del catálogo de receta) — eligió **armazón solo**. Como
+Negro-Azul no tenía foto de perfil del armazón solo en el Dropbox, se recortó de una foto compuesta
+del propio distribuidor (interoptica.com.ar) — menor resolución (1080px vs 2000-3400px del resto)
+pero real, no generada. Se ve bien en la PDP verificado en vivo. Galería final: 3 fotos por variante
+(perfil armazón solo, frente armazón solo, clip puesto) + medidas.
+
+**mercadolibre_item_id**: a diferencia de Joaca 4, el link que dio Juan para Hover ERA un item
+directo (`articulo.mercadolibre.com.ar/MLA-1499575251-...`, no un link de catálogo "up") — se pudo
+extraer el código real de la URL sin necesitar acceso a ML. Sincronizado en la variante Negro-Azul.
+
+**Investigación de sync con ML (a raíz de la pregunta de Juan "espero que todos los productos estén
+sincronizados con ML y usando la API")**: confirmado que la integración SÍ está viva en producción
+(`README.md` y ADR-024 en `DECISIONS.md` decían "Sprint 2/3 pendientes" desde mayo, estaban
+desactualizados — corregidos). OAuth activo, token refrescándose solo, crons `ml-reconcile-stock` +
+`ml-ventas` corriendo cada hora. Cobertura real: 321/328 variantes activas (98%) sincronizan. Gap de
+7 (las 6 de Joaca 4 sin item ML + Vulk The Trial SKU 968279, preexistente) anotado en `BACKLOG.md`.
+
+**Seed 132 aplicado con OK del founder ("Dale, aplicalo")**. Verificación SELECT: `variantes=5,
+stock_total=1, imgs=16, con_item_ml=1`. Verificado en vivo: PDP completa (callouts, ficha técnica,
+badge "¡Última unidad!"), grid proporcionado vs Moorea/Ancara2. **Fix post-aplicación**: la card del
+grid mostraba por defecto MT Negro Gris (sin stock) en vez de Negro Azul (con stock) — corregido
+reordenando `sort_order` de variants e images para que la variante con stock vaya primera (mismo
+criterio que Joaca 4 BR Negro), verificado con SELECT tras el fix. El grid tarda hasta 5 min en
+reflejar el reorder (ISR `revalidate=300`), confirmado en DB aunque no se vio instantáneo en pantalla.
+
+**Próximo paso exacto**: no queda tarea abierta de Hover. Pendiente de Juan (no bloqueante): item MLA
+de Joaca 4 BR Negro, para cerrar el gap de sync de 7 variantes.
+
+### ✅ Cargado y live: Mormaii Joaca 4 (sol) — CERRADO en el sitio, falta item ML de BR Negro
+
+Anteojo de sol envolvente deportivo. Juan pasó medidas por imagen (61 calibre / 17 puente / 138 ancho
+/ 120 varilla) + alto total 46mm a mano (dato que faltaba en la imagen) + Cat 3/UV400/polarizados.
+Sólo tiene stock real de 1 unidad del color BR Negro (link ML: `mercadolibre.com.ar/.../up/
+MLAU1172914382` — es un link de catálogo "up", no el item directo, y ML pide login así que no pude
+entrar a sacar el `mercadolibre_item_id` real ni verificar atributos/precio desde ahí).
+
+**Colores**: el fabricante (interoptica.com.ar, mismo distribuidor de otros Mormaii del catálogo)
+tiene 8 colores en el selector pero sólo 6 con variación real (`data-product_variations` del form
+WooCommerce, JSON con SKU/stock/imagen por color — método más confiable que simular clicks, ver
+`LEARNINGS.md`): BR Negro (col01), MT Negro (col02), Negro-Rojo (col03), Negro-Azul (col04), Humo
+(col06), Gris (col08). Azul y Negro-Verde (col05/col07) figuran discontinuados sin variación válida.
+Le pregunté a Juan si cargar los 6 activos o los 8 del Dropbox — eligió **los 6 activos**: BR Negro
+con stock 1, el resto en stock 0 (mismo patrón que "cargar todas las variantes aunque estén en 0").
+
+**Fotos**: bajadas del Dropbox del distribuidor (`Interoptica Andina`) para los 6 colores, perfil+
+frente cada una, resolución real de cámara (5000×3300, EXIF Canon EOS M3) — excepto el lateral de
+Gris (col08) que no estaba en el Dropbox, bajado directo de interoptica.com.ar (2000×2000, menor res
+pero utilizable). Grabado físico verificado en 2 fotos (col01 y col08): "JOACA 4 Col.0X Cat.3 UV400"
+— confirma Cat3/UV400 en los 2 colores chequeados, mismo dato que dijo Juan.
+
+**Placas**: generadas las 6 (`pnpm placas --solo 1,2,4`, sólo perfil/frente/medidas para el sitio —
+sin plates de ML ya que no hay publicación nueva que armar, sólo sincronizar el sitio). El script
+tiró la advertencia de siempre por geometría (`2×61+17=139` vs `138` de ancho, -1mm) — mismo tipo de
+alerta que San Juan pero mucho más chica (1mm vs el caso límite de 0mm de San Juan) y ambas fuentes
+(imagen del founder + interoptica) coinciden exacto en los mismos números, así que no hay discrepancia
+real que resolver, es redondeo de fábrica. Contact sheet revisado a ojo: fondo limpio, colores
+distinguibles y bien mapeados a su nombre en los 6.
+
+**Bug de la skill `pnpm placas` encontrado**: la ayuda del comando dice que `--solo` acepta `"web"`
+como valor pero el código nunca lo implementa (sólo reconoce IDs `'1'`-`'6'`) — con `--solo web` no
+tira error, genera 0 archivos silenciosamente. El equivalente real para "sólo perfil+frente+medidas
+del sitio, sin plates de ML" es `--solo 1,2,4`. Entry en `LEARNINGS.md`.
+
+Material del armazón confirmado por Juan: poliamida (interoptica sólo decía "Inyección" como
+proceso, no material — mismo material que San Juan, misma línea deportiva envolvente). Precio
+$122.290 confirmado por Juan mid-turn.
+
+**Revisión de agentes antes de aplicar**: `catalog-loader` encontró 2 hallazgos reales — faltaba
+`mercadolibre_item_id`/`mercadolibre_variation_code` en el `ON CONFLICT` de variants (agregado) y
+faltaba entry de peso pendiente en `BACKLOG.md` (agregado). `seo-strategist` confirmó GO con meta/
+slug sin cambios, pero marcó riesgo de canibalización real con Storm/Borneo (3er envolvente+hombre
+del cluster) — resuelto con el diferenciador real "más colores de la línea" (6) en descripción, sin
+tocar el H1: se descubrió que el sufijo de H1 que documenta `SEO_STRATEGY.md` para Storm/Daito/
+Curazao/Borneo/San Juan (`Marca Modelo — Diferenciador`) **nunca se implementó de verdad** en
+`products.name` (los 5 están planos en la DB) — hallazgo nuevo, entry en `BACKLOG.md`, Joaca 4 quedó
+consistente con el estado real del cluster (name plano). Entry SEO completa agregada a
+`SEO_STRATEGY.md`.
+
+Seed 131 aplicado con OK del founder ("Dale, aplicalo"). Verificación SELECT: `variantes=6,
+stock_total=1, imgs=13`. Verificado en vivo: PDP con foto limpia, breadcrumbs correctos, y el grid
+`/anteojos-de-sol/mormaii` comparado a ojo contra Storm/Borneo/Daito — Joaca 4 se ve proporcionado,
+sin necesidad de scale override (esta vez SÍ se comparó contra el grid real antes de cerrar, lección
+aplicada de K12/K13).
+
+**Pendiente, no bloqueante**: (1) el item ML directo (`MLA...`) de la publicación de BR Negro —
+Juan pasó un link de catálogo ("up") que pide login, así que `mercadolibre_item_id` quedó NULL en
+las 6 variantes; cuando lo pase, sincronizar con un UPDATE puntual. (2) peso del armazón, en
+`BACKLOG.md`. (3) decisión pendiente del founder sobre el hallazgo del H1 no implementado (ver
+`BACKLOG.md`) — no es de Joaca 4 específicamente, es de los 6 productos del cluster.
+
+**Próximo paso exacto**: no queda tarea abierta de Joaca 4 en el sitio. Cuando Juan pase el item MLA
+de BR Negro, hacer el UPDATE de sincronización. Cuando traiga el próximo producto, arrancar leyendo
+este archivo y `MISTAKES.md`.
+
 ### ✅ Cargado y live: Rusty K13 (receta infantil) — CERRADO, segundo producto infantil del catálogo
 
 Segundo producto infantil del catálogo, casi gemelo del K12 (ver entry abajo). Juan pasó ficha del
@@ -72,16 +1356,30 @@ efecto en prod). **Esperando OK explícito de Juan para commitear y pushear** (a
 `image-scale-overrides.ts`) — después reverificar el grid en vivo y ajustar si sigue grande o si
 quedó demasiado chico.
 
-**Próximo paso exacto**: si Juan ya dio el OK, commitear+pushear `image-scale-overrides.ts`, esperar
-el deploy de Vercel, y volver a capturar el grid `/anteojos-de-receta/rusty` (y el grid donde vive el
-K13) para confirmar que ahora se ven proporcionalmente más chicos que los vecinos adultos — ajustar
-escalonado (subir hacia 0.85 si quedó muy chico, bajar hacia 0.65 si sigue grande) según lo que se
-vea. Si todavía no respondió, no tocar el repo — el diff ya está armado y descrito arriba, sólo falta
-confirmación. Una vez cerrado esto sí queda 100% cerrado K12/K13 en los dos canales, y recién ahí
-aplica lo de siempre: cuando Juan traiga el próximo producto, arrancar por leer
+**Actualización 2026-09-29 — deploy confirmado y verificado con medición rigurosa**: Juan dio el OK
+("si"), se commiteó y pusheó `image-scale-overrides.ts` (commit `205510b`). Deploy de Vercel
+confirmado en vivo (`transform:scale(0.75)` presente en el DOM de las 4 imágenes primarias de K12/K13
+vs `scale(1.05)` de Bruice / `scale(1.15)` de Misty). Verificación NO a ojo — mismo método que el
+precedente de Bruice: se midió el bounding box de píxeles no-blancos de cada foto fuente y se
+recalculó el % de relleno renderizado real considerando `object-contain` + el transform aplicado:
+- K12 vs Bruice: 69% de ancho renderizado vs 96% de Bruice → K12 ahora lee visiblemente más chico.
+- K13 vs Misty: 69% ancho / 44% alto vs 95% ancho / 61% alto de Misty → K13 ahora lee más chico en
+  ambos ejes.
+Con estos números el fix ya cumple el objetivo (leerse como "chico/delicado" frente a vecinos
+adultos) — si algo, quedó conservador (podría subir un poco sin perder el efecto). La impresión
+inicial de "el K13 sigue viéndose grande" al mirar la captura fue por el armazón azul oscuro grueso
+(más masa visual/contraste que el aro fino metálico de Misty), no por el tamaño real medido.
+
+**Próximo paso exacto**: pendiente que Juan confirme visualmente en
+`opticacarballo.com.ar/anteojos-de-receta/rusty` si el resultado le cierra o si quiere ajustar más
+(subir hacia 0.85 si lo ve chico, bajar hacia 0.65 si todavía lo ve grande pese a la medición). Si no
+dice nada más, dar el fix por bueno — la medición objetiva ya está del lado seguro. Una vez que Juan
+confirme (o no diga nada más y se considere cerrado), K12/K13 quedan 100% cerrados en los dos
+canales, y recién ahí aplica lo de siempre: cuando Juan traiga el próximo producto, arrancar por leer
 `CURRENT_STATE.md`/`MISTAKES.md` y aplicar directo las plantillas y lecciones ya guardadas en memoria
 de esta sesión (badge infantil, plantilla ML corta, estuche por variante, no adivinar nombres de
-archivo, **y esta vez sí comparar el scale contra el grid ANTES de declarar el cierre**).
+archivo, **y esta vez sí comparar el scale contra el grid — con medición de píxeles, no a ojo — ANTES
+de declarar el cierre**).
 
 ### 🔄 En curso: Rusty K12 (receta infantil) — sitio CERRADO, publicación ML lista con GO del trío auditor, falta que Juan la publique
 

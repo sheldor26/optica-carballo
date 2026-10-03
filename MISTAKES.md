@@ -1,5 +1,16 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-10-03 — Maté con `pkill` el servidor del clicker mientras el founder lo estaba usando; sus marcas se perdieron sin aviso
+
+**Qué pasó:** `pnpm anclas` levanta un servidor local que guarda al apretar "Guardar". Para correr `--copiar-de` hice
+`pkill -f ml-anclas.ts` sin preguntar si el founder tenía la pestaña abierta. Su guardado de la 016 falló en silencio, él
+dijo "ya marqué" y yo regeneré la placa con el archivo viejo (salió igual de mal).
+**Causa raíz:** traté un proceso de ayuda interactiva como si fuera mío y desechable, y no verifiqué que el archivo
+hubiera cambiado antes de regenerar.
+**Regla preventiva:** (1) no matar procesos que el founder pueda estar usando; si hay que reiniciar, avisarle antes.
+(2) Antes de regenerar con datos que dice haber cargado él, comprobar la hora del archivo (`stat`) o que un valor cambió.
+(3) La página de `ml-anclas` debería avisar en pantalla cuando el servidor no responde (pendiente).
+
 ## Qué es este archivo
 
 Registro de errores cometidos durante el proyecto. Cada vez que algo sale mal —un bug, una decisión equivocada, una hora perdida, una integración mal hecha— se documenta acá.
@@ -72,6 +83,84 @@ resubida.
 `SELECT slug FROM products WHERE slug ILIKE '%<nombre-corto>%'` o revisar el `storage_path` de una
 fila existente en `product_images` para confirmar el slug real — nunca asumirlo por el apodo corto
 que uso en la conversación o en el brief del founder.
+
+## 2026-09-29 — Asumí que la publicación de ML de Hover era single-item sin verificarlo contra la API real, y quedó sin sincronizar
+
+**Estado**: 🟡 Mitigado — detectado porque Juan lo reportó explícito ("tampoco está sincronizado"),
+diagnosticado con un script que usa el token OAuth real del sitio, corregido con UPDATE + reverificado
+contra la API.
+
+**Qué pasó**: al cargar Mormaii Hover, el founder pasó UN link de ML para el color con stock real
+(Negro-Azul). Asumí que era una publicación single-item (mismo patrón que la mayoría de las cargas
+de esta sesión) y guardé `mercadolibre_item_id` sin `mercadolibre_variation_code`. El item real
+resultó ser MULTI-VARIACIÓN (2 colores bajo la misma publicación) — sin el `variation_code`, el
+código de sync (`lib/integrations/mercadolibre/sync-stock.ts`) SIEMPRE saltea la fila, así que la
+variante nunca sincronizó pese a tener el `item_id` "correcto" cargado.
+
+**Por qué no lo agarré antes**: dí por buena la lectura de la URL (`articulo.mercadolibre.com.ar/
+MLA-...`, un link de item directo) como suficiente evidencia de que todo estaba bien mapeado, sin
+verificar el CONTENIDO del item (¿tiene variaciones? ¿cuántas?) contra la API real antes de aplicar
+el seed. Tenía acceso a esa verificación desde el principio (el token OAuth de `marketplace_integrations`
+está activo) pero no lo usé hasta que Juan reportó el problema.
+
+**Regla preventiva**: cuando se carga un producto con `mercadolibre_item_id`, antes de dar el
+mapping por cerrado hay que traer el item REAL con `pnpm exec tsx --env-file=.env.local
+scripts/ml-item.ts <MLA...>` (ya existe en el repo, usa el token autenticado — no la API pública, que
+bloquea con 403 para requests anónimos) y mirar si `variaciones > 0`. Si las tiene, cada SKU del
+sitio que corresponda a ese item necesita su propio `mercadolibre_variation_code` — nunca asumir
+single-item sólo porque la URL es de un item directo (`articulo.mercadolibre.com.ar`, no `/up/`).
+
+## 2026-09-29 — Le dije al founder que Joaca 4 "no se podía sincronizar" sin haber probado la búsqueda autenticada por título
+
+**Estado**: ✅ Cerrado — resuelto en la misma sesión, ambas variantes con publicación real ahora
+sincronizadas.
+
+**Qué pasó**: cuando cargué Joaca 4, el único link de ML que tenía el founder era de catálogo
+(`/up/MLAU...`, pide login). Probé WebFetch y curl contra la API pública de ML, ambos bloqueados con
+403. Concluí "no se puede sincronizar sin que Juan pase el link directo" y así se lo dije — sin
+probar la búsqueda `/users/{seller_id}/items/search` con el token OAuth YA ACTIVO del sitio, que no
+tiene el bloqueo anónimo de la API pública. Cuando Juan preguntó "por qué Hover sí y Joaca 4 no",
+probé esa búsqueda por primera vez y encontró las 2 publicaciones reales (BR Negro, Gris) en menos de
+un minuto, sin necesitar ningún link nuevo del founder.
+
+**Por qué no lo until antes**: dí por agotadas las opciones de acceso a ML apenas la API pública
+anónima falló (WebFetch, curl), sin recordar/revisar que el propio repo tiene una integración OAuth
+ACTIVA con acceso autenticado completo (confirmado ese mismo día, al investigar el estado del sync a
+pedido de Juan) — dos búsquedas en el mismo hilo de trabajo, y no conecté que la segunda resolvía la
+limitación reportada en la primera.
+
+**Regla preventiva**: antes de decirle al founder "esto no se puede verificar/sincronizar sin que me
+pases X" por un bloqueo de la API pública de ML, probar primero si el token OAuth del sitio
+(`marketplace_integrations`, status=active) puede resolverlo — búsqueda por título del vendedor
+(`/users/{id}/items/search` + multiget `/items?ids=`) encuentra publicaciones reales sin depender de
+que el founder pase ningún link. Es autenticado, no pega contra el bloqueo `PolicyAgent` de accesos
+anónimos.
+
+## 2026-09-29 — Cargué Mormaii Hover con la variante SIN stock como sort_order=1, pese a haber aprendido esa lección un producto antes (Joaca 4)
+
+**Estado**: 🟡 Mitigado — detectado al verificar el grid en vivo (regla de comparar contra el grid
+antes de cerrar), corregido con un UPDATE de `sort_order` en variants e images, reverificado con
+SELECT.
+
+**Qué pasó**: al armar el seed 132 (Mormaii Hover, 5 colores, sólo 1 con stock real), listé las
+variantes en el orden "natural" del catálogo del distribuidor (Col.01 a Col.05), dejando la única con
+stock real (Negro-Azul, Col.05) en `sort_order=5`, última. Al verificar el grid en vivo, la card del
+producto mostraba por defecto la primera variante (MT Negro-Gris, sin stock) con el badge "Sin stock"
+— mala primera impresión para un producto que SÍ tiene una unidad disponible.
+
+**Por qué se repitió pese a tener el patrón correcto fresco**: en el seed de Mormaii Joaca 4 (el
+producto INMEDIATO ANTERIOR de esta misma sesión, mismo día), ya había puesto deliberadamente la
+variante con stock real como `sort_order=1` — es decir, tenía la lección aplicada a mano hace
+minutos, pero al armar Hover no la traje como checklist explícito, sólo repliqué la estructura
+genérica del seed anterior (San Juan) sin revisar ese detalle puntual.
+
+**Regla preventiva**: cuando un producto tiene variantes con stock desigual (algunas en 0, alguna(s)
+en stock real), el `sort_order=1` va SIEMPRE para la variante con stock real, sin excepción — no es
+"una mejora opcional si sobra tiempo", es parte del checklist mínimo de cualquier carga multi-color
+con stock parcial, al mismo nivel que "primaria = perfil" o "SKU real si existe". Antes de escribir
+el bloque de `INSERT INTO product_variants`, preguntarse explícito: "¿cuál tiene stock? ¿esa es la
+sort_order=1?" — no asumir que el orden del catálogo del distribuidor (Col.01, 02, 03...) es el
+orden correcto para el sitio.
 
 ## 2026-09-29 — Usé la misma foto de estuche para todas las variantes de K12, sin verificar si el fabricante tenía una por color
 
@@ -8491,6 +8580,299 @@ Founder pidió validación explícita de visibilidad del sistema al inicio de se
 - [x] Registro en MISTAKES.md (este archivo).
 - [ ] Verificar / crear `.claude/settings.json` con hook de cierre de sesión (acción para próxima sesión).
 - [ ] Considerar agregar a CLAUDE.md regla explícita: "Al cerrar sesión, actualizar CURRENT_STATE.md siempre, incluso si la sesión fue corta o solo de validación."
+
+---
+
+## 2026-09-29 — Imagen compartida (`variant_id NULL`) "en el medio" del `sort_order` rompe la galería de variantes agregadas después
+
+**Estado**: 🟢 Resuelto
+**Categoría**: Código
+
+### Qué pasó
+Juan reportó que en `mormaii-borneo`, al elegir una de las 2 variantes espejadas agregadas hoy (seed
+134), la galería mostraba la placa de MEDIDAS primero y las fotos del producto después. Las 2
+variantes originales mostraban el orden correcto.
+
+### Causa raíz
+`components/product/product-gallery.tsx` (`sortImages()`) ordena, dentro del subconjunto de imágenes
+filtrado por variante (propias + `variant_id NULL`), por `sort_order` GLOBAL puro — decisión de diseño
+correcta y vigente (evita otro bug distinto ya resuelto antes, el caso "MBLK"). El problema fue de
+DATOS: al agregar el seed 134, la placa `medidas.jpg` se dejó en `sort_order=4` ("no se reordena para
+no romper la galería ya visible" — comentario del propio seed 134) porque numéricamente parecía
+neutral. Pero 4 es MENOR que el `sort_order` de las 2 variantes nuevas (5-8) — así que, dentro del
+subconjunto filtrado de esas variantes, `medidas` cae primero. Cualquier imagen compartida "enterrada
+en el medio" de la numeración global rompe la galería de toda variante agregada después con
+`sort_order` mayor al de esa imagen compartida.
+
+### Impacto
+- Medio: 2 variantes live mostrando la placa de medidas como primera imagen del carrusel, visible para
+  cualquier cliente que las eligiera. Detectado por el founder navegando el sitio en producción, no en
+  un chequeo interno.
+
+### Cómo se detectó
+Reporte directo del founder navegando el sitio. Confirmado matemáticamente con un agente `Explore`
+que leyó `product-gallery.tsx` + los 2 seeds de Borneo y replicó el filtro+sort a mano.
+
+### Cómo se evita en el futuro
+**Regla preventiva**: cuando se agregan variantes nuevas a un producto que ya tiene una imagen
+compartida (`variant_id NULL`, típicamente `medidas.jpg`) con un `sort_order` intermedio, esa imagen
+compartida tiene que recalcularse al `sort_order` MÁS ALTO del producto (mayor que el de todas las
+imágenes de todas las variantes, propias y nuevas) — nunca "dejarla donde está" asumiendo que no
+afecta la vista filtrada por variante. Aplica a cualquier producto con imagen de medidas compartida al
+que se le agreguen colores después (ya pasó con Borneo, puede repetirse con Traful/Hover/Leñas si se
+les agregan variantes más adelante).
+
+### Cambios derivados
+- [x] Fix aplicado en Supabase Cloud: `UPDATE product_images SET sort_order=9 WHERE storage_path='mormaii-borneo/medidas.jpg'` — verificado en vivo con la variante Espejada Celeste, orden correcto.
+- [x] Registro en MISTAKES.md (este archivo).
+- [ ] Si se agregan variantes a Traful/Hover/Leñas en el futuro, verificar el `sort_order` de su placa de medidas compartida ANTES de aplicar el seed nuevo (no después).
+
+---
+
+## 2026-09-29 — `pnpm fotos:subir --sufijo` sin guion inicial pega el sufijo pegado al nombre base
+
+**Estado**: 🟢 Resuelto
+**Categoría**: Código
+
+### Qué pasó
+Al subir las 4 placas de perfil de Mormaii Leñas con `pnpm fotos:subir --sufijo negro-brillo` (sin
+guion), el script generó `perfilnegro-brillo.jpg` en vez de `perfil-negro-brillo.jpg` — el patrón
+usado en todos los seeds anteriores (Traful, Borneo). Los 4 archivos quedaron subidos con nombre
+inconsistente antes de escribir el seed.
+
+### Causa raíz
+`scripts/subir-fotos-producto.ts` arma el path como `${base}${sufijo}${ext}` (concatenación directa,
+sin separador implícito) — el guion tiene que venir incluido en el valor que se le pasa a `--sufijo`.
+Asumí, por el nombre del flag y por cómo se ve en los seeds ya aplicados, que el script agregaba el
+guion solo.
+
+### Impacto
+- Bajo. Detectado antes de escribir el seed (los paths todavía no estaban referenciados en ningún
+  lado). Se corrigió borrando los 4 archivos mal nombrados (`supabase.storage.from('products').remove()`
+  vía script one-off) y resubiendo con `--sufijo -negro-brillo` (guion incluido).
+
+### Cómo se detectó
+Lectura del output del comando (`✓ mormaii-lenas-receta/perfilnegro-brillo.jpg`) antes de seguir —
+no coincidía con el patrón `perfil-<color>.jpg` de los seeds de referencia (133, 134).
+
+### Cómo se evita en el futuro
+**Regla preventiva**: al usar `pnpm fotos:subir --sufijo <valor>`, el `<valor>` SIEMPRE lleva el
+guion inicial incluido (ej. `--sufijo -negro-brillo`, no `--sufijo negro-brillo`). El flag no agrega
+separador — es concatenación literal contra el nombre base (`perfil`, `frente`, `medidas`).
+
+### Cambios derivados
+- [x] Registro en MISTAKES.md (este archivo).
+- [ ] Considerar (próxima vez que se toque el script) que `subir-fotos-producto.ts` anteponga el
+  guion automáticamente si `--sufijo` no empieza con uno, para que el error no se pueda repetir.
+
+---
+
+## 2026-09-30 — Inferí/estimé alturas de lente que el founder nunca dio, en vez de usar directo su dato
+
+**Estado**: 🟢 Resuelto
+**Categoría**: Producto
+
+### Qué pasó
+En Kona MAG, el founder dio explícito dos valores distintos de altura ("40 es de la lente, 47 es la
+total del armazón") — de ahí armé una regla general ("cuando da un solo valor, es el total; hay que
+derivar la del lente aparte") y la apliqué por mi cuenta en 2 cargas posteriores: en Leñas 2 MAG
+estimé la altura de lente por proporción de píxeles en la foto (~30mm, nunca confirmado por el
+founder con la pieza física); en Fortaleza asumí que el bracket de altura de la imagen (46mm) era
+"la del lente" y que un "altura total: 53mm" aparte confirmaba el total, por analogía con Kona MAG —
+sin que el founder hubiera hecho esa distinción para ese producto puntual.
+
+### Causa raíz
+Generalicé una regla a partir de UN solo caso (Kona MAG) donde el founder sí distinguió
+explícitamente dos valores, y la apliqué a productos donde él NO hizo esa distinción — en esos casos
+sólo dio un número (o dos, pero sin decir cuál era cuál), y yo inventé una interpretación en vez de
+preguntarle. El founder corrigió: "tenés que usar la del armazón total (la altura) ya que TODAS las
+medidas te paso de la altura total" — la regla correcta es mucho más simple (usar el valor tal cual,
+salvo distinción explícita del founder para ese producto), y mi versión elaborada le agregaba
+inferencia donde no correspondía.
+
+### Impacto
+- Medio: 2 productos live (Leñas 2 MAG, Maceio) con un valor de altura técnicamente incorrecto en el
+  campo `lens_height_mm` (aunque el campo del schema se define como "altura de lente", en la práctica
+  el founder sólo puede dar/medir la altura total, así que el dato correcto para ese campo es
+  simplemente el que él da). Se corrigió con UPDATE post-aplicación en los 2 productos + el seed 141
+  (Fortaleza) se corrigió ANTES de aplicar, porque el founder lo señaló en el mismo mensaje donde
+  aprobó aplicarlo.
+
+### Cómo se detectó
+El founder revisó las páginas en vivo de Leñas 2 MAG y Maceio y avisó directamente.
+
+### Cómo se evita en el futuro
+**Regla preventiva**: nunca generalizar una regla de interpretación de datos a partir de un solo
+caso donde el founder hizo algo explícito una vez — si la próxima carga no repite esa misma
+distinción explícita, preguntar de nuevo en vez de asumir que aplica igual. Regla actualizada
+completa en memoria `altura-founder-siempre-total-armazon.md`: cualquier altura que da el founder va
+directo al campo, sin estimar ni inferir, salvo que él mismo distinga dos valores para ESE producto
+puntual.
+
+**Relacionado**: en el mismo pedido, el founder también pidió suavizar el texto de "apto SOLO para
+monofocales" (sonaba a restricción técnica dura) a "recomendado para monofocales" (es una
+recomendación por el tamaño, no una limitación categórica que se pueda afirmar con certeza) — mismo
+principio de fondo: no convertir un dato/recomendación en una afirmación más fuerte de lo que
+realmente es.
+
+### Cambios derivados
+- [x] UPDATE post-aplicación en Leñas 2 MAG (`lens_height_mm` 30→35) y Maceio (texto de callout/
+  description suavizado, medida ya era correcta).
+- [x] Seed 141 (Fortaleza) corregido ANTES de aplicar (`lens_height_mm` 46→53).
+- [x] Placas de medidas regeneradas y resubidas (Leñas 2 MAG, Fortaleza) con el valor correcto.
+- [x] Memoria `altura-founder-siempre-total-armazon.md` reescrita con la regla simplificada.
+- [x] Registro en MISTAKES.md (este archivo).
+
+---
+
+## 2026-09-30 — Escribí `gender: "hombre"` (español) en vez del enum real `"male"` en 2 seeds, rompiendo el filtro de género en producción sin que nada avisara
+
+**Estado**: 🟢 Resuelto
+**Categoría**: Código
+
+### Qué pasó
+En los seeds 137 (Mormaii Monterrey 2) y 138 (Mormaii Madri) escribí `"gender": "hombre"` en el JSONB
+de `attributes`, en vez de `"male"`. `PRODUCT_SCHEMA.md` define el enum en inglés
+(`unisex | male | female`) y el filtro de categoría (`lib/catalog/queries.ts:226,1194`) hace
+`.in('attributes->>gender', ['male','unisex'])` de forma literal, sin normalizar español↔inglés. Los
+2 productos quedaron publicados y visibles en su propia ficha (PDP), pero invisibles en la ruta de
+filtro `/anteojos-de-sol/mormaii/hombre` — nada rompía visualmente, no había error en consola, la
+ficha se veía perfecta. Lo detectó `catalog-loader` por accidente, revisando seeds previos como
+contexto para validar Doha (seed 143), no porque alguien lo estuviera buscando.
+
+### Causa raíz
+Le copié el patrón de escritura en español consistente con el resto del `attributes` (`frame_shape:
+"cuadrado"`, `hinge_system: "plastica reforzada"`, etc.) sin verificar que ESE campo puntual tiene un
+enum fijo en inglés que el código matchea literal — a diferencia de otros campos que son texto libre
+en español y se muestran tal cual. No hay una sola fuente de verdad fácil de grepear: hay que cruzar
+`PRODUCT_SCHEMA.md` con el código de filtro real para saber cuáles campos son "texto libre en
+español" y cuáles son "enum literal en inglés que el código matchea".
+
+### Impacto
+- Medio: 2 productos live invisibles en su ruta de filtro de género durante ~2-3 semanas (desde que
+  se cargaron hasta que se detectó). No afectó la venta directa (el producto se encuentra igual por
+  búsqueda, por la marca, o por el link directo), pero sí SEO/descubribilidad de esa ruta específica.
+
+### Cómo se detectó
+`catalog-loader`, revisando seeds Mormaii previos como contexto para validar la carga de Doha (no
+estaba buscando este bug específico — lo encontró de paso).
+
+### Cómo se evita en el futuro
+**Regla preventiva**: antes de escribir cualquier campo de `attributes` que tenga un enum fijo en
+`PRODUCT_SCHEMA.md` (no texto libre), grepear el código de filtro real (`lib/catalog/queries.ts`,
+`lib/catalog/brand-filters.ts`) para confirmar en qué idioma/forma exacta lo espera el matching — no
+asumir que "consistencia de idioma con el resto del objeto" es suficiente. Ya pasó una vez antes con
+`frame_material: "acetato"` vs `"acetate"` (Barcelona, seed 142, mismo tipo de error, detectado ANTES
+de aplicar esa vez) — es el mismo patrón repitiéndose: campos con apariencia de texto libre que en
+realidad son enums estrictos. Con 2 recurrencias ya es patrón, no incidente aislado — considerar
+pedir a `nextjs-performance` o al founder una validación de schema en tiempo de seed (constraint SQL
+o check de CI) que rechace valores fuera del enum antes de aplicar a Cloud, en vez de depender de que
+un agente lo note al pasar.
+
+### Cambios derivados
+- [x] UPDATE puntual en Madri y Monterrey2 (`attributes->>gender` "hombre"→"male"), vía Supabase MCP,
+  JSONB, no toca stock/precio/órdenes.
+- [x] SELECT de verificación: 0 productos del catálogo con `gender` fuera del enum tras el fix.
+- [x] Seed 143 (Doha) escrito desde el arranque con `"gender": "male"`.
+- [x] Registro en MISTAKES.md (este archivo).
+- [ ] Pendiente (no bloqueante): evaluar constraint/check de schema que valide enums de `attributes`
+  antes de aplicar un seed, para no depender de que un agente lo detecte al pasar.
+
+---
+
+## 2026-10-02 — Copié la línea "Disponible en N variantes: [colores]" en la descripción de High 4 y Sevilha, contra la política #8 de `BUSINESS_POLICIES.md`
+
+**Estado**: 🟡 Parcial (detectado, sin corregir en producción — decisión del founder)
+**Categoría**: Proceso
+
+### Qué pasó
+En los seeds 151 (High 4) y 152 (Sevilha) la descripción larga termina con "Disponible en 2/3
+variantes: [lista de colores]", copiado del template de Frey/Leñas 3 MAG. `BUSINESS_POLICIES.md` #8
+dice que la descripción debe ser genérica del MODELO y no mencionar colores de variantes (queda
+desactualizada cuando se agrega o saca una variante). Los dos productos están live con esa línea.
+Al grepear, la misma línea está en 85 seeds de todo el catálogo (desde el seed 52): es un patrón
+heredado, no un error puntual de esta sesión.
+
+### Causa raíz
+Usé el seed anterior como template y repliqué el cierre sin contrastarlo contra la política. El
+template mismo arrastraba la violación, así que "seguir el patrón reciente" no la detecta. Lo
+encontró `catalog-loader` al validar Recife, no yo.
+
+### Impacto
+Bajo: texto que queda desactualizado si cambian las variantes (en Recife el Dropbox trae 6 colores y
+solo 3 están cargados, el riesgo es concreto). No rompe filtros ni ventas.
+
+### Cómo se evita en el futuro
+**Regla preventiva**: al escribir la descripción larga, contrastar contra `BUSINESS_POLICIES.md` #8 y
+no listar ni contar colores/variantes. Desde Recife (seed 153) el cierre es genérico, sin lista.
+
+### Cambios derivados
+- [x] Seed 153 (Recife) escrito sin la línea.
+- [ ] Decisión del founder: limpiar las 85 descripciones en Cloud (UPDATE masivo de texto) o dejarlas.
+  Anotado en BACKLOG.md.
+
+---
+
+## 2026-10-02 — Di por buena una placa de callouts con las flechas cruzadas y claims no verificados
+
+**Estado**: 🟢 Resuelto
+**Categoría**: Proceso
+
+### Qué pasó
+Para el Mormaii Vesubio le copié al founder las placas de ML tal como las dejó `pnpm placas`. Al abrirlas
+vi que la de callouts decía "Armazón liviano", "Cómodos" y "Color a definir" (textos por defecto) y la
+rehice con textos verificados. Pero en esa v2 le dije "las flechas quedaron en su lugar" cuando se
+cruzaban entre sí y apuntaban con poca precisión; el founder lo marcó. La v3 usa una grilla para
+apuntar y asigna cada burbuja a la parte más cercana.
+
+### Causa raíz
+Revisé el CONTENIDO de los textos (qué se afirma) y no la GEOMETRÍA (qué flecha va adónde). Declaré
+terminada la placa sin mirarla con ojo de comprador: ¿cada flecha apunta a lo que dice y ninguna cruza
+a otra?
+
+### Impacto
+Bajo: lo detectó el founder antes de publicar, sin consecuencias en ML.
+
+### Cómo se evita en el futuro
+**Regla preventiva**: antes de entregar una placa generada con `pnpm placas`, abrir cada una y chequear
+(1) que ningún texto por defecto con claims sobreviva (liviano, cómodo, color a definir) y (2) que
+cada flecha toque la parte que nombra sin cruzar otra. Técnica de la grilla en LEARNINGS.md 2026-10-02.
+
+### Cambios derivados
+- [x] Placa 03-callouts v3 con flechas sin cruces, entregada.
+- [x] Entry en LEARNINGS.md con la técnica (`--c/--a` fijos + grilla de coordenadas).
+
+---
+
+## 2026-10-03 — Tomé el rótulo de color de un producto de catálogo de ML como dato confirmado (Reef 128: 015 rotulada como 018)
+
+**Estado**: 🟢 Resuelto
+**Categoría**: Proceso
+
+### Qué pasó
+Al cruzar las 6 variantes de la publicación del founder con las fotos de la marca, la variación `180372264014` quedaba
+enlazada por ML a un producto de catálogo rotulado "128 Ying - 018". Le presenté esa variación como la **018** (con el
+GTIN de ese producto) y el founder me corrigió: era la **015**. Después, al pasarme él la 018 como "color que falta", dijo
+que "en teoría ya la tenía": el error de fondo era que ML tenía rotulada la 015 como 018 (colores muy parecidos), y yo lo
+había convertido en dato. Costó varias vueltas aclarar qué era cada cosa.
+
+### Causa raíz
+Traté `DETAILED_MODEL` y el GTIN del producto de catálogo de ML como si fueran la verdad, cuando son datos que arma ML
+y pueden estar mal enlazados (la variación hereda el User Product por sus atributos, y el founder había cargado mal el
+color del armazón). La fuente confiable era la unidad física (color y código de la caja) y lo que dice el founder.
+
+### Impacto
+Bajo: se detectó antes de crear ninguna variación ni tocar la base. Costó tiempo y confusión.
+
+### Cómo se evita en el futuro
+**Regla preventiva**: el rótulo/GTIN de un producto de catálogo de ML es una PISTA, nunca un hecho. Antes de afirmar qué
+color es una variante, presentarlo como hipótesis y pedir que el founder lo confirme contra la unidad (color del frente,
+varillas y código de barras de la caja). Armar una tabla maestra variación↔color↔GTIN con estado "confirmado por el
+founder" vs "pista de ML" (ver LEARNINGS.md 2026-10-03).
+
+### Cambios derivados
+- [x] Tabla maestra de Reef 128 en CURRENT_STATE.md con el estado de confirmación de cada casillero.
+- [x] El founder corrige en ML el color del armazón de la variación 015 (pendiente de su lado).
 
 ---
 

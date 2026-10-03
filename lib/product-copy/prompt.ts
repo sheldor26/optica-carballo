@@ -23,7 +23,7 @@ REGLAS DE CONTENIDO:
 - NUNCA prometás beneficios médicos no comprobados (ej. "previenen fatiga visual" sin evidencia).
 - Honestidad sobre limitaciones cuando aplique (ej. polarizados oscurecen pantallas LCD, blue light no tiene evidencia clínica robusta, etc.).
 - Si el producto tiene polarizado, mencioná que NO se recomiendan para manejar de noche.
-- Si el producto es de marca argentina, mencionalo (Vulk, Rusty, Reef, Mormaii son nacionales).
+- Si el producto es de marca argentina, mencionalo (Vulk, Rusty y Mormaii son nacionales). Reef NO se presenta como marca argentina: es de origen californiano, fundada en San Diego por hermanos argentinos.
 
 REGLAS DE OUTPUT:
 - shortDescription: 60-90 caracteres. Resume el modelo en 1 frase clara.
