@@ -12161,6 +12161,13 @@ se ve negro sobre fondo claro y, sin filtro, blanco sobre fondo oscuro. Copia en
 marca, mirar el logo renderizado en ficha, categoría, `/marcas` y home (si el panel del navegador no puede capturar, abrir el PNG/SVG y comprobar que no tenga un rect de fondo: `grep -c "fill=\"#000000\"" logo.svg`);
 (2) los logos de marca tienen que ser transparentes y monocromáticos; (3) las páginas se actualizan por ISR (~5 min; `/marcas` tarda más).
 
+## Un modelo "descatalogado" en la tienda de la marca (Reef/Ranieri, PrestaShop) deja su ficha redirigida pero SUS IMÁGENES siguen vivas: se recuperan por id de imagen, sin estilo
+
+Reef 177 Aerial no figuraba en `reefeyewear.com/9-solares` ni en Oportunidades y el buscador no lo devolvía. Pero el id de producto existe: `index.php?controller=product&id_product=N` redirige 301 a `/solares/N-<rewrite>.html` (para el 177: `244-177`) y esa URL a su vez redirige
+a la categoría (producto desactivado). Los ids de PrestaShop son secuenciales, así que el producto desactivado está entre los activos vecinos. **Las imágenes no se desactivan:** `https://reefeyewear.com/<id_imagen>/<cualquier-nombre>.jpg` devuelve el ORIGINAL (1000-1200 px). Cómo se encuentran: (1) sacar los ids de imagen de las
+páginas de los productos activos vecinos (`/solares/240-161.html`: 613-618, `247-186`: 629...), (2) las imágenes originales de un producto viejo están en el hueco entre ellas (619-628 para los productos 241-246), (3) las fotos de otros colores se subieron en tandas posteriores (2891-2895), (4) barrer los rangos con `curl` en paralelo (`xargs -P 10`) y mirar una hoja
+de contacto con los ids. Funciona también con `ranieristore.com` (misma plataforma). **Límites:** las fotos de la marca de modelos viejos son de ~1000-1200 px, así que no mejoran a las de retailers; sirven cuando el retailer tiene una versión más chica (C09: 1000 vs 840). Wayback Machine devolvió 429.
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

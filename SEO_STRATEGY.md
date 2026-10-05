@@ -987,6 +987,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 30. Mormaii Vesubio (receta, aviador doble puente), seed 155
 31. Reef 128 Yin (sol, envolvente deportivo), seed 156
 32. Reef 129 Yang (sol, envolvente), seed 157
+33. Reef 177 Aerial (sol, envolvente deportivo), seed 158
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2476,6 +2477,21 @@ No usar: "128" suelto, "178", liviano, flexible (la flexibilidad se dice sólo c
 Sin dato en los CSV: "reef 129", "reef yang", "reef yin yang". Title: `Anteojos de Sol Reef 129 Yang Polarizados | Óptica Carballo` (59). H1 = `Reef 129 Yang`. Meta (154): `Anteojos de sol Reef 129 Yang polarizados UV400, con frente de metal y patillas de aluminio. Lente de 66 x 43 mm. Envío a todo el país y garantía oficial.`
 Anti-canibalización vs 128: familia léxica distinta, token de modelo distinto, meta distinta; cross-link 128↔129 (related automático + una frase en el copy del 129; falta la del 128). Cabeceras genéricas al hub.
 No usar en el 129: liviano, flexible (sólo "bisagras metálicas con sistema flex"), "armazón de aluminio" (sólo patillas), policarbonato (es TAC), deportivo, grande/oversized, colores o cantidad, "marca argentina", "resistente a rayones", "128"/"129" sueltos, género o "envolvente" en title/H1/meta.
+
+*Reef 177 Aerial (sol, ENVOLVENTE DEPORTIVO, HOMBRE, armazón inyectado de Grilamid, lente de policarbonato UV400 cat 3, antirreflejo interno, bisagras metálicas, 64-17-124, ancho 143, alto de lente 47; 3 versiones con lente polarizada y 1 con lente espejada NO polarizada) · slug `reef-177-aerial` en `/anteojos-de-sol/reef/reef-177-aerial`. Seed 158 aplicado 2026-10-05; publicaciones tradicionales MLA1544239398, MLA1543879398 y MLA1961794090*
+| Keyword | Vol/mes | Dif | Uso |
+|---|---|---|---|
+| reef 177 aerial | sin medir | - | primaria de modelo (title, H1) |
+| lentes de sol deportivos | 210 | 17 | descriptor del title y primer párrafo |
+| lentes deportivos de sol | 210 | 15 | variante en copy |
+| anteojos de sol hombre deportivos | 110 | 10 | copy y alt |
+| lentes de sol hombre deportivos | 90 | 19 | copy |
+| lentes de sol espejados | 90 | 16 | una mención, sin color |
+| lentes de sol reef / anteojos de sol reef | 210 / 170 | 7 / 9 | NO en esta PDP (hub y 128) |
+Sin dato en los CSV: "reef 177", "reef aerial", "reef 177 aerial". Title: `Lentes de Sol Deportivos Reef 177 Aerial | Óptica Carballo` (58). H1 = `Reef 177 Aerial`. Meta (150): `Lentes de sol deportivos Reef 177 Aerial para hombre, envolventes, UV400 y categoría 3. Lente de 64 x 47 mm. Envío a todo el país, estuche y garantía.`
+Anti-canibalización: familia léxica "lentes de sol deportivos" (And Now toma "anteojos de sol deportivos", 128 "lentes de sol", 129 "anteojos de sol"); token de modelo y meta distintos; cabeceras genéricas de Reef al hub. Polarizado: NUNCA en title, H1 ni meta; en copy "tres versiones polarizadas y la espejada azul no"; `polarized` por variante; alt de la C09 sin "polarizado".
+Cross-link: el 177 apunta al 128 y al 129 con una frase; **falta la frase de vuelta en el 128 y el 129** ("Para el deporte, mirá también el Reef 177 Aerial"; actualizar sus seeds, UPSERT).
+No usar: liviano, flexible, "armazón de metal o aluminio", BTR600, "para deportes" a secas ni promesas de protección deportiva, colores o cantidad de versiones, "azul" para la espejada fuera del alt, "177" suelto, "marca argentina", resistente a rayones.
 
 
 ### Reglas para futuros productos

@@ -420,3 +420,13 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Confirmar los nombres de color** (deducidos de las fotos de la marca): sobre todo si 013 y 014 son realmente distintas (ML dice 014 = frente gris oscuro mate) y si 012 es "plateado mate".
 - [ ] **Peso** (balanza). Bloquea: `weight_grams` y cualquier claim de liviano.
 - [ ] En ML (lado del founder): re-subir las placas de las 6 variaciones (`marketing/placas-ml/RESUBIR-reef-129/`); revisar que la ficha diga TAC y no "policarbonato"; fotos propias de frentes.
+
+## Reef 177 Aerial (sol, 2026-10-05)
+
+- [x] **2026-10-05 — Confirmado por el founder:** medidas 64-17-124, alto de lente 47, ancho total 143; envolvente deportivo, categoría 3, hombre, UV400; GTIN de las 4 variantes (C15 7790394208818, C09 7790394182163, C07 7790394164299, C11 7790394191141); C15/C07/C11 polarizados con AR interno; C09 espejada azul con AR interno.
+- [~] **Fotos del 177:** el founder indicó usar las de Óptica Paesani (sólo perfil; la C07 comparte foto con la C11). Pendiente su visto bueno a las placas. Siguen sin existir fotos de frente ni fotos propias de las unidades.
+- [x] **2026-10-05 — Bisagras: metálicas, sin flex** (confirmado por el founder).
+- [ ] **Confirmar que la C09 NO es polarizada** (ML dice que no). Bloquea: `polarized` de esa variante y si el producto puede decir "polarizado" en título/H1.
+- [ ] Peso (balanza). Bloquea: `weight_grams` y claims de liviano.
+- [x] **2026-10-05 — Ancho total 143 confirmado por el founder** (la geometría plana 2×64+17=145 no aplica a un envolvente).
+- [x] **2026-10-05 — C09 NO es polarizada** (confirmado por el founder).
