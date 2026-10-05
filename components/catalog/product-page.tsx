@@ -373,10 +373,13 @@ export async function ProductDetailPage({
                       <Image
                         src={getBrandAssetUrl(product.brand.logo_url)}
                         alt={product.brand.name}
-                        width={120}
-                        height={32}
+                        width={260}
+                        height={64}
                         className={cn(
-                          'h-7 w-auto object-contain md:h-8',
+                          // Logo de marca más grande en la ficha: alto 40px en celular y 56px en
+                          // desktop. El ancho máximo evita que los logos muy apaisados (Rusty,
+                          // Vulk) se estiren de más.
+                          'h-10 w-auto max-w-[200px] object-contain md:h-14 md:max-w-[260px]',
                           shouldInvertLogo(product.brand.logo_url, 'light-bg') &&
                             'brightness-0',
                         )}

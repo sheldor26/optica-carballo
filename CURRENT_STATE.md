@@ -5,6 +5,16 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### ✅ Resuelto (2026-10-05): logo de Reef aparecía como bloque negro en ficha y categoría
+
+El founder mandó capturas del Reef 128 Yin y de `/anteojos-de-sol/reef` con un cuadrado negro en lugar del logo. Causa: `brands.logo_url = brand-logos/reef-logo-light.svg`, un SVG vectorizado con rect negro
+opaco de fondo, más el `brightness-0` que el código aplica a los logos `-light` sobre fondo claro. Arreglo (sin tocar código): se generó un PNG transparente (luminancia → alfa) y se subió a
+`brand-assets/brand-logos/reef-logo-light.png` (HTTP 200); `UPDATE brands SET logo_url='brand-logos/reef-logo-light.png' WHERE slug='reef'` (hecho vía MCP). Verificado en producción: ficha del 129, del 128, hub de
+Reef y home ya apuntan al PNG y el endpoint de imágenes de Next lo sirve (200, image/png); **`/marcas` seguía con el SVG tras ~2 min (caché ISR)**, se actualiza solo. No se pudo ver la captura
+(el panel del navegador no compone frames): comparar a ojo en la página. Copia del PNG en `marketing/brand-assets/reef-logo-light.png` (sin commitear). Aprendizaje en LEARNINGS.md. Los otros logos
+(`-dark.svg` de Mormaii, Paula Cahen, Rusty, Vulk) no tienen el problema reportado. **Próximo paso:** el founder confirma que el logo se ve bien.
+**Pedido siguiente (2026-10-05): agrandar el logo de marca en la ficha del producto.** Editado `components/catalog/product-page.tsx` (sólo el `<Image>` del logo de marca): antes `h-7 md:h-8` (28/32 px), ahora `h-10 md:h-14` (40/56 px) con `max-w-[200px] md:max-w-[260px]` para que los logos apaisados (Rusty, Vulk) no se estiren, y `width/height` 260×64 para que Next sirva la imagen con resolución suficiente. Afecta a TODAS las marcas en la ficha. `tsc` OK. **SIN commit ni deploy:** espera el OK del founder (regla sin auto-commits). En las páginas de categoría de marca el logo ya mide 48/56 px (no se tocó).
+
 ### 🔄 En curso (2026-10-03): Reef 129 Yang (sol), placas nuevas hechas, falta cargarlo al catálogo
 
 El founder pidió el modelo **Reef 129 Yang** (marca: "129 Reef"): publicación tradicional **MLA1423304199** (`catalog_listing:false`, $157.955,64, 5 variaciones hoy,

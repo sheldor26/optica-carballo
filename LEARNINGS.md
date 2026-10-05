@@ -12150,6 +12150,17 @@ antes de recortar (`sharp.extend`). **Cómo aplicar a futuro:** (1) bajar siempr
 en vez de depender de Vision; (3) las marcas manuales (`pnpm anclas`) de UNA foto se trasladan al resto de colores, y una foto con otro encuadre (calce < 0.35) hay que revisarla a ojo.
 (Pendiente de decisión del founder: rehacer las placas de Reef 128 con los originales.)
 
+## El logo de marca debe ser PNG/SVG con FONDO TRANSPARENTE: el de Reef era un SVG vectorizado con un rectángulo negro de fondo y `brightness-0` lo convertía en un bloque negro sólido
+
+Al cargar los primeros productos de Reef, el founder vio un bloque negro donde va el logo (ficha, categoría). Causa: `brands.logo_url` apuntaba a `brand-logos/reef-logo-light.svg`,
+un trazado vectorizado cuyo primer `<path>` es un rectángulo `#000000` de 500×434 (fondo) con el logo en blanco encima. El código (`shouldInvertLogo`, convención `-light`/`-dark`) aplica
+`brightness-0` a los logos `-light` sobre fondo claro: todo píxel opaco pasa a negro, y el fondo opaco queda como un bloque. Nadie lo había visto porque Reef tenía 0 productos (el logo no se
+mostraba) y yo sólo verifiqué la ficha por texto (H1, labels), no por captura. **Solución:** renderizar el SVG con `sharp` (density 300), usar la luminancia como canal alfa sobre blanco (queda
+el logo blanco con las letras vaciadas y el fondo transparente), recortar y guardar `brand-logos/reef-logo-light.png` (1000×826) en el bucket `brand-assets`; `UPDATE brands SET logo_url`. Con `brightness-0`
+se ve negro sobre fondo claro y, sin filtro, blanco sobre fondo oscuro. Copia en `marketing/brand-assets/reef-logo-light.png`. **Cómo aplicar a futuro:** (1) al cargar el PRIMER producto de una
+marca, mirar el logo renderizado en ficha, categoría, `/marcas` y home (si el panel del navegador no puede capturar, abrir el PNG/SVG y comprobar que no tenga un rect de fondo: `grep -c "fill=\"#000000\"" logo.svg`);
+(2) los logos de marca tienen que ser transparentes y monocromáticos; (3) las páginas se actualizan por ISR (~5 min; `/marcas` tarda más).
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
