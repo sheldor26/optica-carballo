@@ -85,7 +85,17 @@ type CajaBurbuja = { x: number; y: number; w: number; h: number };
 export function medirBurbuja(
   b: Burbuja,
   canvas: number,
-  opciones: { margen?: number; tituloPx?: number; subPx?: number } = {},
+  opciones: {
+    margen?: number;
+    tituloPx?: number;
+    subPx?: number;
+    canvasAlto?: number;
+    /** Familia del texto del globo. Default: la de las placas de ML. */
+    familia?: string;
+    pesoFamilia?: string;
+    /** Reservar el alto del subtítulo aunque no haya. Default: sí (placas ML). */
+    reservarSubtitulo?: boolean;
+  } = {},
 ): { caja: CajaBurbuja; tituloPx: number; subPx: number; padX: number; padY: number } {
   const { caja, tituloPx, subPx, padX, padY } = calcular(b, canvas, opciones);
   return { caja, tituloPx, subPx, padX, padY };
@@ -94,8 +104,22 @@ export function medirBurbuja(
 function calcular(
   b: Burbuja,
   canvas: number,
-  opciones: { margen?: number; tituloPx?: number; subPx?: number } = {},
+  opciones: {
+    margen?: number;
+    tituloPx?: number;
+    subPx?: number;
+    canvasAlto?: number;
+    /** Familia del texto del globo. Default: la de las placas de ML. */
+    familia?: string;
+    pesoFamilia?: string;
+    /** Reservar el alto del subtítulo aunque no haya. Default: sí (placas ML). */
+    reservarSubtitulo?: boolean;
+  } = {},
 ) {
+  // `canvas` era el lado de un lienzo cuadrado (las placas de ML son 1500×1500)
+  // y se usaba para el ancho Y el alto. Las placas de Instagram son verticales,
+  // así que el alto va aparte. Sin pasarlo, se comporta igual que antes.
+  const alto = opciones.canvasAlto ?? canvas;
   const margen = opciones.margen ?? Math.round(canvas * 0.055);
   // Dos burbujas por fila: cada una no puede pasar de la mitad del ancho
   // libre, así siempre queda un canal de aire entre las de la misma fila.
@@ -103,13 +127,14 @@ function calcular(
   // El tope se aplica al TEXTO, así que hay que descontarle el padding
   // horizontal de la burbuja o el recuadro termina invadiendo al vecino.
   const anchoMax = (canvas - margen * 3) / 2 - canvas * 0.055;
+  const metrica = opciones.familia === 'DM Sans' ? 'manrope' : 'archivo';
   const tituloPx = Math.min(
     opciones.tituloPx ?? Math.round(canvas * 0.036),
-    fontQueEntra(b.titulo, anchoMax, 'archivo', 0.08, canvas),
+    fontQueEntra(b.titulo, anchoMax, metrica, 0.08, canvas),
   );
   const subPx = Math.min(
     opciones.subPx ?? Math.round(canvas * 0.024),
-    b.subtitulo ? fontQueEntra(b.subtitulo, anchoMax, 'archivo', 0.08, canvas) : canvas,
+    b.subtitulo ? fontQueEntra(b.subtitulo, anchoMax, metrica, 0.08, canvas) : canvas,
   );
   // Tracking chico: a estos cuerpos, separar las letras sólo resta legibilidad.
   const trackingTitulo = tituloPx * 0.08;
@@ -117,19 +142,23 @@ function calcular(
 
   const padX = Math.round(tituloPx * 0.75);
   const padY = Math.round(tituloPx * 0.45);
-  const anchoTitulo = anchoTexto(b.titulo, tituloPx, 'archivo', trackingTitulo);
-  const anchoSub = b.subtitulo ? anchoTexto(b.subtitulo, subPx, 'archivo', trackingSub) : 0;
+  const anchoTitulo = anchoTexto(b.titulo, tituloPx, metrica, trackingTitulo);
+  const anchoSub = b.subtitulo ? anchoTexto(b.subtitulo, subPx, metrica, trackingSub) : 0;
   const w = Math.round(Math.max(anchoTitulo, anchoSub) + padX * 2);
-  // El alto reserva siempre la ranura del subtítulo, tenga o no: así las dos
-  // burbujas de una fila miden lo mismo y el set se lee como un sistema.
-  const h = Math.round(tituloPx * 1.12 + subPx * 1.7 + padY * 2);
+  // Las placas de Mercado Libre reservan siempre la ranura del subtítulo, tenga
+  // o no: son cuatro globos en un cuadrado y todos tienen que medir lo mismo.
+  // Las de Instagram son dos y se apoyan en esquinas opuestas, así que ahí la
+  // ranura vacía solo agrega 60% de alto muerto que empuja al producto.
+  const reserva = opciones.reservarSubtitulo ?? true;
+  const alturaSub = b.subtitulo || reserva ? subPx * 1.7 : 0;
+  const h = Math.round(tituloPx * 1.12 + alturaSub + padY * 2);
 
   const izq = b.esquina === 'tl' || b.esquina === 'bl';
   const arriba = b.esquina === 'tl' || b.esquina === 'tr';
 
   const caja: CajaBurbuja = {
     x: izq ? margen : canvas - margen - w,
-    y: arriba ? margen + Math.round(canvas * 0.05) : canvas - margen - h - Math.round(canvas * 0.03),
+    y: arriba ? margen + Math.round(canvas * 0.05) : alto - margen - h - Math.round(canvas * 0.03),
     w,
     h,
   };
@@ -141,7 +170,28 @@ function calcular(
 export function burbujaConFlecha(
   b: Burbuja,
   canvas: number,
-  opciones: { margen?: number; tituloPx?: number; subPx?: number } = {},
+  opciones: {
+    margen?: number;
+    tituloPx?: number;
+    subPx?: number;
+    canvasAlto?: number;
+    /** Colores del globo. Por default, los del set de Mercado Libre (azul sobre
+     *  blanco). Sobre fondo oscuro hay que invertirlos o el globo desaparece. */
+    colorFondo?: string;
+    colorTexto?: string;
+    colorFlecha?: string;
+    /** Desplazamiento vertical, para no chocar con el encabezado de la placa. */
+    dy?: number;
+    /** Familia del texto del globo. Default: la de las placas de ML. */
+    familia?: string;
+    pesoFamilia?: string;
+    /** Reservar el alto del subtítulo aunque no haya. Default: sí (placas ML). */
+    reservarSubtitulo?: boolean;
+    /** Contorno de la flecha. Sobre un lente oscuro una flecha azul marino
+     *  desaparece; con un borde blanco se lee sobre cualquier parte. Sin
+     *  valor, la flecha se dibuja sola como siempre. */
+    halo?: string;
+  } = {},
 ): string {
   const { caja, tituloPx, subPx, padX, padY, trackingTitulo, trackingSub } = calcular(
     b,
@@ -159,21 +209,23 @@ export function burbujaConFlecha(
     : caja.y + caja.h / 2 + tituloPx * 0.36;
   const baseSub = baseTitulo + subPx * 1.55;
 
+  const familia = opciones.familia ?? 'Archivo Black';
+  const peso = opciones.pesoFamilia ? ` font-weight="${opciones.pesoFamilia}"` : '';
   const texto = `
-    <text x="${cx}" y="${baseTitulo}" font-family="Archivo Black" font-size="${tituloPx}"
-      letter-spacing="${trackingTitulo}" fill="${ACENTO_TEXTO}" text-anchor="middle">${escaparXml(b.titulo.toUpperCase())}</text>
+    <text x="${cx}" y="${baseTitulo}" font-family="${familia}"${peso} font-size="${tituloPx}"
+      letter-spacing="${trackingTitulo}" fill="${opciones.colorTexto ?? ACENTO_TEXTO}" text-anchor="middle">${escaparXml(b.titulo.toUpperCase())}</text>
     ${
       b.subtitulo
-        ? `<text x="${cx}" y="${baseSub}" font-family="Archivo Black" font-size="${subPx}"
-      letter-spacing="${trackingSub}" fill="${ACENTO_TEXTO}" text-anchor="middle">${escaparXml(b.subtitulo.toUpperCase())}</text>`
+        ? `<text x="${cx}" y="${baseSub}" font-family="${familia}"${peso} font-size="${subPx}"
+      letter-spacing="${trackingSub}" fill="${opciones.colorTexto ?? ACENTO_TEXTO}" text-anchor="middle">${escaparXml(b.subtitulo.toUpperCase())}</text>`
         : ''
     }`;
 
   return `
   <g>
-    <rect x="${caja.x}" y="${caja.y}" width="${caja.w}" height="${caja.h}" rx="${Math.round(h * 0.42)}" fill="${ACENTO}"/>
+    <rect x="${caja.x}" y="${caja.y}" width="${caja.w}" height="${caja.h}" rx="${Math.round(h * 0.42)}" fill="${opciones.colorFondo ?? ACENTO}"/>
     ${texto}
-    ${flechaCurva(caja, b.target, arriba, izq, canvas)}
+    ${flechaCurva(caja, b.target, arriba, izq, canvas, opciones.colorFlecha ?? opciones.colorFondo ?? ACENTO, opciones.halo)}
   </g>`;
 }
 
@@ -187,11 +239,14 @@ export function burbujaConFlecha(
  * costado, en vez de nacer siempre del mismo borde y tener que rodear.
  */
 function flechaCurva(
+  // `color` permite que la flecha acompañe al globo sobre fondos oscuros.
   caja: CajaBurbuja,
   target: { x: number; y: number },
   arriba: boolean,
   izq: boolean,
   canvas: number,
+  color: string = ACENTO,
+  halo?: string,
 ): string {
   const grosor = Math.max(6, Math.round(canvas * 0.0075));
   const inicio = salidaDeCaja(caja, target, grosor);
@@ -211,11 +266,17 @@ function flechaCurva(
     y: inicio.y + dy * 0.5 + ny * curva * signo,
   };
 
-  const punta = puntaFlecha(control, target, canvas);
+  const punta = puntaFlecha(control, target, canvas, color, halo);
+  const trazo = `M ${inicio.x.toFixed(1)} ${inicio.y.toFixed(1)} Q ${control.x.toFixed(1)} ${control.y.toFixed(1)} ${target.x.toFixed(1)} ${target.y.toFixed(1)}`;
+  // El contorno va primero y más grueso: queda como un borde alrededor del trazo.
+  const contorno = halo
+    ? `<path d="${trazo}" fill="none" stroke="${halo}" stroke-width="${grosor + Math.round(grosor * 0.9)}" stroke-linecap="round"/>`
+    : '';
 
   return `
-    <path d="M ${inicio.x.toFixed(1)} ${inicio.y.toFixed(1)} Q ${control.x.toFixed(1)} ${control.y.toFixed(1)} ${target.x.toFixed(1)} ${target.y.toFixed(1)}"
-      fill="none" stroke="${ACENTO}" stroke-width="${grosor}" stroke-linecap="round"/>
+    ${contorno}
+    <path d="${trazo}"
+      fill="none" stroke="${color}" stroke-width="${grosor}" stroke-linecap="round"/>
     ${punta}`;
 }
 
@@ -246,6 +307,8 @@ function puntaFlecha(
   desde: { x: number; y: number },
   hasta: { x: number; y: number },
   canvas: number,
+  color: string = ACENTO,
+  halo?: string,
 ): string {
   const largo = Math.round(canvas * 0.032);
   const grosor = Math.max(6, Math.round(canvas * 0.0075));
@@ -261,6 +324,10 @@ function puntaFlecha(
     y: hasta.y - largo * Math.sin(ang + abertura),
   };
 
-  return `<path d="M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} L ${hasta.x.toFixed(1)} ${hasta.y.toFixed(1)} L ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}"
-    fill="none" stroke="${ACENTO}" stroke-width="${grosor}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const trazo = `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} L ${hasta.x.toFixed(1)} ${hasta.y.toFixed(1)} L ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  const contorno = halo
+    ? `<path d="${trazo}" fill="none" stroke="${halo}" stroke-width="${grosor + Math.round(grosor * 0.9)}" stroke-linecap="round" stroke-linejoin="round"/>`
+    : '';
+  return `${contorno}<path d="${trazo}"
+    fill="none" stroke="${color}" stroke-width="${grosor}" stroke-linecap="round" stroke-linejoin="round"/>`;
 }

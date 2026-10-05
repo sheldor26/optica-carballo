@@ -20,6 +20,10 @@
  *   --a1..--a4 "0.3,0.5"            Fuerza a dónde apunta cada flecha
  *                                   (fracción del armazón: 0,0 arriba-izq).
  *                                   Sin esto, la parte se detecta en la foto.
+ *   --anclas <json>     Partes marcadas a mano con `pnpm anclas` (por defecto se lee
+ *                       `<perfil>.anclas.json`; si no existe, se usan las de otra foto
+ *                       de la misma carpeta, alineadas solas). Con
+ *                       esto no se llama a Vision y las flechas van al pixel marcado.
  *   --sin-vision        No detectar partes; usar las posiciones por defecto.
  *   --plantilla <file>  Plantilla de medidas a rellenar (default marketing/medidas.png).
  *   --lifestyle <file>  Foto de persona para la placa de lentes (opcional).
@@ -48,11 +52,14 @@ import os from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
 
+import { buscarReferencia, trasladarPartes } from './lib/placas-anclas';
 import { recortarAnteojo, encajar, type Recorte } from './lib/placas-frame';
+import { asegurarFuentes } from './lib/placas-fuentes';
 import {
   ACENTO,
   ACENTO_TEXTO,
   AZUL,
+  BLANCO,
   NEGRO,
   VERDE,
   burbujaConFlecha,
@@ -67,7 +74,9 @@ import {
   detectarPartes,
   pegarAlProducto,
   parteSegunTexto,
+  candidatasDeParte,
   resolverAncla,
+  type NombreParte,
   type Partes,
 } from './lib/placas-partes';
 
@@ -130,39 +139,6 @@ function slugify(texto: string): string {
     .replace(/^-|-$/g, '');
 }
 
-/**
- * Anton y Archivo Black tienen que estar registradas en el sistema: en
- * macOS librsvg resuelve familias por CoreText, así que no alcanza con
- * apuntar fontconfig a la carpeta del repo.
- */
-function asegurarFuentes(): void {
-  let instaladas = '';
-  try {
-    instaladas = execFileSync('fc-list', { encoding: 'utf8' });
-  } catch {
-    console.warn('⚠️ No encontré `fc-list`; asumo que las fuentes ya están instaladas.');
-    return;
-  }
-
-  const familias: Array<[string, string]> = [
-    ['Anton-Regular.ttf', 'Anton'],
-    ['ArchivoBlack-Regular.ttf', 'Archivo Black'],
-    ['DMSans-Variable.ttf', 'DM Sans'],
-  ];
-  const faltan = familias.filter(([, familia]) => !instaladas.includes(familia)).map(([f]) => f);
-  if (faltan.length === 0) return;
-
-  const destino = path.join(os.homedir(), 'Library/Fonts');
-  for (const f of faltan) {
-    execFileSync('cp', [path.join(FUENTES_DIR, f), destino]);
-    console.log(`  ✓ instalé ${f} en ~/Library/Fonts`);
-  }
-  try {
-    execFileSync('fc-cache', ['-f']);
-  } catch {
-    /* el cache se regenera solo en el próximo arranque */
-  }
-}
 
 // ---------------------------------------------------------------------
 // Composición
@@ -293,6 +269,119 @@ function separarDeLosOtros(
   return resultado;
 }
 
+
+/**
+ * Lee las partes marcadas a mano con `pnpm anclas`. Devuelve `undefined` si
+ * no hay archivo. Si el recorte de ahora no mide lo mismo que cuando se
+ * marcó, las fracciones ya no caen donde se clickeó: se avisa y se descarta.
+ */
+async function leerAnclas(ruta: string, recorte: Recorte): Promise<Partes | undefined> {
+  let archivo: { recorte?: { width: number; height: number }; partes?: Partes };
+  try {
+    archivo = JSON.parse(await fs.readFile(ruta, 'utf8'));
+  } catch {
+    return undefined;
+  }
+  const r = archivo.recorte;
+  if (r && (Math.abs(r.width - recorte.width) > 2 || Math.abs(r.height - recorte.height) > 2)) {
+    console.warn(
+      `  ⚠️ ${path.basename(ruta)} se marcó sobre un recorte de ${r.width}×${r.height} y ahora es ` +
+        `${recorte.width}×${recorte.height}: lo ignoro. Volvé a correr pnpm anclas con esta foto.`,
+    );
+    return undefined;
+  }
+  return archivo.partes && Object.keys(archivo.partes).length > 0 ? archivo.partes : undefined;
+}
+
+/** Avisa de los callouts que hablan de una parte que nadie marcó en la foto. */
+function avisarPartesFaltantes(
+  callouts: Array<{ titulo: string; subtitulo?: string }>,
+  partes: Partes,
+): void {
+  const pares: Record<string, string[]> = {
+    bisagra_izquierda: ['bisagra_izquierda', 'bisagra_derecha'],
+    patilla_izquierda: ['patilla_izquierda', 'patilla_derecha'],
+    lente_izquierdo: ['lente_izquierdo', 'lente_derecho'],
+    frente_izquierdo: ['frente_izquierdo', 'frente_derecho'],
+    puente: ['puente'],
+  };
+  for (const c of callouts.slice(0, 4)) {
+    const parte = parteSegunTexto(c.titulo, c.subtitulo);
+    if (parte === 'auto') continue;
+    const candidatas = pares[parte] ?? [parte];
+    if (!candidatas.some((n) => partes[n as keyof Partes])) {
+      console.warn(`  ⚠️ "${c.titulo}" habla de ${parte.replace(/_.*/, '')} y no la marcaste: la flecha va a una posición por defecto.`);
+    }
+  }
+}
+
+
+/** ¿Se cruzan los segmentos ab y cd? */
+function seCruzan(
+  a: { x: number; y: number },
+  b: { x: number; y: number },
+  c: { x: number; y: number },
+  d: { x: number; y: number },
+): boolean {
+  const o = (p: typeof a, q: typeof a, r: typeof a) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+  return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0;
+}
+
+/**
+ * Con las partes marcadas a mano, elige a qué punto va cada flecha mirando las
+ * cuatro a la vez. Si cada burbuja elegía sola su punto más cercano (cuando se
+ * marcaron las dos bisagras, los dos lentes...) las flechas de un mismo lado
+ * terminaban cruzadas. Acá se prueban todas las combinaciones y gana la de
+ * flechas más cortas SIN cruces.
+ */
+function asignarExactas(
+  callouts: Array<{ titulo: string; subtitulo?: string }>,
+  partes: Partes,
+  cajas: Array<{ x: number; y: number; w: number; h: number }>,
+  esquinas: Array<Burbuja['esquina']>,
+  respaldo: Array<{ fx: number; fy: number }>,
+  aLienzo: (p: { fx: number; fy: number }) => { x: number; y: number },
+): Array<{ fx: number; fy: number }> {
+  const n = Math.min(callouts.length, 4);
+  const opciones = callouts.slice(0, n).map((c, i) => {
+    const parte = parteSegunTexto(c.titulo, c.subtitulo);
+    const lista =
+      parte === 'auto' ? [] : candidatasDeParte(parte as NombreParte, partes);
+    return lista.length > 0
+      ? lista
+      : [resolverAncla(parte, partes, esquinas[i]!, respaldo[i]!)];
+  });
+  const centros = cajas.slice(0, n).map((c) => ({ x: c.x + c.w / 2, y: c.y + c.h / 2 }));
+
+  let mejor: Array<{ fx: number; fy: number }> = opciones.map((o) => o[0]!);
+  let mejorCosto = Infinity;
+  const actual: Array<{ fx: number; fy: number }> = [];
+
+  const probar = (i: number): void => {
+    if (i === n) {
+      let costo = 0;
+      const dest = actual.map(aLienzo);
+      for (let a = 0; a < n; a++) {
+        costo += Math.hypot(dest[a]!.x - centros[a]!.x, dest[a]!.y - centros[a]!.y);
+        for (let b = a + 1; b < n; b++) {
+          if (seCruzan(centros[a]!, dest[a]!, centros[b]!, dest[b]!)) costo += 1e6;
+        }
+      }
+      if (costo < mejorCosto) {
+        mejorCosto = costo;
+        mejor = [...actual];
+      }
+      return;
+    }
+    for (const p of opciones[i]!) {
+      actual[i] = p;
+      probar(i + 1);
+    }
+  };
+  probar(0);
+  return mejor;
+}
+
 /** Placa de callouts: armazón centrado + 4 burbujas amarillas con flecha. */
 async function placaCallouts(
   recorte: Recorte,
@@ -300,6 +389,8 @@ async function placaCallouts(
   destino: string,
   anclasCustom: Array<{ fx: number; fy: number } | undefined> = [],
   partes: Partes = {},
+  /** Partes marcadas a mano: se respetan al pixel, sin separarlas ni moverlas. */
+  exactas = false,
 ): Promise<void> {
   // Posiciones de respaldo, en fracciones del rectángulo del armazón, para
   // cuando no se pudieron detectar las partes. Se pueden pisar con --a1..--a4.
@@ -352,16 +443,34 @@ async function placaCallouts(
   // ver que dos flechas del mismo lado se cruzan.
   const usados: Array<{ fx: number; fy: number }> = [];
   const fijos: boolean[] = [];
+  const aLienzo = (p: { fx: number; fy: number }) => ({
+    x: fit.left + fit.width * p.fx,
+    y: fit.top + fit.height * p.fy,
+  });
+  const exactos = exactas
+    ? asignarExactas(
+        callouts,
+        partes,
+        cajas,
+        anclas.map((a) => a.esquina),
+        anclas.map((a) => ({ fx: a.fx, fy: a.fy })),
+        aLienzo,
+      )
+    : undefined;
   const puntos = callouts.slice(0, 4).map((c, i) => {
     const base = anclas[i]!;
     const custom = anclasCustom[i];
 
-    // Prioridad: lo que pidió el founder, después la parte detectada en la
-    // foto, y recién al final la posición de respaldo.
+    // Prioridad: lo que pidió el founder con --a1..--a4, después lo marcado a
+    // mano sobre la foto, después la parte detectada, y al final el respaldo.
     if (custom) {
       fijos.push(true);
       usados.push(custom);
       return custom;
+    }
+    if (exactos) {
+      fijos.push(true);
+      return exactos[i]!;
     }
 
     const parte = parteSegunTexto(c.titulo, c.subtitulo);
@@ -388,6 +497,7 @@ async function placaCallouts(
         },
       },
       ML,
+      { halo: BLANCO },
     );
   });
 
@@ -563,6 +673,26 @@ async function placaGarantia(destino: string, items: string[], titulo: string): 
   const altoLinea = itemPx * 1.38;
   const checkX = cardX + Math.round(cardW * 0.09);
   const textoX = checkX + Math.round(ML * 0.055);
+
+  // Una línea más ancha que la tarjeta se cortaba contra el borde (pasó con la
+  // 06 de Reef 177/188/196: "Lentes polarizadas con protección UV400 categoría 3").
+  // Se parte sola por la mitad y se avisa; lo ideal es poner el "|" a mano.
+  const anchoTexto = cardX + cardW - textoX - Math.round(ML * 0.04);
+  const entra = (t: string) => fontQueEntra(t, anchoTexto, 'manrope', 0.01, itemPx) >= itemPx;
+  const partir = (linea: string): string[] => {
+    if (entra(linea)) return [linea];
+    const palabras = linea.split(' ');
+    if (palabras.length < 2) return [linea];
+    let mejor = 1;
+    for (let k = 1; k < palabras.length; k++) {
+      const a = palabras.slice(0, k).join(' ').length;
+      const b = palabras.slice(k).join(' ').length;
+      if (Math.abs(a - b) < Math.abs(palabras.slice(0, mejor).join(' ').length - palabras.slice(mejor).join(' ').length)) mejor = k;
+    }
+    console.warn(`  ⚠️ 06: "${linea}" no entra en una línea; la parto sola (usá "|" para controlarlo).`);
+    return [...partir(palabras.slice(0, mejor).join(' ')), ...partir(palabras.slice(mejor).join(' '))];
+  };
+  items = items.map((item) => item.split('|').flatMap(partir).join('|'));
 
   // Reparto vertical: cada ítem ocupa según sus líneas, y el aire sobrante
   // se divide en partes iguales — así no se amontonan los de 2 líneas.
@@ -784,24 +914,46 @@ async function main(): Promise<void> {
     console.log('  ✓ 02 frente (ML + web)');
   }
   if (hacer('3')) {
-    // Dónde está cada parte en ESTA foto: sin esto las flechas apuntan a
-    // fracciones fijas del cuadro y caen donde toque.
-    const detectado = process.argv.includes('--sin-vision')
-      ? {}
-      : await detectarPartes(recortePerfil.buffer);
-    // Vision ubica bien la parte pero a veces erra el punto exacto y lo deja
-    // en el aire; esto lo devuelve al armazón antes de dibujar la flecha.
-    const partes = await pegarAlProducto(detectado, recortePerfil.buffer);
+    // Dónde está cada parte en ESTA foto. Primero lo marcado a mano con
+    // `pnpm anclas` (precisión de pixel); si no hay, Vision; si no, fijos.
+    const rutaAnclas = flag('anclas') ?? `${perfil}.anclas.json`;
+    let manuales = await leerAnclas(rutaAnclas, recortePerfil);
+    if (!manuales && !flag('anclas')) {
+      // Sin marcas propias: si otra foto de la carpeta (otro color del mismo
+      // modelo) ya tiene, se alinea contra ella y se usan sus marcas.
+      const ref = await buscarReferencia(perfil);
+      if (ref) {
+        const t = await trasladarPartes(ref, perfil);
+        manuales = t.partes;
+        console.log(
+          `  · marcas trasladadas de ${path.basename(ref)} (calce ${t.calce.toFixed(2)})` +
+            (t.dudoso ? ' ⚠️ alineación dudosa: revisá la placa' : ''),
+        );
+      }
+    }
+    let partes: Partes;
+    if (manuales) {
+      partes = manuales;
+      console.log(`  · partes marcadas a mano (${path.basename(rutaAnclas)}): ${Object.keys(partes).join(', ')}`);
+      avisarPartesFaltantes(callouts, partes);
+    } else {
+      const detectado = process.argv.includes('--sin-vision')
+        ? {}
+        : await detectarPartes(recortePerfil.buffer);
+      // Vision ubica bien la parte pero a veces erra el punto exacto y lo deja
+      // en el aire; esto lo devuelve al armazón antes de dibujar la flecha.
+      partes = await pegarAlProducto(detectado, recortePerfil.buffer);
+      const detectadas = Object.keys(partes);
+      console.log(
+        detectadas.length > 0
+          ? `  · partes detectadas: ${detectadas.join(', ')}`
+          : '  · sin detección de partes: uso las posiciones por defecto',
+      );
+    }
     if (process.argv.includes('--debug-partes')) {
       await debugPartes(recortePerfil, partes, path.join(mlDir, 'debug-partes.jpg'));
-      console.log('  · escribí debug-partes.jpg con los puntos detectados');
+      console.log('  · escribí debug-partes.jpg con los puntos de las partes');
     }
-    const detectadas = Object.keys(partes);
-    console.log(
-      detectadas.length > 0
-        ? `  · partes detectadas: ${detectadas.join(', ')}`
-        : '  · sin detección de partes: uso las posiciones por defecto',
-    );
 
     const anclas = ['a1', 'a2', 'a3', 'a4'].map((nombre) => {
       const valor = flag(nombre);
@@ -812,7 +964,7 @@ async function main(): Promise<void> {
       }
       return { fx, fy };
     });
-    await placaCallouts(recortePerfil, callouts, path.join(mlDir, '03-callouts.jpg'), anclas, partes);
+    await placaCallouts(recortePerfil, callouts, path.join(mlDir, '03-callouts.jpg'), anclas, partes, Boolean(manuales));
     console.log('  ✓ 03 callouts');
   }
   if (hacer('4')) {

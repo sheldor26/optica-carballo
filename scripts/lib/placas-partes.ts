@@ -344,6 +344,29 @@ export function resolverAncla(
   );
 }
 
+/**
+ * Todos los puntos disponibles de una parte, de los dos lados si se marcaron
+ * ambos. Sirve para decidir con la placa entera a la vista cuál conviene a
+ * cada burbuja, en vez de que cada una elija sola la más cercana.
+ */
+export function candidatasDeParte(parte: NombreParte, partes: Partes): Punto[] {
+  const contraparte: Partial<Record<NombreParte, NombreParte>> = {
+    bisagra_izquierda: 'bisagra_derecha',
+    bisagra_derecha: 'bisagra_izquierda',
+    patilla_izquierda: 'patilla_derecha',
+    patilla_derecha: 'patilla_izquierda',
+    lente_izquierdo: 'lente_derecho',
+    lente_derecho: 'lente_izquierdo',
+    frente_izquierdo: 'frente_derecho',
+    frente_derecho: 'frente_izquierdo',
+  };
+  const otra = contraparte[parte];
+  return [parte, otra]
+    .filter((n): n is NombreParte => Boolean(n))
+    .map((n) => partes[n])
+    .filter((p): p is Punto => Boolean(p));
+}
+
 function distancia(a: Punto, b: Punto): number {
   return Math.hypot(a.fx - b.fx, a.fy - b.fy);
 }

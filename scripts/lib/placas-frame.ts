@@ -21,6 +21,11 @@ export type Recorte = {
   buffer: Buffer;
   width: number;
   height: number;
+  /** Dónde estaba el recorte dentro de la foto original (sólo con `trim`).
+   *  Permite pasar un punto de una foto a otra del mismo modelo en pixeles
+   *  absolutos aunque cada una se haya recortado distinto. */
+  izquierda?: number;
+  arriba?: number;
 };
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -110,7 +115,8 @@ async function detectBboxConVision(
  * borde uniforme (foto con fondo no blanco).
  */
 export async function recortarAnteojo(
-  rutaFoto: string,
+  /** Ruta en disco o el buffer de la foto ya descargada. */
+  rutaFoto: string | Buffer,
   opciones: { usarVision?: boolean; umbralTrim?: number } = {},
 ): Promise<Recorte> {
   const original = sharp(rutaFoto).rotate();
@@ -131,10 +137,17 @@ export async function recortarAnteojo(
     // Si el trim se comió casi toda la foto (<3%) algo salió mal; si no
     // recortó nada (>99.5%) el fondo no era uniforme → Vision.
     if (recorteUtil > 0.03 && recorteUtil < 0.995) {
-      return { buffer: data, width: info.width, height: info.height };
+      return {
+        buffer: data,
+        width: info.width,
+        height: info.height,
+        izquierda: -(info.trimOffsetLeft ?? 0),
+        arriba: -(info.trimOffsetTop ?? 0),
+      };
     }
     console.warn(
-      `  ⚠️ trim no encontró fondo uniforme en ${rutaFoto} (quedó ${(recorteUtil * 100).toFixed(1)}%) → uso Claude Vision.`,
+      `  ⚠️ trim no encontró fondo uniforme en ${typeof rutaFoto === 'string' ? rutaFoto : 'la foto'} ` +
+        `(quedó ${(recorteUtil * 100).toFixed(1)}%) → uso Claude Vision.`,
     );
   }
 
