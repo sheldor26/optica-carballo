@@ -1,5 +1,16 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-10-05 — La placa de garantía de Reef 177, 188 y 196 salió con una línea cortada contra el borde y nadie la miró
+
+**Qué pasó:** en los 3 modelos puse el ítem "Lentes polarizadas con protección UV400 categoría 3" en una sola línea de la
+placa 06. Es más ancha que la tarjeta y se corta ("...categoría"). Pasé las placas por `ml:diag` (moderación de ML), que no
+mira el texto, y revisé a ojo sólo la 03 (callouts); la 06 se la di al founder sin verla. Lo descubrí al armar la del 193.
+**Causa raíz:** (1) el generador no validaba que cada línea entrara en la tarjeta; (2) mi checklist de revisión visual sólo
+cubría perfil/callouts/medidas; (3) los ítems largos eran míos, no del default.
+**Regla preventiva:** (1) mirar las 4 placas de cada color antes de entregar, no sólo la 03. (2) `placaGarantia` ahora parte
+sola una línea que no entra y avisa por consola (arreglado 2026-10-05); para controlarlo, poner el corte con `|`.
+(3) Corregidas 177/188/196 en las carpetas `RESUBIR-*` (sólo cambia la "4 garantia.jpg"); el founder tiene que re-subirlas.
+
 ## 2026-10-03 — Maté con `pkill` el servidor del clicker mientras el founder lo estaba usando; sus marcas se perdieron sin aviso
 
 **Qué pasó:** `pnpm anclas` levanta un servidor local que guarda al apretar "Guardar". Para correr `--copiar-de` hice

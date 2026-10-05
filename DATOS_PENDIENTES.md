@@ -447,3 +447,11 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] GTIN de la C10 y la C11 (ML no los devuelve en las variaciones; el de la C02 ya está). Bloquea: nada, se carga sin `gtin`.
 - [x] Lente de la C02: gris oscuro (ML, 2026-10-05).
 - [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+
+## Reef 193 Tortuga (sol, 2026-10-05)
+
+- [x] **Confirmado por el founder:** cuadrado, hombre, UV400, cat 3, bisagras metálicas sin flex; 59-17-131, ancho total 144, altura de lente 52; AR interno en las 3; C11 negro mate polarizado, C2 negro mate espejado azul NO polarizado, C12 marrón polarizado.
+- [x] **Foto del C11 (negro MATE):** la marca sólo tiene el 0007 (negro BRILLO); el founder ya la usa en ML, se usa igual en el sitio (2026-10-05). Si consigue la de mate, reemplazar.
+- [x] **Publicado en ML (2026-10-05):** C11 MLA2155221487, C12 MLA2155221489, C2 MLA4032299650, con GTIN de las 3.
+- [ ] Color del lente del C11 (se asume gris oscuro; el de ML dice solo "C11 - Negro Mate").
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
