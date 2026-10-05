@@ -989,6 +989,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 32. Reef 129 Yang (sol, envolvente), seed 157
 33. Reef 177 Aerial (sol, envolvente deportivo), seed 158
 34. Reef 188 Octopus (sol, envolvente), seed 159
+35. Reef 196 Reunión (sol, cuadrado tipo wayfarer, unisex), seed 160
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2509,6 +2510,18 @@ Sin dato en los CSV: "reef 188", "reef octopus", "reef 188 octopus". Title (60):
 Anti-canibalización: descriptor único "envolventes" (128 polarizados, 129 anteojos polarizados, 177 deportivos); token de modelo y meta distintos. Polarizado: NUNCA en title, H1, meta ni short_description; `lens_treatment` del producto sólo ["uv400"]; `polarized` y `lens_treatment:["antirreflejo-interno"]` por variante.
 Cross-link: el 188 apunta con links a 128, 129 y 177; **falta la frase de vuelta en 128, 129 y 177** (UPSERT de seeds 156-158, un solo turno: "Si buscás un envolvente de armazón inyectado, mirá los [Reef 188 Octopus](...)").
 No usar: liviano, flexible ("No Flex" de la marca no es argumento), deportivo (sólo dijo envolvente; sin `line`), Grilamid, BTR600, revo, espejado, azul para el lente, colores o cantidad de versiones en el copy, "marca argentina", resistente a rayones, "188" suelto.
+
+*Reef 196 Reunión (sol, CUADRADO tipo wayfarer, UNISEX, armazón inyectado con bisagras plásticas reforzadas, lente de policarbonato UV400 cat 3, 56-19-137, ancho 144, alto 49; 3 versiones con lente gris oscuro: C10 negro brillo y C11 negro mate polarizadas, C02 negro mate NO polarizada; las 3 con antirreflejo interno) · slug `reef-196-reunion` en `/anteojos-de-sol/reef/reef-196-reunion`. Seed 160 (borrador 2026-10-05); publicaciones tradicionales MLA2107860210 (C10/C11) y MLA4031305848 (C02)*
+| Keyword | Vol/mes | Dif | Uso |
+|---|---|---|---|
+| reef 196 reunión / reef 196 | sin dato | - | primaria de modelo (title, H1) |
+| lentes de sol cuadrados | 390 | 11 | descriptor del title y primer párrafo |
+| anteojos wayfarer | 260 | 9 | una mención en el copy ("estilo/estética tipo wayfarer") |
+| lentes de sol wayfarer | 140 | 36 | una mención, sin insistir |
+Title (58): `Lentes de Sol Cuadrados Reef 196 Reunión | Óptica Carballo`. H1 = `Reef 196 Reunión`. Meta (146): `Lentes de sol cuadrados Reef 196 Reunión, unisex: armazón inyectado, lente de policarbonato, UV400 y categoría 3. Envío a todo el país y garantía.`
+Anti-canibalización: descriptor único "cuadrados" (128/129 envolventes, 177 deportivo, 188 envolvente); NO atacar `lentes de sol reef`/`anteojos de sol reef` (hub de marca), `lentes cuadrados`, `wayfarer lentes`, `lentes wayfarer` (hubs de forma), ni variantes hombre/mujer (el 196 es unisex). "Wayfarer" una sola vez y en minúscula, nunca como nombre; sin "Ray-Ban". Polarizado: NUNCA en title, H1, meta ni short_description (C10/C11 sí, C02 no; `polarized` por variante). `frame_shape: "cuadrado"` (no `wayfarer`: ese valor mapea al filtro `/wayfarer`; cambiarlo si el founder quiere aparecer ahí).
+Cross-link: el 196 apunta a 128, 129, 177 y 188. **Frases de vuelta pendientes** (UPSERT de seeds 156-159, un solo turno, junto con las del 188 ya pendientes): 128 "Si preferís una forma cuadrada y unisex en lugar de envolvente, mirá los [Reef 196 Reunión](/anteojos-de-sol/reef/reef-196-reunion)."; 129 "Para un estilo cuadrado de línea wayfarer, mirá los [anteojos de sol Reef 196 Reunión](...)."; 177 "Si lo vas a usar todos los días y querés un frente cuadrado, mirá el [Reef 196 Reunión](...)."; 188 "Si te gusta el armazón inyectado pero en forma cuadrada, mirá el [Reef 196 Reunión](...)."
+No usar: liviano, flexible, "bisagras con sistema flex", Grilamid, BTR600, colores o cantidad de versiones, "marca argentina", "resistente a rayones", "196" suelto. `recommended_face_shapes: ["ovalado","redondo","triangular"]` (optical-expert, criterio estético).
 
 
 ### Reglas para futuros productos

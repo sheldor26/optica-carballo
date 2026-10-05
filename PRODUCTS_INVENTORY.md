@@ -105,7 +105,7 @@ Por cada marca/categoría, trackeamos:
 | Vulk: Reporter (cuadrado G-Flex, apto receta, 3 variantes) | 1 | 3 (stock 12) | 7 (HTTP 200) | 1 | ✅ Aplicado MCP (seed 43). 2 pol (S10+LGREY, multi-var MLA1866713114) → `lens_treatment ["uv400"]`. Apto receta. Primary=MBLK/G.GREEN perfil. Founder: ¿4ª var verde degradé stock 0? + tonalidad LGREY/DRT03 + chequear grid. |
 | Rusty: Dapper (G-Flex, unisex, 4 variantes) | 1 | 4 (stock 5; 2 con stock) | 9 (HTTP 200) | 1 | ✅ Aplicado MCP (seed 42). 1 pol (SBLK) → `lens_treatment ["uv400"]`. Precio/stock vía ml-import-preview prod. Primary=SBH/6208 perfil. Forma redondo (confirmado founder). Founder: chequear grid/scale. |
 | _Nota: tabla desactualizada (faltan Vrast/Etiquet/Tulle/Xold/Spell/Sotion/Zaedit/etc.). Fuente de verdad de seeds aplicados = `supabase/CLOUD_APPLIED.md`._ | | | | | |
-| Reef | 4 | 21 (stock 43) | 25 | 4 | ✅ Aplicado MCP: seed 156 (Reef 128 Yin, MLA1751925814, 8 var.), seed 157 (Reef 129 Yang, MLA1423304199, 6 var.) seed 158 (Reef 177 Aerial, 3 publicaciones, 4 var.) y seed 159 (Reef 188 Octopus, 3 publicaciones, 3 var.), 2026-10-03/05 |
+| Reef | 5 | 24 (stock 49) | 29 | 5 | ✅ Aplicado MCP: seed 156 (Reef 128 Yin, MLA1751925814, 8 var.), seed 157 (Reef 129 Yang, MLA1423304199, 6 var.) seed 158 (Reef 177 Aerial, 3 publicaciones, 4 var.), seed 159 (Reef 188 Octopus, 3 publicaciones, 3 var.) y seed 160 (Reef 196 Reunión, 2 publicaciones, 3 var.), 2026-10-03/05 |
 | Vulk | 0 | 0 | 0 | 0 | 🔴 |
 | Infinit | 0 | 0 | 0 | 0 | 🔴 |
 | Prune | 0 | 0 | 0 | 0 | 🔴 |
