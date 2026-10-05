@@ -430,3 +430,12 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] Peso (balanza). Bloquea: `weight_grams` y claims de liviano.
 - [x] **2026-10-05 — Ancho total 143 confirmado por el founder** (la geometría plana 2×64+17=145 no aplica a un envolvente).
 - [x] **2026-10-05 — C09 NO es polarizada** (confirmado por el founder).
+
+## Reef 188 Octopus (sol, 2026-10-05)
+
+- [x] **2026-10-05 — Confirmado por el founder:** envolvente, bisagras plásticas reforzadas, cat 3, UV400; C08 negro brillo polarizada con AR; C09 marrón brillo polarizada con AR; C14 negro mate sin polarizado ni AR; medidas 66-14-134, alto de lente 47, ancho total 141.
+- [x] **2026-10-05 — C09 publicada en ML:** MLA2154432869, $154.370, stock 1, GTIN 7790394181722 (la gemela de catálogo MLA4031298022 se ignora).
+- [x] **2026-10-05 — Género: hombre.**
+- [x] **2026-10-05 — C14: lente gris oscuro, NO espejado.** El founder decidió usar la foto de la marca igual y no decir revo/espejado/azul para el lente. Pendiente opcional: foto propia de la unidad si algún día la quiere.
+- [ ] Peso (balanza). Bloquea: `weight_grams` y claims de liviano (ML dice "liviano" en un título: no copiar).
+- [x] GTIN de las 3: C08 7790394181715, C09 7790394181722, C14 7790394233278 (de ML).

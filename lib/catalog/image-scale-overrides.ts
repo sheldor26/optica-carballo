@@ -762,6 +762,10 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 95-97%, así que el Bruice se veía más chico. 1.05 lo lleva a 96,6%.
   // Medido reproduciendo el render de la card (object-contain 3:2 + transform
   // scale), no a ojo. 1.10 quedaba en 101% y se recortaba.
+  // Reef 188 Octopus (seed 159): valor inicial 0.93, a verificar con `pnpm auditar:encuadre` (objetivo 86% ±7).
+  'reef-188-octopus/perfil-c14.jpg': 0.93,
+  'reef-188-octopus/perfil-c08.jpg': 0.93,
+  'reef-188-octopus/perfil-c09.jpg': 0.93,
   // Reef 177 Aerial (seed 158): valor inicial 0.93, a verificar con `pnpm auditar:encuadre` (objetivo 86% ±7).
   'reef-177-aerial/perfil-c07.jpg': 0.93,
   'reef-177-aerial/perfil-c11.jpg': 0.93,

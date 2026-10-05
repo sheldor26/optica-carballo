@@ -988,6 +988,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 31. Reef 128 Yin (sol, envolvente deportivo), seed 156
 32. Reef 129 Yang (sol, envolvente), seed 157
 33. Reef 177 Aerial (sol, envolvente deportivo), seed 158
+34. Reef 188 Octopus (sol, envolvente), seed 159
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2492,6 +2493,22 @@ Sin dato en los CSV: "reef 177", "reef aerial", "reef 177 aerial". Title: `Lente
 Anti-canibalización: familia léxica "lentes de sol deportivos" (And Now toma "anteojos de sol deportivos", 128 "lentes de sol", 129 "anteojos de sol"); token de modelo y meta distintos; cabeceras genéricas de Reef al hub. Polarizado: NUNCA en title, H1 ni meta; en copy "tres versiones polarizadas y la espejada azul no"; `polarized` por variante; alt de la C09 sin "polarizado".
 Cross-link: el 177 apunta al 128 y al 129 con una frase; **falta la frase de vuelta en el 128 y el 129** ("Para el deporte, mirá también el Reef 177 Aerial"; actualizar sus seeds, UPSERT).
 No usar: liviano, flexible, "armazón de metal o aluminio", BTR600, "para deportes" a secas ni promesas de protección deportiva, colores o cantidad de versiones, "azul" para la espejada fuera del alt, "177" suelto, "marca argentina", resistente a rayones.
+
+*Reef 188 Octopus (sol, ENVOLVENTE, HOMBRE, armazón inyectado con bisagras plásticas reforzadas, lente de policarbonato UV400 cat 3, 66-14-134, ancho 141, alto de lente 47; 3 versiones: 2 con lente polarizada y antirreflejo interno, 1 con lente gris oscuro NO polarizada y sin antirreflejo) · slug `reef-188-octopus` en `/anteojos-de-sol/reef/reef-188-octopus`. Seed 159 aplicado 2026-10-05; publicaciones tradicionales MLA1504917413, MLA1382267525 y MLA2154432869*
+| Keyword | Vol/mes | Dif | Uso |
+|---|---|---|---|
+| reef 188 octopus | sin medir | - | primaria de modelo (title, H1) |
+| lentes de sol envolventes | 70 | 36 | descriptor del title y primer párrafo |
+| lentes de sol envolventes hombre | 70 | 36 | copy y alt |
+| lentes envolventes | 90 | 16 | copy |
+| anteojos de sol envolventes hombre | 50 | 36 | una mención en copy |
+| lentes de sol categoria 3 | 30 | 36 | copy |
+| lentes de sol polarizados y antireflejo | 90 | 12 | sólo el párrafo "según la versión", nunca title/H1/meta |
+| lentes de sol reef / anteojos de sol reef | 210 / 170 | 7 / 9 | NO en esta PDP (hub y 128) |
+Sin dato en los CSV: "reef 188", "reef octopus", "reef 188 octopus". Title (60): `Lentes de Sol Envolventes Reef 188 Octopus | Óptica Carballo`. H1 = `Reef 188 Octopus`. Meta (152): `Lentes de sol envolventes Reef 188 Octopus para hombre: armazón inyectado, lente de policarbonato, UV400 y categoría 3. Envío a todo el país y garantía.`
+Anti-canibalización: descriptor único "envolventes" (128 polarizados, 129 anteojos polarizados, 177 deportivos); token de modelo y meta distintos. Polarizado: NUNCA en title, H1, meta ni short_description; `lens_treatment` del producto sólo ["uv400"]; `polarized` y `lens_treatment:["antirreflejo-interno"]` por variante.
+Cross-link: el 188 apunta con links a 128, 129 y 177; **falta la frase de vuelta en 128, 129 y 177** (UPSERT de seeds 156-158, un solo turno: "Si buscás un envolvente de armazón inyectado, mirá los [Reef 188 Octopus](...)").
+No usar: liviano, flexible ("No Flex" de la marca no es argumento), deportivo (sólo dijo envolvente; sin `line`), Grilamid, BTR600, revo, espejado, azul para el lente, colores o cantidad de versiones en el copy, "marca argentina", resistente a rayones, "188" suelto.
 
 
 ### Reglas para futuros productos
