@@ -439,3 +439,11 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [x] **2026-10-05 — C14: lente gris oscuro, NO espejado.** El founder decidió usar la foto de la marca igual y no decir revo/espejado/azul para el lente. Pendiente opcional: foto propia de la unidad si algún día la quiere.
 - [ ] Peso (balanza). Bloquea: `weight_grams` y claims de liviano (ML dice "liviano" en un título: no copiar).
 - [x] GTIN de las 3: C08 7790394181715, C09 7790394181722, C14 7790394233278 (de ML).
+
+## Reef 196 Reunión (sol, 2026-10-05) · CARGADO (seed 160)
+
+- [x] **2026-10-05 — Confirmado por el founder:** cuadrado tipo wayfarer, unisex, bisagras plásticas reforzadas, UV400 y cat 3; medidas 56-19-137, altura total 49, ancho total 144; C10 negro brillo polarizado con AR; C11 negro mate polarizado con AR; C02 negro mate sin polarizar con AR interno (usa fotos de la C11).
+- [x] **C02 en ML (2026-10-05):** subida como item aparte MLA4031305848 ($132.690, stock 2, GTIN 7790394181371, lente gris oscuro).
+- [ ] GTIN de la C10 y la C11 (ML no los devuelve en las variaciones; el de la C02 ya está). Bloquea: nada, se carga sin `gtin`.
+- [x] Lente de la C02: gris oscuro (ML, 2026-10-05).
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
