@@ -1,5 +1,18 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-10-06 — Cargué la foto equivocada del Reef 183 por interpretar a mi manera una instrucción corta del founder
+
+**Qué pasó:** el founder dijo primero "usar la de Paesani que te pasé... o la que usamos en Mercadolibre" y después, ante mi pregunta
+por color/GTIN/foto, "usa el que subimos a Mercadolibre". Lo leí como respuesta al GTIN o al color y seguí con la foto de Paesani, que
+resultó ser OTRO armazón (gris camuflado, no el negro mate de su publicación). Se aplicó a producción y él tuvo que avisar ("subiste mal
+la foto").
+**Causa raíz:** (1) ante una instrucción ambigua elegí la lectura que me dejaba seguir en vez de la más literal ("la que subimos a
+ML" = la foto de ML); (2) vi que la foto de Paesani contradecía el color "negro mate" que iba a cargar y lo dejé como "a confirmar" en
+vez de frenar antes de aplicar; (3) descarté la foto de ML por chica (500 px) sin probar que la API la da en 1200 px (`-F.jpg`).
+**Regla preventiva:** (1) si dos fuentes de foto entran en conflicto con el color que voy a cargar, NO aplicar: resolverlo antes del OK.
+(2) Cuando el founder nombra "la que usamos en ML", usar ESA y sacarla en tamaño completo (`-F.jpg`) antes de pedirle otra. (3) Si una
+instrucción de una línea admite dos lecturas, preguntar la lectura concreta en una frase antes de generar y subir archivos.
+
 ## 2026-10-05 — La placa de garantía de Reef 177, 188 y 196 salió con una línea cortada contra el borde y nadie la miró
 
 **Qué pasó:** en los 3 modelos puse el ítem "Lentes polarizadas con protección UV400 categoría 3" en una sola línea de la

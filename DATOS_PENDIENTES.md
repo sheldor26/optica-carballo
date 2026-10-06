@@ -462,6 +462,13 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Ancho total 148 / altura 49:** el mensaje decía "altura total 148, ancho total 49" (cruzados). Confirmar. Bloquea: medidas del seed y de la placa.
 - [x] **Publicación de ML del C11 (2026-10-06):** MLA4034472062, $160.590, stock 3. **GTIN:** el que tiene (7791394273622) es el de la C2 del 193, probablemente copiado: confirmar el correcto. Bloquea: sólo el `gtin` del seed.
 - [x] **Foto del C11 (2026-10-06):** la de Paesani (1200 px), placas hechas. Si el armazón real no es el de esa foto, avisar.
-- [ ] **Color real del armazón del C11:** la foto de Paesani muestra gris/negro mate camuflado con detalles azules; ML dice "Negro Mate". Bloquea: `frame_color`, label, alt y título del seed.
+- [x] **Color/foto del C11 (2026-10-06):** negro mate con la foto de su publicación de ML (corregido; la de Paesani era otro armazón).
 - [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
 - [x] **Color del armazón del C11:** negro mate (ML, 2026-10-06).
+- [x] **Foto del C11 (2026-10-06):** el C11 es negro mate liso (rediseño del que era camuflado): se mantiene la foto de su publicación de ML.
+- [ ] **Antirreflejo de C07, C09, C08 y C10:** el founder no lo sabe hasta tener los anteojos en la mano (2026-10-06); hoy no se afirma. Bloquea: sólo el copy de esas variantes.
+- [ ] **Stock de C07, C09, C08 y C10** cuando reingrese: se sincroniza solo desde ML; revisar el title/meta de la ficha (ver SEO_STRATEGY).
+- [x] **Medidas de C07, C09, C08 y C10 (2026-10-06):** las mismas del C11, confirmado por el founder.
+- [ ] **Nombres de color de las 4 variantes viejas:** C09 "negro mate con detalle naranja", C08 "marrón transparente", C10 "gris oscuro transparente" son lo que se ve en la foto; ML las llama "Negro Mate", "Marrón" y "Gris Oscuro Transparente". Confirmar. Bloquea: sólo la etiqueta del selector.
+- [x] **GTIN del C11 del 183 (2026-10-06):** 7791394273622 confirmado por el founder (cargado en Cloud y en el seed 162; coincide con el de la C2 del 193).
+

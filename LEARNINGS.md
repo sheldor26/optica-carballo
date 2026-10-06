@@ -22,6 +22,20 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-10-06 — Fotos de un modelo dado de baja en la marca: barrido de ids de imagen ordenado por parecido de SILUETA (los 5 colores del Reef 183 entre 3.750 imágenes)
+
+**El caso:** el Reef 183 Bolero ya no está en `reefeyewear.com`, pero el founder recordó (otra vez) que la URL de cada imagen queda viva. El
+barrido "a ojo" por montajes de ids (3431-3729) no lo encontró porque el rango estaba mal. Con la búsqueda exhaustiva pedida (ids 1-5600,
+~3.750 JPEG, 150 MB, 24 `curl` en paralelo, ~3 min) hacía falta algo que no fuera mirar 3.750 fotos.
+**Lo que funcionó:** comparar la SILUETA (máscara no-blanco recortada a su caja y reducida a 96×48) contra 4-5 fotos de referencia del mismo
+modelo sacadas de las publicaciones viejas de ML o de una revendedora (IoU). Con 5 referencias (4 de ML + la de Paesani) los colores del Bolero (ids 3796-3799, 1300 px) salieron con IoU 0,96-1,00 y
+el 3800 (translúcido) entró en el top 20 con 0,83; con sólo 2 referencias el orden cambia, así que conviene pasar TODAS las que haya. Un montaje de los 48 mejores lo resolvió en una mirada.
+**Por qué importa:** la marca usa siempre el mismo ángulo de cámara, así que la silueta es una huella casi única del modelo; no hace falta
+ningún modelo de IA (anda sin créditos de Anthropic). Sirve también para ubicar colores viejos (los ids 628/630 eran Bolero carey).
+**Herramienta:** `scripts/marca-buscar-por-silueta.cjs` (los pasos de descarga están en su cabecera). Corolario: la foto de la publicación
+del propio founder puede ser de OTRO modelo si clonó la publicación (la de su Bolero C11 era del frente del Tortuga): validar siempre
+la forma contra la silueta de las demás variantes antes de usarla.
+
 ## 2026-10-06 — Foto de un modelo dado de baja en la marca: si el barrido de imágenes no lo encuentra, sacarla de una óptica revendedora con el navegador del panel (curl da 403)
 
 **El caso:** el Reef 183 Bolero ya no figura en `reefeyewear.com` y el barrido de ids de imagen (3431-3729) sólo trajo otras marcas. La
