@@ -7,12 +7,12 @@
 --
 -- DATOS CONFIRMADOS POR EL FOUNDER (2026-10-05/06): cuadrado deportivo, hombre, cat 3, UV400, bisagra metálica sin flex; medidas 60-17-139, ancho total 148, altura 49 (su mensaje decía "altura 148 / ancho 49": cruzados,
 -- asumido ancho 148 y altura 49; Paesani publica "ancho 147, lente 60, alto 49"). C11 = espejado azul, con AR interno, sin polarizar. Altura cargada tal cual en lens_height_mm (regla del founder).
--- ⚠️ COLOR DEL ARMAZÓN: el founder pidió "usar el que subimos a ML" = "C11 - Negro Mate / Espejado Azul" => `frame_color:"negro-mate"`. La foto de Paesani muestra un armazón gris/negro mate CAMUFLADO con detalles azules
--- (la foto que el founder puso en ML es del Tortuga 193). Si el armazón real es camuflado, corregir `frame_color`, el label y la foto en un UPSERT. El texto del producto y el alt NO nombran el color del armazón.
--- ⚠️ GTIN: ML tiene 7791394273622 = el MISMO de la C2 del Reef 193 (copiado al clonar la publicación): NO se carga hasta que el founder pase el correcto.
+-- COLOR DEL ARMAZÓN: negro mate ("C11 - Negro Mate / Espejado Azul" en ML) => `frame_color:"negro-mate"`.
+-- 📷 FOTO (corregida 2026-10-06): el founder pidió "la que subimos a ML" y yo había puesto la de Paesani (gris camuflado, otro armazón). La definitiva es la foto de su publicación de ML en tamaño completo (1200×500, `-F.jpg` de mlstatic), negro mate con placa metálica REEF: `perfil-c11-ml.jpg`.
+-- GTIN 7791394273622: el founder lo CONFIRMÓ (2026-10-06) para el C11, aunque es el mismo que figura en la C2 del Reef 193; se carga tal cual (dos variantes comparten GTIN en el sitio).
 -- Marco: valor neutro `injected` (la marca dice BTR600/Grilamid; no se usan).
 --
--- 📷 FOTO: la de Paesani (opticapaesani.com.ar, product_zoom 1200 px) por pedido del founder. Placas generadas con esa foto (ml + web).
+-- Las placas se regeneraron con esa foto (`marketing/placas-ml/reef-183-c11-ml`, carpeta `SUBIR-reef-183`).
 -- 🎯 SEO (seo-strategist): slug reef-183-bolero, descriptor "Espejados" (deportivo=177, cuadrado=196, hombre=193); "deportivo" y "cuadrado" sólo como adjetivos; sin "polarizado" en title/H1/short/meta.
 -- 🏷️ SKU de casa REEF183-C11.
 -- ============================================
@@ -55,11 +55,11 @@ ON CONFLICT (slug) DO UPDATE SET
   name=EXCLUDED.name, short_description=EXCLUDED.short_description, description=EXCLUDED.description,
   attributes=EXCLUDED.attributes, meta_title=EXCLUDED.meta_title, meta_description=EXCLUDED.meta_description, updated_at=now();
 
--- 1 variante: item simple de ML (variation_code NULL). Sin `gtin` (el de ML es el del 193 C2, ver arriba).
+-- 1 variante: item simple de ML (variation_code NULL).
 INSERT INTO public.product_variants (product_id, sku, attributes, price_cents, stock_qty, is_active, sort_order, mercadolibre_item_id, mercadolibre_variation_code)
 VALUES
   ((SELECT id FROM public.products WHERE slug='reef-183-bolero'), 'REEF183-C11',
-   '{"frame_color":"negro-mate","lens_color":"azul-espejado","polarized":false,"lens_treatment":["antirreflejo-interno"],"model_code":"C11"}'::jsonb,
+   '{"frame_color":"negro-mate","lens_color":"azul-espejado","polarized":false,"lens_treatment":["antirreflejo-interno"],"model_code":"C11","gtin":"7791394273622"}'::jsonb,
    16059000, 3, true, 1, 'MLA4034472062', NULL)
 ON CONFLICT (sku) DO UPDATE SET
   product_id=EXCLUDED.product_id, attributes=EXCLUDED.attributes, price_cents=EXCLUDED.price_cents,
@@ -70,7 +70,7 @@ ON CONFLICT (sku) DO UPDATE SET
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='reef-183-bolero'), (SELECT id FROM public.product_variants WHERE sku='REEF183-C11'),
-   'reef-183-bolero/perfil-c11.jpg', 'Lentes de sol espejados Reef 183 Bolero para hombre, vista de perfil: armazón cuadrado de estilo deportivo con lente espejado azul', 2000, 1333, 0, true),
+   'reef-183-bolero/perfil-c11-ml.jpg', 'Lentes de sol espejados Reef 183 Bolero para hombre, vista de perfil: armazón negro mate cuadrado de estilo deportivo con lente espejado azul', 2000, 1333, 0, true),
   ((SELECT id FROM public.products WHERE slug='reef-183-bolero'), NULL,
    'reef-183-bolero/medidas.jpg', 'Esquema técnico de medidas Reef 183 Bolero: ancho total 148mm, lente 60mm, alto 49mm, puente 17mm, varilla 139mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
