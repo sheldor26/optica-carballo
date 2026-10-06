@@ -455,3 +455,13 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [x] **Publicado en ML (2026-10-05):** C11 MLA2155221487, C12 MLA2155221489, C2 MLA4032299650, con GTIN de las 3.
 - [ ] Color del lente del C11 (se asume gris oscuro; el de ML dice solo "C11 - Negro Mate").
 - [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+
+## Reef 183 Bolero (sol, 2026-10-05)
+
+- [x] **Confirmado por el founder:** 60-17-139, cuadrado deportivo, hombre, cat 3, UV400, bisagra metálica sin flex; sólo stock del C11 espejado azul, AR interno, sin polarizar.
+- [ ] **Ancho total 148 / altura 49:** el mensaje decía "altura total 148, ancho total 49" (cruzados). Confirmar. Bloquea: medidas del seed y de la placa.
+- [x] **Publicación de ML del C11 (2026-10-06):** MLA4034472062, $160.590, stock 3. **GTIN:** el que tiene (7791394273622) es el de la C2 del 193, probablemente copiado: confirmar el correcto. Bloquea: sólo el `gtin` del seed.
+- [x] **Foto del C11 (2026-10-06):** la de Paesani (1200 px), placas hechas. Si el armazón real no es el de esa foto, avisar.
+- [ ] **Color real del armazón del C11:** la foto de Paesani muestra gris/negro mate camuflado con detalles azules; ML dice "Negro Mate". Bloquea: `frame_color`, label, alt y título del seed.
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+- [x] **Color del armazón del C11:** negro mate (ML, 2026-10-06).

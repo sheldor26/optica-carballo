@@ -22,6 +22,19 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-10-06 — Foto de un modelo dado de baja en la marca: si el barrido de imágenes no lo encuentra, sacarla de una óptica revendedora con el navegador del panel (curl da 403)
+
+**El caso:** el Reef 183 Bolero ya no figura en `reefeyewear.com` y el barrido de ids de imagen (3431-3729) sólo trajo otras marcas. La
+foto de la publicación de ML del founder tenía 500×208 px. La de la óptica Paesani (`opticapaesani.com.ar/anteojos-reef-bolero.html`)
+sí servía, pero `curl` a la página devuelve 403 de Cloudflare.
+**Lo que funcionó:** abrir la página en el navegador del panel (`preview_start`/`navigate`), leer los `<img>` con `javascript_tool`
+(`naturalWidth`, `currentSrc`) y descubrir la variante `-product_zoom` (1200×1200). Esa URL de imagen sí se baja con `curl -A "Mozilla/5.0"`
+(el 403 es sólo de la página HTML, no del CDN de imágenes). Salió en 3 llamadas.
+**Por qué importa:** el barrido de ids sólo sirve si el modelo estuvo activo en el catálogo; para uno que se dio de baja hace tiempo, el
+camino corto es una revendedora, y el patrón `<id>-product_zoom/<slug>.jpg` de PrestaShop da la mejor resolución.
+**Además:** antes de usar la foto que el founder puso en su propia publicación de ML, compararla con la del revendedor: la suya era de otro
+modelo (Tortuga 193) y las placas 2-4 tenían las medidas del 193. Verificar siempre foto y medidas contra el modelo.
+
 ## 2026-09-29 — El listado paginado de una carpeta de Dropbox puede omitir archivos reales — bajar la carpeta completa como ZIP es la forma confiable de auditarla
 
 **El caso**: en Mormaii Hover, el founder encontró un archivo (`MO_Hover_col05_RX_Lateral.jpg`) que mi
