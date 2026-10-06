@@ -991,6 +991,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 34. Reef 188 Octopus (sol, envolvente), seed 159
 35. Reef 196 Reunión (sol, cuadrado tipo wayfarer, unisex), seed 160
 36. Reef 193 Tortuga (sol, cuadrado ancho, hombre), seed 161
+37. Reef 183 Bolero (sol, cuadrado deportivo, hombre, espejado), seed 162
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2529,6 +2530,11 @@ Title (57): `Anteojos de Sol Hombre Reef 193 Tortuga | Óptica Carballo`. H1 = `
 Keywords (CSV): `anteojos de sol hombre` 3.600/11 (sólo prefijo del title; es del hub de género), `anteojos de sol para hombres` 320/10, `anteojos de sol hombre reef` 170/7 (compartida con 128/129), `lentes de sol cuadrados hombre` 90/18, `anteojos de sol cuadrados hombre` 70/35 (una mención cada una en el copy); `reef 193 tortuga`/`reef 193` sin dato.
 Anti-canibalización con el 196: el 196 es dueño de `lentes de sol cuadrados` (390/11) y de "wayfarer"; el 193 usa "anteojos de sol" + "hombre", "cuadrado" sólo como adjetivo, sin wayfarer ni envolvente, y el 196 NO suma "hombre" ni "frente ancho". Evitar: `lentes cuadrados`/`anteojos cuadrados` (hubs de forma), `lentes de sol reef`/`anteojos de sol reef`/`anteojos reef` (hub y 128), "polarizado" en title/H1/meta/short (la C2 no lo es), liviano, flexible, Grilamid, BTR600.
 Cross-link: el 193 apunta a 128, 129, 188, 177 y 196; el 196 apunta de vuelta al 193 ("Si buscás un cuadrado para hombre con lente más ancho…", aplicado 2026-10-05, seed 160 sincronizado). 177 y 188 NO suman link al 193 (ya mandan al 196 por "cuadrado"; un segundo link diluye).
+
+*Reef 183 Bolero (sol, CUADRADO DEPORTIVO, HOMBRE, armazón inyectado con bisagras metálicas sin flex, lente de policarbonato ESPEJADO AZUL NO polarizado, UV400 cat 3, AR interno, 60-17-139, ancho 148, alto 49; 1 versión: C11) · slug `reef-183-bolero` en `/anteojos-de-sol/reef/reef-183-bolero`. Seed 162 aplicado 2026-10-06; publicación tradicional MLA4034472062*
+Title (56): `Lentes de Sol Espejados Reef 183 Bolero | Óptica Carballo`. H1 = `Reef 183 Bolero`. Meta (147): `Lentes de sol espejados Reef 183 Bolero para hombre: cuadrados, de estilo deportivo, UV400 y categoría 3. Envío a todo el país, estuche y garantía.`
+Descriptor único "espejados" (deportivo = 177 `lentes de sol deportivos` 210/17, cuadrado = 196 `lentes de sol cuadrados` 390/11, hombre = 193, envolventes = 188). Keywords (CSV): `lentes de sol espejados` 90/16 (primaria), `lentes espejados` 170/11, `anteojos espejados` 140/14, `lentes de sol espejados hombre` 50/36 (una mención cada una en el copy); `reef 183`/`reef bolero` sin dato. Evitar: `lentes de sol deportivos` (177), `lentes de sol cuadrados`/`lentes cuadrados` (196 y hubs), `lentes de sol reef`/`anteojos reef` (hub y 128), `anteojos de sol hombre` (hub/193), polarizado, liviano, flexible, Grilamid, BTR600. "Espejados" pasa a ser del 183: 177 (C09) y 193 (C2) lo mencionan una vez en el copy, sin title ni meta.
+Cross-link: el 183 apunta a 177, 193 y 196; frases de vuelta APLICADAS 2026-10-06 sólo en el 193 y el 177 (196, 128, 129 y 188 NO: otro intento, diluye). No agregar más links al 177 (ya manda al 196).
 
 
 ### Reglas para futuros productos

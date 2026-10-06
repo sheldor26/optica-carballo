@@ -762,6 +762,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // 95-97%, así que el Bruice se veía más chico. 1.05 lo lleva a 96,6%.
   // Medido reproduciendo el render de la card (object-contain 3:2 + transform
   // scale), no a ojo. 1.10 quedaba en 101% y se recortaba.
+  // Reef 183 Bolero (seed 162): foto de Paesani al 92% del ancho, igual que los demás Reef; 0.93 a verificar con `pnpm auditar:encuadre`.
+  'reef-183-bolero/perfil-c11.jpg': 0.93,
   // Reef 193 Tortuga (seed 161): fotos al 92% del ancho igual que el 196, valor inicial 0.93 a verificar con `pnpm auditar:encuadre`.
   'reef-193-tortuga/perfil-c11.jpg': 0.93,
   'reef-193-tortuga/perfil-c12.jpg': 0.93,
