@@ -12,6 +12,7 @@
 -- GTIN 7791394273622: el founder lo CONFIRMÓ (2026-10-06) para el C11, aunque es el mismo que figura en la C2 del Reef 193; se carga tal cual (dos variantes comparten GTIN en el sitio).
 -- Marco: valor neutro `injected` (la marca dice BTR600/Grilamid; no se usan).
 --
+-- 📷 FOTO DEFINITIVA (2026-10-06, tercera): el founder señaló que la "real" del C11 es la de Paesani `lentes-de-sol-reef-183-bolero-11-espejado-azul` (id 44197, product_zoom 1200 px): negro mate (dibujo oscuro sutil) con bandas azules en la unión de las patillas, forma Bolero. `perfil-c11-pae.jpg`.
 -- Las placas se regeneraron con esa foto (`marketing/placas-ml/reef-183-c11-ml`, carpeta `SUBIR-reef-183`).
 -- 🎯 SEO (seo-strategist): slug reef-183-bolero, descriptor "Espejados" (deportivo=177, cuadrado=196, hombre=193); "deportivo" y "cuadrado" sólo como adjetivos; sin "polarizado" en title/H1/short/meta.
 -- 🏷️ SKU de casa REEF183-C11.
@@ -70,7 +71,7 @@ ON CONFLICT (sku) DO UPDATE SET
 INSERT INTO public.product_images (product_id, variant_id, storage_path, alt_text, width, height, sort_order, is_primary)
 VALUES
   ((SELECT id FROM public.products WHERE slug='reef-183-bolero'), (SELECT id FROM public.product_variants WHERE sku='REEF183-C11'),
-   'reef-183-bolero/perfil-c11-ml.jpg', 'Lentes de sol espejados Reef 183 Bolero para hombre, vista de perfil: armazón negro mate cuadrado de estilo deportivo con lente espejado azul', 2000, 1333, 0, true),
+   'reef-183-bolero/perfil-c11-pae.jpg', 'Lentes de sol espejados Reef 183 Bolero para hombre, vista de perfil: armazón negro mate cuadrado de estilo deportivo con detalles azules y lente espejado azul', 2000, 1333, 0, true),
   ((SELECT id FROM public.products WHERE slug='reef-183-bolero'), NULL,
    'reef-183-bolero/medidas.jpg', 'Esquema técnico de medidas Reef 183 Bolero: ancho total 148mm, lente 60mm, alto 49mm, puente 17mm, varilla 139mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

@@ -776,7 +776,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'reef-183-bolero/perfil-c08-marca.jpg': 0.93,
   'reef-183-bolero/perfil-c10-marca.jpg': 0.93,
   // Reef 183 Bolero (seed 162): foto de Paesani al 92% del ancho, igual que los demás Reef; 0.93 a verificar con `pnpm auditar:encuadre`.
-  'reef-183-bolero/perfil-c11-ml.jpg': 0.93,
+  'reef-183-bolero/perfil-c11-pae.jpg': 0.93,
   // Reef 193 Tortuga (seed 161): fotos al 92% del ancho igual que el 196, valor inicial 0.93 a verificar con `pnpm auditar:encuadre`.
   'reef-193-tortuga/perfil-c11.jpg': 0.93,
   'reef-193-tortuga/perfil-c12.jpg': 0.93,
