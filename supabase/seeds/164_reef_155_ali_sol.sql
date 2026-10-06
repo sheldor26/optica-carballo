@@ -14,6 +14,7 @@
 -- La marca (calibre 55, puente 18, alto 36, patilla 136, "No Flex", BTR600) no gana contra los datos del founder. Marco: valor neutro `injected`.
 -- `frame_shape:"rectangular"` (seo-strategist: "cuadrado" ya es de 196 y 193 en el filtro); el founder dijo "clásico cuadrado": cambiar a `cuadrado` si prefiere.
 -- POLARIZADO PARCIAL: `polarized` por variante (C25, C18, C20 true); `lens_treatment` del producto sólo ["uv400"]; AR interno por variante. Sin "polarizado" en title/H1/short/meta.
+-- 📷 FOTO C07 (cambiada 2026-10-06 por pedido del founder, "se ve mejor"): la de Paesani `anteojos-reef-ali-patillas-rojo` (id 5231, product_zoom 1200 px) en vez de la de su publicación de ML: `perfil-c07-pae.jpg`.
 -- 📷 FOTOS: de la marca (reefeyewear.com ids 4531=C25, 4530=C24, 3786=C14, 4525=C01, 3787=C18, 3788=C20); la C07 (patillas rojas) NO está en la marca: foto de su publicación vieja de ML en tamaño completo (-F, 1200 px).
 -- 🎯 SEO (seo-strategist): slug reef-155-ali, descriptor "Rectangulares" (cuadrados=196, hombre=193, espejados=183, deportivos=177, envolventes=188). Sin color ni cantidad de versiones en el copy.
 -- ============================================
@@ -95,7 +96,7 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='reef-155-ali'), (SELECT id FROM public.product_variants WHERE sku='REEF155-C14'),
    'reef-155-ali/perfil-c14.jpg', 'Lentes de sol rectangulares Reef 155 Ali en negro mate con lente espejada azul, vista de perfil', 2000, 1333, 2, false),
   ((SELECT id FROM public.products WHERE slug='reef-155-ali'), (SELECT id FROM public.product_variants WHERE sku='REEF155-C07'),
-   'reef-155-ali/perfil-c07.jpg', 'Lentes de sol rectangulares Reef 155 Ali con frente negro brillante y patillas rojas, vista de perfil', 2000, 1333, 3, false),
+   'reef-155-ali/perfil-c07-pae.jpg', 'Lentes de sol rectangulares Reef 155 Ali con frente negro brillante y patillas rojas, vista de perfil', 2000, 1333, 3, false),
   ((SELECT id FROM public.products WHERE slug='reef-155-ali'), (SELECT id FROM public.product_variants WHERE sku='REEF155-C01'),
    'reef-155-ali/perfil-c01.jpg', 'Lentes de sol rectangulares Reef 155 Ali en negro brillante, vista de perfil', 2000, 1333, 4, false),
   ((SELECT id FROM public.products WHERE slug='reef-155-ali'), (SELECT id FROM public.product_variants WHERE sku='REEF155-C18'),

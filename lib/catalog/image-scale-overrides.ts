@@ -766,7 +766,7 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'reef-155-ali/perfil-c25.jpg': 0.93,
   'reef-155-ali/perfil-c24.jpg': 0.93,
   'reef-155-ali/perfil-c14.jpg': 0.93,
-  'reef-155-ali/perfil-c07.jpg': 0.93,
+  'reef-155-ali/perfil-c07-pae.jpg': 0.93,
   'reef-155-ali/perfil-c01.jpg': 0.93,
   'reef-155-ali/perfil-c18.jpg': 0.93,
   'reef-155-ali/perfil-c20.jpg': 0.93,
