@@ -1,5 +1,11 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-10-06 — Tres fotos distintas para el C11 del Reef 183 en un mismo día: no verifiqué la foto contra la página del producto exacto en la revendedora
+
+**Qué pasó:** cargué primero la foto de Paesani del "Bolero Espejado Azul" (camuflada), después la de la publicación de ML del founder (frente del Tortuga) y recién a la tercera la correcta (Paesani `...bolero-11-espejado-azul`, negro mate con bandas azules). Dos veces el founder tuvo que avisar.
+**Causa raíz:** busqué "Reef Bolero espejado azul" y tomé el primer resultado de la revendedora sin comprobar que fuera EL color pedido (el nombre de la página trae el código: "bolero-11"); y después reemplacé una foto dudosa por otra dudosa en vez de pedir el link exacto.
+**Regla preventiva:** (1) al sacar la foto de un revendedor, el slug/título de la página debe contener el código de color del founder (`...-11-...`); si no coincide, no usarla. (2) Con una foto que dos fuentes contradicen, pedir el link exacto en la primera vuelta, antes de generar placas y aplicar a producción. (3) Mirar la forma del frente contra las otras variantes del mismo modelo antes de cargar.
+
 ## 2026-10-06 — Cargué la foto equivocada del Reef 183 por interpretar a mi manera una instrucción corta del founder
 
 **Qué pasó:** el founder dijo primero "usar la de Paesani que te pasé... o la que usamos en Mercadolibre" y después, ante mi pregunta
