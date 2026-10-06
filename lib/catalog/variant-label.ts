@@ -9,6 +9,8 @@ export type VariantAttributesJson = Record<string, unknown>;
 
 const FRAME_COLOR_LABELS: Record<string, string> = {
   negro: 'Negro',
+  // Reef 155 Ali (seed 164): un slug nuevo; negro-mate, negro-brillo, marron-transparente, gris-oscuro, azul-espejado y marron ya existen.
+  'negro-brillo-patillas-rojas': 'Negro brillo con patillas rojas',
   // Reef 183 Bolero (seed 163): un slug nuevo; negro-brillo, negro-mate, marron-transparente y gris-oscuro-transparente ya existen.
   'negro-mate-detalle-naranja': 'Negro mate con detalle naranja',
   // Reef 188 Octopus (seed 159): dos slugs nuevos; negro-brillo, gris-oscuro y marron ya existen.
