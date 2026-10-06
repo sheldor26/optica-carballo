@@ -472,3 +472,13 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Nombres de color de las 4 variantes viejas:** C09 "negro mate con detalle naranja", C08 "marrón transparente", C10 "gris oscuro transparente" son lo que se ve en la foto; ML las llama "Negro Mate", "Marrón" y "Gris Oscuro Transparente". Confirmar. Bloquea: sólo la etiqueta del selector.
 - [x] **GTIN del C11 del 183 (2026-10-06):** 7791394273622 confirmado por el founder (cargado en Cloud y en el seed 162; coincide con el de la C2 del 193).
 
+## Reef 155 Ali (sol, 2026-10-06)
+
+- [x] **Confirmado por el founder:** clásico cuadrado hombre, bisagras plásticas, UV400, cat 3, inyección/policarbonato; 55-18-136, altura 44, ancho 139; C25 negro mate pol + AR, C24 negro mate + AR no pol, C14 espejado azul + AR no pol, C07 frente negro brillo/patillas rojas + AR no pol; lente gris oscuro salvo el espejado.
+- [x] **Links de ML (2026-10-06):** C07, C01, C14, C24, C18 y C20 pasados por el founder; las publicaciones siguen pausadas (las activa después y el stock se sincroniza). Falta el link de la **C25** (asumida MLA1388774515 por GTIN).
+- [x] **Marrón (2026-10-06):** la polarizada, ML `MLA1422986079` (0020; el founder la escribió "C02").
+- [ ] **C25 vs "024 polarizado" de ML:** la publicación vieja MLA1388774515 se llama 024 pero es polarizada (GTIN 7791394253501); confirmar que es la C25. Bloquea: el mapeo C25.
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+- [ ] **Antirreflejo de C18 (negro brillo pol) y C20 (marrón pol):** sin dato; no se afirma. Bloquea: sólo el copy de esas dos.
+- [ ] **Placas de ML de C01, C18 y C20** cuando las active (las de C25/C24/C14/C07 ya están en `SUBIR-reef-155/`).
+
