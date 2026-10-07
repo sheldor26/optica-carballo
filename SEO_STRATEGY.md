@@ -994,6 +994,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 37. Reef 183 Bolero (sol, cuadrado deportivo, hombre, espejado), seed 162
 38. Reef 155 Ali (sol, rectangular clásico, hombre), seed 164
 39. Reef 161 Pulse (sol, aviador metálico doble puente, unisex), seed 165
+40. Reef 307 (sol, deportivo envolvente con laterales calados, hombre), seed 166
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2548,6 +2549,11 @@ Cross-link: el 155 apunta a 196 y 193; frase de vuelta APLICADA sólo en el 193 
 Title (54): `Aviador Metálico Reef 161 Pulse | Lentes de Sol Unisex`. H1 = `Reef 161 Pulse`. Meta (~149): `Lentes de sol aviador metálico Reef 161 Pulse, unisex: doble puente, bisagras con sistema flex, UV400 y categoría 3. Envío a todo el país y garantía.`
 Descriptor "aviador metálico" como modificador (el resto de las formas está tomado y el catálogo ya tiene ~11 aviadores de otras marcas con "lentes/anteojos de sol aviador": The Take, Yeah, Bruice, Vulk The Trial, Mormaii Fortaleza). Keywords (CSV): `lentes aviador mujer` 210/18 (una mención, "para mujer y para hombre"), `lentes tipo aviador` 110/20, `lentes de sol estilo aviador` 30/36, `lentes de sol aviador` 170/12 (una sola mención en el copy, nunca en title/H1). Evitar `anteojos de sol aviador` (Yeah), "doble puente" en el title (Bruice), `lentes de sol reef`/`anteojos reef` (hub y 128), `lentes aviador hombre`, "espejado" como keyword (183), polarizado en title/H1/short/meta y "armazón flexible" ("flex" sólo en "bisagras con sistema flex").
 Cross-link: el 161 apunta a 128, 129 (frente de metal envolvente), 155 y a `/anteojos-de-sol/aviador`; frases de vuelta: NINGUNA (único aviador de Reef; 128/129 ya cargan 4-5 links). **Pendiente de revisar:** `/anteojos-de-sol/reef/aviador` queda con 1 producto y `lib/catalog/metadata.ts` sólo marca `noindex` con 0 (thin content).
+
+*Reef 307 (sol, DEPORTIVO de HOMBRE con frente ENVOLVENTE y LATERALES CALADOS, armazón inyectado con bisagras plásticas, lente de policarbonato UV400 cat 3, 58-17-133, ancho 144, alto 47; 3 versiones: C01 negro brillo lente gris (AR, no pol), C02 negro mate lente marrón POLARIZADA (sin AR), C03 azul mate espejado azul (AR, no pol)) · slug `reef-307` en `/anteojos-de-sol/reef/reef-307`. Seed 166 aplicado 2026-10-07; publicaciones tradicionales MLA4040499154, MLA2161555871 y MLA2161555873*
+Title (46): `Reef 307 | Lentes de Sol con Laterales Calados` (sin sufijo de marca: con él pasa de 60). H1 = `Reef 307`. Meta (~150): `Lentes de sol Reef 307 para hombre: armazón inyectado con frente envolvente y laterales calados, UV400 y categoría 3. Envío a todo el país, estuche y garantía.`
+**Descriptor:** el seo-strategist propuso "con protección lateral" (único rasgo libre); el **optical-expert lo corrigió a "laterales calados"** (no prometer protección contra viento/polvo; el callout aclara que no sella). `frame_shape:"envolvente"` (rectangular es del 155). Sin keyword propia con volumen: rankea por `reef 307` (sin dato) y tráfico interno. Keywords: `anteojos de sol hombre deportivos` 110/10 (compartida con 177: una mención en copy y alt, nunca en title), `lentes de sol categoria 3` 30/36. Evitar `lentes de sol deportivos` (177), `lentes de sol envolventes` (188), `lentes de sol reef`, `anteojos de sol hombre` (193), "polarizado" en title/H1/short/meta, y afirmar AR en la C02.
+Cross-link: el 307 apunta a 177 y 188; frase de vuelta APLICADA sólo en el 188 ("Si querés un envolvente de armazón inyectado con laterales calados, mirá los Reef 307."). Sin links nuevos en 177/128/129/196/193/183/155/161.
 
 
 ### Reglas para futuros productos
