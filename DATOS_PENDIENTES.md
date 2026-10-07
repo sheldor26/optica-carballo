@@ -482,3 +482,10 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Antirreflejo de C18 (negro brillo pol) y C20 (marrón pol):** sin dato; no se afirma. Bloquea: sólo el copy de esas dos.
 - [ ] **Placas de ML de C01, C18 y C20** cuando las active (las de C25/C24/C14/C07 ya están en `SUBIR-reef-155/`).
 
+## Reef 161 Pulse (sol, 2026-10-07)
+
+- [x] **Confirmado por el founder:** aviador metálico unisex, doble puente, bisagras metálicas flex, UV400, cat 3; 60-14-132, altura 49, ancho 140; AR interno en todas menos la C16; C08 espejado azul no polarizado; links de C08, C13, C14, C16 y C12.
+- [x] **GTIN de la C14 (2026-10-07):** 7790394200867 (el de ML, 7894563230706, era un placeholder; corregir también en la publicación).
+- [x] **Lente de C12 y C14 (2026-10-07):** gris verdoso las dos (ML decía verde y negro).
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+
