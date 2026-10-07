@@ -9,6 +9,12 @@ export type VariantAttributesJson = Record<string, unknown>;
 
 const FRAME_COLOR_LABELS: Record<string, string> = {
   negro: 'Negro',
+  // Reef 161 Pulse (seed 165): 5 slugs nuevos (aviador de metal: frente + terminales).
+  'dorado-detalles-azules': 'Dorado con detalles azules',
+  'plateado-terminales-blancas': 'Plateado con terminales blancas',
+  'plateado-terminales-negras': 'Plateado con terminales negras',
+  'dorado-detalles-ocre': 'Dorado con detalles ocre',
+  'peltre-terminales-azules': 'Peltre con terminales azules',
   // Reef 155 Ali (seed 164): un slug nuevo; negro-mate, negro-brillo, marron-transparente, gris-oscuro, azul-espejado y marron ya existen.
   'negro-brillo-patillas-rojas': 'Negro brillo con patillas rojas',
   // Reef 183 Bolero (seed 163): un slug nuevo; negro-brillo, negro-mate, marron-transparente y gris-oscuro-transparente ya existen.
@@ -97,6 +103,7 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'espejado-dorado': 'Dorado espejado',
   'espejado-naranja': 'Naranja espejado',
   'verde-g15': 'Verde G15',
+  'gris-verdoso': 'Gris verdoso',
   'rojo-degrade': 'Rojo degradé',
   'espejado-celeste': 'Celeste espejado',
   'espejado-verde': 'Verde espejado',

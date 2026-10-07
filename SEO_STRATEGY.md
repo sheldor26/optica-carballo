@@ -993,6 +993,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 36. Reef 193 Tortuga (sol, cuadrado ancho, hombre), seed 161
 37. Reef 183 Bolero (sol, cuadrado deportivo, hombre, espejado), seed 162
 38. Reef 155 Ali (sol, rectangular clásico, hombre), seed 164
+39. Reef 161 Pulse (sol, aviador metálico doble puente, unisex), seed 165
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2542,6 +2543,11 @@ Cross-link: el 183 apunta a 177, 193 y 196; frases de vuelta APLICADAS 2026-10-0
 Title (58): `Lentes de Sol Rectangulares Reef 155 Ali | Óptica Carballo`. H1 = `Reef 155 Ali`. Meta (~150): `Lentes de sol rectangulares Reef 155 Ali para hombre: armazón inyectado, lente de policarbonato, UV400 y categoría 3. Envío a todo el país y garantía.`
 Descriptor único "rectangulares" (`lentes de sol rectangulares` 320/12; `anteojos de sol rectangulares` 140/12; `lentes de sol rectangulares hombre` 70/35): 196 = cuadrados, 193 = hombre, 183 = espejados, 177 = deportivos, 188 = envolventes. `frame_shape:"rectangular"` (no "cuadrado": ese filtro es de 196/193). Evitar `lentes rectangulares` (hub de forma), `lentes de sol reef`, `anteojos de sol hombre`, `lentes de sol cuadrados`, `lentes de sol espejados`, "ray ban"/"wayfarer", color y cantidad de versiones en el copy, "polarizado" en title/H1/short/meta, y afirmar AR en C18/C20 (sin dato).
 Cross-link: el 155 apunta a 196 y 193; frase de vuelta APLICADA sólo en el 193 ("Si querés un frente rectangular más clásico y angosto…"). Sin links nuevos en 196/183/177/188/128/129. Mientras casi todas estén sin stock: sitemap/noindex temporal según la política (revisar cuando se reactiven).
+
+*Reef 161 Pulse (sol, AVIADOR METÁLICO de DOBLE PUENTE, UNISEX, bisagras metálicas con sistema flex, lente de policarbonato UV400 cat 3, 60-14-132, ancho 140, alto 49; 5 versiones: C08 espejado azul NO polarizada; C13/C14/C16/C12 polarizadas; AR interno salvo C16) · slug `reef-161-pulse` en `/anteojos-de-sol/reef/reef-161-pulse`. Seed 165 aplicado 2026-10-07; publicaciones tradicionales MLA1543877016, MLA1389495787, MLA1389535369, MLA1543903996 y MLA1389507959*
+Title (54): `Aviador Metálico Reef 161 Pulse | Lentes de Sol Unisex`. H1 = `Reef 161 Pulse`. Meta (~149): `Lentes de sol aviador metálico Reef 161 Pulse, unisex: doble puente, bisagras con sistema flex, UV400 y categoría 3. Envío a todo el país y garantía.`
+Descriptor "aviador metálico" como modificador (el resto de las formas está tomado y el catálogo ya tiene ~11 aviadores de otras marcas con "lentes/anteojos de sol aviador": The Take, Yeah, Bruice, Vulk The Trial, Mormaii Fortaleza). Keywords (CSV): `lentes aviador mujer` 210/18 (una mención, "para mujer y para hombre"), `lentes tipo aviador` 110/20, `lentes de sol estilo aviador` 30/36, `lentes de sol aviador` 170/12 (una sola mención en el copy, nunca en title/H1). Evitar `anteojos de sol aviador` (Yeah), "doble puente" en el title (Bruice), `lentes de sol reef`/`anteojos reef` (hub y 128), `lentes aviador hombre`, "espejado" como keyword (183), polarizado en title/H1/short/meta y "armazón flexible" ("flex" sólo en "bisagras con sistema flex").
+Cross-link: el 161 apunta a 128, 129 (frente de metal envolvente), 155 y a `/anteojos-de-sol/aviador`; frases de vuelta: NINGUNA (único aviador de Reef; 128/129 ya cargan 4-5 links). **Pendiente de revisar:** `/anteojos-de-sol/reef/aviador` queda con 1 producto y `lib/catalog/metadata.ts` sólo marca `noindex` con 0 (thin content).
 
 
 ### Reglas para futuros productos
