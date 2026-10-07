@@ -489,3 +489,11 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [x] **Lente de C12 y C14 (2026-10-07):** gris verdoso las dos (ML decía verde y negro).
 - [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
 
+## Reef 307 (sol, 2026-10-07)
+
+- [x] **Confirmado por el founder:** deportivo hombre, bisagras plásticas, inyección, cat 3, UV400; 58-17-133, altura 47, ancho 144; C01 negro brillo lente gris AR no pol; C02 negro mate lente marrón POL sin AR; C03 azul mate espejado azul AR no pol.
+- [x] **Publicado en ML (2026-10-07):** C01 MLA4040499154, C02 MLA2161555871, C03 MLA2161555873.
+- [ ] **Corregir en ML la C02:** título (dice "C3 Espejados Azules"), atributo "con lente polarizada" (figura No) y GTIN (repite el de la C03). Pasar el GTIN correcto de la C02. Bloquea: sólo el `gtin` de la C02.
+- [ ] **C01 polarizada o no:** la marca marca el 0001 como polarizado; el founder dice que NO. Confirmar contra la caja. Bloquea: `polarized` de la C01 (hoy false).
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+
