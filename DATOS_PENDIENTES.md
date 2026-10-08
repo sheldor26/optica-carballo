@@ -520,3 +520,10 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **AR interno de C01, C03 y C04:** ML no lo dice y no se afirma. Bloquea: el copy de esas versiones.
 - [ ] **GTIN de la C01** (ML marca "sin código"). Bloquea: sólo `gtin` de esa variante.
 - [ ] **Peso** de las 3 versiones. Bloquea: `weight_grams` y claims de liviano.
+
+## Reef 219 Pupukea (seed 170)
+- [ ] **Reactivar las 3 publicaciones en ML** (C01 `MLA1423063411`, C03 `MLA1749154764`, C05 `MLA1438018327`): están pausadas con stock 0. Revisar también los precios ($111.190 / $142.700 / $109.990, de publicaciones pausadas). Bloquea: que el sitio muestre stock.
+- [ ] **¿Cargamos la C02 polarizada** (`MLA1749180790`, pausada)? No la mencionaste. Bloquea: nada.
+- [ ] **ML titula la C05 "semiespejado azul"**; vos decís espejado azul. Si es semiespejado, corregirlo en ML o avisarme para ajustar `lens_color`.
+- [ ] **¿Placa de medidas** para el sitio? La marca tiene una sola foto por color. Bloquea: sólo `medidas.jpg`.
+- [ ] **Peso** de las 3 versiones. Bloquea: `weight_grams` y claims de liviano.

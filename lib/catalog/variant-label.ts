@@ -28,6 +28,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'negro-mate-detalles-verde-lima': 'Negro mate con detalles verde lima',
   // Reef 188 Octopus (seed 159): dos slugs nuevos; negro-brillo, gris-oscuro y marron ya existen.
   'negro-mate-patillas-azules': 'Negro mate con patillas azules',
+  'negro-mate-patillas-rojas': 'Negro mate con patillas rojas',
   'marron-brillo-patillas-marron-crema': 'Marrón brillo con patillas marrón y crema',
   // Reef 177 Aerial (seed 158): un slug nuevo; negro-mate, negro-brillo, gris-oscuro y azul-espejado ya existen.
   'azul-mate-detalles-celestes': 'Azul mate con detalles celestes',
