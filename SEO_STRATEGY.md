@@ -997,6 +997,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 40. Reef 307 (sol, deportivo envolvente con laterales calados, hombre), seed 166
 41. Reef 304 (sol, lentes grandes rectangulares deportivos, hombre), seed 167
 42. Reef 299 Pier (sol, cuadrado semi-envolvente deportivo, hombre, TODAS polarizadas), seed 168
+43. Reef 295 AI Design (sol, lente único tipo máscara, hombre, polarizado parcial), seed 169
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -2565,6 +2566,10 @@ Cross-link: el 304 apunta a 307 y 155; frase de vuelta APLICADA sólo en el 307 
 *Reef 299 Pier (sol, CUADRADO SEMI-ENVOLVENTE de HOMBRE, estilo deportivo, armazón inyectado con bisagras plásticas reforzadas, lente TAC POLARIZADA UV400 cat 3, 58-20-134, ancho 148, alto 49; 3 versiones todas polarizadas: C03 gris oscuro mate/patillas verdes, C04 negro/patillas rojas, C05 degradé gris y celeste con espejado azul + AR interno) · slug `reef-299-pier` en `/anteojos-de-sol/reef/reef-299-pier`. Seed 168 aplicado 2026-10-08; 2 publicaciones tradicionales (MLA2583781810 con 2 variaciones + MLA2584101628)*
 Title (48): `Reef 299 Pier | Lentes de Sol Hombre Polarizados`. H1 = `Reef 299 Pier`. Meta (~146): `Lentes de sol Reef 299 Pier para hombre: polarizados UV400, frente cuadrado semi-envolvente y armazón inyectado. Envío a todo el país y garantía.`
 Descriptor "hombre + polarizados" (`lentes de sol hombre polarizados` 50/35, sin la cabecera contigua del hub). `frame_shape:"cuadrado"` (no existe semi-envolvente en el enum). Link interno al hub `/anteojos-de-sol/polarizados` con anchor "lentes polarizados". **"Polarizados" en title/meta/short es CONDICIONAL: vale mientras las 3 versiones lo sean; si se suma una no polarizada hay que sacarlo de los 4 lugares** (hoy hay 3 PDPs con "polarizados": 128, 129, 299). Cross-link: el 299 apunta a 193, 188 y 177; frase de vuelta APLICADA sólo en el 193 ("Si querés un frente cuadrado con patillas de diseño y lente polarizado…").
+
+*Reef 295 AI Design (sol, LENTE ÚNICO tipo máscara de 130 mm de HOMBRE sobre frente cuadrado, estilo deportivo, armazón inyectado con bisagras plásticas, lente de policarbonato UV400 cat 3, NO se puede graduar, placa 130, patilla 115, ancho 143, alto 53; 3 versiones: C04 negro mate/detalles verde lima con lente verde polarizado, C01 negro brillo con lente gris NO polarizado, C03 azul mate con espejado azul polarizado) · slug `reef-295-ai-design` en `/anteojos-de-sol/reef/reef-295-ai-design`. Seed 169 aplicado 2026-10-08; 3 publicaciones tradicionales (items simples)*
+Title (47): `Reef 295 AI Design | Lentes de Sol Tipo Máscara`. H1 = `Reef 295 AI Design`. Meta (~155): `Lentes de sol Reef 295 AI Design para hombre: lente único tipo máscara de 130 mm, armazón inyectado, UV400 y categoría 3. Envío a todo el país y garantía.`
+Descriptor "tipo máscara / lente único" (sin volumen propio en los CSV; nadie lo usa en el catálogo; el 295 rankea por token de modelo y tráfico interno, como 307 y 304). Evitar: "polarizado" en title/H1/meta (parcial: C03 y C04; en el short va como "dos con lente polarizado"), `lentes ciclismo`/`anteojos ciclismo` (320/210 de volumen pero la ficha sólo dice "línea deportiva": no se promete), `lentes de sol espejados` (183), deportivos (177/307), cuadrados (196), envolventes (188), grandes (304), Grilamid/flexible/irrompible/ventilado. "AI Design" es el nombre oficial del modelo: queda en title/H1/meta como nombre propio y NO se agrega prosa sobre IA en el copy (regla global). Cross-link: el 295 apunta a 299, 183, 177, anteojos de receta y al hub `/anteojos-de-sol/polarizados`; frase de vuelta APLICADA sólo en el 299.
 
 
 ### Reglas para futuros productos

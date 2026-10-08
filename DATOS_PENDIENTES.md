@@ -514,3 +514,9 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **GTIN de C03 y C04** (ML no los da por variación). Bloquea: sólo `gtin`.
 - [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
 
+
+## Reef 295 AI Design (seed 169)
+- [ ] **¿Querés placa de medidas (`medidas.jpg`) para el sitio?** La plantilla supone dos lentes con puente; este modelo tiene un lente único de 130 mm sin puente. Bloquea: sólo esa imagen (el seed va sin ella).
+- [ ] **AR interno de C01, C03 y C04:** ML no lo dice y no se afirma. Bloquea: el copy de esas versiones.
+- [ ] **GTIN de la C01** (ML marca "sin código"). Bloquea: sólo `gtin` de esa variante.
+- [ ] **Peso** de las 3 versiones. Bloquea: `weight_grams` y claims de liviano.

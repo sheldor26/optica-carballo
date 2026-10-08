@@ -766,6 +766,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'reef-299-pier/perfil-c03.jpg': 0.93,
   'reef-299-pier/perfil-c04.jpg': 0.93,
   'reef-299-pier/perfil-c05.jpg': 0.93,
+  'reef-295-ai-design/perfil-c01.jpg': 0.93,
+  'reef-295-ai-design/perfil-c03.jpg': 0.93,
+  'reef-295-ai-design/perfil-c04.jpg': 0.93,
   // Reef 304 (seed 167): 3 fotos al 92% del ancho, igual que los demás Reef; 0.93 a verificar con `pnpm auditar:encuadre`.
   'reef-304/perfil-c01.jpg': 0.93,
   'reef-304/perfil-c02.jpg': 0.93,
