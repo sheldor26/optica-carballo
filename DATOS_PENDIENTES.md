@@ -522,8 +522,8 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Peso** de las 3 versiones. Bloquea: `weight_grams` y claims de liviano.
 
 ## Reef 219 Pupukea (seed 170)
-- [ ] **Reactivar las 3 publicaciones en ML** (C01 `MLA1423063411`, C03 `MLA1749154764`, C05 `MLA1438018327`): están pausadas con stock 0. Revisar también los precios ($111.190 / $142.700 / $109.990, de publicaciones pausadas). Bloquea: que el sitio muestre stock.
-- [ ] **¿Cargamos la C02 polarizada** (`MLA1749180790`, pausada)? No la mencionaste. Bloquea: nada.
-- [ ] **ML titula la C05 "semiespejado azul"**; vos decís espejado azul. Si es semiespejado, corregirlo en ML o avisarme para ajustar `lens_color`.
+- [ ] **Reactivar las publicaciones en ML** (founder 2026-10-08: sólo entró la C01, `MLA1423063411`, pausada por `out_of_stock` con 1 vendida: alcanza con cargarle stock para que se reactive; título congelado por la venta; la descripción actual dice "unisex" y nombra BTR600, conviene reemplazarla). Las 3: (C01 `MLA1423063411`, C03 `MLA1749154764`, C05 `MLA1438018327`): están pausadas con stock 0. Revisar también los precios ($111.190 / $142.700 / $109.990, de publicaciones pausadas). Bloquea: que el sitio muestre stock.
+- [x] **C02 polarizada** (`MLA1749180790`): el founder confirmó 2026-10-08 que NO la tiene; no se carga.
+- [ ] **ML titula la C05 "semiespejado azul"**; el founder confirmó 2026-10-08 que es ESPEJADA (el sitio ya dice espejado azul): corregir el título/atributo en ML.
 - [ ] **¿Placa de medidas** para el sitio? La marca tiene una sola foto por color. Bloquea: sólo `medidas.jpg`.
 - [ ] **Peso** de las 3 versiones. Bloquea: `weight_grams` y claims de liviano.
