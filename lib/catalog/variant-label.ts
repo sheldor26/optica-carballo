@@ -9,6 +9,12 @@ export type VariantAttributesJson = Record<string, unknown>;
 
 const FRAME_COLOR_LABELS: Record<string, string> = {
   negro: 'Negro',
+  // Reef 299 Pier (seed 168): 3 slugs nuevos (frente + patillas cambian juntos); los lentes verde, gris y azul-espejado ya existen.
+  'gris-oscuro-mate-patillas-verdes': 'Gris oscuro mate con patillas verdes',
+  'negro-patillas-rojas': 'Negro con patillas rojas',
+  'gris-celeste-degrade': 'Gris y celeste degradé',
+  // Reef 304 (seed 167): un frame nuevo (negro arriba que baja a turquesa); negro-mate y negro-brillo ya existen.
+  'negro-turquesa-degrade': 'Negro y turquesa degradé',
   // Reef 161 Pulse (seed 165): 5 slugs nuevos (aviador de metal: frente + terminales).
   'dorado-detalles-azules': 'Dorado con detalles azules',
   'plateado-terminales-blancas': 'Plateado con terminales blancas',
@@ -108,6 +114,7 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'espejado-celeste': 'Celeste espejado',
   'espejado-verde': 'Verde espejado',
   'gris-semi-espejado': 'Gris semi-espejado',
+  'azul-semi-espejado': 'Azul semi-espejado',
 };
 
 function toTitleCase(s: string): string {

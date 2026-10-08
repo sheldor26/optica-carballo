@@ -494,6 +494,23 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [x] **Confirmado por el founder:** deportivo hombre, bisagras plásticas, inyección, cat 3, UV400; 58-17-133, altura 47, ancho 144; C01 negro brillo lente gris AR no pol; C02 negro mate lente marrón POL sin AR; C03 azul mate espejado azul AR no pol.
 - [x] **Publicado en ML (2026-10-07):** C01 MLA4040499154, C02 MLA2161555871, C03 MLA2161555873.
 - [ ] **Corregir en ML la C02:** título (dice "C3 Espejados Azules"), atributo "con lente polarizada" (figura No) y GTIN (repite el de la C03). Pasar el GTIN correcto de la C02. Bloquea: sólo el `gtin` de la C02.
-- [ ] **C01 polarizada o no:** la marca marca el 0001 como polarizado; el founder dice que NO. Confirmar contra la caja. Bloquea: `polarized` de la C01 (hoy false).
+- [x] **C01 NO es polarizada (2026-10-07):** el founder la probó físicamente; la marca la declara polarizada pero manda lo suyo. El sitio ya la tiene `polarized:false`.
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+
+## Reef 304 (sol, 2026-10-08)
+
+- [x] **Confirmado por el founder:** cuadrado/rectangular deportivo hombre, inyección, bisagras plásticas reforzadas, cat 3; 62-18-118, altura 46, ancho 145; las 3 con AR interno; link de ML multivariante.
+- [x] **Polarizado (2026-10-08):** ninguna de las 3 es polarizada (confirmado por el founder); el sitio ya las tiene `polarized:false`.
+- [ ] **Colores de lente de C01 y C06** (se asumió gris por la foto de la marca) y GTIN de cada una (ML no los da por variación). Bloquea: sólo `lens_color` y `gtin`.
+- [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
+- [x] **Varilla del 304 (2026-10-08):** 118 mm es lo que dice el armazón (confirmado por el founder; la marca también). Queda como está.
+
+## Reef 299 Pier (sol, 2026-10-08)
+
+- [x] **Confirmado por el founder:** cuadrado deportivo hombre, bisagra plástica reforzada, cat 3; 58-20-134, altura 49, ancho 148; todas polarizadas; C005 Raised = polarizado + espejado azul + AR interno; links de ML.
+- [x] **¿La segunda variación de MLA2583781810 es la C04 (negro con patillas rojas)?** ML la nombra sólo "Cuadrado Semi-envolvente". Bloquea: el `model_code`/`frame_color` de esa variante (hoy C04, negro con patillas rojas, lente gris). **Confirmado por el founder 2026-10-08: es la C04.**
+- [ ] **AR de C03 y C04:** el founder sólo lo afirmó para la C05; no se afirma en las otras. Bloquea: el copy de esas dos.
+- [ ] **Colores de lente de C03 (verde) y C04 (gris)** según ML y la foto; confirmar. Bloquea: sólo `lens_color`.
+- [ ] **GTIN de C03 y C04** (ML no los da por variación). Bloquea: sólo `gtin`.
 - [ ] Peso. Bloquea: `weight_grams` y claims de liviano.
 
