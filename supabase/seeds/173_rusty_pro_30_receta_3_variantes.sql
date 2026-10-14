@@ -18,10 +18,10 @@
 BEGIN;
 
 UPDATE public.products SET
-  short_description = 'Rusty PRO 30: armazón de receta cuadrado para hombre, ultraliviano (22,9 g), en 4 colores con terminales de goma ajustables. Apto monofocal, bifocal y progresivo.',
+  short_description = 'Rusty PRO 30: armazón de receta cuadrado para hombre, liviano (22,9 g), en 4 colores con terminales de goma ajustables. Apto monofocal, bifocal y progresivo.',
   description = E'El **Rusty PRO 30** es un armazón de receta **cuadrado para hombre**, de 22,9 g. **Frente de G-Flex** con **patillas de G-Flex con alma de metal interior** y **terminales de goma ajustables y antideslizantes**, para un calce cómodo y firme.\n\nMedidas: frente 149 mm · lente 56 mm de ancho × 48 mm de alto · puente 19 mm · varilla 140 mm.\n\nViene con lentes demo (sin graduación). Sumale tus cristales con receta: monofocales, bifocales, progresivos o multifocales.\n\nDisponible en 4 colores:\n\n• Gris transparente con terminales azules.\n• Cristal transparente con terminales negros.\n• Negro brillo con terminales verdes.\n• Carey mate con terminales verdes.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   attributes = jsonb_set(attributes, '{callouts,0}',
-    '{"body": "Frente de G-Flex en gris transparente, cristal transparente, negro brillo o carey mate. Patillas con alma de metal interior y terminales de goma ajustables y antideslizantes. Ultraliviano: 22,9 g.", "type": "info", "title": "Cuadrado para hombre en 4 colores", "position": "top"}'::jsonb),
+    '{"body": "Frente de G-Flex en gris transparente, cristal transparente, negro brillo o carey mate. Patillas con alma de metal interior y terminales de goma ajustables y antideslizantes. Liviano: 22,9 g.", "type": "info", "title": "Cuadrado para hombre en 4 colores", "position": "top"}'::jsonb),
   updated_at = now()
 WHERE slug = 'rusty-pro-30-receta';
 

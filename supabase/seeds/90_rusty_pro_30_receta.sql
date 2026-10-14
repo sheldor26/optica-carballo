@@ -57,7 +57,7 @@ WITH
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
   (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-pro-30-receta', 'Rusty PRO 30 Optics',
-  'Rusty PRO 30: armazón de receta cuadrado para hombre, gris transparente con terminales azules, ultraliviano (22,9g). Apto monofocal, bifocal y progresivo.',
+  'Rusty PRO 30: armazón de receta cuadrado para hombre, gris transparente con terminales azules, liviano (22,9g). Apto monofocal, bifocal y progresivo.',
   E'El **Rusty PRO 30** es un armazón de receta **cuadrado para hombre**, en gris transparente con terminales azules, de 22,9 g. **Frente de G-Flex** con **patillas de G-Flex con alma de metal interior** y **terminales de goma ajustables y antideslizantes**, para un calce cómodo y firme.\n\nMedidas: frente 149 mm · lente 56 mm de ancho × 48 mm de alto · puente 19 mm · varilla 140 mm.\n\nViene con lentes demo (sin graduación). Sumale tus cristales con receta: monofocales, bifocales, progresivos o multifocales.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
@@ -71,7 +71,7 @@ VALUES (
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
     "callouts": [
-      {"type": "info", "position": "top", "title": "Cuadrado transparente para hombre", "body": "Frente de G-Flex, gris transparente con terminales azules. Patillas con alma de metal interior y terminales de goma ajustables y antideslizantes. Ultraliviano: 22,9 g."},
+      {"type": "info", "position": "top", "title": "Cuadrado transparente para hombre", "body": "Frente de G-Flex, gris transparente con terminales azules. Patillas con alma de metal interior y terminales de goma ajustables y antideslizantes. Liviano: 22,9 g."},
       {"type": "tip", "position": "middle", "title": "Apto para tu graduación", "body": "Acepta lentes monofocales, bifocales, progresivos y multifocales. Si tenés dudas con tu receta, escribinos antes de comprar."},
       {"type": "recommendation", "position": "bottom", "title": "Cómo cotizar tu receta", "body": "Escribinos por WhatsApp con foto de tu receta. Te pasamos el costo del laboratorio según tu graduación + tratamientos (antirreflex, fotocromático). Armazón + cristales en 7-10 días hábiles."}
     ],
