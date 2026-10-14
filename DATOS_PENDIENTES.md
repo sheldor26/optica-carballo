@@ -527,3 +527,10 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **ML titula la C05 "semiespejado azul"**; el founder confirmó 2026-10-08 que es ESPEJADA (el sitio ya dice espejado azul): corregir el título/atributo en ML.
 - [ ] **¿Placa de medidas** para el sitio? La marca tiene una sola foto por color. Bloquea: sólo `medidas.jpg`.
 - [ ] **Peso** de las 3 versiones. Bloquea: `weight_grams` y claims de liviano.
+
+## Rusty Clevel receta (seed 172)
+- [ ] **Alto del hueco del cristal** (medir con regla, no la altura total de 46 mm). Bloquea: el texto de progresivos en sitio y ML (si da 40 mm o más, la frase queda; si da menos, se ajusta).
+- [ ] **¿El lente demo trae filtro Blue Cut de verdad?** Rusty lo declara; en el Bruice se había desmentido. Bloquea: nada (hoy va "según el fabricante").
+- [ ] **¿Incluye estuche y franela?** Se asumió la política universal. Bloquea: la línea "Incluye" del sitio y de ML.
+- [ ] **Peso real con cristales** no hace falta; el del armazón (24,7 g) es dato de Rusty.
+- [ ] **ML:** atributos `Con patillas flex: No` y el título propio de cada item; la publicación de la C1 no tiene GTIN.

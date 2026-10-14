@@ -896,6 +896,10 @@ obligatorio K12 ↔ K13 en relacionados + ambos → `/marcas/rusty` + `/anteojos
 translúcido, Grilamid TR-90 liviano y resistente. Envío a todo el país, 30+ años en óptica
 familiar.` (160)
 
+*Rusty Clevel Optics (receta, rectangular de bordes gruesos en ACETATO, UNISEX, bisagras de acero inoxidable sin flex, 24,7 g, 53-18-145, alto total 46, ancho total 143, 2 colores: C1 negro brillo y C2 marrón claro transparente) · slug `rusty-clevel-receta` en `/anteojos-de-receta/rusty/rusty-clevel-receta`. Seed 172 aplicado 2026-10-14; 2 publicaciones de ML (items simples)*
+Title (51): `Rusty Clevel Optics en Acetato | Anteojos de Receta`. H1 = `Rusty Clevel Optics` (convención de la línea receta de Rusty: "Rusty <Modelo> Optics"). Meta (~160): `Anteojos de receta Rusty Clevel Optics de acetato, rectangular de bordes gruesos. 24,7 g, 2 colores. Monofocales, bifocales o progresivos. Envíos a todo el país.`
+Descriptor primario "lentes de acetato" (110/11): es el único Rusty de receta en acetato (los demás son G-Flex o metal), sostenido por el branded `rusty clevel`; una vez "anteojos recetados" (720/9, head compartido de receta) y una vez "lentes de acetato" en el primer párrafo. Sin color en title/H1 (C1 negro y C2 marrón: ningún color representa a las dos). Evitar como primaria: `anteojos rectangulares`/`lentes rectangulares` (R-CY 02), `anteojos rusty hombre` (Invig), `anteojos transparentes` (PRO 30/Strewn), `bordes anchos` (Dieven), `anteojos rusty`/`lentes rusty` (hubs), "gruesos" sólo como palabra de copy (10/18). Cross-link: el Clevel apunta a R-CY 02, Invig y al hub `/anteojos-de-receta/rusty`; frase de vuelta APLICADA sólo en R-CY 02 ("Si preferís acetato, mirá los Rusty Clevel Optics").
+
 **Internal linking del cluster**:
 - Hub `/marcas/rusty` → `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty` + top productos Rusty + guía de forma. Mantenerlo navegacional (no compite la SERP transaccional de las categorías).
 - `/anteojos-de-sol/rusty` ↔ `/anteojos-de-receta/rusty` (cross-link sol↔receta de la misma marca).
@@ -999,6 +1003,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 42. Reef 299 Pier (sol, cuadrado semi-envolvente deportivo, hombre, TODAS polarizadas), seed 168
 43. Reef 295 AI Design (sol, lente único tipo máscara, hombre, polarizado parcial), seed 169
 44. Reef 219 Pupukea (sol, cuadrado de hombre, "anteojos de sol negros", polarizado parcial), seed 170
+45. Rusty Clevel Optics (receta, rectangular de bordes gruesos en acetato, unisex), seed 172
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
