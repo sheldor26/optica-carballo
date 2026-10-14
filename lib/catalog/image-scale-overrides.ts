@@ -264,6 +264,16 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // baseline receta 1.1 perfil / 1.0 frente. PROVISIONAL, reverificar grid (regla 15).
   'Rusty-PRO30-receta/PRO_30_LIGHT_GREY-perfil.jpg': 1.1,
   'Rusty-PRO30-receta/PRO_30_LIGHT_GREY-frente.jpg': 1.0,
+  'rusty-pro-30-receta/perfil-cry.jpg': 1.05,
+  'rusty-pro-30-receta/frente-cry.jpg': 1.05,
+  'rusty-pro-30-receta/perfil-sblk.jpg': 1.05,
+  'rusty-pro-30-receta/frente-sblk.jpg': 1.05,
+  'rusty-pro-30-receta/perfil-mdemi.jpg': 1.05,
+  'rusty-pro-30-receta/frente-mdemi.jpg': 1.05,
+  'rusty-blica-receta/perfil-sblk.jpg': 1.05,
+  'rusty-blica-receta/frente-sblk.jpg': 1.05,
+  'rusty-blica-receta/perfil-sand.jpg': 1.05,
+  'rusty-blica-receta/frente-sand.jpg': 1.05,
 
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.

@@ -9005,6 +9005,24 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 9. **Vender lentes recetados sin receta válida**.
 10. **Auto-completar formularios** con datos del usuario sin que se entere claramente.
 
+
+## 2026-10-14 — Escribí en los textos de ML "los cristales se arman con tu receta" y el Blue Cut de la ficha web de Rusty, sin que el founder lo hubiera confirmado (Clevel, PRO 30, Blica)
+
+**Qué pasó:** en las descripciones de ML del Clevel, el PRO 30 y el Blica puse (1) "Los cristales definitivos se arman con tu receta" y "se arma con..." y (2) "lentes de demostración con filtro Blue Cut según el fabricante". El founder me frenó dos veces: "el tema de armar con tu receta en Mercadolibre no va... ya lo sabes" y "¿de dónde sacaste que el Blica tiene Blue Cut?".
+
+**Causa raíz:** (1) la regla ya estaba escrita en la skill `optimizador-ml-optica` y en la memoria `plantilla-descripcion-ml-corta` (en ML no se explicita el armado ni online vs presencial: alcanza con decir que permite adaptar cristales monofocales, bifocales y progresivos), pero copié el patrón del sitio al texto de ML. (2) Tomé "Lentes: Blue Cut" de la web de Rusty como dato del fabricante y lo atribuí, cuando el founder sólo había dicho "con lentillas demo" y en el Bruice había desmentido ese filtro.
+
+**Regla preventiva:** antes de entregar un texto de ML, releer la plantilla corta y buscar las palabras "arman", "armamos" y "armado": no van. Y un claim que no dijo el founder (Blue Cut, filtros, tratamientos) NO se agrega aunque figure en la web del fabricante: se pregunta, y mientras tanto se omite.
+
+
+## 2026-10-14 — Cargué el Rusty Peating de receta como "Rusty Peating Carey" (color en el nombre del modelo) en vez de "Rusty Peating Optics"
+
+**Qué pasó:** el seed 84 (2026-07-14) nombró al armazón de receta "Rusty Peating Carey", con el color como calificador, porque las dos variantes son carey. El founder lo marcó 3 meses después mirando la grilla: "es Rusty Peating Optics (las variantes son carey, pero el modelo en sí es el Peating Optics)". Ya había pasado con el Bruice (sin el sufijo "Optics") y el seed 94 había dejado escrito que Peating era "la excepción".
+
+**Causa raíz:** tomé como excepción válida un nombre que yo mismo había armado con el color. La convención de la línea de receta de Rusty es "Rusty <Modelo> Optics"; el color es de la variante, no del modelo, aunque todas las variantes lo compartan.
+
+**Regla preventiva:** al cargar un receta de Rusty, `name` = "Rusty <Modelo> Optics" siempre; el color no entra en name/H1/title. No documentar "excepciones" a una convención sin confirmarlas con el founder. Corregido en la base, seed 84 y docs el 2026-10-14.
+
 ---
 
 # Métricas de calidad del sistema

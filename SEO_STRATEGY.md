@@ -683,7 +683,7 @@ De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `ant
 | anteojos recetados | 720 | 9 | head de intención receta → copy |
 | rusty spell receta (branded) | 0 medido | ~4 | long-tail exacto → title + H1 + slug |
 
-*Rusty Peating Carey (receta, CUADRADO, UNISEX, G-Flex, bisagras metálicas, liviano 18,9g, lentes demo mono/bi/progresivo, 2 colores carey — SDEMI carey brillo / MDEMI carey mate) — slug `rusty-peating-receta` en `/anteojos-de-receta/rusty/rusty-peating-receta`*
+*Rusty Peating Optics (receta, CUADRADO, UNISEX, G-Flex, bisagras metálicas, liviano 18,9g, lentes demo mono/bi/progresivo, 2 colores carey — SDEMI carey brillo / MDEMI carey mate) — slug `rusty-peating-receta` en `/anteojos-de-receta/rusty/rusty-peating-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
 | anteojos carey | 390 | 8 | **PRIMARIA** — carril color/material, LIBRE en el cluster (2/2 variantes carey) → name/H1/1er párrafo |
@@ -694,7 +694,7 @@ De respaldo (copy/alt, NO primaria): `anteojos cuadrados hombre` (210/14) + `ant
 | lentes cuadrados | 880 | 10 | forma variante "lentes", soporte → copy |
 | rusty peating (branded) | 0 medido | ~4 | name/H1/slug/alt |
 
-> **Anti-canibalización 4 cuadrados de receta (Zinz/Spell/Katleen/Strewn) + Peating**: la forma cuadrada NO es la primaria de Peating — la lidera Zinz (`anteojos cuadrados` unisex 480/10). Peating toma el carril CAREY (`anteojos carey` 390/8), color que ningún otro ataca (Strewn=transparente, Zinz=forma neutra, Spell=hombre, Katleen=mujer). Peating dice "cuadrado/unisex" en copy pero su primaria es el color → cero solapamiento con Zinz. `anteojos de sol carey` (Blinded, 40/34) es otra intención (sol). NO usar: `anteojos carey mujer` (110, unisex lo cubre), `armazones carey` (20/49), `anteojos cuadrados unisex` (0 medido). **Cross-link obligatorio** Peating↔Zinz↔Spell (Rusty cuadrados) + `/anteojos-de-receta/rusty` + `/marcas/rusty` + `/guias/como-leer-receta-anteojos`. Cross-link sol↔receta NO (Peating sol no cargado). Title (auto): `Rusty Peating Carey | Anteojos de Receta - Óptica Carballo` (58). H1/name: `Rusty Peating Carey`.
+> **Anti-canibalización 4 cuadrados de receta (Zinz/Spell/Katleen/Strewn) + Peating**: la forma cuadrada NO es la primaria de Peating — la lidera Zinz (`anteojos cuadrados` unisex 480/10). Peating toma el carril CAREY (`anteojos carey` 390/8), color que ningún otro ataca (Strewn=transparente, Zinz=forma neutra, Spell=hombre, Katleen=mujer). Peating dice "cuadrado/unisex" en copy pero su primaria es el color → cero solapamiento con Zinz. `anteojos de sol carey` (Blinded, 40/34) es otra intención (sol). NO usar: `anteojos carey mujer` (110, unisex lo cubre), `armazones carey` (20/49), `anteojos cuadrados unisex` (0 medido). **Cross-link obligatorio** Peating↔Zinz↔Spell (Rusty cuadrados) + `/anteojos-de-receta/rusty` + `/marcas/rusty` + `/guias/como-leer-receta-anteojos`. Cross-link sol↔receta NO (Peating sol no cargado). Title (auto): `Rusty Peating Optics | Anteojos de Receta - Óptica Carballo` (58). H1/name: `Rusty Peating Optics`.
 
 *Rusty Invig Optics (receta, RECTANGULAR de METAL, HOMBRE, ultra liviano 14,7g, frente metal + patillas metal/acetato + bisagra acero inox, lentes demo, 3 colores mate — negro/marrón/gris oscuro) — slug `rusty-invig-receta` en `/anteojos-de-receta/rusty/rusty-invig-receta`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
@@ -820,7 +820,7 @@ De respaldo (copy/alt, NO primaria): `anteojos de sol cuadrados mujer` (110/14),
 
 > **Anti-canibalización Zinz sol vs Zinz receta**: mismo frame, dos URLs, dos intenciones. El Zinz de SOL targetea `lentes/anteojos de sol cuadrados` (390/170, con "de sol"); el de RECETA (`/anteojos-de-receta/rusty/rusty-zinz-receta`) targetea `anteojos/lentes cuadrados` (480/880, SIN "de sol"). Sin keyword primaria compartida. Cross-link sol↔receta OBLIGATORIO en ambas fichas ("versión de receta/sol del Zinz").
 
-*Rusty Peating (sol, CUADRADO, UNISEX, G-Flex ultra liviano, 2/2 variantes polarizadas — MBLK/S10 negro mate + SBLK/DRT03 negro brillo lente degradé gris, policarbonato UV400 cat 3, 100% UVA/UVB — versión de sol del Peating Carey de receta) — slug `rusty-peating` en `/anteojos-de-sol/rusty/rusty-peating`*
+*Rusty Peating (sol, CUADRADO, UNISEX, G-Flex ultra liviano, 2/2 variantes polarizadas — MBLK/S10 negro mate + SBLK/DRT03 negro brillo lente degradé gris, policarbonato UV400 cat 3, 100% UVA/UVB — versión de sol del Peating Optics de receta) — slug `rusty-peating` en `/anteojos-de-sol/rusty/rusty-peating`*
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
 | lentes de sol negros cuadrados | 20 | 35 | carril COLOR+forma, libre en el cluster (Zinz mezcla colores, Peating es 100% negro) → soporte/copy |
@@ -899,6 +899,10 @@ familiar.` (160)
 *Rusty Clevel Optics (receta, rectangular de bordes gruesos en ACETATO, UNISEX, bisagras de acero inoxidable sin flex, 24,7 g, 53-18-145, alto total 46, ancho total 143, 2 colores: C1 negro brillo y C2 marrón claro transparente) · slug `rusty-clevel-receta` en `/anteojos-de-receta/rusty/rusty-clevel-receta`. Seed 172 aplicado 2026-10-14; 2 publicaciones de ML (items simples)*
 Title (51): `Rusty Clevel Optics en Acetato | Anteojos de Receta`. H1 = `Rusty Clevel Optics` (convención de la línea receta de Rusty: "Rusty <Modelo> Optics"). Meta (~160): `Anteojos de receta Rusty Clevel Optics de acetato, rectangular de bordes gruesos. 24,7 g, 2 colores. Monofocales, bifocales o progresivos. Envíos a todo el país.`
 Descriptor primario "lentes de acetato" (110/11): es el único Rusty de receta en acetato (los demás son G-Flex o metal), sostenido por el branded `rusty clevel`; una vez "anteojos recetados" (720/9, head compartido de receta) y una vez "lentes de acetato" en el primer párrafo. Sin color en title/H1 (C1 negro y C2 marrón: ningún color representa a las dos). Evitar como primaria: `anteojos rectangulares`/`lentes rectangulares` (R-CY 02), `anteojos rusty hombre` (Invig), `anteojos transparentes` (PRO 30/Strewn), `bordes anchos` (Dieven), `anteojos rusty`/`lentes rusty` (hubs), "gruesos" sólo como palabra de copy (10/18). Cross-link: el Clevel apunta a R-CY 02, Invig y al hub `/anteojos-de-receta/rusty`; frase de vuelta APLICADA sólo en R-CY 02 ("Si preferís acetato, mirá los Rusty Clevel Optics").
+
+*Rusty Blica Optics (receta, REDONDO en G-Flex, UNISEX, talle chico, bisagras metálicas con sistema flex, 23,2 g, 48-20-135, ancho total 130, alto total 50, 2 colores: SBLK negro brillo y SAND-0292 frente caramelo transparente con patillas rosa pálido) · slug `rusty-blica-receta` en `/anteojos-de-receta/rusty/rusty-blica-receta`. Seed 174 aplicado 2026-10-14; 2 publicaciones de ML (items simples)*
+Title (54): `Rusty Blica Optics Redondo G-Flex | Anteojos de Receta`. H1 = `Rusty Blica Optics`. Meta (~150): `Anteojos de receta Rusty Blica Optics: armazón redondo de G-Flex, liviano (23,2 g), con bisagras metálicas. Envíos a todo el país y garantía de 1 año.`
+Sin carril propio con volumen: los redondos ya son de Ther (`anteojos redondos` 880/12), Misty, Kirt, My Crew, Vartis, Traful y Sevilha; G-Flex lo comparten Woxi, Zinz, Peating y PRO 30. Se ataca con el branded `rusty blica` (0 medido, dif ~4) en title, H1, slug y alt, y `anteojos recetados` (720/9) una sola vez en el primer párrafo. Evitar como primaria: redondos (hombre/mujer), metal, acetato, transparentes, `anteojos rusty mujer/hombre`, hubs, colores y género en title/H1; "facetado" NO (no lo confirmó el founder). El SAND, de aspecto más femenino, se resuelve por el color en el copy y el alt, nunca "mujer". Cross-link: el Blica apunta a Ther (metal), Misty (talle chico), Zinz (cuadrado G-Flex) y al hub; frase de vuelta APLICADA sólo en Misty receta.
 
 **Internal linking del cluster**:
 - Hub `/marcas/rusty` → `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty` + top productos Rusty + guía de forma. Mantenerlo navegacional (no compite la SERP transaccional de las categorías).
@@ -1004,6 +1008,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 43. Reef 295 AI Design (sol, lente único tipo máscara, hombre, polarizado parcial), seed 169
 44. Reef 219 Pupukea (sol, cuadrado de hombre, "anteojos de sol negros", polarizado parcial), seed 170
 45. Rusty Clevel Optics (receta, rectangular de bordes gruesos en acetato, unisex), seed 172
+46. Rusty Blica Optics (receta, redondo G-Flex, unisex, talle chico), seed 174
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
@@ -1541,7 +1546,7 @@ Brillo/Negro Mate/Gris Translúcido con Turquesa/Azul Brillo) — slug `mormaii-
 | Keyword | Vol/mes | Difficulty | Por qué pega |
 |---|---|---|---|
 | mormaii leñas (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
-| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomadas por Rusty Zinz Optics (dueño) y Rusty Peating Carey (soporte) dentro del mismo carril forma+género → Leñas NO reclama "cuadrado" en ningún nivel de título/H1 |
+| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomadas por Rusty Zinz Optics (dueño) y Rusty Peating Optics (soporte) dentro del mismo carril forma+género → Leñas NO reclama "cuadrado" en ningún nivel de título/H1 |
 
 **Diferenciador real de meta_title**: "Grilamid" (2do precedente del catálogo, sin competencia) en vez
 de "Cuadrado" — mismo criterio que Mormaii Ancara2 (mismo brand, misma categoría) ya aplicó antes:
@@ -1550,7 +1555,7 @@ description y `frame_shape` (la regla de exclusión es sólo meta_title/H1).
 
 Cross-links obligatorios: familia receta Mormaii (Traful, Moorea, Ancara2, Hover) + par específico
 Leñas↔Traful (única pareja Grilamid del catálogo en ese momento) + Leñas↔Ancara2 (ambos cuadrados
-Mormaii RX, género distinto) + similares cross-brand (Rusty Zinz Optics, Rusty Peating Carey) como
+Mormaii RX, género distinto) + similares cross-brand (Rusty Zinz Optics, Rusty Peating Optics) como
 "te puede interesar", sin anchor de keyword compartida.
 
 **Gap de infraestructura (no bloqueante, escalado a BACKLOG.md)**: no existe faceta
@@ -1657,7 +1662,7 @@ restricción, 3 colores, cada uno publicación ML separada) — slug `mormaii-ko
 |---|---|---|---|
 | mormaii kona mag (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt |
 | anteojos/lentes con imán / imantados | 170-260 | 18-49 | volumen real PERO el SERP actual es de OTRO producto (lectura de kiosco plegable, clip-on 2-en-1 con imán en el PUENTE, no en la patilla) → **NO primaria**, atraería tráfico de intención equivocada |
-| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomado por Zinz/Peating Carey/Ancara2/Leñas → Kona MAG NO pelea "cuadrado" en título/H1 |
+| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomado por Zinz/Peating Optics/Ancara2/Leñas → Kona MAG NO pelea "cuadrado" en título/H1 |
 
 **Criterio sentado para los PRÓXIMOS modelos MAG** (Traful Magnetic, Swap NG 2 Magnetic, Leñas 3
 Magnetic, Asana Magnetic — no re-auditar desde cero cada vez):
@@ -2003,7 +2008,7 @@ con Azul) — slug `mormaii-lenas-3-mag-receta` en `/anteojos-de-receta/mormaii/
 |---|---|---|---|
 | mormaii leñas 3 mag (branded) | 0 medido | ~4 | branded exacto, libre, sin riesgo → **primaria** título+H1+slug+alt. "MAG" queda literal (no se traduce a "Magnético"), mismo criterio que Leñas 2 MAG |
 | anteojos/lentes con imán / imantados (genérico) | 170-260 | 18-49 | criterio Kona MAG SIGUE VIGENTE sin excepción — no hay clip-on ni función solar acá, la excepción de Swap NG2 MAG NO aplica → **NO primaria**, SERP de intención equivocada (kiosco/colgar) |
-| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomado por Rusty Zinz Optics/Peating Carey y saturado dentro del propio catálogo Mormaii (Leñas original, Kona MAG, Swap NG2 MAG) → Leñas 3 MAG tampoco pelea "cuadrado" en título/H1 |
+| anteojos/lentes cuadrados | 480/15, 880/10 | ya tomado por Rusty Zinz Optics/Peating Optics y saturado dentro del propio catálogo Mormaii (Leñas original, Kona MAG, Swap NG2 MAG) → Leñas 3 MAG tampoco pelea "cuadrado" en título/H1 |
 
 **Confirmación explícita de criterio**: el amendment "salvo el compuesto receta+sol+imán" sentado en
 Swap NG2 MAG NO se activa en Leñas 3 MAG porque no hay clip solar removible — es el mismo patrón

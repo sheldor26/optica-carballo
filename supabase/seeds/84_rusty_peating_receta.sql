@@ -24,7 +24,7 @@
 -- SEO (seo-strategist): primaria CAREY `anteojos carey` (390/dif 8) — carril LIBRE en el
 -- cluster de cuadrados receta (Zinz=forma neutra unisex, Spell=hombre, Katleen=mujer,
 -- Strewn=transparente). Peating NO usa `anteojos cuadrados` como primaria (es de Zinz) —
--- solo copy/H2. name = "Rusty Peating Carey" (no "Receta": la categoría ya renderiza
+-- solo copy/H2. name = "Rusty Peating Optics" (corregido 2026-10-14 por el founder: las variantes son carey pero el modelo es el Peating Optics) (no "Receta": la categoría ya renderiza
 -- "Anteojos de Receta" en el title). Cross-link obligatorio Peating↔Zinz↔Spell.
 --
 -- CROSS-LINK sol↔receta: NO existe Peating de SOL cargado (hay varios MLAs de sol en ML,
@@ -45,9 +45,9 @@ WITH
   receta  AS (SELECT id FROM public.categories WHERE slug = 'anteojos-de-receta' AND parent_id IS NULL)
 INSERT INTO public.products (brand_id, category_id, slug, name, short_description, description, attributes, is_active, is_featured, meta_title, meta_description)
 VALUES (
-  (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-peating-receta', 'Rusty Peating Carey',
+  (SELECT id FROM rusty), (SELECT id FROM receta), 'rusty-peating-receta', 'Rusty Peating Optics',
   'Anteojos recetados Rusty Peating: armazón cuadrado en carey, unisex y liviano (18,9 g), con frente y patillas de G-Flex y bisagras metálicas. Comprás el armazón (viene con lentes demo, sin aumento) y le sumás los cristales según tu receta; el precio publicado es del armazón, los cristales se cotizan aparte.',
-  E'El **Rusty Peating Carey** es un armazón de receta **cuadrado en carey**, **unisex** y liviano (18,9 g). Frente y patillas de **G-Flex** —flexible y resistente— con **bisagras metálicas** para un calce cómodo y durable.\n\nMedidas: frente 143 mm · lente 52 mm de ancho × 49 mm de alto · puente 19 mm · varilla 133 mm.\n\nViene con lentes demo (sin graduación). Sumale tus cristales con receta: monofocales, bifocales, progresivos o multifocales.\n\nDisponible en 2 tonos de carey:\n\n• SDEMI — carey brillo.\n• MDEMI — carey mate.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
+  E'El **Rusty Peating Optics** es un armazón de receta **cuadrado en carey**, **unisex** y liviano (18,9 g). Frente y patillas de **G-Flex** —flexible y resistente— con **bisagras metálicas** para un calce cómodo y durable.\n\nMedidas: frente 143 mm · lente 52 mm de ancho × 49 mm de alto · puente 19 mm · varilla 133 mm.\n\nViene con lentes demo (sin graduación). Sumale tus cristales con receta: monofocales, bifocales, progresivos o multifocales.\n\nDisponible en 2 tonos de carey:\n\n• SDEMI — carey brillo.\n• MDEMI — carey mate.\n\nIncluye estuche, franela de microfibra y garantía oficial de 1 año del fabricante.',
   '{
     "frame_material": "g-flex",
     "frame_shape": "cuadrado",
@@ -68,7 +68,7 @@ VALUES (
     "imported_from": {"marketplace": "mercadolibre", "item_ids": ["MLA3604846462", "MLA3604846464"], "imported_at": "2026-07-14"}
   }'::jsonb,
   true, false,
-  'Rusty Peating Carey | Anteojos de Receta - Óptica Carballo',
+  'Rusty Peating Optics | Anteojos de Receta - Óptica Carballo',
   'Armazón de receta Rusty Peating en carey, cuadrado y unisex. Ultraliviano (18,9 g), apto mono, bi y multifocal. Envíos a todo el país, 30 años de experiencia.'
 )
 ON CONFLICT (slug) DO UPDATE SET
