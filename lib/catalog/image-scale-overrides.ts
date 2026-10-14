@@ -752,6 +752,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-yeah/YEAH_C2_POL._frente.jpg': 1.0,
   'rusty-yeah/YEAH_C3_perfil.jpg': 1.2,
   'rusty-yeah/YEAH_C3_frente.jpg': 1.0,
+  'rusty-yeah/perfil-c6-pol.jpg': 1.12,
+  'rusty-yeah/frente-c6-pol.jpg': 1.0,
 
   // Rusty The Take Optics RECETA — aviador. Fotos 900×442 (2.04:1) más anchas que el card 3:2
   // → object-contain llena por ancho → 1.0 en las 4 (como Raven/Trial; 1.15 cropearía patillas).
