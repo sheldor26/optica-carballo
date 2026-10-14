@@ -904,6 +904,10 @@ Descriptor primario "lentes de acetato" (110/11): es el único Rusty de receta e
 Title (54): `Rusty Blica Optics Redondo G-Flex | Anteojos de Receta`. H1 = `Rusty Blica Optics`. Meta (~150): `Anteojos de receta Rusty Blica Optics: armazón redondo de G-Flex, liviano (23,2 g), con bisagras metálicas. Envíos a todo el país y garantía de 1 año.`
 Sin carril propio con volumen: los redondos ya son de Ther (`anteojos redondos` 880/12), Misty, Kirt, My Crew, Vartis, Traful y Sevilha; G-Flex lo comparten Woxi, Zinz, Peating y PRO 30. Se ataca con el branded `rusty blica` (0 medido, dif ~4) en title, H1, slug y alt, y `anteojos recetados` (720/9) una sola vez en el primer párrafo. Evitar como primaria: redondos (hombre/mujer), metal, acetato, transparentes, `anteojos rusty mujer/hombre`, hubs, colores y género en title/H1; "facetado" NO (no lo confirmó el founder). El SAND, de aspecto más femenino, se resuelve por el color en el copy y el alt, nunca "mujer". Cross-link: el Blica apunta a Ther (metal), Misty (talle chico), Zinz (cuadrado G-Flex) y al hub; frase de vuelta APLICADA sólo en Misty receta.
 
+*Rusty Arms Optics (receta, RECTANGULAR en G-Flex, UNISEX, bisagras metálicas con sistema flex, 23,2 g, 51-20-145, ancho total 139, alto total 40, sólo monofocales y bifocales, 4 colores: MBLK negro mate, L.GREY gris claro transparente, MBLUE-MBLK frente azul/patillas negro mate, O.GREEN-MBLK frente verde oliva/patillas negro mate) · slug `rusty-arms-receta` en `/anteojos-de-receta/rusty/rusty-arms-receta`. Seed 175 aplicado 2026-10-14; 1 publicación multivariante de ML (MLA2015405558)*
+Title (56): `Rusty Arms Optics Liviano en G-Flex | Anteojos de Receta`. H1 = `Rusty Arms Optics`. Meta (~143): `Anteojos de receta Rusty Arms Optics: armazón rectangular de G-Flex, liviano (23,2 g), en 4 colores. Envíos a todo el país y garantía de 1 año.`
+Carril = branded `rusty arms` (volumen no medido, dif ~4) en title, H1, slug y alt + `anteojos recetados` (720/9) una vez en el primer párrafo; sin carril de colores (no hay "anteojos de colores" en los CSV; "anteojos azules" 110/15 es de intención mixta por luz azul: sólo copy/alt). Evitar: `anteojos/lentes rectangulares` (480/15, 880/10: R-CY 02), `anteojos rusty hombre` (390/9: Invig; Arms es unisex aunque el título congelado de ML diga "Hombre"), transparentes (PRO 30), metal, flexibles, blue cut; "progresivos" NO se menciona en ningún lado. Cross-link: el Arms apunta a Woxi, R-CY 02, Zinz y al hub; frase de vuelta APLICADA sólo en Woxi (R-CY 02 ya recibe la del Clevel).
+
 **Internal linking del cluster**:
 - Hub `/marcas/rusty` → `/anteojos-de-receta/rusty` + `/anteojos-de-sol/rusty` + top productos Rusty + guía de forma. Mantenerlo navegacional (no compite la SERP transaccional de las categorías).
 - `/anteojos-de-sol/rusty` ↔ `/anteojos-de-receta/rusty` (cross-link sol↔receta de la misma marca).
@@ -1009,6 +1013,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 44. Reef 219 Pupukea (sol, cuadrado de hombre, "anteojos de sol negros", polarizado parcial), seed 170
 45. Rusty Clevel Optics (receta, rectangular de bordes gruesos en acetato, unisex), seed 172
 46. Rusty Blica Optics (receta, redondo G-Flex, unisex, talle chico), seed 174
+47. Rusty Arms Optics (receta, rectangular G-Flex, unisex, monofocal/bifocal), seed 175
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 
