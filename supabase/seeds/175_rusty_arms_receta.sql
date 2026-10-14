@@ -12,12 +12,12 @@
 -- DATOS DEL FOUNDER (2026-10-14): G-Flex (frente y patillas), rectangular, bisagras metálicas con flex, unisex, 51-20-145, alto total 40, ancho total 139, "monofocales y bifocales, pero es medio chico para progresivos". Peso 23,2 g (dato de Rusty).
 -- ⚠️ PROGRESIVOS: NO se mencionan en ningún lado (ni "no recomendado": el founder no quiere frases que duden del producto): `lens_compatibility` ["monofocal","bifocal"], sin callout de progresivos. El hueco real del cristal (est. 32-36 mm) está SIN MEDIR: pendiente del founder.
 -- ⚠️ La descripción vigente en ML decía "progresivos", "G-Flex material flexible", alto de lente 36 y ancho total 140: se entregó una nueva (`marketing/placas-ml/SUBIR-rusty-arms/PUBLICACION.md`); pendiente que el founder la reemplace.
--- ⚠️ La foto de FRENTE del MBLUE-MBLK de Rusty parece mal (lo marcó el founder): NO se sube al sitio hasta que pase una foto propia; el MBLUE va sólo con perfil.
+-- La foto de FRENTE del MBLUE-MBLK de Rusty parecía mal en la web de Rusty; el founder confirmó (2026-10-14) que "se ve bien cuando queda descargada": se sube (`frente-mblue.jpg`, sort 3).
 -- ⚠️ Sin Blue Cut (no confirmado), sin "flexible" para el armazón, sin "facetado".
 -- Convención de la línea de receta de Rusty: name "Rusty <Modelo> Optics", slug `rusty-<modelo>-receta`.
 -- 🎯 SEO (seo-strategist): branded `rusty arms` + `anteojos recetados` una vez; "rectangular" sólo en copy (R-CY 02 lo lidera); sin carril de colores; links a Woxi, R-CY 02, Zinz y hub; frase de vuelta sólo en Woxi.
 -- 🔬 optical-expert: "liviano" (no "ultraliviano"), sistema flex = bisagra de resorte, face shapes ovalado/redondo/corazón, talle mediano a chico, sin callout de progresivos.
--- 📸 FOTOS: oficiales de Rusty (900×442) pasadas por `pnpm placas --tipo receta` y subidas con `pnpm fotos:subir --sufijo`: `rusty-arms-receta/perfil|frente-mblk|lgrey|ogreen.jpg`, `perfil-mblue.jpg` y `medidas.jpg` (2000×1333), scale 1.05.
+-- 📸 FOTOS: oficiales de Rusty (900×442) pasadas por `pnpm placas --tipo receta` y subidas con `pnpm fotos:subir --sufijo`: `rusty-arms-receta/perfil|frente-mblk|lgrey|ogreen.jpg`, `perfil|frente-mblue.jpg` y `medidas.jpg` (2000×1333), scale 1.05.
 -- ============================================
 
 BEGIN;
@@ -87,14 +87,16 @@ VALUES
    'rusty-arms-receta/frente-mblk.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista frontal, negro mate con lentes de demostración', 2000, 1333, 1, false),
   ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), (SELECT id FROM public.product_variants WHERE sku='113273'),
    'rusty-arms-receta/perfil-mblue.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista lateral, frente azul con patillas negro mate y lentes de demostración', 2000, 1333, 2, false),
+  ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), (SELECT id FROM public.product_variants WHERE sku='113273'),
+   'rusty-arms-receta/frente-mblue.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista frontal, frente azul con patillas negro mate y lentes de demostración', 2000, 1333, 3, false),
   ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), (SELECT id FROM public.product_variants WHERE sku='113274'),
-   'rusty-arms-receta/perfil-ogreen.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista lateral, frente verde oliva con patillas negro mate y lentes de demostración', 2000, 1333, 3, false),
+   'rusty-arms-receta/perfil-ogreen.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista lateral, frente verde oliva con patillas negro mate y lentes de demostración', 2000, 1333, 4, false),
   ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), (SELECT id FROM public.product_variants WHERE sku='113274'),
-   'rusty-arms-receta/frente-ogreen.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista frontal, frente verde oliva con patillas negro mate y lentes de demostración', 2000, 1333, 4, false),
+   'rusty-arms-receta/frente-ogreen.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista frontal, frente verde oliva con patillas negro mate y lentes de demostración', 2000, 1333, 5, false),
   ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), (SELECT id FROM public.product_variants WHERE sku='113272'),
-   'rusty-arms-receta/perfil-lgrey.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista lateral, gris claro transparente con lentes de demostración', 2000, 1333, 5, false),
+   'rusty-arms-receta/perfil-lgrey.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista lateral, gris claro transparente con lentes de demostración', 2000, 1333, 6, false),
   ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), (SELECT id FROM public.product_variants WHERE sku='113272'),
-   'rusty-arms-receta/frente-lgrey.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista frontal, gris claro transparente con lentes de demostración', 2000, 1333, 6, false),
+   'rusty-arms-receta/frente-lgrey.jpg', 'Anteojos de receta Rusty Arms rectangulares de G-Flex, vista frontal, gris claro transparente con lentes de demostración', 2000, 1333, 7, false),
   ((SELECT id FROM public.products WHERE slug='rusty-arms-receta'), NULL,
    'rusty-arms-receta/medidas.jpg', 'Esquema técnico de medidas Rusty Arms: frente 139mm, lente 51mm, alto total 40mm, puente 20mm, varilla 145mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET

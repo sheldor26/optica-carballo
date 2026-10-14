@@ -32,6 +32,12 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'marron-brillo-patillas-marron-crema': 'Marrón brillo con patillas marrón y crema',
   // Reef 177 Aerial (seed 158): un slug nuevo; negro-mate, negro-brillo, gris-oscuro y azul-espejado ya existen.
   'azul-mate-detalles-celestes': 'Azul mate con detalles celestes',
+  // Rusty Burrout receta (seed 177): dos slugs nuevos.
+  'negro-mate-detalles-rojos': 'Negro mate con detalles rojos',
+  'azul-mate-detalles-negros': 'Azul mate con detalles negros',
+  // Rusty Midwest receta (seed 178): 'negro-mate-detalles-rojos' ya existe (Burrout); dos slugs nuevos.
+  'negro-mate-detalles-azul-oscuro': 'Negro mate con detalles azul oscuro',
+  'transparente-detalles-negros': 'Transparente con detalles negros',
   // Reef 129 Yang (seed 157): sólo 2 slugs nuevos; los demás se reutilizan del 128 (describen la apariencia).
   'gris-oscuro-mate-patillas-plateadas': 'Gris oscuro mate con patillas plateadas',
   'plateado-mate-patillas-plateadas': 'Plateado mate con patillas plateadas',

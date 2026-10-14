@@ -279,8 +279,19 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-arms-receta/perfil-lgrey.jpg': 1.05,
   'rusty-arms-receta/frente-lgrey.jpg': 1.05,
   'rusty-arms-receta/perfil-mblue.jpg': 1.05,
+  'rusty-arms-receta/frente-mblue.jpg': 1.05,
   'rusty-arms-receta/perfil-ogreen.jpg': 1.05,
   'rusty-arms-receta/frente-ogreen.jpg': 1.05,
+  'rusty-burrout-receta/perfil-c2.jpg': 1.05,
+  'rusty-burrout-receta/frente-c2.jpg': 1.05,
+  'rusty-burrout-receta/perfil-c4.jpg': 1.05,
+  'rusty-burrout-receta/frente-c4.jpg': 1.05,
+  'rusty-midwest-receta/perfil-c1.jpg': 1.05,
+  'rusty-midwest-receta/frente-c1.jpg': 1.05,
+  'rusty-midwest-receta/perfil-c2.jpg': 1.05,
+  'rusty-midwest-receta/frente-c2.jpg': 1.05,
+  'rusty-midwest-receta/perfil-c3.jpg': 1.05,
+  'rusty-midwest-receta/frente-c3.jpg': 1.05,
 
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
@@ -869,6 +880,8 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-bruice-receta/frente-mblk.jpg': 1.05,
   'rusty-bruice-receta/perfil-cry.jpg': 1.05,
   'rusty-bruice-receta/frente-cry.jpg': 1.05,
+  'rusty-bruice-receta/perfil-sblk.jpg': 1.05,
+  'rusty-bruice-receta/frente-sblk.jpg': 1.05,
   'rusty-the-take-receta/THE_TAKE_MDEMI_PERFIL.jpg': 1.1,
   'rusty-the-take-receta/THE_TAKE_MDEMI_frente.jpg': 1.0,
   'rusty-the-take-receta/THE_TAKE_L.ROSE_-_p.jpg': 1.1,
