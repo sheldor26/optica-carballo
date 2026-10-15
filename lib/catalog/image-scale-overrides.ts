@@ -360,6 +360,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   // más chico en el frame que las del Yau. Si recorta, bajar a 1.5/1.25.
   'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.6,
   'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.31,
+  // MBLUE R GREEN: fotos reemplazadas 2026-10-15 (armazón azul mate, como dice la
+  // ficha). Nombre nuevo por la cache de 31 días; mismo encuadre que las originales,
+  // así que conservan el scale de arriba.
+  'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-PERFIL-20261015.jpg': 1.6,
+  'rusty-sotion/MBLUE-R-GREEN-POL-YELLOW-FRENTE-20261015.jpg': 1.31,
   'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-PERFIL.jpg': 1.6,
   'rusty-sotion/MBLK-R-BLUE-POL-YELLOW-FRENTE.jpg': 1.3,
   'rusty-sotion/MBLK-S10-POL-YELLOW-PERFIL.jpg': 1.6,
@@ -456,6 +461,11 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-eslav/MBLK-S10-YELLOW---FRENTE.jpg': 1.3,
   'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-PERFIL.jpg': 1.65,
   'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-FRENTE.jpg': 1.3,
+  // MBLUE R GREEN: fotos reemplazadas 2026-10-15 (armazón azul mate, como dice la
+  // ficha). Nombre nuevo por la cache de 31 días; mismo encuadre que las originales,
+  // así que conservan el scale de arriba.
+  'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-PERFIL-20261015.jpg': 1.65,
+  'rusty-eslav/MBLUE-R-GREEN-POL-YELLOW-FRENTE-20261015.jpg': 1.3,
 
   // Rusty Misty — redondo talle chico. Perfil 1.15 / frente 1.0 (default studio).
   // Pendiente verificación visual del founder (armazón pequeño).
