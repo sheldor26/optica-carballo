@@ -547,3 +547,9 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Nombres de los colores** (los definí mirando las fotos: C1 violeta con detalles turquesa, C2 azul con detalles rojos, C3 transparente con detalles rojos y verdes). Bloquea: nada, pero si querés otros nombres hay que cambiarlos antes del seed.
 - [ ] **Alto del hueco del cristal** (medir con regla, bajo el centro de la pupila). Bloquea: el ajuste fino del texto de progresivos (estimado 40-44 mm; el cat-eye pierde altura útil abajo).
 - [ ] **ML:** agregar la C2 (SKU 960691) a `MLA2819287108`, género "Mujer", SKU en cada variación, reemplazar las fotos de medidas (decían ancho total 136) y la descripción vieja.
+
+## Rusty Exile sol (seed 184, 2026-10-19)
+- [ ] **SKU de las 2 variantes NO polarizadas** (MBLK/S10 y SBLK/S10 sin POL): hoy van con el código provisorio `EXILE-MBLK-S10` / `EXILE-SBLK-S10` (`sku` es NOT NULL). Bloquea: nada.
+- [ ] **Peso del armazón** (el founder no lo pasó): se carga sin `weight_grams`. Bloquea: la línea de peso en la ficha y ML.
+- [ ] **En qué cara va el antirreflex** de las no polarizadas (el founder dijo "vienen con antirreflex"): hoy el texto no dice "interno". Bloquea: el detalle del antirreflex en el sitio.
+- [ ] **ML:** SKU en las 4 variaciones, corregir "Grilamid" por G-Flex, medidas (puente 22, patilla 145) y las fotos de medidas con 18/125; reemplazar las 2 descripciones.
