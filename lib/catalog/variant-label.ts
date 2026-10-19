@@ -38,6 +38,14 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   // Rusty Midwest receta (seed 178): 'negro-mate-detalles-rojos' ya existe (Burrout); dos slugs nuevos.
   'negro-mate-detalles-azul-oscuro': 'Negro mate con detalles azul oscuro',
   'transparente-detalles-negros': 'Transparente con detalles negros',
+  // Rusty Tuniti receta (seed 180): tres slugs nuevos.
+  // Rusty Zinz receta 0096 (seed 182): un slug nuevo.
+  'azul-brillo-patillas-negro-brillo': 'Frente azul brillo con patillas negro brillo',
+  // Rusty Patien receta MDEMI-MBLK (seed 183): un slug nuevo.
+  'carey-mate-patillas-negro-mate': 'Frente carey mate con patillas negro mate',
+  'violeta-detalles-turquesa': 'Violeta con detalles turquesa',
+  'azul-tonos-rosa-y-salmon': 'Azul con tonos rosa y salmón',
+  'transparente-detalles-rojos-y-verdes': 'Transparente con detalles rojos y verdes',
   // Reef 129 Yang (seed 157): sólo 2 slugs nuevos; los demás se reutilizan del 128 (describen la apariencia).
   'gris-oscuro-mate-patillas-plateadas': 'Gris oscuro mate con patillas plateadas',
   'plateado-mate-patillas-plateadas': 'Plateado mate con patillas plateadas',

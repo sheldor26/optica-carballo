@@ -534,3 +534,16 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **¿Incluye estuche y franela?** Se asumió la política universal. Bloquea: la línea "Incluye" del sitio y de ML.
 - [ ] **Peso real con cristales** no hace falta; el del armazón (24,7 g) es dato de Rusty.
 - [ ] **ML:** atributos `Con patillas flex: No` y el título propio de cada item; la publicación de la C1 no tiene GTIN.
+
+## Rusty Penc receta (seed 179, 2026-10-15)
+- [ ] **Foto de PERFIL de la SBLK (negro brillo)**: no existe en la web de Rusty (sólo el frente) y la que está en la publicación de ML es de 500 px. Si tenés el original, pasámelo. Bloquea: nada (la SBLK va en el sitio con la foto de frente y sin perfil).
+- [ ] **Alto del hueco del cristal** (medir con regla, no los 47 mm de alto total). Bloquea: el texto de progresivos en sitio y ML (si da menos de 32 mm se saca "progresivo").
+- [ ] **Bisagra flex**: comprobar con el armazón en mano que la patilla abra más de 90° con resistencia elástica y vuelva sola. Bloquea: la frase "bisagras metálicas con sistema flex" (si no, queda "bisagras metálicas").
+- [ ] **¿Incluye estuche y franela?** Se asumió la política universal. Bloquea: la línea "Incluye" del sitio y de ML.
+- [ ] **ML:** las 2 fotos de medidas que hay hoy en la publicación (48/23/135, de Rusty) están mal: reemplazarlas por la nueva `04-medidas.jpg` (47/17/134/140/47); cargar el SKU de cada variación (957010, 957011, 957012) y revisar el atributo de forma.
+
+## Rusty Tuniti receta (seed 180, 2026-10-15)
+- [x] **Foto de PERFIL de la C2 (azul)**: la pasó el founder el 2026-10-15 (`TUNITI_C2-_PERFIL_53-16-145.jpg` en la web de Rusty, con otro nombre de archivo); placas completas (6/6) y foto web subida.
+- [ ] **Nombres de los colores** (los definí mirando las fotos: C1 violeta con detalles turquesa, C2 azul con detalles rojos, C3 transparente con detalles rojos y verdes). Bloquea: nada, pero si querés otros nombres hay que cambiarlos antes del seed.
+- [ ] **Alto del hueco del cristal** (medir con regla, bajo el centro de la pupila). Bloquea: el ajuste fino del texto de progresivos (estimado 40-44 mm; el cat-eye pierde altura útil abajo).
+- [ ] **ML:** agregar la C2 (SKU 960691) a `MLA2819287108`, género "Mujer", SKU en cada variación, reemplazar las fotos de medidas (decían ancho total 136) y la descripción vieja.

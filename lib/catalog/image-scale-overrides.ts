@@ -292,6 +292,21 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'rusty-midwest-receta/frente-c2.jpg': 1.05,
   'rusty-midwest-receta/perfil-c3.jpg': 1.05,
   'rusty-midwest-receta/frente-c3.jpg': 1.05,
+  'rusty-penc-receta/perfil-mblk.jpg': 1.05,
+  'rusty-penc-receta/frente-mblk.jpg': 1.05,
+  'rusty-penc-receta/perfil-mblue.jpg': 1.05,
+  'rusty-penc-receta/frente-mblue.jpg': 1.05,
+  'rusty-penc-receta/frente-sblk.jpg': 1.05,
+  'rusty-tuniti-receta/perfil-c1.jpg': 1.05,
+  'rusty-tuniti-receta/frente-c1.jpg': 1.05,
+  'rusty-tuniti-receta/perfil-c2.jpg': 1.05,
+  'rusty-tuniti-receta/frente-c2.jpg': 1.05,
+  'rusty-tuniti-receta/perfil-c3.jpg': 1.05,
+  'rusty-tuniti-receta/frente-c3.jpg': 1.05,
+  'rusty-zinz-receta/perfil-0096.jpg': 1.05,
+  'rusty-zinz-receta/frente-0096.jpg': 1.05,
+  'rusty-patien-receta/perfil-mdemi.jpg': 1.05,
+  'rusty-patien-receta/frente-mdemi.jpg': 1.05,
 
   // Vulk Booping — naming founder tiene inconsistencias respetado tal cual.
   // Iter 1: 1.15/1.0 default → founder pidió +10-15%.
