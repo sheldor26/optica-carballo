@@ -69,6 +69,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'transparente-patillas-negras': 'Frente transparente / patillas negras',
   'gris-transparente': 'Gris transparente',
   'azul-mate': 'Azul mate',
+  'azul-oscuro-mate': 'Azul oscuro mate',
   'gris-oscuro-transparente': 'Gris oscuro transparente',
   'azul-metalico': 'Azul metálico',
   'rosa-transparente': 'Rosa transparente',
@@ -128,6 +129,7 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'azul-degrade': 'Azul degradé',
   'azul-espejado': 'Azul espejado',
   'espejado-azul': 'Azul espejado',
+  'verde-espejado': 'Verde espejado',
   espejado: 'Espejado',
   // `espejado-rojo` ya lo usaba el Blozon (seed 96) sin entrada acá: caía al
   // fallback de title-case y renderizaba "Espejado Rojo" en vez de "Rojo espejado".
