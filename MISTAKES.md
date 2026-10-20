@@ -9023,6 +9023,23 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** al cargar un receta de Rusty, `name` = "Rusty <Modelo> Optics" siempre; el color no entra en name/H1/title. No documentar "excepciones" a una convención sin confirmarlas con el founder. Corregido en la base, seed 84 y docs el 2026-10-14.
 
+
+## 2026-10-20 — En las fotos recreadas del Rusty The Javo dejé el logo de la patilla fuera de proporción (2,4× el ancho de la patilla) y le dibujé un bisel plateado que el producto no tiene
+
+**Qué pasó:** pedido "el logo debe verse 100% fiel". La v3 pegó la placa real de la foto del founder, pero la escaló al tamaño de la placa que había generado agy (235×40 px sobre una patilla de ~100 px) y le agregué un marco plateado dibujado. El founder lo marcó: "muy grande en proporción a la patilla y le agrega un reborde plateado que no tiene". La v4 lo corrigió (150×16 px, ~1,5× el ancho, sin bisel).
+
+**Causa raíz:** (1) tomé como medida el logo generado, no el producto real: no medí la proporción placa/patilla en la foto de contexto que él mismo había pasado; (2) completé con un detalle "razonable" (bisel) en vez de copiar sólo lo que muestra la foto real, donde el borde estaba tapado por un reflejo; y no le avisé que lo había dibujado hasta que lo notó (lo dejé en la nota técnica, no al frente del mensaje).
+
+**Regla preventiva:** al reproducir un logo o detalle "100% fiel", (a) medir su tamaño relativo en la foto real (placa vs ancho de la patilla) ANTES de componer, y comparar el resultado contra esa proporción; (b) no dibujar elementos que la foto de referencia no muestra: si falta información (bisel tapado), dejarlo sin el elemento o preguntar; (c) todo lo que se dibuja a mano va al frente del mensaje, no en una nota al pie. Corregido el 2026-10-20 (v4 en `marketing/fotos/rusty-the-javo/recreadas-agy/`).
+
+## 2026-10-20 — Entregué los kits de ML del Rusty The Javo y de la Reef Ali C25 con la descripción sólo en un archivo `PUBLICACION.md`, resumida en el chat; el founder tuvo que pedirla ("pasame las placas para ML, descripción")
+
+**Qué pasó:** en los dos kits armé título, atributos y descripción completos dentro de `PUBLICACION.md` y en el mensaje sólo los resumí. La regla (memoria del founder) es entregar la descripción COMPLETA en el chat, además del archivo.
+
+**Causa raíz:** traté el archivo como "la entrega" y el chat como un aviso; ya me había pasado con el Exile y lo tenía anotado como regla de trabajo, pero no la apliqué al armar el mensaje de cierre.
+
+**Regla preventiva:** al entregar un kit de ML, el mensaje de cierre lleva SIEMPRE título, atributos y descripción pegados enteros (bloque de código para copiar), y la carpeta `SUBIR-*` abierta en el Finder; el `PUBLICACION.md` es copia de respaldo. Corregido el 2026-10-20.
+
 ---
 
 # Métricas de calidad del sistema

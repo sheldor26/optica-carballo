@@ -6,6 +6,8 @@ type Faq = {
   a: string;
 };
 
+const PRESCRIPTION_SOL_FAQ_Q = '¿Se les puede poner graduación?';
+
 const SOL_FAQS: Faq[] = [
   {
     q: '¿Tienen protección contra rayos UV?',
@@ -16,7 +18,7 @@ const SOL_FAQS: Faq[] = [
     a: 'Con la franela de microfibra incluida + agua tibia y jabón neutro si es necesario. Nunca usar la remera, papel, alcohol ni productos abrasivos. La garantía no cubre rayaduras de uso.',
   },
   {
-    q: '¿Se les puede poner graduación?',
+    q: PRESCRIPTION_SOL_FAQ_Q,
     a: 'Sí. Si necesitás graduación, escribinos por WhatsApp con tu receta para coordinarlo. El armado de lentes graduados se hace presencial en nuestro local.',
   },
   {
@@ -71,8 +73,17 @@ const RECETA_FAQS_REST: Faq[] = [
  * o necesitamos personalización por producto, considerar mover el contenido
  * a `lib/business/product-faqs.ts` o cargarlo desde DB.
  */
-export function ProductFaqs({ categorySlug }: { categorySlug: string }) {
-  const faqs = categorySlug === 'anteojos-de-receta' ? recetaFaqs() : SOL_FAQS;
+export function ProductFaqs({
+  categorySlug,
+  hidePrescriptionFaq = false,
+}: {
+  categorySlug: string;
+  /** Opt-out por producto (`attributes.hide_prescription_faq`): modelos que NO admiten lentes graduadas
+   * (envolventes muy curvos como Exile o The Javo) no tienen que responder "Sí" a esa pregunta. */
+  hidePrescriptionFaq?: boolean;
+}) {
+  const base = categorySlug === 'anteojos-de-receta' ? recetaFaqs() : SOL_FAQS;
+  const faqs = hidePrescriptionFaq ? base.filter((f) => f.q !== PRESCRIPTION_SOL_FAQ_Q) : base;
 
   return (
     <section className="mt-16 max-w-3xl mx-auto" aria-label="Preguntas frecuentes del producto">

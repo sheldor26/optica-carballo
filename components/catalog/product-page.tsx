@@ -538,7 +538,10 @@ export async function ProductDetailPage({
       )}
 
       <RevealOnScroll>
-        <ProductFaqs categorySlug={category.slug} />
+        <ProductFaqs
+          categorySlug={category.slug}
+          hidePrescriptionFaq={product.attributes?.hide_prescription_faq === true}
+        />
       </RevealOnScroll>
 
       <RevealOnScroll>

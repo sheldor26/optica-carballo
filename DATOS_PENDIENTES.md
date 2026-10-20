@@ -93,6 +93,14 @@ stock sí se pueden tomar de esas fuentes.
   - 🔴 **Se encontró un claim de cuero VIVO**: el alt de esa imagen decía "estuche **de cuero**" y se
     mostraba en los **33 productos Vulk** desde el seed 17 (2026-05-30). Corregido. Ver MISTAKES.md.
 
+## 🔄 Rusty The Javo (sol) — carga a la web escrita (seed 185), NO aplicable hasta que pases precio y stock (2026-10-20)
+
+- [x] **Precio, stock y publicación en ML** (2026-10-20): el founder publicó `MLA2217343809` (activa, $90.890, stock 3, item simple, SELLER_SKU 10025); seed 185 actualizado con esos datos reales, falta su "aplicá".
+- [ ] **Título de ML (no urgente, hoy se puede corregir porque no hay ventas):** ML armó "…Envolvente Marron Moda Sbh/ch74 - Marron Brillo Con Lentes Marrones" porque el atributo COLOR DE LA LENTE se cargó con "SBH/CH74 - Marron Brillo con Lentes Marrones". Si lo cambia a "Marrón", el título se rearma sin el código.
+- [ ] **Peso** (no bloquea): va sin `weight_grams`; si no lo tenés, el fabricante no lo da.
+- [x] Antirreflex sólo en la cara interna, medida 55 oficial de Rusty, lente marrón pleno sin degradé, color "marrón brillo" (2026-10-20).
+- [ ] **Comparar las fotos con el armazón real** (son recreaciones con agy, no fotos del producto).
+
 ## 🔄 Mormaii Vesubio RX (receta aviador) — alta en ML + página, seed 155 escrito pero NO aplicado (2026-10-02)
 
 **Estado**: seed 155 APLICADO el 2026-10-02. Quedan sólo los datos que no bloquean la carga (peso, altura

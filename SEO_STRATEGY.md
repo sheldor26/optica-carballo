@@ -1044,6 +1044,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 51. Rusty Tuniti Optics (receta, cat eye de acetato, femenino, monofocal/bifocal/progresivo), seed 180
 52. Rusty See Life (sol, cat eye redondeado femenino G-Flex, polarizado 4/4), seed 181
 53. Rusty Exile (sol, envolvente deportivo unisex G-Flex, 2 pol + 2 no pol con antirreflex), seed 184
+54. Rusty The Javo (sol, envolvente unisex marrón brillo G-Flex, 1 var, no polarizado), seed 185: slug `rusty-the-javo`, title (55) `Lentes de Sol Marrones Rusty The Javo | Óptica Carballo`, meta (152), keyword libre `lentes de sol marrones` (110/diff 11), sin "polarizados" ni "deportivos" en title/H1; frase de vuelta sólo en Exile.
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 

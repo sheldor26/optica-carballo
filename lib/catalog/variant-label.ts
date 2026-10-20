@@ -73,6 +73,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'azul-metalico': 'Azul metálico',
   'rosa-transparente': 'Rosa transparente',
   'marron-transparente': 'Marrón transparente',
+  'marron-brillo': 'Marrón brillo',
   'marron-claro-transparente': 'Marrón claro transparente',
   'transparente-terminales-negros': 'Cristal transparente con terminales negros',
   'caramelo-transparente-patillas-rosa-palido': 'Frente caramelo transparente con patillas rosa pálido',

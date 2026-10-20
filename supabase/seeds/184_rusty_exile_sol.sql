@@ -14,7 +14,7 @@
 -- DATOS DEL FOUNDER (2026-10-19): unisex, "envolventes deportivos", G-Flex (frente y patillas; ML decía Grilamid: gana el founder), bisagras de plástico reforzadas (sin flex), cat 3, UV400, lente gris oscuro, **67-22-145** (el 67 está medido SOBRE LA CURVA del envolvente: en plano no cierra con el ancho total), **ancho total 137, alto total 44**. **NO se pueden adaptar lentes graduadas.** La no polarizada viene con antirreflex (no dijo en qué cara: no se afirma "interno"). Policarbonato = default del proyecto (no lo dijo).
 -- 🔬 optical-expert: "envolvente" = forma ("cubre más del costado"), nunca "protección total"; UV400 = "100% UVA y UVB a través de la lente"; 2 de 4 polarizadas → "polarizados" NO va en title/H1/meta, sí en descripción/callout/variante; el polarizado y el UV400 son cosas distintas; sin "liviano" (sin peso), sin "flexible"/"flex", sin "fatiga ocular"/"durabilidad"/"protección óptima"; cat 3: no sirve para manejar de noche; talle "mediano" sin `size_fit`.
 -- 🎯 SEO (seo-strategist): slug `rusty-exile`, name `Rusty Exile` (sin Optics); no queda keyword con volumen libre: carril branded + forma (`anteojos de sol rusty envolventes`); "deportivos" sólo en copy (es de And Now); `lens_treatment` de producto ["uv400"], `polarized` true/false por variante; links a Esvep (gemelo, frase de vuelta sólo ahí), And Now, CCCP, y facetas `/anteojos-de-sol/{rusty,deportivos,polarizados}`.
--- 📸 FOTOS: no existen en la web de Rusty (modelo discontinuado): salieron de las publicaciones de ML del founder (originales de Rusty a 1200 px), pasadas por `pnpm placas --tipo sol` y subidas con `pnpm fotos:subir --sufijo`: `rusty-exile/perfil|frente-mblk|sblk.jpg` (variantes polarizadas) y copias `-mblk-np` / `-sblk-np` (variantes no polarizadas: la misma foto, el UNIQUE(product_id, storage_path) impide atar un archivo a 2 variantes; mismo patrón que Rusty CCCP seed 54) + `medidas-mblk.jpg`. El frente trae el sticker "RUSTY POLARIZED" en la lente (es lo que hay). Scale 1.0 por defecto: revisar con `pnpm auditar:encuadre` (el grid de deportivos es el más chico).
+-- 📸 FOTOS: no existen en la web de Rusty (modelo discontinuado): salieron de las publicaciones de ML del founder (originales de Rusty a 1200 px), pasadas por `pnpm placas --tipo sol` y subidas con `pnpm fotos:subir --sufijo`: `rusty-exile/perfil|frente-mblk|sblk.jpg` (variantes polarizadas) y copias `-np` (perfil) y `-np3` (frente SIN el sticker "RUSTY POLARIZED", borrado con agy (Gemini 3.8 Flash Low) el 2026-10-19) para las variantes no polarizadas (la misma foto, el UNIQUE(product_id, storage_path) impide atar un archivo a 2 variantes; mismo patrón que Rusty CCCP seed 54) + `medidas-mblk.jpg`. El frente trae el sticker "RUSTY POLARIZED" en la lente (es lo que hay). Scale 1.0 por defecto: revisar con `pnpm auditar:encuadre` (el grid de deportivos es el más chico).
 -- ============================================
 
 BEGIN;
@@ -39,6 +39,7 @@ VALUES (
     "measurements": {"frame_width_mm": 137, "lens_width_mm": 67, "lens_height_mm": 44, "bridge_mm": 22, "temple_length_mm": 145},
     "includes": ["estuche", "franela"],
     "warranty_months": 12,
+    "hide_prescription_faq": true,
     "new_until": "2026-11-19",
     "callouts": [
       {"type": "info", "position": "top", "title": "Envolvente deportivo y unisex", "body": "Frente y patillas de G-Flex, con bisagras de plástico reforzadas. Diseño envolvente que cubre más del costado que un armazón plano. En negro mate o negro brillo."},
@@ -89,11 +90,11 @@ VALUES
   ((SELECT id FROM public.products WHERE slug='rusty-exile'), (SELECT id FROM public.product_variants WHERE sku='EXILE-MBLK-S10'),
    'rusty-exile/perfil-mblk-np.jpg', 'Anteojos de sol Rusty Exile envolventes con antirreflex, vista lateral, negro mate con lente gris oscuro', 2000, 1333, 4, false),
   ((SELECT id FROM public.products WHERE slug='rusty-exile'), (SELECT id FROM public.product_variants WHERE sku='EXILE-MBLK-S10'),
-   'rusty-exile/frente-mblk-np.jpg', 'Anteojos de sol Rusty Exile envolventes con antirreflex, vista frontal, negro mate con lente gris oscuro', 2000, 1333, 5, false),
+   'rusty-exile/frente-mblk-np3.jpg', 'Anteojos de sol Rusty Exile envolventes con antirreflex, vista frontal, negro mate con lente gris oscuro', 2000, 1333, 5, false),
   ((SELECT id FROM public.products WHERE slug='rusty-exile'), (SELECT id FROM public.product_variants WHERE sku='EXILE-SBLK-S10'),
    'rusty-exile/perfil-sblk-np.jpg', 'Anteojos de sol Rusty Exile envolventes con antirreflex, vista lateral, negro brillo con lente gris oscuro', 2000, 1333, 6, false),
   ((SELECT id FROM public.products WHERE slug='rusty-exile'), (SELECT id FROM public.product_variants WHERE sku='EXILE-SBLK-S10'),
-   'rusty-exile/frente-sblk-np.jpg', 'Anteojos de sol Rusty Exile envolventes con antirreflex, vista frontal, negro brillo con lente gris oscuro', 2000, 1333, 7, false),
+   'rusty-exile/frente-sblk-np3.jpg', 'Anteojos de sol Rusty Exile envolventes con antirreflex, vista frontal, negro brillo con lente gris oscuro', 2000, 1333, 7, false),
   ((SELECT id FROM public.products WHERE slug='rusty-exile'), NULL,
    'rusty-exile/medidas-mblk.jpg', 'Esquema técnico de medidas Rusty Exile: frente 137mm, lente 67mm sobre la curva, alto total 44mm, puente 22mm, varilla 145mm', 2000, 1333, 99, false)
 ON CONFLICT (product_id, storage_path) DO UPDATE SET
