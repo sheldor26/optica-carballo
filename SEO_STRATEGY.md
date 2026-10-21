@@ -1046,6 +1046,7 @@ Secundarias de respaldo: `anteojos para mujer` (480/7), `armazones vulk` (110/8 
 53. Rusty Exile (sol, envolvente deportivo unisex G-Flex, 2 pol + 2 no pol con antirreflex), seed 184
 54. Rusty The Javo (sol, envolvente unisex marrón brillo G-Flex, 1 var, no polarizado), seed 185: slug `rusty-the-javo`, title (55) `Lentes de Sol Marrones Rusty The Javo | Óptica Carballo`, meta (152), keyword libre `lentes de sol marrones` (110/diff 11), sin "polarizados" ni "deportivos" en title/H1; frase de vuelta sólo en Exile.
 55. Rusty Called (sol, wayfarer/rectangular clásico unisex G-Flex, 3 var, 1 polarizada), seed 186: slug `rusty-called`, title (53) `Lentes de Sol Rusty Called Wayfarer | Óptica Carballo`, meta (151), carril `lentes wayfarer` (590/diff 14; "Anteojos" ya es del Zaedit); sin rectangulares/hombre/espejados/polarizados en title/H1/meta; frase de vuelta sólo en Rew.
+56. Rusty Society (sol, redondo unisex con puente tipo llave G-Flex, 2 var, 1 polarizada), seed 187: slug `rusty-society`, title (52) `Lentes de Sol Rusty Society Unisex | Óptica Carballo` ("redondos" ya es de Blinded/Zion/Misty/Etiquet: sólo en copy/alt), meta (150), head `lentes de sol rusty` 1.300/diff 9; frase de vuelta sólo en Ardigan.
 
 Marca brasilera, segmento medio, posicionamiento surf/outdoor (ver `BRANDS.md`).
 

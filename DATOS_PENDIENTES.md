@@ -101,7 +101,15 @@ stock sí se pueden tomar de esas fuentes.
 - [x] Antirreflex sólo en la cara interna, medida 55 oficial de Rusty, lente marrón pleno sin degradé, color "marrón brillo" (2026-10-20).
 - [ ] **Comparar las fotos con el armazón real** (son recreaciones con agy, no fotos del producto).
 
+## 🔄 Rusty Society (sol) — cargado (seed 187, aplicado 2026-10-20); faltan 2 confirmaciones tuyas, no bloquean
+
+- [ ] **¿Admite lentes graduadas?** Hoy no se menciona y la FAQ genérica de graduación está oculta (`hide_prescription_faq`). Si admite, se saca el flag y se agrega el aviso.
+- [ ] **Polarizada (113114): ¿tiene reflejo/espejado leve?** Rusty la describe "polarizadas con coating REVO"; en la foto se ve gris liso, por eso no se menciona. Tampoco se afirma antirreflex (no hay dato).
+- [x] Antirreflex en la cara interna de la REVO BLUE (confirmado 2026-10-20); la REVO se reactivó en ML (stock 8).
+- [ ] (Menor) El peso 22,7 g es el de la ficha de Rusty y coincide con el del Blinded; confirmar con la balanza si querés.
+
 ## 🔄 Mormaii Vesubio RX (receta aviador) — alta en ML + página, seed 155 escrito pero NO aplicado (2026-10-02)
+
 
 **Estado**: seed 155 APLICADO el 2026-10-02. Quedan sólo los datos que no bloquean la carga (peso, altura
 útil del aro, plaquetas, níquel, criterio de progresivos con la regente).
