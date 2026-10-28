@@ -26,6 +26,7 @@ import { ProductTrustSignals } from '@/components/product/product-trust-signals'
 import { ProductFaqs } from '@/components/product/product-faqs';
 import { RelatedProducts } from '@/components/product/related-products';
 import { WhatsappAdvisorCard } from '@/components/product/whatsapp-advisor-card';
+import { brandedProductName } from '@/lib/catalog/display-name';
 import { CrossModalityLink } from '@/components/product/cross-modality-link';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { RecentlyViewedTracker } from '@/components/recently-viewed/recently-viewed-tracker';
@@ -414,7 +415,7 @@ export async function ProductDetailPage({
                   variant="title"
                 />
                 <ShareButtons
-                  title={`${product.brand.name} ${product.name}`}
+                  title={brandedProductName(product.brand.name, product.name)}
                   url={pageUrl}
                   contentType="product"
                   itemSlug={product.slug}

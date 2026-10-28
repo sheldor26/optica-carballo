@@ -9,6 +9,7 @@ import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { formatPriceCents } from '@/lib/format/currency';
 import { FREE_SHIPPING_THRESHOLD_CENTS } from '@/lib/shipping';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import { brandedProductName } from '@/lib/catalog/display-name';
 import type { ResolvedCart } from '@/lib/cart/types';
 
 export function CartPage({
@@ -213,7 +214,7 @@ function EmptyCart({ checkoutEnabled }: { checkoutEnabled: boolean }) {
 
 function CartWhatsappCta({ items }: { items: ResolvedCart['items'] }) {
   const productList = items
-    .map((it) => `${it.brand.name} ${it.product.name} (x${it.quantity})`)
+    .map((it) => `${brandedProductName(it.brand.name, it.product.name)} (x${it.quantity})`)
     .join(', ');
   const message = `Hola! Quiero hacer este pedido: ${productList}. ¿Pueden ayudarme?`;
   const href = getWhatsappLinkWithContext(message);

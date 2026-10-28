@@ -1,6 +1,7 @@
 import 'server-only';
 import { Preference } from 'mercadopago';
 import { getMpClient } from './client';
+import { brandedProductName } from '@/lib/catalog/display-name';
 import type { ResolvedCart } from '@/lib/cart/types';
 import type { ShippingQuote } from '@/lib/shipping';
 
@@ -130,7 +131,7 @@ export async function createCheckoutPreference(args: {
 
   const items: MpItem[] = cart.items.map((it) => ({
     id: it.variant.sku,
-    title: `${it.brand.name} ${it.product.name}`.slice(0, 256),
+    title: brandedProductName(it.brand.name, it.product.name).slice(0, 256),
     description: `SKU ${it.variant.sku}`.slice(0, 256),
     quantity: it.quantity,
     unit_price: it.variant.priceCents / 100,

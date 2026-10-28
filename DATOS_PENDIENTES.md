@@ -108,6 +108,27 @@ stock sí se pueden tomar de esas fuentes.
 - [x] Antirreflex en la cara interna de la REVO BLUE (confirmado 2026-10-20); la REVO se reactivó en ML (stock 8).
 - [ ] (Menor) El peso 22,7 g es el de la ficha de Rusty y coincide con el del Blinded; confirmar con la balanza si querés.
 
+## 🔄 Mormaii Fiji SOL (Col 09, 13, 15, 20) — placas hechas, faltan datos (2026-10-26)
+Bloquea: la placa 04 (medidas) y la carga a la web.
+- [x] **Alto total** del Fiji: 51 (pasado el 2026-10-26; lente 53, puente 19, varilla 134, ancho total 146).
+- [ ] Peso (g). El fabricante dice "ultraliviano" pero no se repite sin peso.
+- [x] Decidido: variaciones nuevas de `MLA1392353341`; SKUs pasados (120105909/13/15/20). **Falta el STOCK de Col 13, 15, 20** (y SKU + stock de Col 11).
+- [x] Variación vieja rosado/beige (= Col 11): se carga en la web por si reingresa.
+- [ ] Confirmar con María Carlota qué graduado se ofrece en Fiji (base 6) y si hacen polarizado graduado.
+
+## 🔄 Mormaii Carmel 2 SOL (Col 01, 03, 06) — kit ML hecho, falta la publicación en ML (2026-10-26)
+Bloquea: cargar el modelo a la web (no hay item_id/variation_code reales, ML no tiene Carmel 2).
+- [ ] Publicar en ML (kit: `marketing/placas-ml/SUBIR-mormaii-carmel-2/`, 3 variaciones) y pasar el link + SKUs de cada color.
+- [ ] Confirmar título (opción A `…Carmel 2 Hombre` o B `…Uv400`).
+- [ ] Peso (g) del Carmel 2 y material si lo sabés (el fabricante sólo dice "inyección"); sin eso va sin peso y "plástico inyectado".
+
+## 🔄 Mormaii High 4 APE (3ª variante receta) — kit ML hecho, falta crear la variación en ML (2026-10-26)
+Bloquea: cargar la variante a la web (seed 188), porque no hay `variation_code` real en `MLA2518277684`.
+- [ ] Crear la variación en ML (kit: `marketing/placas-ml/SUBIR-mormaii-high4-ape/`) y pasar el **var_id** (o avisarme y lo saco por API) + el **stock**.
+- [ ] Confirmar SKU (`HIGH4-APE` sugerido) y el nombre del color ("azul marino" vs "azul").
+- [ ] Corregir en ML la descripción (hoy 58/38/130 y "liviano", ver `PUBLICACION.md`) y decidir si se saca "Livianos" del título.
+- [ ] Peso del High 4 (sigue pendiente desde el seed 151).
+
 ## 🔄 Mormaii Vesubio RX (receta aviador) — alta en ML + página, seed 155 escrito pero NO aplicado (2026-10-02)
 
 

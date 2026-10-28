@@ -9,7 +9,7 @@ import { FloatingChat } from '@/components/chat/floating-chat';
 import { FloatingWhatsapp } from '@/components/ui/floating-whatsapp';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
 import { ToastHost } from '@/components/ui/toast-host';
-import { getBusinessInfo } from '@/lib/site/business';
+import { getBusinessInfo, WHATSAPP_WELCOME_MESSAGE } from '@/lib/site/business';
 
 export default function StorefrontLayout({
   children,
@@ -29,7 +29,7 @@ export default function StorefrontLayout({
       {business.whatsappLink && (
         <FloatingWhatsapp
           whatsappLink={business.whatsappLink}
-          defaultMessage="Hola, te consulto por anteojos."
+          defaultMessage={WHATSAPP_WELCOME_MESSAGE}
         />
       )}
       <CookiesBanner />

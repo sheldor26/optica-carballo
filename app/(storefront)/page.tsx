@@ -18,7 +18,11 @@ import {
   fetchAllActiveBrands,
   fetchCategoryIndex,
 } from '@/lib/catalog/queries';
-import { getBusinessInfo, getWhatsappLinkWithContext } from '@/lib/site/business';
+import {
+  getBusinessInfo,
+  getWhatsappLinkWithContext,
+  WHATSAPP_WELCOME_MESSAGE,
+} from '@/lib/site/business';
 
 export const revalidate = 300;
 
@@ -34,7 +38,7 @@ export default async function HomePage() {
   ]);
 
   const { siteName } = getBusinessInfo();
-  const whatsappLink = getWhatsappLinkWithContext('Hola, te consulto por anteojos.');
+  const whatsappLink = getWhatsappLinkWithContext(WHATSAPP_WELCOME_MESSAGE);
 
   return (
     <>

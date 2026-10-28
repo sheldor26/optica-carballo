@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import { brandedProductName } from '@/lib/catalog/display-name';
 
 /**
  * Botón "Consultar por WhatsApp" inline en cada variante, con mensaje
@@ -39,7 +40,7 @@ export function VariantWhatsappCta({
 }) {
   const priceText = formatPriceCents(priceCents);
   const message =
-    `Hola! Quería consultar por el modelo ${brandName} ${productName} ` +
+    `Hola! Quería consultar por el modelo ${brandedProductName(brandName, productName)} ` +
     `(${variantLabel}, SKU ${sku}, ${priceText}).`;
   const link = getWhatsappLinkWithContext(message);
   if (!link) return null;

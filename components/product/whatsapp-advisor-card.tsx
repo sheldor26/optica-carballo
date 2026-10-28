@@ -2,6 +2,7 @@ import { Sparkles } from 'lucide-react';
 import { WhatsappIcon } from '@/components/ui/whatsapp-icon';
 import { Button } from '@/components/ui/button';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import { brandedProductName } from '@/lib/catalog/display-name';
 
 type Props = {
   productName: string;
@@ -15,7 +16,7 @@ type Props = {
  * Captura conversión potencial perdida sin presionar al cliente.
  */
 export function WhatsappAdvisorCard({ productName, brandName }: Props) {
-  const message = `Hola! Tengo una consulta sobre ${brandName} ${productName}, ¿pueden asesorarme?`;
+  const message = `Hola! Tengo una consulta sobre ${brandedProductName(brandName, productName)}, ¿pueden asesorarme?`;
   const href = getWhatsappLinkWithContext(message);
   if (!href) return null;
 

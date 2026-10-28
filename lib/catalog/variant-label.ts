@@ -32,6 +32,17 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'marron-brillo-patillas-marron-crema': 'Marrón brillo con patillas marrón y crema',
   // Reef 177 Aerial (seed 158): un slug nuevo; negro-mate, negro-brillo, gris-oscuro y azul-espejado ya existen.
   'azul-mate-detalles-celestes': 'Azul mate con detalles celestes',
+  // Mormaii Fiji sol (seed 190): cinco slugs nuevos (el color se nombra por frente + patillas porque cambian juntos).
+  'negro-brillo-patillas-gun-celeste': 'Negro brillo con patillas gun y celeste',
+  'negro-mate-patillas-negras-punta-gris': 'Negro mate con patillas negras y punta gris',
+  'marron-degrade-patillas-doradas': 'Marrón a transparente con patillas doradas',
+  'negro-mate-patillas-gun-rojo': 'Negro mate con patillas gun y rojo',
+  'beige-translucido-patillas-doradas': 'Beige translúcido con patillas doradas',
+  // Mormaii Carmel 2 sol (seed 189): dos slugs nuevos; negro-mate ya existe, lentes verde-oscuro/gris-oscuro/marron ya existen.
+  'negro-mate-degrade-marron': 'Negro mate degradé a marrón',
+  'azul-mate-tonos-turquesa': 'Azul mate con tonos turquesa',
+  // Mormaii High 4 receta APE (seed 188): un slug nuevo (frente negro brillo + patillas azul oscuro translúcido).
+  'negro-brillo-patillas-azul-oscuro-translucido': 'Negro brillo con patillas azul oscuro translúcido',
   // Rusty Burrout receta (seed 177): dos slugs nuevos.
   'negro-mate-detalles-rojos': 'Negro mate con detalles rojos',
   'azul-mate-detalles-negros': 'Azul mate con detalles negros',
@@ -140,6 +151,7 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'gris-verdoso': 'Gris verdoso',
   'rojo-degrade': 'Rojo degradé',
   'espejado-celeste': 'Celeste espejado',
+  'espejado-rosado': 'Rosado espejado',
   'espejado-verde': 'Verde espejado',
   'gris-semi-espejado': 'Gris semi-espejado',
   'azul-semi-espejado': 'Azul semi-espejado',

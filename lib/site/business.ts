@@ -64,6 +64,10 @@ export type BusinessInfo = {
   tecnicoMatricula: string | null;
 };
 
+/** Saludo por defecto de los botones de WhatsApp generales (home, botón flotante, páginas legales). */
+export const WHATSAPP_WELCOME_MESSAGE =
+  'Hola! Estoy en la tienda online de Óptica Carballo y me gustaría obtener información sobre sus productos.';
+
 /**
  * Construye una URL `wa.me/` con mensaje pre-llenado.
  * Devuelve null si no hay número de WhatsApp configurado.
@@ -77,7 +81,7 @@ export function getWhatsappLinkWithContext(message: string): string | null {
 export function getBusinessInfo(): BusinessInfo {
   const whatsappNumber = nonEmpty(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER);
   const whatsappLink = whatsappNumber
-    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hola, te consulto por...')}`
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(WHATSAPP_WELCOME_MESSAGE)}`
     : null;
 
   return {

@@ -55,9 +55,18 @@ export function FloatingWhatsapp({
 
   const shouldHide = hidden || compareCount > 0 || buyBarVisible;
 
-  const href = defaultMessage
-    ? `${whatsappLink}${whatsappLink.includes('?') ? '&' : '?'}text=${encodeURIComponent(defaultMessage)}`
-    : whatsappLink;
+  // Reemplaza el `text` que ya traiga el link (antes se agregaba un segundo `text=` y
+  // WhatsApp usaba el primero: el saludo genérico "Hola, te consulto por...").
+  const href = (() => {
+    if (!defaultMessage) return whatsappLink;
+    try {
+      const url = new URL(whatsappLink);
+      url.searchParams.set('text', defaultMessage);
+      return url.toString();
+    } catch {
+      return whatsappLink;
+    }
+  })();
 
   // Entrada con tailwindcss-animate (antes framer-motion; sin animación de
   // salida — desaparición instantánea, imperceptible). Perf 2026-06-11.
