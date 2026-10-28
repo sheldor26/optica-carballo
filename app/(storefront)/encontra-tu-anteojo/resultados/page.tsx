@@ -7,6 +7,7 @@ import { fetchQuizRecommendations } from '@/lib/quiz/recommendations';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { formatPriceCents } from '@/lib/format/currency';
 import type { QuizAnswers } from '@/lib/quiz/types';
+import { brandedProductName } from '@/lib/catalog/display-name';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,7 +78,7 @@ export default async function ResultadosPage({ searchParams }: { searchParams: S
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
-                        alt={`${rec.brandName} ${rec.name}`}
+                        alt={brandedProductName(rec.brandName, rec.name)}
                         fill
                         className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
                         style={{ objectFit: 'contain', transform: `scale(${rec.primaryImageScale})` }}

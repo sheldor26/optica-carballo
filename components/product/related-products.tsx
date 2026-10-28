@@ -6,6 +6,7 @@ import { formatPriceCents } from '@/lib/format/currency';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { buildProductImageAlt } from '@/lib/catalog/image-alt';
 import type { RelatedProductCard } from '@/lib/catalog/queries';
+import { brandedProductName } from '@/lib/catalog/display-name';
 
 type Props = {
   products: RelatedProductCard[];
@@ -65,7 +66,7 @@ function RelatedCard({ product }: { product: RelatedProductCard }) {
   });
 
   return (
-    <Link href={href} className="group block h-full" aria-label={`${product.brandName} ${product.name}`}>
+    <Link href={href} className="group block h-full" aria-label={brandedProductName(product.brandName, product.name)}>
       <article className="flex h-full flex-col">
         <div className="bg-background relative aspect-[4/3] w-full overflow-hidden">
           {primaryUrl ? (

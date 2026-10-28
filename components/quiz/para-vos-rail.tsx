@@ -9,6 +9,7 @@ import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { formatPriceCents } from '@/lib/format/currency';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import type { QuizRecommendation } from '@/lib/quiz/types';
+import { brandedProductName } from '@/lib/catalog/display-name';
 
 /**
  * Riel "Pensado para vos": recomendaciones personalizadas según el quiz que el
@@ -76,7 +77,7 @@ export function ParaVosRail() {
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
-                    alt={`${rec.brandName} ${rec.name}`}
+                    alt={brandedProductName(rec.brandName, rec.name)}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     style={{ transform: `scale(${rec.primaryImageScale})` }}

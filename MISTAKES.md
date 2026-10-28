@@ -9132,6 +9132,14 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** modificar parámetros de URL con `URL.searchParams` (no concatenando) y verificar los links `wa.me` en el preview (`getAll('text').length === 1`). Corregido el 2026-10-27 (sin deploy hasta el "subí").
 
+## 2026-10-28 — La corrección de la marca duplicada ("Rusty Rusty") quedó incompleta: la barrida inicial sólo cubrió los textos visibles y siguió en `aria-label`/`alt`
+
+**Qué pasó:** el 2026-10-27 apliqué `brandedProductName` en 5 lugares (WhatsApp, carrito, compartir, Mercado Pago) y anoté los `alt`/`aria-label` como "pendientes menores". Al verificar producción, la PDP de Rusty Xold todavía tenía "Rusty Rusty Dunsert/And Now/Dearly" en las tarjetas relacionadas (lectores de pantalla).
+
+**Causa raíz:** barrí el código por una búsqueda parcial en vez de por todas las concatenaciones `${brand} ${name}`, y dejé afuera accesibilidad sin justificación suficiente.
+
+**Regla preventiva:** al corregir un patrón, buscar TODAS las ocurrencias antes de cerrar y verificar en producción con `grep` del texto defectuoso (`Rusty Rusty` = 0). Completado el 2026-10-28 (pendiente de "subí").
+
 ---
 
 # Métricas de calidad del sistema

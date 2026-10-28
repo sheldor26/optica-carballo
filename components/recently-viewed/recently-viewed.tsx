@@ -8,6 +8,7 @@ import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 import { formatPriceCents } from '@/lib/format/currency';
 import { readRecentClientSide } from '@/lib/recently-viewed/client';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
+import { brandedProductName } from '@/lib/catalog/display-name';
 
 type Props = {
   /** Slugs a excluir (ej: el producto que está viendo ahora). */
@@ -158,7 +159,7 @@ function RecentCard({
     <Link
       href={href}
       className="group block h-full"
-      aria-label={`${brandName} ${name}`}
+      aria-label={brandedProductName(brandName, name)}
     >
       <article className="flex h-full flex-col">
         <div className="bg-background relative aspect-[4/3] w-full overflow-hidden">
