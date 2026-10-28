@@ -32,6 +32,8 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'marron-brillo-patillas-marron-crema': 'Marrón brillo con patillas marrón y crema',
   // Reef 177 Aerial (seed 158): un slug nuevo; negro-mate, negro-brillo, gris-oscuro y azul-espejado ya existen.
   'azul-mate-detalles-celestes': 'Azul mate con detalles celestes',
+  // Mormaii Suva receta (seed 192): un slug nuevo; negro-brillo, negro-mate y azul-mate-y-turquesa ya existen.
+  'negro-mate-con-azul': 'Negro mate con azul',
   // Mormaii Fiji sol (seed 190): cinco slugs nuevos (el color se nombra por frente + patillas porque cambian juntos).
   'negro-brillo-patillas-gun-celeste': 'Negro brillo con patillas gun y celeste',
   'negro-mate-patillas-negras-punta-gris': 'Negro mate con patillas negras y punta gris',

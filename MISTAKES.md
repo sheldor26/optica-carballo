@@ -9140,6 +9140,14 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** al corregir un patrón, buscar TODAS las ocurrencias antes de cerrar y verificar en producción con `grep` del texto defectuoso (`Rusty Rusty` = 0). Completado el 2026-10-28 (pendiente de "subí").
 
+## 2026-10-28 — Malinterpreté "rehacerla con placas nuevas y nueva descripción" (Suva) como "crear publicaciones nuevas" y armé un plan que el founder no pedía
+
+**Qué pasó:** el founder pidió rehacer la publicación multivariante existente del Suva con placas y descripción nuevas. Yo propuse crear una publicación nueva por color y pausar la vieja; él respondió que sólo había actualizado la publicación que ya estaba. Costó un turno de ida y vuelta (además de 3 consultas a agentes sobre un plan que no iba a ejecutarse).
+
+**Causa raíz:** apliqué por inercia la lección del Fiji (no tocar multivariantes viejas) saltando directo a "crear nuevas" sin preguntar qué quería hacer él con la publicación que ya tenía; interpreté "rehacer" como reemplazar en vez de actualizar el contenido.
+
+**Regla preventiva:** ante "rehacer/actualizar una publicación existente", primero preguntar o confirmar en una línea la modalidad (¿edita él en el panel con mi kit, o la toco yo por API con los riesgos?) antes de diseñar o consultar agentes sobre alternativas. Corregido el 2026-10-28 (kit adaptado a edición en panel).
+
 ---
 
 # Métricas de calidad del sistema
