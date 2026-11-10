@@ -12235,6 +12235,44 @@ El botón flotante de WhatsApp tomaba el link base (que ya traía `?text=Hola, t
 
 En `MLA1392353341` (2 ventas) `PUT {family_name}` devolvió 400 `BODY_INVALID_FIELDS`: no hay forma de sacar una palabra del título una vez vendido (sólo cerrar y republicar). En cambio por PUT se pudieron corregir `sale_terms` (WARRANTY_TYPE/TIME copiando `value_id` de otro item), atributos (`BRIDGE_LENGTH`, `FRAME_SHAPE`, `FRAME_MATERIAL`, `TEMPLE_MATERIAL`), la descripción (`PUT /items/{id}/description`, endpoint propio) y `pictures`. Por eso las palabras de riesgo (marcas ajenas, promesas) hay que evitarlas en el `family_name`/título ANTES de la primera venta; revisar títulos antes de publicar, no después.
 
+## Logo/texto de marca perdido al recolorear con AGY: reponer el texto REAL de una foto real, mezclado por oscuridad (no regenerar, no dejar liso)
+
+AGY recolorea bien el material pero regenera mal el texto diminuto grabado (en la chapa de la Patien salió "SBSY RL"); dejar la chapa lisa tampoco sirve (el logo de marca es indispensable para el founder). Método que funcionó: (1) pedirle a AGY SOLO que limpie la chapa (parche ampliado ×6 en el scratchpad, pegado con máscara suave); (2) tomar el texto y el símbolo REALES de una foto real del producto (ahí `referencia-real/7.png`, lateral de 1024 px): recortar sólo la franja de texto (sin los bordes oscuros de la chapa, que aparecen como rayas), convertir la luminancia en alfa (`(bg-lum)/bg`, umbral ~0,18), rotar al ángulo de la chapa y mezclar `out = base*(1-a) + tinta*a` (tinta ≈ (28,28,32), a≤0,9); (3) trabajar sobre la foto ya reescalada 2× para que el texto no quede borroso; (4) verificar con zoom ×4 antes de subir. Y comprobar siempre `git status` después de AGY: dejó un `parche_limpio.png` en la raíz del repo en vez de en la carpeta indicada.
+
+## Logo diminuto: pedirle a AGY que grabe el logo sobre la chapa lisa CON la chapa real de referencia, y usar sólo su grabado como máscara (no su composición)
+
+El recorte de 20 px de una foto real salía borroso al ampliarlo (seed 195, rechazado por el founder). Mejor resultado: pasar a AGY el parche ampliado de la chapa LISA + un primer plano de la chapa real (lateral, 1024 px) y pedirle que grabe el MISMO texto y símbolo. AGY devuelve otra perspectiva (no se puede pegar tal cual), pero el grabado sale nítido y fiel: se extrae sólo ese grabado como alfa por oscuridad (bg = percentil 75, umbral ~0,16, bordes a 0), se rota al ángulo de la chapa y se mezcla sobre la foto original con su geometría. Si el logo sigue quedando mal, subir resolución del parche o pedirlo en otra pasada, nunca dejar la chapa lisa ni publicar texto regenerado.
+
+## 2026-10-30 — Logo/texto de marca: dibujarlo en vector calcando fotos reales cuando AGY no tiene cupo
+
+**Qué funcionó:** el modelo de imágenes de AGY tiene cupo propio (429 `gemini-3.1-flash-image`, ~4 h) y cambiar el modelo orquestador no lo evita. Alternativa determinística: (1) medir la chapa en la foto base (bordes por columna → ángulo −25,4°, largo ~80 px, ancho ~23 px), (2) dibujar el grabado como SVG (letras como trazos finos y muy espaciados + logo calcado de la foto real en un panel lado a lado), (3) renderizar a 8× y bajar con lanczos, (4) componer con alfa sobre la base SIN logo. Comparar siempre el dibujo contra la foto real en un panel lado a lado ANTES de componer (mi primer dibujo salió como un "bumerán" y sólo lo vi así).
+
+**Detalles:** las fotos HEIC del iPhone traen rotación EXIF; con `sharp` usar `.rotate()` sin argumentos o los recortes salen en otro lugar. La foto de la chapa real ya no se enmascara bien por umbral (reflejos, tono desparejo): conviene calcar a mano.
+
+## 2026-10-30 — Grabado de marca fiel: tomar los píxeles de la foto real y enderezarlos (no redibujar)
+
+**Qué funcionó:** tinta = 1 − luz/fondo_local (el fondo local sale de un blur del tono de la chapa), engrosada con un blur chico y un boost, dentro de un polígono interior de la chapa; luego una transformación afín (renderizada como `<image transform="matrix(...)">` en SVG y bajada con lanczos) sobre la base sin logo. Reproduce letras y logo reales. Calcular la matriz con `map(0,0)`, `map(1,0)`, `map(0,1)`. Cuidado: `sharp.blur().raw()` en 1 canal puede devolver 3 canales (leer `info.channels`).
+
+## 2026-11-07 — Despiece animado de un producto real: lámina de AGY a partir de las fotos + recorte de piezas + CSS por scroll
+
+**Qué funcionó:** pasarle a AGY las fotos del producto (frente + perfil) y pedir UNA lámina de despiece sobre blanco puro, con las piezas separadas y la anatomía explícita (qué pieza lleva qué), da piezas fieles al producto. Se recortan por componentes conexos (fondo = casi blanco conectado al borde + huecos internos), se guardan en WebP con alfa (~5 KB cada una) y se animan con variables CSS (`--f1..--f5`) escritas por un listener de scroll con rAF, sin librerías ni re-render. Detalles que hay que repetir: pedir el borde del lente limpio y sacar el aro claro del vidrio con una erosión de ~9 px; en el frente (oscuro) descartar píxeles claros para evitar halos; para el estado armado poner detrás un relleno opaco del lente (un rectángulo con las esquinas redondeadas) porque el hueco del frente no coincide con la forma del lente; clasificar piezas por área (patillas = las dos más chicas) y no por orientación, porque AGY a veces las dibuja horizontales; AGY deja una copia de la imagen en la raíz del repo (borrarla y chequear `git status`).
+
+## 2026-11-07 — Sección sticky con animación por scroll: calcular el progreso con el stage, no con innerHeight
+
+**Qué funcionó:** para un track `h-[200svh]` con un stage `sticky`, el progreso real es `(-rect.top + stickyTop) / (track.height - stage.offsetHeight)`; usar `innerHeight` desfasa el final (el stage se despega antes de llegar a 1) y en mobile cambia con la barra del navegador. Sólo escribir las variables CSS cuando cambian; pasar las imágenes lazy a eager con un segundo IntersectionObserver a ~150% de margen (sin ponerlas eager de entrada por el LCP); precargar la lámina nueva al cambiar de variante. Los textos técnicos (materiales/bisagras) se revisan con `optical-expert` ANTES de mostrar: sacó "inyectado" y "sistema flex" por no estar respaldados.
+
+## 2026-11-07 — Relleno detrás de un hueco con tope: usar el casco convexo del hueco como máscara
+
+**Qué funcionó:** para tapar lo que se ve a través del hueco de un marco recortado (lentes armados), la máscara del hueco calculada por "casi blanco conectado" deja muescas donde hay un saliente opaco del marco (los topes negros). El casco convexo del hueco (Andrew monotone chain + rasterizado por producto vectorial) cubre esas muescas, y como el saliente es opaco lo tapa por delante; después se dilata unos píxeles para quedar bajo el borde. Un cierre morfológico NO alcanza si la muesca es más ancha que el radio. Para verificar sin navegador, componer las piezas offline con `sharp.composite` y mirarlas ampliadas.
+
+## 2026-11-07 — Variantes de color de un despiece: recolorear las piezas de la lámina aprobada en vez de regenerar
+
+**Qué funcionó:** cuando el generador de imágenes no tiene cupo (o devuelve diseños inconsistentes), derivar una variante de la lámina aprobada: frente y patillas se desaturan (`l + (c − l) × 0,06`) y se oscurecen (×0,8) para pasar de azul mate a negro mate, conservando la corona y el remate plateado (ya son de baja saturación), y los lentes se reemplazan por los de otra lámina redimensionados al tamaño de los de la plantilla. Mismo manifest para todas las variantes, así la animación es idéntica. Script: `marketing/despiece-vulk-arvin/variante.cjs`.
+
+## 2026-11-10 — Publicación nueva de ML: qué cazaron los auditores antes de publicar (Foz)
+
+**Qué funcionó:** el ciclo seo-strategist + optical-expert + auditoría externa (Codex y Gemini) detectó, antes de publicar, tres cosas que yo había dado por buenas: declarar "Policarbonato" por defecto cuando el distribuidor no informa el material, decir "Garantía oficial del fabricante" sin respaldo (la política sólo dice "1 año contra defectos de fabricación") y la instrucción de elegir "El producto no tiene código registrado" para el GTIN sólo porque no tenemos el código a mano. Reglas: atributo no obligatorio y sin dato confirmado = vacío; GTIN = pedirlo al proveedor/caja antes de declararlo ausente; forma/material del armazón se eligen de la lista de ML (Rectangular/Plástico) y lo específico (cuadrado/poliamida) va en título y descripción. Para saber las listas reales: `GET /categories/MLA417128/attributes` con el token de la integración. Operativo: el binario de Codex es `/opt/homebrew/bin/codex` (la ruta de la skill trio-auditor quedó vieja).
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

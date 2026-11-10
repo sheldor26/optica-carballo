@@ -1154,6 +1154,17 @@ stock), verde oliva/gris oscuro (Col.07, sin stock)) — slug `mormaii-curazao` 
 | polarizado lentes de sol | 260 | 36 | atributo genérico, dif. alta = soporte; 3/3 variantes son polarizadas → se afirma "polarizadas" para todo el modelo en copy/H2 (mismo criterio Daito/Terdey/Zinz) |
 | mormaii lentes / lentes mormaii / anteojos mormaii | 390/170/170 | 7/7/7 | hub-only (`/anteojos-de-sol/mormaii`, futuro `/marcas/mormaii`), NUNCA en esta PDP |
 
+*Mormaii Foz (sol, CUADRADO de bordes gruesos, HOMBRE, poliamida, 3 colores, polarizadas, seed 198, 2026-11-10)* — seo-strategist + CSV:
+| keyword | vol | dif | rol |
+|---|---|---|---|
+| mormaii foz (branded) | 0 medido | ~4 | slug, `name`, alt de cada foto |
+| anteojos de sol hombre | 3.600 | 11 | sólo prefijo del title ("Anteojos de Sol Mormaii Foz Hombre"); head de un futuro hub de género |
+| anteojos de sol cuadrados hombre | 70 | 35 | secundaria en copy, 1 mención; NO en title/H1 |
+| lentes de sol hombre | 5.400 | 14 | hub-only |
+| lentes de sol polarizados | 260 | 36 | soporte, afirmado en copy |
+| lentes/anteojos mormaii | 170 | 7 | hub-only, nunca en esta PDP |
+Anti-canibalización: "cuadrados" NO va en el title (ya lo reclaman Vulk The Sil, Rusty Zinz, Daito y Curazao); el Foz se diferencia por "bordes gruesos" (Curazao: bordes más redondeados), diferencia de copy y no de keyword. Cross-link Foz → Curazao, Daito y hub; frase de vuelta sólo en Curazao. El hueco `/anteojos-de-sol/cuadrados` ahora tiene 5 PDPs reclamando el string.
+
 **Anti-canibalización (Curazao vs Daito, mismo armazón/forma/precio, mismo brand)**: la diferencia de
 género (HOMBRE explícito vs UNISEX de Daito) no evita la canibalización por sí sola como *etiqueta* —
 la evita porque se traduce en un STRING de keyword secundaria distinto y sin superposición: Daito usa

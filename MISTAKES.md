@@ -1,5 +1,25 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-11-07 — Lancé AGY en segundo plano con la sintaxis equivocada y le dije al founder "está trabajando" sin comprobar que había arrancado
+
+**Estado:** ✅ Cerrado (corregido en el mismo turno, sin daño: el repo quedó intacto).
+
+**Qué pasó:** corrí `agy --print --dangerously-skip-permissions "<prompt>"` en segundo plano. `--print` tomó el otro flag como si fuera el prompt y salió con código 2 sin hacer nada. Yo ya le había dicho al founder "AGY está trabajando y te aviso apenas termine". Me enteré del fallo recién cuando llegó la notificación de "completado", al abrir `agy-salida.txt`. Perdí unos minutos y le di una información falsa por un rato.
+
+**Causa raíz:** asumí que un comando lanzado en background arrancó bien, sin mirar sus primeras líneas de salida, y reporté el estado antes de verificarlo.
+
+**Regla preventiva:** (1) la forma correcta es `agy --dangerously-skip-permissions --print="<prompt>"` (el prompt pegado a `--print=`). (2) Después de lanzar CUALQUIER tarea en background, leer su archivo de salida a los pocos segundos y confirmar que arrancó antes de decirle al founder que está en marcha.
+
+## 2026-11-07 — `fetchCorreoTracking` quedó 5 meses con una implementación que el propio servidor de Correo rechaza (query param en vez de GET con body)
+
+**Estado:** 🟡 Abierto (código sin corregir a propósito hasta validar el nº de seguimiento correcto; ver `CURRENT_STATE.md` 2026-11-07).
+
+**Qué pasó:** en junio `fetch`/undici rechazó el GET con body del manual y lo cambié a query param (`?shippingId=`), con el comentario "si el server exigiera body, se valida después". Después, en las pruebas E2E del 2026-06-08, se confirmó que el servidor SÍ exige GET + body (query param → 415) y que solo acepta el campo `shippingId` — pero eso quedó escrito solo en `CURRENT_STATE.md`/`BACKLOG.md`, nunca se corrigió la función. Hoy (2026-11-07), al revisar si Correo avisa entregas, la función seguía mandando la forma que el servidor no acepta; la prueba de hoy la tuve que hacer con un script aparte usando `https` nativo. Ningún cliente se vio afectado porque la función no se llama desde ningún lado.
+
+**Causa raíz:** dejé un workaround provisional ("lo validamos después") y cuando la validación llegó, anoté el hallazgo en la documentación pero no volví a tocar el código: el conocimiento quedó en el doc y el código siguió contradiciéndolo.
+
+**Regla preventiva:** cuando una prueba contra el servicio real invalida un workaround, corregir el código en el mismo turno (o dejar un `TODO`/`throw` explícito en la función), no solo documentarlo. Un comentario "se valida después" en el código es una deuda: al cerrar la validación hay que volver a ese comentario.
+
 ## 2026-10-06 — Tres fotos distintas para el C11 del Reef 183 en un mismo día: no verifiqué la foto contra la página del producto exacto en la revendedora
 
 **Qué pasó:** cargué primero la foto de Paesani del "Bolero Espejado Azul" (camuflada), después la de la publicación de ML del founder (frente del Tortuga) y recién a la tercera la correcta (Paesani `...bolero-11-espejado-azul`, negro mate con bandas azules). Dos veces el founder tuvo que avisar.
@@ -9148,6 +9168,22 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** ante "rehacer/actualizar una publicación existente", primero preguntar o confirmar en una línea la modalidad (¿edita él en el panel con mi kit, o la toco yo por API con los riesgos?) antes de diseñar o consultar agentes sobre alternativas. Corregido el 2026-10-28 (kit adaptado a edición en panel).
 
+## 2026-10-30 — Entregué las fotos recoloreadas de la Patien 669K-SBLK sin el logo de la patilla y lo presenté como un "límite" aceptable; el founder: "es indispensable"
+
+**Qué pasó:** AGY regeneró mal el texto de la chapa de la patilla; para no publicar texto inventado la dejé lisa, la subí a la web y se lo conté como un detalle. El founder lo vio y exigió el logo.
+
+**Causa raíz:** traté la fidelidad de marca como opcional y decidí por mi cuenta qué tolerar, en vez de resolver con el material real disponible (la foto lateral real traía el logo legible) o preguntar antes de subir.
+
+**Regla preventiva:** el logo de marca en el producto es indispensable: nunca subir una foto de producto sin él ni con texto regenerado; si la IA lo rompe, reponerlo con el texto real de una foto real (método en LEARNINGS) antes de mostrar el resultado. Corregido el 2026-10-30 (seed 195).
+
+## 2026-10-30 — Subí a la web (seed 195) un logo de la patilla hecho con un recorte de 20 px que se veía borroso, sin mostrárselo antes al founder ("sale mal el logo")
+
+**Qué pasó:** tras el reclamo de que faltaba el logo, lo repuse con el texto de una foto real ampliado y lo apliqué directo a la web; el founder lo vio mal y pidió que lo rehiciera AGY o Codex. Se rehízo (seed 196).
+
+**Causa raíz:** apliqué a producción un resultado visual sin mostrárselo y sin verificarlo a la escala en que se ve; la fuente (20 px) no tenía resolución para sostener la ampliación.
+
+**Regla preventiva:** los retoques de logo/texto en fotos de producto se muestran al founder (zoom) ANTES de subirlos a la web; si la fuente es diminuta, generar el grabado nítido con AGY y usarlo como máscara. Corregido el 2026-10-30 (seed 196).
+
 ---
 
 # Métricas de calidad del sistema
@@ -9160,6 +9196,54 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 - **Mistakes repetidos (patrón sistémico)**
 
 ---
+
+## 2026-10-30 — Rehíce el logo de la patilla de la Patien 669K-SBLK dos veces con una forma equivocada ("una onda") por no verificar la forma contra una foto real nítida; y recorté las fotos HEIC sin aplicar la rotación EXIF
+
+**Qué pasó:** los seeds 195/196 grabaron RUSTY + una "onda" tomada de una referencia de baja resolución, y el prompt a AGY también la describía como onda. El logo real de Rusty es una "R" caligráfica con tronco diagonal, aleta, brazo dentado y un punto. Recién las 5 fotos del founder (IMG_0585-0589) lo mostraron. Aparte, mis primeros recortes de esas fotos salieron en otro lugar porque `sharp` ignoró la rotación EXIF del iPhone.
+
+**Causa raíz:** describí con palabras un símbolo de marca que no había mirado de cerca, y se lo pasé a un generador como si fuera un dato verificado.
+
+**Regla preventiva:** antes de grabar/dibujar un logo o texto de marca, ampliar la foto real nítida, describir su forma y compararla lado a lado con el resultado; si la referencia es borrosa, pedirle al founder una foto de cerca antes de iterar. Con fotos de celular, usar `.rotate()` en `sharp` y mirar el recorte antes de procesar.
+
+## 2026-10-30 — Presenté un logo dibujado a mano en vector como "fiel" a las fotos reales; el founder: "no es fiel al original"
+
+**Qué pasó:** con las fotos reales del grabado dibujé el logo y el texto en SVG por mi cuenta y lo entregué como candidato. Era una interpretación mía (silueta aproximada), no el grabado real.
+
+**Causa raíz:** ante el cupo agotado de AGY elegí redibujar en vez de usar los píxeles reales de la foto, que ya tenía en la mano.
+
+**Regla preventiva:** cuando el founder entrega una foto del original, usar SUS píxeles (extraer la tinta y enderezarla sobre la base) y no redibujar; si hay que dibujar, avisar explícitamente que es una aproximación y compararla lado a lado con la foto antes de mostrarla.
+
+## 2026-11-07 — Armé el piloto del despiece con un dibujo SVG hecho por código y lo mostré como si representara al anteojo ("que carajos es eso")
+
+**Qué pasó:** el founder pidió que el anteojo "se vaya despedazando" al scrollear y que se viera como el de la foto. Hice un esquema vectorial inventado por mí (marco grueso, patillas como banderitas, lentes cuadrados) y recién después el founder pidió usar AGY con la foto real. En el segundo intento AGY devolvió bisagras como piezas sueltas y el tope negro dentro de la patilla, algo que el producto real no tiene; el founder lo corrigió (las bisagras van en la patilla, el tope negro es del frente).
+
+**Causa raíz:** (1) elegí dibujar en vez de partir de las fotos del producto que ya tenía; (2) di por buena la lámina generada sin contrastarla con cómo está construido el producto real.
+
+**Regla preventiva:** para cualquier representación visual de un producto (despiece, esquema, render), partir de sus fotos reales y verificar la anatomía (qué pieza es de qué parte) contra la foto antes de animar; si algo no se puede confirmar con la foto, preguntarle al founder antes de mostrarlo.
+
+## 2026-11-07 — Dimensioné la caja del despiece sólo por alto máximo y en pantalla ancha las piezas se salían (las patillas pisaban la leyenda)
+
+**Qué pasó:** verifiqué el despiece en un panel angosto y en celular (375 px) pero no en un escritorio de 1280×800, donde el ancho (max-w-4xl) producía una caja más alta que el alto permitido; con `max-height` la caja se achicaba pero las piezas, posicionadas en % del ancho, se desbordaban. Lo detecté al pedirme el founder "a verlo".
+
+**Causa raíz:** probé sólo dos tamaños de pantalla y supuse que el resto se comportaba igual.
+
+**Regla preventiva:** una sección con piezas posicionadas en % dentro de una caja con aspect-ratio debe limitar el ANCHO por el alto disponible (`width: min(100%, alto × proporción)`) y verificarse al menos en 375, ~740 y 1280 px de ancho antes de mostrarla.
+
+## 2026-11-07 — Generé cada variante del despiece desde cero con AGY y salieron con diseños distintos (topes en el frente, bisagras sueltas, patillas horizontales)
+
+**Qué pasó:** tres láminas de AGY con la misma consigna dieron anatomías diferentes; sólo la de la azul espejado quedó bien. El founder: "no interpretás bien cómo es el diseño del armazón", "la tercera la hacés diferente a las otras".
+
+**Causa raíz:** traté cada variante como un trabajo independiente y no fijé una lámina aprobada como referencia de diseño; di por buena cada salida sin compararla con las demás.
+
+**Regla preventiva:** con varias variantes de un mismo modelo, aprobar UNA lámina y derivar las demás de ella (cambiando sólo colores, con AGY o recoloreando las piezas), y comparar todas lado a lado antes de mostrarlas.
+
+## 2026-11-10 — Le dije al founder "no existe en tu cuenta" sobre el Foz y ya estaba publicada la C01
+
+**Qué pasó:** busqué por `q=foz` y por `seller_sku` en la API de ML, no encontré nada y lo afirmé como "verificado". Al rato el founder pasó el link de la C01 (`MLA2278430569`, creada ese mismo día, SKU 120110001).
+
+**Causa raíz:** usé sólo búsquedas por texto/SKU, que no ven publicaciones recién creadas (índice con demora) ni por título distinto, y lo presenté como verificación completa.
+
+**Regla preventiva:** para afirmar que algo NO está publicado, recorrer también el listado de la cuenta ordenado por fecha de creación (`/users/{id}/items/search?sort=date_desc` + `/items?ids=`) y aun así decirlo como "no lo encontré", y preguntarle al founder si ya empezó a cargarlo.
 
 # Notas finales
 

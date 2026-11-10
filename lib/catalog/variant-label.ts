@@ -43,6 +43,10 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   // Mormaii Carmel 2 sol (seed 189): dos slugs nuevos; negro-mate ya existe, lentes verde-oscuro/gris-oscuro/marron ya existen.
   'negro-mate-degrade-marron': 'Negro mate degradé a marrón',
   'azul-mate-tonos-turquesa': 'Azul mate con tonos turquesa',
+  // Mormaii Foz sol (seed 198): tres slugs nuevos de armazón; los lentes verde-g15 y gris-oscuro ya existen.
+  'gris-muy-oscuro-mate': 'Gris muy oscuro mate',
+  'azul-oscuro-mate-patillas-turquesa': 'Azul oscuro mate con patillas turquesa',
+  'gris-translucido-mate': 'Gris translúcido mate',
   // Mormaii High 4 receta APE (seed 188): un slug nuevo (frente negro brillo + patillas azul oscuro translúcido).
   'negro-brillo-patillas-azul-oscuro-translucido': 'Negro brillo con patillas azul oscuro translúcido',
   // Rusty Burrout receta (seed 177): dos slugs nuevos.
@@ -156,6 +160,8 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'espejado-rosado': 'Rosado espejado',
   'espejado-verde': 'Verde espejado',
   'gris-semi-espejado': 'Gris semi-espejado',
+  // Mormaii Foz sol C05 (seed 198): lente semi espejada plateada.
+  'plateado-semi-espejado': 'Plateado semi espejado',
   'azul-semi-espejado': 'Azul semi-espejado',
 };
 

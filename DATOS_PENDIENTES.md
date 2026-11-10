@@ -116,6 +116,14 @@ Bloquea: la placa 04 (medidas) y la carga a la web.
 - [x] Variación vieja rosado/beige (= Col 11): se carga en la web por si reingresa.
 - [ ] Confirmar con María Carlota qué graduado se ofrece en Fiji (base 6) y si hacen polarizado graduado.
 
+## 🔄 Mormaii Foz SOL (C01, C03, C05) — cargado en la web (seed 198, 2026-11-10); faltan confirmaciones, no bloquean
+- [ ] **Peso (g)** del Foz: va sin `weight_grams`; sin peso no se dice "liviano".
+- [ ] **GTIN (código de barras) de cada color**: en ML figura el motivo "Otra razón"; pedirlo a Interoptica o leerlo de la caja.
+- [ ] **Material del armazón**: en ML figura "Inyección Grilamid TR90" y en la web "poliamida" (dato tuyo); ¿el Grilamid TR90 viene de Mormaii?
+- [ ] **Material de la lente**: en ML quedó "Policarbonato" sin dato del distribuidor (las auditorías pidieron dejarlo vacío); la web lo carga por el default del catálogo.
+- [ ] Título de ML sin "Hombre" y con "Deportivos" (editable hasta la primera venta; hay que cambiar el `family_name` igual en las 3).
+- [ ] Verificar con el producto en mano: estuche y franela incluidos, color de C01 con luz natural (hoy "gris muy oscuro mate") y plateado de la lente C05.
+
 ## 🔄 Mormaii Carmel 2 SOL (Col 01, 03, 06) — kit ML hecho, falta la publicación en ML (2026-10-26)
 Bloquea: cargar el modelo a la web (no hay item_id/variation_code reales, ML no tiene Carmel 2).
 - [ ] Publicar en ML (kit: `marketing/placas-ml/SUBIR-mormaii-carmel-2/`, 3 variaciones) y pasar el link + SKUs de cada color.
