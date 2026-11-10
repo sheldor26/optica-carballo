@@ -116,6 +116,13 @@ Bloquea: la placa 04 (medidas) y la carga a la web.
 - [x] Variación vieja rosado/beige (= Col 11): se carga en la web por si reingresa.
 - [ ] Confirmar con María Carlota qué graduado se ofrece en Fiji (base 6) y si hacen polarizado graduado.
 
+## 🔄 Vulk Katleen SBLK / S10 POL — cargada en ML y en la web (seed 199, 2026-11-10); quedan puntos del MBLK, no bloquean
+- [ ] **Precio del MBLK/S10 POL (SKU 125907, `MLA1423906891`)**: dijiste que el MBLK y el SBLK cuestan $89.574; el MBLK sigue en $85.309 en ML y en la web. Decime si lo paso a $89.574 (primero en ML, después la web).
+- [ ] **Medidas del MBLK en ML**: tiene Lente 4,7 · Puente 2,5 · Varilla 14,6 cm (ficha de Vulk), distintas de las tuyas (53-18-145). Conviene corregirlas.
+- [ ] **Garantía del MBLK en ML**: figura "Sin garantía"; la política es 1 año contra defectos de fabricación.
+- [ ] **GTIN del SBLK** (la publicación no tiene código de barras ni motivo cargado) y color de la lente en ML ("SBLK/S10 - Gris Oscuro").
+- [ ] Texto de la web: se mantiene "garantía oficial de 1 año del fabricante" del producto Katleen; confirmar con Vulk o cambiarlo a "1 año contra defectos de fabricación".
+
 ## 🔄 Mormaii Foz SOL (C01, C03, C05) — cargado en la web (seed 198, 2026-11-10); faltan confirmaciones, no bloquean
 - [ ] **Peso (g)** del Foz: va sin `weight_grams`; sin peso no se dice "liviano".
 - [ ] **GTIN (código de barras) de cada color**: en ML figura el motivo "Otra razón"; pedirlo a Interoptica o leerlo de la caja.
