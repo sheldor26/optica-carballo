@@ -261,6 +261,12 @@ export default function Page() {
           <strong>Analíticas</strong> (opt-in): Google Analytics, Vercel
           Analytics. Solo se activan si das consentimiento.
         </li>
+        <li>
+          <strong>Publicidad</strong> (opt-in): píxel de X (Twitter). Nos
+          permite saber si llegaste desde un anuncio nuestro en X y medir
+          cuántas visitas terminan en compra. Solo se activa si das
+          consentimiento.
+        </li>
       </ul>
       <p>
         Podés gestionar tus preferencias en el banner que aparece al primer

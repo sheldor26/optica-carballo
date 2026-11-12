@@ -14,6 +14,78 @@ liviana, o cosas que esperan input externo (assets, decisiones del founder).
 
 ---
 
+## ✅ CERRADO — 7 variantes activas sin `mercadolibre_item_id` (abierto y resuelto 2026-09-29)
+
+**Contexto**: Juan preguntó si todos los productos están sincronizados con ML vía API, y después pidió
+auditar todo el catálogo. Investigación confirmó que la integración SÍ está viva en producción
+(ADR-024 en `DECISIONS.md` decía "Sprint 2/3 pendientes" desde mayo, pero en realidad ya estaban
+completos hace tiempo — doc corregida). Se hizo una auditoría completa de las 321 variantes activas
+con `mercadolibre_item_id` contra la API real de ML (usando el token OAuth ya activo del sitio, no la
+API pública que bloquea accesos anónimos — ver `LEARNINGS.md`): **286 sincronizando perfecto, 0
+drift, 34 con el item pausado en ML (29 por stock 0, normal; 5 con stock disponible, ver entry
+separada abajo), y 1 bug real de mapping (Hover, resuelto el mismo día — ver `MISTAKES.md`).**
+
+**Las 6 variantes de Joaca 4 sin item ML** se resolvieron buscando las publicaciones reales del
+vendedor por título con el mismo acceso autenticado (sin necesitar que Juan pasara ningún link
+nuevo): aparecieron 2 publicaciones activas — BR Negro (`MLA1909865590`) y Gris (`MLA1909839706`,
+confirmada por foto). Ambas mapeadas y sincronizadas; Gris tenía stock=0 en el sitio pero stock=1
+real en ML, corregido. Las otras 4 variantes de Joaca 4 siguen sin publicación real (no aparecieron
+en la búsqueda), consistente con lo que dijo Juan originalmente.
+
+`Vulk The Trial`, SKU `968279`, sigue sin `mercadolibre_item_id` — no es un bug de mapping (no está
+en la lista de "pausados con stock" porque directamente nunca tuvo item_id cargado), pendiente
+investigar si alguna vez tuvo publicación en ML o si el gap es correcto.
+
+---
+
+## ✅ CERRADO — 5 publicaciones de ML pausadas CON stock disponible (abierto y resuelto 2026-09-29, mismo día)
+
+**Hallazgo de la auditoría completa**: 3 publicaciones únicas (Tulle y Vrast son multi-variación,
+cada una cubría 2 de los 5 SKUs con stock) estaban `paused` en ML pese a tener unidades disponibles —
+venta perdida. Juan pidió reactivarlas. Hecho vía la API autenticada real (`PUT /items/{id}` con
+`status: active`), **verificado con un GET fresco después del cambio** (no sólo la respuesta del PUT,
+que puede mentir/cachear) — las 3 quedaron `status: active` de verdad:
+
+- `MLA1513045607` (Rusty Tulle, 4 variaciones, SKUs 968441/968440) — reactivada, stock real 6.
+- `MLA2415985768` (Rusty Vrast, 3 variaciones, SKUs 968452/968453) — reactivada, stock real 6.
+- `MLA1387893041` (Rusty Dapper Sbh/6208, single item, SKU 958072) — reactivada, stock real 2.
+
+Re-auditado el catálogo completo después del fix: 0 pausados con stock, 0 drift, 0 bugs de mapping en
+las 324 variantes activas sincronizadas.
+
+**Nota**: `rusty-vrast` está en la memoria del proyecto como "no mencionar espontáneamente al
+founder, él avisa si empiezan a trabajar esa variante" — el founder mismo pidió reactivarla (incluida
+en "las 5"), así que esto cuenta como que él inició el tema, no una sugerencia proactiva.
+
+**Qué falta para cerrar el gap**: que Juan pase el item MLA directo (no el link "up" de catálogo) de
+la publicación de Joaca 4 BR Negro, y que alguien audite por qué Vulk The Trial 968279 quedó sin
+mapear (puede ser tan simple como que nunca se publicó en ML, en cuyo caso no es un bug sino el
+estado correcto — no confirmado todavía).
+
+## 🟡 El "H1 con diferenciador" del cluster Mormaii sol nunca se implementó de verdad (2026-09-29)
+
+**Hallazgo, no bloqueante**: `SEO_STRATEGY.md` documenta un H1 con formato `Marca Modelo —
+Diferenciador` para Storm, Daito, Curazao, Borneo y San Juan (ej. `Mormaii Borneo — Hombre, 100%
+Polarizados`), pero el `products.name` real de esos 5 en los seeds aplicados es el nombre plano, sin
+el sufijo. `product.name` es el ÚNICO campo que alimenta `<h1>` en
+`components/catalog/product-page.tsx` — no hay un campo H1 separado — así que ese diferenciador nunca
+estuvo visible en ningún H1 real, sólo en el documento de estrategia. Encontrado al cargar Mormaii
+Joaca 4 (seed 131): el agente `seo-strategist` pidió el mismo patrón de sufijo para el H1 nuevo, y al
+chequear contra la DB real se vio que sus 5 hermanos nunca lo tuvieron aplicado.
+
+**Por qué no se corrigió solo**: cambiar `name` en 6 productos (los 5 existentes + Joaca 4) no es
+sólo "tocar el H1" — `product.name` también aparece en breadcrumbs, carrito, wishlist, JSON-LD y
+panel admin, así que el sufijo se vería en TODOS esos lugares, no sólo en el título grande de la PDP.
+Es una decisión de producto/diseño, no un fix de una línea.
+
+**Qué decidir**: (a) implementar el sufijo de verdad en los 6 `name` (requiere ver cómo queda en
+carrito/breadcrumbs antes de aplicar, probablemente `ui-motion-designer` o `conversion-optimizer`
+opinen), o (b) corregir `SEO_STRATEGY.md` para dejar de documentar un H1 que no existe y aceptar el
+nombre plano como el H1 real definitivo. Joaca 4 quedó cargado con `name` plano, consistente con el
+estado real de sus 5 hermanos (no con lo que dice el documento).
+
+---
+
 ## 🟡 Dos cosas de SEO que salieron cargando el Rusty Ardigan (2026-08-26)
 
 **1. Colisión viva entre Blinded y Zion, hoy en producción.** `SEO_STRATEGY.md` le asigna al Rusty
@@ -246,6 +318,16 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 - [ ] En el panel de Mercado Libre (Configuración de la app → Notificaciones), actualizar la URL del webhook a `https://opticacarballo.com.ar/api/ml/webhook?token=<el-token-que-generaste>`.
 - [ ] Confirmar que sigan llegando eventos (`marketplace_webhook_events` sigue sumando filas `processed`).
 
+## 🟡 Actualizar precio de MLA1910636064 en Mercado Libre (acción del founder — hallazgo Tokio, 2026-09-30)
+
+Al cargar Mormaii Tokio (seed 146), la publicación de Col.01 (Negro Brillo, pausada/sin stock) tenía
+precio $78.400 — desactualizado hace más de un año, muy por debajo del $116.490 uniforme de Col.03 y
+Col.05. El seed cargó $116.490 en las 3 variantes (no el precio viejo), pero si Col.01 recupera stock
+en ML antes de actualizar el precio ahí, la sincronización lo traería vendiendo ~33% más barato sin
+que nadie lo note.
+
+- [ ] Actualizar el precio de MLA1910636064 en el panel de ML a $116.490.
+
 ## 🔴 Pendiente bloqueante para sub-feature LOGISTICA (acción del founder)
 
 - [ ] **Solicitar credenciales API MiCorreo** al área Comercial de Correo Argentino:
@@ -292,6 +374,13 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 
 - [ ] **Cargar productos de las otras 4 marcas** (Vulk, Reef, Mormaii,
   Paula Cahen D'Anvers) — actualmente solo Rusty tiene productos cargados.
+  - [ ] **Al cargar Reef: verificar si existe un "Reef 178" propio** (detectado 2026-10-01 por
+    `seo-strategist` al cargar Mormaii 178, seed 150). Confirmado por SERP que Reef vende un modelo
+    "178" en Mercado Libre Argentina — no es colisión geográfica, es colisión de código de modelo
+    cross-brand dentro del mismo nicho (Reef es marca top-priority del research, 3.400 vol, aún sin
+    cargar). Sin riesgo de URL (slug siempre prefijado por marca), pero si Reef 178 entra al
+    catálogo, reforzar que "178" nunca se use suelto en ningún nivel sin "Mormaii"/"Reef" pegado —
+    doble motivo ahora, no sólo uno.
 - [ ] **Reemplazar `[PENDIENTE]` en páginas legales**: plazos de
   devolución, garantía, días de reintegro. Editar `politica-de-devolucion`
   y `boton-de-arrepentimiento`.
@@ -330,7 +419,61 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 
 - [ ] **Cross-link sol↔receta pendiente para Rusty Peating** (detectado 2026-07-14). Tiene versión de SOL activa en ML (MBLK/S10 + SBLK/DRT03) pero solo la versión RECETA fue cargada al catálogo (seeds 84/85, ambos sin aplicar). El cross-link es automático por convención de slug (`rusty-peating` ↔ `rusty-peating-receta`) — engancha solo apenas ambos estén aplicados. (Vulk Dieven resuelto: seed 87 sol ya cargado en el mismo turno.)
 
-- [ ] **Falta faceta `/anteojos-de-sol/cuadrados`** (detectado 2026-07-14 por seo-strategist al cargar Rusty Peating sol). No existe la ruta ni a nivel top-level ni por marca (`/anteojos-de-sol/[brand]/cuadrados`), a pesar de que Rusty Zinz sol ya targetea `anteojos/lentes de sol cuadrados` (170-390/mes) como primaria desde el seed 79. Sin la faceta, esa keyword no tiene una URL de categoría a la que apuntar — el producto individual absorbe todo el peso. Evaluar agregar la faceta cuando haya volumen suficiente de cuadrados de sol cargados (hoy: Zinz, Peating).
+- [ ] **Falta faceta `/anteojos-de-sol/cuadrados`** (detectado 2026-07-14 por seo-strategist al cargar Rusty Peating sol). No existe la ruta ni a nivel top-level ni por marca (`/anteojos-de-sol/[brand]/cuadrados`), a pesar de que Rusty Zinz sol ya targetea `anteojos/lentes de sol cuadrados` (170-390/mes) como primaria desde el seed 79. Sin la faceta, esa keyword no tiene una URL de categoría a la que apuntar — el producto individual absorbe todo el peso. Evaluar agregar la faceta cuando haya volumen suficiente de cuadrados de sol cargados (hoy: Zinz, Peating). **Prioridad escalada 2026-09-28, ahora 4 productos**: Rusty Zinz, Vulk The Sil, Mormaii Daito y Mormaii Curazao reclaman el mismo string "cuadrados" como forma real del armazón pero ninguno lo puede usar como keyword primaria por este gap — Daito tomó el carril unisex/branded, Curazao tomó "cuadrados hombre" (branded+género, ver `SEO_STRATEGY.md` cluster Mormaii). Cuantos más "cuadrados" entren sin la faceta, más keyword se pierde sin URL de categoría a la que apuntar.
+
+- [ ] **Falta ficha SEO retroactiva de Vulk Clems Receta en `SEO_STRATEGY.md`** (detectado 2026-10-01
+  por `seo-strategist` al cargar Mormaii Frey, seed 149). Clems (seed 57) se cargó antes de la norma
+  de `seo-strategist` obligatorio y antes de que existiera la carpeta `KEYWORDS OPTICA/` — nunca tuvo
+  ficha formal en el cluster. Ahora que Frey (ovalado, Mormaii) comparte el mismo carril RX+ovalado+
+  unisex y hay volumen real medido para "lentes/anteojos ovalados" (390/260, diff 10-11), conviene
+  formalizar la entrada de Clems retroactivamente — hoy reclama esa frase de facto en su meta_title
+  vivo sin que el documento lo registre.
+
+- [ ] **Gap de faceta `/anteojos-de-receta/ovalados`** (detectado 2026-10-01 al cargar Mormaii Frey,
+  seed 149, primer ovalado de la marca). Con Vulk Clems Receta (seed 57) + Frey, el carril
+  ovalado+receta ya tiene 2 productos — bajo el umbral de 4 que usa el proyecto para promover una
+  faceta activa (mismo criterio ya aplicado a `/anteojos-de-sol/cuadrados` y `/anteojos-de-receta/
+  ninos`). Revisar de nuevo si se cargan 2 ovalados más.
+
+- [ ] **Gap de faceta `/anteojos-de-receta/rectangulares`** (detectado 2026-09-30 al cargar Mormaii
+  Barcelona, reforzado 2026-10-01 al cargar Mormaii High 4). No existe la ruta (ni top-level ni por
+  marca), pese a que ya son 6 productos de receta reclamando la forma "rectangular" sin faceta propia
+  a la que apuntar: Mormaii Barcelona, Hover, Leñas 2 MAG, High 4 + Rusty R-CY 02 (dueño de facto
+  cross-brand de `anteojos/lentes rectangulares`, 480/15-880/10 vol) + Rusty Woxi. Mismo patrón ya
+  escalado para `/anteojos-de-sol/cuadrados` — ya superó el umbral de 4 que usa el proyecto para
+  promover una faceta activa. Evaluar abrirla en la próxima pasada de categorías.
+
+- [ ] **MLA1450640375 (Mormaii Leñas C20 Transparente Cristal) está pausada y con precio viejo en ML**
+  (detectado 2026-10-02 al cargar la variante, seed 154): precio $105.790 vs $111.030 de las otras 4
+  variantes de Leñas, y estado `paused` con stock 1. En el sitio se carga a $111.030. Decisión del
+  founder: reactivar y subirle el precio en ML (mismo caso que MLA1910636064 de Tokio).
+
+- [ ] **El título de ML del Vesubio dice "Livianos"** (detectado 2026-10-02 al mapear MLA4021586886 y MLA4021560698; título que publicó el founder: "...Vesubio Aviador Livianos Col01 - Negro Mate"). El sitio NO lo afirma porque no hay gramaje medido (claim del distribuidor). Decidir: pesar el armazón (habilita "liviano" con número, en sitio y ML) o sacar la palabra del título de ML (ojo: con User Products el título se congela con la primera venta).
+
+- [ ] **Limpiar "Disponible en N variantes: [colores]" de las descripciones** (detectado 2026-10-02
+  por `catalog-loader` al validar Recife). Está en 85 seeds (desde el 52), contra la política #8 de
+  `BUSINESS_POLICIES.md` (descripción genérica del modelo, sin colores de variantes). Hoy no rompe
+  nada pero queda desactualizado al cambiar las variantes. Requiere decisión del founder: UPDATE
+  masivo de `description` en Cloud (texto, sin tocar stock/precio) o dejarlo. Desde Recife (seed 153)
+  los seeds nuevos ya no lo llevan. Ver MISTAKES.md 2026-10-02.
+
+- [ ] **Gap de faceta `/anteojos-de-receta/redondos`** (detectado 2026-10-01 al cargar Mormaii
+  Sevilha, seed 152). Con Sevilha, el carril RX+redondo llega a 4-5 productos (Rusty Ther Optics, Vulk
+  Kirt Optics, Mormaii Traful, Mormaii Sevilha, + Vulk Vartis Mujer como hipótesis no concluyente de
+  `seo-strategist`) — cruza el umbral de 4 que el proyecto usa para promover una faceta activa, mismo
+  patrón que `/anteojos-de-sol/cuadrados` y `/anteojos-de-receta/rectangulares`. Capturaría `anteojos
+  redondos` (880/12) y `lentes redondos` (1.000/18) como keywords de categoría indexable en vez de
+  mención dispersa en 4-5 PDPs. Evaluar abrirla en la próxima pasada de categorías.
+
+- [ ] **Validar con `optical-expert` si "cara redonda" es compatible con armazones redondos**
+  (detectado 2026-10-01 al cargar Mormaii Sevilha, seed 152). `seo-strategist` marcó que la teoría de
+  contraste de forma generalmente recomienda armazones ANGULARES (cuadrados/rectangulares) para cara
+  redonda, no armazones redondos — usar "anteojos/lentes para cara redonda" (1.000/15 vol) como
+  keyword en Sevilha u otros armazones redondos del catálogo (Traful, futuros) sería potencialmente
+  una recomendación técnica incorrecta de cara al cliente (YMYL). Confirmar con `optical-expert` antes
+  de que el recomendador de forma de cara o cualquier copy use esa keyword en productos redondos.
+
+- [ ] **Evaluar categoría/faceta dedicada `/anteojos-de-receta/ninos`** (detectado 2026-09-29 al cargar Rusty K12, primer producto infantil del catálogo). El founder mencionó espontáneamente la idea ("quizás hacemos una categoría especial para niños"). `seo-strategist` confirmó que hoy NO conviene abrirla: barrido completo de los 35 CSV de `KEYWORDS OPTICA/` da volumen 0 medido para el cruce receta+infantil, y K12 es el único producto infantil (por debajo del umbral interno de 4 que el sitio usa para promover una faceta, mismo criterio que Vulk Anima/mujer). Revisar de nuevo cuando el catálogo tenga 3-4 productos infantiles más — en ese momento re-chequear volumen de `anteojos infantiles`/`armazones infantiles` (hoy 70/10 vol pero difficulty 48-49, alta) y decidir si justifica la ruta. Mientras tanto, K12 usa el badge nuevo `size_fit: "infantil"` (`lib/catalog/size-fit.ts`) para diferenciarse visualmente sin necesitar una categoría propia.
 
 - [ ] **`recommended_face_shapes` en los armazones del catálogo** (detectado 2026-06-11 al cargar Vulk Tour 81 vía catalog-loader). Es campo RECOMENDADO del schema (PRODUCT_SCHEMA línea 111) y lo usa el recomendador IA, pero ningún armazón lo tiene (My Crew, Tour 81, etc. lo omiten). Pasada dedicada: definir el vocabulario exacto que espera el recomendador (`["ovalada","redonda",...]`?), validarlo con `optical-expert` por forma (cuadrado/redondo → cara redonda/ovalada; etc.) y backfillear los productos. Hasta entonces el recomendador no sugiere por forma de cara.
 - [ ] **Pesos pendientes — el founder pesa con balanza de precisión y pasa los gramos** (lista viva, desde 2026-06-11). Cuando ML/el fabricante no da el peso, el producto se carga SIN `weight_grams` (no inventamos; el casillero "Peso" del comparador queda vacío) y se anota acá. El founder los pesa y los pasa; si NO los pasa es porque el fabricante tampoco da el dato (queda vacío definitivo). Al recibir cada peso → agregar `weight_grams` al seed + DB (vía MCP) y tachar de la lista.
@@ -341,6 +484,44 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
   - [ ] Rusty Woxi receta (seed 74) — "livianos" sin gramaje.
   - [ ] Rusty And Now sol (seed 69).
   - [x] ~~Rusty Patien sol (seed 65) + receta (seed 66)~~ — **23,6 g** (founder pasó el peso 2026-06-13, aplicado a ambos, mismo frame).
+  - [ ] Mormaii Daito sol (seed 118) — ni ML ni el fabricante dan el peso del armazón (el "244g" de ML es del paquete con embalaje, no sirve).
+  - [ ] Mormaii Curazao sol — mismo caso, el "140g" de ML es del paquete con embalaje.
+  - [ ] Mormaii Borneo sol — ni ML ni el fabricante dan ningún dato de peso esta vez (ni siquiera del paquete).
+  - [ ] Mormaii Ancara 2 RX (seed 125) — ni ML ni el fabricante dan ningún dato de peso.
+  - [ ] Mormaii San Juan sol (seed 128) — no lo pasó el founder ni lo da el fabricante.
+  - [ ] Mormaii Joaca 4 sol (seed 131) — no lo pasó el founder ni lo da interoptica.com.ar (ficha técnica sin campo de peso).
+  - [ ] Mormaii Traful receta (seed 133) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Leñas receta (seed 135) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Maceio receta (seed 136) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Monterrey 2 sol (seed 137) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Madri sol (seed 138) — `SELLER_PACKAGE_WEIGHT=155g` de ML es del paquete con embalaje, no del armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Kona MAG receta (seed 139) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Leñas 2 MAG receta (seed 140) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Fortaleza sol (seed 141) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Barcelona receta (seed 142) — ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Doha sol (seed 143) — `SELLER_PACKAGE_WEIGHT=160g` de ML es del paquete con embalaje,
+    no del armazón (mismo caveat que Madri); ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Macau sol (seed 144) — `SELLER_PACKAGE_WEIGHT=125g` de ML es del paquete con
+    embalaje, no del armazón (mismo caveat); ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Swap NG2 MAG receta (seed 145) — `SELLER_PACKAGE_WEIGHT=200g` de ML es del paquete
+    con embalaje, no del armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Tokio sol (seed 146) — `SELLER_PACKAGE_WEIGHT` de ML es del paquete (133g Col.03,
+    120g Col.01/Col.05), no del armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Leñas 3 MAG receta (seed 147) — `SELLER_PACKAGE_WEIGHT=120g` de ML es del paquete,
+    no del armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Miami sol (seed 148) — `SELLER_PACKAGE_WEIGHT=148g` de ML es del paquete, no del
+    armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Frey receta (seed 149) — `SELLER_PACKAGE_WEIGHT=120g` de ML es del paquete, no del
+    armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii 178 sol (seed 150) — `SELLER_PACKAGE_WEIGHT=175g` de ML es del paquete, no del
+    armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii High 4 receta (seed 151) — founder no lo pasó; ni ML ni interoptica.com.ar dan el peso.
+  - [ ] Mormaii Sevilha receta (seed 152) — `SELLER_PACKAGE_WEIGHT=120g` de ML es del paquete, no del
+    armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Recife receta (seed 153) — `SELLER_PACKAGE_WEIGHT=130g` de ML es del paquete, no del
+    armazón; ni ML ni interoptica.com.ar dan el peso real.
+  - [ ] Mormaii Vesubio receta (seed 155, sin aplicar) — el founder no lo pasó; interoptica no lo da
+    (peso "N/D"). Ver también DATOS_PENDIENTES.md.
 
 - [ ] **Backfill de `cacheControl: 31536000` en objetos viejos del bucket `products`** (audit perf 2026-06-11). Los seeds subieron fotos con el default de Supabase (`max-age=3600`). Mitigado por `images.minimumCacheTTL = 31d` en next.config → prioridad baja. Si se hace: script que re-sube cada objeto con el cacheControl correcto (storage `update` necesita el archivo).
 - [ ] **Content-Security-Policy (CSP)** (auditoría 2026-06-09). Los demás headers de seguridad ya están (commit `c93a101`: X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy). Falta CSP, que es la riesgosa: hay que listar orígenes de MP, Supabase, AFIP, fonts, etc. y testear que no rompa nada. Hacer con `Content-Security-Policy-Report-Only` primero.
@@ -357,7 +538,7 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 - [x] ~~**Job de expiración de reservas de stock para órdenes `pending` abandonadas**~~ — **Hecho 2026-06-09** (commit `f914147`). Cron `app/api/cron/cancel-abandoned-orders` (hourly, auth `CRON_SECRET`): cancela `pending` de +24h sin pago y reintegra stock vía `releaseOrderStock` (DB + ML, idempotente por `orders.stock_released_at`). Reusa el mismo camino que el reintegro al cancelar manual. Plazo `ABANDON_HOURS=24` (ajustable en el route).
 - [ ] **Blindar el cron de abandonados contra "pago OK pero webhook falló"** (detectado 2026-06-09 al verificar el cron de cancelación). Caso raro: el cliente paga en MP pero el webhook nunca llega → la orden queda `pending` aunque esté pagada → el cron de 24h la cancelaría (y reintegraría stock de una venta real). Poco probable (MP reintenta el webhook por horas) pero con volumen conviene cubrirlo: antes de cancelar, el cron consulta a MP el estado real del pago (`mp_preference_id`/`external_reference`) y solo cancela si NO está aprobado. Alternativa más simple: un cron de reconciliación de pagos MP→DB (análogo al de stock ML). Prioridad sube con tráfico real.
 - [x] ~~**Investigar si el nº de tracking de Correo se puede obtener automático por API**~~ — **CERRADO 2026-06-08: NO se puede (limitación de Correo, confirmada contra el manual completo + pruebas E2E en test y prod).** La API MiCorreo tiene SOLO 6 endpoints (`/register`, `/users/validate`, `/agencies`, `/rates`, `/shipping/import`, `/shipping/tracking`) — **no hay endpoint de "listar mis envíos" ni "dame el tracking de la orden X"**. El alta (`/shipping/import`) devuelve solo `{createdAt}` (verificado en body + headers, ambos ambientes). `/shipping/tracking` SOLO acepta el nº real de Correo (`000500...`); con nuestro `extOrderId`/`orderNumber`/`customerId` da `"No existe el cliente o pedido"` (21 intentos, distintos timings). El nº lo genera Correo y solo se publica en el **panel MiCorreo** + la etiqueta. **Flujo definitivo = alta automática (botón "Generar envío") + nº copiado a mano del panel una vez.** Única forma de evitar el copy-paste sería que Correo sume un endpoint de listado, o scrapear el panel (frágil, no recomendado). No re-investigar.
-- [ ] **Mostrar el seguimiento del envío en vivo al cliente** (detectado 2026-06-08). Una vez cargado el nº de tracking de Correo, `/shipping/tracking` (GET+body, ver `fetchCorreoTracking` en `lib/correo/import.ts`) devuelve los eventos (PREIMPOSICION → en camino → entregado). Se podría mostrar ese timeline en `/mi-cuenta/pedidos/[id]` para que el cliente no salga a la web de Correo. Verificado que NO sirve para obtener el nº (solo el estado de un envío con nº ya conocido).
+- [ ] **Mostrar el seguimiento del envío en vivo al cliente** (detectado 2026-06-08). Una vez cargado el nº de tracking de Correo, `/shipping/tracking` (GET+body, ver `fetchCorreoTracking` en `lib/correo/import.ts`) devuelve los eventos (PREIMPOSICION → en camino → entregado). Se podría mostrar ese timeline en `/mi-cuenta/pedidos/[id]` para que el cliente no salga a la web de Correo. Verificado que NO sirve para obtener el nº (solo el estado de un envío con nº ya conocido). **Actualización 2026-11-07:** Correo NO tiene webhook/aviso de entrega (solo polling). `fetchCorreoTracking` está mal (query param; el server exige GET con body `{shippingId}` vía `https` nativo) y con el nº del pedido OC-2026-00014 devolvió "No existe el cliente o pedido": falta confirmar qué nº acepta. Ver CURRENT_STATE.
 - [ ] **Endpoint/acción admin para forzar sync stock OUTBOUND (DB→ML)** (detectado 2026-06-08). Hoy solo existe el inbound (`/api/admin/ml-force-sync` = ML→DB). Para correcciones manuales de stock desde el sitio falta el camino inverso. Mientras tanto, corregir stock = editar en ML (fuente de verdad) y dejar que el inbound/webhook baje a la DB.
 - [ ] **Agregar `/guias` + artículos al `app/sitemap.ts`** (gap descubierto 2026-06-01, ver MISTAKES). Hoy NINGÚN artículo ni el índice `/guias` están en el sitemap. Derivar de `listArticles()` (ya excluye `draft: true`, así que los borradores no se filtran solos). Agregar entry `/guias` (priority ~0.7) + un map sobre `listArticles()` (priority ~0.6, lastModified = updatedAt). Hacerlo cuando se publique el primer artículo nuevo del plan de defectos refractivos (o antes).
 - [ ] **Migrar `pnpm lint`** a la CLI nueva de ESLint (Next 15 deprecó
@@ -369,6 +550,15 @@ El código ya soporta un token de origen para `/api/ml/webhook` (`ML_WEBHOOK_TOK
 
 ## 🟢 Features menores futuras
 
+- [ ] **Deepening de `description` de productos** (decidido con el founder 2026-10-01). Las
+  descripciones de los últimos Mormaii cargados quedaron cortas y bastante formulaicas (3-4 párrafos
+  genéricos). La tabla de medidas (`product-measurements.tsx`) y la de atributos técnicos
+  (`product-attributes.tsx`) ya se renderizan solas desde el JSONB `attributes` de cada seed, y las
+  FAQs (`product-faqs.tsx`) también ya están — genéricas por categoría sol/receta, no hace falta
+  tocarlas por producto. Lo único corto de verdad es el texto de `description` en sí. Plan acordado:
+  NO meterlo en el flujo de carga actual (frenaría el ritmo de bulk-loading) — hacer una pasada de
+  "deepening" aparte más adelante, priorizada por los productos con más tráfico real en GSC (mismo
+  patrón ya usado en otros sitios del founder, ver skill `product-review-deepening`).
 - [ ] **Threads para Óptica Carballo** (habilitado 2026-08-25): la app de Meta ya tiene el caso
   de uso de la Threads API prendido. En productosvirales Threads rinde ~12x las vistas de X, así
   que vale probarlo acá. Sería una integración aparte (`lib/integrations/threads/`), pero puede

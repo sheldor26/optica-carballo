@@ -57,6 +57,9 @@ export async function cambiarEstadoDePedido(input: {
   newStatus: OrderStatus;
   note?: string;
   trackingNumber?: string;
+  /** `false` = cambiar el estado SIN mandar el email al cliente (ej. marcar
+   * "Entregado" pedidos viejos que ya llegaron). Por defecto se avisa. */
+  notify?: boolean;
 }): Promise<UpdateStatusResult> {
   const { orderId, newStatus } = input;
   const note = input.note?.trim() || null;
@@ -130,6 +133,7 @@ export async function cambiarEstadoDePedido(input: {
   let emailed = false;
   let emailError: string | undefined;
   if (
+    input.notify !== false &&
     shouldNotifyCustomer(newStatus) &&
     current.status !== newStatus &&
     current.customer_email

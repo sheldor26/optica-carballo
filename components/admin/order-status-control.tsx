@@ -45,7 +45,9 @@ export function OrderStatusControl({
     text: string;
   } | null>(null);
 
-  const willNotify = NOTIFY_SET.has(status) && status !== currentStatus;
+  const [silent, setSilent] = useState(false);
+  const canNotify = NOTIFY_SET.has(status) && status !== currentStatus;
+  const willNotify = canNotify && !silent;
   const trackingChanged = tracking.trim() !== (currentTracking ?? '');
   const dirty =
     status !== currentStatus || note.trim().length > 0 || trackingChanged;
@@ -58,6 +60,7 @@ export function OrderStatusControl({
         newStatus: status,
         note: note.trim() || undefined,
         trackingNumber: trackingChanged ? tracking.trim() : undefined,
+        notify: !silent,
       });
       if (res.ok) {
         const emailNote = res.emailed
@@ -72,6 +75,7 @@ export function OrderStatusControl({
             : `Estado actualizado a "${ORDER_STATUS_LABELS[status]}".${emailNote}`,
         });
         setNote('');
+        setSilent(false);
         router.refresh();
       } else {
         setFeedback({ type: 'error', text: res.error });
@@ -158,6 +162,24 @@ export function OrderStatusControl({
             el pedido como “Enviado”.
           </p>
         </div>
+
+        {canNotify && (
+          <label className="flex items-start gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={silent}
+              onChange={(e) => setSilent(e.target.checked)}
+              disabled={pending}
+              className="mt-0.5"
+            />
+            <span className="text-foreground">
+              No avisar al cliente por email{' '}
+              <span className="text-muted-foreground">
+                (útil para marcar “Entregado” pedidos viejos que ya llegaron)
+              </span>
+            </span>
+          </label>
+        )}
 
         {willNotify && (
           <p className="rounded-md bg-sky-50 px-3 py-2 text-xs text-sky-700 dark:bg-sky-950 dark:text-sky-300">

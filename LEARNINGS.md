@@ -22,6 +22,16 @@ Sirve para:
 
 # Log de learnings
 
+## 2026-11-12 — En Next.js un `openGraph` definido en una página PISA el de la raíz: se pierde la imagen de `app/opengraph-image.tsx` (y la tarjeta de X queda chica)
+
+**Contexto**: revisando el sitio antes de un anuncio en X, la home y todas las categorías/marcas salían con `og:image` ausente y `twitter:card=summary`, aunque `/opengraph-image` respondía 200. Las fichas de producto sí tenían imagen porque declaran la suya.
+
+**Causa**: cada builder de `lib/catalog/metadata.ts` devolvía `openGraph: { title, description, url, type }`. El `openGraph` de una página reemplaza el de la raíz (no se mezcla), y con él se pierden las `images` que el archivo `opengraph-image.tsx` aporta de forma automática.
+
+**Qué funcionó**: un helper único `socialPreview({title, description, url})` que devuelve `openGraph` con `images` + `twitter` (`summary_large_image`), reemplazando las 7 líneas idénticas. Verificado con `curl` a las páginas sirviendo local (home, categoría, marca, polarizados): `og:image`, `twitter:card=summary_large_image` y `twitter:image` presentes.
+
+**Cómo replicar**: ante cualquier página nueva con `openGraph` propio, incluir `images` (o usar `socialPreview`). Para auditar: `curl -s <url> | grep -oiE '<meta[^>]+(og:image|twitter:card)[^>]*>'` — no alcanza con mirar que exista `app/opengraph-image.tsx`.
+
 ## 2026-10-06 — Fotos de un modelo dado de baja en la marca: barrido de ids de imagen ordenado por parecido de SILUETA (los 5 colores del Reef 183 entre 3.750 imágenes)
 
 **El caso:** el Reef 183 Bolero ya no está en `reefeyewear.com`, pero el founder recordó (otra vez) que la URL de cada imagen queda viva. El

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AddressSelector } from '@/components/checkout/address-selector';
 import { CheckoutSummary } from '@/components/checkout/checkout-summary';
 import { ShippingMethodSelector } from '@/components/checkout/shipping-method-selector';
+import { ShippingTimeNotice } from '@/components/shipping/shipping-time-notice';
 import { submitCheckout, type CheckoutFormState } from '@/lib/checkout/actions';
 import { cartRequiresPrescription } from '@/lib/checkout/prescription';
 import {
@@ -261,6 +262,12 @@ export function CheckoutPage({
 
         <aside className="space-y-4">
           <CheckoutSummary cart={cart} shipping={activeQuote} />
+
+          {/* Último punto antes de contratar: plazo de entrega a la vista
+              (Ley 24.240 art. 10 inc. e). En retiro en local no aplica. */}
+          {method !== 'pickup' && (
+            <ShippingTimeNotice prescription={cartRequiresPrescription(cart)} />
+          )}
 
           <Button
             type="submit"

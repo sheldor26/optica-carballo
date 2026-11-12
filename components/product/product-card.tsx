@@ -8,8 +8,8 @@ import { isCheckoutEnabled } from '@/lib/features';
 import { formatPriceCents } from '@/lib/format/currency';
 import {
   INSTALLMENTS_ENABLED,
-  INTEREST_FREE_INSTALLMENTS,
   installmentAmountCents,
+  interestFreeInstallmentsFor,
 } from '@/lib/site/installments';
 import { getProductImageUrl } from '@/lib/storage/product-image-url';
 import { buildProductImageAlt } from '@/lib/catalog/image-alt';
@@ -330,8 +330,14 @@ export function ProductCard({
               </p>
               {INSTALLMENTS_ENABLED && (
                 <p className="text-foreground/80 text-xs tabular-nums">
-                  {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
-                  {formatPriceCents(installmentAmountCents(displayPriceCents))}
+                  {interestFreeInstallmentsFor(product.brandSlug)} cuotas sin
+                  interés de{' '}
+                  {formatPriceCents(
+                    installmentAmountCents(
+                      displayPriceCents,
+                      interestFreeInstallmentsFor(product.brandSlug),
+                    ),
+                  )}
                 </p>
               )}
             </>

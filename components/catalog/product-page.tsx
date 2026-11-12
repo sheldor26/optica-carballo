@@ -441,6 +441,7 @@ export async function ProductDetailPage({
               stockQty: v.stock_qty,
             }))}
             fallbackLabel={priceLabel}
+            brandSlug={product.brand.slug}
           />
 
           {/* Alerta de precio/stock: movida debajo del precio (antes empujaba

@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
 import { MicrosoftClarity } from '@/components/analytics/microsoft-clarity';
+import { XPixel } from '@/components/analytics/x-pixel';
 import './globals.css';
 
 // Tipografía alineada a ShotPilot (founder 2026-06-29): Manrope (cuerpo) +
@@ -60,6 +61,7 @@ export default function RootLayout({
         {children}
         <GoogleAnalytics />
         <MicrosoftClarity />
+        <XPixel />
         <Analytics />
         <SpeedInsights />
       </body>

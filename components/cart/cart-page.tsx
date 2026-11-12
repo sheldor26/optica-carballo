@@ -5,10 +5,16 @@ import { Button } from '@/components/ui/button';
 import { CartItemRow } from '@/components/cart/cart-item-row';
 import { CouponInput } from '@/components/cart/coupon-input';
 import { ShippingCalculator } from '@/components/cart/shipping-calculator';
+import { ShippingTimeNotice } from '@/components/shipping/shipping-time-notice';
+import { cartRequiresPrescription } from '@/lib/checkout/prescription';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { formatPriceCents } from '@/lib/format/currency';
 import { FREE_SHIPPING_THRESHOLD_CENTS } from '@/lib/shipping';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
+import {
+  cartHasMixedInstallmentBrands,
+  maxInstallmentsForBrands,
+} from '@/lib/site/installments';
 import { brandedProductName } from '@/lib/catalog/display-name';
 import type { ResolvedCart } from '@/lib/cart/types';
 
@@ -102,8 +108,22 @@ export function CartPage({
                   0,
                   cart.subtotalCents - (cart.coupon?.discountCents ?? 0),
                 )}
+                // Mismo criterio que el cobro (lib/mp/preferences.ts): 6 cuotas
+                // solo si TODO el carrito es Vulk/Rusty.
+                showSixInstallments={
+                  maxInstallmentsForBrands(cart.items.map((it) => it.brand.slug)) ===
+                  undefined
+                }
+                mixedBrands={cartHasMixedInstallmentBrands(
+                  cart.items.map((it) => it.brand.slug),
+                )}
               />
             )}
+
+            <ShippingTimeNotice
+              className="mt-4"
+              prescription={cartRequiresPrescription(cart)}
+            />
 
             {remainingForFree > 0 && (
               <div className="bg-brand/10 border-brand/30 mt-4 rounded-lg border p-3">
@@ -245,7 +265,17 @@ function CartWhatsappCta({ items }: { items: ResolvedCart['items'] }) {
  * Muestra ejemplos de 3 y 6 cuotas calculadas a partir del subtotal.
  * NO promete "sin interés" porque depende del banco — copy honesto.
  */
-function InstallmentsHint({ subtotalCents }: { subtotalCents: number }) {
+function InstallmentsHint({
+  subtotalCents,
+  showSixInstallments,
+  mixedBrands,
+}: {
+  subtotalCents: number;
+  /** false si el cobro queda con tope de 3 cuotas (hay una marca que no es Vulk/Rusty). */
+  showSixInstallments: boolean;
+  /** true si el carrito mezcla Vulk/Rusty con otra marca. */
+  mixedBrands: boolean;
+}) {
   if (subtotalCents <= 0) return null;
   const three = Math.round(subtotalCents / 3);
   const six = Math.round(subtotalCents / 6);
@@ -263,14 +293,24 @@ function InstallmentsHint({ subtotalCents }: { subtotalCents: number }) {
             <span className="text-muted-foreground ml-1 text-[10px]">/ mes</span>
           </span>
         </li>
-        <li className="text-foreground flex items-baseline justify-between">
-          <span className="text-muted-foreground">6 cuotas</span>
-          <span className="font-medium tabular-nums">
-            {formatPriceCents(six)}
-            <span className="text-muted-foreground ml-1 text-[10px]">/ mes</span>
-          </span>
-        </li>
+        {showSixInstallments && (
+          <li className="text-foreground flex items-baseline justify-between">
+            <span className="text-muted-foreground">6 cuotas</span>
+            <span className="font-medium tabular-nums">
+              {formatPriceCents(six)}
+              <span className="text-muted-foreground ml-1 text-[10px]">/ mes</span>
+            </span>
+          </li>
+        )}
       </ul>
+      {mixedBrands && (
+        <p className="bg-muted/60 text-foreground mt-2 rounded-md p-2 text-[11px] leading-snug">
+          Tu carrito tiene productos de Rusty o Vulk junto con otra marca, así
+          que el pago queda limitado a <strong>3 cuotas sin interés</strong>. Para
+          pagar Rusty o Vulk en <strong>6 cuotas sin interés</strong>, hacé dos
+          compras por separado.
+        </p>
+      )}
       <p className="text-muted-foreground/80 mt-1.5 text-[10px] leading-snug">
         Cuotas reales según banco y tarjeta vía Mercado Pago.
       </p>

@@ -1,5 +1,15 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-11-10 — Le dije al founder que Vulk "no tiene publicada" la foto de perfil de la Harry CR51 porque la URL directa daba 404; las fotos estaban y las cargaba el sitio por JavaScript
+
+**Estado:** ✅ Cerrado (las fotos se bajaron y el kit de la CR51 se armó en el mismo turno).
+
+**Qué pasó:** el founder me pasó la página de la Harry y dijo que las fotos de cada variante estaban en el selector. Bajé las del HTML (sólo el frente de la CR51), probé la URL directa de esa variante (404 con `curl`, con `WebFetch` y también en el navegador) y afirmé "Vulk sólo publica el frente; su página da 404". Era falso: el sitio de Vulk carga cada variante al hacer clic en la miniatura (la URL cambia por JavaScript) y esa misma URL, abierta directo, da 404. El founder tuvo que mandarme una captura y decirme "no me mientas".
+
+**Causa raíz:** traté "no encontré el dato por mi camino" como "el dato no existe", y lo reporté como hecho. Ignoré además lo que el propio founder me había dicho (que estaban en el selector de variantes).
+
+**Regla preventiva:** (1) cuando el founder dice dónde está algo, reproducir ESE camino (en el navegador: abrir la página, hacer clic en el selector, leer el DOM después) antes de contestar que no existe. (2) Un 404 en la URL directa de un sitio que cambia de variante por JavaScript no prueba que la página no exista. (3) Decir "no encontré X por Y" y no "X no existe" hasta haber probado el camino del usuario.
+
 ## 2026-11-07 — Lancé AGY en segundo plano con la sintaxis equivocada y le dije al founder "está trabajando" sin comprobar que había arrancado
 
 **Estado:** ✅ Cerrado (corregido en el mismo turno, sin daño: el repo quedó intacto).

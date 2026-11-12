@@ -34,6 +34,7 @@ export async function updateOrderStatusAction(input: {
   newStatus: OrderStatus;
   note?: string;
   trackingNumber?: string;
+  notify?: boolean;
 }): Promise<UpdateStatusResult> {
   await requireAdmin();
 

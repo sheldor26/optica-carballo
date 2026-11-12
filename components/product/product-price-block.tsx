@@ -5,10 +5,11 @@ import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { AnimatedPrice } from '@/components/product/animated-price';
 import { ShippingEstimator } from '@/components/product/shipping-estimator';
+import { ShippingTimeNotice } from '@/components/shipping/shipping-time-notice';
 import {
   INSTALLMENTS_ENABLED,
-  INTEREST_FREE_INSTALLMENTS,
   installmentAmountCents,
+  interestFreeInstallmentsFor,
 } from '@/lib/site/installments';
 
 type PriceVariant = {
@@ -32,11 +33,15 @@ type PriceVariant = {
 export function ProductPriceBlock({
   variants,
   fallbackLabel,
+  brandSlug,
 }: {
   variants: PriceVariant[];
   fallbackLabel: string | null;
+  /** Slug de la marca: define cuántas cuotas sin interés se publicitan. */
+  brandSlug: string;
 }) {
   const { selectedVariantId } = useVariantSelection();
+  const installments = interestFreeInstallmentsFor(brandSlug);
   const selected = variants.find((v) => v.id === selectedVariantId) ?? null;
 
   const priceText = selected ? formatPriceCents(selected.priceCents) : fallbackLabel;
@@ -85,9 +90,11 @@ export function ProductPriceBlock({
           {INSTALLMENTS_ENABLED && selected ? (
             <>
               <p className="text-foreground mt-2 text-xs font-medium sm:text-sm">
-                {INTEREST_FREE_INSTALLMENTS} cuotas sin interés de{' '}
+                {installments} cuotas sin interés de{' '}
                 <span className="font-semibold">
-                  {formatPriceCents(installmentAmountCents(selected.priceCents))}
+                  {formatPriceCents(
+                    installmentAmountCents(selected.priceCents, installments),
+                  )}
                 </span>
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
@@ -124,6 +131,7 @@ export function ProductPriceBlock({
               Retiro gratis en local
             </p>
           </div>
+          <ShippingTimeNotice variant="compact" className="mt-3" />
           <div className="mt-3">
             <ShippingEstimator variants={variants} />
           </div>

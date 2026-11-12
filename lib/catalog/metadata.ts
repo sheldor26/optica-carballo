@@ -11,6 +11,39 @@ import { CATEGORIES, type CategoryConfig } from '@/lib/catalog/categories';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
+/**
+ * Vista previa al compartir el link (WhatsApp, X, Facebook...). Un `openGraph`
+ * definido en una página PISA el de la raíz, y con él se pierde la imagen
+ * generada en `app/opengraph-image.tsx`: la home y las categorías salían sin
+ * imagen (detectado 2026-11-12, antes de un anuncio en X). Acá se incluye
+ * siempre, con tarjeta grande de X.
+ */
+const SOCIAL_IMAGE = {
+  url: '/opengraph-image',
+  width: 1200,
+  height: 630,
+  alt: 'Óptica Carballo — anteojos de sol y receta',
+};
+
+function socialPreview(args: { title: string; description: string; url: string }) {
+  return {
+    openGraph: {
+      title: args.title,
+      description: args.description,
+      url: args.url,
+      type: 'website' as const,
+      images: [SOCIAL_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: args.title,
+      description: args.description,
+      images: [SOCIAL_IMAGE.url],
+    },
+  };
+}
+
+
 type BrandMetaRow = { name: string };
 type ProductMetaRow = {
   name: string;
@@ -56,7 +89,7 @@ export async function buildBrandMetadata(
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
   };
 }
 
@@ -80,7 +113,7 @@ export function buildCategoryGenderMetadata(args: {
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
   };
 }
 
@@ -130,7 +163,7 @@ export async function buildCategoryShapeMetadata({
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
     robots: noindex ? { index: false, follow: true } : undefined,
   };
 }
@@ -217,7 +250,7 @@ export async function buildBrandGenderMetadata(args: {
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
   };
 }
 
@@ -264,7 +297,7 @@ export async function buildBrandFilterMetadata(args: {
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
     robots: args.noindex ? { index: false, follow: true } : undefined,
   };
 }
@@ -372,7 +405,7 @@ export function buildHomeMetadata(): Metadata {
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
   };
 }
 
@@ -399,7 +432,7 @@ export function buildCategoryIndexMetadata(
       canonical: url,
       languages: { 'es-AR': url, 'x-default': url },
     },
-    openGraph: { title, description, url, type: 'website' },
+    ...socialPreview({ title, description, url }),
   };
 }
 

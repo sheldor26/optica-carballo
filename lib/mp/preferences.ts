@@ -4,6 +4,7 @@ import { getMpClient } from './client';
 import { brandedProductName } from '@/lib/catalog/display-name';
 import type { ResolvedCart } from '@/lib/cart/types';
 import type { ShippingQuote } from '@/lib/shipping';
+import { maxInstallmentsForBrands } from '@/lib/site/installments';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -68,6 +69,9 @@ async function createPreferenceFromItems(args: {
   orderNumber: string;
   payerEmail: string;
   items: MpItem[];
+  /** Tope de cuotas del pago (ver `maxInstallmentsForBrands`); `undefined` =
+   * sin tope (valen las cuotas que MP ofrezca para la cuenta). */
+  maxInstallments?: number;
 }): Promise<CreatePreferenceResult> {
   if (args.items.length === 0) {
     return { ok: false, error: 'Sin items para cobrar.' };
@@ -88,6 +92,9 @@ async function createPreferenceFromItems(args: {
       failure: `${SITE_URL}/checkout/error`,
     },
     ...(isLocalhost ? {} : { auto_return: 'approved' as const }),
+    ...(args.maxInstallments
+      ? { payment_methods: { installments: args.maxInstallments } }
+      : {}),
     statement_descriptor: 'OPTICA CARBALLO',
     notification_url: `${SITE_URL}/api/mp/webhook`,
     metadata: { order_number: args.orderNumber },
@@ -144,7 +151,14 @@ export async function createCheckoutPreference(args: {
   );
   if (ship) items.push(ship);
 
-  return createPreferenceFromItems({ orderNumber, payerEmail, items });
+  return createPreferenceFromItems({
+    orderNumber,
+    payerEmail,
+    items,
+    maxInstallments: maxInstallmentsForBrands(
+      cart.items.map((it) => it.brand.slug),
+    ),
+  });
 }
 
 /** Línea de un pedido ya creado (datos de `order_items`) para "retomar pago". */
@@ -166,6 +180,9 @@ export async function createCheckoutPreferenceFromOrder(args: {
   items: OrderLineItem[];
   shippingCents: number;
   shippingLabel?: string;
+  /** Marca de cada ítem del pedido (`order_items.brand_name`), para el tope
+   * de cuotas. Obligatorio a propósito: que no se pueda olvidar. */
+  brands: ReadonlyArray<string | null | undefined>;
 }): Promise<CreatePreferenceResult> {
   const items: MpItem[] = args.items.map((it) => ({
     id: it.sku,
@@ -183,5 +200,6 @@ export async function createCheckoutPreferenceFromOrder(args: {
     orderNumber: args.orderNumber,
     payerEmail: args.payerEmail,
     items,
+    maxInstallments: maxInstallmentsForBrands(args.brands),
   });
 }

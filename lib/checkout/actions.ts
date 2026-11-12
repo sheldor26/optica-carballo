@@ -299,6 +299,7 @@ export async function resumeOrderPaymentAction(
       unitPriceCents: it.unitPriceCents,
     })),
     shippingCents: order.shippingCents,
+    brands: order.items.map((it) => it.brandName),
   });
 
   if (!preferenceResult.ok) {
