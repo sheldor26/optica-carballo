@@ -19,6 +19,7 @@ import {
 } from '@/lib/mp/preferences';
 import { isMpTestMode } from '@/lib/mp/client';
 import { fetchOrderById } from '@/lib/orders/queries';
+import { readAttributionCookie } from '@/lib/attribution';
 
 export type CheckoutFormState = {
   ok: boolean;
@@ -211,6 +212,7 @@ export async function submitCheckout(
     customerName,
     customerPhone: profile?.phone ?? null,
     customerDni,
+    attribution: await readAttributionCookie(),
     cart: resolved,
     address,
     shipping,

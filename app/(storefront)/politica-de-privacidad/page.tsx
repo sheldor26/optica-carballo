@@ -259,18 +259,25 @@ export default function Page() {
         </li>
         <li>
           <strong>Analíticas</strong> (opt-in): Google Analytics, Vercel
-          Analytics. Solo se activan si das consentimiento.
+          Analytics y Microsoft Clarity (mapas de calor y grabación de cómo se
+          navega el sitio). Solo se activan si das consentimiento.
         </li>
         <li>
           <strong>Publicidad</strong> (opt-in): píxel de X (Twitter). Nos
           permite saber si llegaste desde un anuncio nuestro en X y medir
-          cuántas visitas terminan en compra. Solo se activa si das
+          cuántas visitas terminan en compra. Además guardamos una cookie
+          propia, por 30 días, con los datos de la campaña de la que viniste
+          (por ejemplo, el anuncio), sin datos personales; si comprás, esa
+          fuente se anota en tu pedido. El píxel envía datos a X, un
+          proveedor ubicado en el exterior. Solo se activa si das
           consentimiento.
         </li>
       </ul>
       <p>
         Podés gestionar tus preferencias en el banner que aparece al primer
-        acceso al sitio.
+        acceso al sitio. Para retirar tu consentimiento, borrá los datos del
+        sitio en tu navegador (el banner vuelve a aparecer y podés elegir
+        &ldquo;Solo necesarias&rdquo;) o escribinos y lo gestionamos.
       </p>
 
       <h2>8. Seguridad</h2>

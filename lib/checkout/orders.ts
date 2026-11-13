@@ -1,5 +1,6 @@
 import 'server-only';
 import { createAdminClient } from '@/lib/supabase/admin';
+import type { Attribution } from '@/lib/attribution';
 import type { ResolvedCart } from '@/lib/cart/types';
 import type { Address } from '@/lib/addresses/types';
 import type { ShippingMethod, ShippingQuote } from '@/lib/shipping';
@@ -70,6 +71,9 @@ export async function createOrderFromCart(args: {
   prescription?: PrescriptionCookie | null;
   /** UUID estable por intento de checkout — ver doc de la función. */
   idempotencyKey: string;
+  /** Fuente de la visita (cookie `oc_attr`, ya validada). Se anota en
+   * `orders.attribution` DESPUÉS de crear el pedido, best-effort. */
+  attribution?: Attribution | null;
 }): Promise<CreateOrderResult> {
   const {
     userId,
@@ -86,6 +90,7 @@ export async function createOrderFromCart(args: {
     agencyName = null,
     prescription = null,
     idempotencyKey,
+    attribution = null,
   } = args;
   const isPickup = shippingMethod === 'pickup';
   const isBranch = shippingMethod === 'branch';
@@ -197,6 +202,19 @@ export async function createOrderFromCart(args: {
   // reconcile corrige drift.
   if (!result.replay) {
     void syncStockOutboundForVariants(reserveItems.map((it) => it.variant_id));
+  }
+
+  // Atribución de la compra (de qué anuncio vino). Fuera de la RPC atómica a
+  // propósito: es un dato secundario y NUNCA debe hacer fallar una venta. Un
+  // replay (doble submit) no pisa la fuente ya guardada.
+  if (attribution && !result.replay) {
+    const { error: attrErr } = await supabase
+      .from('orders')
+      .update({ attribution })
+      .eq('id', result.id);
+    if (attrErr) {
+      console.error('[checkout] no se pudo guardar attribution:', attrErr.message);
+    }
   }
 
   return {

@@ -270,6 +270,7 @@ export type Database = {
           discount_cents: number
           id: string
           idempotency_key: string | null
+          attribution: Json | null
           invoice_cae: string | null
           invoice_id: string | null
           invoice_url: string | null
@@ -318,6 +319,7 @@ export type Database = {
           discount_cents?: number
           id?: string
           idempotency_key?: string | null
+          attribution?: Json | null
           invoice_cae?: string | null
           invoice_id?: string | null
           invoice_url?: string | null
@@ -366,6 +368,7 @@ export type Database = {
           discount_cents?: number
           id?: string
           idempotency_key?: string | null
+          attribution?: Json | null
           invoice_cae?: string | null
           invoice_id?: string | null
           invoice_url?: string | null

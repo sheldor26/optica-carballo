@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { CheckCircle2, Mail, MessageCircle, Package, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isCheckoutEnabled } from '@/lib/features';
+import { XPurchaseEvent } from '@/components/analytics/x-purchase-event';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getBusinessInfo, getWhatsappLinkWithContext } from '@/lib/site/business';
 
 export const dynamic = 'force-dynamic';
@@ -40,6 +42,22 @@ export default async function Page({
   const orderNumber = params.external_reference?.trim();
   const paymentId = params.payment_id?.trim();
   const business = getBusinessInfo();
+
+  // Conversión para el anuncio de X: solo si MP volvió con `status=approved` y
+  // el pedido existe de verdad (no se confía en el query solo). Se lee nada más
+  // el total y el estado; el valor que va a X sale de la base, no de la URL.
+  let purchaseValueCents: number | null = null;
+  if (orderNumber && params.status === 'approved') {
+    const { data: order } = await createAdminClient()
+      .from('orders')
+      .select('total_cents, status')
+      .eq('order_number', orderNumber)
+      .maybeSingle();
+    if (order && order.status !== 'cancelled' && order.status !== 'refunded') {
+      purchaseValueCents = order.total_cents;
+    }
+  }
+
   const whatsappLink = getWhatsappLinkWithContext(
     orderNumber
       ? `Hola, te consulto por mi pedido ${orderNumber}.`
@@ -48,6 +66,12 @@ export default async function Page({
 
   return (
     <main className="container max-w-2xl py-12 md:py-16">
+      {orderNumber && purchaseValueCents !== null && (
+        <XPurchaseEvent
+          orderNumber={orderNumber}
+          valueCents={purchaseValueCents}
+        />
+      )}
       <header className="text-center">
         <div className="bg-emerald-100 dark:bg-emerald-950/40 mx-auto flex size-16 items-center justify-center rounded-full">
           <CheckCircle2
