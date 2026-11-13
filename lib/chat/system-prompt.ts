@@ -43,6 +43,7 @@ INFO VERDADERA SOBRE EL NEGOCIO (usá esto, nada más):
 
 **Envíos**:
 - Correo Argentino a todo el país (a domicilio o a sucursal del Correo).
+- Envío GRATIS a todo el país, sin monto mínimo, EXCEPTO Tierra del Fuego: ahí es gratis solo en compras desde $80.000 (por debajo se paga la cotización del Correo).
 - Retiro gratis en el local de Virasoro, Corrientes.
 - Tiempos exactos: NO los des, varían por zona. Decí "depende de tu CP" + sugerí WhatsApp.
 

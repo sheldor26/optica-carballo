@@ -19,8 +19,59 @@ import { AR_PROVINCES, type ArProvince } from '@/lib/addresses/constants';
 // Constantes editables (mover a env vars o admin UI si crece la complejidad)
 // ============================================================================
 
-/** Subtotal del cart (en centavos) a partir del cual el envío es gratis. */
+/**
+ * Envío a domicilio / sucursal GRATIS a todo el país sin monto mínimo
+ * (decisión del founder, 2026-11-12), SALVO las provincias de abajo, donde el
+ * envío gratis sigue siendo solo para compras desde `FREE_SHIPPING_THRESHOLD_CENTS`.
+ */
+export const FREE_SHIPPING_EXCLUDED_PROVINCES: readonly string[] = [
+  'Tierra del Fuego',
+];
+
+/** Subtotal del cart (en centavos) a partir del cual el envío es gratis en las provincias excluidas. */
 export const FREE_SHIPPING_THRESHOLD_CENTS = 80_000_00; // $80.000
+
+/** CP de 4 dígitos de Tierra del Fuego (Ushuaia 9410, Río Grande 9420…); Santa Cruz llega hasta 9407. */
+function isTierraDelFuegoPostalCode(postalCode?: string | null): boolean {
+  const cp = Number(postalCode?.match(/\d{4}/)?.[0]);
+  return Number.isFinite(cp) && cp >= 9410 && cp <= 9499;
+}
+
+/**
+ * ¿El destino entra en el envío gratis SIN mínimo? Si no se sabe la provincia
+ * ni el CP, se asume que sí (el checkout siempre cobra con la provincia real).
+ */
+export function isFreeShippingRegion(args: {
+  provinceName?: string | null;
+  postalCode?: string | null;
+}): boolean {
+  if (
+    args.provinceName &&
+    FREE_SHIPPING_EXCLUDED_PROVINCES.includes(args.provinceName)
+  ) {
+    return false;
+  }
+  return !isTierraDelFuegoPostalCode(args.postalCode);
+}
+
+/** Regla única de envío gratis (la usan la tabla por zonas y la cotización de Correo). */
+export function resolveFreeShipping(args: {
+  subtotalCents: number;
+  provinceName?: string | null;
+  postalCode?: string | null;
+}): { isFree: boolean; freeNationwide: boolean; centsToFreeShipping: number } {
+  if (isFreeShippingRegion(args)) {
+    return { isFree: true, freeNationwide: true, centsToFreeShipping: 0 };
+  }
+  const isFree = args.subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS;
+  return {
+    isFree,
+    freeNationwide: false,
+    centsToFreeShipping: isFree
+      ? 0
+      : FREE_SHIPPING_THRESHOLD_CENTS - args.subtotalCents,
+  };
+}
 
 /**
  * Método de envío elegido en el checkout:
@@ -101,6 +152,8 @@ export type ShippingQuote = {
   originalCents: number | null;
   /** Cuánto le falta al user para llegar al free shipping. 0 si ya llegó o es pickup. */
   centsToFreeShipping: number;
+  /** true cuando es gratis por la política "todo el país" (no por llegar al mínimo). */
+  freeNationwide?: boolean;
 };
 
 /**
@@ -124,13 +177,12 @@ function resolveZone(provinceName: string): ShippingZone {
 export function calculateShipping(args: {
   subtotalCents: number;
   provinceName: string;
+  postalCode?: string | null;
 }): ShippingQuote {
   const zone = resolveZone(args.provinceName);
   const baseRate = SHIPPING_RATES_BY_ZONE[zone];
-  const isFree = args.subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS;
-  const centsToFreeShipping = isFree
-    ? 0
-    : FREE_SHIPPING_THRESHOLD_CENTS - args.subtotalCents;
+  const { isFree, freeNationwide, centsToFreeShipping } =
+    resolveFreeShipping(args);
 
   return {
     method: 'delivery',
@@ -140,6 +192,7 @@ export function calculateShipping(args: {
     isFree,
     originalCents: isFree ? baseRate : null,
     centsToFreeShipping,
+    freeNationwide,
   };
 }
 

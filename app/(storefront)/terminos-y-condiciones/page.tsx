@@ -141,6 +141,11 @@ export default function Page() {
         {business.locality ?? '[A CONFIRMAR]'}.
       </p>
       <p>
+      <p>
+        El envío, a domicilio o a sucursal, es gratis a todo el país excepto
+        Tierra del Fuego, donde es gratis en compras desde $80.000. Cuando el
+        envío tiene costo, lo ves antes de pagar.
+      </p>
         Los plazos son estimados — dependen del operador logístico y no son
         garantizados. Una vez despachado, te enviamos código de seguimiento.
       </p>

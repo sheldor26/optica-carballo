@@ -1,7 +1,7 @@
 import 'server-only';
 import {
   calculateShipping,
-  FREE_SHIPPING_THRESHOLD_CENTS,
+  resolveFreeShipping,
   type ShippingQuote,
 } from './shipping';
 import { isCorreoConfigured } from './correo/constants';
@@ -23,9 +23,13 @@ function rateToQuote(
   rate: CorreoRate,
   subtotalCents: number,
   fallback: ShippingQuote,
+  destination: { provinceName?: string | null; postalCode?: string | null },
 ): ShippingQuote {
   const baseRate = Math.round(rate.price * 100); // pesos → centavos
-  const isFree = subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS;
+  const { isFree, freeNationwide, centsToFreeShipping } = resolveFreeShipping({
+    subtotalCents,
+    ...destination,
+  });
   return {
     method: 'delivery',
     // Zona/label derivados de la provincia para registro; el costo es de la API.
@@ -34,9 +38,8 @@ function rateToQuote(
     cents: isFree ? 0 : baseRate,
     isFree,
     originalCents: isFree ? baseRate : null,
-    centsToFreeShipping: isFree
-      ? 0
-      : Math.max(0, FREE_SHIPPING_THRESHOLD_CENTS - subtotalCents),
+    centsToFreeShipping,
+    freeNationwide,
   };
 }
 
@@ -58,7 +61,12 @@ export async function resolveShippingQuotes(args: {
   const fallback = calculateShipping({
     subtotalCents: args.subtotalCents,
     provinceName: args.provinceName ?? '',
+    postalCode: args.postalCode,
   });
+  const destination = {
+    provinceName: args.provinceName,
+    postalCode: args.postalCode,
+  };
 
   if (!isCorreoConfigured() || !args.postalCode) {
     return { delivery: fallback, branch: null };
@@ -73,9 +81,11 @@ export async function resolveShippingQuotes(args: {
     const sRate = cheapestRate(data.rates, 'S');
     return {
       delivery: dRate
-        ? rateToQuote(dRate, args.subtotalCents, fallback)
+        ? rateToQuote(dRate, args.subtotalCents, fallback, destination)
         : fallback,
-      branch: sRate ? rateToQuote(sRate, args.subtotalCents, fallback) : null,
+      branch: sRate
+        ? rateToQuote(sRate, args.subtotalCents, fallback, destination)
+        : null,
     };
   } catch (err) {
     console.error(

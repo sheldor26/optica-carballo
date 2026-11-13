@@ -33,8 +33,8 @@ export function ValueProps() {
     },
     {
       icon: Truck,
-      title: 'Envíos a todo el país',
-      body: 'Envíos con Correo Argentino a todo el país. Retiro gratis en local de Virasoro.',
+      title: 'Envío gratis con Correo Argentino',
+      body: 'Envío gratis a domicilio o a sucursal, sin mínimo de compra. En Tierra del Fuego, gratis desde $80.000. Retiro gratis en el local de Virasoro.',
     },
     {
       icon: null,

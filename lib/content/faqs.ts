@@ -94,7 +94,7 @@ export const FAQS: FaqItem[] = [
     featured: true,
     question: '¿Cuánto cuesta el envío?',
     answer:
-      'El costo depende de la zona. En CABA y GBA arranca en $2.500. En el interior cercano (Litoral, Córdoba, Mendoza) cuesta $4.500. En zonas más alejadas (NEA, NOA, Cuyo) $6.500, y en Patagonia $9.500. Compras superiores a $80.000 tienen envío gratis a todo el país.',
+      'El envío es gratis a todo el país, a domicilio o a sucursal del Correo, excepto Tierra del Fuego. En Tierra del Fuego el envío es gratis en compras desde $80.000; por debajo de ese monto se paga según la cotización del Correo para tu código postal.',
   },
   {
     id: 'retiro-en-local',

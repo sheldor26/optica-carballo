@@ -9,7 +9,6 @@ import { ShippingTimeNotice } from '@/components/shipping/shipping-time-notice';
 import { cartRequiresPrescription } from '@/lib/checkout/prescription';
 import { RecentlyViewed } from '@/components/recently-viewed/recently-viewed';
 import { formatPriceCents } from '@/lib/format/currency';
-import { FREE_SHIPPING_THRESHOLD_CENTS } from '@/lib/shipping';
 import { getWhatsappLinkWithContext } from '@/lib/site/business';
 import {
   cartHasMixedInstallmentBrands,
@@ -33,11 +32,6 @@ export function CartPage({
   if (cart.items.length === 0) {
     return <EmptyCart checkoutEnabled={checkoutEnabled} />;
   }
-
-  const remainingForFree = Math.max(
-    FREE_SHIPPING_THRESHOLD_CENTS - cart.subtotalCents,
-    0,
-  );
 
   return (
     <main className="container py-8 md:py-12">
@@ -125,28 +119,12 @@ export function CartPage({
               prescription={cartRequiresPrescription(cart)}
             />
 
-            {remainingForFree > 0 && (
-              <div className="bg-brand/10 border-brand/30 mt-4 rounded-lg border p-3">
-                <p className="text-foreground text-xs">
-                  Te faltan{' '}
-                  <span className="text-brand font-semibold">
-                    {formatPriceCents(remainingForFree)}
-                  </span>{' '}
-                  para envío gratis.
-                </p>
-                <div className="bg-muted mt-2 h-1.5 overflow-hidden rounded-full">
-                  <div
-                    className="bg-brand h-full rounded-full transition-all"
-                    style={{
-                      width: `${Math.min(
-                        (cart.subtotalCents / FREE_SHIPPING_THRESHOLD_CENTS) * 100,
-                        100,
-                      )}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+            <div className="bg-brand/10 border-brand/30 mt-4 rounded-lg border p-3">
+              <p className="text-foreground text-xs">
+                <span className="text-brand font-semibold">Envío gratis</span>{' '}
+                a todo el país, a domicilio o a sucursal. En Tierra del Fuego, gratis desde $80.000.
+              </p>
+            </div>
 
             {cart.hasIssues && (
               <p className="text-destructive mt-4 text-xs">
@@ -327,7 +305,7 @@ function TrustSignals({ checkoutEnabled }: { checkoutEnabled: boolean }) {
       </li>
       <li className="text-muted-foreground flex items-start gap-2">
         <Truck className="text-brand mt-0.5 size-3.5 shrink-0" />
-        <span>Envíos a todo el país. Retiro gratis en local.</span>
+        <span>Envío gratis a todo el país (en Tierra del Fuego, desde $80.000). Retiro gratis en local.</span>
       </li>
       <li className="text-muted-foreground flex items-start gap-2">
         <CreditCard className="text-brand mt-0.5 size-3.5 shrink-0" />

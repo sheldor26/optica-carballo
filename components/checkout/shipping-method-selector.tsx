@@ -53,7 +53,11 @@ export function ShippingMethodSelector({
         <MethodOption
           icon={Home}
           title="Envío a domicilio"
-          subtitle={deliveryQuote.zoneLabel}
+          subtitle={
+            deliveryQuote.freeNationwide
+              ? 'Gratis a todo el país (Tierra del Fuego: desde $80.000)'
+              : deliveryQuote.zoneLabel
+          }
           price={loading ? '...' : priceLabel(deliveryQuote)}
           selected={selected === 'delivery'}
           onClick={() => onChange('delivery')}
