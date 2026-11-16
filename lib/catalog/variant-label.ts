@@ -142,6 +142,8 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   // Vulk Harry MBLK/CR51 (seed 202): lente celeste sólido (no degradé).
   celeste: 'Celeste',
   // Vulk The Phone (seed 203): dos degradés verdes nuevos; verde-oscuro y gris-oscuro-degrade ya existen.
+  // Vulk Day Light IVORY/BP2021 (seed 204): marrón que vira a rojizo; `marron-degrade` no dice "rojizo".
+  'marron-rojizo-degrade': 'Marrón rojizo degradé',
   'verde-oscuro-degrade': 'Verde oscuro degradé',
   'verde-claro-degrade': 'Verde claro degradé',
   'marron-degrade': 'Marrón degradé',

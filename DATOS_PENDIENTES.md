@@ -116,6 +116,12 @@ Bloquea: la placa 04 (medidas) y la carga a la web.
 - [x] Variación vieja rosado/beige (= Col 11): se carga en la web por si reingresa.
 - [ ] Confirmar con María Carlota qué graduado se ofrece en Fiji (base 6) y si hacen polarizado graduado.
 
+## 🔄 Vulk Day Light IVORY/BP2021 (SKU 194188) — publicado en ML y cargado en la web (seed 204, 2026-11-17); queda poco
+- [x] No polarizada (confirmada dos veces), categoría 3 y "más de mujer por los colores" confirmados por el founder (2026-11-17). Género: ML "Mujer"; web unisex a nivel producto, con la IVORY descripta como la más pensada para mujer.
+- [ ] **GTIN** (en ML figura "Otra razón").
+- [ ] **Day Light en la página de Vulk polarizados:** hoy sale de ahí (para que la ficha no diga "polarizados" de la IVORY); se puede revertir si querés.
+- [ ] **Ancho de lente:** la publicación vieja del Day Light en ML dice 52 mm y la web/Vulk 51 mm.
+
 ## 🔄 Vulk The Phone (4 variantes; SKU 107110-107113) — publicado en ML y cargado en la web (seed 203, 2026-11-16); quedan datos tuyos
 - [ ] **GTIN** de las cuatro (en ML figuran "Otra razón").
 - [ ] **Ancho total 154:** 2×51+24 = 126; confirmar que lo mediste bien.
