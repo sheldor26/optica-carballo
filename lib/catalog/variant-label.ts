@@ -47,6 +47,11 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'gris-muy-oscuro-mate': 'Gris muy oscuro mate',
   'azul-oscuro-mate-patillas-turquesa': 'Azul oscuro mate con patillas turquesa',
   'gris-translucido-mate': 'Gris translúcido mate',
+  // Vulk Platz sol (seed 201): un slug nuevo de armazón; el lente verde-degrade ya existe.
+  'beige-brillo': 'Beige brillo',
+  // Vulk The Phone sol (seed 203): dos slugs nuevos de armazón; negro-brillo y marron-brillo ya existen.
+  'gris-azulado-transparente': 'Gris azulado transparente',
+  'rosa-palido-caramelo': 'Rosa pálido con caramelo',
   // Mormaii High 4 receta APE (seed 188): un slug nuevo (frente negro brillo + patillas azul oscuro translúcido).
   'negro-brillo-patillas-azul-oscuro-translucido': 'Negro brillo con patillas azul oscuro translúcido',
   // Rusty Burrout receta (seed 177): dos slugs nuevos.
@@ -134,6 +139,11 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   marron: 'Marrón',
   verde: 'Verde',
   azul: 'Azul',
+  // Vulk Harry MBLK/CR51 (seed 202): lente celeste sólido (no degradé).
+  celeste: 'Celeste',
+  // Vulk The Phone (seed 203): dos degradés verdes nuevos; verde-oscuro y gris-oscuro-degrade ya existen.
+  'verde-oscuro-degrade': 'Verde oscuro degradé',
+  'verde-claro-degrade': 'Verde claro degradé',
   'marron-degrade': 'Marrón degradé',
   'gris-degrade': 'Gris degradé',
   'verde-degrade': 'Verde degradé',

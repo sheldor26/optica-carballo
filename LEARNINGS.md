@@ -1,5 +1,21 @@
 # Óptica Carballo — Learnings Log
 
+## 2026-11-16 — Placa de callouts v2 (legible en el celular) como estilo por defecto
+
+**Qué funcionó:** comparar la placa vieja y la nueva a 375 px de ancho (cómo se ve la galería de ML en el celular) mostró el problema real: subtítulos de 4-5 px ilegibles. La v2 usa un texto corto y grande por cartel, un cartel protagonista en celeste, líneas rectas con punto, y fondo con degradé y sombra (producto con `multiply`).
+
+**Cómo se usa:** `pnpm placas` ya la genera por defecto (`--estilo clasico` para la anterior). Poner el beneficio principal en `--c2`; los subtítulos largos se descartan (sólo entran si tienen ≤ 12 caracteres). Código en `scripts/lib/placas-callouts-v2.ts`.
+
+**Regla:** al diseñar placas para ML, verificar siempre cómo se ven a 375 px antes de darlas por buenas.
+
+## 2026-11-16 — Editar imágenes con la app de Gemini del Mac (cuando AGY no tiene cuota)
+
+**Qué funcionó:** corregir el lente del Harry SBLK/118 en la app de Gemini con las fotos del fabricante + fotos reales como referencia dio un resultado fiel y más definido (1472×720) que lo que se logró por código (900 px de origen, máscaras a mano).
+
+**Cómo se hace (reproducible):** (1) `request_access` de `Gemini` + `Finder` (+ `clipboardWrite`); el founder lo tiene que aprobar. (2) `request_full_control`: en segundo plano el botón "+" abre un menú nativo y "Pegar" por menú está bloqueado, así que con control de pantalla completo se pega con `cmd+v`. (3) Para cada foto: `osascript -e 'set the clipboard to (read (POSIX file "<ruta>") as «class JPEG»)'` y después clic en el campo de Gemini + `cmd+v` (una foto por vez, en orden). (4) Describir qué foto es cuál por su ORDEN, no por su nombre de archivo (Gemini no ve los nombres) y pedir UNA imagen por mensaje; si devuelve el ángulo equivocado, repetir aclarando cuál. (5) Guardar con el botón de descarga (aparece al pasar el mouse por la imagen) → diálogo de guardado → `cmd+a`, nombre, Return; queda en el Escritorio y se copia al repo. (6) `release_full_control` al terminar.
+
+**Regla:** si AGY da 429 en el modelo de imágenes, la alternativa que el founder prefiere es la app de Gemini, no un arreglo por código.
+
 ## Qué es este archivo
 
 El opuesto de `MISTAKES.md`. Documenta **qué funciona bien** — patrones, approaches y decisiones que produjeron buenos resultados.

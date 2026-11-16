@@ -116,6 +116,36 @@ Bloquea: la placa 04 (medidas) y la carga a la web.
 - [x] Variación vieja rosado/beige (= Col 11): se carga en la web por si reingresa.
 - [ ] Confirmar con María Carlota qué graduado se ofrece en Fiji (base 6) y si hacen polarizado graduado.
 
+## 🔄 Vulk The Phone (4 variantes; SKU 107110-107113) — publicado en ML y cargado en la web (seed 203, 2026-11-16); quedan datos tuyos
+- [ ] **GTIN** de las cuatro (en ML figuran "Otra razón").
+- [ ] **Ancho total 154:** 2×51+24 = 126; confirmar que lo mediste bien.
+- [ ] **SKU:** se cargaron los tuyos (107110-107113); Vulk lista 960050-960053.
+- [ ] **Graduación:** la web dice "se pueden adaptar lentes graduadas: consultanos por WhatsApp", sin nombrar tipos de lente.
+- [ ] **Peso 25,2 g** viene de la ficha de Vulk.
+
+## 🔄 Vulk Harry: 3 variantes cargadas en ML y en la web (seed 202, 2026-11-16); quedan datos tuyos
+- [x] SKU de la G.GREEN en ML corregido a 125333 (verificado por API el 2026-11-16; la búsqueda por SKU tarda en reindexar).
+- [ ] **GTIN** de las tres (CR51 y G.GREEN figuran "Otra razón"; la SBLK/118 no tiene dato).
+- [x] SBLK/118: categoría 2 confirmada (2026-11-16) y cargada en la web.
+- [ ] **Categoría de lente** (1/2/3) de la CR51 y la G.GREEN; en la web no se afirma (sólo el MBLK/S10 es cat. 3 y la SBLK/118 cat. 2).
+- [ ] **Precio:** el MBLK/S10 sigue en $89.427 y las nuevas en $93.897; decidir si se igualan.
+- [ ] **Medidas** del Harry (57-14-140, alto 54, ancho 142): confirmar que valen para las tres nuevas. En ML el MBLK/S10 viejo tiene varilla 14,5 cm y la web 14 cm.
+- [ ] **Peso 24,8 g** viene de la ficha de Vulk (no se muestra en la web).
+
+## 🔄 Vulk Platz TAN/LTWGG39 (SKU 116294) — publicado en ML y cargado en la web (seed 201, 2026-11-10); quedan datos tuyos
+- [ ] **GTIN** de la caja/etiqueta (en ML figura "Otra razón") y **talle** en ML (dice "Único"; otros modelos "Mediano").
+- [ ] **Color del armazón:** la foto lo muestra caramelo/marrón claro; vos dijiste "beige brillo". Definir el nombre antes de publicar (el título se congela).
+- [ ] **Peso 32,3 g** viene de la ficha de Vulk; pesar si querés dato propio.
+- [ ] **UV400 y categoría 2** vienen de vos; la ficha de Vulk sólo dice "100% UVA y UVB".
+
+## 🔄 Vulk Suicidal Trend SBLK / S10 (SKU 958590) — kit de ML armado, falta publicar y cargar a la web
+- [ ] **Precio y stock** (no los pasaste): bloquean la publicación en ML y el seed.
+- [ ] **Género y forma** para ML (¿hombre o unisex? ¿forma Rectangular?).
+- [ ] **GTIN** de la caja/etiqueta.
+- [ ] **Medida de lente 65:** 2×65+12 = 142 > 136 de ancho total; confirmar que está medida sobre la curva (envolvente).
+- [ ] **Peso 29,6 g** viene de la ficha de Vulk; pesar si querés dato propio.
+- [ ] **UV400 y antirreflex** vienen de vos; la ficha de Vulk sólo dice "100% UVA y UVB" y no menciona el antirreflex.
+
 ## 🔄 Vulk Katleen SBLK / S10 POL — cargada en ML y en la web (seed 199, 2026-11-10); quedan puntos del MBLK, no bloquean
 - [ ] **Precio del MBLK/S10 POL (SKU 125907, `MLA1423906891`)**: dijiste que el MBLK y el SBLK cuestan $89.574; el MBLK sigue en $85.309 en ML y en la web. Decime si lo paso a $89.574 (primero en ML, después la web).
 - [ ] **Medidas del MBLK en ML**: tiene Lente 4,7 · Puente 2,5 · Varilla 14,6 cm (ficha de Vulk), distintas de las tuyas (53-18-145). Conviene corregirlas.

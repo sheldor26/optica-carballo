@@ -1165,6 +1165,30 @@ stock), verde oliva/gris oscuro (Col.07, sin stock)) — slug `mormaii-curazao` 
 | lentes/anteojos mormaii | 170 | 7 | hub-only, nunca en esta PDP |
 Anti-canibalización: "cuadrados" NO va en el title (ya lo reclaman Vulk The Sil, Rusty Zinz, Daito y Curazao); el Foz se diferencia por "bordes gruesos" (Curazao: bordes más redondeados), diferencia de copy y no de keyword. Cross-link Foz → Curazao, Daito y hub; frase de vuelta sólo en Curazao. El hueco `/anteojos-de-sol/cuadrados` ahora tiene 5 PDPs reclamando el string.
 
+*Vulk Suicidal Trend (sol, ENVOLVENTE, unisex, G-Flex, no polarizado, seed 200, 2026-11-10)* — seo-strategist + CSV:
+
+| keyword | vol/dif | uso |
+|---|---|---|
+| lentes de sol vulk | 1.300 / 8 | primaria: title ("Lentes de Sol Vulk Suicidal Trend Envolventes") y primer párrafo |
+| anteojos de sol vulk | 880 / 10 | copy y H1 |
+| lentes / anteojos de sol envolventes | 70 / 36 y 50 / 36 | carril de forma, copy y alt |
+| vulk suicidal trend | sin dato en CSV | branded en slug y H1 |
+
+Anti-canibalización: "deportivo" una sola vez en el cuerpo (los deportivos son de Rusty And Now); sin "negros" (carril del Vulk Guardian). Cross-link Suicidal Trend → Rusty Exile y hub de Vulk; sin frase de vuelta. Primer Vulk con `frame_shape: envolvente`: `/anteojos-de-sol/vulk/deportivos` pasa a tener 1 producto.
+
+*Vulk The Phone (sol, REDONDO, mujer, 4 variantes, 3 polarizadas, seed 203, 2026-11-16)* — seo-strategist + CSV:
+
+| keyword | vol/dif | uso |
+|---|---|---|
+| lentes de sol vulk | 1.300 / 8 | primaria: primer párrafo |
+| anteojos de sol vulk | 880 / 10 | copy |
+| lentes de sol polarizados / anteojos de sol polarizados | 260 / 12 y 170 / 10 | soporte; "Polarizados" en el title |
+| lentes de sol vulk polarizados | 70 / 34 | copy, 1 vez |
+| anteojos de sol redondos mujer | 110 / 18 | meta, copy y alt (libre; Etiquet usa "Redondos Femeninos") |
+| lentes de sol mujer | 5.400 / 14 | soporte, linkea a `/anteojos-de-sol/mujer` |
+
+Anti-canibalización: sin "Mujer" en el title (lo reclama Vulk Anima: "lentes de sol vulk mujer" 260/8), "redondos" sólo en copy y alt (Blinded y Etiquet lo lideran), sin "femeninos" (Lady Piny, Katleen, Etiquet), sin "cuadrados"/"rectangulares"/"envolventes"/"transparentes". Cross-link The Phone → Etiquet, Lady Piny, Bennie 51, Cinema y hub de Vulk; frase de vuelta sólo desde Lady Piny.
+
 **Anti-canibalización (Curazao vs Daito, mismo armazón/forma/precio, mismo brand)**: la diferencia de
 género (HOMBRE explícito vs UNISEX de Daito) no evita la canibalización por sí sola como *etiqueta* —
 la evita porque se traduce en un STRING de keyword secundaria distinto y sin superposición: Daito usa

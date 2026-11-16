@@ -17,6 +17,10 @@
  *   --calibre/--puente/--ancho/--alto/--patilla   Medidas en mm.
  *   --tipo receta|sol   Ajusta los textos por defecto (default: receta).
  *   --c1..--c4 "TITULO|subtítulo"   Textos de los 4 callouts.
+ *                       Estilo v2 (default): se usa el título solo (el subtítulo sólo
+ *                       si tiene ≤ 12 caracteres). El 2º cartel es el protagonista
+ *                       (más grande, en celeste): ahí va el beneficio principal.
+ *   --estilo clasico    Placa de callouts con las burbujas y flechas de antes.
  *   --a1..--a4 "0.3,0.5"            Fuerza a dónde apunta cada flecha
  *                                   (fracción del armazón: 0,0 arriba-izq).
  *                                   Sin esto, la parte se detecta en la foto.
@@ -53,6 +57,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 import { buscarReferencia, trasladarPartes } from './lib/placas-anclas';
+import { placaCalloutsV2, textoCalloutV2 } from './lib/placas-callouts-v2';
 import { recortarAnteojo, encajar, type Recorte } from './lib/placas-frame';
 import { asegurarFuentes } from './lib/placas-fuentes';
 import {
@@ -391,6 +396,8 @@ async function placaCallouts(
   partes: Partes = {},
   /** Partes marcadas a mano: se respetan al pixel, sin separarlas ni moverlas. */
   exactas = false,
+  /** `v2` (default desde 2026-11-16) o `clasico` (burbujas con flechas curvas). */
+  estilo: 'v2' | 'clasico' = 'v2',
 ): Promise<void> {
   // Posiciones de respaldo, en fracciones del rectángulo del armazón, para
   // cuando no se pudieron detectar las partes. Se pueden pisar con --a1..--a4.
@@ -482,6 +489,19 @@ async function placaCallouts(
   });
 
   destrenzar(puntos, anclas, anclasCustom, fijos);
+
+  if (estilo === 'v2') {
+    await placaCalloutsV2(
+      recorte,
+      callouts.slice(0, 4).map((c, i) => ({
+        texto: textoCalloutV2(c.titulo, c.subtitulo),
+        fx: puntos[i]!.fx,
+        fy: puntos[i]!.fy,
+      })),
+      destino,
+    );
+    return;
+  }
 
   const burbujas = callouts.slice(0, 4).map((c, i) => {
     const base = anclas[i]!;
@@ -964,7 +984,15 @@ async function main(): Promise<void> {
       }
       return { fx, fy };
     });
-    await placaCallouts(recortePerfil, callouts, path.join(mlDir, '03-callouts.jpg'), anclas, partes, Boolean(manuales));
+    await placaCallouts(
+      recortePerfil,
+      callouts,
+      path.join(mlDir, '03-callouts.jpg'),
+      anclas,
+      partes,
+      Boolean(manuales),
+      flag('estilo') === 'clasico' ? 'clasico' : 'v2',
+    );
     console.log('  ✓ 03 callouts');
   }
   if (hacer('4')) {
