@@ -16,6 +16,12 @@
 
 **Regla:** si AGY da 429 en el modelo de imágenes, la alternativa que el founder prefiere es la app de Gemini, no un arreglo por código.
 
+## 2026-11-17 — Foto de producto que no existe: generar la copia fiel en la app de Gemini con la referencia + fotos reales del celular
+
+**Qué funcionó:** para el Crimson SDEMI (Vulk ya no lo lista, no había foto oficial) se pegaron en la app de Gemini, en orden, (1) una foto de catálogo vieja de 500 px en 3/4 como referencia de ángulo, (2) la foto real del frente con el celular y (3) la de las patillas. Pidiendo UNA imagen por mensaje y diciendo "copia fiel, no rediseñes", salieron una vista 3/4 y una frontal en 1456×720 casi idénticas al producto real. Para el frente se sumó como cuarta imagen una foto de catálogo de OTRO modelo, sólo como referencia de encuadre. Se pidió un segundo pase con "lentes más oscuras, verde botella casi negro verdoso, como la foto real" y quedó bien. No se pegó la foto con modelo (cara) para evitar rechazos.
+
+**Detalles operativos:** (1) el CLI `agy` ya no lista ningún modelo de imágenes (sólo los de texto "Argon/Hydrogen"): ir directo a la app. (2) En la app de Gemini el botón de descarga aparece al pasar el mouse sobre la imagen; si el clic abre una vista previa en vez del diálogo de guardado, `cmd+w` cierra también la ventana de Gemini: recuperarla con el menú Ventana > Traer todo al frente. (3) Siempre mirar la imagen generada (zoom) contra la foto real antes de aceptarla; el primer pase tenía las lentes demasiado claras.
+
 ## Qué es este archivo
 
 El opuesto de `MISTAKES.md`. Documenta **qué funciona bien** — patrones, approaches y decisiones que produjeron buenos resultados.
@@ -12298,6 +12304,12 @@ El recorte de 20 px de una foto real salía borroso al ampliarlo (seed 195, rech
 ## 2026-11-10 — Publicación nueva de ML: qué cazaron los auditores antes de publicar (Foz)
 
 **Qué funcionó:** el ciclo seo-strategist + optical-expert + auditoría externa (Codex y Gemini) detectó, antes de publicar, tres cosas que yo había dado por buenas: declarar "Policarbonato" por defecto cuando el distribuidor no informa el material, decir "Garantía oficial del fabricante" sin respaldo (la política sólo dice "1 año contra defectos de fabricación") y la instrucción de elegir "El producto no tiene código registrado" para el GTIN sólo porque no tenemos el código a mano. Reglas: atributo no obligatorio y sin dato confirmado = vacío; GTIN = pedirlo al proveedor/caja antes de declararlo ausente; forma/material del armazón se eligen de la lista de ML (Rectangular/Plástico) y lo específico (cuadrado/poliamida) va en título y descripción. Para saber las listas reales: `GET /categories/MLA417128/attributes` con el token de la integración. Operativo: el binario de Codex es `/opt/homebrew/bin/codex` (la ruta de la skill trio-auditor quedó vieja).
+
+## 2026-11-17 — Claims de una línea de Vulk (biodegradable, origen): buscar en la página de TECNOLOGÍA de la marca, no sólo en la ficha del modelo
+
+**Qué funcionó:** el agente optical-expert miró sólo la ficha de un modelo de la línea (BIO 01 de receta) y concluyó "no hay fuente pública", porque ahí sólo las patillas figuran como biodegradables. El founder avisó que lo veía en su factura y pidió buscar la campaña Bio Activist: la sección ACTIVIST (06 Eco) de `vulkeyewear.com/tecnologia` sí declara el claim a nivel línea (acetato de celulosa de algodón biodegradable, origen natural, materia prima FSC, estuche y paño de PET reciclado). Con eso el claim se pudo escribir, acotado al acetato y aclarando en las preguntas frecuentes que bisagras y lentes no lo son. El origen (Italia) lo respaldó la factura del founder, que es documento primario.
+
+**Cómo aplicar:** para claims de línea o material de Vulk, mirar primero `vulkeyewear.com/tecnologia` (y "Sobre nosotros"), después la ficha del modelo y por último revendedores. Un "no hay fuente" de un agente sólo vale si recorrió esas tres. Cuando el founder tiene la factura o la caja, es fuente primaria: no le pidas que la verifique, pedile la foto para guardarla como respaldo. Redacción: biodegradable sólo sobre el material que la marca declara, sin "ecológico", "sustentable" ni plazos si no hay norma citada.
 
 ## Notas finales
 

@@ -9260,3 +9260,11 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 - Este archivo NO es para criticarse. Es para no repetir errores.
 - Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
 - El acto de documentar un mistake es parte de la solución.
+## 2026-11-17 — La placa de garantía de los kits de ML decía "Armazón liviano y cómodo" por defecto, contra la regla de no decir "liviano"
+
+**Qué pasó:** al auditar el set del Activist BIO-40 con Codex, avisó que el código de `scripts/ml-placas.ts` trae de fábrica el ítem "Armazón liviano y cómodo" en la placa 06 (y "Armazón liviano" como callout por defecto). Lo confirmé mirando el 06 de Glory Box: lo lleva, junto con "Apto para adaptar lentes graduadas", aunque su PUBLICACION.md decía "sin placa de graduación" y "no dice liviano". Las descripciones de texto estaban cuidadas; las imágenes salieron con el default sin revisar.
+
+**Causa raíz:** cuidé la regla en los textos que escribo a mano y no en los textos que genera el script. Nunca leí la placa 06 de cada kit contra la lista de claims permitidos.
+
+**Regla preventiva:** antes de entregar un kit, mirar CADA placa (incluida la 06) contra los claims verificados del modelo. Para sol, pasar siempre `--item` con ítems verificados y sin "liviano"; y sacar el default de "liviano" del generador (pendiente de aprobación del founder).
+

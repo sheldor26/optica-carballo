@@ -49,6 +49,8 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'gris-translucido-mate': 'Gris translúcido mate',
   // Vulk Platz sol (seed 201): un slug nuevo de armazón; el lente verde-degrade ya existe.
   'beige-brillo': 'Beige brillo',
+  // Vulk Glory Box sol (seed 205): un slug nuevo de armazón; negro-brillo, marron-brillo y rosa-palido-caramelo ya existen.
+  'carey-brillo-patillas-negro-brillo': 'Frente carey brillo con patillas negro brillo',
   // Vulk The Phone sol (seed 203): dos slugs nuevos de armazón; negro-brillo y marron-brillo ya existen.
   'gris-azulado-transparente': 'Gris azulado transparente',
   'rosa-palido-caramelo': 'Rosa pálido con caramelo',
@@ -141,6 +143,10 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   azul: 'Azul',
   // Vulk Harry MBLK/CR51 (seed 202): lente celeste sólido (no degradé).
   celeste: 'Celeste',
+  // Vulk Glory Box L.PINK/L.BROWN (seed 205): marrón claro sólido; gris-oscuro, marron y marron-degrade ya existen.
+  'marron-claro': 'Marrón claro',
+  // Vulk Crimson MBLK/DR75 POL (seed 206): lente amarilla sólida; gris-oscuro-degrade, verde-oscuro y celeste-degrade ya existen.
+  amarillo: 'Amarillo',
   // Vulk The Phone (seed 203): dos degradés verdes nuevos; verde-oscuro y gris-oscuro-degrade ya existen.
   // Vulk Day Light IVORY/BP2021 (seed 204): marrón que vira a rojizo; `marron-degrade` no dice "rojizo".
   'marron-rojizo-degrade': 'Marrón rojizo degradé',

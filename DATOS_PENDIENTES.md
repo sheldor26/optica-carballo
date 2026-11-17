@@ -116,6 +116,13 @@ Bloquea: la placa 04 (medidas) y la carga a la web.
 - [x] Variación vieja rosado/beige (= Col 11): se carga en la web por si reingresa.
 - [ ] Confirmar con María Carlota qué graduado se ofrece en Fiji (base 6) y si hacen polarizado graduado.
 
+## 🔄 Vulk Glory Box (4 variantes; SKU 116380/116383/116384/116382) — publicado en ML y cargado en la web (seed 205, 2026-11-17); quedan datos tuyos
+- [ ] **GTIN** de las 4 (las polarizadas no tienen dato; las no polarizadas figuran "Otra razón").
+- [ ] **Lente de policarbonato:** la ficha de Vulk no lo dice; se puso por la regla de sol.
+- [ ] **"Livianas" en los títulos de ML** de las 2 no polarizadas: en la web no se usa "liviano" (≈27 g); decidí no replicarlo, es tu elección en ML.
+- [ ] **Peso 27,3 g** viene de la ficha de Vulk.
+- [x] Polarizado/categoría: confirmados por el founder (la ficha de Vulk está mal cargada).
+
 ## 🔄 Vulk Day Light IVORY/BP2021 (SKU 194188) — publicado en ML y cargado en la web (seed 204, 2026-11-17); queda poco
 - [x] No polarizada (confirmada dos veces), categoría 3 y "más de mujer por los colores" confirmados por el founder (2026-11-17). Género: ML "Mujer"; web unisex a nivel producto, con la IVORY descripta como la más pensada para mujer.
 - [ ] **GTIN** (en ML figura "Otra razón").
@@ -641,3 +648,27 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Peso del armazón** (el founder no lo pasó): se carga sin `weight_grams`. Bloquea: la línea de peso en la ficha y ML.
 - [ ] **En qué cara va el antirreflex** de las no polarizadas (el founder dijo "vienen con antirreflex"): hoy el texto no dice "interno". Bloquea: el detalle del antirreflex en el sitio.
 - [ ] **ML:** SKU en las 4 variaciones, corregir "Grilamid" por G-Flex, medidas (puente 22, patilla 145) y las fotos de medidas con 18/125; reemplazar las 2 descripciones.
+
+## Vulk Activist BIO-40 POL (2026-11-17, kit armado, falta publicar en ML)
+- [ ] **Precio y stock** del BIO-40 POL. Bloquea: publicar en ML y la carga web.
+- [ ] **GTIN** (caja/etiqueta). Bloquea: el campo GTIN en ML.
+- [x] "Hecho en Italia" (factura del founder) y "biodegradable" (página oficial de Vulk, ACTIVIST): resueltos 2026-11-17. Guardar foto de la factura como respaldo. Pendiente menor: si el estuche/paño de su unidad son reciclados (Vulk dice que sí) para sumarlo a "Qué incluye".
+- [ ] **Peso** del armazón (si lo pesás; si no, se carga sin `weight_grams`).
+- [ ] **BIO-42:** faltan SKU, medidas, categoría, precio y stock cuando se lo trabaje.
+- [ ] **Fotos para placas nuevas del BIO-40:** (1) cenital con celular, luz pareja sobre hoja blanca: anteojo + estuche + franela de tu unidad; (2) macro de la patilla interior (leyenda grabada) y de la bisagra/remache. Bloquea: las placas "Qué incluye" y "Detalle". Si el estuche y el paño son los reciclados de la línea Activist, avisar para sumarlo a "Qué incluye".
+- [ ] **Placas 06 de otros kits Vulk** (Glory Box y probablemente más) dicen "Armazón liviano y cómodo": definir si se reemplazan en ML. Bloquea: nada, pero va contra la regla de no decir "liviano".
+
+## Vulk Activist BIO-42 (2026-11-17, kit armado, falta publicar en ML)
+- [ ] **Precio, stock y GTIN** del BIO-42 (SKU 107108). Bloquea: publicar en ML y la carga web.
+- [ ] **Transmitancia real de la lente celeste (% de luz)** en la etiqueta/certificado del fabricante. Bloquea: cualquier frase sobre uso nocturno; hoy la descripción sólo dice "uso diurno".
+- [ ] **Confirmar que van en publicación APARTE del BIO-40** (cat. 1 vs cat. 3). Bloquea: nada, es la recomendación.
+
+## Vulk Crimson (2026-11-17, kit del BROWN/G.BLUE armado; faltan SDEMI y la carga web)
+- [ ] **Precio, stock y GTIN** del BROWN/G.BLUE (194178) y del SDEMI/DRWG15C3 POL (194172). Bloquea: publicar en ML.
+- [ ] **Categoría real de la lente celeste degradé** (BROWN/G.BLUE) y de la amarilla (DR75): vos dijiste cat 3 para todo; el optical-expert dice que celeste claro y amarillo suelen ser cat 1-2. Mirá la etiqueta/ficha. Bloquea: poner la categoría en ML, placas y web.
+- [ ] **Fotos del SDEMI/DRWG15C3 POL (194172):** Vulk ya no lo lista; las pasás vos. Bloquea: kit de placas y carga web de esa variante.
+- [ ] **Graduación:** ¿se puede adaptar lentes a los Crimson? No lo dijiste; no se nombra. Bloquea: la placa 05 y la frase.
+- [ ] **ML, items existentes:** (a) altura de lente figura 4,8 cm y vos pasaste 43 mm; (b) el amarillo MLA2493325890 (bajo revisión, sin SKU, stock 2) ¿es el mismo que el DR75 pausado MLA1632607965?; (c) el DR75 pausado con stock 0.
+- [ ] **Crimson SDEMI (194172):** aprobar las fotos generadas (comparar con el producto en mano), y pasar precio, stock, GTIN y confirmar la categoría de la lente verde. Bloquea: publicar en ML y la carga web de esa variante.
+- [ ] **Crimson, correcciones en tus publicaciones de ML:** (1) la gris (MLA1470841299) no tiene SELLER_SKU: ponerle 194174; (2) la gris y la amarilla dicen altura de lente 4,8 cm: son 4,3 cm; (3) la SDEMI (MLA2297603973) dice material Acetato: ¿es G-Flex o acetato? (en la web quedó G-Flex); (4) la amarilla (MLA1632607965) dice material "grillamid", modelo "MBLK/DRT75" (es DR75) y tratamiento "Clásica". Bloquea: nada, pero ML y la web tienen que decir lo mismo.
+- [ ] **Crimson, categoría de las lentes celeste (BROWN) y amarilla (DR75):** hoy sin categoría en la web. Si la etiqueta dice 3, se agrega; si dice 1 o 2, se agrega esa. Y la amarilla está pausada con stock 0: ¿la reponés?
