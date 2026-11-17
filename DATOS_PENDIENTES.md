@@ -679,3 +679,9 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Comparar la foto de perfil editada con tu unidad** (patilla lisa, VULK vertical en la bisagra, marca "Vulk P" en la lente). Bloquea: usarla como portada.
 - [ ] **Cinema CRY: "Bisagras flexo" en las placas 03 y 06:** viene del catálogo oficial del modelo (seed 99); tu unidad tiene el bloque metálico con VULK. ¿Confirmás que es el sistema flexo? Si no, rehago esas dos placas sin esa frase. Y si se le pueden adaptar lentes graduadas, decímelo y sumo la placa 05.
 - [ ] **Cinema CRY en ML:** la descripción de MLA4210088546 dice "Esta publicación reúne las versiones disponibles: elegí el color en las variantes" pero es un item de una sola variante: ajustar esa frase (te armo la versión si querés). Sigue pendiente confirmar "bisagras flexo" en tu unidad.
+
+## Vulk Voices (2026-11-17, kits armados; falta publicar en ML y carga web)
+- [ ] **Precio, stock y GTIN** de MBLK/B30 POL (969380) y SBLK/G16 POL (969381). Bloquea: publicar en ML y la carga web.
+- [ ] **Logo de la patilla:** la foto oficial tiene una coronita plateada; mirá si tu unidad la tiene. Si es distinta, hay que editar la foto en Gemini. Bloquea: usar la portada.
+- [ ] **Graduación:** ¿se puede adaptar lentes a los Voices? No lo dijiste; no se nombra. Bloquea: la placa 05 y la frase.
+- [ ] **Voices en ML:** las dos están como items separados con GTIN "Otra razón". Si querés, las agrupo en una multivariante (título y descripción ya armados en `PUBLICACION-vulk-voices.md`); si no, quedan así. Sigue pendiente comparar el logo de la patilla con la foto oficial.

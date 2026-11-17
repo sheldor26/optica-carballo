@@ -51,6 +51,9 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'beige-brillo': 'Beige brillo',
   // Vulk Glory Box sol (seed 205): un slug nuevo de armazón; negro-brillo, marron-brillo y rosa-palido-caramelo ya existen.
   'carey-brillo-patillas-negro-brillo': 'Frente carey brillo con patillas negro brillo',
+  // Vulk Voices (seed 208): dos slugs nuevos de armazón (patillas negro brillo con interior transparente).
+  'negro-mate-patillas-negro-brillo-interior-transparente': 'Negro mate con patillas negro brillo e interior transparente',
+  'negro-brillo-patillas-interior-transparente': 'Negro brillo con patillas de interior transparente',
   // Vulk The Phone sol (seed 203): dos slugs nuevos de armazón; negro-brillo y marron-brillo ya existen.
   'gris-azulado-transparente': 'Gris azulado transparente',
   'rosa-palido-caramelo': 'Rosa pálido con caramelo',
