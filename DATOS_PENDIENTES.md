@@ -672,3 +672,10 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Crimson SDEMI (194172):** aprobar las fotos generadas (comparar con el producto en mano), y pasar precio, stock, GTIN y confirmar la categoría de la lente verde. Bloquea: publicar en ML y la carga web de esa variante.
 - [ ] **Crimson, correcciones en tus publicaciones de ML:** (1) la gris (MLA1470841299) no tiene SELLER_SKU: ponerle 194174; (2) la gris y la amarilla dicen altura de lente 4,8 cm: son 4,3 cm; (3) la SDEMI (MLA2297603973) dice material Acetato: ¿es G-Flex o acetato? (en la web quedó G-Flex); (4) la amarilla (MLA1632607965) dice material "grillamid", modelo "MBLK/DRT75" (es DR75) y tratamiento "Clásica". Bloquea: nada, pero ML y la web tienen que decir lo mismo.
 - [ ] **Crimson, categoría de las lentes celeste (BROWN) y amarilla (DR75):** hoy sin categoría en la web. Si la etiqueta dice 3, se agrega; si dice 1 o 2, se agrega esa. Y la amarilla está pausada con stock 0: ¿la reponés?
+
+## Vulk Cinema CRY/G.GREY POL (2026-11-17, fotos editadas; falta ML y carga web)
+- [ ] **Cómo la publicás en ML:** ¿variación nueva dentro de la publicación del Cinema (MLA1695892216) o item aparte? Si es variación, ML pide color de armazón/varilla (transparente) y lente (gris degradé). Bloquea: el seed.
+- [ ] **SKU (956951 según el catálogo del fabricante, confirmá con tu etiqueta), precio y stock.** Bloquea: la carga web.
+- [ ] **Comparar la foto de perfil editada con tu unidad** (patilla lisa, VULK vertical en la bisagra, marca "Vulk P" en la lente). Bloquea: usarla como portada.
+- [ ] **Cinema CRY: "Bisagras flexo" en las placas 03 y 06:** viene del catálogo oficial del modelo (seed 99); tu unidad tiene el bloque metálico con VULK. ¿Confirmás que es el sistema flexo? Si no, rehago esas dos placas sin esa frase. Y si se le pueden adaptar lentes graduadas, decímelo y sumo la placa 05.
+- [ ] **Cinema CRY en ML:** la descripción de MLA4210088546 dice "Esta publicación reúne las versiones disponibles: elegí el color en las variantes" pero es un item de una sola variante: ajustar esa frase (te armo la versión si querés). Sigue pendiente confirmar "bisagras flexo" en tu unidad.
