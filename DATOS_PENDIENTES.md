@@ -685,3 +685,9 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Logo de la patilla:** la foto oficial tiene una coronita plateada; mirá si tu unidad la tiene. Si es distinta, hay que editar la foto en Gemini. Bloquea: usar la portada.
 - [ ] **Graduación:** ¿se puede adaptar lentes a los Voices? No lo dijiste; no se nombra. Bloquea: la placa 05 y la frase.
 - [ ] **Voices en ML:** las dos están como items separados con GTIN "Otra razón". Si querés, las agrupo en una multivariante (título y descripción ya armados en `PUBLICACION-vulk-voices.md`); si no, quedan así. Sigue pendiente comparar el logo de la patilla con la foto oficial.
+
+## Vulk Dieven L.GREY/G.GREEN (2026-11-17, fotos recoloreadas; falta publicar y cargar)
+- [ ] **¿Es polarizada y qué categoría?** La ficha de Vulk sólo dice policarbonato y UV; las otras variantes del Dieven en la web son polarizadas (cat 3). Bloquea: título, callouts y descripción.
+- [ ] **Precio, stock, GTIN y link de ML** de la L.GREY/G.GREEN (SKU 116088). Bloquea: publicar y la carga web.
+- [ ] **Comparar las fotos recoloreadas con tu unidad** (marco gris claro translúcido, lentes verde oscuro degradé). Bloquea: usarlas de portada.
+- [x] **Dieven L.GREY/G.GREEN:** publicado en ML y cargado en la web (seed 209). Sigue pendiente: GTIN (en ML figura sin dato) y comparar las fotos recoloreadas con tu unidad.
