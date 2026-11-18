@@ -3,6 +3,7 @@ import { InfoPageShell } from '@/components/legal/info-page-shell';
 import { PlaceholderNote } from '@/components/legal/placeholder-note';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 import { getBusinessInfo } from '@/lib/site/business';
+import { ETA_BUCKETS, formatEta } from '@/lib/site/shipping-eta';
 
 const SLUG = 'terminos-y-condiciones';
 const TITLE = 'Términos y condiciones';
@@ -141,13 +142,25 @@ export default function Page() {
         {business.locality ?? '[A CONFIRMAR]'}.
       </p>
       <p>
-      <p>
         El envío, a domicilio o a sucursal, es gratis a todo el país excepto
         Tierra del Fuego, donde es gratis en compras desde $80.000. Cuando el
         envío tiene costo, lo ves antes de pagar.
       </p>
-        Los plazos son estimados — dependen del operador logístico y no son
-        garantizados. Una vez despachado, te enviamos código de seguimiento.
+      <p>
+        Los plazos de entrega son estimados, en días hábiles (de lunes a
+        viernes, sin feriados), y se cuentan desde que se acredita el pago.
+        Incluyen la preparación y el despacho más el tránsito de Correo
+        Argentino: NEA y Litoral {formatEta(ETA_BUCKETS.nea)}; Buenos Aires,
+        CABA, Córdoba, Santa Fe y La Pampa {formatEta(ETA_BUCKETS.centro)};
+        Cuyo y NOA {formatEta(ETA_BUCKETS.cuyo_noa)}; Patagonia{' '}
+        {formatEta(ETA_BUCKETS.patagonia)}; Tierra del Fuego{' '}
+        {formatEta(ETA_BUCKETS.tierra_del_fuego)}. Antes de pagar ves el plazo
+        para tu código postal. En anteojos con receta, el plazo de envío corre
+        desde que se arman los lentes, y el tiempo de armado te lo informamos
+        antes de empezar. Si tu pedido no llega dentro del plazo máximo de tu
+        zona, escribinos: lo rastreamos con el Correo y podés elegir entre que
+        te lo enviemos de nuevo, un producto equivalente o la devolución de lo
+        pagado. Una vez despachado, te enviamos el código de seguimiento.
       </p>
 
       <h2>8. Cambios y devoluciones</h2>

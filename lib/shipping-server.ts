@@ -4,6 +4,7 @@ import {
   resolveFreeShipping,
   type ShippingQuote,
 } from './shipping';
+import { resolveEta } from '@/lib/site/shipping-eta';
 import { isCorreoConfigured } from './correo/constants';
 import { fetchCorreoRates } from './correo/quote';
 import type { CorreoDeliveredType, CorreoRate } from './correo/types';
@@ -40,6 +41,8 @@ function rateToQuote(
     originalCents: isFree ? baseRate : null,
     centsToFreeShipping,
     freeNationwide,
+    // El plazo NO sale de Correo (/rates trae el mismo para todo el país): tabla propia.
+    etaBusinessDays: resolveEta(destination),
   };
 }
 

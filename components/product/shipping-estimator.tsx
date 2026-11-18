@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronDown, Truck, X } from 'lucide-react';
 import { AR_PROVINCES } from '@/lib/addresses/constants';
 import { calculateShipping } from '@/lib/shipping';
+import { formatEta } from '@/lib/site/shipping-eta';
 import { formatPriceCents } from '@/lib/format/currency';
 import { useVariantSelection } from '@/lib/product/variant-selection';
 import { cn } from '@/lib/utils';
@@ -102,6 +103,11 @@ export function ShippingEstimator({ variants }: { variants: PriceVariant[] }) {
               </p>
             )}
           </>
+        )}
+        {quote.etaBusinessDays && (
+          <p className="text-muted-foreground mt-1 text-[11px]">
+            Llega en {formatEta(quote.etaBusinessDays)} desde que se acredita el pago (estimado)
+          </p>
         )}
       </div>
       <button

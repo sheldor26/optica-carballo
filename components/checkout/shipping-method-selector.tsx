@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import type { ShippingMethod, ShippingQuote } from '@/lib/shipping';
 import type { CorreoBranch } from '@/lib/correo/types';
+import { formatEta } from '@/lib/site/shipping-eta';
 
 type Props = {
   selected: ShippingMethod;
@@ -58,6 +59,11 @@ export function ShippingMethodSelector({
               ? 'Gratis a todo el país (Tierra del Fuego: desde $80.000)'
               : deliveryQuote.zoneLabel
           }
+          detail={
+            deliveryQuote.etaBusinessDays
+              ? `Llega en ${formatEta(deliveryQuote.etaBusinessDays)} desde que se acredita el pago (estimado)`
+              : undefined
+          }
           price={loading ? '...' : priceLabel(deliveryQuote)}
           selected={selected === 'delivery'}
           onClick={() => onChange('delivery')}
@@ -67,6 +73,11 @@ export function ShippingMethodSelector({
             icon={Building2}
             title="Sucursal del Correo"
             subtitle="Retirás más barato"
+            detail={
+              branchQuote.etaBusinessDays
+                ? `Llega a la sucursal en ${formatEta(branchQuote.etaBusinessDays)} desde que se acredita el pago (estimado)`
+                : undefined
+            }
             price={loading ? '...' : priceLabel(branchQuote)}
             selected={selected === 'branch'}
             onClick={() => onChange('branch')}
@@ -157,6 +168,7 @@ function MethodOption({
   icon: Icon,
   title,
   subtitle,
+  detail,
   price,
   selected,
   onClick,
@@ -164,6 +176,8 @@ function MethodOption({
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   subtitle: string;
+  /** Línea extra opcional (p. ej. el plazo estimado). */
+  detail?: string;
   price: string;
   selected: boolean;
   onClick: () => void;
@@ -192,6 +206,9 @@ function MethodOption({
       <div className="flex-1">
         <p className="text-foreground text-sm font-semibold">{title}</p>
         <p className="text-muted-foreground mt-0.5 text-xs">{subtitle}</p>
+        {detail && (
+          <p className="text-foreground/80 mt-1 text-xs">{detail}</p>
+        )}
         <p className="text-foreground mt-2 text-sm font-medium tabular-nums">
           {price}
         </p>

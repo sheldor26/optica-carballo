@@ -3,6 +3,7 @@ import {
   SHIPPING_ESTIMATE_DAYS,
   SHIPPING_ORIGIN_LABEL,
 } from '@/lib/site/shipping-notice';
+import { ETA_BUCKETS, formatEta } from '@/lib/site/shipping-eta';
 import { cn } from '@/lib/utils';
 
 /**
@@ -34,7 +35,9 @@ export function ShippingTimeNotice({
         <MapPin className="text-brand mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
         <span>
           <strong>Enviamos desde Corrientes.</strong> Llega en un estimado de{' '}
-          {min} a {max} días, según Correo Argentino y tu zona.
+          {min} a {max} días hábiles desde que se acredita el pago, según tu
+          zona (Buenos Aires: {formatEta(ETA_BUCKETS.centro)}). Poné tu
+          provincia o código postal y te mostramos el tuyo.
         </span>
       </p>
     );
@@ -52,13 +55,16 @@ export function ShippingTimeNotice({
         <p className="font-semibold">Enviamos desde Corrientes</p>
         <p className="text-xs leading-snug">
           Somos una óptica de {SHIPPING_ORIGIN_LABEL}. Los envíos llegan en un
-          estimado de <strong>{min} a {max} días</strong> desde que se acredita
-          el pago. Depende de Correo Argentino y de tu zona.
+          estimado de <strong>{min} a {max} días hábiles</strong> desde que se
+          acredita el pago, según tu zona (Buenos Aires:{' '}
+          {formatEta(ETA_BUCKETS.centro)}). Depende de Correo Argentino.
         </p>
         {prescription && (
           <p className="text-xs leading-snug">
-            En anteojos con receta, el plazo corre desde que armamos tus lentes
-            y despachamos. Te avisamos cuando salen.
+            En anteojos con receta, a ese plazo se suma el armado de los lentes
+            (5 a 15 días hábiles según el cristal; lo confirmamos por WhatsApp
+            antes de empezar). El plazo de envío corre desde que los
+            despachamos. Te avisamos cuando salen.
           </p>
         )}
       </div>

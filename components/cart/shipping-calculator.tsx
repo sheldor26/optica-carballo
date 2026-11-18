@@ -5,6 +5,7 @@ import { Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatPriceCents } from '@/lib/format/currency';
 import { type ShippingQuote } from '@/lib/shipping';
+import { formatEta } from '@/lib/site/shipping-eta';
 
 type Props = {
   subtotalCents: number;
@@ -138,6 +139,15 @@ export function ShippingCalculator({
           <QuoteRow label="A domicilio" quote={apiQuotes.delivery} />
           {apiQuotes.branch && (
             <QuoteRow label="A sucursal del Correo" quote={apiQuotes.branch} />
+          )}
+          {apiQuotes.delivery.etaBusinessDays && (
+            <p className="text-muted-foreground text-xs">
+              Plazo estimado:{' '}
+              <span className="text-foreground font-medium">
+                {formatEta(apiQuotes.delivery.etaBusinessDays)}
+              </span>{' '}
+              desde que se acredita el pago.
+            </p>
           )}
           {!apiQuotes.delivery.isFree &&
             apiQuotes.delivery.centsToFreeShipping > 0 && (

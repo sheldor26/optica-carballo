@@ -14,6 +14,7 @@
  */
 
 import { AR_PROVINCES, type ArProvince } from '@/lib/addresses/constants';
+import { resolveEta, type EtaRange } from '@/lib/site/shipping-eta';
 
 // ============================================================================
 // Constantes editables (mover a env vars o admin UI si crece la complejidad)
@@ -154,6 +155,8 @@ export type ShippingQuote = {
   centsToFreeShipping: number;
   /** true cuando es gratis por la política "todo el país" (no por llegar al mínimo). */
   freeNationwide?: boolean;
+  /** Plazo estimado en días hábiles desde el pago (tabla propia, ver `lib/site/shipping-eta.ts`). null si no se sabe el destino. */
+  etaBusinessDays?: EtaRange | null;
 };
 
 /**
@@ -193,6 +196,10 @@ export function calculateShipping(args: {
     originalCents: isFree ? baseRate : null,
     centsToFreeShipping,
     freeNationwide,
+    etaBusinessDays: resolveEta({
+      postalCode: args.postalCode,
+      provinceName: args.provinceName,
+    }),
   };
 }
 

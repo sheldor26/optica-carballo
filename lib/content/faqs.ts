@@ -16,6 +16,12 @@
  * editarlo después.
  */
 
+
+import { ETA_BUCKETS, formatEta, type EtaBucket } from '@/lib/site/shipping-eta';
+
+/** Plazo en días hábiles de una zona, formateado desde la tabla única (`shipping-eta.ts`). */
+const eta = (b: EtaBucket) => formatEta(ETA_BUCKETS[b]);
+
 export type FaqCategory =
   | 'envios'
   | 'pagos'
@@ -86,7 +92,7 @@ export const FAQS: FaqItem[] = [
     category: 'envios',
     question: '¿Cuánto tarda en llegar mi pedido?',
     answer:
-      'El tiempo de entrega depende de la zona y de Correo Argentino. Te enviamos el código de seguimiento por email apenas despachamos el paquete para que puedas seguir el envío en tiempo real. [A CONFIRMAR: plazos estimados una vez que tengamos historial real de entregas con Correo Argentino].',
+      `Es una estimación y depende de tu zona y de Correo Argentino. Contando desde que se acredita el pago (incluye la preparación y el despacho): NEA y Litoral ${eta('nea')}; Buenos Aires, Córdoba, Santa Fe y La Pampa ${eta('centro')}; Cuyo y NOA ${eta('cuyo_noa')}; Patagonia ${eta('patagonia')}; Tierra del Fuego ${eta('tierra_del_fuego')}. En la ficha del producto, el carrito y el checkout ves el plazo para tu provincia o código postal. En anteojos con receta, el plazo corre desde que armamos tus lentes. Te enviamos el código de seguimiento por email apenas despachamos el paquete para que puedas seguir el envío.`,
   },
   {
     id: 'costo-envio',
@@ -108,7 +114,7 @@ export const FAQS: FaqItem[] = [
     category: 'envios',
     question: '¿Qué hago si mi paquete no llegó?',
     answer:
-      'Escribinos por WhatsApp con el número de pedido y lo rastreamos con el operador. Si el paquete se pierde o no llega en el plazo estimado, te enviamos uno nuevo sin costo o te devolvemos el dinero.',
+      'Si pasó el plazo máximo estimado para tu zona y tu paquete no llegó, escribinos por WhatsApp con el número de pedido y lo rastreamos con el Correo. Si se pierde o no llega, elegís entre que te lo enviemos de nuevo sin costo o que te devolvamos lo pagado.',
   },
 
   // ===========================================================================
