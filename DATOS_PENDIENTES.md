@@ -691,3 +691,17 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Precio, stock, GTIN y link de ML** de la L.GREY/G.GREEN (SKU 116088). Bloquea: publicar y la carga web.
 - [ ] **Comparar las fotos recoloreadas con tu unidad** (marco gris claro translúcido, lentes verde oscuro degradé). Bloquea: usarlas de portada.
 - [x] **Dieven L.GREY/G.GREEN:** publicado en ML y cargado en la web (seed 209). Sigue pendiente: GTIN (en ML figura sin dato) y comparar las fotos recoloreadas con tu unidad.
+
+## Vulk Yester (2026-11-18, arrancado; faltan todos los datos)
+- [ ] **3 variantes:** SKU, color de frente / patillas / lente, polarizado y categoría de cada una. Bloquea: todo el kit.
+- [ ] **Medidas que midas vos** (calibre-puente-varilla, altura total, ancho total), peso, material del armazón y tipo de bisagra. Bloquea: placa de medidas, descripción y carga web. (Lo de la publicación vieja de ML —redonda, Grilamid— no se usa.)
+- [ ] **Fotos:** de tu unidad o link de una óptica con las del fabricante; Vulk ya no lo tiene en su sitio. Bloquea: portadas.
+- [ ] **ML:** la publicación vieja (MLA1468877674) está pausada y en revisión; ¿la corregís o publicás nuevas? Pasame los links si ya están.
+- [ ] **Yester (actualización 2026-11-18):** ya tengo las 4 variantes y las medidas. Falta: precio, stock y GTIN de las 4; las fotos de la CRY LT BRN/T16 (969777); mirar si la patilla lleva coronita; confirmar peso (la ficha de Vulk dice 20 g); y si las 3 polarizadas van en una multivariante o como items separados.
+- [ ] **Yester CRY LT BRN/T16:** foto recreada en Gemini (marco champán/caramelo, lente marrón degradé suave): compararla con tu unidad y decirme si el marrón del marco y de la lente va bien o ajusto. Falta además precio, stock y GTIN.
+
+- **Yester CRY LT BRN/T16, perfil (2026-11-18):** quedó la v10 (patilla cercana lisa, corona dorada chica) como definitiva; el grabado de la patilla del fondo se descartó. No hace falta nada más de tu parte para las fotos de la CRY. Bloquea: nada.
+
+- **Yester polarizadas (2026-11-18, seed 210 aplicado):** RESUELTO: precio ($102.058), stock (SBLK 3, MDEMI 2, MBLK 3) y GTIN de las 3 polarizadas, y la decisión de publicarlas como items simples (verificado por API: MLA2300345537, MLA2300333241, MLA2300370887). SIGUE PENDIENTE: (a) publicar la CRY LT BRN/T16 (969777) con su precio, stock y GTIN y pasar el link; (b) coronita en la patilla de las polarizadas: las fotos oficiales muestran una coronita plateada, mirá tu unidad y decime si es igual; (c) peso real (20 g es el de la ficha de Vulk). Bloquea: (a) la 4ª variante; (b) y (c) nada.
+
+- **Yester CRY en ML (2026-11-18, seed 211 aplicado):** el item MLA2300374329 quedó con el SKU "9697777" (un 7 de más): corregilo a 969777 en ML. El GTIN quedó vacío ('Otra razón'): si tenés el código de barras de la caja de la CRY, cargalo y pasámelo. Sigue pendiente de las polarizadas: coronita de la patilla y peso real (20 g de la ficha de Vulk). Bloquea: nada.

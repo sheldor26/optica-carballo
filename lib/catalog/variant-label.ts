@@ -89,6 +89,7 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'negro-brillo': 'Negro brillo',
   'negro-satinado': 'Negro satinado',
   carey: 'Carey',
+  'carey-mate': 'Carey mate',
   'carey-mate-y-negro-mate': 'Frente carey mate / patillas negro mate',
   'negro-brillo-carey': 'Frente negro brillo / patillas carey',
   'steelblue-negro-mate': 'Frente azul acero / patillas negro mate',

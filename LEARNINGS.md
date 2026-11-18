@@ -12316,3 +12316,27 @@ El recorte de 20 px de una foto real salía borroso al ampliarlo (seed 195, rech
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
 - También se actualiza manualmente cuando el founder o el sistema detectan algo digno de documentar.
 - Si el log crece mucho y se vuelve difícil de navegar, el `agent-manager` propondrá consolidación en `/agent-review`.
+## 2026-11-18 — Recolorear en Gemini una foto de catálogo: base = la foto del mismo ángulo que la ficha del fabricante, muestra de color = el FRENTE ya aprobado
+
+**Qué funcionó:** para el Yester CRY, la pasada que dio el ángulo y el tono correctos fue pegar primero el frente ya aprobado (`cry-gemini/frente.jpg`) como muestra de color, "SOLO como muestra, no uses su forma ni su ángulo", y al final la foto de catálogo con el ángulo exacto de la página de Vulk (`originales/cbrn_2.jpg`), pidiendo mantener ángulo, encuadre y fondo, patillas lisas y sólo la corona dorada. El resultado salió con el caramelo claro del frente y la corona dorada nítida, sin textos deformes.
+
+**Cómo aplicar:** (1) la base a editar es siempre la foto original del fabricante del ángulo pedido, no una salida previa de Gemini (cada pasada sobre una salida anterior fue girando el modelo hacia el perfil); (2) la muestra de color es la imagen ya aprobada por el founder, no una foto real tomada con luz cálida (me dio un marrón demasiado oscuro y rojizo); (3) no pedirle a Gemini que dibuje grabados chicos: dejar patillas lisas y sólo el logo metálico, que es lo que el founder aceptó ("de última puede quedar lisa").
+
+## 2026-11-18 — Logo chico de producto en Gemini: pasarle la foto real a escala + el primer plano + "no inventes otro diseño", y pedir el tamaño en porcentaje
+
+**Qué funcionó:** para la corona de la patilla del Yester CRY, con un solo recorte grande Gemini redibujaba otra corona (v7). Con tres imágenes (1: foto real del dorso del anteojo, donde se ve la corona a su tamaño real; 2: primer plano de la corona; 3: el perfil a editar) y la orden "reemplazá por la corona real, no inventes otro diseño, mismo lugar", respetó cuatro puntas, líneas negras y dos franjas. El tamaño se ajustó con un segundo mensaje pidiendo "el 60% del tamaño actual".
+
+**Cómo aplicar:** logos o grabados chicos: (a) foto real a escala como primera referencia y primer plano como segunda, la imagen a editar siempre última; (b) decir explícito qué parte NO cambiar; (c) corregir tamaño con un porcentaje, no con "más chica" a secas; (d) cuidar el botón de regenerar al descargar (un clic mal puesto genera otra variante).
+
+## 2026-11-18 — Texto fino sobre una patilla en Gemini: con el primer plano real y la explicación del lado, sí salió legible
+
+**Qué funcionó:** para escribir "VULK EYEWEAR CE" en la patilla del fondo del Yester CRY, Gemini lo hizo legible y dorado cuando recibió (1) la foto real del anteojo por detrás, (2) un primer plano real del grabado y (3) una explicación explícita de qué cara se ve (la del fondo se ve desde adentro, así que el texto se lee normal; el espejado sólo se ve desde afuera). Antes, sin esas referencias, producía letras sin sentido.
+
+**Cómo aplicar:** para grabados chicos, dar el primer plano real y decir en qué cara está y cómo se lee; pedir "no inventes otras letras". Ojo: Gemini puede ubicar una marca en la patilla equivocada (el "Vulk" externo lo puso en la punta de la patilla del fondo); revisar la ubicación contra lo pedido y no intentar borrarlo con retoque local (deja una mancha): mejor otra pasada de Gemini con la ubicación repetida.
+
+## 2026-11-18 — Para encontrar una publicación recién creada en ML: buscar por SKU del vendedor, no por fecha
+
+**Qué funcionó:** al cargar las 3 polarizadas del Yester, el listado de la cuenta ordenado por fecha (`/users/{id}/items/search?sort=date_desc`, 100 items) NO mostró ninguna publicación nueva (el índice tarda), pero `GET /users/{id}/items/search?seller_sku=<SKU>` devolvió al instante las 3 (MLA2300345537, MLA2300333241, MLA2300370887) y no devolvió la CRY, que todavía no estaba publicada. Con el item id se trae todo (`/items/{id}`): GTIN, stock, precio, `catalog_listing`, `variations`.
+
+**Cómo aplicar:** para confirmar si un modelo ya está en ML o para recuperar los item ids, buscar por `seller_sku` con el SKU de casa antes que por texto o por fecha; un resultado vacío por SKU sí sirve para decir "todavía no está publicada" (a diferencia de la búsqueda por fecha). Complementa la regla de MISTAKES sobre no afirmar que algo no está publicado.
+

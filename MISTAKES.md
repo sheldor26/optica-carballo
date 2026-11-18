@@ -9268,3 +9268,24 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** antes de entregar un kit, mirar CADA placa (incluida la 06) contra los claims verificados del modelo. Para sol, pasar siempre `--item` con ítems verificados y sin "liviano"; y sacar el default de "liviano" del generador (pendiente de aprobación del founder).
 
+## 2026-11-18 — Perfil del Yester CRY: seis pasadas en Gemini por editar sobre salidas previas y usar una foto real como muestra de color
+
+**Qué pasó:** el founder pidió corregir el grabado de las patillas; yo seguí editando salidas anteriores de Gemini (v3, luego una versión espejada) y el modelo quedó cada vez más de perfil que la foto de Vulk; después usé la foto real (luz cálida) como muestra de color y salió un marrón más oscuro y rojizo que el frente aprobado. El founder tuvo que decir "mal", "NO, MAL" y pedir volver a la versión de 27 minutos antes (la v2).
+
+**Causa raíz:** (1) tomé el pedido de "arreglar el grabado" como edición incremental sin volver a comparar ángulo y tono contra las referencias aprobadas (foto del fabricante y frente); (2) entendí tarde que el grabado real está en la cara interna y se ve espejado, y lo traté de dibujar igual con texto chico, que Gemini siempre deforma.
+
+**Regla preventiva:** guardar cada salida de Gemini con versión y hora, y si el founder rechaza dos veces seguidas, volver a la última aprobada en vez de seguir sobre la última generada. Comparar cada resultado contra el ángulo del fabricante y el tono del frente aprobado antes de avisarle. Ante "NO, MAL" sin detalle, preguntar qué parte antes de regenerar.
+
+## 2026-11-18 — Anuncié "la corona quedó mejor / es tu corona" dos veces sin compararla lado a lado con la real
+
+**Qué pasó:** en el perfil del Yester CRY le dije al founder que la corona de Gemini (v7) "quedó mejor" y después que la pegada de IMG_0737 (v8) "es tu corona". En ambos casos el founder contestó "es otra corona" y "no la estás pegando": la v7 tenía otro diseño (tres puntas lisas) y la v8 era un recorte irregular de una foto torcida y espejada que a tamaño de placa se veía como una mancha.
+
+**Causa raíz:** juzgué la corona sólo contra mi propio criterio de "se ve prolija" y no contra la real a la misma escala; y partí de una fuente mala (foto angulada, con reflejo) sin avisar antes que no alcanzaba para un logo de 20 a 50 px.
+
+**Regla preventiva:** antes de decir que un logo o grabado quedó igual al real, armar una imagen lado a lado (real y resultado a la misma escala) y mirarla. Si la fuente no tiene resolución o ángulo suficientes, pedir al founder la foto correcta (macro de frente, luz difusa, enfocada) antes de editar, en vez de iterar sobre una mala.
+
+# Notas finales
+
+- Este archivo NO es para criticarse. Es para no repetir errores.
+- Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
+- El acto de documentar un mistake es parte de la solución.
