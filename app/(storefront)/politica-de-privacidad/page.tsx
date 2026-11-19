@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { InfoPageShell } from '@/components/legal/info-page-shell';
-import { PlaceholderNote } from '@/components/legal/placeholder-note';
 import { buildInfoPageMetadata } from '@/lib/catalog/metadata';
 import { getBusinessInfo } from '@/lib/site/business';
 
 const SLUG = 'politica-de-privacidad';
 const TITLE = 'Política de privacidad';
+const CONTACT_EMAIL = 'hola@opticacarballo.com.ar';
 
 export const revalidate = 86400;
 
@@ -13,11 +13,8 @@ export function generateMetadata(): Metadata {
   return buildInfoPageMetadata({
     title: TITLE,
     description:
-      'Cómo Óptica Carballo recolecta, usa y protege tus datos personales. Cumplimiento ley 25.326 de Protección de Datos Personales.',
+      'Cómo Óptica Carballo recolecta, usa y protege tus datos personales, incluido el asistente virtual de WhatsApp. Ley 25.326 de Protección de Datos Personales.',
     slug: SLUG,
-    // CUIT, razón social exacta y domicilio fiscal siguen [A CONFIRMAR] más
-    // abajo — sacar este flag cuando el founder los confirme.
-    incomplete: true,
   });
 }
 
@@ -29,51 +26,42 @@ export default function Page() {
       <p>
         Esta política describe cómo {business.siteName} recolecta, usa, comparte
         y protege tus datos personales cuando navegás nuestro sitio, hacés una
-        compra o nos contactás. Cumplimos con la{' '}
+        compra o nos escribís (incluso por WhatsApp). Cumplimos con la{' '}
         <strong>Ley 25.326 de Protección de Datos Personales</strong> de
         Argentina y sus normas reglamentarias.
       </p>
 
-      <PlaceholderNote>
-        <p>
-          Política redactada como template estándar para óptica argentina con
-          venta online. Los campos marcados como <code>[A CONFIRMAR]</code>{' '}
-          requieren confirmación del founder (CUIT, razón social exacta,
-          domicilio fiscal, contacto del responsable de datos). Revisar con
-          abogado antes de activar checkout end-to-end.
-        </p>
-      </PlaceholderNote>
-
       <h2>1. Responsable del tratamiento</h2>
       <p>
         El responsable del tratamiento de tus datos personales es{' '}
-        <strong>{business.siteName}</strong>, con domicilio en{' '}
-        {business.locality && business.region ? (
-          <>
-            {business.locality}, {business.region}, Argentina
-          </>
-        ) : (
-          <>[A CONFIRMAR: domicilio fiscal completo]</>
-        )}
-        .
+        <strong>Juan Leopoldo Mirande</strong>, titular de {business.siteName}.
       </p>
       <ul>
         <li>
-          <strong>Razón social</strong>: [A CONFIRMAR: nombre de la persona
-          física o jurídica que opera la óptica].
+          <strong>Nombre comercial</strong>: {business.siteName}.
         </li>
         <li>
-          <strong>CUIT</strong>: [A CONFIRMAR].
+          <strong>Titular</strong>: Juan Leopoldo Mirande.
+        </li>
+        <li>
+          <strong>CUIT</strong>: 20-16852182-1.
+        </li>
+        <li>
+          <strong>Domicilio</strong>: Av. Lavalle 2686, Gobernador Virasoro,
+          Corrientes (CP 3342), Argentina.
         </li>
         <li>
           <strong>Contacto para temas de datos personales</strong>:{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           {business.whatsappLink ? (
-            <a href={business.whatsappLink} target="_blank" rel="noopener noreferrer">
-              WhatsApp
-            </a>
-          ) : (
-            <>[A CONFIRMAR: email o canal de contacto]</>
-          )}
+            <>
+              {' '}
+              o por{' '}
+              <a href={business.whatsappLink} target="_blank" rel="noopener noreferrer">
+                WhatsApp
+              </a>
+            </>
+          ) : null}
           .
         </li>
       </ul>
@@ -100,6 +88,13 @@ export default function Page() {
           cuidado especial.
         </li>
         <li>
+          <strong>Datos de tus mensajes por WhatsApp</strong>: tu número de
+          teléfono, el nombre de tu perfil de WhatsApp (si lo tenés), el texto
+          de los mensajes (tuyos, del asistente virtual y del equipo) y sus
+          fechas. <strong>No guardamos fotos, audios ni documentos</strong>:
+          solo registramos que los mandaste.
+        </li>
+        <li>
           <strong>Datos de navegación</strong>: páginas visitadas, productos
           vistos, búsquedas realizadas. Algunos guardados en cookies del
           navegador (wishlist, comparador, carrito).
@@ -109,6 +104,12 @@ export default function Page() {
           voluntariamente.
         </li>
       </ul>
+      <p>
+        <strong>No nos mandes datos de salud por chat</strong> (síntomas,
+        diagnósticos, tu graduación): no estás obligado a dárnoslos. Si igual
+        los escribís, quedan en la conversación y se tratan como el resto de
+        los mensajes.
+      </p>
 
       <h2>3. Finalidad y base legal del tratamiento</h2>
       <ul>
@@ -121,6 +122,13 @@ export default function Page() {
           <strong>Atención al cliente</strong>: responder consultas, gestionar
           cambios y devoluciones. Base legal: ejecución del contrato y
           consentimiento.
+        </li>
+        <li>
+          <strong>Atención por WhatsApp</strong>: responder tus consultas con
+          un asistente virtual y, cuando haga falta, con una persona del
+          equipo. Base legal: tu consentimiento, que damos por prestado
+          cuando seguís la conversación después del aviso inicial del
+          asistente.
         </li>
         <li>
           <strong>Newsletter</strong>: enviarte novedades de productos.{' '}
@@ -163,17 +171,36 @@ export default function Page() {
           pedido. Comparten datos de contacto y dirección.
         </li>
         <li>
-          <strong>Resend</strong>: envía los emails transaccionales y el
-          newsletter (si te suscribiste).
+          <strong>Meta Platforms (WhatsApp)</strong>: es el operador de
+          WhatsApp. Procesa los mensajes que nos mandás y que te mandamos.
+        </li>
+        <li>
+          <strong>OpenAI y Anthropic</strong>: proveedores de inteligencia
+          artificial. El texto de tus mensajes al asistente virtual (por
+          WhatsApp o por el chat del sitio) se les envía para buscar en el
+          catálogo y redactar la respuesta.
+        </li>
+        <li>
+          <strong>Resend</strong>: envía los emails transaccionales, el
+          newsletter (si te suscribiste) y los avisos internos al equipo.
         </li>
         <li>
           <strong>AFIP</strong>: para emitir factura electrónica.
         </li>
         <li>
           <strong>Supabase / Vercel</strong>: proveedores de infraestructura
-          técnica donde se almacena el sitio y los datos.
+          técnica donde se almacena el sitio y los datos, ubicados en Estados
+          Unidos.
         </li>
       </ul>
+      <p>
+        <strong>Transferencia internacional.</strong> Meta, OpenAI, Anthropic,
+        Supabase y Vercel procesan datos en Estados Unidos, un país que la
+        Argentina no reconoce con un nivel de protección adecuado. Cuando usás
+        el asistente por WhatsApp te avisamos antes y, al seguir la
+        conversación, aceptás esa transferencia. Si no querés, pedinos hablar
+        con una persona del equipo.
+      </p>
       <p>
         <strong>Nunca vendemos tus datos a terceros.</strong> No compartimos
         información para publicidad de otras empresas.
@@ -194,6 +221,14 @@ export default function Page() {
           + 5 años. Después se anonimizan.
         </li>
         <li>
+          <strong>Mensajes de WhatsApp</strong>: se borran automáticamente a
+          los 90 días de recibidos. Si la conversación pasó a una persona del
+          equipo, a los 12 meses. El aviso interno por email incluye un
+          resumen de los últimos mensajes y queda en la casilla del equipo;
+          lo borramos si nos lo pedís. Meta, OpenAI y Anthropic aplican sus
+          propios plazos.
+        </li>
+        <li>
           <strong>Newsletter</strong>: hasta que te des de baja.
         </li>
         <li>
@@ -202,14 +237,14 @@ export default function Page() {
         </li>
       </ul>
 
-      <h2>6. Tus derechos (ARCO)</h2>
+      <h2>6. Tus derechos</h2>
       <p>
         Conforme la Ley 25.326, tenés los siguientes derechos sobre tus datos:
       </p>
       <ul>
         <li>
           <strong>Acceso</strong>: pedir qué datos tuyos tenemos y para qué los
-          usamos. Sin costo, una vez cada 6 meses.
+          usamos.
         </li>
         <li>
           <strong>Rectificación</strong>: actualizar datos incorrectos o
@@ -223,27 +258,46 @@ export default function Page() {
           <strong>Oposición</strong>: oponerte al tratamiento por motivos
           fundados.
         </li>
-        <li>
-          <strong>Portabilidad</strong>: recibir tus datos en formato
-          estructurado para llevarlos a otro proveedor.
-        </li>
       </ul>
       <p>
-        Para ejercer cualquiera de estos derechos, contactanos por{' '}
+        Para ejercer cualquiera de estos derechos, escribinos a{' '}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         {business.whatsappLink ? (
-          <a href={business.whatsappLink} target="_blank" rel="noopener noreferrer">
-            WhatsApp
-          </a>
-        ) : (
-          <>[A CONFIRMAR: canal]</>
-        )}{' '}
-        con tu DNI y la solicitud específica. Te respondemos dentro de los 10
-        días hábiles.
+          <>
+            {' '}
+            o por{' '}
+            <a href={business.whatsappLink} target="_blank" rel="noopener noreferrer">
+              WhatsApp
+            </a>
+          </>
+        ) : null}{' '}
+        con tu nombre y DNI (o el número de WhatsApp desde el que nos
+        escribiste) y tu pedido. Respondemos dentro de los plazos de la ley:{' '}
+        <strong>10 días corridos</strong> para el acceso y{' '}
+        <strong>5 días hábiles</strong> para la rectificación, actualización o
+        supresión.
       </p>
       <p>
-        También podés presentar reclamos ante la{' '}
-        <strong>Agencia de Acceso a la Información Pública (AAIP)</strong>,
-        autoridad de aplicación de la Ley 25.326.
+        Podés ejercer gratis tu derecho de acceso a intervalos no inferiores a
+        seis meses, salvo que acredites un interés legítimo (art. 14, inc. 3,
+        Ley 25.326). La{' '}
+        <strong>Agencia de Acceso a la Información Pública</strong>, en su
+        carácter de Órgano de Control de la Ley 25.326, tiene la atribución de
+        atender las denuncias y reclamos que interpongan quienes resulten
+        afectados en sus derechos por incumplimiento de las normas vigentes en
+        materia de protección de datos personales.
+      </p>
+
+      <h3>Cómo pedir que borremos tus datos</h3>
+      <p>
+        Escribinos a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{' '}
+        con el asunto &ldquo;Eliminar mis datos&rdquo;, indicando tu nombre y
+        DNI o el número de WhatsApp desde el que nos escribiste. Si nos
+        escribiste por WhatsApp, también podés pedírselo a una persona del
+        equipo en la misma conversación. Borramos la conversación completa en
+        un máximo de 5 días hábiles y te confirmamos. Los datos que la ley
+        nos obliga a conservar (por ejemplo, las facturas) no se pueden
+        borrar.
       </p>
 
       <h2>7. Cookies</h2>
@@ -303,7 +357,23 @@ export default function Page() {
         consentimiento, contactanos y los eliminamos.
       </p>
 
-      <h2>10. Cambios a esta política</h2>
+      <h2>10. Asistente virtual de WhatsApp</h2>
+      <p>
+        Las consultas que nos hacés por WhatsApp las atiende primero un{' '}
+        <strong>asistente virtual con inteligencia artificial</strong>, que
+        puede equivocarse. Está configurado para pasarte con una persona del
+        equipo cuando preguntás por recetas o graduación, contás síntomas,
+        hacés un reclamo o lo pedís. El primer mensaje de cada conversación te
+        avisa que es un asistente virtual y te manda a esta página.
+      </p>
+      <p>
+        Para generar cada respuesta, el texto de tu mensaje se envía a OpenAI y
+        Anthropic (Estados Unidos). Los mensajes también los puede leer el
+        equipo de la óptica. No interpretamos recetas por chat: eso lo revisa
+        siempre una persona.
+      </p>
+
+      <h2>11. Cambios a esta política</h2>
       <p>
         Podemos actualizar esta política para reflejar cambios en nuestros
         servicios o en la legislación. La versión vigente siempre está
@@ -312,7 +382,7 @@ export default function Page() {
       </p>
 
       <p className="text-muted-foreground mt-8 text-xs">
-        Última actualización: 2026-05-29.
+        Última actualización: 2026-11-19.
       </p>
     </InfoPageShell>
   );

@@ -1,5 +1,13 @@
 # Óptica Carballo — Learnings Log
 
+## 2026-11-19 — Subir SOLO lo propio cuando la carpeta tiene trabajo a medio hacer de otras tareas
+
+**Qué funcionó:** la carpeta tenía ~15 archivos modificados y ~20 sin seguimiento de otras tareas (Instagram, despiece, páginas legales). Para el bot se armó el commit con `git add` de los archivos propios y, para los archivos mezclados (`package.json`, `.env.example`), con `git hash-object -w` + `git update-index --cacheinfo`: se arma "versión de HEAD + solo mis líneas" sin tocar el archivo de trabajo ni usar `git add -p` (que no es interactivo acá). Después se verificó con `git worktree add --detach` del commit, `node_modules` enlazado y `pnpm build`: si ese build pasa, Vercel puede construirlo sin los archivos sueltos. Recién ahí `git push`.
+
+**Cómo se usa:** (1) escanear lo staged buscando secretos y datos personales, (2) commit, (3) build en la copia limpia, (4) push, (5) esperar el READY del deployment y probar el endpoint nuevo en producción (con `curl`, sin credenciales).
+
+**Regla:** "subí todo" después de describir una tarea significa esa tarea, no cada archivo suelto de la carpeta: nunca mandar a producción cambios de otras tareas sin que el founder los haya pedido.
+
 ## 2026-11-19 — Revisar el diseño con el agente de IA ANTES de escribir el bot de WhatsApp, y probar contra el catálogo real
 
 **Qué funcionó:** darle al `ai-features-engineer` el diseño en prosa (sin código) y pedirle críticas concretas encontró huecos que el código habría tenido: guardar el mensaje ANTES de contestar 200 (si no, Meta no reintenta y se pierde), ignorar el evento `history` de la coexistencia (el bot le habría contestado a chats de hace meses), tope de mensajes SALIENTES (bot contra bot), esperar unos segundos por si el cliente manda ráfagas, y derivar con una herramienta del modelo en vez de una etiqueta en el texto. Después, un script de prueba con la IA real (`pnpm whatsapp:smoke`) mostró que las respuestas eran buenas en tono pero que el catálogo venía vacío: `product_embeddings` tenía 0 filas y ningún test de formato lo iba a detectar.
@@ -12354,6 +12362,10 @@ El recorte de 20 px de una foto real salía borroso al ampliarlo (seed 195, rech
 ## 2026-11-18 — MiCorreo `/rates` devuelve plazo (min/max) pero es igual para todo el país: no sirve para estimar por código postal
 
 **Qué se encontró:** consultando `/rates` en producción (solo lectura) para 12 CP (Virasoro, Corrientes, Posadas, La Plata, CABA, Córdoba, Rosario, Tucumán, Neuquén, Comodoro, Ushuaia, Jujuy): Correo Clásico siempre `2-5` días y Expreso `1-3`, a domicilio y a sucursal; sólo cambia el precio por zona. **Cómo aplicar:** para mostrar "llega entre X y Y" por CP hay que usar una tabla propia por zona (alimentada con entregas reales), no `deliveryTimeMin/Max`; mostrar el 2–5 de la API sería prometer de menos que lo real. Script de consulta de ejemplo: ver el patrón en `lib/correo/quote.ts` (token Basic + POST `/rates`), es de solo lectura.
+
+## 2026-11-19 — Auditar el gasto de Vercel: el MCP no da billing; sirve el panel Usage (agrupar "By Project" y después filtrar el proyecto)
+
+El MCP de Vercel devuelve 404 ("Plan not found" / "Observability Data not found") en billing, observabilidad y web analytics para este equipo, así que no se puede sacar el gasto por API. Lo que sí funcionó: abrir `vercel.com/<team>/~/usage` en Chrome, ver el total del crédito, agrupar **By Project** (el crédito es del equipo, no del proyecto: Óptica era el 2.º de 13) y recién ahí filtrar el proyecto y agrupar **By Product**. Después, Observability → Functions / CDN Requests (período 7d) muestra qué rutas invocan función y cuáles no se cachean. **Cómo aplicar:** ante "se gasta rápido el crédito", primero ver qué proyecto y qué concepto manda antes de tocar código; en este equipo el add-on Observability Plus ($1,20/1M eventos) era ~28% del gasto y se apaga **por proyecto** desde la página Observability del proyecto → menú ⋯ → "Exclude Project from Plus" (el diálogo de Billing → Manage projects no permite excluir; el toggle de Billing es de todo el equipo). Al excluir: sin alertas, logs 3 días en vez de 14, sin Query Builder; reversible. **Spend Management:** el presupuesto del equipo (Settings → Spend Management → ⋯ → Edit Budget) cuenta solo el gasto on-demand por encima de los $20 de crédito de Pro (aparecía $0 con $17,94 consumidos); guardar pide escribir el nombre del equipo; la opción "Pause production deployments" frena TODOS los proyectos del equipo, así que con una tienda en producción conviene dejarla apagada y usar solo avisos.
 
 ## Notas finales
 

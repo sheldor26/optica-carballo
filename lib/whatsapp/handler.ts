@@ -143,6 +143,19 @@ async function procesar(db: Db, msg: InboundMessage): Promise<void> {
     return;
   }
 
+  // 5b) Primer contacto: antes de que su texto viaje a los proveedores de IA, el
+  //     cliente recibe el aviso de asistente virtual (y puede dejar de escribir).
+  //     Este mensaje NO se procesa con IA; la IA arranca con el siguiente.
+  if (!(await avisoEnviado(db, msg.waId))) {
+    await enviar(db, msg.waId, mensajeInicial());
+    const marca = await db
+      .from('whatsapp_conversations')
+      .update({ aviso_enviado_at: new Date().toISOString() })
+      .eq('wa_id', msg.waId);
+    if (marca.error) throw new Error(`marcar aviso: ${marca.error.message}`);
+    return;
+  }
+
   // 6) La IA.
   const { historial, anteriorCliente } = await cargarHistorial(db, msg.waId, msg.wamid);
   const respuesta = await generarRespuesta({
@@ -245,6 +258,16 @@ function consultaConteo(db: Db) {
 }
 type ConsultaConteo = ReturnType<typeof consultaConteo>;
 
+async function avisoEnviado(db: Db, waId: string): Promise<boolean> {
+  const { data, error } = await db
+    .from('whatsapp_conversations')
+    .select('aviso_enviado_at')
+    .eq('wa_id', waId)
+    .maybeSingle();
+  if (error) throw new Error(`leer aviso: ${error.message}`);
+  return !!data?.aviso_enviado_at;
+}
+
 async function contar(db: Db, filtros: (q: ConsultaConteo) => ConsultaConteo): Promise<number> {
   const { count, error } = await filtros(consultaConteo(db));
   if (error) throw new Error(`contar mensajes: ${error.message}`);
@@ -340,11 +363,8 @@ async function cargarHistorial(
   return { historial, anteriorCliente: anterior };
 }
 
-/** Manda un mensaje y lo guarda. En el primero de la conversación va el saludo con el aviso de asistente virtual. */
-async function enviar(db: Db, waId: string, texto: string): Promise<void> {
-  const previos = await contar(db, (q) => q.eq('wa_id', waId).eq('sender', 'bot'));
-  const cuerpo = previos === 0 ? `${mensajeInicial()}\n\n${texto}` : texto;
-
+/** Manda un mensaje y lo guarda (para que el eco del propio bot no se confunda con una persona). */
+async function enviar(db: Db, waId: string, cuerpo: string): Promise<void> {
   const wamid = await sendWhatsAppText(waId, cuerpo);
   if (!wamid) {
     console.error('[whatsapp] Meta no devolvió el id del mensaje enviado');

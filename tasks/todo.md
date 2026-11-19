@@ -17,9 +17,12 @@
 - [x] `pnpm whatsapp:selftest` 59/59, `tsc` y `eslint` limpios, webhook local probado (GET 200/403, POST 401/401/200/400), `pnpm whatsapp:smoke` 21/21
 - [x] OK del founder ("Sí, las dos cosas"): migración aplicada al cloud y `embed-products` corrido (158 filas); se arregló el script y se quitó el índice ivfflat (búsqueda exacta)
 - [x] `pnpm whatsapp:smoke` con el catálogo cargado: 21/21; leyendo las respuestas se vio que inventaba "liviano"/"adaptar lentes graduadas" → regla de prompt + filtro con respaldo del catálogo (selftest 63/63)
-- [ ] Deploy a Vercel + variables de entorno (`WHATSAPP_*`) + `WHATSAPP_BOT_ENABLED=false` al inicio
-- [ ] Configurar el webhook en la app de Meta con el número de prueba y probar con los webhooks de prueba del dashboard
-- [ ] Política de privacidad completa y ajustar "sin chatbot" de Sobre nosotros ANTES de publicar la app
-- [ ] Retención de mensajes (cron de borrado a 90 días) y derecho de supresión por `wa_id`
+- [x] Deploy a Vercel (commit `fe6fb0e`, deployment READY, bot apagado por defecto; solo lo del bot, build verificado en copia limpia)
+- [x] Variables `WHATSAPP_*` cargadas en Vercel por el founder (el MCP de Vercel no tiene permiso: 403) y verificadas en producción (POST sin firma → 401, GET con token → 200)
+- [x] Webhook configurado en la app de Meta (verify token pegado por el founder) y probado con el evento de prueba `messages` del dashboard; formato del eco confirmado con el ejemplo oficial
+- [x] Política de privacidad completa (titular, CUIT, WhatsApp/IA, transferencia, derechos, eliminación) y "sin chatbot" de Sobre nosotros corregido — en la carpeta, SIN subir (espera OK del founder)
+- [x] Retención: función SQL + cron diario + `pnpm whatsapp:borrar` — escritos, la migración `20261119140000` NO está aplicada al cloud todavía
+- [ ] Aplicar la migración `20261119140000_whatsapp_retencion_y_aviso.sql` al cloud, commitear y subir (con OK del founder)
+- [ ] Founder: inscribir la base en el Registro Nacional de Bases de Datos (AAIP, vía TAD) y revisar la política con un abogado
 - [ ] Número real en coexistencia (QR desde el celular de la óptica) al final
 

@@ -1,5 +1,17 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-11-19 — Di por enviado el mail de aviso del bot porque no tiró error, pero el SDK de Resend no tira errores: los devuelve
+
+**Estado:** ✅ Cerrado en mi función (`send-whatsapp-handoff-email.ts` ahora mira `error`); 🟡 abierto el mismo patrón en 3 mails que ya existían (ver abajo).
+
+**Qué pasó:** escribí `sendWhatsAppHandoffEmail` con `await resend.emails.send(...)` dentro de un `try/catch` y `return true`. Corrí la prueba, imprimió "enviado" y se lo di al founder como hecho. El founder dijo "no me llegó". Resend devuelve `{ data, error }` y NO lanza excepción cuando la API rechaza el envío, así que mi `true` no probaba nada. En este caso el mail sí salió (Resend lo marcó `delivered` y le llegó al founder con demora por el reenvío de ImprovMX), pero mi función habría reportado "enviado" igual si lo hubiera rechazado.
+
+**Causa raíz:** asumí que "no hubo excepción" significa "se mandó" sin leer cómo responde el SDK, y reporté el resultado de mi propio `return true` como si fuera una verificación de entrega.
+
+**Regla preventiva:** (1) con Resend, SIEMPRE leer `const { data, error } = await resend.emails.send(...)` y tratar `error` como fallo (`send-order-emails.ts` ya lo hace bien). (2) Para decir "el mail se mandó" hay que mirar el estado real con `resend.emails.get(id)` (`delivered`), no el retorno de mi función. (3) Pasar de "enviado" a "te tiene que llegar" y esperar la confirmación del founder antes de darlo por probado: el reenvío de `hola@` (ImprovMX) puede tardar.
+
+**Pendiente (pre-existente, no lo toqué):** `send-alert-email.ts`, `send-prescription-reminder-email.ts` y `send-social-alert-email.ts` tienen el mismo patrón (ignoran `error`): un rechazo de Resend pasaría como éxito. Los dos primeros son de producción; el tercero es del trabajo de Instagram sin commitear.
+
 ## 2026-11-19 — En el setup de WhatsApp afirmé cosas de Meta sin verificarlas: portfolio equivocado, "hay que verificar la empresa" y "el 2FA parece sin activar"
 
 **Estado:** ✅ Cerrado (los tres se corrigieron en el mismo día, sin daño: todo fue solo lectura y no se cambió nada en Meta).

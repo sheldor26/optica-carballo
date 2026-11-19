@@ -130,9 +130,10 @@ export function parseWebhook(payload: unknown): ParsedWebhook {
       }
 
       // Mensajes que una persona mandó desde la app WhatsApp Business
-      // (coexistencia). Campo "smb_message_echoes". Estructura según la
-      // documentación de coexistencia de Meta; hay que confirmarla con un
-      // evento real cuando el número esté conectado.
+      // (coexistencia). Campo "smb_message_echoes". Estructura confirmada el
+      // 2026-11-19 contra el ejemplo oficial que muestra el dashboard de Meta
+      // (Webhooks → Whatsapp Business Account → smb_message_echoes → Test);
+      // falta verla con un evento real cuando el número esté conectado.
       if (change.field === 'smb_message_echoes') {
         for (const m of arr(value.message_echoes)) {
           if (!isObj(m)) continue;

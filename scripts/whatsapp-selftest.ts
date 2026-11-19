@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 import { openStatus } from '../lib/whatsapp/hours';
 import { parseWebhook } from '../lib/whatsapp/payload';
-import { decidirDerivacion, filtrarSalida, limpiarEntrada } from '../lib/whatsapp/policy';
+import { decidirDerivacion, filtrarSalida, limpiarEntrada, mensajeInicial } from '../lib/whatsapp/policy';
 import { verifyWhatsAppSignature } from '../lib/whatsapp/signature';
 
 let pasaron = 0;
@@ -122,6 +122,30 @@ caso('eco de coexistencia (lo escribió una persona)', () => {
   assert.equal(r.echoes[0]?.toWaId, '5493756000000');
   assert.equal(r.echoes[0]?.text, 'Hola Ana');
 });
+caso('eco: ejemplo OFICIAL de Meta (dashboard, 2026-11-19)', () => {
+  const r = parseWebhook({
+    object: 'whatsapp_business_account',
+    entry: [
+      {
+        changes: [
+          {
+            field: 'smb_message_echoes',
+            value: {
+              messaging_product: 'whatsapp',
+              metadata: { display_phone_number: '16505551111', phone_number_id: '123456123' },
+              message_echoes: [
+                { from: '16315551181', to: '11234567890', id: 'ABGGFlA5Fpa', timestamp: '1504902988', type: 'text', text: { body: 'this is a text message' } },
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  });
+  assert.deepEqual(r.echoes, [
+    { phoneNumberId: '123456123', wamid: 'ABGGFlA5Fpa', toWaId: '11234567890', kind: 'text', text: 'this is a text message', timestamp: 1504902988 },
+  ]);
+});
 caso('basura no rompe nada', () => {
   for (const basura of [null, undefined, 42, 'x', [], {}, { object: 'page' }, { object: 'whatsapp_business_account', entry: 'x' }]) {
     assert.deepEqual(parseWebhook(basura), { inbound: [], echoes: [] });
@@ -175,6 +199,9 @@ deriva('Mi pedido no llegó todavía', 'queja');
 deriva('quiero hacer un reclamo', 'queja');
 deriva('me cobraron dos veces', 'queja');
 deriva('Me pegué un golpe en el ojo y veo destellos', 'sintomas');
+deriva('Quiero que borren mis datos', 'pidio_persona');
+deriva('quiero ejercer mi derecho de acceso', 'pidio_persona');
+deriva('Eliminar todos mis datos por favor', 'pidio_persona');
 deriva('tengo dolor en el ojo desde ayer', 'sintomas');
 deriva('no veo bien de lejos, qué me conviene', null); // consulta común, no emergencia
 
@@ -186,6 +213,21 @@ caso('neutraliza etiquetas que intentan falsificar el catálogo', () => {
   assert.equal(sucio.includes('>'), false);
 });
 caso('acorta mensajes larguísimos', () => assert.equal(limpiarEntrada('a'.repeat(5000)).length, 1000));
+
+// ── Aviso inicial (consentimiento) ──────────────────────────────────────────
+console.log('Aviso inicial');
+for (const [nombre, patron] of [
+  ['dice que es un asistente virtual / IA', /asistente virtual[\s\S]*inteligencia artificial/i],
+  ['avisa que los datos viajan a Estados Unidos', /Estados Unidos/],
+  ['dice cuánto se guarda (90 días)', /90 días/],
+  ['dice que seguir = aceptar', /seguís la conversación, aceptás/],
+  ['pide no mandar datos de salud', /datos de salud/],
+  ['incluye el link a la política', /https:\/\/opticacarballo\.com\.ar\/politica-de-privacidad/],
+  ['ofrece pedir a una persona', /persona del equipo/],
+] as const) {
+  caso(`el aviso ${nombre}`, () => assert.match(mensajeInicial(), patron));
+}
+caso('el aviso pasa su propio filtro de salida', () => assert.equal(filtrarSalida(mensajeInicial()).ok, true));
 
 // ── Filtro de salida ────────────────────────────────────────────────────────
 console.log('Filtro de salida del bot');

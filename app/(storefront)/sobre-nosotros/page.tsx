@@ -509,8 +509,10 @@ function ContactCta({
             <span className="font-normal italic opacity-70">escribinos</span>.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-balance text-base opacity-80 md:text-lg">
-            Respondemos en horario comercial. Sin formulario raro, sin chatbot.
-            Hablás con nosotros directamente.
+            Respondemos en horario comercial. Por WhatsApp te atiende primero
+            un asistente virtual para consultas de catálogo, envíos y horarios,
+            y una persona del equipo para todo lo demás: podés pedirla cuando
+            quieras.
             {location ? ` Atendemos desde ${location}.` : ''}
           </p>
 

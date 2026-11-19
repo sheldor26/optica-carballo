@@ -53,7 +53,10 @@ export async function sendWhatsAppHandoffEmail(input: WhatsAppHandoffInput): Pro
 </body></html>`;
 
   try {
-    await getResendClient().emails.send({
+    // El SDK de Resend NO tira error cuando la API rechaza el envío: devuelve
+    // `{ data, error }`. Hay que mirar `error`, si no un mail fallido se
+    // reportaría como enviado.
+    const { error } = await getResendClient().emails.send({
       from: getFromAddress(),
       to,
       // Sin datos del cliente en el asunto: el asunto se ve en notificaciones y listas.
@@ -61,6 +64,10 @@ export async function sendWhatsAppHandoffEmail(input: WhatsAppHandoffInput): Pro
       html,
       text: `${nombre} necesita que le contestes.\n\nMotivo: ${input.motivo}\n\n${lineas.join('\n')}\n\nAbrir el chat: ${chat}`,
     });
+    if (error) {
+      console.error('[whatsapp-handoff] Resend rechazó el aviso:', error.message);
+      return false;
+    }
     return true;
   } catch (err) {
     console.error('[whatsapp-handoff] no pude mandar el aviso:', err);

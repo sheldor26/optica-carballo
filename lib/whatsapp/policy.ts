@@ -63,6 +63,8 @@ const RE_GRADUACION =
   /([+-]\s?\d{1,2}[.,]\d{2}\b|\b(esfera|cilindro|adicion)\b|\bmi receta\b|\bmi graduacion\b)/;
 const RE_PIDIO_PERSONA =
   /\b(humano|persona real|asesor|asesora|operador|hablar con (alguien|una persona|un humano|el dueno|la duena|la optica)|que me (atienda|conteste) (una|alguien))\b/;
+const RE_DATOS_PERSONALES =
+  /\b(((borr|elimin|suprim|sac|quit)\w*|(dar|den|de) de baja|de baja) (mis|todos mis|los) datos|mis datos personales|ley 25\.?326|derecho de (acceso|supresion|rectificacion))\b/;
 const RE_QUEJA =
   /\b(reclamo|estafa|estafadores|denuncia|defensa del consumidor|no me llego|todavia no llego|mi pedido|devolver|arrepent|me cobraron|reembolso)\b/;
 
@@ -80,6 +82,8 @@ export function decidirDerivacion(texto: string): PolicyDecision {
   if (RE_SINTOMAS.test(t)) return { reason: 'sintomas', reply: respuestaSintomas() };
   if (RE_GRADUACION.test(t)) return { reason: 'graduacion', reply: respuestaDerivacion() };
   if (RE_PIDIO_PERSONA.test(t)) return { reason: 'pidio_persona', reply: respuestaDerivacion() };
+  // Acceso / borrado de datos personales: lo resuelve una persona (derechos de la Ley 25.326).
+  if (RE_DATOS_PERSONALES.test(t)) return { reason: 'pidio_persona', reply: respuestaDerivacion() };
   if (RE_QUEJA.test(t)) return { reason: 'queja', reply: respuestaDerivacion() };
   return null;
 }
@@ -106,9 +110,19 @@ export function respuestaLimite(): string {
   return `Llegaste al límite de mensajes por hoy con el asistente. Una persona del equipo te atiende en nuestro horario: ${HORARIOS_TEXTO}`;
 }
 
-/** Va una sola vez, al principio de la conversación. */
+/**
+ * Aviso de la primera vez (y la ÚNICA respuesta a ese primer mensaje). El texto
+ * del cliente todavía NO se procesó con IA: recién el mensaje siguiente, después
+ * de que vio este aviso, viaja a los proveedores de IA (EE.UU.). Seguir la
+ * conversación es la aceptación (revisión legal 2026-11-19: EE.UU. no tiene nivel
+ * de protección adecuado, art. 12 Ley 25.326 → informar + consentimiento).
+ */
 export function mensajeInicial(): string {
-  return `Hola, soy el asistente virtual de Óptica Carballo. Te ayudo con el catálogo, envíos y horarios; para lo demás te paso con una persona del equipo. Qué guardamos de esta conversación: ${SITE_URL}/politica-de-privacidad`;
+  return `Hola, soy el asistente virtual de Óptica Carballo (una inteligencia artificial: puede equivocarse). Te ayudo con el catálogo, envíos y horarios, y si necesitás a una persona del equipo, pedila cuando quieras.
+
+Para responderte, el texto de tus mensajes se procesa con proveedores de IA ubicados en Estados Unidos, y lo guardamos hasta 90 días. Si seguís la conversación, aceptás eso. No nos mandes datos de salud por acá. Más info y cómo borrar tus datos: ${SITE_URL}/politica-de-privacidad
+
+Contame tu consulta.`;
 }
 
 // ── Filtro de salida ────────────────────────────────────────────────────────
