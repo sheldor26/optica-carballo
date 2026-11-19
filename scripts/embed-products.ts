@@ -55,9 +55,10 @@ type ProductRow = {
   name: string;
   short_description: string | null;
   description: string | null;
-  category_slug: string;
   attributes: Record<string, unknown> | null;
   brands: { name: string; slug: string } | null;
+  // `products` no tiene columna category_slug: el slug sale del join con `categories`.
+  categories: { slug: string } | null;
 };
 
 /** Convierte un producto a texto rico para embeddear.
@@ -66,7 +67,7 @@ function productToText(p: ProductRow): string {
   const lines: string[] = [];
   lines.push(`Producto: ${p.name}`);
   if (p.brands?.name) lines.push(`Marca: ${p.brands.name}`);
-  lines.push(`Categoría: ${p.category_slug === 'anteojos-de-sol' ? 'Anteojos de sol' : 'Anteojos de receta'}`);
+  lines.push(`Categoría: ${p.categories?.slug === 'anteojos-de-sol' ? 'Anteojos de sol' : 'Anteojos de receta'}`);
   if (p.short_description) lines.push(`Descripción corta: ${p.short_description}`);
   if (p.description) lines.push(`Descripción: ${p.description}`);
 
@@ -122,8 +123,9 @@ async function main() {
   const { data: products, error } = await supabase
     .from('products')
     .select(`
-      id, slug, name, short_description, description, category_slug, attributes,
-      brands ( name, slug )
+      id, slug, name, short_description, description, attributes,
+      brands ( name, slug ),
+      categories ( slug )
     `)
     .eq('is_active', true);
 

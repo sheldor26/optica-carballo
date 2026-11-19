@@ -558,3 +558,15 @@ asymmetry_mm = abs(dnp_od - dnp_oi)
 - **Si un prompt cambia y empeora**: revertir a versión anterior. NO dejar regresión en producción.
 - **Logs**: cada llamada se loguea con: prompt_id, prompt_version, model, tokens_in, tokens_out, latency_ms, success, error (si hubo).
 - **Optimización futura**: cuando NeuralRouting esté integrado, parte de estas llamadas pueden cachearse (especialmente PROMPT-004 que es alta frecuencia, baja variabilidad).
+
+---
+
+## Asistente de WhatsApp — v1 (2026-11-19)
+
+**Dónde vive:** `lib/whatsapp/prompt.ts` (system prompt) + `lib/whatsapp/policy.ts` (reglas fijas y filtro de salida) + `lib/whatsapp/answer.ts` (llamada al modelo). Modelo: Claude Haiku 4.5 por `fetch`, sin streaming, `max_tokens` 500, herramienta `derivar_a_humano` (motivo: receta | duda_compleja | queja | pidio_persona | otro).
+
+**Diferencias con el prompt del chat web (`lib/chat/system-prompt.ts`):** sin markdown (WhatsApp no muestra links `[x](url)`; URL completa en línea propia); nunca "escribinos por WhatsApp" (ya está en WhatsApp: deriva con la herramienta); con horarios reales (lun-vie 8:00–12:15 y 16:30–20:30, sáb 8:30–12:15 y 17:00–20:30; domingos/feriados sin dato: no afirma nada); la consulta del cliente va entre `<consulta_cliente>` y el catálogo entre `<contexto_catalogo>` con los `<` del cliente neutralizados; el RAG solo en el turno actual y embebiendo los últimos 2 mensajes del cliente; garantía = la da el fabricante, nunca "todos tienen garantía".
+
+**Defensas que NO dependen del modelo:** derivación por reglas antes de llamar a la IA (graduación escrita, síntomas, reclamo/pedido, pide persona); filtro de salida (solo links a opticacarballo.com.ar, sin mails ni teléfonos, sin "estamos abiertos/cerrados", "garantía de Óptica Carballo", plazos prometidos; máx. 1200 caracteres) → si no pasa, respuesta fija + derivación; límites por número (12/h, 40/día entrantes; 8/h salientes) y tope global diario; interruptor `WHATSAPP_BOT_ENABLED`.
+
+**Smoke test:** `pnpm whatsapp:smoke` (21 frases, IA real, no manda nada por WhatsApp). Pruebas puras: `pnpm whatsapp:selftest` (63 casos). Resultado 2026-11-19 con el catálogo cargado (158 embeddings; `match_products` ya devuelve los 154 productos con stock): 21/21 ok. Leyendo las respuestas se vio que el modelo agregaba cualidades que la descripción no decía ("liviano", "se pueden adaptar lentes graduadas" en Vulk The Phone): se agregó la regla 6 al prompt y el filtro de salida exige que liviano/ligero/flexible/resistente/irrompible/antirrayas/antireflejo/cómodo/graduad/adaptar lentes figuren en el catálogo de ese turno. **Mantenimiento:** hay que volver a correr `scripts/embed-products.ts` cuando se carguen productos o cambien descripciones (si no, el bot no ve los nuevos).

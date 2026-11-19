@@ -616,7 +616,12 @@ Cuentas a confirmar/crear:
 ## ADR-024 — Integración con Mercado Libre: sync bidireccional de stock vía API + webhooks
 
 **Fecha**: 2026-05-29
-**Estado**: 🟡 En revisión (Sprint 1 implementado, Sprint 2 y 3 pendientes)
+**Estado**: 🟢 Vigente — Sprints 1-3 implementados y en producción (corregido 2026-09-29, este
+documento decía "Sprint 2/3 pendientes" desde mayo pese a que ya estaban hechos). Verificado contra
+Cloud: `marketplace_integrations` tiene una fila `mercadolibre` con `status=active` y token
+refrescándose solo; cron `ml-reconcile-stock` + `ml-ventas` corren cada hora (`vercel.json`). Único
+punto de los Sprints 1-3 que sigue sin hacer: la admin UI `/mi-cuenta/marketplace` (el mapping
+`mercadolibre_item_id` se sigue haciendo a mano por SQL en cada seed, no hay pantalla dedicada).
 **Categoría**: Arquitectura | Operación | Marketplace
 
 ### Contexto
@@ -699,17 +704,19 @@ Founder pidió "que cuando se vende en ML baje stock en la página y viceversa".
 - ✅ Estructura `lib/integrations/mercadolibre/` con types + Zod schemas.
 - ✅ Update PRODUCT_SCHEMA.md con el nuevo campo.
 
-**Sprint 2 (OAuth + webhook)** — REQUIERE credenciales del founder (App ID + Secret Key registrada en developers.mercadolibre.com.ar).
-- OAuth flow (initiation + callback + token storage).
-- Refresh token automático.
-- Webhook receiver `/api/ml/webhook` con validación HMAC.
+**Sprint 2 (OAuth + webhook)** — ✅ completo (verificado 2026-09-29).
+- ✅ OAuth flow (initiation + callback + token storage) — `app/api/ml/oauth/`.
+- ✅ Refresh token automático — token en Cloud se renueva solo, confirmado por `token_expires_at`.
+- ✅ Webhook receiver `/api/ml/webhook`.
 
-**Sprint 3 (sync activo)** — REQUIERE Sprint 2 funcionando + mapping de productos.
-- Server action `pushStockToML(variantId, newQty)`.
-- Procesamiento del webhook ML → update Supabase.
-- Admin UI `/mi-cuenta/marketplace`.
-- Cron de reconciliación diaria.
-- Tabla `marketplace_sync_errors` para logs.
+**Sprint 3 (sync activo)** — ✅ completo salvo la admin UI (verificado 2026-09-29).
+- ✅ Sync de stock — `lib/integrations/mercadolibre/sync-stock.ts`.
+- ✅ Procesamiento del webhook ML → update Supabase.
+- ⬜ Admin UI `/mi-cuenta/marketplace` — **sigue sin existir**, el mapping se hace a mano por SQL.
+- ✅ Cron de reconciliación — `ml-reconcile-stock`, cada hora (no diaria como decía el plan original).
+- ✅ Órdenes de ML — `ml-ventas`, cada hora (no estaba en el plan original de este ADR, se sumó
+  después — `lib/integrations/mercadolibre/orders.ts`).
+- Tabla `marketplace_sync_errors` para logs: no confirmado en esta revisión, pendiente de verificar.
 
 ---
 
@@ -761,6 +768,104 @@ El ADR-017 (2026-05-27) definía Andreani como operador principal y Correo Argen
 
 ### Cómo se valida
 Cotización validada contra producción (login + `/rates` + `/agencies`, read-only). El checkout e2e ya creó órdenes con envío a domicilio/sucursal/pickup correctamente.
+
+---
+
+## ADR-027 — Publicación en Instagram con la API oficial de Meta, no con un servicio de terceros
+
+**Fecha**: 2026-08-25
+**Estado**: 🟢 Vigente
+**Categoría**: Marketing / Integraciones
+
+### Contexto
+Toda publicación en @optica.carballo se hacía a mano: armar la placa en la compu, pasarla al
+celular, subirla. Con el catálogo creciendo y las placas ya generadas por código, el cuello de
+botella pasó a ser el subir, no el producir.
+
+Dos caminos: un servicio de terceros de programación de posts (Buffer, Later, Metricool,
+Ayrshare) o la API de publicación de contenido de Meta directo.
+
+La cuenta ya es Business y está vinculada a una página de Facebook, que es el requisito duro de
+Meta. Y como solo publicamos en nuestra propia cuenta, **no hace falta App Review** — eso es lo
+que suele hacer inviable el camino directo, y acá no aplica.
+
+### Decisión
+- **API oficial de Meta (Instagram Content Publishing), sin intermediarios.** Todo el código
+  aislado en `lib/integrations/instagram/`.
+- **El programador es nuestro**: la API de Instagram no tiene publicación programada. La cola
+  vive en `social_posts` y un cron de Vercel la despacha.
+- **El token vive cifrado en `marketplace_integrations`** (misma tabla y mismo AES-256-GCM que
+  Mercado Libre), no en una env var. Se renueva solo con 7 días de anticipación.
+- **Las publicaciones generadas automáticamente (producto, baja de precio) se encolan como
+  `draft` y las aprueba el founder**, no salen solas.
+
+### Por qué no un servicio de terceros
+- Costo mensual recurrente en dólares por algo que son dos llamadas HTTP.
+- Habría que subirles las placas a su storage, con nuestro catálogo y precios adentro.
+- Las placas se generan desde el repo (`build.py`, `scripts/lib/placas-*.ts`): meter un servicio
+  externo en el medio parte el flujo en dos y agrega un paso manual, que es justo lo que se
+  quería sacar.
+- Un intermediario más que puede romperse, y que igual depende de la misma API de Meta.
+
+### Por qué aprobación manual en lo generado
+La regla dura del negocio dice que no prometemos lo que no podemos cumplir. Una placa
+autogenerada con un precio desactualizado o un stock que ya se vendió es exactamente eso, y en
+el feed no se puede deshacer: se borra, pero ya la vieron. El costo de aprobar con un click es
+mucho más bajo que el de publicar mal.
+
+### Consecuencias
+- Positivas: cero costo recurrente; las placas van del repo a Instagram sin escalas; el mismo
+  historial (`social_posts`) sirva lo que salió a mano o programado.
+- Negativas / límites que son de Meta y no del código:
+  - Las historias por API van **sin stickers**: ni link, ni encuestas, ni preguntas, ni música.
+    Una historia que necesite el sticker de link va a mano.
+  - Solo JPEG; el feed solo acepta entre 4:5 y 1.91:1 (una placa de historia no sirve para feed).
+  - 100 publicaciones por cuenta cada 24 h.
+  - Carruseles y reels quedan fuera del alcance inicial.
+- El token vence a los 60 días y **no hay refresh token**: si se deja vencer hay que generar uno
+  a mano. Por eso la renovación anticipada y el aviso por mail si falla.
+
+### Addendum 2026-08-25 (fase 3) — dónde se genera la placa y de dónde sale el disparador
+
+Dos cosas se resolvieron distinto de lo planeado, por evidencia que apareció al construir:
+
+**1. La placa de producto se genera en la máquina del founder, no en Vercel.** Se dibuja con
+SVG + `sharp` y necesita las tipografías de `assets/placas/fonts/` (Anton, DM Sans), que
+`asegurarFuentes()` instala en el sistema. El runtime de Vercel no garantiza fuentes, y la
+alternativa (bundlear fontconfig) no se puede verificar sin deployar. Como la aprobación manual
+ya era la decisión, generar local no saca nada: el founder igual tenía que mirar la placa antes
+de que salga.
+
+**2. El disparador NO se colgó de `check-alerts`.** El plan decía engancharlo ahí, pero al
+mirar la base hay **0 alertas de clientes activas** — y aunque hubiera, esa tabla solo cubre los
+productos que alguien siguió, justo al revés de lo que se necesita. Se agregó
+`social_price_watch`: una foto del precio y el stock de cada variante, que un cron diario compara
+para detectar bajas (piso del 3%) y stock que vuelve. Avisa por mail con el comando exacto; no
+encola ni publica.
+
+### Cómo se valida
+`pnpm ig:token` muestra estado y cupo. `pnpm ig:post --dry-run` sube la imagen y crea el
+container sin publicar. La prueba real se hace con una **historia**, que se borra sola en 24 h.
+
+## ADR-028 — Chatbot de WhatsApp: API oficial de Meta en modo coexistencia, V1 "responder y derivar"
+
+**Fecha:** 2026-11-19 · **Estado:** propuesta aprobada por el founder (alcance y número); sin construir.
+
+### Decisión
+- **Canal:** WhatsApp Cloud API oficial de Meta, con el **mismo número** de la óptica en **modo coexistencia** (el bot atiende y el equipo puede seguir contestando desde la app WhatsApp Business). Hay que verificar en Meta que la cuenta sea elegible antes de construir; si no lo es, plan B = número nuevo para el bot.
+- **V1 = responder y derivar:** catálogo (reutiliza el RAG de `app/api/chat` + `lib/chat/`), horarios, envíos y garantía; ante receta o duda compleja avisa al equipo y deriva a humano. NO toma pedidos (ADR-008: el checkout directo es el primario).
+- **Portfolio (aprobado 2026-11-19):** la verificación va en un portfolio de Meta aparte solo para la óptica ("Óptica Carballo", id 1055140104677351), NO en "Juan Mirande 1" (donde están los proyectos personales del founder). La app de WhatsApp se crea NUEVA dentro de ese portfolio; la Página y la app de Instagram (ADR-027) no se mueven.
+- **App de Meta (2026-11-19):** "Óptica Carballo Bot", id 1687718589624595, creada dentro del portfolio "Óptica Carballo" (sin verificar: Meta indicó que no hace falta por ahora).
+- **Avisos de derivación (2026-11-19):** llegan por mail (Resend) a hola@opticacarballo.com.ar, variable `WHATSAPP_ALERT_EMAIL`; a confirmar con una prueba que esa casilla recibe.
+- **Diseño del bot (2026-11-19, tras revisión de `ai-features-engineer`):** interruptor general `WHATSAPP_BOT_ENABLED` (solo contesta si vale exactamente `true`; apagado, el webhook valida y descarta sin guardar nada); el mensaje se guarda ANTES de contestar 200 y se procesa con `after()`; solo se atienden los campos `messages` y `smb_message_echoes` (el evento `history` se descarta); si una persona contesta desde la app el bot se calla 12 h, y tras derivar también 12 h (con vencimiento, nunca eterna); límites 12/h y 40/día entrantes por número, 8/h salientes y tope global diario (default 500); derivación por reglas fijas antes de la IA (graduación escrita, síntomas, reclamo, pide persona) y por la herramienta `derivar_a_humano`; filtro de salida determinístico (solo links a opticacarballo.com.ar, sin mails ni teléfonos, sin 'estamos abiertos', sin plazos ni garantía propia); el bot no guarda imágenes ni audios (solo el tipo) y no interpreta recetas. **Fuera de V1 (a propósito):** precios en las respuestas (hay que leer el precio vigente de la tabla de productos, no del embedding).
+- Complementa ADR-008; no lo reemplaza.
+
+### Consecuencias
+- Los mensajes que manda la API tienen costo por conversación según la tarifa de Meta; los de la app son gratis.
+- En coexistencia no hay llamadas de voz por la API.
+- Reglas del bot: nunca prometer stock ni plazos fuera de lo publicado, nada de afirmaciones ópticas sin validar, no vender recetados sin receta.
+
+---
 
 ---
 

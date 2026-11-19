@@ -1,5 +1,25 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-11-19 — En el setup de WhatsApp afirmé cosas de Meta sin verificarlas: portfolio equivocado, "hay que verificar la empresa" y "el 2FA parece sin activar"
+
+**Estado:** ✅ Cerrado (los tres se corrigieron en el mismo día, sin daño: todo fue solo lectura y no se cambió nada en Meta).
+
+**Qué pasó:** (1) El founder tiene 10 portfolios de Meta; abrí el que se llama "Óptica Carballo" por el nombre, y la óptica real estaba en "Juan Mirande 1" (Página, apps). Tuvo que corregirme con el link. (2) Le dije que había que verificar la empresa con documentos y CUIT, y le hice planear qué entidad usar, sin haber mirado el Centro de seguridad: Meta decía "Your organization does not need to be verified". (3) Leí una captura del Centro de seguridad y dije que el 2FA "parecía sin activar" por el candado abierto en rojo; la tarjeta solo mostraba la política del portfolio ("quién está obligado: No one"). También asumí al principio que la app de Instagram del `.env.example` estaba en ese portfolio.
+
+**Causa raíz:** inferí estado de cuenta por el nombre, por el ícono y por lo que "suele pasar" en Meta, y lo presenté como hecho antes de abrir la pantalla que lo decía. Con eso mandé al founder a hacer trámites legales que no hacían falta.
+
+**Regla preventiva:** (1) con varios portfolios/cuentas, no asumir por el nombre: buscar el activo concreto (Página, app, número) y recién ahí decir cuál es. (2) Antes de pedirle al founder un trámite pesado o legal (verificación, documentos, CUIT), mirar en solo lectura si el sistema realmente lo exige y decir "a confirmar" hasta entonces. (3) Un ícono no es un estado: leer el texto de la tarjeta antes de afirmar algo sobre seguridad.
+
+## 2026-11-16 — "Vistos recientemente" disparaba una server action en bucle (~3 POST/seg por pestaña abierta) y prendió la alerta de Vercel de invocaciones de función
+
+**Estado:** 🟡 Arreglado en el código local (sin commitear al momento de escribir esto); el bucle sigue en producción hasta que se suba y se cierren las pestañas abiertas.
+
+**Qué pasó:** Vercel alertó "Function invocations spike ~33x" (71 mil invocaciones en 3 h contra 25 mil de un día normal; el Vercel Agent lo atribuyó a "clientes automatizados" de dos IPs argentinas recargando `vulk-nova`, `vulk-katleen` y `vulk-harry` con cache BYPASS). En Request Logs eran **POST** a la ficha (= server actions), varios por segundo. Era `RecentlyViewedTracker` (`components/recently-viewed/recently-viewed-tracker.tsx`).
+
+**Causa raíz:** `useEffect(() => { trackRecentAction(entry) }, [entry])` con `entry` como OBJETO. La action escribe una cookie, Next vuelve a renderizar la página al terminar la action, llega un `entry` nuevo (mismo contenido, otra identidad), el efecto se dispara de nuevo y vuelta a empezar, sin fin mientras la pestaña esté abierta. Venía de antes (alertas previas de 15, 19 y 49 días atrás con el mismo patrón). Probablemente las dos IPs sean pestañas abiertas del propio founder mientras carga productos.
+
+**Regla preventiva:** (1) en un `useEffect` que llama una server action, depender SIEMPRE de valores primitivos (strings/números), nunca de objetos o arrays que llegan por props desde un server component. (2) una server action que hace `cookies().set` vuelve a renderizar la ruta: nunca dispararla desde un efecto cuyas dependencias cambian con ese re-render. (3) ante una alerta de "invocaciones" en Vercel, mirar Request Logs: método POST sobre una página = server action en bucle, no bots. (4) para verificar efectos de React usar Chrome normal: el panel integrado en segundo plano no los ejecuta de forma confiable.
+
 ## 2026-11-10 — Le dije al founder que Vulk "no tiene publicada" la foto de perfil de la Harry CR51 porque la URL directa daba 404; las fotos estaban y las cargaba el sitio por JavaScript
 
 **Estado:** ✅ Cerrado (las fotos se bajaron y el kit de la CR51 se armó en el mismo turno).
@@ -9255,11 +9275,6 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** para afirmar que algo NO está publicado, recorrer también el listado de la cuenta ordenado por fecha de creación (`/users/{id}/items/search?sort=date_desc` + `/items?ids=`) y aun así decirlo como "no lo encontré", y preguntarle al founder si ya empezó a cargarlo.
 
-# Notas finales
-
-- Este archivo NO es para criticarse. Es para no repetir errores.
-- Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
-- El acto de documentar un mistake es parte de la solución.
 ## 2026-11-17 — La placa de garantía de los kits de ML decía "Armazón liviano y cómodo" por defecto, contra la regla de no decir "liviano"
 
 **Qué pasó:** al auditar el set del Activist BIO-40 con Codex, avisó que el código de `scripts/ml-placas.ts` trae de fábrica el ítem "Armazón liviano y cómodo" en la placa 06 (y "Armazón liviano" como callout por defecto). Lo confirmé mirando el 06 de Glory Box: lo lleva, junto con "Apto para adaptar lentes graduadas", aunque su PUBLICACION.md decía "sin placa de graduación" y "no dice liviano". Las descripciones de texto estaban cuidadas; las imágenes salieron con el default sin revisar.

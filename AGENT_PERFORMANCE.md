@@ -95,13 +95,13 @@ Tracker de uso, performance y evolución de cada agente del sistema. Usado por `
 ## ai-features-engineer
 
 - **Versión**: 1.1
-- **Estado**: ⚪ Definido, sin invocaciones aún
+- **Estado**: 🟢 Invocado con buen resultado
 - **Creado**: 2026-05-27
-- **Última revisión**: 2026-06-11
-- **Invocaciones estimadas (último período)**: 0
-- **Casos de éxito**: -
-- **Casos donde requirió corrección**: -
-- **Notas**: Stack de modelos IA definido. Validar costos reales vs estimados.
+- **Última revisión**: 2026-11-19
+- **Invocaciones estimadas (último período)**: 1 (2026-11-19, revisión de diseño del bot de WhatsApp)
+- **Casos de éxito**: leyó el chat web existente y devolvió 5 cambios priorizados que se adoptaron (guardar antes del 200, ignorar `history`, tope de salientes, ráfagas, derivación por herramienta) + filtro de salida y límites. Detectó además que el prompt web mezcla el contexto del catálogo con la consulta del cliente (falsificable).
+- **Casos donde requirió corrección**: sugirió sumar el precio a las respuestas; se dejó fuera de V1 porque `match_products` no trae precio y hay que leerlo de la tabla viva (decisión registrada en ADR-028).
+- **Notas**: Stack de modelos IA definido. Validar costos reales vs estimados. Funciona mejor con el diseño en prosa y preguntas concretas (a–h) que con "revisá esto".
 
 ## conversion-optimizer
 

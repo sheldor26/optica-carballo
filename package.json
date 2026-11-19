@@ -32,6 +32,8 @@
     "ig:despachar": "tsx --env-file=.env.local scripts/ig-despachar.ts",
     "ig:producto": "tsx --env-file=.env.local scripts/ig-producto.ts",
     "ig:guia": "tsx --env-file=.env.local scripts/ig-guia.ts",
+    "whatsapp:selftest": "tsx scripts/whatsapp-selftest.ts",
+    "whatsapp:smoke": "tsx --conditions=react-server --env-file=.env.local scripts/whatsapp-smoke.ts",
     "foto:reemplazar": "tsx --env-file=.env.local scripts/reemplazar-foto-producto.ts",
     "fotos:subir": "tsx --env-file=.env.local scripts/subir-fotos-producto.ts",
     "vulk:fotos": "tsx scripts/vulk-fotos.ts",

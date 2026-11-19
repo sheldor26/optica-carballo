@@ -107,7 +107,7 @@ export const FAQS: FaqItem[] = [
     category: 'envios',
     question: '¿Puedo retirar el producto en el local?',
     answer:
-      'Sí, el retiro en local es gratis. Nuestro local está en Av. Lavalle 2686, Gob. Virasoro, Corrientes (CP 3342). Te avisamos por WhatsApp cuando tu pedido esté listo para retirar. [A CONFIRMAR: horario de atención].',
+      'Sí, el retiro en local es gratis. Nuestro local está en Av. Lavalle 2686, Gob. Virasoro, Corrientes (CP 3342). Te avisamos por WhatsApp cuando tu pedido esté listo para retirar. Podés pasar de lunes a viernes de 8:00 a 12:15 y de 16:30 a 20:30, o los sábados de 8:30 a 12:15 y de 17:00 a 20:30.',
   },
   {
     id: 'paquete-no-llego',
@@ -126,7 +126,7 @@ export const FAQS: FaqItem[] = [
     featured: true,
     question: '¿Qué medios de pago aceptan?',
     answer:
-      'Por ahora coordinamos cada compra por WhatsApp. Podés pagar con Mercado Pago (tarjeta de crédito, débito, transferencia, dinero en cuenta), MODO o transferencia bancaria directa. [A CONFIRMAR: si aceptan efectivo en el local para retiro en persona]. Apenas esté activo el pago online en el sitio, vas a poder pagar directo ahí.',
+      'Por ahora coordinamos cada compra por WhatsApp. Podés pagar con Mercado Pago (tarjeta de crédito, débito, transferencia, dinero en cuenta), MODO o transferencia bancaria directa. Si retirás en el local, también podés pagar en efectivo. Apenas esté activo el pago online en el sitio, vas a poder pagar directo ahí.',
   },
   {
     id: 'cuotas-sin-interes',
@@ -225,7 +225,7 @@ export const FAQS: FaqItem[] = [
     category: 'nosotros',
     question: '¿Tienen local físico?',
     answer:
-      'Sí, estamos en Av. Lavalle 2686, Gob. Virasoro, Corrientes. Somos una óptica familiar con más de 30 años de experiencia. [A CONFIRMAR: horario de atención].',
+      'Sí, estamos en Av. Lavalle 2686, Gob. Virasoro, Corrientes. Somos una óptica familiar con más de 30 años de experiencia. Atendemos de lunes a viernes de 8:00 a 12:15 y de 16:30 a 20:30, y los sábados de 8:30 a 12:15 y de 17:00 a 20:30.',
   },
 
   // ===========================================================================

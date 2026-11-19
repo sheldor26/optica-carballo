@@ -1,5 +1,15 @@
 # Óptica Carballo — Learnings Log
 
+## 2026-11-19 — Revisar el diseño con el agente de IA ANTES de escribir el bot de WhatsApp, y probar contra el catálogo real
+
+**Qué funcionó:** darle al `ai-features-engineer` el diseño en prosa (sin código) y pedirle críticas concretas encontró huecos que el código habría tenido: guardar el mensaje ANTES de contestar 200 (si no, Meta no reintenta y se pierde), ignorar el evento `history` de la coexistencia (el bot le habría contestado a chats de hace meses), tope de mensajes SALIENTES (bot contra bot), esperar unos segundos por si el cliente manda ráfagas, y derivar con una herramienta del modelo en vez de una etiqueta en el texto. Después, un script de prueba con la IA real (`pnpm whatsapp:smoke`) mostró que las respuestas eran buenas en tono pero que el catálogo venía vacío: `product_embeddings` tenía 0 filas y ningún test de formato lo iba a detectar.
+
+**Cómo se usa:** para cualquier feature con IA nueva: (1) escribir el diseño en una página, (2) pasárselo al agente con preguntas concretas, (3) dejar la lógica que no depende del modelo (reglas, filtros, límites) en módulos puros con un selftest, (4) correr el smoke con IA real y MIRAR las respuestas, no solo que pasen los checks.
+
+**Regla:** un smoke test de IA que pasa 21/21 no prueba que el RAG funcione; verificar siempre cuántas filas devuelve la búsqueda antes de confiar en las recomendaciones.
+
+**Segundo hallazgo del mismo smoke:** cargados los embeddings, `match_products` seguía devolviendo 0 o 16 productos aunque hubiera 154 con stock: el índice `ivfflat` (100 listas) se había creado con la tabla vacía y cada consulta miraba una sola lista. Se detectó pidiendo `umbral -1` y `count 200` y comparando con el total. Regla: con un catálogo chico no usar ivfflat (búsqueda exacta, o HNSW); y NUNCA crear un índice ivfflat antes de cargar los datos. Además, el modelo agregó "liviano" y "se pueden adaptar lentes graduadas" a un producto que no lo decía: el smoke pasó igual, y solo se vio LEYENDO las respuestas. Por eso el filtro de salida ahora exige que ciertas cualidades (liviano, flexible, resistente, graduadas...) figuren en el catálogo de ese turno.
+
 ## 2026-11-16 — Placa de callouts v2 (legible en el celular) como estilo por defecto
 
 **Qué funcionó:** comparar la placa vieja y la nueva a 375 px de ancho (cómo se ve la galería de ML en el celular) mostró el problema real: subtítulos de 4-5 px ilegibles. La v2 usa un texto corto y grande por cartel, un cartel protagonista en celeste, líneas rectas con punto, y fondo con degradé y sombra (producto con `multiply`).
@@ -12305,17 +12315,18 @@ El recorte de 20 px de una foto real salía borroso al ampliarlo (seed 195, rech
 
 **Qué funcionó:** el ciclo seo-strategist + optical-expert + auditoría externa (Codex y Gemini) detectó, antes de publicar, tres cosas que yo había dado por buenas: declarar "Policarbonato" por defecto cuando el distribuidor no informa el material, decir "Garantía oficial del fabricante" sin respaldo (la política sólo dice "1 año contra defectos de fabricación") y la instrucción de elegir "El producto no tiene código registrado" para el GTIN sólo porque no tenemos el código a mano. Reglas: atributo no obligatorio y sin dato confirmado = vacío; GTIN = pedirlo al proveedor/caja antes de declararlo ausente; forma/material del armazón se eligen de la lista de ML (Rectangular/Plástico) y lo específico (cuadrado/poliamida) va en título y descripción. Para saber las listas reales: `GET /categories/MLA417128/attributes` con el token de la integración. Operativo: el binario de Codex es `/opt/homebrew/bin/codex` (la ruta de la skill trio-auditor quedó vieja).
 
+## 2026-11-16 — Diagnosticar una alerta de Vercel "function invocations spike": ir a Request Logs, no confiar en el resumen del agente
+
+**Qué funcionó:** abrir la alerta (Observability → Alerts) para ver la ruta y la cantidad, y después Logs → "Request Logs" (el log por defecto es "Runtime Logs", que no muestra los requests). Ver que eran POST a una página dio la pista exacta (server action en bucle) y permitió reproducirlo en local: `next dev -p 3100`, abrir la ficha en Chrome y contar los POST de red antes y después del arreglo (antes ~19 cada 10 s sin parar; después 1 solo al cargar). El resumen automático del agente de Vercel decía "clientes automatizados", la causa real era un bug nuestro.
+
+**Cómo aplicar:** ante picos de invocaciones, reproducir con el contador de red antes de arreglar y después de arreglar; verificar con Chrome real (el panel integrado en segundo plano no ejecuta los efectos de React de forma confiable).
+
 ## 2026-11-17 — Claims de una línea de Vulk (biodegradable, origen): buscar en la página de TECNOLOGÍA de la marca, no sólo en la ficha del modelo
 
 **Qué funcionó:** el agente optical-expert miró sólo la ficha de un modelo de la línea (BIO 01 de receta) y concluyó "no hay fuente pública", porque ahí sólo las patillas figuran como biodegradables. El founder avisó que lo veía en su factura y pidió buscar la campaña Bio Activist: la sección ACTIVIST (06 Eco) de `vulkeyewear.com/tecnologia` sí declara el claim a nivel línea (acetato de celulosa de algodón biodegradable, origen natural, materia prima FSC, estuche y paño de PET reciclado). Con eso el claim se pudo escribir, acotado al acetato y aclarando en las preguntas frecuentes que bisagras y lentes no lo son. El origen (Italia) lo respaldó la factura del founder, que es documento primario.
 
 **Cómo aplicar:** para claims de línea o material de Vulk, mirar primero `vulkeyewear.com/tecnologia` (y "Sobre nosotros"), después la ficha del modelo y por último revendedores. Un "no hay fuente" de un agente sólo vale si recorrió esas tres. Cuando el founder tiene la factura o la caja, es fuente primaria: no le pidas que la verifique, pedile la foto para guardarla como respaldo. Redacción: biodegradable sólo sobre el material que la marca declara, sin "ecológico", "sustentable" ni plazos si no hay norma citada.
 
-## Notas finales
-
-- Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
-- También se actualiza manualmente cuando el founder o el sistema detectan algo digno de documentar.
-- Si el log crece mucho y se vuelve difícil de navegar, el `agent-manager` propondrá consolidación en `/agent-review`.
 ## 2026-11-18 — Recolorear en Gemini una foto de catálogo: base = la foto del mismo ángulo que la ficha del fabricante, muestra de color = el FRENTE ya aprobado
 
 **Qué funcionó:** para el Yester CRY, la pasada que dio el ángulo y el tono correctos fue pegar primero el frente ya aprobado (`cry-gemini/frente.jpg`) como muestra de color, "SOLO como muestra, no uses su forma ni su ángulo", y al final la foto de catálogo con el ángulo exacto de la página de Vulk (`originales/cbrn_2.jpg`), pidiendo mantener ángulo, encuadre y fondo, patillas lisas y sólo la corona dorada. El resultado salió con el caramelo claro del frente y la corona dorada nítida, sin textos deformes.
@@ -12340,3 +12351,12 @@ El recorte de 20 px de una foto real salía borroso al ampliarlo (seed 195, rech
 
 **Cómo aplicar:** para confirmar si un modelo ya está en ML o para recuperar los item ids, buscar por `seller_sku` con el SKU de casa antes que por texto o por fecha; un resultado vacío por SKU sí sirve para decir "todavía no está publicada" (a diferencia de la búsqueda por fecha). Complementa la regla de MISTAKES sobre no afirmar que algo no está publicado.
 
+## 2026-11-18 — MiCorreo `/rates` devuelve plazo (min/max) pero es igual para todo el país: no sirve para estimar por código postal
+
+**Qué se encontró:** consultando `/rates` en producción (solo lectura) para 12 CP (Virasoro, Corrientes, Posadas, La Plata, CABA, Córdoba, Rosario, Tucumán, Neuquén, Comodoro, Ushuaia, Jujuy): Correo Clásico siempre `2-5` días y Expreso `1-3`, a domicilio y a sucursal; sólo cambia el precio por zona. **Cómo aplicar:** para mostrar "llega entre X y Y" por CP hay que usar una tabla propia por zona (alimentada con entregas reales), no `deliveryTimeMin/Max`; mostrar el 2–5 de la API sería prometer de menos que lo real. Script de consulta de ejemplo: ver el patrón en `lib/correo/quote.ts` (token Basic + POST `/rates`), es de solo lectura.
+
+## Notas finales
+
+- Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).
+- También se actualiza manualmente cuando el founder o el sistema detectan algo digno de documentar.
+- Si el log crece mucho y se vuelve difícil de navegar, el `agent-manager` propondrá consolidación en `/agent-review`.
