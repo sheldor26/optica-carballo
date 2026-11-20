@@ -705,3 +705,11 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - **Yester polarizadas (2026-11-18, seed 210 aplicado):** RESUELTO: precio ($102.058), stock (SBLK 3, MDEMI 2, MBLK 3) y GTIN de las 3 polarizadas, y la decisión de publicarlas como items simples (verificado por API: MLA2300345537, MLA2300333241, MLA2300370887). SIGUE PENDIENTE: (a) publicar la CRY LT BRN/T16 (969777) con su precio, stock y GTIN y pasar el link; (b) coronita en la patilla de las polarizadas: las fotos oficiales muestran una coronita plateada, mirá tu unidad y decime si es igual; (c) peso real (20 g es el de la ficha de Vulk). Bloquea: (a) la 4ª variante; (b) y (c) nada.
 
 - **Yester CRY en ML (2026-11-18, seed 211 aplicado):** el item MLA2300374329 quedó con el SKU "9697777" (un 7 de más): corregilo a 969777 en ML. El GTIN quedó vacío ('Otra razón'): si tenés el código de barras de la caja de la CRY, cargalo y pasámelo. Sigue pendiente de las polarizadas: coronita de la patilla y peso real (20 g de la ficha de Vulk). Bloquea: nada.
+
+## Vulk Merge (2026-11-18, arrancado)
+- [x] **Fotos de frente:** resuelto el 2026-11-20 sin Gemini con el frente oficial de la home de Vulk (640 px, ampliado: queda algo suave). Si tenés un frente real de tu unidad en alta (de frente, sobre papel blanco, sin flash), pasalo y rehago la 02 y el frente web. Bloquea: nada.
+- [ ] **Multivariante o items separados** en ML; **precio, stock y GTIN** de las 2 y los links cuando publiques. Bloquea: el seed 212.
+- [ ] **Confirmar medidas:** cargué ancho total 145 / alto total 43 (vos las escribiste al revés). Si es al revés de verdad, avisame.
+- [ ] **Coronita/logo en la patilla:** mirá tu unidad contra la foto oficial.
+
+- **Vulk Merge (2026-11-20, seed 212 aplicado):** RESUELTO: publicación en ML (2 items simples), precio ($133.245), stock (3 y 3) y fotos. SIGUE PENDIENTE: (a) GTIN de la C2 (969911) y de la C3 (969912): en ML no aparece cargado; si tenés el código de barras de la caja, pasámelo o cargalo; (b) mirá la patilla de tu unidad contra la foto oficial (coronita/logo); (c) opcional: un frente propio en alta para rehacer la placa 02 y el frente web (hoy es la foto de Vulk de 640 px ampliada). Bloquea: nada.

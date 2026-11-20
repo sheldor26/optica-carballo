@@ -9316,3 +9316,11 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 - Este archivo NO es para criticarse. Es para no repetir errores.
 - Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
 - El acto de documentar un mistake es parte de la solución.
+## 2026-11-20 — Vulk Merge: la placa 02 "frente" salió con la foto del estuche y la franela
+
+**Qué pasó:** el generador de placas exige una foto de frente. Las páginas de color de Vulk sólo traían la vista 3/4 y una foto del estuche, así que pasé la del estuche como `--frente` y entregué los kits diciendo que "calzaba con incluye estuche". El founder contestó: "mal, en la foto de frente trajiste el estuche con la franela". El frente real del Merge estaba en la home de vulkeyewear.com (3 colores, 640 px) y no lo había buscado ahí. Antes de eso, además, pedí control de pantalla para generar el frente en Gemini sin que hiciera falta.
+
+**Causa raíz:** (1) rellené un requisito del script con la foto disponible en vez de buscar la correcta; (2) busqué las fotos sólo en las páginas de producto y no en la home ni en los listados de la marca; (3) presenté como "criterio" algo que cambiaba el contenido de una placa sin consultar.
+
+**Regla preventiva:** si falta una foto que exige el script (frente, perfil), no sustituirla por otra cosa: buscarla primero en la home y los listados de la marca (`/img/cache/640/…`), y si no existe, preguntar al founder antes de entregar el kit. Nunca poner un accesorio (estuche, franela, caja) en el lugar de una vista del armazón.
+

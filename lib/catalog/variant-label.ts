@@ -85,6 +85,9 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'plateado-patillas-negras-logo-naranja': 'Plateado con patillas negras y logo naranja',
   'dorado-brillo-patillas-plateadas': 'Dorado brillo con patillas plateadas',
   'dorado-mate-patillas-plateadas': 'Dorado mate con patillas plateadas',
+  // Vulk Merge (seed 212): frente de metal dorado, patillas de acetato.
+  'dorado-patillas-negras': 'Dorado con patillas negras',
+  'dorado-patillas-carey': 'Dorado con patillas carey',
   'negro-mate': 'Negro mate',
   'negro-brillo': 'Negro brillo',
   'negro-satinado': 'Negro satinado',
