@@ -79,7 +79,7 @@ export function ProductHighlights({
   if (weight !== null) {
     highlights.push({
       key: 'weight',
-      label: `${weight} g · liviano`,
+      label: `${weight} g`,
       icon: Feather,
     });
   }
