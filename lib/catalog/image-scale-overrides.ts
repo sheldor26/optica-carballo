@@ -321,6 +321,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-booping/BOOPING MBLKG15 POL- frente.jpg': 1.05,
   'vulk-booping/BOOPING BROWNB15 POL-perfil.jpg': 1.2,
   'vulk-booping/BOOPING BROWNB15 POL frente.jpg': 1.05,
+  // Booping MDEMI (seed 214): mismos valores que las otras variantes (comparar contra el grid).
+  'vulk-booping/perfil-mdemi.jpg': 1.2,
+  'vulk-booping/frente-mdemi.jpg': 1.05,
 
   // Vulk Arvin — counter-learning del mistake Booping iter 2: default 1.15/1.0
   // CONSERVADOR. Si queda chico vs grid, subir escalonado a 1.2/1.05.
@@ -554,6 +557,9 @@ export const IMAGE_SCALE_OVERRIDES: Record<string, number> = {
   'vulk-deserve/DESERVE-SBLK-GDARK-GREY f.jpg': 1.0,
   'vulk-deserve/DESERVE-MBLK-G3262-EMERALD p.jpg': 1.15,
   'vulk-deserve/DESERVE-MBLK-G3262-EMERALD f.jpg': 1.0,
+  // Deserve Sienna (seed 213): mismos valores que las otras 3 variantes.
+  'vulk-deserve/perfil-sienna.jpg': 1.15,
+  'vulk-deserve/frente-sienna.jpg': 1.0,
 
   // Vulk Katleen — cuadrado femenino G-Flex ultra liviano. Perfil 1.15 / frente
   // 1.0 (default, mismo patrón que Beason/Vorez femeninos). Pendiente chequeo

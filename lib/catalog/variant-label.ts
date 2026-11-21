@@ -104,6 +104,8 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'gris-oscuro-transparente': 'Gris oscuro transparente',
   'azul-metalico': 'Azul metálico',
   'rosa-transparente': 'Rosa transparente',
+  // Vulk Ombuxe C28 (seed 215): así la llama el founder en ML ("Rosa Claro Transparente").
+  'rosa-claro-transparente': 'Rosa claro transparente',
   'marron-transparente': 'Marrón transparente',
   'marron-brillo': 'Marrón brillo',
   'marron-claro-transparente': 'Marrón claro transparente',
@@ -160,6 +162,8 @@ const LENS_COLOR_LABELS: Record<string, string> = {
   'verde-oscuro-degrade': 'Verde oscuro degradé',
   'verde-claro-degrade': 'Verde claro degradé',
   'marron-degrade': 'Marrón degradé',
+  // Vulk Ombuxe C17 (seed 215): lente marrón caramelo liso; `marron-claro` es otro tono.
+  'marron-caramelo': 'Marrón caramelo',
   'gris-degrade': 'Gris degradé',
   'verde-degrade': 'Verde degradé',
   'gris-oscuro': 'Gris oscuro',

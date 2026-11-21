@@ -713,3 +713,38 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Coronita/logo en la patilla:** mirá tu unidad contra la foto oficial.
 
 - **Vulk Merge (2026-11-20, seed 212 aplicado):** RESUELTO: publicación en ML (2 items simples), precio ($133.245), stock (3 y 3) y fotos. SIGUE PENDIENTE: (a) GTIN de la C2 (969911) y de la C3 (969912): en ML no aparece cargado; si tenés el código de barras de la caja, pasámelo o cargalo; (b) mirá la patilla de tu unidad contra la foto oficial (coronita/logo); (c) opcional: un frente propio en alta para rehacer la placa 02 y el frente web (hoy es la foto de Vulk de 640 px ampliada). Bloquea: nada.
+
+## Vulk Deserve Sienna (2026-11-20, kit hecho)
+- [x] **Publicar en ML:** hecho (MLA4223912450, $94.085, stock 2), seed 213 aplicado el 2026-11-20.
+- [ ] **Corregir en ML el SKU del Sienna:** quedó "112939" y es 112938 (el de Vulk y el de la base). Bloquea: nada.
+- [ ] **GTIN** del Sienna: en ML quedó vacío; si tenés el código de barras de la caja, cargalo o pasámelo. Bloquea: nada.
+- [ ] **Altura:** en ML pusiste 5,2 cm de altura de lente y en la web el Deserve tiene alto total 58 mm (medida tuya, coincide con Vulk). ¿Son dos medidas distintas (lente 52 / total 58)? Si es un error, decime cuál vale.
+- [ ] **Peso** de la unidad (no figura en Vulk ni en la base del Deserve). Bloquea: nada.
+
+## MDEMI/DRT04 POL, SKU 960802 (2026-11-20, arrancado sin modelo)
+- [x] **Nombre del modelo:** es una variante nueva del Booping (2026-11-20).
+- [x] **Fotos:** recreadas en Gemini desde las fotos oficiales del Booping negro y tus fotos reales; el kit está en `SUBIR-vulk-booping-mdemi`. Revisá `ml/01-perfil.jpg` y `02-frente.jpg` contra tu unidad.
+- [x] **Medidas:** las del Booping ya cargadas (52-21-143, alto 52).
+- [ ] **Publicar en ML** (variación nueva del item MLA1440036743 o item aparte) y pasarme precio, stock, GTIN y el link. Bloquea: el seed 214.
+
+## Booping: imágenes de ML (2026-11-21)
+- [ ] **Reemplazar en ML las fotos de las 4 variaciones** del item MLA1440036743 con los kits `SUBIR-vulk-booping-lpink`, `-mblkdrt03`, `-mblkg15` y `-brown` (y la MDEMI cuando la publiques). Bloquea: nada.
+
+- **Booping MDEMI (2026-11-21, seed 214 aplicado):** RESUELTO: publicación como 5ª variación (SKU 960802, $93.955, stock 3). SIGUE PENDIENTE: pegar la descripción conjunta en MLA1440036743 y el GTIN de la MDEMI si tenés el código de barras. Bloquea: nada.
+
+## Vulk Ombuxe (2026-11-21, kit de la C17 hecho)
+- [x] **Polarizadas:** NO (confirmado 2026-11-21). **Frente biodegradable:** confirmado.
+- [x] **Fotos de la C28** (SKU 957127, era la "C29" por error): recibidas, corregidas del exceso de brillo y kit hecho en `SUBIR-vulk-ombuxe-c28`. Falta tu OK mirando la 01 contra tu unidad.
+- [ ] **Medidas:** Vulk publica 55-18-140 (ancho 147) para la C28; vos pasaste 56-18-145 y ancho 149 (y la unidad grabada dice 56□18 145). Cargo las tuyas; avisame si querés otra cosa.
+- [ ] **Subir la C17 a ML** con el kit `SUBIR-vulk-ombuxe-c17` y pasarme precio, stock, GTIN y el link. Bloquea: el seed 215.
+- [x] **Forma del armazón:** aviador cuadrado con doble puente (confirmado 2026-11-21).
+- [ ] **Multivariante o items separados** para C17 y C28.
+
+## Vulk Ombuxe (2026-11-21, seed 215 aplicado)
+- [x] Publicación en ML (variaciones C17 y C28 del item MLA2190885294, $136.819, stock 2 c/u) y seed aplicado.
+- [ ] **Material de lente en ML:** dice Policarbonato y la unidad es CR39 (no pueden ser los dos). Corregilo en ML si el campo te deja; en la web va CR39. Bloquea: nada.
+- [ ] **Categoría del degradé de la C28:** cargué cat 3 de la etiqueta de tu unidad; si querés cerrarlo, consulta puntual a Vulk. Bloquea: nada.
+- [ ] **Variaciones viejas del item de ML (C16 negro brillo/gris oscuro degradé, C24 carey/celeste degradé, C21 marrón claro/brown gradient, stock 0):** si las querés en la web pasame SKU, fotos y confirmación; hoy no están cargadas.
+- [ ] **Tests rápidos antes de insistir con el copy:** rotar la lente frente a una pantalla (confirma 'no polarizado'), confirmar que el frente es acetato y mirar si la etiqueta trae leyenda de 'no apto para conducir'.
+- [ ] **GTIN** de la C17 y la C28 si tenés el código de barras.
+

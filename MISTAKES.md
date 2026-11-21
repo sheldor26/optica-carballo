@@ -9324,3 +9324,16 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 
 **Regla preventiva:** si falta una foto que exige el script (frente, perfil), no sustituirla por otra cosa: buscarla primero en la home y los listados de la marca (`/img/cache/640/…`), y si no existe, preguntar al founder antes de entregar el kit. Nunca poner un accesorio (estuche, franela, caja) en el lugar de una vista del armazón.
 
+## 2026-11-21 — Ombuxe C17: leí al revés "el marrón es un poco más claro" y oscurecí la lente
+
+**Qué pasó:** el founder dijo "quedó muy bien, pero el marrón es un poco más claro". Lo interpreté como "el marrón quedó más claro que el real" y oscurecí el recoloreo un 12%; era al revés: quería la lente más clara. Después, mi segundo intento (ya en la dirección correcta) se cortó por el permiso de la herramienta y el kit siguió con la versión oscura, por lo que el founder volvió a decir "parece que sigue oscuro".
+
+**Causa raíz:** (1) feedback ambiguo sobre la dirección de un ajuste ("es más claro") resuelto por mi cuenta en vez de confirmar o mostrar opciones; (2) usé el promedio de píxeles de las fotos como criterio de "el color real", cuando lo que cuenta es lo que el founder ve.
+
+**Regla preventiva:** ante un ajuste de tono cuya dirección no es inequívoca, generar una tira de 3-4 tonos y dejar que el founder elija el número, o preguntar "¿más clara o más oscura?" antes de regenerar el kit; y verificar siempre que el kit en disco tenga la versión que dije que dejé (mirar el archivo, no asumir que el comando corrió).
+
+# Notas finales
+
+- Este archivo NO es para criticarse. Es para no repetir errores.
+- Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
+- El acto de documentar un mistake es parte de la solución.
