@@ -12391,6 +12391,17 @@ El MCP de Vercel devuelve 404 ("Plan not found" / "Observability Data not found"
 
 **Cómo aplicar:** frames translúcidos claros: tolerancia baja al limpiar el fondo y revisar el borde inferior; la imagen de Gemini se saca con el botón de copiar y el portapapeles (`PNGf`). Siempre mirar la placa 01 a pantalla completa: el recuadro gris del fondo sólo se ve en la placa, no en el visor de Gemini.
 
+## 2026-11-21 — Cambiar sólo el color de un marco liso (azul eléctrico → azul marino): máscara HSV por saturación y tono, no Gemini
+
+**Qué funcionó:** en el Reporter MBLU el marco oficial salía azul eléctrico (RGB prom. 47-78-133) y el real es azul marino mate (42-49-77). Con PIL + numpy: máscara del marco = saturación > 0,30 (suavizada 0,30-0,42) y tono entre 200° y 255° y valor > 0,15; sobre esa máscara, en HSV, valor × 0,46, saturación × 0,72 y tono +10° (el oficial estaba a 218° y el real a 228°). La lente (gris violácea, S ≈ 0,2) queda fuera por la saturación, y el sello "Vulk P", los textos de la patilla y los bordes quedan intactos. Mismo método para la 3/4, donde las patillas desaturadas también entran en la máscara.
+
+**Cómo aplicar:** para tono de marcos/lentes lisos usar este método y dejar tres tonos (valor × 0,58 / 0,46 / 0,36) para que el founder elija; Gemini sólo si hay que cambiar forma, patrón (carey) o rehacer un fondo. Errores a evitar: separar por tono sin mirar la saturación (la lente violeta se pinta como marco) y aplicar un cociente por canal RGB en vez de HSV (vira a rojo/violeta).
+
+**Addendum (mismo día, el founder pidió Gemini):** con Gemini también salió bien si la instrucción es de UNA sola cosa y dice 'no toques ni redibujes el sello (dice Vulk P), es una foto retocada, no una imagen nueva'; pasar la foto real como referencia de color y la oficial al final. Pasos: (1) frente con el marco ya corregido como base para una segunda pasada que toque sólo la lente; (2) medir marco y lente en las imágenes (promedio RGB por zona) antes de decir que quedó bien: el primer frente tenía la lente idéntica a la oficial (120-141 abajo) aunque el marco estaba perfecto; (3) recortar el sello oficial vs generado lado a lado. Las dos vías sirven; Gemini es mejor si el founder prefiere ese aspecto, el código si hay que garantizar píxeles.
+
+### Borrar grabados de una foto de producto por código (2026-11-21)
+Para sacar texto grabado de una patilla (Reporter, "53□20 144" y "VULK EYEWEAR") funciona: (1) polígono acotado sólo a los textos, siguiendo la inclinación de la patilla y quedando unos 3 px por encima del borde del frente; (2) rellenar con un promedio gaussiano (σ≈9) de **píxeles azules sanos** (saturación > 0,30 y valor < 0,62), nunca de toda la imagen: si el promedio incluye el fondo blanco, salen manchas claras (me pasó en una segunda pasada; se volvió al original con texto, guardado antes de tocar); (3) no reemplazar donde casi no hay vecinos azules (da un bloque negro); (4) mirar el recorte ampliado 8× antes y después, porque los restos tenues sólo se ven así. Guardar siempre una copia `_con_texto` antes de editar.
+
 ## Notas finales
 
 - Este archivo se actualiza automáticamente al cerrar sesión cuando hay learnings significativos (vía hook en `settings.json`).

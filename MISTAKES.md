@@ -9337,3 +9337,11 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 - Este archivo NO es para criticarse. Es para no repetir errores.
 - Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
 - El acto de documentar un mistake es parte de la solución.
+## 2026-11-21 — Reporter MBLU: Gemini cambió el sello "Vulk P" y yo oscurecí la lente sin que me lo pidieran
+
+**Qué pasó:** el founder pidió corregir las fotos oficiales del Reporter azul (el marco azul oficial es más claro que el real). (1) Se lo pasé a Gemini con la foto real de referencia y devolvió el marco y las lentes bien, pero reemplazó el sello "Vulk P" de la lente por otro dibujo distinto; lo entregué para revisar sin comparar el sello contra el original y fue el founder quien lo vio. (2) Al rehacerlo por código oscurecí también la lente "porque la real era casi negra", sin que lo pidiera: el founder tuvo que aclarar "lo único que hay que hacer es oscurecer más el marco, nada más". (3) Mi primera máscara por código confundió la lente gris violácea con el marco azul y dejó manchas rojizas y patillas violetas; la detecté mirando la imagen, pero eran dos iteraciones perdidas.
+
+**Causa raíz:** (1) repetí el patrón ya registrado de Gemini con texto/logos chicos (Vulk EVEWEAK, Cinema, sello del Vulk): no hay que pedirle que "mantenga" un sello, hay que sacarlo de la ecuación; (2) amplié el pedido ("marco y lentes más claros") más allá de lo que el founder dijo en concreto (sólo el marco); (3) separé marco y lente por tono de color en vez de por saturación.
+
+**Regla preventiva:** (a) si el único cambio es el tono de una pieza lisa (marco, lente), hacerlo por código con una máscara y NO tocar nada más, así el sello queda píxel por píxel; usar Gemini sólo para formas, patrones o rehacer una pieza; (b) tocar sólo lo que el founder nombró, y mostrar tira de tonos A/B/C; (c) antes de entregar una foto retocada, ponerla al lado de la oficial y mirar sello, texto y bordes, no sólo el color; (d) separar marco azul saturado de lente gris violácea por saturación (marco S>0,30; lente S<0,30), no por tono.
+

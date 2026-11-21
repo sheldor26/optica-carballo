@@ -748,3 +748,12 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [ ] **Tests rápidos antes de insistir con el copy:** rotar la lente frente a una pantalla (confirma 'no polarizado'), confirmar que el frente es acetato y mirar si la etiqueta trae leyenda de 'no apto para conducir'.
 - [ ] **GTIN** de la C17 y la C28 si tenés el código de barras.
 
+## Vulk Reporter MBLU/DRT25 POL, SKU 194162 (2026-11-21, kit hecho)
+- [ ] **Mirar las placas del Reporter contra tu unidad** (marco azul marino y lentes oscuras hechos en Gemini); si querés las lentes aún más oscuras o el marco en otro tono, avisame. Bloquea: nada.
+- [x] **Publicar en ML:** hecho (item MLA1866713114, variación 208655229341, $95.097, stock 2, verificado por API 2026-11-21). Falta el **GTIN**; no bloquea el seed 216.
+- [ ] **ML, campo "Diseño" de la variación azul:** quedó "MBLUE - Azul Mate"; las otras variaciones dicen "Anteojo Cuadrado". Corregirlo en la publicación (afecta el filtro por forma en ML, no la web). Bloquea: nada.
+- [x] **SKU:** Vulk publica 129261; cargado el tuyo, 194162 (seed 216 aplicado 2026-11-21).
+- [ ] **Peso del Reporter MBLU:** Vulk publica 24,7 g; pesalo con balanza y pasame el número (hoy la ficha va sin peso). Bloquea: el chip de peso de esa variante.
+- [x] **Reporter LGREY/DRT03 (SKU 129260):** el founder confirmó 2026-11-21 que la lente es gris degradé; corregido a `gris-degrade` y agregado el label "Gris claro" para el armazón.
+- [ ] **Graduación:** el copy viejo del Reporter dice 'aptos para lentes recetados' (import viejo); decime si es cierto para los de sol o lo saco.
+
