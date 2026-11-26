@@ -103,6 +103,8 @@ const FRAME_COLOR_LABELS: Record<string, string> = {
   'azul-oscuro-mate': 'Azul oscuro mate',
   // Vulk Reporter LGREY/DRT03 (seed 43, ahora con label): armazón gris claro.
   'gris-claro': 'Gris claro',
+  // Vulk Netaglio MRED (seed 218).
+  'rojo-mate': 'Rojo mate',
   'gris-oscuro-transparente': 'Gris oscuro transparente',
   'azul-metalico': 'Azul metálico',
   'rosa-transparente': 'Rosa transparente',

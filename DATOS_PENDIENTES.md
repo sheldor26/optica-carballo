@@ -755,5 +755,42 @@ Se listan cuando se quiera con `pnpm ml:medidas`.
 - [x] **SKU:** Vulk publica 129261; cargado el tuyo, 194162 (seed 216 aplicado 2026-11-21).
 - [ ] **Peso del Reporter MBLU:** Vulk publica 24,7 g; pesalo con balanza y pasame el número (hoy la ficha va sin peso). Bloquea: el chip de peso de esa variante.
 - [x] **Reporter LGREY/DRT03 (SKU 129260):** el founder confirmó 2026-11-21 que la lente es gris degradé; corregido a `gris-degrade` y agregado el label "Gris claro" para el armazón.
-- [ ] **Graduación:** el copy viejo del Reporter dice 'aptos para lentes recetados' (import viejo); decime si es cierto para los de sol o lo saco.
+- [x] **Graduación:** el founder confirmó 2026-11-21 que el Reporter se puede graduar; el copy dice "admite lentes con graduación" y `prescription_adapter` queda en true.
 
+## Vulk Netaglio (receta), 3 variantes: MRED 125576, MBLK 125571, CRY 125572 (2026-11-24, kits de ML hechos)
+- [x] **Medidas, peso, forma y género:** pasados el 2026-11-24 (51-20-140, alto 46, ancho 144, 17,9 g, rectangular, unisex, G-Flex, bisagras metálicas flex).
+- [x] **Link de la publicación de ML:** pasado el 2026-11-25 (`MLA1664343869`, 3 variaciones). Los `variation_code` salieron de la página; falta confirmar SKU y stock de CRY por la API cuando Supabase vuelva. Bloquea: el seed hasta esa verificación.
+- [ ] **Descripción de ML del Netaglio:** la actual tiene "liviano" y tuteo y la forma figura "Cuadrada" (vos dijiste rectangular). Decime si pegás la nuestra y si cambiás la forma en la ficha. Bloquea: nada.
+- [ ] **GTIN** de cada variante. Bloquea: nada.
+- [ ] **Placas:** mirá las de `SUBIR-vulk-netaglio-{mred,mblk,cry}/ml` y decime si querés liso el grabado tenue de la patilla del fondo (roja y transparente). Bloquea: nada.
+
+## Rusty Zubia (sol), 3 variantes: C1 970020, C2 970021, C3 970022 (2026-11-25, kits de ML hechos, seed 217 en borrador)
+- [x] **C1 publicado en ML** (item simple `MLA4239644536`, $138.912, stock 3; leído de la página el 2026-11-25).
+- [x] **Links de ML de C2 (970021) y C3 (970022):** no hace falta que los pases (decisión del founder, 2026-11-25): se rastrean por SKU con la API cuando Supabase vuelva.
+- [ ] **ML, "Material de la varilla" del Zubia:** dice Acetato; las patillas son de metal con terminales de acetato (Rusty). Corregilo en la ficha de ML si querés que coincida con la web. Bloquea: nada.
+- [ ] **GTIN** de cada variante. Bloquea: nada.
+- [ ] **Peso:** Rusty publica 18,8 g y lo cargo como dato (regla 7); si lo pesás y es otro, avisame. Bloquea: nada.
+- [ ] **Placas:** mirá las de `SUBIR-rusty-zubia-c1|c2|c3/ml` (el sello "POLARIZED" de la lente es de fábrica). Bloquea: nada.
+- [ ] **Terminales de acetato:** en las fotos cambian de color por variante (carey claro, carey oscuro, verde jaspeado). No las cargué como dato porque no las describiste; decime si querés que figuren. Bloquea: nada.
+
+## Rusty Decloc (sol), 3 variantes: C1 970030, C2 970031, C3 970032 (2026-11-25, kits de ML hechos)
+- [x] **C1 del Decloc publicado en ML** (item simple `MLA2322131483`, $138.912, stock 1; leído de la página el 2026-11-25).
+- [x] **C2 y C3 del Decloc en ML:** publicados y cargados (2026-11-26).
+- [ ] **ML, "Material de la varilla" del Decloc:** dice Acetato; son de metal con terminales de acetato. Corregilo si querés que coincida con la web (igual que el Zubia). Bloquea: nada.
+- [ ] **GTIN** de cada variante. Bloquea: nada.
+- [ ] **Lente de C3:** dijiste "gris oscuro"; la foto de Rusty se ve con un leve degradé. Cargo `gris-oscuro` (sin degradé) siguiéndote a vos; avisame si es degradé. Bloquea: nada.
+- [ ] **Placas:** mirá las de `SUBIR-rusty-decloc-c1|c2|c3/ml`. Bloquea: nada.
+
+## Rusty Xold SIENNA/902 LTD (sol), SKU 126420 (2026-11-25, kit de ML hecho, seed 220 en borrador)
+- [ ] **Confirmar que NO es polarizada** (código `SIENNA/902 LTD`, sin POL; el seed la carga `polarized:false`). Bloquea: el seed 220.
+- [x] **Color real de la unidad:** confirmado con fotos el 2026-11-26: marrón caramelo translúcido.
+- [ ] **Publicar en ML** (o avisarme; rastreo por SKU 126420 con la API cuando vuelva Supabase). Bloquea: el seed 220 (precio, stock, `item_id`).
+- [ ] **GTIN.** Bloquea: nada.
+- [ ] **Graduación del Xold de sol:** el seed 220 no afirma que admita lentes con graduación (no pude ver el copy actual); si el Xold de sol se puede graduar, decime y lo restituyo. Bloquea: nada.
+- [x] **Fotos del Xold Sienna:** resuelto con la versión final del 2026-11-26.
+
+## 2026-11-26: Supabase volvió
+- [x] **Carga web de Zubia, Decloc y Netaglio:** hecha el 2026-11-26 (seeds 217, 219 y 218).
+- [ ] **ML, Zubia C3 (`MLA4239632260`):** el color del armazón dice "Gris Degrade" y el de la lente "Plateados": están invertidos. Corregirlo en ML. Bloquea: nada (la web usa tu dato).
+- [ ] **Publicar el Xold Sienna (126420)** en ML: no figura. Bloquea: el seed 220.
+- [x] **Xold Sienna: fotos elegidas** (2026-11-26): opción B (fábrica con color ajustado al real). Kit final hecho.

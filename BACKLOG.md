@@ -86,6 +86,15 @@ estado real de sus 5 hermanos (no con lo que dice el documento).
 
 ---
 
+## 🟡 Dieven receta y Be Again conservan copy con "flexible", "ultra liviano" y "garantía oficial" (2026-11-26, detectado al cargar el Netaglio)
+Seeds 86 y 88. Contradice las reglas de copy (G-Flex no autoriza "flexible"; sin "liviano"). Reescribir en un seed aparte, previo SELECT del texto vigente y con `seo-strategist`. Al Dieven hoy sólo se le sumó la frase de vuelta al Netaglio. No bloquea nada.
+
+## 🟡 Rusty Blinded conserva copy con "ultralivianos"/"livianos" (2026-11-25, detectado por seo-strategist al preparar el seed 220 del Xold)
+El seed 68 del Rusty Blinded tiene "ultralivianos" y "livianos" en short, meta y descripción (viola la regla de no usar "liviano"). El seed 220 sólo le agrega la frase de vuelta al Xold. Hay que reescribir su copy en otro seed (con `seo-strategist`). No bloquea nada.
+
+## 🟡 Faceta `/anteojos-de-sol/ovalados` (2026-11-25, sugerida por seo-strategist al cargar el Rusty Decloc)
+Con el Decloc suman 4 ovalados de sol (Vulk Nova, Rusty EYSY, Vulk Voices, Rusty Decloc), el umbral del proyecto para activar una faceta. Sería el dueño legítimo de "lentes ovalados" (390/11), "anteojos ovalados" (260/10) y "lentes de sol ovalados" (140/13), unos 800 de volumen sumado. Cuando se cree, hay que revisar los titles de Nova y EYSY (que hoy llevan "ovalados") para no canibalizar. Antes de crearla, verificar si la ruta ya existe (el seed 80 decía que no). No bloquea nada.
+
 ## 🟡 Dos cosas de SEO que salieron cargando el Rusty Ardigan (2026-08-26)
 
 **1. Colisión viva entre Blinded y Zion, hoy en producción.** `SEO_STRATEGY.md` le asigna al Rusty

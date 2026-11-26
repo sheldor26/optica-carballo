@@ -9337,6 +9337,22 @@ Estos NO se han cometido en este proyecto pero son típicos del rubro y vale ten
 - Este archivo NO es para criticarse. Es para no repetir errores.
 - Mistakes pequeños también cuentan. Lo importante es el patrón, no el incidente.
 - El acto de documentar un mistake es parte de la solución.
+## 2026-11-26 — Un reemplazo por prefijo pisó el pendiente de OTRO producto en DATOS_PENDIENTES.md
+
+**Qué pasó:** el 2026-11-21, al registrar que el Reporter se puede graduar, busqué la línea con `startswith('- [ ] **Graduación:**')` y tomé la primera: era la del Vulk The Phone. Quedó marcada como resuelta con el texto del Reporter, y la del Reporter siguió abierta. Lo detecté el 26/11 al revisar los cambios antes de commitear; nunca se pusheó.
+
+**Causa raíz:** usé un prefijo repetido en el archivo (hay varios "Graduación:") sin acotar a la sección del producto, y verifiqué sólo con un conteo, no leyendo qué línea había cambiado.
+
+**Regla preventiva:** en archivos con secciones repetidas, ubicar primero el encabezado del producto y reemplazar dentro de esa sección (o incluir el nombre del producto en el texto buscado, con `assert` de coincidencia única); y antes de commitear, revisar el diff línea por línea de lo que figure como reemplazo.
+
+## 2026-11-25 — Xold Sienna: parché y aclaré por código la imagen de Gemini y entregué una versión sin definición
+
+**Qué pasó:** el founder pidió el armazón de sus fotos de fábrica en el marrón del Xold receta "con Gemini". Sobre la salida de Gemini pegué zonas de las fotos originales (sello, chapita, letras) y aclaré el marrón por código. La di por buena mirando recortes de los textos y miniaturas; el founder vio que le faltaba definición y que se veía raro en la parte de arriba de la lente (el pegado del sello dejaba una zona lisa y el aclarado rozaba el borde de la lente). Pidió dejarla como la hizo Gemini, sin parches.
+
+**Causa raíz:** (1) apilé retoques (alineación, pegado, aclarado, fondo) sin comparar la imagen completa a tamaño ampliado contra la de partida; (2) revisé sólo las zonas que yo había tocado a propósito, no sus alrededores; (3) cambié el resultado de la herramienta que el founder había pedido sin preguntarle.
+
+**Regla preventiva:** si el founder pide una imagen hecha con Gemini y sale con defectos, mostrarle la salida tal cual, señalar los defectos y proponer opciones (otra tirada o editar desde la foto original); no parchear por código sin su OK. Si igual se edita, comparar ampliado al 200 % toda la lente y sus bordes antes de entregar.
+
 ## 2026-11-21 — Reporter MBLU: Gemini cambió el sello "Vulk P" y yo oscurecí la lente sin que me lo pidieran
 
 **Qué pasó:** el founder pidió corregir las fotos oficiales del Reporter azul (el marco azul oficial es más claro que el real). (1) Se lo pasé a Gemini con la foto real de referencia y devolvió el marco y las lentes bien, pero reemplazó el sello "Vulk P" de la lente por otro dibujo distinto; lo entregué para revisar sin comparar el sello contra el original y fue el founder quien lo vio. (2) Al rehacerlo por código oscurecí también la lente "porque la real era casi negra", sin que lo pidiera: el founder tuvo que aclarar "lo único que hay que hacer es oscurecer más el marco, nada más". (3) Mi primera máscara por código confundió la lente gris violácea con el marco azul y dejó manchas rojizas y patillas violetas; la detecté mirando la imagen, pero eran dos iteraciones perdidas.
