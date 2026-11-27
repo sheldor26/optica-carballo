@@ -60,6 +60,63 @@ export const mlItemSchema = z.object({
 });
 
 // ============================================================================
+// Publicación (consulta de sólo lectura para el sistema de la óptica)
+// ============================================================================
+
+/*
+ * Aparte de `mlItemSchema` a propósito: ése valida lo que hace falta para el
+ * stock. Éste es para MOSTRAR una publicación, así que es tolerante con lo que
+ * puede faltar y con estados nuevos: un `status` desconocido se muestra, no
+ * tira abajo la consulta. Zod descarta todo lo que no está listado acá.
+ */
+const mlAttributeSchema = z.object({
+  id: z.string().nullish(),
+  name: z.string().nullish(),
+  value_name: z.string().nullish(),
+});
+
+export const mlPublicationSchema = z.object({
+  id: z.string().regex(/^MLA\d+$/, 'Formato MLA1234567890'),
+  title: z.string(),
+  status: z.string(),
+  sub_status: z.array(z.string()).nullish(),
+  price: z.number().nullish(),
+  currency_id: z.string().nullish(),
+  available_quantity: z.number().int().nullish(),
+  permalink: z.string().nullish(),
+  seller_custom_field: z.string().nullish(),
+  attributes: z.array(mlAttributeSchema).nullish(),
+  pictures: z
+    .array(
+      z.object({
+        id: z.string(),
+        url: z.string().nullish(),
+        secure_url: z.string().nullish(),
+      }),
+    )
+    .nullish(),
+  variations: z
+    .array(
+      z.object({
+        id: z.union([z.number().int(), z.string()]),
+        price: z.number().nullish(),
+        available_quantity: z.number().int().nullish(),
+        attribute_combinations: z.array(mlAttributeSchema).nullish(),
+        /** Con `include_attributes=all` acá viene SELLER_SKU. */
+        attributes: z.array(mlAttributeSchema).nullish(),
+        picture_ids: z.array(z.string()).nullish(),
+        seller_custom_field: z.string().nullish(),
+      }),
+    )
+    .nullish(),
+});
+
+/** `GET /items?ids=a,b`: cada una viene con su código. */
+export const mlMultigetSchema = z.array(
+  z.object({ code: z.number(), body: z.unknown() }),
+);
+
+// ============================================================================
 // Webhooks
 // ============================================================================
 
@@ -87,4 +144,5 @@ export const mlWebhookPayloadSchema = z.object({
 
 export type OAuthTokenResponseValidated = z.infer<typeof oauthTokenResponseSchema>;
 export type MLItemValidated = z.infer<typeof mlItemSchema>;
+export type MLPublicationValidated = z.infer<typeof mlPublicationSchema>;
 export type MLWebhookPayloadValidated = z.infer<typeof mlWebhookPayloadSchema>;
