@@ -1,5 +1,15 @@
 # Óptica Carballo — Learnings Log
 
+## 2026-11-26 — Integrar un recurso de ML sin poder probarlo: dependencias inyectadas y respuestas de ejemplo
+
+**Qué funcionó:** para reclamos y devoluciones (sin poder llamar a la API ni abrir la documentación, que contestó 403) la lectura de respuestas quedó en un archivo puro (`claims-mapping.ts`) y la corrida recibe ML, base y reloj como dependencias. Así se probaron sin red 429, paginado, corte por tiempo y fallos parciales.
+
+**Cómo se usa:** `pnpm exec tsx --conditions=react-server scripts/ml-reclamos-selftest.ts`. La consulta real de prueba va aparte, usa `scripts/lib/ml-auth.ts` (no renueva el token ni escribe) e imprime sólo códigos y cantidades.
+
+**Segunda parte (2026-11-27):** el founder amplió la consulta de prueba a siete variantes de filtros: en una sola corrida quedó claro qué acepta la búsqueda. Para un endpoint sin probar, conviene que la consulta de prueba ensaye varias combinaciones y muestre sólo códigos y cantidades.
+
+**Regla:** que el nombre de un campo parezca obvio no alcanza: en las devoluciones de ML `refund_at` no es una fecha sino el momento del flujo en que se reembolsa ("shipped", "delivered"). Los ejemplos prueban la lógica, no que la API conteste así.
+
 ## 2026-11-19 — Subir SOLO lo propio cuando la carpeta tiene trabajo a medio hacer de otras tareas
 
 **Qué funcionó:** la carpeta tenía ~15 archivos modificados y ~20 sin seguimiento de otras tareas (Instagram, despiece, páginas legales). Para el bot se armó el commit con `git add` de los archivos propios y, para los archivos mezclados (`package.json`, `.env.example`), con `git hash-object -w` + `git update-index --cacheinfo`: se arma "versión de HEAD + solo mis líneas" sin tocar el archivo de trabajo ni usar `git add -p` (que no es interactivo acá). Después se verificó con `git worktree add --detach` del commit, `node_modules` enlazado y `pnpm build`: si ese build pasa, Vercel puede construirlo sin los archivos sueltos. Recién ahí `git push`.

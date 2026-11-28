@@ -868,6 +868,42 @@ container sin publicar. La prueba real se hace con una **historia**, que se borr
 
 ---
 
+## ADR-029 — Reclamos y devoluciones de Mercado Libre: tarea programada de sólo lectura
+
+**Fecha:** 2026-11-26 · **Estado:** plan aprobado por el founder; código escrito, sin aplicar ni publicar.
+**Categoría:** Arquitectura | Operación | Marketplace
+
+### Contexto
+`ml-ventas` trae lo que se vendió. No se sabía qué volvió, por qué ni cuántos días después de la entrega (hay compradores que abusan de la Compra Protegida).
+
+### Decisión
+- Tarea horaria `/api/cron/ml-reclamos` (minuto 20, para no coincidir con las de :00 que comparten token y límite de pedidos). Sin webhooks. Complementa ADR-024.
+- Tabla `marketplace_claims`, un renglón por reclamo, upsert por `(marketplace, claim_id)`. Cruce con `marketplace_orders` por `order_external_id` / `pack_id`, sin clave foránea.
+- **Sólo GET a ML.** Nada de responder, subir evidencia, aprobar devoluciones ni mover plata. No se piden mensajes.
+- **Sin `payload` crudo** (a diferencia de `marketplace_orders`) ni datos del comprador.
+- RLS sin policies. Ni el Facturador ni el sistema de la óptica leen esta tabla todavía: si hace falta, va en una migración aparte.
+- Un disparador conserva lo guardado cuando llega vacío. Si un reclamo se reabre quedan `closed_at` y la resolución anteriores: manda `status`.
+- `refunded_at` es aproximada (`refunded_at_source`): última modificación del pago devuelto en la orden, o fecha de la resolución `payment_refunded`. El `refund_at` de la devolución NO es una fecha sino la regla de cuándo se reembolsa (`return_refund_trigger`).
+- `days_from_delivery_to_claim` = días de 24 h entre la entrega del envío original y la apertura del reclamo.
+- Un reclamo cerrado se deja de mirar cuando no tiene nada pendiente, o a los 90 días del cierre. Un error que no es de red se reintenta 48 h desde que se vio el reclamo.
+- Reclamos sobre el envío: se cruzan por `marketplace_orders.shipment_id`; si no, por el `order_id` del envío.
+
+### Confirmado contra la API (consulta de prueba del founder, sólo la búsqueda)
+Permiso de la app; `status` obligatorio (`players.*` y `range` no cuentan como filtro); `range` por `last_updated` con `sort=last_updated:desc` y fechas con milisegundos y `+00:00`; `resource` puede ser `order` o `shipment`; no viene `related_entities`. Por eso: dos búsquedas (abiertos con `players`, cerrados con `range` sin `players`, que son las combinaciones probadas) y la devolución se pide por reclamo.
+
+### Sin confirmar contra la API real
+- Que la búsqueda traiga `players` (si no, una compra propia cerrada podría entrar) y que el paginado con `offset` > 0 funcione.
+- Detalle por id, motivos y devoluciones: ruta, permiso y forma de la respuesta. Sin devolución se espera 404; si es otro error, se reintenta 48 h y se deja.
+- `GET /shipments/{id}`: `order_id`, `status_history`, `tracking_number`, `tracking_method`.
+- Que `date_last_modified` del pago refleje el día del reembolso.
+
+### Consecuencias
+- Positivas: motivo y plazos junto a cada venta; costo bajo por hora (lo cerrado sin cambios no se vuelve a pedir).
+- Riesgos: la documentación oficial no se pudo abrir directamente (403); la primera corrida puede obligar a ajustar nombres de campos de lo que no es la búsqueda.
+
+### Cómo se valida
+Consulta de prueba en HTTP 200 (hecho) → primera carga de 90 días sin `errores` → comparar 3 reclamos contra el panel de ML (motivo, estado, fecha de entrega, seguimiento).
+
 ---
 
 ## Notas finales

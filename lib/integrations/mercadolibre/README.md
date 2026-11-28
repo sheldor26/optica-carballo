@@ -26,6 +26,19 @@ lib/integrations/mercadolibre/
 └── reconcile.ts      # [Sprint 3] Cron job de reconciliación diaria
 ```
 
+## Reclamos y devoluciones (ADR-029, sin aplicar ni publicar al 2026-11-26)
+
+- `claims.ts`: la corrida (sólo GET a ML). `claims-mapping.ts`: lectura de respuestas, sin IO.
+- Cron `/api/cron/ml-reclamos` (minuto 20, `CRON_SECRET`, `?dias=N`; repetir mientras
+  responda `incompleto: true`). Tabla `marketplace_claims`.
+- La búsqueda exige `status` (`players.*` y `range` solos dan 400) y no trae
+  `related_entities`. Hay reclamos sobre la orden y sobre el envío.
+- Permiso de la app: activado y probado para la búsqueda.
+- Consulta de prueba (siete GET a la búsqueda, no renueva el token ni escribe; las
+  dos sin `status` dan 400 a propósito), desde la raíz del repo:
+  `pnpm exec tsx --env-file=.env.local scripts/ml-reclamos-prueba.ts --confirmar`
+- Prueba sin red: `pnpm exec tsx --conditions=react-server scripts/ml-reclamos-selftest.ts`
+
 ## Env vars necesarias (Sprint 2)
 
 ```

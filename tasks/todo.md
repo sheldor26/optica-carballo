@@ -1,4 +1,16 @@
 
+## Reclamos y devoluciones de Mercado Libre (ADR-029) — 2026-11-26
+- [x] Migración `20261126120000_marketplace_claims.sql` (escrita, NO aplicada ni ejecutada en ninguna base)
+- [x] `lib/integrations/mercadolibre/claims.ts` + `claims-mapping.ts`, cron `/api/cron/ml-reclamos`, `vercel.json`
+- [x] Selftest sin red 26/26, `tsc` y `eslint` limpios
+- [x] Founder: permiso activado, app reautorizada y consulta de prueba corrida (búsqueda 200)
+- [x] Ajuste con datos reales: `status` siempre, sin depender de `related_entities`, reclamos sobre el envío
+- [ ] Aplicar la migración (con OK del founder) y verificar RLS
+- [ ] Commit, push y deploy (sólo con "subí")
+- [ ] Primera carga `?dias=90` hasta `incompleto: false`; revisar `errores` y 3 reclamos contra el panel de ML
+
+**Revisión:** de la API sólo se probó la búsqueda; nada contra una base. Puntos sin confirmar en ADR-029.
+
 ## Piloto "Despiece al scrollear" — Vulk Arvin (2026-11-07)
 - [x] Auditar la PDP: no hay despiece, ni three.js/model-viewer; sí framer-motion; `useVariantSelection` da la variante elegida
 - [ ] Dirección de diseño (`ui-motion-designer`) y ubicación/CRO (`conversion-optimizer`) — consultados, esperando respuesta

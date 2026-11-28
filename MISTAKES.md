@@ -1,5 +1,15 @@
 # Óptica Carballo — Mistakes Log
 
+## 2026-11-27 — Armé la búsqueda de reclamos de ML sobre filtros no probados: habría fallado siempre con 400
+
+**Estado:** ✅ Cerrado en el código de la rama `reclamos-ml` (antes de publicarse).
+
+**Qué pasó:** la primera versión buscaba los reclamos recientes con `players.role` + `players.user_id` + `range`, sin `status`, y la consulta de prueba usaba lo mismo. La API contesta 400 (`atLeastOneFilterProvided`): esos parámetros no cuentan como filtro. Además contaba con `related_entities`, que la búsqueda no trae. Las pruebas sin red pasaban 19/19.
+
+**Causa raíz:** tomé resúmenes de buscador sobre la documentación (que no pude abrir) como forma de la API, y la ML de mentira de las pruebas aceptaba cualquier filtro: probaba mi suposición contra sí misma. El plan B (reintentar con `date_created`) no cubría este caso.
+
+**Regla preventiva:** (1) con un endpoint sin probar, la consulta de prueba va primero y ensaya varias combinaciones. (2) Una vez observado el comportamiento real, la prueba sin red lo imita (acá: sin `status` devuelve error) y el tipo del código lo exige.
+
 ## 2026-11-19 — Di por enviado el mail de aviso del bot porque no tiró error, pero el SDK de Resend no tira errores: los devuelve
 
 **Estado:** ✅ Cerrado en mi función (`send-whatsapp-handoff-email.ts` ahora mira `error`); 🟡 abierto el mismo patrón en 3 mails que ya existían (ver abajo).

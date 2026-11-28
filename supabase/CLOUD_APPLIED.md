@@ -9,6 +9,12 @@ re-aplicar o saltarse algo.
 
 ---
 
+## Migraciones escritas y NO aplicadas
+
+| Archivo | Estado | Notas |
+|---|---|---|
+| `20261126120000_marketplace_claims.sql` | ❌ NO aplicada (escrita 2026-11-26, nunca ejecutada en ninguna base) | Tabla privada `marketplace_claims` (ADR-029). Aplicar ANTES de publicar `/api/cron/ml-reclamos`. Verificar después: `SELECT relrowsecurity FROM pg_class WHERE oid='public.marketplace_claims'::regclass;` → `true`, y `SELECT count(*) FROM pg_policies WHERE tablename='marketplace_claims';` → `0`. |
+
 ## Migraciones aplicadas a cloud
 
 | Archivo | Aplicada al cloud | Cómo | Notas |
