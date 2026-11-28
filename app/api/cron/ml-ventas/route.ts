@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import { traerVentas } from '@/lib/integrations/mercadolibre/orders';
+import {
+  refrescarEnviosViejos,
+  traerVentas,
+} from '@/lib/integrations/mercadolibre/orders';
 import { secretsMatch } from '@/lib/security/timing-safe-equal';
 
 export const dynamic = 'force-dynamic';
@@ -21,6 +24,9 @@ export const runtime = 'nodejs';
  *
  * `?dias=N` amplía el rango, para la primera corrida o para recuperar algo que
  * se haya perdido. Por omisión mira los últimos 7 días.
+ *
+ * Después vuelve a mirar unas pocas ventas más viejas cuyo envío no terminó
+ * (sólo estado de la venta y del envío).
  */
 export async function GET(request: Request) {
   const auth = request.headers.get('authorization') ?? '';
@@ -36,5 +42,10 @@ export async function GET(request: Request) {
   if (!r.ok) {
     return NextResponse.json({ ok: false, error: r.error, retryable: r.retryable }, { status: 502 });
   }
-  return NextResponse.json({ ok: true, ...r.data });
+  // Aparte: si esto falla, las ventas de arriba ya quedaron guardadas.
+  const enviosViejos = await refrescarEnviosViejos().catch((err: unknown) => {
+    console.error('[ml-ventas] no pude refrescar envíos viejos', err);
+    return null;
+  });
+  return NextResponse.json({ ok: true, ...r.data, envios_viejos: enviosViejos });
 }

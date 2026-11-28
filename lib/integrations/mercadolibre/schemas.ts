@@ -138,6 +138,27 @@ export const mlWebhookPayloadSchema = z.object({
   attempts: z.number().int().nonnegative().default(0),
 });
 
+/** Los avisos de reclamos. ML usa `post_purchase`; `claims` y variantes, por las dudas. */
+export const TEMAS_DE_RECLAMOS = [
+  'post_purchase',
+  'claims',
+  'claims_actions',
+  'marketplace_claims',
+] as const;
+
+/**
+ * Aparte y más tolerante que el de arriba: de un aviso de reclamo sólo hacen
+ * falta el tema y el recurso, y perderlo por un campo de más o de menos sería
+ * enterarse tarde.
+ */
+export const mlAvisoReclamoSchema = z.looseObject({
+  _id: z.string().optional(),
+  topic: z.enum(TEMAS_DE_RECLAMOS),
+  resource: z.string().min(1),
+  user_id: z.union([z.number(), z.string()]).optional(),
+  sent: z.string().optional(),
+});
+
 // ============================================================================
 // Helpers de tipo derivados
 // ============================================================================

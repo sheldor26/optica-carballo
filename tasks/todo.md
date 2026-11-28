@@ -1,4 +1,16 @@
 
+## Postventa de Mercado Libre, conector (ADR-029) — 2026-11-28
+- [x] Columnas y tablas nuevas, funciones de avisos (migración probada en Postgres local)
+- [x] Reconciliación, historial en tandas, reputación, estado de sincronización
+- [x] Webhook `post_purchase`, correos urgentes y resumen, botón de refrescar
+- [x] Envíos viejos en `ml-ventas`; token: dos renovaciones a la vez
+- [x] Selftest 68/68, `tsc` limpio, `eslint` limpio en lo tocado
+- [ ] Con OK del founder: aplicar migración, `ML_AVISOS_EMAIL`, commit y publicar
+- [ ] `?historico=1` hasta terminado; revisar 3 reclamos contra el panel de ML
+- [ ] Activar el tema `post_purchase` en la app de ML y ver un aviso real
+
+**Revisión:** nada probado contra servicios reales. Riesgo: el límite de 120 pedidos por hora del webhook también cuenta los avisos de reclamos.
+
 ## Reclamos y devoluciones de Mercado Libre (ADR-029) — 2026-11-26
 - [x] Migración `20261126120000_marketplace_claims.sql` (escrita, NO aplicada ni ejecutada en ninguna base)
 - [x] `lib/integrations/mercadolibre/claims.ts` + `claims-mapping.ts`, cron `/api/cron/ml-reclamos`, `vercel.json`

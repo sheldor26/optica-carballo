@@ -26,18 +26,32 @@ lib/integrations/mercadolibre/
 └── reconcile.ts      # [Sprint 3] Cron job de reconciliación diaria
 ```
 
-## Reclamos y devoluciones (ADR-029, sin aplicar ni publicar al 2026-11-26)
+## Reclamos, devoluciones y avisos (ADR-029, sin aplicar ni publicar al 2026-11-28)
 
-- `claims.ts`: la corrida (sólo GET a ML). `claims-mapping.ts`: lectura de respuestas, sin IO.
-- Cron `/api/cron/ml-reclamos` (minuto 20, `CRON_SECRET`, `?dias=N`; repetir mientras
-  responda `incompleto: true`). Tabla `marketplace_claims`.
-- La búsqueda exige `status` (`players.*` y `range` solos dan 400) y no trae
-  `related_entities`. Hay reclamos sobre la orden y sobre el envío.
-- Permiso de la app: activado y probado para la búsqueda.
-- Consulta de prueba (siete GET a la búsqueda, no renueva el token ni escribe; las
-  dos sin `status` dan 400 a propósito), desde la raíz del repo:
-  `pnpm exec tsx --env-file=.env.local scripts/ml-reclamos-prueba.ts --confirmar`
+Sólo GET a ML. Tablas (migración `20261126120000_marketplace_claims.sql`):
+`marketplace_claims`, `marketplace_reputation`, `marketplace_sync_state`.
+
+- `claims.ts`: recorridos (`reconciliar`, `rapido`, `historico`) y el aviso de un
+  reclamo. `claims-mapping.ts`: lectura de respuestas. `claims-avisos.ts`: qué se
+  avisa y cómo se escribe. `claims-deps.ts`: ML, base y correo reales.
+  `reputation.ts`, `postventa.ts` (botón y resumen), `claims-webhook.ts`.
+- Cron `/api/cron/ml-reclamos` (minuto 20, `CRON_SECRET`, `?dias=N`).
+  Historial: `?historico=1`, repetir hasta `historico.terminado: true`.
+- Cron `/api/cron/ml-reclamos-resumen` (11:30 UTC = 8:30 de Argentina).
+- `POST /api/optisys/ml/postventa/refrescar` (`OPTISYS_TOKEN`): recorrido rápido;
+  omite si hubo uno completo hace menos de 4 minutos o hay uno en curso.
+  Responde `{ ok, actualizado_en, omitido }` (y `error` si falló).
+- Webhook: tema `post_purchase` (contesta y procesa con `after()`). Hay que
+  activarlo en la app de ML.
+- Correos a `ML_AVISOS_EMAIL`; sin esa variable no se manda nada. `notified` evita
+  repetir.
+- La búsqueda exige `status`; `players.role` no filtra (las compras propias se
+  descartan mirando `players`). Hay reclamos sobre la orden y sobre el envío.
+- Lectura real de prueba (sólo GET): `scripts/ml-reclamos-lectura.ts`.
 - Prueba sin red: `pnpm exec tsx --conditions=react-server scripts/ml-reclamos-selftest.ts`
+
+`ml-ventas` además refresca (hasta 20 por corrida) estado de venta y de envío de
+las ventas de 7 a 90 días con el envío sin terminar.
 
 ## Env vars necesarias (Sprint 2)
 
@@ -95,3 +109,7 @@ Ver ADR-024 en DECISIONS.md para el razonamiento completo.
 - Mapping: **explícito 1:1** variante ↔ item ML. Sin auto-discovery.
 - Errores: **logged a `marketplace_sync_errors`** con retry exponencial.
 - Reconciliación: **cron daily** detecta drifts y alerta al founder.
+
+**Historial:** `/api/cron/ml-reclamos-historico` carga los reclamos cerrados viejos de a tandas
+y deja de hacer pedidos cuando termina (`marketplace_sync_state`, clave `historico`). Una vez
+terminado se puede sacar de `vercel.json`.

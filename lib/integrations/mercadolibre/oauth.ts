@@ -229,9 +229,14 @@ export async function refreshAccessToken(
       body,
     });
 
-    // 400/401 en refresh = refresh_token expirado/revocado.
-    // Marcamos como expired para que admin UI muestre "re-autorizar".
+    // 400/401 en refresh = refresh_token expirado/revocado... o ya usado por
+    // otro pedido que renovó al mismo tiempo (ML lo rota en cada renovación).
+    // Marcamos como expired para que admin UI muestre "re-autorizar" sólo si
+    // nadie más guardó uno nuevo.
     if (response.status === 400 || response.status === 401) {
+      const deOtro = await tokenRenovadoPorOtro(integration.refreshToken);
+      if (deOtro) return { ok: true, data: deOtro };
+
       await markMLIntegrationError({
         externalUserId: integration.externalUserId,
         message: `Refresh falló con ${response.status}. Re-autorizar.`,
@@ -269,6 +274,24 @@ export async function refreshAccessToken(
   }
 
   return { ok: true, data: updated };
+}
+
+/**
+ * Si mientras fallaba esta renovación otro proceso guardó una nueva, la
+ * devuelve. Espera un momento porque el otro puede estar todavía guardándola.
+ */
+export async function tokenRenovadoPorOtro(
+  refreshUsado: string,
+  leer: () => Promise<MarketplaceIntegration | null> = getActiveMLIntegration,
+  esperar: (ms: number) => Promise<unknown> = (ms) =>
+    new Promise((listo) => setTimeout(listo, ms)),
+): Promise<MarketplaceIntegration | null> {
+  for (const ms of [0, 1_000, 2_000]) {
+    if (ms > 0) await esperar(ms);
+    const actual = await leer();
+    if (actual && actual.refreshToken !== refreshUsado) return actual;
+  }
+  return null;
 }
 
 /**

@@ -1,12 +1,20 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 import { mlWebhookPayloadSchema } from '@/lib/integrations/mercadolibre/schemas';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { syncStockFromMLItem } from '@/lib/integrations/mercadolibre/sync-stock';
 import { logMLSyncError } from '@/lib/integrations/mercadolibre/integrations-repo';
 import { secretsMatch } from '@/lib/security/timing-safe-equal';
+import { procesarAvisoDeReclamo } from '@/lib/integrations/mercadolibre/claims';
+import {
+  esTemaDeReclamos,
+  recibirAvisoDeReclamo,
+  type DependenciasAviso,
+} from '@/lib/integrations/mercadolibre/claims-webhook';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+// Los avisos de reclamos se procesan después de contestar, con `after()`.
+export const maxDuration = 60;
 
 /**
  * Rate limiting in-memory simple, mismo patrón que /api/prescription y
@@ -42,6 +50,8 @@ function checkRateLimit(ip: string): boolean {
  *      cambios manuales del seller en panel ML + cambios por ventas.
  *    - `orders_v2`: ignorar por ahora — el sync via items cubre el efecto
  *      en stock. Futuro: tracking de órdenes.
+ *    - `post_purchase` (reclamos): guardar el evento, contestar enseguida y
+ *      traer el reclamo después (ver claims-webhook.ts).
  *    - otros topics: ignorar con status='ignored'.
  * 5. INSERT en `marketplace_webhook_events` con status (processed/failed/ignored).
  * 6. Responder 200 OK siempre que pasó la validación de origen (incluso si
@@ -78,6 +88,10 @@ export async function POST(request: NextRequest) {
     body = await request.json();
   } catch {
     return NextResponse.json({ ok: true, ignored: 'invalid_json' });
+  }
+
+  if (esTemaDeReclamos(body)) {
+    return NextResponse.json(await recibirAvisoDeReclamo(body, avisoReal()));
   }
 
   const parsed = mlWebhookPayloadSchema.safeParse(body);
@@ -146,4 +160,38 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json({ ok: true, status });
+}
+
+function avisoReal(): DependenciasAviso {
+  const eventos = () =>
+    createAdminClient().from('marketplace_webhook_events');
+  return {
+    eventos: {
+      async existe(id) {
+        const { data } = await eventos().select('id').eq('id', id).maybeSingle();
+        return !!data;
+      },
+      async guardar(evento) {
+        const { error } = await eventos().insert(evento);
+        if (!error) return 'guardado';
+        if (error.code === '23505') return 'repetido';
+        console.error('[ml-webhook] no pude guardar el aviso', error.message);
+        return 'fallo';
+      },
+      async resultado(id, status, errorMessage) {
+        const { error } = await eventos()
+          .update({
+            status,
+            error_message: errorMessage,
+            processed_at: new Date().toISOString(),
+          })
+          .eq('id', id);
+        if (error) {
+          console.error('[ml-webhook] no pude cerrar el aviso', error.message);
+        }
+      },
+    },
+    despues: (tarea) => after(tarea),
+    procesar: (claimId) => procesarAvisoDeReclamo(claimId),
+  };
 }

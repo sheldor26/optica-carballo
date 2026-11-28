@@ -904,6 +904,14 @@ Permiso de la app; `status` obligatorio (`players.*` y `range` no cuentan como f
 ### Cómo se valida
 Consulta de prueba en HTTP 200 (hecho) → primera carga de 90 días sin `errores` → comparar 3 reclamos contra el panel de ML (motivo, estado, fecha de entrega, seguimiento).
 
+
+### Ampliación 2026-11-28 (postventa) — reemplaza lo anterior donde difiera
+- Se guardan número de usuario y apodo del comprador (nunca nombre ni dirección), turno, plazos, impacto, artículos de la venta y de la devolución.
+- Una lectura que falló no pisa; una respuesta válida vacía sí en turno, plazos y devolución: el conector no manda esas columnas cuando falla y el disparador no las conserva.
+- Hay webhooks (`post_purchase`): contestar y procesar con `after()`. La tarea horaria sigue siendo la garantía.
+- Correos sin repetir: `notified` por hecho, tomado de forma atómica en la base, con clave de idempotencia en Resend.
+- Lo que llega al depósito de Mercado Libre no cuenta como devolución entregada (`return_delivered_at` queda vacío).
+- La API ya confirma las formas de detalle, acciones, impacto, devolución v2, orden y reputación (lectura del 28/11).
 ---
 
 ## Notas finales

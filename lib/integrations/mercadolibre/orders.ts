@@ -492,3 +492,152 @@ export async function traerVentas(dias = DIAS_POR_OMISION): Promise<SyncResult<R
 
   return { ok: true, data: resumen };
 }
+
+/*
+ * LOS ENVÍOS QUE QUEDARON ABIERTOS FUERA DE LA VENTANA
+ *
+ * La tarea de arriba mira los últimos siete días. Una venta que a esa altura
+ * seguía sin entregarse (o que se canceló después) quedaba congelada. Esto
+ * vuelve a preguntar por unas pocas en cada corrida, las menos tocadas primero:
+ * sólo estado de la venta y estado del envío, y nunca pisa con vacío.
+ */
+const ENVIOS_FINALES = ['delivered', 'not_delivered', 'cancelled'] as const;
+const VIEJAS_POR_CORRIDA = 20;
+/** Pasado esto no se insiste más. */
+const VIEJAS_DIAS_MAX = 90;
+const VIEJAS_PRESUPUESTO_MS = 15_000;
+
+export type VentaSinCerrar = { external_id: string; shipment_id: string };
+
+export type CambiosDeEnvio = {
+  status?: string;
+  shipping_estado?: string;
+  shipping_subestado?: string;
+  updated_at: string;
+};
+
+export type DependenciasEnvios = {
+  pedir<T>(
+    path: string,
+    opciones: { operation: string; headers?: Record<string, string> },
+  ): Promise<SyncResult<T>>;
+  ventasSinCerrar(args: {
+    antesDe: string;
+    desde: string;
+    finales: readonly string[];
+    limite: number;
+  }): Promise<VentaSinCerrar[]>;
+  actualizar(externalId: string, cambios: CambiosDeEnvio): Promise<void>;
+  ahora(): number;
+};
+
+export type ResumenEnvios = {
+  revisadas: number;
+  actualizadas: number;
+  errores: string[];
+};
+
+export async function refrescarEnviosViejos(
+  deps: DependenciasEnvios = dependenciasDeEnvios(),
+): Promise<ResumenEnvios> {
+  const inicio = deps.ahora();
+  const dia = 24 * 60 * 60 * 1000;
+  const resumen: ResumenEnvios = { revisadas: 0, actualizadas: 0, errores: [] };
+  const filas = await deps.ventasSinCerrar({
+    antesDe: new Date(inicio - DIAS_POR_OMISION * dia).toISOString(),
+    desde: new Date(inicio - VIEJAS_DIAS_MAX * dia).toISOString(),
+    finales: ENVIOS_FINALES,
+    limite: VIEJAS_POR_CORRIDA,
+  });
+
+  for (const fila of filas) {
+    if (deps.ahora() - inicio > VIEJAS_PRESUPUESTO_MS) break;
+    const envio = await deps.pedir<MLEnvio>(
+      `/shipments/${encodeURIComponent(fila.shipment_id)}`,
+      { operation: 'refrescar_envio', headers: { 'x-format-new': 'true' } },
+    );
+    const orden = await deps.pedir<MLOrder>(
+      `/orders/${encodeURIComponent(fila.external_id)}`,
+      { operation: 'refrescar_venta' },
+    );
+    const cortar = [envio, orden].find(
+      (r) =>
+        !r.ok &&
+        ['rate_limited', 'token_expired', 'token_invalid'].includes(r.error),
+    );
+    if (cortar && !cortar.ok) {
+      resumen.errores.push(`corte: ${cortar.error}`);
+      break;
+    }
+
+    // `updated_at` cambia siempre: manda la venta al final de la fila aunque la
+    // lectura haya fallado, para que no trabe a las demás.
+    const cambios: CambiosDeEnvio = {
+      updated_at: new Date(deps.ahora()).toISOString(),
+    };
+    const estado = envio.ok ? comoTexto(envio.data?.status) : null;
+    const subestado = envio.ok ? comoTexto(envio.data?.substatus) : null;
+    const status = orden.ok ? comoTexto(orden.data?.status) : null;
+    if (estado) cambios.shipping_estado = estado;
+    if (subestado) cambios.shipping_subestado = subestado;
+    if (status) cambios.status = status;
+    if (!envio.ok) {
+      resumen.errores.push(`envío de ${fila.external_id}: ${envio.error}`);
+    }
+    if (!orden.ok) {
+      resumen.errores.push(`venta ${fila.external_id}: ${orden.error}`);
+    }
+
+    try {
+      await deps.actualizar(fila.external_id, cambios);
+      resumen.revisadas++;
+      if (estado || status) resumen.actualizadas++;
+    } catch (err) {
+      resumen.errores.push(
+        `venta ${fila.external_id}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  }
+  return resumen;
+}
+
+function dependenciasDeEnvios(): DependenciasEnvios {
+  const supabase = createAdminClient();
+  const ventas = () => supabase.from('marketplace_orders');
+  return {
+    pedir: <T>(
+      path: string,
+      opciones: { operation: string; headers?: Record<string, string> },
+    ) =>
+      mlFetch<T>(path, {
+        ...opciones,
+        method: 'GET',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(8_000),
+      }),
+    async ventasSinCerrar({ antesDe, desde, finales, limite }) {
+      const { data, error } = await ventas()
+        .select('external_id, shipment_id')
+        .eq('marketplace', 'mercadolibre')
+        .neq('status', 'cancelled')
+        .not('shipment_id', 'is', null)
+        .lt('sold_at', antesDe)
+        .gte('sold_at', desde)
+        .or(
+          `shipping_estado.is.null,shipping_estado.not.in.(${finales.join(',')})`,
+        )
+        .order('updated_at', { ascending: true })
+        .limit(limite);
+      if (error) throw new Error(`leer ventas sin cerrar: ${error.message}`);
+      return (data ?? []) as VentaSinCerrar[];
+    },
+    async actualizar(externalId, cambios) {
+      const { error } = await ventas()
+        .update(cambios)
+        .eq('marketplace', 'mercadolibre')
+        .eq('external_id', externalId);
+      if (error) throw new Error(error.message);
+    },
+    ahora: () => Date.now(),
+  };
+}

@@ -1,5 +1,11 @@
 # Óptica Carballo — Learnings Log
 
+## 2026-11-28 — "No pisar con vacío" cuando a veces el vacío es un dato
+
+**Qué funcionó:** separar dos clases de columnas. Las que nunca se vacían las cuida el disparador; las que sí (turno, plazo, devolución) el código directamente no las manda en el upsert cuando la lectura falló. PostgREST sólo actualiza las claves presentes.
+
+**Cómo se usa:** ver `ColumnasBorrables` en `claims-mapping.ts` y el disparador de la migración. Probado en un Postgres local descartable creando los roles `anon`, `authenticated` y `service_role` con los permisos por omisión de Supabase.
+
 ## 2026-11-26 — Integrar un recurso de ML sin poder probarlo: dependencias inyectadas y respuestas de ejemplo
 
 **Qué funcionó:** para reclamos y devoluciones (sin poder llamar a la API ni abrir la documentación, que contestó 403) la lectura de respuestas quedó en un archivo puro (`claims-mapping.ts`) y la corrida recibe ML, base y reloj como dependencias. Así se probaron sin red 429, paginado, corte por tiempo y fallos parciales.

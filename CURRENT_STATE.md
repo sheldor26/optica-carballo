@@ -5,6 +5,13 @@
 > de verdad). Las entries históricas por-producto más abajo son registro, no estado
 > vigente. Detalle verificable en `CLOUD_APPLIED.md`.
 
+### 📬 Postventa de Mercado Libre, parte conector — ESCRITA en la rama `reclamos-ml`; SIN commitear, SIN aplicar, SIN publicar (2026-11-28, ADR-029)
+**Qué se hizo:** sobre el código de reclamos: turno, plazos, impacto, comprador, venta referida y artículos devueltos; reputación y estado de sincronización; carga histórica en tandas; webhook `post_purchase`; correos urgentes y resumen diario; botón de refrescar para el sistema de la óptica; refresco de envíos viejos en `ml-ventas`; tolerancia a dos renovaciones de token simultáneas (`oauth.ts`). La migración `20261126120000_marketplace_claims.sql` se amplió (nunca se había aplicado).
+**Verificado:** selftest 68/68 sin red; migración aplicada dos veces en un Postgres local descartable con pruebas de disparador, funciones, concurrencia y permisos (base y roles borrados); `tsc` limpio; `eslint` limpio en los archivos tocados (el repo ya tenía errores en otros archivos).
+**NO verificado:** nada contra Supabase, Mercado Libre ni Resend reales; los campos de `GET /shipments/{id}` y el formato de un aviso `post_purchase` real.
+**Próximo paso exacto:** con OK del founder: aplicar la migración, cargar `ML_AVISOS_EMAIL`, commit y publicar, carga histórica `?historico=1`, activar el tema `post_purchase` en la app de ML.
+**Docs:** LEARNINGS con entrada nueva; MISTAKES revisado — sin novedad: no hubo fallas nuevas para registrar.
+
 ### ↩️ Reclamos y devoluciones de Mercado Libre — ESCRITO en la rama `reclamos-ml`; SIN commitear, SIN aplicar, SIN publicar (2026-11-26, ADR-029)
 **Pedido del founder (plan aprobado con "dale"):** traer, además de las ventas, el motivo del reclamo o de la devolución, para cruzarlo con la venta y ver a cuántos días de recibirlo devolvió. **Sólo lectura en ML.**
 **Qué se hizo (worktree `.claude/worktrees/reclamos-ml`):** migración `20261126120000_marketplace_claims.sql` (tabla privada `marketplace_claims`, RLS sin policies + REVOKE a `anon`/`authenticated`, disparador que no pisa con vacío), `lib/integrations/mercadolibre/claims.ts` + `claims-mapping.ts`, ruta `/api/cron/ml-reclamos` (CRON_SECRET, `?dias=N`, por omisión 3 días + abiertos + pendientes), entrada en `vercel.json` (minuto 20 de cada hora), `scripts/ml-reclamos-prueba.ts` (consulta de prueba, ya corrida por el founder) y `scripts/ml-reclamos-selftest.ts`.

@@ -11,14 +11,13 @@ re-aplicar o saltarse algo.
 
 ## Migraciones escritas y NO aplicadas
 
-| Archivo | Estado | Notas |
-|---|---|---|
-| `20261126120000_marketplace_claims.sql` | ❌ NO aplicada (escrita 2026-11-26, nunca ejecutada en ninguna base) | Tabla privada `marketplace_claims` (ADR-029). Aplicar ANTES de publicar `/api/cron/ml-reclamos`. Verificar después: `SELECT relrowsecurity FROM pg_class WHERE oid='public.marketplace_claims'::regclass;` → `true`, y `SELECT count(*) FROM pg_policies WHERE tablename='marketplace_claims';` → `0`. |
+Ninguna.
 
 ## Migraciones aplicadas a cloud
 
 | Archivo | Aplicada al cloud | Cómo | Notas |
 |---|---|---|---|
+| `20261126120000_marketplace_claims.sql` | ✅ 2026-11-28 (VERIFICADO con SELECT: 3 tablas con RLS y 0 policies, `anon` sin lectura, cuerpo de las 5 funciones idéntico al archivo) | Supabase MCP `apply_migration` (sin BEGIN/COMMIT ni comentarios sueltos del archivo), con el OK del founder | Reclamos, devoluciones, reputación y estado de la sincronización de Mercado Libre (ADR-029). `ML_AVISOS_EMAIL` sin cargar: no se mandan correos. |
 | `20261119140000_whatsapp_retencion_y_aviso.sql` | ✅ 2026-11-19 (VERIFICADO con SELECT: columna `aviso_enviado_at` y función `whatsapp_purgar_mensajes` existen; `anon` y `authenticated` NO pueden ejecutarla, `service_role` sí) | Supabase MCP `apply_migration` (sin el BEGIN/COMMIT del archivo), con el OK explícito del founder ("Sí, aplicá y subí") | Bot de WhatsApp: retención (mensajes a 90 días, 365 si se derivó) que llama el cron diario `/api/cron/whatsapp-retencion`, y registro del aviso inicial de asistente virtual. |
 | `20261119120000_whatsapp_bot.sql` | ✅ 2026-11-19 (VERIFICADO con SELECT: las 2 tablas existen, RLS activo y 0 policies) | Supabase MCP `apply_migration` (sin el BEGIN/COMMIT del archivo, que lo envuelve el MCP), con el OK explícito del founder ("Sí, las dos cosas") | Bot de WhatsApp (ADR-028): tablas `whatsapp_conversations` y `whatsapp_messages` (wamid UNIQUE para dedupe de reintentos de Meta). Solo service role. Falta definir retención (borrar mensajes viejos) antes de lanzar. |
 | `20261119130000_product_embeddings_exact_scan.sql` | ✅ 2026-11-19 (VERIFICADO: `match_products` pasó de devolver 0 o 16 productos a los 154 con stock) | Supabase MCP `apply_migration` | `DROP INDEX idx_product_embeddings_vector` (ivfflat creado con la tabla vacía: centros mal calculados, cada consulta miraba UNA lista). Búsqueda exacta para ~158 productos. Si el catálogo llega a miles, usar HNSW. Decisión mía dentro del objetivo aprobado (RAG funcionando); reversible. |
